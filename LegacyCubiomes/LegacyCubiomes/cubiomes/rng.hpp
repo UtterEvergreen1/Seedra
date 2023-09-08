@@ -1,0 +1,304 @@
+#pragma once
+
+// #define __STDC_FORMAT_MACROS 1
+
+#include <cstdlib>
+#include <cstdint>
+#include <cinttypes>
+
+
+///=============================================================================
+///                      Compiler and Platform Features
+///=============================================================================
+
+#if __GNUC__
+
+#define PREFETCH(PTR,RW,LOC)    __builtin_prefetch(PTR,RW,LOC)
+#define EXPECT_FALSE(COND)                 (__builtin_expect((COND),0))    // [[unlikely]
+#define EXPECT_TRUE(COND)                 (__builtin_expect((COND),1))    // [[likely]
+#define ATTR(...)               __attribute__((__VA_ARGS__))
+#else
+// #define IABS(X)                 ((int)abs(X))
+#define PREFETCH(PTR,RW,LOC)
+ #define EXPECT_FALSE(COND)               (COND) [[unlikely]]
+#define EXPECT_TRUE(COND)                 (COND) [[likely]]
+#define ATTR(...)
+static inline uint32_t BSWAP32(uint32_t x) {
+    x = ((x & 0x000000ff) << 24) | ((x & 0x0000ff00) <<  8) |
+        ((x & 0x00ff0000) >>  8) | ((x & 0xff000000) >> 24);
+    return x;
+}
+#endif
+
+/// imitate amd64/x64 rotate instructions
+
+static inline ATTR(const, always_inline, artificial)
+uint64_t rotl64(uint64_t x, uint8_t b)
+{
+    return (x << b) | (x >> (64-b));
+}
+
+static inline ATTR(const, always_inline, artificial)
+uint32_t rotr32(uint32_t a, uint8_t b)
+{
+    return (a >> b) | (a << (32-b));
+}
+
+
+///=============================================================================
+///                    C implementation of Java Random
+///=============================================================================
+
+static inline void setSeed(uint64_t *seed, uint64_t value)
+{
+    *seed = (value ^ 0x5deece66d) & 0xFFFFFFFFFFFF;
+}
+
+static inline int next(uint64_t *seed, const int bits)
+{
+    *seed = (*seed * 0x5deece66d + 0xb) & 0xFFFFFFFFFFFF;
+    return (int) ((int64_t)*seed >> (48 - bits));
+}
+
+static inline bool nextBoolean(uint64_t *seed){
+    return next(seed, 1) != 0;
+}
+
+
+static inline int nextInt(uint64_t *seed, const int n)
+{
+    int bits, val;
+    const int m = n - 1;
+
+    if ((m & n) == 0) {
+        uint64_t x = n * (uint64_t) next(seed, 31);
+        return (int) ((int64_t) x >> 31);
+    }
+
+    do {
+        bits = next(seed, 31);
+        val = bits % n;
+    }
+    while (bits - val + m < 0);
+    return val;
+}
+
+static inline int nextInt(uint64_t *seed)
+{
+    return next(seed, 32);
+}
+
+static inline uint64_t nextLong(uint64_t *seed)
+{
+    return ((uint64_t) next(seed, 32) << 32) + next(seed, 32);
+}
+
+static inline float nextFloat(uint64_t *seed)
+{
+    return (float)next(seed, 24) / (float)0x1000000;
+}
+
+static inline double nextDouble(uint64_t *seed)
+{
+    uint64_t x = next(seed, 26);
+    x <<= 27;
+    x += next(seed, 27);
+    return (int64_t) x / (double)0x20000000000000;
+}
+
+static inline uint64_t getLargeFeatureSeed(int64_t worldSeed, int chunkX, int chunkZ) {
+    uint64_t rng;
+    setSeed(&rng, worldSeed);
+    int64_t l2 = nextLong(&rng);
+    int64_t l3 = nextLong(&rng);
+    int64_t l4 = (int64_t) chunkX * l2 ^ (int64_t) chunkZ * l3 ^ worldSeed;
+    setSeed(&rng, l4);
+    return rng;
+}
+
+static inline uint64_t getPopulationSeed(int64_t worldSeed, int chunkX, int chunkZ) {
+    uint64_t rng;
+    setSeed(&rng, worldSeed);
+    int64_t a = nextLong(&rng);
+    int64_t b = nextLong(&rng);
+    a = (int64_t)(((a / 2) * 2) + 1); b = (int64_t)(((b / 2) * 2) + 1);
+    int64_t decoratorSeed = (chunkX * a + chunkZ * b) ^ worldSeed;
+    setSeed(&rng, decoratorSeed);
+    return rng;
+}
+
+/* A macro to generate the ideal assembly for X = nextInt(S, 24)
+ * This is a macro and not an inline function, as many compilers can make use
+ * of the additional optimisation passes for the surrounding code.
+ */
+#define JAVA_NEXT_INT24(S,X)                \
+    do {                                    \
+        uint64_t a = (1ULL << 48) - 1;      \
+        uint64_t c = 0x5deece66dULL * (S);  \
+        c += 11; a &= c;                    \
+        (S) = a;                            \
+        a = (uint64_t) ((int64_t)a >> 17);  \
+        c = 0xaaaaaaab * a;                 \
+        c = (uint64_t) ((int64_t)c >> 36);  \
+        (X) = (int)a - (int)(c << 3) * 3;   \
+    } while (0)
+
+
+/* Jumps forwards in the random number sequence by simulating 'n' calls to next.
+ */
+static inline void skipNextN(uint64_t *seed, uint64_t n)
+{
+    uint64_t m = 1;
+    uint64_t a = 0;
+    uint64_t im = 0x5deece66dULL;
+    uint64_t ia = 0xb;
+    uint64_t k;
+
+    for (k = n; k; k >>= 1)
+    {
+        if (k & 1)
+        {
+            m *= im;
+            a = im * a + ia;
+        }
+        ia = (im + 1) * ia;
+        im *= im;
+    }
+
+    *seed = *seed * m + a;
+    *seed &= 0xffffffffffffULL;
+}
+
+
+//==============================================================================
+//                              MC Seed Helpers
+//==============================================================================
+
+/**
+ * The seed pipeline:
+ *
+ * getLayerSalt(n)                -> layerSalt (ls)
+ * layerSalt (ls), worldSeed (ws) -> startSalt (st), startSeed (ss)
+ * startSeed (ss), coords (x,z)   -> chunkSeed (cs)
+ *
+ * The chunkSeed alone is enough to generate the first PRNG integer with:
+ *   mcFirstInt(cs, mod)
+ * subsequent PRNG integers are generated by stepping the chunkSeed forwards,
+ * salted with startSalt:
+ *   cs_next = mcStepSeed(cs, st)
+ */
+
+static inline uint64_t mcStepSeed(uint64_t s, uint64_t salt)
+{
+    return s * (s * 6364136223846793005ULL + 1442695040888963407ULL) + salt;
+}
+
+static inline int mcFirstInt(uint64_t s, int mod)
+{
+    int ret = (int)(((int64_t)s >> 24) % mod);
+    if (ret < 0)
+        ret += mod;
+    return ret;
+}
+
+static inline int mcFirstIsZero(uint64_t s, int mod)
+{
+    return (int)(((int64_t)s >> 24) % mod) == 0;
+}
+
+static inline uint64_t getChunkSeed(uint64_t ss, int x, int z)
+{
+    uint64_t cs = ss + x;
+    cs = mcStepSeed(cs, z);
+    cs = mcStepSeed(cs, x);
+    cs = mcStepSeed(cs, z);
+    return cs;
+}
+
+static inline uint64_t getLayerSalt(uint64_t salt)
+{
+    uint64_t ls = mcStepSeed(salt, salt);
+    ls = mcStepSeed(ls, salt);
+    ls = mcStepSeed(ls, salt);
+    return ls;
+}
+
+static inline uint64_t getStartSalt(uint64_t ws, uint64_t ls)
+{
+    uint64_t st = ws;
+    st = mcStepSeed(st, ls);
+    st = mcStepSeed(st, ls);
+    st = mcStepSeed(st, ls);
+    return st;
+}
+
+static inline uint64_t getStartSeed(uint64_t ws, uint64_t ls)
+{
+    uint64_t ss = ws;
+    ss = getStartSalt(ss, ls);
+    ss = mcStepSeed(ss, 0);
+    return ss;
+}
+
+
+///============================================================================
+///                               Arithmetic
+///============================================================================
+
+
+/* Linear interpolations
+ */
+static inline double lerp(double part, double from, double to)
+{
+    return from + part * (to - from);
+}
+
+static inline double lerp2(
+        double dx, double dy, double v00, double v10, double v01, double v11)
+{
+    return lerp(dy, lerp(dx, v00, v10), lerp(dx, v01, v11));
+}
+
+static inline double lerp3(
+        double dx, double dy, double dz,
+        double v000, double v100, double v010, double v110,
+        double v001, double v101, double v011, double v111)
+{
+    v000 = lerp2(dx, dy, v000, v100, v010, v110);
+    v001 = lerp2(dx, dy, v001, v101, v011, v111);
+    return lerp(dz, v000, v001);
+}
+
+static inline double clampedLerp(double part, double from, double to)
+{
+    if (part <= 0) return from;
+    if (part >= 1) return to;
+    return lerp(part, from, to);
+}
+
+/* Find the modular inverse: (1/x) | mod m.
+ * Assumes x and m are positive (less than 2^63), co-prime.
+ */
+static inline ATTR(const)
+uint64_t mulInv(uint64_t x, uint64_t m)
+{
+    uint64_t t, q, a, b, n;
+    if ((int64_t)m <= 1)
+        return 0; // no solution
+
+    n = m;
+    a = 0; b = 1;
+
+    while ((int64_t)x > 1)
+    {
+        if (m == 0)
+            return 0; // x and m are co-prime
+        q = x / m;
+        t = m; m = x % m;     x = t;
+        t = a; a = b - q * a; b = t;
+    }
+
+    if ((int64_t)b < 0)
+        b += n;
+    return b;
+}

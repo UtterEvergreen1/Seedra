@@ -1,0 +1,214 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <VCProjectVersion>16.0</VCProjectVersion>
+    <Keyword>Win32Proj</Keyword>
+    <ProjectGuid>{6774167f-de1b-4afa-8b4d-7be344d79c9a}</ProjectGuid>
+    <RootNamespace>LegacyCubiomes</RootNamespace>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="Shared">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <IncludePath>C:\Users\Daniel\source\repos\LegacyCubiomes\LegacyCubiomes;$(IncludePath)</IncludePath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <IncludePath>C:\Users\Daniel\source\repos\LegacyCubiomes\LegacyCubiomes;$(IncludePath)</IncludePath>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <LanguageStandard>stdcpp20</LanguageStandard>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <WarningLevel>Level4</WarningLevel>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <LanguageStandard>stdcpp20</LanguageStandard>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="LegacyCubiomes\building_blocks\BasePiece.cpp" />
+    <ClCompile Include="LegacyCubiomes\building_blocks\BoundingBox.cpp" />
+    <ClCompile Include="LegacyCubiomes\chunk_generator\biome.cpp" />
+    <ClCompile Include="LegacyCubiomes\chunk_generator\ChunkGenerator.cpp" />
+    <ClCompile Include="LegacyCubiomes\cubiomes\layers.cpp" />
+    <ClCompile Include="LegacyCubiomes\cubiomes\noise.cpp" />
+    <ClCompile Include="LegacyCubiomes\cubiomes\util.cpp" />
+    <ClCompile Include="LegacyCubiomes\structures\structure_generation\stronghold_generator\StrongholdGenerator.cpp" />
+    <ClCompile Include="LegacyCubiomes\structures\structure_placement\DynamicStructures.cpp" />
+    <ClCompile Include="LegacyCubiomes\structures\structure_placement\StaticStructures.cpp" />
+    <ClCompile Include="LegacyCubiomes\structures\structure_placement\StrongholdStructure.cpp" />
+    <ClCompile Include="LegacyCubiomes\utils\pos2D.cpp" />
+    <ClCompile Include="LegacyCubiomes\utils\pos3D.cpp" />
+    <ClCompile Include="main.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="LegacyCubiomes\building_blocks\BasePiece.hpp" />
+    <ClInclude Include="LegacyCubiomes\building_blocks\BoundingBox.hpp" />
+    <ClInclude Include="LegacyCubiomes\chunk_generator\biome.hpp" />
+    <ClInclude Include="LegacyCubiomes\chunk_generator\block.hpp" />
+    <ClInclude Include="LegacyCubiomes\chunk_generator\CaveGenerator.hpp" />
+    <ClInclude Include="LegacyCubiomes\chunk_generator\Chunk.hpp" />
+    <ClInclude Include="LegacyCubiomes\chunk_generator\ChunkGenerator.hpp" />
+    <ClInclude Include="LegacyCubiomes\chunk_generator\ChunkPrimer.hpp" />
+    <ClInclude Include="LegacyCubiomes\chunk_generator\MapGenBase.hpp" />
+    <ClInclude Include="LegacyCubiomes\chunk_generator\NoiseGenerator.hpp" />
+    <ClInclude Include="LegacyCubiomes\chunk_generator\RavineGenerator.hpp" />
+    <ClInclude Include="LegacyCubiomes\chunk_generator\stuff.hpp" />
+    <ClInclude Include="LegacyCubiomes\cubiomes\generator.hpp" />
+    <ClInclude Include="LegacyCubiomes\cubiomes\layers.hpp" />
+    <ClInclude Include="LegacyCubiomes\cubiomes\noise.hpp" />
+    <ClInclude Include="LegacyCubiomes\cubiomes\rng.hpp" />
+    <ClInclude Include="LegacyCubiomes\cubiomes\util.hpp" />
+    <ClInclude Include="LegacyCubiomes\features\lakes.hpp" />
+    <ClInclude Include="LegacyCubiomes\loot\abandoned_mineshaft.hpp" />
+    <ClInclude Include="LegacyCubiomes\loot\base_classes\loot.hpp" />
+    <ClInclude Include="LegacyCubiomes\loot\base_classes\loot_classes.hpp" />
+    <ClInclude Include="LegacyCubiomes\loot\base_classes\stronghold_loot.hpp" />
+    <ClInclude Include="LegacyCubiomes\loot\blacksmith.hpp" />
+    <ClInclude Include="LegacyCubiomes\loot\buried_treasure.hpp" />
+    <ClInclude Include="LegacyCubiomes\loot\desert_temple.hpp" />
+    <ClInclude Include="LegacyCubiomes\loot\end_city_treasure.hpp" />
+    <ClInclude Include="LegacyCubiomes\loot\igloo_chest.hpp" />
+    <ClInclude Include="LegacyCubiomes\loot\jungle_temple.hpp" />
+    <ClInclude Include="LegacyCubiomes\loot\jungle_temple_dispenser.hpp" />
+    <ClInclude Include="LegacyCubiomes\loot\nether_bridge.hpp" />
+    <ClInclude Include="LegacyCubiomes\loot\setup.hpp" />
+    <ClInclude Include="LegacyCubiomes\loot\simple_dungeon.hpp" />
+    <ClInclude Include="LegacyCubiomes\loot\spawn_bonus_chest.hpp" />
+    <ClInclude Include="LegacyCubiomes\loot\stronghold_corridor.hpp" />
+    <ClInclude Include="LegacyCubiomes\loot\stronghold_crossing.hpp" />
+    <ClInclude Include="LegacyCubiomes\loot\stronghold_library.hpp" />
+    <ClInclude Include="LegacyCubiomes\loot\woodland_mansion.hpp" />
+    <ClInclude Include="LegacyCubiomes\mc\itemID.hpp" />
+    <ClInclude Include="LegacyCubiomes\mc\items.hpp" />
+    <ClInclude Include="LegacyCubiomes\mc\itemTypes.hpp" />
+    <ClInclude Include="LegacyCubiomes\structures\dynamic\Mansion\Mansion.hpp" />
+    <ClInclude Include="LegacyCubiomes\structures\structure_generation\stronghold_generator\Enums.hpp" />
+    <ClInclude Include="LegacyCubiomes\structures\structure_generation\stronghold_generator\Piece.hpp" />
+    <ClInclude Include="LegacyCubiomes\structures\structure_generation\stronghold_generator\PiecePlaceCount.hpp" />
+    <ClInclude Include="LegacyCubiomes\structures\structure_generation\stronghold_generator\PieceWeight.hpp" />
+    <ClInclude Include="LegacyCubiomes\structures\structure_generation\stronghold_generator\StrongholdGenerator.hpp" />
+    <ClInclude Include="LegacyCubiomes\structures\structure_placement\DynamicStructures.hpp" />
+    <ClInclude Include="LegacyCubiomes\structures\structure_placement\StaticStructures.hpp" />
+    <ClInclude Include="LegacyCubiomes\structures\structure_placement\StrongholdStructure.hpp" />
+    <ClInclude Include="LegacyCubiomes\structures\structure_rolls\base_rolls.hpp" />
+    <ClInclude Include="LegacyCubiomes\structures\structure_rolls\stronghold_rolls.hpp" />
+    <ClInclude Include="LegacyCubiomes\utils\constants.hpp" />
+    <ClInclude Include="LegacyCubiomes\utils\enums.hpp" />
+    <ClInclude Include="LegacyCubiomes\utils\json.hpp" />
+    <ClInclude Include="LegacyCubiomes\utils\pos2D.hpp" />
+    <ClInclude Include="LegacyCubiomes\utils\pos3D.hpp" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>
