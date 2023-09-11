@@ -4,6 +4,7 @@
 #include <iostream>
 #include <string>
 //#include <QDebug>
+
 class Pos2D {
 public:
     int x;
@@ -80,5 +81,4 @@ public:
             return (size_t) i ^ j;
         }
     };
-
 };

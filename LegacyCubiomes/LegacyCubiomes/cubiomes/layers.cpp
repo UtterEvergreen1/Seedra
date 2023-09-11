@@ -332,11 +332,6 @@ int isSnowy(int id)
     }
 }
 
-
-void initBiomes()
-{
-}
-
 void setLayerSeed(Layer *layer, uint64_t worldSeed)
 {
     if (layer->p2 != 0)
@@ -344,13 +339,6 @@ void setLayerSeed(Layer *layer, uint64_t worldSeed)
 
     if (layer->p != 0)
         setLayerSeed(layer->p, worldSeed);
-
-    if (layer->noise != 0)
-    {
-        uint64_t s;
-        setSeed(&s, worldSeed);
-        perlinInit((PerlinNoise*)layer->noise, &s);
-    }
 
     uint64_t ls = layer->layerSalt;
     if (ls == 0)
@@ -391,7 +379,6 @@ Layer *setupLayer(Layer *l, mapfunc_t *map, int theMc,
         l->layerSalt = getLayerSalt(saltbase);
     l->startSalt = 0;
     l->startSeed = 0;
-    l->noise = nullptr;
     l->data = nullptr;
     l->p = p;
     l->p2 = p2;
@@ -772,144 +759,16 @@ double sampleSurfaceNoise(const SurfaceNoise *rnd, int x, int y, int z)
     return clampedLerp(0.5 + 0.05*mainNoise, minNoise/512.0, maxNoise/512.0);
 }
 
-
 //==============================================================================
-// End (1.9+) Biome Generation
+// End Generation
 //==============================================================================
 
 void setEndSeed(EndNoise *en, uint64_t seed)
 {
     uint64_t s;
     setSeed(&s, seed);
-    skipNextN(&s, 17292);
+    seed = (seed * 257489430523441 + 184379205320524) & 0xffffffffffff; // 17292 rolls
     perlinInit(en, &s);
-}
-
-static int getEndBiome(int hx, int hz, const uint16_t *hmap, int hw)
-{
-    int i, j;
-    const uint16_t ds[26] = { // (25-2*i)*(25-2*i)
-        //  0    1    2    3    4    5    6    7    8    9   10   11   12
-          625, 529, 441, 361, 289, 225, 169, 121,  81,  49,  25,   9,   1,
-        // 13   14   15   16   17   18   19   20   21   22   23   24,  25
-            1,   9,  25,  49,  81, 121, 169, 225, 289, 361, 441, 529, 625,
-    };
-
-    const uint16_t *p_dsi = ds + (hx < 0);
-    const uint16_t *p_dsj = ds + (hz < 0);
-    const uint16_t *p_elev = hmap;
-    uint32_t h;
-
-    if (abs(hx) > 15 || abs(hz) > 15)
-        h = 14401;
-    else
-        h = 64 * (hx*hx + hz*hz);
-
-    for (j = 0; j < 25; j++)
-    {
-        uint16_t dsj = p_dsj[j];
-        uint16_t e;
-        uint32_t u;
-        for (i = 0; i < 25; i += 5)
-        {
-        #if __GNUC__
-            if (EXPECT_FALSE(e = p_elev[i + 0]) && (u = (p_dsi[i + 0] + (uint32_t)dsj) * e) < h) h = u;
-            if (EXPECT_FALSE(e = p_elev[i + 1]) && (u = (p_dsi[i + 1] + (uint32_t)dsj) * e) < h) h = u;
-            if (EXPECT_FALSE(e = p_elev[i + 2]) && (u = (p_dsi[i + 2] + (uint32_t)dsj) * e) < h) h = u;
-            if (EXPECT_FALSE(e = p_elev[i + 3]) && (u = (p_dsi[i + 3] + (uint32_t)dsj) * e) < h) h = u;
-            if (EXPECT_FALSE(e = p_elev[i + 4]) && (u = (p_dsi[i + 4] + (uint32_t)dsj) * e) < h) h = u;
-        #else
-            if ((e = p_elev[i + 0]) && (u = (p_dsi[i + 0] + (uint32_t)dsj) * e) < h) h = u;
-            if ((e = p_elev[i + 1]) && (u = (p_dsi[i + 1] + (uint32_t)dsj) * e) < h) h = u;
-            if ((e = p_elev[i + 2]) && (u = (p_dsi[i + 2] + (uint32_t)dsj) * e) < h) h = u;
-            if ((e = p_elev[i + 3]) && (u = (p_dsi[i + 3] + (uint32_t)dsj) * e) < h) h = u;
-            if ((e = p_elev[i + 4]) && (u = (p_dsi[i + 4] + (uint32_t)dsj) * e) < h) h = u;
-        #endif
-        }
-        p_elev += hw;
-    }
-
-    if (h < 3600)
-        return end_highlands;
-    else if (h <= 10000)
-        return end_midlands;
-    else if (h <= 14400)
-        return end_barrens;
-
-    return small_end_islands;
-}
-
-int mapEndBiome(const EndNoise *en, int *out, int x, int z, int w, int h)
-{
-    int i, j;
-    int hw = w + 26;
-    int hh = h + 26;
-    uint16_t *hmap = (uint16_t*) malloc(hw * hh * sizeof(*hmap));
-
-    for (j = 0; j < hh; j++)
-    {
-        for (i = 0; i < hw; i++)
-        {
-            int64_t rx = x + i - 12;
-            int64_t rz = z + j - 12;
-            uint16_t v = 0;
-            if (rx*rx + rz*rz > 4096 && sampleSimplex2D(en, (double)rx, (double)rz) < -0.9f)
-            {
-                v = (llabs(rx) * 3439 + llabs(rz) * 147) % 13 + 9;
-                v *= v;
-            }
-            hmap[j*hw+i] = v;
-        }
-    }
-
-    for (j = 0; j < h; j++)
-    {
-        for (i = 0; i < w; i++)
-        {
-            int64_t hx = (i+x);
-            int64_t hz = (j+z);
-
-            if (hx*hx + hz*hz <= 4096L)
-                out[j*w+i] = the_end;
-            else
-            {
-                hx = 2*hx + 1;
-                hz = 2*hz + 1;
-                uint16_t *p_elev = &hmap[(hz/2-z)*hw + (hx/2-x)];
-                out[j*w+i] = getEndBiome((int)hx, (int)hz, p_elev, hw);
-            }
-        }
-    }
-
-    free(hmap);
-    return 0;
-}
-
-int mapEnd(const EndNoise *en, int *out, int x, int z, int w, int h)
-{
-    int cx = x >> 2;
-    int cz = z >> 2;
-    int cw = ((x+w) >> 2) + 1 - cx;
-    int ch = ((z+h) >> 2) + 1 - cz;
-
-    int *buf = (int*) malloc(cw * ch * sizeof(int));
-    mapEndBiome(en, buf, cx, cz, cw, ch);
-
-    int i, j;
-
-    for (j = 0; j < h; j++)
-    {
-        int cj = ((z+j) >> 2) - cz;
-        for (i = 0; i < w; i++)
-        {
-            int ci = ((x+i) >> 2) - cx;
-            int v = buf[cj*cw+ci];
-            out[j*w+i] = v;
-        }
-    }
-
-    free(buf);
-    return 0;
 }
 
 float getEndHeightNoise(const EndNoise *en, int x, int z)
@@ -1026,148 +885,6 @@ int getSurfaceHeightEnd(int mc, uint64_t seed, int x, int z)
     sampleNoiseColumnEnd(ncol11, &sn, &en, cellX + 1, cellY + 1, y0, y1);
 
     return getSurfaceHeight(ncol00, ncol01, ncol10, ncol11, y0, y1, 4, dx, dz);
-}
-
-int genEndScaled(const EndNoise *en, int *out, Range r, int mc, uint64_t sha)
-{
-    if (r.scale != 1 && r.scale != 4 && r.scale != 16 && r.scale != 64)
-        return 1; // unsupported scale
-
-    // if (r.sy == 0)
-    // r.sy = 1;
-
-    if (mc < MC_1_9)
-    {
-        uint64_t i, siz = (uint64_t)r.sx*r.sz; // *r.sy
-        for (i = 0; i < siz; i++)
-            out[i] = the_end;
-        return 0;
-    }
-
-    int err;
-
-    if (r.scale == 1)
-    {
-        Range s = getVoronoiSrcRange(r);
-        err = mapEnd(en, out, s.x, s.z, s.sx, s.sz);
-        if (err) return err;
-
-        if (mc <= MC_1_14)
-        {   // up to 1.14 voronoi noise is planar
-            Layer lVoronoi;
-            memset(&lVoronoi, 0, sizeof(Layer));
-            lVoronoi.startSalt = getLayerSalt(10);
-            err = mapVoronoi114(&lVoronoi, out, r.x, r.z, r.sx, r.sz);
-            if (err) return err;
-        }
-        /* LCE NO HAVE 1.15
-        else
-        {   // in 1.15 voronoi noise varies vertically in the End
-            int *src = out + r.sx*r.sz; // *r.sy
-            memmove(src, out, s.sx*s.sz*sizeof(int));
-            for (iy = 0; iy < r.sy; iy++)
-            {
-                mapVoronoiPlane(
-                    sha, out+r.sx*r.sz*iy, src,
-                    r.x,r.z,r.sx,r.sz, r.y+iy,
-                    s.x,s.z,s.sx,s.sz);
-            }
-            return 0; // 3D expansion is done => return
-        }
-         */
-    }
-    else if (r.scale == 4)
-    {
-        err = mapEnd(en, out, r.x, r.z, r.sx, r.sz);
-        if (err) return err;
-    }
-    else if (r.scale == 16)
-    {
-        err = mapEndBiome(en, out, r.x, r.z, r.sx, r.sz);
-        if (err) return err;
-    }
-    else if (r.scale == 64)
-    {
-        int i, j, di, dj;
-        int d = 4;
-        int hw = (2+r.sx) * d + 1;
-        int hh = (2+r.sz) * d + 1;
-        int16_t *hmap = (int16_t*) calloc(hw*hh, sizeof(*hmap));
-
-        for (j = 0; j < r.sz; j++)
-        {
-            for (i = 0; i < r.sx; i++)
-            {
-                int64_t hx = (i+r.x) * d;
-                int64_t hz = (j+r.z) * d;
-                if (hx*hx + hz*hz <= 4096L)
-                {
-                    out[j*r.sx+i] = the_end;
-                    continue;
-                }
-
-                int64_t h = 64*16*16;
-
-                for (dj = -d; dj < d; dj++)
-                {
-                    for (di = -d; di < d; di++)
-                    {
-                        int64_t rx = hx + di;
-                        int64_t rz = hz + dj;
-                        int hi = i*d + di+d;
-                        int hj = j*d + dj+d;
-                        int16_t *p = &hmap[hj*hw + hi];
-                        if (*p == 0)
-                        {
-                            if (sampleSimplex2D(en, rx, rz) < -0.9f)
-                            {
-                                *p = (llabs(rx) * 3439 + llabs(rz) * 147) % 13 + 9;
-                                *p *= *p;
-                            }
-                            else
-                            {
-                                *p = -1;
-                            }
-                        }
-
-                        if (*p > 0)
-                        {
-                            int64_t noise = 4*(di*di + dj*dj) * (*p);
-                            if (noise < h)
-                                h = noise;
-                        }
-                    }
-                }
-
-                if (h < 3600)
-                    out[j*r.sx+i] = end_highlands;
-                else if (h <= 10000)
-                    out[j*r.sx+i] = end_midlands;
-                else if (h <= 14400)
-                    out[j*r.sx+i] = end_barrens;
-                else
-                    out[j*r.sx+i] = small_end_islands;
-            }
-        }
-        free(hmap);
-    }
-    else
-    {   // A scale higher than 1:64 is discouraged and not well defined.
-        // TODO...
-        return 1;
-    }
-
-    /* We no longer use 3d biomes
-    // expanding 2D into 3D
-    for (iy = 1; iy < r.sy; iy++)
-    {
-    int i, siz = r.sx*r.sz;
-    for (i = 0; i < siz; i++)
-        out[iy * siz + i] = out[i];
-    }
-     */
-
-    return 0;
 }
 
 

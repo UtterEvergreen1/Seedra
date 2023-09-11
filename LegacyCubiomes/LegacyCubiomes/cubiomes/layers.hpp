@@ -4,7 +4,7 @@
 
 struct PerlinNoise;
 
-/* */
+
 enum StructureType
 {
     st_Desert_Pyramid,
@@ -13,11 +13,11 @@ enum StructureType
     st_Igloo,
     st_Village,
     st_Ocean_Ruin,
-    st_Shipwreck,
-    st_Monument,
     st_Mansion,
-    st_Outpost,
+    st_Monument,
     st_Treasure,
+    st_Shipwreck,
+    st_Outpost,
     st_Mineshaft,
     st_Fortress,
     st_End_City,
@@ -274,7 +274,6 @@ struct Layer
     uint64_t startSalt; // (depends on world seed) used to step PRNG forward
     uint64_t startSeed; // (depends on world seed) start for chunk seeds
 
-    void *noise;        // (depends on world seed) noise map data
     void *data;         // generic data for custom layers
 
     Layer *p, *p2;      // parent layers
@@ -290,7 +289,6 @@ struct LayerStack
     Layer *entry_16;    // [L_SWAMP_RIVER_16|L_SHORE_16]
     Layer *entry_64;    // [L_HILLS_64|L_SUNFLOWER_64]
     Layer *entry_256;   // [L_BIOME_256|L_BAMBOO_256]
-    PerlinNoise oceanRnd;
 };
 
 // End biome generator 1.9+
@@ -301,8 +299,6 @@ typedef PerlinNoise EndNoise;
 //==============================================================================
 // Essentials
 //==============================================================================
-
-void initBiomes();
 
 /* Applies the given world seed to the layer and all dependent layers. */
 void setLayerSeed(Layer *layer, uint64_t worldSeed);
@@ -322,24 +318,8 @@ int getBiomeDepthAndScale(int id, double *depth, double *scale, int *grass);
 //==============================================================================
 // End (1.9+) Biome Noise Generation
 //==============================================================================
-
-/**
- * End biome generation is based on simplex noise and varies only at a 1:16
- * chunk scale which can be generated with mapEndBiome(). The function mapEnd()
- * is a variation which also scales this up on a regular grid to 1:4. The final
- * access at a 1:1 scale uses voronoi.
- */
 void setEndSeed(EndNoise *en, uint64_t seed);
-int mapEndBiome(const EndNoise *en, int *out, int x, int z, int w, int h);
-int mapEnd(const EndNoise *en, int *out, int x, int z, int w, int h);
 int getSurfaceHeightEnd(int mc, uint64_t seed, int x, int z);
-/**
- * The scaled End generation supports scales 1, 4, 16, and 64.
- * The End biomes are usually 2D, but in 1.15+ there is 3D voronoi noise, which
- * is controlled by the 'sha' hash of the seed. For scales higher than 1:1, and
- * versions up to 1.14, 'sha' is ignored.
- */
-int genEndScaled(const EndNoise *en, int *out, Range r, int mc, uint64_t sha);
 
 
 //==============================================================================

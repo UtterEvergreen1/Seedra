@@ -152,6 +152,27 @@ const char *biome2str(int id)
     return nullptr;
 }
 
+const char* getStructureName(StructureType type) {
+    switch (type) {
+    case st_Desert_Pyramid: return "Desert_Pyramid";
+    case st_Jungle_Pyramid: return "Jungle_Pyramid";
+    case st_Swamp_Hut: return "Swamp_Hut";
+    case st_Igloo: return "Igloo";
+    case st_Village: return "Village";
+    case st_Ocean_Ruin: return "Ocean_Ruin";
+    case st_Mansion: return "Mansion";
+    case st_Monument: return "Monument";
+    case st_Treasure: return "Buried Treasure";
+    case st_Shipwreck: return "Shipwreck";
+    case st_Outpost: return "Outpost";
+    case st_Mineshaft: return "Mineshaft";
+    case st_Fortress: return "Fortress";
+    case st_End_City: return "End_City";
+    case st_End_Gateway: return "End_Gateway";
+    default: return "NONE";
+    }
+}
+
 void setBiomeColor(unsigned char biomeColor[256][3], int id,
         unsigned char r, unsigned char g, unsigned char b)
 {

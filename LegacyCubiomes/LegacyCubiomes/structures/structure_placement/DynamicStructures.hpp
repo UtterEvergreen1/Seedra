@@ -8,13 +8,11 @@
 #include "LegacyCubiomes/cubiomes/generator.hpp"
 
 namespace Structure {
-    static constexpr size_t ARRAY_SIZE = 256;
-
     template <typename Derived>
     class DynamicStructure {
     public:
-        static char MAIN_VALID_BIOMES[ARRAY_SIZE];
-        static char SECOND_VALID_BIOMES[ARRAY_SIZE];
+        static char MAIN_VALID_BIOMES[256];
+        static char SECOND_VALID_BIOMES[256];
         
         static int SALT;
         static int REGION_SIZE;
@@ -24,6 +22,8 @@ namespace Structure {
         static int SECOND_RADIUS;
 
         static bool HAS_SECOND_BIOME_CHECK;
+
+        static bool HAS_MAX_ATTEMPTS;
 
         static int CHUNK_BOUNDS;
 

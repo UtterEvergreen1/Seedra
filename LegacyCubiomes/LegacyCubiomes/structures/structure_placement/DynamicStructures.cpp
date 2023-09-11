@@ -1,9 +1,9 @@
 #include "DynamicStructures.hpp"
 namespace Structure {
     template<typename Derived>
-    char DynamicStructure<Derived>::MAIN_VALID_BIOMES[Structure::ARRAY_SIZE];
+    char DynamicStructure<Derived>::MAIN_VALID_BIOMES[256];
     template<typename Derived>
-    char DynamicStructure<Derived>::SECOND_VALID_BIOMES[Structure::ARRAY_SIZE];
+    char DynamicStructure<Derived>::SECOND_VALID_BIOMES[256];
 
     template<typename Derived>
     int DynamicStructure<Derived>::SALT = 0;
@@ -38,11 +38,19 @@ namespace Structure {
         Derived::CHUNK_BOUNDS = getChunkWorldBounds(worldSize) - 3;
 
         Derived::HAS_SECOND_BIOME_CHECK = biomeListSecond.size() > 0;
-        for (unsigned int i = 0; i < biomeListMain.size(); i++)
-            Derived::MAIN_VALID_BIOMES[biomeListMain[i]] = 1;
 
-        for (unsigned int i = 0; i < biomeListSecond.size(); i++)
-            Derived::SECOND_VALID_BIOMES[biomeListSecond[i]] = 1;
+        // This will only trigger if the setup values are changed, but it is neccassary to prevent an infinte loop in getPosition()
+        if EXPECT_FALSE(Derived::CHUNK_RANGE * Derived::CHUNK_RANGE >= attempts)
+            attempts = Derived::CHUNK_RANGE * Derived::CHUNK_RANGE;
+
+
+        if (!MAIN_VALID_BIOMES[biomeListMain[0]])
+            for (unsigned int i = 0; i < biomeListMain.size(); i++)
+                Derived::MAIN_VALID_BIOMES[biomeListMain[i]] = 1;
+
+        if (Derived::HAS_SECOND_BIOME_CHECK && !SECOND_VALID_BIOMES[biomeListSecond[0]])
+            for (unsigned int i = 0; i < biomeListSecond.size(); i++)
+                Derived::SECOND_VALID_BIOMES[biomeListSecond[i]] = 1;
     }
 
     template<typename Derived>
@@ -80,11 +88,14 @@ namespace Structure {
 
     template<typename Derived>
     std::vector<Pos2D> DynamicStructure<Derived>::getAllPositions(Generator* g) {
-        int numRegions = CHUNK_BOUNDS / REGION_SIZE;
+        Pos2D structPos;
         std::vector<Pos2D> positions;
+        int numRegions = CHUNK_BOUNDS / REGION_SIZE;
         for (int regionX = -numRegions - 1; regionX <= numRegions; ++regionX) {
             for (int regionZ = -numRegions - 1; regionZ <= numRegions; ++regionZ) {
-                positions.push_back(getPosition(g, regionX, regionZ));
+                structPos = getPosition(g, regionX, regionZ);
+                if(structPos != 0)
+                    positions.push_back(structPos);
             }
         }
         return positions;

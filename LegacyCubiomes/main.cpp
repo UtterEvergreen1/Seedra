@@ -6,10 +6,12 @@
 #include <iterator>
 #include "LegacyCubiomes/loot/stronghold_library.hpp"
 #include "LegacyCubiomes/utils/constants.hpp"
+#include "LegacyCubiomes/cubiomes/util.hpp"
+#include "LegacyCubiomes/structures/structure_placement/StaticStructures.hpp"
 #include "LegacyCubiomes/structures/structure_placement/DynamicStructures.hpp"
 #include "LegacyCubiomes/utils/json.hpp"
 //#pragma warning(disable : 4996) // stupid VS compiler complains
-using json = nlohmann::json;
+/*using json = nlohmann::json;
 
 std::vector<std::thread> runningThreads;
 std::queue<int> freeIndexes;
@@ -22,7 +24,7 @@ static std::fstream optionsFile;
 static std::string optionsFileName = "options.json";
 static json optionsData;
 
-/*customization for search*/
+//customization for search
 static WORLDSIZE worldSize = WORLDSIZE::CLASSIC;
 static BIOMESCALE biomeSize = BIOMESCALE::SMALL;
 static const int chunkXSearch = 0;
@@ -70,9 +72,146 @@ void CheckSeed(Generator* g) {
     int freeIndex = freeIndexes.front();
     runningThreads[freeIndex] = std::thread(CheckSisterSeeds, freeIndex, g);
     freeIndexes.pop();
+}*/
+bool isValidInput(const std::string& input) {
+    // Check if the input is a valid int64_t or a valid range.
+    std::istringstream iss(input);
+    int64_t number;
+    char dash;
+    return (iss >> number && iss.eof()) || (iss.clear(), iss >> number >> dash && dash == '-' && iss >> number && iss.eof());
+}
+
+int main(int argc, char* argv[]) {
+    /* This will find all the structures of a world seed or in a range */
+    int64_t worldSeed = 0;
+    int64_t highWorldSeed = 0;
+    std::string input;
+    BIOMESCALE biomeScale;
+    WORLDSIZE worldSize;
+    std::istringstream inputStream;
+    bool singleSeed = false;
+    std::cout << "Legacy Structure Finder by UtterEvergreen1" << std::endl;
+    std::cout << "Input world size (C = Classic, S = Small, M = Medium, L = Large): ";
+    std::cin >> input;
+    if (input == "C" || input == "Classic") {
+        worldSize = WORLDSIZE::CLASSIC;
+    }
+    else if (input == "S" || input == "Small") {
+        worldSize = WORLDSIZE::SMALL;
+    }
+    else if (input == "M" || input == "Medium") {
+        worldSize = WORLDSIZE::MEDIUM;
+    }
+    else if (input == "L" || input == "Large") {
+        worldSize = WORLDSIZE::LARGE;
+    }
+    else {
+        std::cout << "Invalid input, defaulting to classic world size" << std::endl;
+        worldSize = WORLDSIZE::CLASSIC;
+    }
+
+    std::cout << "Input biome scale (S = Small, M = Medium, L = Large): ";
+    std::cin >> input;
+    if (input == "S" || input == "Small") {
+        biomeScale = BIOMESCALE::SMALL;
+    }
+    else if (input == "M" || input == "Medium") {
+        biomeScale = BIOMESCALE::MEDIUM;
+    }
+    else if (input == "L" || input == "Large") {
+        biomeScale = BIOMESCALE::LARGE;
+    }
+    else {
+        std::cout << "Invalid input, defaulting to small biome scale" << std::endl;
+        biomeScale = BIOMESCALE::SMALL;
+    }
+    Generator generator(WIIU_LATEST, biomeScale, worldSize);
+    /* dynamic setup */
+    Structure::Mansion::setup(worldSize);
+    Structure::Monument::setup(worldSize);
+    Structure::Treasure::setup(worldSize);
+    Structure::Shipwreck::setup(worldSize);
+    Structure::Outpost::setup(worldSize);
+
+    /* static setup */
+    Structure::Feature::setup(worldSize);
+    Structure::Village::setup(worldSize);
+    Structure::OceanRuin::setup(worldSize);
+    while (true) {
+        std::cout << "Input world seed or seed range (LOW-HIGH) or \"quit\" to quit: ";
+        std::cin >> input;
+        if (input == "quit")
+            break;
+        inputStream.clear();
+        inputStream.str(input);
+        if (inputStream >> worldSeed) {
+            char dash;
+            if (inputStream.eof()) {
+                highWorldSeed = worldSeed;
+                singleSeed = true;
+            }
+            else if (inputStream >> dash >> highWorldSeed) {
+                if (inputStream.eof()) {
+                    singleSeed = false;
+                    if (highWorldSeed <= worldSeed)
+                        std::cout << "Please ensure that the HIGH seed is larger than the LOW seed." << std::endl;
+                }
+                else {
+                    inputStream.setstate(std::ios_base::badbit);
+                }
+                
+            }
+        }
+
+        if(!inputStream) {
+            std::cout << "Invalid input" << std::endl;
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+            continue;
+        }
+
+        for (; worldSeed <= highWorldSeed; ++worldSeed) {
+            generator.applySeed(worldSeed);
+            if(singleSeed)
+                std::cout << "Seed " << worldSeed << " has these structures: " << std::endl;
+            else
+                std::cout << "Seed " << worldSeed << ":" << std::endl;
+
+            /* dynamic */
+            std::cout << std::endl << "Dynamic:" << std::endl;
+            for (const Pos2D& mansionPos : Structure::Mansion::getAllPositions(&generator))
+                std::cout << "Mansion: " << mansionPos << std::endl;
+
+            for (const Pos2D& monumentPos : Structure::Monument::getAllPositions(&generator))
+                std::cout << "Monument: " << monumentPos << std::endl;
+
+            for (const Pos2D& treasurePos : Structure::Treasure::getAllPositions(&generator))
+                std::cout << "Buried Treasure: " << treasurePos << std::endl;
+
+            for (const Pos2D& shipwreckPos : Structure::Shipwreck::getAllPositions(&generator))
+                std::cout << "Shipwreck: " << shipwreckPos << std::endl;
+
+            for (const Pos2D& outpostPos : Structure::Outpost::getAllPositions(&generator))
+                std::cout << "Outpost: " << outpostPos << std::endl;
+
+            /* static */
+            std::cout << std::endl << "Static:" << std::endl;
+            for (const Structure::FeatureStructure& feature : Structure::Feature::getAllFeaturePositions(&generator))
+                std::cout << feature << std::endl;
+
+            for (const Pos2D& villagePos : Structure::Village::getAllPositions(&generator))
+                std::cout << "Village: " << villagePos << std::endl;
+
+            for (const Pos2D& oceanRuinPos : Structure::OceanRuin::getAllPositions(&generator))
+                std::cout << "Ocean Ruin: " << oceanRuinPos << std::endl;
+
+            std::cout << std::endl;
+        }
+    };
 }
 
 /*find 5 cake seeds from file*/
+/*
 int main(int argc, char* argv[]) {
     int numThreads = 0;
     int64_t savedOffsetNumber = 0;

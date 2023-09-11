@@ -18,20 +18,14 @@ public:
     int mc;
     int dim;
     int64_t seed;
-    WORLDSIZE worldSize;
-    BIOMESCALE biomeSize;
     LCEVERSION lceVersion;
+    BIOMESCALE biomeSize;
+    WORLDSIZE worldSize;
 
     int worldCoordinateBounds;
 
-    union { // Nested class for the union structure
-        struct { // Nested structure for MC 1.0 - 1.17
-            LayerStack ls;
-            Layer xlayer[5]; // buffer for custom entry layers @{1,4,16,64,256}
-            Layer* entry;
-        };
-    };
-    //EndNoise en{}; // MC 1.9
+    LayerStack ls;
+    Layer* entry;
 
 
     ///=============================================================================
@@ -43,20 +37,12 @@ public:
      * control LARGE_BIOMES or to FORCE_OCEAN_VARIANTS to enable ocean variants at
      * scales higher than normal.
      */
-    Generator(LCEVERSION lceVersion, WORLDSIZE worldSize, BIOMESCALE biomeSize)
-        : mc(MC_1_13), dim(1000), seed(0), worldSize(worldSize), biomeSize(biomeSize), lceVersion(lceVersion)
+    Generator(LCEVERSION lceVersion, BIOMESCALE biomeSize, WORLDSIZE worldSize = WORLDSIZE::CLASSIC)
+        : mc(MC_1_13), dim(1000), seed(0),
+        lceVersion(lceVersion), biomeSize(biomeSize),
+        worldSize(worldSize), worldCoordinateBounds(getChunkWorldBounds(worldSize) << 4), entry(nullptr)
     {
         setupLayerStack(&this->ls, mc, lceVersion, biomeSize);
-        worldCoordinateBounds = getChunkWorldBounds(worldSize) << 4;
-        this->entry = nullptr;
-    }
-
-    Generator(LCEVERSION lceVersion, BIOMESCALE biomeSize)
-        : mc(MC_1_13), dim(1000), seed(0), worldSize(WORLDSIZE::CLASSIC), biomeSize(biomeSize), lceVersion(lceVersion)
-    {
-        setupLayerStack(&this->ls, mc, lceVersion, biomeSize);
-        worldCoordinateBounds = getChunkWorldBounds(worldSize) << 4;
-        this->entry = nullptr;
     }
 
     /**
@@ -65,19 +51,19 @@ public:
      * dim=-1:  Nether
      * dim=+1:  End
      */
-    void applySeed(int theDim, uint64_t theSeed)
+    void applySeed(int dim, uint64_t seed)
     {
-        this->dim = theDim;
-        this->seed = theSeed;
+        this->dim = dim;
+        this->seed = seed;
 
         if (dim == 0)
             setLayerSeed(this->entry ? this->entry : this->ls.entry_1, seed);
     }
 
-    void applySeed(uint64_t theSeed)
+    void applySeed(uint64_t seed)
     {
         this->dim = 0;
-        this->seed = theSeed;
+        this->seed = seed;
         setLayerSeed(this->entry ? this->entry : this->ls.entry_1, seed);
     }
     /**

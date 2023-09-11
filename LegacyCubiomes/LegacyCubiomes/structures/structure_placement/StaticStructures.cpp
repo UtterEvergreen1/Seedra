@@ -2,7 +2,7 @@
 
 namespace Structure {
     template<typename Derived>
-    char StaticStructure<Derived>::VALID_BIOMES[ARRAY_SIZE];
+    char StaticStructure<Derived>::VALID_BIOMES[256];
 
     template<typename Derived>
     int StaticStructure<Derived>::SALT = 0;
@@ -22,8 +22,9 @@ namespace Structure {
 
         Derived::CHUNK_BOUNDS = getChunkWorldBounds(worldSize);
 
-        for (unsigned int i = 0; i < biomeList.size(); i++)
-            Derived::VALID_BIOMES[biomeList[i]] = 1;
+        if (!VALID_BIOMES[biomeList[0]])
+            for (unsigned int i = 0; i < biomeList.size(); i++)
+                Derived::VALID_BIOMES[biomeList[i]] = 1;
     }
 
     template<typename Derived>
@@ -43,12 +44,16 @@ namespace Structure {
     }
 
     template<typename Derived>
-    std::vector<Pos2D> StaticStructure<Derived>::getAllPositions(int64_t worldSeed) {
+    std::vector<Pos2D> StaticStructure<Derived>::getAllPositions(Generator* g) {
+        Pos2D structPos;
         std::vector<Pos2D> positions;
         int numRegions = CHUNK_BOUNDS / REGION_SIZE;
         for (int regionX = -numRegions - 1; regionX <= numRegions; ++regionX) {
             for (int regionZ = -numRegions - 1; regionZ <= numRegions; ++regionZ) {
-                positions.push_back(getRegionBlockPosition(worldSeed, regionX, regionZ));
+                structPos = getRegionChunkPosition(g->seed, regionX, regionZ);
+                if (verifyChunkPosition(g, structPos)) {
+                    positions.emplace_back((structPos << 4) + 8);
+                }
             }
         }
         return positions;
@@ -56,11 +61,11 @@ namespace Structure {
 
     template<typename Derived>
     bool StaticStructure<Derived>::verifyChunkPosition(Generator* g, int chunkX, int chunkZ) {
-        if (chunkX < CHUNK_BOUNDS && chunkX > -CHUNK_BOUNDS && chunkZ < CHUNK_BOUNDS && chunkZ > -CHUNK_BOUNDS) {
-            int id = g->getBiomeAt(1, (chunkX << 4) + 8, (chunkZ << 4) + 8);
-            return VALID_BIOMES[id];
-        }
-        return false;
+        if (chunkX < -CHUNK_BOUNDS || chunkX > CHUNK_BOUNDS || chunkZ < -CHUNK_BOUNDS || chunkZ > CHUNK_BOUNDS)
+            return false;
+
+        int id = g->getBiomeAt(1, (chunkX << 4) + 8, (chunkZ << 4) + 8);
+        return VALID_BIOMES[id];
     }
 
     void Feature::setup(WORLDSIZE worldSize) {
@@ -70,6 +75,12 @@ namespace Structure {
     }
 
     StructureType Feature::getFeatureType(Generator* g, int blockX, int blockZ) {
+        if (blockX < -g->worldCoordinateBounds ||
+            blockX > g->worldCoordinateBounds ||
+            blockZ < -g->worldCoordinateBounds ||
+            blockZ > g->worldCoordinateBounds) {
+            return st_NONE;
+        }
         switch (g->getBiomeAt(1, blockX, blockZ)) {
         case desert:
         case desert_hills:
@@ -89,18 +100,27 @@ namespace Structure {
         }
     }
 
-    std::map<Pos2D, StructureType, Pos2D::Hasher> Feature::getAllFeaturePositions(Generator* g) {
+    std::vector<FeatureStructure> Feature::getAllFeaturePositions(Generator* g) {
         Pos2D structPos;
-        std::map<Pos2D, StructureType, Pos2D::Hasher> positionTypes;
+        std::vector<FeatureStructure> features;
         int numRegions = CHUNK_BOUNDS / REGION_SIZE;
         for (int regionX = -numRegions - 1; regionX <= numRegions; ++regionX) {
             for (int regionZ = -numRegions - 1; regionZ <= numRegions; ++regionZ) {
-                structPos = getRegionChunkPosition(g->seed, regionX, regionZ);
-                //TODO: fix this error
-                //positionTypes.emplace(structPos, getFeatureType(g, structPos));
+                structPos = getRegionBlockPosition(g->seed, regionX, regionZ);
+                StructureType structureType = getFeatureType(g, structPos);
+                if (structureType != st_NONE)
+                    features.emplace_back(structPos, structureType);
             }
         }
-        return positionTypes;
+        return features;
+    }
+
+    void Village::setup(WORLDSIZE worldSize) {
+        std::vector<int> biomeList = {
+            plains, desert, savanna, taiga, cold_taiga, ice_plains
+        };
+        bool useReducedSpacing = worldSize < WORLDSIZE::MEDIUM;
+        setupDerived(10387312, useReducedSpacing ? 16 : 32, 8, biomeList, worldSize);
     }
 
     void OceanRuin::setup(WORLDSIZE worldSize) {
@@ -109,13 +129,9 @@ namespace Structure {
         };
         setupDerived(14357617, 8, 2, biomeList, worldSize);
     }
-
-    void Village::setup(WORLDSIZE worldSize) {
-        std::vector<int> biomeList = {
-            plains, desert, savanna, taiga, cold_taiga, ice_plains
-        };
-        bool useReducedSpacing = worldSize < WORLDSIZE::MEDIUM;
-        setupDerived(10387312, useReducedSpacing ? 32 : 16, 8, biomeList, worldSize);
-    }
 }
+
+template class Structure::StaticStructure<Structure::Feature>;
+template class Structure::StaticStructure<Structure::Village>;
+template class Structure::StaticStructure<Structure::OceanRuin>;
 

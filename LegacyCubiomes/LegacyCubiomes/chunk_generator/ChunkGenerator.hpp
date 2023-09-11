@@ -29,7 +29,7 @@ public:
     std::vector<double> minLimitRegion;
     std::vector<double> maxLimitRegion;
     ChunkGeneratorOverWorld(const Generator& generator);
-    ChunkGeneratorOverWorld(int64_t worldSeed, WORLDSIZE worldSize, BIOMESCALE biomeScale);
+    ChunkGeneratorOverWorld(int64_t worldSeed, BIOMESCALE biomeScale);
     ~ChunkGeneratorOverWorld();
     void setBiomesForGeneration(int x, int z, int width, int height, int scale);
     void setBlocksInChunk(int chunkX, int chunkZ, ChunkPrimer *primer);

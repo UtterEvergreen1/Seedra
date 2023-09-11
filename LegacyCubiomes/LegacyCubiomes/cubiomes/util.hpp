@@ -1,6 +1,5 @@
-
-#ifndef UTIL_H_
-#define UTIL_H_
+#pragma once
+#include "layers.hpp"
 
 /// convert between version enum and text
 const char* mc2str(int mc);
@@ -8,6 +7,8 @@ int str2mc(const char *s);
 
 /// get the resource id name for a biome (for versions 1.13+)
 const char *biome2str(int id);
+
+const char* getStructureName(StructureType type);
 
 /// initialize a biome colormap with some defaults
 void initBiomeColors(unsigned char biomeColors[256][3]);
@@ -28,5 +29,3 @@ int biomesToImage(unsigned char *pixels,
 int savePPM(const char* path, const unsigned char *pixels,
         const unsigned int sx, const unsigned int sy);
 
-
-#endif

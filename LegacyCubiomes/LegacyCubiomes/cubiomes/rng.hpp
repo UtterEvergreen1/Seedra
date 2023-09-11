@@ -1,18 +1,13 @@
 #pragma once
-
-// #define __STDC_FORMAT_MACROS 1
-
 #include <cstdlib>
 #include <cstdint>
 #include <cinttypes>
-
 
 ///=============================================================================
 ///                      Compiler and Platform Features
 ///=============================================================================
 
 #if __GNUC__
-
 #define PREFETCH(PTR,RW,LOC)    __builtin_prefetch(PTR,RW,LOC)
 #define EXPECT_FALSE(COND)                 (__builtin_expect((COND),0))    // [[unlikely]
 #define EXPECT_TRUE(COND)                 (__builtin_expect((COND),1))    // [[likely]
@@ -31,7 +26,6 @@ static inline uint32_t BSWAP32(uint32_t x) {
 #endif
 
 /// imitate amd64/x64 rotate instructions
-
 static inline ATTR(const, always_inline, artificial)
 uint64_t rotl64(uint64_t x, uint8_t b)
 {
@@ -43,7 +37,6 @@ uint32_t rotr32(uint32_t a, uint8_t b)
 {
     return (a >> b) | (a << (32-b));
 }
-
 
 ///=============================================================================
 ///                    C implementation of Java Random
@@ -63,7 +56,6 @@ static inline int next(uint64_t *seed, const int bits)
 static inline bool nextBoolean(uint64_t *seed){
     return next(seed, 1) != 0;
 }
-
 
 static inline int nextInt(uint64_t *seed, const int n)
 {
@@ -106,47 +98,7 @@ static inline double nextDouble(uint64_t *seed)
     return (int64_t) x / (double)0x20000000000000;
 }
 
-static inline uint64_t getLargeFeatureSeed(int64_t worldSeed, int chunkX, int chunkZ) {
-    uint64_t rng;
-    setSeed(&rng, worldSeed);
-    int64_t l2 = nextLong(&rng);
-    int64_t l3 = nextLong(&rng);
-    int64_t l4 = (int64_t) chunkX * l2 ^ (int64_t) chunkZ * l3 ^ worldSeed;
-    setSeed(&rng, l4);
-    return rng;
-}
-
-static inline uint64_t getPopulationSeed(int64_t worldSeed, int chunkX, int chunkZ) {
-    uint64_t rng;
-    setSeed(&rng, worldSeed);
-    int64_t a = nextLong(&rng);
-    int64_t b = nextLong(&rng);
-    a = (int64_t)(((a / 2) * 2) + 1); b = (int64_t)(((b / 2) * 2) + 1);
-    int64_t decoratorSeed = (chunkX * a + chunkZ * b) ^ worldSeed;
-    setSeed(&rng, decoratorSeed);
-    return rng;
-}
-
-/* A macro to generate the ideal assembly for X = nextInt(S, 24)
- * This is a macro and not an inline function, as many compilers can make use
- * of the additional optimisation passes for the surrounding code.
- */
-#define JAVA_NEXT_INT24(S,X)                \
-    do {                                    \
-        uint64_t a = (1ULL << 48) - 1;      \
-        uint64_t c = 0x5deece66dULL * (S);  \
-        c += 11; a &= c;                    \
-        (S) = a;                            \
-        a = (uint64_t) ((int64_t)a >> 17);  \
-        c = 0xaaaaaaab * a;                 \
-        c = (uint64_t) ((int64_t)c >> 36);  \
-        (X) = (int)a - (int)(c << 3) * 3;   \
-    } while (0)
-
-
-/* Jumps forwards in the random number sequence by simulating 'n' calls to next.
- */
-static inline void skipNextN(uint64_t *seed, uint64_t n)
+static inline void skipNextN(uint64_t* seed, uint64_t n)
 {
     uint64_t m = 1;
     uint64_t a = 0;
@@ -169,6 +121,26 @@ static inline void skipNextN(uint64_t *seed, uint64_t n)
     *seed &= 0xffffffffffffULL;
 }
 
+static inline uint64_t getLargeFeatureSeed(int64_t worldSeed, int chunkX, int chunkZ) {
+    uint64_t rng;
+    setSeed(&rng, worldSeed);
+    int64_t l2 = nextLong(&rng);
+    int64_t l3 = nextLong(&rng);
+    int64_t l4 = (int64_t) chunkX * l2 ^ (int64_t) chunkZ * l3 ^ worldSeed;
+    setSeed(&rng, l4);
+    return rng;
+}
+
+static inline uint64_t getPopulationSeed(int64_t worldSeed, int chunkX, int chunkZ) {
+    uint64_t rng;
+    setSeed(&rng, worldSeed);
+    int64_t a = nextLong(&rng);
+    int64_t b = nextLong(&rng);
+    a = (int64_t)(((a / 2) * 2) + 1); b = (int64_t)(((b / 2) * 2) + 1);
+    int64_t decoratorSeed = (chunkX * a + chunkZ * b) ^ worldSeed;
+    setSeed(&rng, decoratorSeed);
+    return rng;
+}
 
 //==============================================================================
 //                              MC Seed Helpers
@@ -240,14 +212,11 @@ static inline uint64_t getStartSeed(uint64_t ws, uint64_t ls)
     return ss;
 }
 
-
 ///============================================================================
 ///                               Arithmetic
 ///============================================================================
 
-
-/* Linear interpolations
- */
+/* Linear interpolations */
 static inline double lerp(double part, double from, double to)
 {
     return from + part * (to - from);

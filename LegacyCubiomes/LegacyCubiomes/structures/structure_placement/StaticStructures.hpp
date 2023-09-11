@@ -1,14 +1,12 @@
 #pragma once
 #include "LegacyCubiomes/utils/pos2D.hpp"
 #include "LegacyCubiomes/cubiomes/generator.hpp"
-#include <map>
+#include "LegacyCubiomes/cubiomes/util.hpp"
 namespace Structure {
-    static constexpr size_t ARRAY_SIZE = 256;
-
     template<class Derived>
     class StaticStructure {
     public:
-        static char VALID_BIOMES[ARRAY_SIZE];
+        static char VALID_BIOMES[256];
 
         static int SALT;
         static int REGION_SIZE;
@@ -20,7 +18,7 @@ namespace Structure {
         static Pos2D getRegionChunkPosition(int64_t worldSeed, int regionX, int regionZ);
         static Pos2D getRegionBlockPosition(int64_t worldSeed, int regionX, int regionZ);
 
-        static std::vector<Pos2D> getAllPositions(int64_t worldSeed);
+        static std::vector<Pos2D> getAllPositions(Generator* g);
 
         /*do not use for feature, use getFeatureType instead*/
         static bool verifyChunkPosition(Generator* g, int chunkX, int chunkZ);
@@ -38,6 +36,26 @@ namespace Structure {
         }
     };
 
+    class FeatureStructure {
+    public:
+        Pos2D pos;
+        StructureType type;
+        FeatureStructure(const Pos2D& position, StructureType structureType)
+            : pos(position), type(structureType) {}
+
+        friend std::ostream& operator<<(std::ostream& out, const FeatureStructure& feature) {
+            out << "Feature: " << feature.pos << " Type: " << getStructureName(feature.type);
+            return out;
+        }
+
+        /*
+        friend QDebug operator<<(QDebug out, const Pos2D &pos) {
+            out.nospace() << "(" << pos.x << ", " << pos.z << ")";
+            return out.space();
+        }
+        */
+    };
+
     class Feature : public StaticStructure<Feature> {
     public:
         static void setup(WORLDSIZE worldSize);
@@ -45,7 +63,7 @@ namespace Structure {
         inline static StructureType getFeatureType(Generator* g, const Pos2D& block) {
             return getFeatureType(g, block.x, block.z);
         }
-        static std::map<Pos2D, StructureType, Pos2D::Hasher> getAllFeaturePositions(Generator* g);
+        static std::vector<FeatureStructure> getAllFeaturePositions(Generator* g);
     };
 
     class OceanRuin : public StaticStructure<OceanRuin> {
