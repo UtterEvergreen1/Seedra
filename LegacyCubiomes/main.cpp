@@ -1,15 +1,13 @@
 #include <iostream>
 #include <fstream>
 #include <vector>
-#include <queue>
-#include <algorithm>
-#include <iterator>
-#include "LegacyCubiomes/loot/stronghold_library.hpp"
-#include "LegacyCubiomes/utils/constants.hpp"
-#include "LegacyCubiomes/cubiomes/util.hpp"
+#include <sstream>
+//#include "LegacyCubiomes/loot/stronghold_library.hpp"
+//#include "LegacyCubiomes/utils/constants.hpp"
+//#include "LegacyCubiomes/cubiomes/util.hpp"
 #include "LegacyCubiomes/structures/structure_placement/StaticStructures.hpp"
 #include "LegacyCubiomes/structures/structure_placement/DynamicStructures.hpp"
-#include "LegacyCubiomes/utils/json.hpp"
+//#include "LegacyCubiomes/utils/json.hpp"
 //#pragma warning(disable : 4996) // stupid VS compiler complains
 /*using json = nlohmann::json;
 
@@ -73,13 +71,6 @@ void CheckSeed(Generator* g) {
     runningThreads[freeIndex] = std::thread(CheckSisterSeeds, freeIndex, g);
     freeIndexes.pop();
 }*/
-bool isValidInput(const std::string& input) {
-    // Check if the input is a valid int64_t or a valid range.
-    std::istringstream iss(input);
-    int64_t number;
-    char dash;
-    return (iss >> number && iss.eof()) || (iss.clear(), iss >> number >> dash && dash == '-' && iss >> number && iss.eof());
-}
 
 int main(int argc, char* argv[]) {
     /* This will find all the structures of a world seed or in a range */
