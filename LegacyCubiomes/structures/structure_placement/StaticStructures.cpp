@@ -22,9 +22,9 @@ namespace Structure {
 
         Derived::CHUNK_BOUNDS = getChunkWorldBounds(worldSize);
 
-        if (!VALID_BIOMES[biomeList[0]])
-            for (unsigned int i = 0; i < biomeList.size(); i++)
-                Derived::VALID_BIOMES[biomeList[i]] = 1;
+        if (!biomeList.empty() && !VALID_BIOMES[biomeList[0]])
+            for (int i : biomeList)
+                Derived::VALID_BIOMES[i] = 1;
     }
 
     template<typename Derived>
