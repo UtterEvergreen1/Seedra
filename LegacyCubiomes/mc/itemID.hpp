@@ -1,5 +1,7 @@
 #pragma once
+
 namespace Items {
+
     enum ItemID {
         AIR_ID = 0,
         STONE_ID = 1,
@@ -466,4 +468,3 @@ namespace Items {
         DISC_WAIT_ID = 2267,
     };
 }
-

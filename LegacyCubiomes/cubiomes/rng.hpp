@@ -1,42 +1,6 @@
 #pragma once
-#include <cstdlib>
-#include <cstdint>
-#include <cinttypes>
 
-///=============================================================================
-///                      Compiler and Platform Features
-///=============================================================================
-
-#if __GNUC__
-#define PREFETCH(PTR,RW,LOC)    __builtin_prefetch(PTR,RW,LOC)
-#define EXPECT_FALSE(COND)                 (__builtin_expect((COND),0))    // [[unlikely]
-#define EXPECT_TRUE(COND)                 (__builtin_expect((COND),1))    // [[likely]
-#define ATTR(...)               __attribute__((__VA_ARGS__))
-#else
-// #define IABS(X)                 ((int)abs(X))
-#define PREFETCH(PTR,RW,LOC)
- #define EXPECT_FALSE(COND)               (COND) [[unlikely]]
-#define EXPECT_TRUE(COND)                 (COND) [[likely]]
-#define ATTR(...)
-static inline uint32_t BSWAP32(uint32_t x) {
-    x = ((x & 0x000000ff) << 24) | ((x & 0x0000ff00) <<  8) |
-        ((x & 0x00ff0000) >>  8) | ((x & 0xff000000) >> 24);
-    return x;
-}
-#endif
-
-/// imitate amd64/x64 rotate instructions
-static inline ATTR(const, always_inline, artificial)
-uint64_t rotl64(uint64_t x, uint8_t b)
-{
-    return (x << b) | (x >> (64-b));
-}
-
-static inline ATTR(const, always_inline, artificial)
-uint32_t rotr32(uint32_t a, uint8_t b)
-{
-    return (a >> b) | (a << (32-b));
-}
+#include "processor.hpp"
 
 ///=============================================================================
 ///                    C implementation of Java Random
@@ -57,6 +21,12 @@ static inline bool nextBoolean(uint64_t *seed){
     return next(seed, 1) != 0;
 }
 
+
+static inline int nextInt(uint64_t *seed)
+{
+    return next(seed, 32);
+}
+
 static inline int nextInt(uint64_t *seed, const int n)
 {
     int bits, val;
@@ -75,9 +45,8 @@ static inline int nextInt(uint64_t *seed, const int n)
     return val;
 }
 
-static inline int nextInt(uint64_t *seed)
-{
-    return next(seed, 32);
+static int nextInt(uint64_t *rng, int minimum, int maximum) {
+    return minimum >= maximum ? minimum : nextInt(rng, maximum - minimum + 1) + minimum;
 }
 
 static inline uint64_t nextLong(uint64_t *seed)
@@ -90,15 +59,70 @@ static inline float nextFloat(uint64_t *seed)
     return (float)next(seed, 24) / (float)0x1000000;
 }
 
-static inline double nextDouble(uint64_t *seed)
-{
+MU static float nextFloat(uint64_t *rng, float minimum, float maximum) {
+    return minimum >= maximum ? minimum : ::nextFloat(rng) * (maximum - minimum) + minimum;
+}
+
+static inline double nextDouble(uint64_t *seed) {
     uint64_t x = next(seed, 26);
     x <<= 27;
     x += next(seed, 27);
     return (int64_t) x / (double)0x20000000000000;
 }
 
-static inline void skipNextN(uint64_t* seed, uint64_t n)
+MU static double nextDouble(uint64_t *rng, double minimum, double maximum) {
+    return minimum >= maximum ? minimum : ::nextDouble(rng) * (maximum - minimum) + minimum;
+}
+
+static inline uint64_t getLargeFeatureSeed(int64_t worldSeed, int chunkX, int chunkZ) {
+    uint64_t rng;
+    setSeed(&rng, worldSeed);
+    int64_t l2 = (int64_t)nextLong(&rng);
+    int64_t l3 = (int64_t)nextLong(&rng);
+    int64_t l4 = (int64_t) chunkX * l2 ^ (int64_t) chunkZ * l3 ^ worldSeed;
+    setSeed(&rng, l4);
+    return rng;
+}
+
+static inline uint64_t getPopulationSeed(int64_t worldSeed, int chunkX, int chunkZ) {
+    uint64_t rng;
+    setSeed(&rng, worldSeed);
+    int64_t a = nextLong(&rng);
+    int64_t b = nextLong(&rng);
+    a = (int64_t)(((a / 2) * 2) + 1); b = (int64_t)(((b / 2) * 2) + 1);
+    int64_t decoratorSeed = (chunkX * a + chunkZ * b) ^ worldSeed;
+    setSeed(&rng, decoratorSeed);
+    return rng;
+}
+
+static int clamp(int num, int min, int max) {
+    if (num < min) {
+        return min;
+    } else {
+        return num > max ? max : num;
+    }
+}
+
+/* A macro to generate the ideal assembly for X = nextInt(S, 24)
+ * This is a macro and not an inline function, as many compilers can make use
+ * of the additional optimisation passes for the surrounding code.
+ */
+#define JAVA_NEXT_INT24(S,X)                \
+    do {                                    \
+        uint64_t a = (1ULL << 48) - 1;      \
+        uint64_t c = 0x5deece66dULL * (S);  \
+        c += 11; a &= c;                    \
+        (S) = a;                            \
+        a = (uint64_t) ((int64_t)a >> 17);  \
+        c = 0xaaaaaaab * a;                 \
+        c = (uint64_t) ((int64_t)c >> 36);  \
+        (X) = (int)a - (int)(c << 3) * 3;   \
+    } while (0)
+
+
+/* Jumps forwards in the random number sequence by simulating 'n' calls to next.
+ */
+static inline void skipNextN(uint64_t *seed, uint64_t n)
 {
     uint64_t m = 1;
     uint64_t a = 0;
@@ -121,26 +145,6 @@ static inline void skipNextN(uint64_t* seed, uint64_t n)
     *seed &= 0xffffffffffffULL;
 }
 
-static inline uint64_t getLargeFeatureSeed(int64_t worldSeed, int chunkX, int chunkZ) {
-    uint64_t rng;
-    setSeed(&rng, worldSeed);
-    int64_t l2 = nextLong(&rng);
-    int64_t l3 = nextLong(&rng);
-    int64_t l4 = (int64_t) chunkX * l2 ^ (int64_t) chunkZ * l3 ^ worldSeed;
-    setSeed(&rng, l4);
-    return rng;
-}
-
-static inline uint64_t getPopulationSeed(int64_t worldSeed, int chunkX, int chunkZ) {
-    uint64_t rng;
-    setSeed(&rng, worldSeed);
-    int64_t a = nextLong(&rng);
-    int64_t b = nextLong(&rng);
-    a = (int64_t)(((a / 2) * 2) + 1); b = (int64_t)(((b / 2) * 2) + 1);
-    int64_t decoratorSeed = (chunkX * a + chunkZ * b) ^ worldSeed;
-    setSeed(&rng, decoratorSeed);
-    return rng;
-}
 
 //==============================================================================
 //                              MC Seed Helpers
@@ -212,11 +216,14 @@ static inline uint64_t getStartSeed(uint64_t ws, uint64_t ls)
     return ss;
 }
 
+
 ///============================================================================
 ///                               Arithmetic
 ///============================================================================
 
-/* Linear interpolations */
+
+/* Linear interpolations
+ */
 static inline double lerp(double part, double from, double to)
 {
     return from + part * (to - from);

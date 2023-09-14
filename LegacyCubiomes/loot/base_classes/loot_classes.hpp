@@ -6,11 +6,14 @@
 #include <utility>
 #include <vector>
 #include <iostream>
-// #include <QDebug>
+
+#ifdef INCLUDE_QT
+#include <QDebug>
+#endif
 
 #include "LegacyCubiomes/mc/items.hpp"
 #include "LegacyCubiomes/cubiomes/rng.hpp"
-//#include "LegacyCubiomes/loot/enchantments/funcs/enchantment.hpp"
+#include "LegacyCubiomes/enchants/enchantment.hpp"
 
 using namespace Items;
 
@@ -58,11 +61,13 @@ class ItemStack
 public:
     const Item* item;
     int stackSize{};
+    std::vector<EnchantmentData> enchantments;
 
     // for now
-    //std::vector<std::pair<const Enchantment*, int>> enchantments;
+    // std::vector<std::pair<const Enchantment*, int>> enchantments;
 
     ItemStack() : item(nullptr), stackSize(0) {}
+    explicit ItemStack(const Item* item) : item(item), stackSize(0) {}
     ItemStack(const Item* item, int stackSize) : item(item), stackSize(stackSize) {}
 
     ItemStack splitStack(int amount) {
@@ -72,20 +77,40 @@ public:
         return splitItem;
     }
 
-    //void addEnchantment(const Enchantment* enchantment, int level) {
-        //enchantments.emplace_back(enchantment, level);
-    //}
+    ND const Item* getItem() const {
+        return this->item;
+    }
+
+    void addEnchantment(Enchantment* enchantment, int level) {
+        enchantments.emplace_back(enchantment, level);
+    }
 
     friend std::ostream& operator<<(std::ostream& out, const ItemStack &itemStack) {
+        // prints the name
         if (itemStack.stackSize > 1) {
             out << itemStack.item->getName() << " (" << itemStack.stackSize << ")";
         }
         else {
             out << itemStack.item->getName();
         }
+        // [prints the enchantments
+        if (!itemStack.enchantments.empty()) {
+            out << " [";
+            for (size_t i = 0; i < itemStack.enchantments.size(); ++i) {
+                out << itemStack.enchantments[i].toString();
+                if (i < itemStack.enchantments.size() - 1) {
+                    out << ", ";
+                }
+            }
+            out << "]";
+        }
+
+
+
         return out;
     }
-    /*
+
+    #ifdef INCLUDE_QT
     friend QDebug operator<<(QDebug out, const ItemStack &itemStack) {
         if (itemStack.stackSize > 1) {
             out.nospace() << *(itemStack.itemEntry) << " (" << itemStack.stackSize << ")";
@@ -95,8 +120,11 @@ public:
         }
         return out.nospace();
     }
-     */
+    #endif
 };
+
+
+
 class LootTable : public UniformRoll {
 public:
     std::vector<ItemEntry> items;

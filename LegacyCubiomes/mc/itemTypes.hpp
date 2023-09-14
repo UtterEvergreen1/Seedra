@@ -1,5 +1,8 @@
 #pragma once
+
+
 namespace Items {
+
     enum ItemType {
         ItemArmor,
         ItemBlock,
@@ -10,5 +13,29 @@ namespace Items {
         ItemSword,
         ItemTool
     };
+
+
+
+
+
+
+
+
+
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
