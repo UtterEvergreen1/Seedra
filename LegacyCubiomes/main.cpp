@@ -7,6 +7,7 @@
 //#include "LegacyCubiomes/cubiomes/util.hpp"
 #include "LegacyCubiomes/structures/structure_placement/StaticStructures.hpp"
 #include "LegacyCubiomes/structures/structure_placement/DynamicStructures.hpp"
+#include "LegacyCubiomes/structures/structure_placement/StrongholdStructure.hpp"
 //#include "LegacyCubiomes/utils/json.hpp"
 //#pragma warning(disable : 4996) // stupid VS compiler complains
 /*using json = nlohmann::json;
@@ -79,21 +80,22 @@ int main(int argc, char* argv[]) {
     std::string input;
     BIOMESCALE biomeScale;
     WORLDSIZE worldSize;
+    LCEVERSION console;
     std::istringstream inputStream;
     bool singleSeed = false;
     std::cout << "Legacy Structure Finder by UtterEvergreen1" << std::endl;
     std::cout << "Input world size (C = Classic, S = Small, M = Medium, L = Large): ";
     std::cin >> input;
-    if (input == "C" || input == "Classic") {
+    if (input == "C" || input == "c" || input == "Classic" || input == "classic") {
         worldSize = WORLDSIZE::CLASSIC;
     }
-    else if (input == "S" || input == "Small") {
+    else if (input == "S" || input == "s" || input == "Small" || input == "small") {
         worldSize = WORLDSIZE::SMALL;
     }
-    else if (input == "M" || input == "Medium") {
+    else if (input == "M" || input == "m" || input == "Medium" || input == "medium") {
         worldSize = WORLDSIZE::MEDIUM;
     }
-    else if (input == "L" || input == "Large") {
+    else if (input == "L" || input == "l" || input == "Large" || input == "large") {
         worldSize = WORLDSIZE::LARGE;
     }
     else {
@@ -103,20 +105,39 @@ int main(int argc, char* argv[]) {
 
     std::cout << "Input biome scale (S = Small, M = Medium, L = Large): ";
     std::cin >> input;
-    if (input == "S" || input == "Small") {
+    if (input == "S" || input == "s" || input == "Small" || input == "small") {
         biomeScale = BIOMESCALE::SMALL;
     }
-    else if (input == "M" || input == "Medium") {
+    else if (input == "M" || input == "m" || input == "Medium" || input == "medium") {
         biomeScale = BIOMESCALE::MEDIUM;
     }
-    else if (input == "L" || input == "Large") {
+    else if (input == "L" || input == "l" || input == "Large" || input == "large") {
         biomeScale = BIOMESCALE::LARGE;
     }
     else {
         std::cout << "Invalid input, defaulting to small biome scale" << std::endl;
         biomeScale = BIOMESCALE::SMALL;
     }
-    Generator generator(WIIU_LATEST, biomeScale, worldSize);
+
+    std::cout << "Input console (X = Xbox, W = WiiU, P = Playstation): ";
+    std::cin >> input;
+    if (input == "X" || input == "x" || input == "Xbox" || input == "xbox") {
+        console = LCEVERSION::XBOX_TU75;
+    }
+    else if (input == "W" || input == "WiiU" || input == "wiiu") {
+        console = LCEVERSION::WIIU_LATEST;
+    }
+    else if (input == "P" || input == "p" || input == "Playstation" || input == "playstation") {
+        console = LCEVERSION::WIIU_LATEST;
+    }
+    else {
+        std::cout << "Invalid input, defaulting to xbox console type" << std::endl;
+        console = LCEVERSION::XBOX_TU75;
+    }
+    Generator generator(console, biomeScale, worldSize);
+    /* stronghold setup */
+    Structure::StrongholdStructure::setup();
+
     /* dynamic setup */
     Structure::Mansion::setup(worldSize);
     Structure::Monument::setup(worldSize);
@@ -126,7 +147,8 @@ int main(int argc, char* argv[]) {
 
     /* static setup */
     Structure::Feature::setup(worldSize);
-    Structure::Village::setup(worldSize);
+    Structure::Village<false>::setup(worldSize);
+    Structure::Village<true>::setup(worldSize);
     Structure::OceanRuin::setup(worldSize);
     while (true) {
         std::cout << "Input world seed or seed range (LOW-HIGH) or \"quit\" to quit: ";
@@ -168,6 +190,9 @@ int main(int argc, char* argv[]) {
             else
                 std::cout << "Seed " << worldSeed << ":" << std::endl;
 
+            /* stronghold */
+            std::cout << "Stronghold: " << Structure::StrongholdStructure::getStartCenter(&generator) << std::endl;
+
             /* dynamic */
             std::cout << std::endl << "Dynamic:" << std::endl;
             for (const Pos2D& mansionPos : Structure::Mansion::getAllPositions(&generator))
@@ -176,8 +201,10 @@ int main(int argc, char* argv[]) {
             for (const Pos2D& monumentPos : Structure::Monument::getAllPositions(&generator))
                 std::cout << "Monument: " << monumentPos << std::endl;
 
-            for (const Pos2D& treasurePos : Structure::Treasure::getAllPositions(&generator))
+            for (Pos2D& treasurePos : Structure::Treasure::getAllPositions(&generator)) {
+                treasurePos.z++;
                 std::cout << "Buried Treasure: " << treasurePos << std::endl;
+            }
 
             for (const Pos2D& shipwreckPos : Structure::Shipwreck::getAllPositions(&generator))
                 std::cout << "Shipwreck: " << shipwreckPos << std::endl;
@@ -190,8 +217,11 @@ int main(int argc, char* argv[]) {
             for (const Structure::FeatureStructure& feature : Structure::Feature::getAllFeaturePositions(&generator))
                 std::cout << feature << std::endl;
 
-            for (const Pos2D& villagePos : Structure::Village::getAllPositions(&generator))
-                std::cout << "Village: " << villagePos << std::endl;
+            for (const Pos2D& villagePos : Structure::Village<false>::getAllPositions(&generator))
+                std::cout << "Classic Village: " << villagePos << std::endl;
+
+            for (const Pos2D& villagePos : Structure::Village<true>::getAllPositions(&generator))
+                std::cout << "PS4 Village: " << villagePos << std::endl;
 
             for (const Pos2D& oceanRuinPos : Structure::OceanRuin::getAllPositions(&generator))
                 std::cout << "Ocean Ruin: " << oceanRuinPos << std::endl;

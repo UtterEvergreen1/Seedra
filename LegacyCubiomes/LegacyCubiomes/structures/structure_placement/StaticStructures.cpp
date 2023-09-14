@@ -115,12 +115,14 @@ namespace Structure {
         return features;
     }
 
-    void Village::setup(WORLDSIZE worldSize) {
+    template <bool PS4Village>
+    void Village<PS4Village>::setup(WORLDSIZE worldSize) {
         std::vector<int> biomeList = {
             plains, desert, savanna, taiga, cold_taiga, ice_plains
         };
         bool useReducedSpacing = worldSize < WORLDSIZE::MEDIUM;
-        setupDerived(10387312, useReducedSpacing ? 16 : 32, 8, biomeList, worldSize);
+        constexpr int spacing = (PS4Village ? 9 : 8);
+        Village<PS4Village>::setupDerived(10387312, useReducedSpacing ? 16 : 32, spacing, biomeList, worldSize);
     }
 
     void OceanRuin::setup(WORLDSIZE worldSize) {
@@ -132,6 +134,9 @@ namespace Structure {
 }
 
 template class Structure::StaticStructure<Structure::Feature>;
-template class Structure::StaticStructure<Structure::Village>;
+template class Structure::Village<false>;
+template class Structure::Village<true>;
+template class Structure::StaticStructure<Structure::Village<false>>;
+template class Structure::StaticStructure<Structure::Village<true>>;
 template class Structure::StaticStructure<Structure::OceanRuin>;
 

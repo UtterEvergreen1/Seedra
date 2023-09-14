@@ -1,7 +1,7 @@
 #include "StrongholdStructure.hpp"
 #include "LegacyCubiomes/utils/constants.hpp"
 namespace Structure {
-    char StrongholdStructure::VALID_BIOMES[ARRAY_SIZE];
+    char StrongholdStructure::VALID_BIOMES[256];
 
     void StrongholdStructure::setup(){
         std::vector<char> biomeList = {
@@ -45,8 +45,6 @@ namespace Structure {
             p = g->locateBiome(p.x, p.z, 112, VALID_BIOMES, &rnds, &out);
 
             if(out || (var7 == 9)) {
-                p.x = p.x >> 4;
-                p.z = p.z >> 4;
                 return p;
             }
 

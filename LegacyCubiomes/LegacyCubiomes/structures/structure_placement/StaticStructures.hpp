@@ -66,12 +66,13 @@ namespace Structure {
         static std::vector<FeatureStructure> getAllFeaturePositions(Generator* g);
     };
 
-    class OceanRuin : public StaticStructure<OceanRuin> {
+    template<bool PS4Village>
+    class Village : public StaticStructure<Village<PS4Village>> {
     public:
         static void setup(WORLDSIZE worldSize);
     };
 
-    class Village : public StaticStructure<Village> {
+    class OceanRuin : public StaticStructure<OceanRuin> {
     public:
         static void setup(WORLDSIZE worldSize);
     };
