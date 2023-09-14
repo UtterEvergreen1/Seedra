@@ -64,14 +64,14 @@ Container getLootFromLootTableSeed(uint64_t* lootTableSeed) {
         for (rollIndex = 0; rollIndex < rollCount; rollIndex++) {
             ItemStack result = table.createLootRoll<false>(lootTableSeed);
 
-            if EXPECT_FALSE(result.item == &Items::OAK_WOOD) {
-                std::cout << "OAK WOOD" << std::endl;
-                int data = nextInt(lootTableSeed, 0, 3);
-            }
-
             if EXPECT_FALSE(result.item == &Items::ACACIA_WOOD) {
-                std::cout << "ACACIA WOOD" << std::endl;
-                int data = nextInt(lootTableSeed, 0, 1);
+                std::cout << "ACACIA WOOD: " << nextInt(lootTableSeed, 0, 1) << std::endl;
+            }
+            else if EXPECT_FALSE(result.item == &Items::OAK_WOOD) {
+                std::cout << "OAK WOOD: " << nextInt(lootTableSeed, 0, 3) << std::endl;
+            }
+            else {
+                std::cout << result << std::endl;
             }
 
             chestContents.push_back(result);
@@ -112,7 +112,7 @@ int main(int argc, char* argv[]) {
      -7139668156223608697 / books and paper / correct
      -4210146869381317490 / https://media.discordapp.net/attachments/753070027397398610/1149803061506752614/image.png
      */
-    uint64_t lootTableSeed = 9179130767997748085;
+    uint64_t lootTableSeed = -3532906795931795829;
     Container loot = getLootFromLootTableSeed<false>(&lootTableSeed);
 
     /*

@@ -89,7 +89,7 @@ namespace loot_tables {
     template <typename T>
     template <bool shuffle>
     inline Container Loot<T>::getLootFromSeed(uint64_t* seed) {
-        getLootFromLootTableSeed<shuffle>(nextLong(seed));
+        return getLootFromLootTableSeed<shuffle>(nextLong(seed));
     }
 
     template <typename T>
