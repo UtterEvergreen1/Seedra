@@ -302,7 +302,7 @@ public:
     }
 
 
-    /*
+    #ifdef INCLUDE_QT
     friend QDebug operator<<(QDebug out, const Container &container) {
         int contents = container.inventorySlots.size();
         out.nospace() << "\n{\n";
@@ -315,6 +315,6 @@ public:
         out.nospace() << "}";
         return out.space();
     }
-     */
+    #endif
 };
 
