@@ -1,7 +1,11 @@
 #pragma once
+
+#include <vector>
+
 #include "LegacyCubiomes/utils/pos2D.hpp"
 #include "LegacyCubiomes/cubiomes/generator.hpp"
 #include "LegacyCubiomes/cubiomes/util.hpp"
+
 namespace Structure {
     template<class Derived>
     class StaticStructure {

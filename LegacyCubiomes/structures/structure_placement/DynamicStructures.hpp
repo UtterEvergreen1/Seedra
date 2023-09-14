@@ -1,5 +1,6 @@
 #pragma once
 
+#include <vector>
 #include <iterator>
 #include <unordered_set>
 

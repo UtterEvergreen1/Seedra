@@ -1,5 +1,10 @@
+
+#include <vector>
+
 #include "StrongholdStructure.hpp"
 #include "LegacyCubiomes/utils/constants.hpp"
+
+
 namespace Structure {
     char StrongholdStructure::VALID_BIOMES[256];
 
