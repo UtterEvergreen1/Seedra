@@ -34,4 +34,3 @@ namespace loot_tables {
     }
 }
 
-

@@ -20,29 +20,29 @@ namespace loot_tables {
         std::vector<ItemEntry> items2;
 
         // table 1
-        items1.emplace_back(&HEART_OF_THE_SEA, 1);
-        lootTables.emplace_back(items1, 1, 1, 1);
+        items1.emplace_back(&HEART_OF_THE_SEA,           1);
+        lootTables.emplace_back(items1,                 1, 1, 1);
 
         // table 2
-        items2.emplace_back(&PRISMARINE_CRYSTALS,         5, 1, 5);
+        items2.emplace_back(&PRISMARINE_CRYSTALS,        5, 1, 5);
         items2.emplace_back(&IRON_INGOT,                 20, 3, 5);
         items2.emplace_back(&GOLD_INGOT,                 10, 1, 5);
         items2.emplace_back(&TNT,                        10, 1, 2);
-        items2.emplace_back(&DIAMOND,                          15);
-        items2.emplace_back(&DISC_WAIT,                         5);
-        items2.emplace_back(&DISC_MELLOHI,                      5);
-        items2.emplace_back(&NAME_TAG,                         10);
-        items2.emplace_back(&CHAINMAIL_CHESTPLATE,             20);
-        items2.emplace_back(&CHAINMAIL_HELMET,                 20);
-        items2.emplace_back(&CHAINMAIL_LEGGINGS,               20);
-        items2.emplace_back(&CHAINMAIL_BOOTS,                  20);
-        items2.emplace_back(&BOOK_AND_QUILL,              5, 1, 2);
+        items2.emplace_back(&DIAMOND,                    15);
+        items2.emplace_back(&DISC_WAIT,                  5);
+        items2.emplace_back(&DISC_MELLOHI,               5);
+        items2.emplace_back(&NAME_TAG,                   10);
+        items2.emplace_back(&CHAINMAIL_CHESTPLATE,       20);
+        items2.emplace_back(&CHAINMAIL_HELMET,           20);
+        items2.emplace_back(&CHAINMAIL_LEGGINGS,         20);
+        items2.emplace_back(&CHAINMAIL_BOOTS,            20);
+        items2.emplace_back(&BOOK_AND_QUILL,             5, 1, 2);
         items2.emplace_back(&LEAD,                       10, 1, 3);
-        items2.emplace_back(&BOTTLE_O_ENCHANTING,               3);
-        items2.emplace_back(&POTION_OF_WATER_BREATHING,        15);
-        items2.emplace_back(&POTION_OF_REGENERATION,           10);
-        items2.emplace_back(&CAKE,                              1);
-        lootTables.emplace_back(items2,                5, 12, 204);
+        items2.emplace_back(&BOTTLE_O_ENCHANTING,        3);
+        items2.emplace_back(&POTION_OF_WATER_BREATHING,  15);
+        items2.emplace_back(&POTION_OF_REGENERATION,     10);
+        items2.emplace_back(&CAKE,                       1);
+        lootTables.emplace_back(items2,                 5, 12, 204);
 
         maxItemsPossible = 13;
 
@@ -93,3 +93,4 @@ namespace loot_tables {
         return cakeCount;
     }
 }
+

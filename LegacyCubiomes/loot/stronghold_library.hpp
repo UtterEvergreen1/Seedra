@@ -23,14 +23,13 @@ namespace loot_tables {
         #else
             items.emplace_back(&BOOK,             100, 1, 3);
             items.emplace_back(&PAPER,            100, 2, 7);
-            items.emplace_back(&MAP,                5      );
-            items.emplace_back(&COMPASS,            5      );
-            items.emplace_back(&ENCHANTED_BOOK,    60      ); // function=enchant_with_levels, levels=30, treasure=true
-            lootTables.emplace_back(items, 2, 10, 270);
+            items.emplace_back(&MAP,              5);
+            items.emplace_back(&COMPASS,          5);
+            items.emplace_back(&ENCHANTED_BOOK,   60); // function=enchant_with_levels, levels=30, treasure=true
+            lootTables.emplace_back(items,             2, 10, 270);
         #endif
 
         maxItemsPossible = 10;
     }
-
 }
 

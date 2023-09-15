@@ -251,7 +251,9 @@ public:
         }
         items.resize(writeIter - items.begin());
 
-        while (numSlots > static_cast<int>(items.size() + stackableItems.size()) && !stackableItems.empty())
+        numSlots -= items.size();
+        while(numSlots > 0 && !stackableItems.empty())
+        //while (numSlots > static_cast<int>(items.size() + stackableItems.size()) && !stackableItems.empty())
         {
             itemIndex = LootTable::getInt<false>(&rngState, 0, static_cast<int>(stackableItems.size()) - 1);
             ItemStack originalStack = stackableItems[itemIndex];
@@ -274,8 +276,10 @@ public:
         items.insert(items.end(), std::make_move_iterator(stackableItems.begin()),
                      std::make_move_iterator(stackableItems.end()));
         randomShuffle<ItemStack>(items, &rngState);
-
         for (const ItemStack& itemStack : items) {
+            if(slotOrder.empty()) // Tried to over-fill a container
+                return;
+
             if (itemStack.stackSize > 0) {
                 itemIndex = slotOrder.back();
                 slotOrder.pop_back();

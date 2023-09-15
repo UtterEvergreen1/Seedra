@@ -52,26 +52,23 @@ Container getLootFromLootTableSeed(uint64_t* lootTableSeed) {
 
 #include "LegacyCubiomes/loot/spawn_bonus_chest.hpp"
 template <bool shuffle>
-Container getLootFromLootTableSeed(uint64_t* lootTableSeed) {
+Container getLootFromLootTableSeed(uint64_t lootTableSeed) {
     int rollCount;
     int rollIndex;
     std::vector<ItemStack> chestContents;
-    setSeed(lootTableSeed, *lootTableSeed);
+    setSeed(&lootTableSeed, lootTableSeed);
 
     // generate loot
     for(const LootTable& table : loot_tables::SpawnBonusChest::lootTables){
-        rollCount = LootTable::getInt<false>(lootTableSeed, table.min, table.max);
+        rollCount = LootTable::getInt<false>(&lootTableSeed, table.min, table.max);
         for (rollIndex = 0; rollIndex < rollCount; rollIndex++) {
-            ItemStack result = table.createLootRoll<false>(lootTableSeed);
+            ItemStack result = table.createLootRoll<false>(&lootTableSeed);
 
             if EXPECT_FALSE(result.item == &Items::ACACIA_WOOD) {
-                std::cout << "ACACIA WOOD: " << nextInt(lootTableSeed, 0, 1) << std::endl;
+                nextInt(&lootTableSeed, 0, 1);
             }
             else if EXPECT_FALSE(result.item == &Items::OAK_WOOD) {
-                std::cout << "OAK WOOD: " << nextInt(lootTableSeed, 0, 3) << std::endl;
-            }
-            else {
-                std::cout << result << std::endl;
+                nextInt(&lootTableSeed, 0, 3);
             }
 
             chestContents.push_back(result);
@@ -79,7 +76,7 @@ Container getLootFromLootTableSeed(uint64_t* lootTableSeed) {
     }
     if constexpr (shuffle){
         Container container = Container(27);
-        container.shuffleIntoContainer(chestContents, *lootTableSeed);
+        container.shuffleIntoContainer(chestContents, lootTableSeed);
         return container;
     }
     else
@@ -92,16 +89,16 @@ Container getLootFromLootTableSeed(uint64_t* lootTableSeed) {
 
 
 int main(int argc, char* argv[]) {
-    Biome::registerBiomes();
-    Enchantment::registerEnchantments();
+    // Biome::registerBiomes();
+    // Enchantment::registerEnchantments();
 
-    Generator g = Generator(LCEVERSION::WIIU_LATEST, BIOMESCALE::SMALL);
-    g.applySeed(DIMENSIONS::OVERWORLD, 12349);
+    // Generator g = Generator(LCEVERSION::WIIU_LATEST, BIOMESCALE::SMALL);
+    // g.applySeed(DIMENSIONS::OVERWORLD, 12349);
 
     loot_tables::SpawnBonusChest::setup();
 
 
-    std::cout << Pos2D(-108, 254).toChunkPos() << std::endl;
+    // std::cout << Pos2D(-108, 254).toChunkPos() << std::endl;
     /*
      -7254631889086558805 / (12348)(wiiu) two enchanted books
      -5989332256310069151 / (12348)(ps3)
@@ -113,7 +110,7 @@ int main(int argc, char* argv[]) {
      -4210146869381317490 / https://media.discordapp.net/attachments/753070027397398610/1149803061506752614/image.png
      */
     uint64_t lootTableSeed = -3532906795931795829;
-    Container loot = getLootFromLootTableSeed<false>(&lootTableSeed);
+    Container loot = getLootFromLootTableSeed<true>(lootTableSeed);
 
     /*
     std::cout << "Enchant List" << std::endl;
@@ -124,19 +121,11 @@ int main(int argc, char* argv[]) {
     }
      */
 
-
-
-    // Pos2D chunkPos = g.getStronghold();
-    auto stronghold = StrongholdGenerator();
-    // stronghold.generate(g.seed, chunkPos);
-
     // std::cout << chunkPos.toBlockPos() << std::endl;
     // Pos2D chest = Pos2D(16, 232).toChunkPos();
     // std::cout << chest << std::endl;
 
     std::cout << std::endl << "Loot:" << loot << std::endl;
-
-    std::map<const Item*, int> itemCount;
 
     /*
      1.
@@ -146,33 +135,6 @@ int main(int argc, char* argv[]) {
      (id 35, lvl 2) Sharpness III
      (id 16, lvl 3) Efficiency IV
      */
-
-
-
-
-
-
-
-    for (const auto& itemStack : loot.inventorySlots) {
-        if (itemStack.stackSize > 0) {
-            if (itemCount.find(itemStack.item) != itemCount.end()) {
-                itemCount[itemStack.item] += itemStack.stackSize;
-            } else {
-                itemCount[itemStack.item] = itemStack.stackSize;
-            }
-        }
-    }
-    std::cout << "\ncounts:" << std::endl;
-    for (const auto& pair : itemCount) {
-        const Item* item = pair.first;
-        int count = pair.second;
-        ItemStack itemStack = ItemStack(item, count);
-
-        std::cout << itemStack << std::endl;
-    }
-
-
-
 }
 
 // Pos2D chunkPos = g.getStronghold();

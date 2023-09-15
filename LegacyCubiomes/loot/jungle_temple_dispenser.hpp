@@ -17,8 +17,8 @@ namespace loot_tables {
     void JungleTempleDispenser::setup() {
         std::vector<ItemEntry> items;
 
-        items.emplace_back(&ARROW,     30, 2, 7);
-        lootTables.emplace_back(items, 1, 2, 30);
+        items.emplace_back(&ARROW, 30, 2, 7);
+        lootTables.emplace_back(items,  1, 2, 30);
 
         maxItemsPossible = 2;
     }

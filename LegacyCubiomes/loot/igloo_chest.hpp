@@ -18,17 +18,17 @@ namespace loot_tables {
         items1.emplace_back(&APPLE,        15, 1, 3);
         items1.emplace_back(&COAL,         15, 1, 4);
         items1.emplace_back(&GOLD_NUGGET,  10, 1, 3);
-        items1.emplace_back(&STONE_AXE,           2);
-        items1.emplace_back(&ROTTEN_FLESH,       10);
-        items1.emplace_back(&EMERALD,             1);
+        items1.emplace_back(&STONE_AXE,    2);
+        items1.emplace_back(&ROTTEN_FLESH, 10);
+        items1.emplace_back(&EMERALD,      1);
         items1.emplace_back(&WHEAT,        10, 2, 3);
         lootTables.emplace_back(items1,    2, 8, 63);
 
         // table 2
-        items2.emplace_back(&GOLDEN_APPLE,        1);
-        lootTables.emplace_back(items2,        1, 1);
+        items2.emplace_back(&GOLDEN_APPLE, 1);
+        lootTables.emplace_back(items2,   1, 1);
 
         maxItemsPossible = 9;
     }
-
 }
+

@@ -23,7 +23,7 @@ namespace loot_tables {
     void StrongholdCorridor<isAquatic>::setup() {
         std::vector<ItemEntry> items;
 
-        items.emplace_back(&ENDER_PEARL,               50);
+        items.emplace_back(&ENDER_PEARL,         50);
         items.emplace_back(&EMERALD,             15, 1, 3);
         if constexpr (isAquatic)
             items.emplace_back(&DIAMOND,         15, 1, 3);
@@ -32,18 +32,18 @@ namespace loot_tables {
         items.emplace_back(&REDSTONE,            25, 4, 9);
         items.emplace_back(&BREAD,               75, 1, 3);
         items.emplace_back(&APPLE,               75, 1, 3);
-        items.emplace_back(&IRON_PICKAXE,              25);
-        items.emplace_back(&IRON_SWORD,                25);
-        items.emplace_back(&IRON_CHESTPLATE,           25);
-        items.emplace_back(&IRON_HELMET,               25);
-        items.emplace_back(&IRON_LEGGINGS,             25);
-        items.emplace_back(&IRON_BOOTS,                25);
-        items.emplace_back(&GOLDEN_APPLE,               5);
-        items.emplace_back(&SADDLE,                     5);
-        items.emplace_back(&IRON_HORSE_ARMOR,           5);
-        items.emplace_back(&GOLDEN_HORSE_ARMOR,         5);
-        items.emplace_back(&DIAMOND_HORSE_ARMOR,        5);
-        items.emplace_back(&ENCHANTED_BOOK,             6); // function=enchant_with_levels, levels=30, treasure=true
+        items.emplace_back(&IRON_PICKAXE,        25);
+        items.emplace_back(&IRON_SWORD,          25);
+        items.emplace_back(&IRON_CHESTPLATE,     25);
+        items.emplace_back(&IRON_HELMET,         25);
+        items.emplace_back(&IRON_LEGGINGS,       25);
+        items.emplace_back(&IRON_BOOTS,          25);
+        items.emplace_back(&GOLDEN_APPLE,        5);
+        items.emplace_back(&SADDLE,              5);
+        items.emplace_back(&IRON_HORSE_ARMOR,    5);
+        items.emplace_back(&GOLDEN_HORSE_ARMOR,  5);
+        items.emplace_back(&DIAMOND_HORSE_ARMOR, 5);
+        items.emplace_back(&ENCHANTED_BOOK,      6); // function=enchant_with_levels, levels=30, treasure=true
         if constexpr (isAquatic) {
             StrongholdCorridor<isAquatic>::lootTables.emplace_back(items, 2, 3, 511);
         } else {
@@ -77,3 +77,4 @@ namespace loot_tables {
         return alterChests;
     }
 }
+
