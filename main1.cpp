@@ -51,38 +51,6 @@ Container getLootFromLootTableSeed(uint64_t* lootTableSeed) {
 */
 
 #include "LegacyCubiomes/loot/spawn_bonus_chest.hpp"
-template <bool shuffle>
-Container getLootFromLootTableSeed(uint64_t lootTableSeed) {
-    int rollCount;
-    int rollIndex;
-    std::vector<ItemStack> chestContents;
-    setSeed(&lootTableSeed, lootTableSeed);
-
-    // generate loot
-    for(const LootTable& table : loot_tables::SpawnBonusChest::lootTables){
-        rollCount = LootTable::getInt<false>(&lootTableSeed, table.min, table.max);
-        for (rollIndex = 0; rollIndex < rollCount; rollIndex++) {
-            ItemStack result = table.createLootRoll<false>(&lootTableSeed);
-
-            if EXPECT_FALSE(result.item == &Items::ACACIA_WOOD) {
-                nextInt(&lootTableSeed, 0, 1);
-            }
-            else if EXPECT_FALSE(result.item == &Items::OAK_WOOD) {
-                nextInt(&lootTableSeed, 0, 3);
-            }
-
-            chestContents.push_back(result);
-        }
-    }
-    if constexpr (shuffle){
-        Container container = Container(27);
-        container.shuffleIntoContainer(chestContents, lootTableSeed);
-        return container;
-    }
-    else
-        return  {27, chestContents};
-}
-
 
 
 #include "LegacyCubiomes/enchants/enchantment.hpp"
@@ -110,7 +78,7 @@ int main(int argc, char* argv[]) {
      -4210146869381317490 / https://media.discordapp.net/attachments/753070027397398610/1149803061506752614/image.png
      */
     uint64_t lootTableSeed = -3532906795931795829;
-    Container loot = getLootFromLootTableSeed<true>(lootTableSeed);
+    Container loot = loot_tables::SpawnBonusChest::getLootFromLootTableSeed<true>(lootTableSeed);
 
     /*
     std::cout << "Enchant List" << std::endl;

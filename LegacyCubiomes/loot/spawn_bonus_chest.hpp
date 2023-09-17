@@ -9,6 +9,9 @@ namespace loot_tables {
     class SpawnBonusChest : public Loot<SpawnBonusChest> {
     public:
         static void setup();
+
+        template<bool shuffle>
+        static Container getLootFromLootTableSeed(uint64_t lootTableSeed);
     };
 
     void SpawnBonusChest::setup() {
@@ -62,5 +65,44 @@ namespace loot_tables {
 
         maxItemsPossible = 9;
     }
+
+
+
+    template <bool shuffle>
+    Container SpawnBonusChest::getLootFromLootTableSeed(uint64_t lootTableSeed) {
+        int rollCount;
+        int rollIndex;
+        std::vector<ItemStack> chestContents;
+        setSeed(&lootTableSeed, lootTableSeed);
+
+        // generate loot
+        for(const LootTable& table : loot_tables::SpawnBonusChest::lootTables){
+            rollCount = LootTable::getInt<false>(&lootTableSeed, table.min, table.max);
+            for (rollIndex = 0; rollIndex < rollCount; rollIndex++) {
+                ItemStack result = table.createLootRoll<false>(&lootTableSeed);
+
+                if EXPECT_FALSE(result.item == &Items::ACACIA_WOOD) {
+                    nextInt(&lootTableSeed, 0, 1);
+                }
+                else if EXPECT_FALSE(result.item == &Items::OAK_WOOD) {
+                    nextInt(&lootTableSeed, 0, 3);
+                }
+
+                chestContents.push_back(result);
+            }
+        }
+        if constexpr (shuffle){
+            Container container = Container(27);
+            container.shuffleIntoContainer(chestContents, lootTableSeed);
+            return container;
+        }
+        else
+            return  {27, chestContents};
+    }
+
+
+
+
+
 }
 
