@@ -100,7 +100,7 @@ public:
 
     // attributes of each class
     const std::string name;
-    const Rarity* rarity = &Rarities::NONE;
+    const Rarity* const rarity = &Rarities::NONE;
     const Type::Base* type = nullptr;
     EnumName enumID = EnumName::NONE;
     bool isTreasure = false;

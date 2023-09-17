@@ -57,12 +57,17 @@ std::vector<EnchantmentData> EnchantmentHelper::buildEnchantmentList(uint64_t *r
     const Item* item = itemStackIn->getItem();
     int i = item->getEnchantability();
 
-    if (i <= 0)
+    if (i == 0)
         return list;
 
+    // #ifdef INCLUDE_JAVA
     level = level + 1 + nextInt(rng, i / 4 + 1) + nextInt(rng, i / 4 + 1);
     float f = (nextFloat(rng) + nextFloat(rng) - 1.0F) * 0.15F;
-    level = clamp((int)std::round((float)level + (float)level * f), 1, std::numeric_limits<int>::max());
+    level = clamp((int)std::round((float)level + (float)level * f), 1, std::numeric_limits<int>::max()); // 0x7fffffff
+    // #else
+
+    // #endif
+
 
     std::vector<EnchantmentData> list1 = getEnchantmentDataList(level, itemStackIn, isBook, allowTreasure);
     /*std::cout << std::endl << "Enchant List" << std::endl;
