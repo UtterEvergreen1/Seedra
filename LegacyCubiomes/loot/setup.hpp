@@ -17,6 +17,7 @@
 #include "woodland_mansion.hpp"
 
 namespace loot_tables {
+    template<bool isAquatic>
     void setup() {
         loot_tables::AbandonedMineshaft::setup();
         loot_tables::Blacksmith::setup();
@@ -29,6 +30,7 @@ namespace loot_tables {
         loot_tables::NetherBridge::setup();
         loot_tables::SimpleDungeon::setup();
         loot_tables::SpawnBonusChest::setup();
+        loot_tables::StrongholdCorridor<isAquatic>::setup();
         loot_tables::StrongholdLibrary::setup();
         loot_tables::Mansion::setup();
     }

@@ -1,6 +1,8 @@
 #pragma once
 
 #include "base_classes/stronghold_loot.hpp"
+#include "LegacyCubiomes/enchants/enchantmentHelper.hpp"
+
 
 using namespace Items;
 using stronghold_generator::StrongholdGenerator;
@@ -10,6 +12,8 @@ namespace loot_tables {
     class StrongholdCorridor : public StrongholdLoot {
     public:
         static void setup();
+        template <bool shuffle>
+        static Container getLootFromLootTableSeed(uint64_t lootTableSeed);
 
         template<bool checkCaves, bool shuffle>
         [[nodiscard]] static Container getAltarChestLoot(int64_t seed, BIOMESCALE biomeSize, BasePiece* alterChestPiece,
@@ -50,6 +54,36 @@ namespace loot_tables {
             StrongholdCorridor<isAquatic>::lootTables.emplace_back(items, 2, 3, 496);
         }
         maxItemsPossible = 3;
+    }
+
+    template<bool isAquatic>
+    template <bool shuffle>
+    Container StrongholdCorridor<isAquatic>::getLootFromLootTableSeed(uint64_t lootTableSeed) {
+        int rollCount;
+        int rollIndex;
+        std::vector<ItemStack> chestContents;
+        setSeed(&lootTableSeed, lootTableSeed);
+
+        // generate loot
+        for(const LootTable& table : loot_tables::StrongholdCorridor<isAquatic>::lootTables){
+            rollCount = LootTable::getInt<false>(&lootTableSeed, table.min, table.max);
+            for (rollIndex = 0; rollIndex < rollCount; rollIndex++) {
+                ItemStack result = table.createLootRoll<false>(&lootTableSeed);
+
+                if EXPECT_FALSE(result.item == &Items::ENCHANTED_BOOK) {
+                    EnchantmentHelper::EnchantWithLevels::apply(&lootTableSeed, &result, 30, true, true);
+                }
+
+                chestContents.push_back(result);
+            }
+        }
+        if constexpr (shuffle){
+            Container container = Container(27);
+            container.shuffleIntoContainer(chestContents, lootTableSeed);
+            return container;
+        }
+        else
+            return  {27, chestContents};
     }
 
     template<bool isAquatic>

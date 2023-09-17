@@ -11,6 +11,7 @@
 #include "LegacyCubiomes/chunk_generator/ChunkGenerator.hpp"
 
 #include "LegacyCubiomes/enchants/enchantmentHelper.hpp"
+#include "LegacyCubiomes/loot/setup.hpp"
 
 
 #include <iostream>
@@ -19,7 +20,7 @@
 using stronghold_generator::StrongholdGenerator;
 
 
-/*
+// Testing enchantments
 template <bool shuffle>
 Container getLootFromLootTableSeed(uint64_t* lootTableSeed) {
     int rollCount;
@@ -28,7 +29,7 @@ Container getLootFromLootTableSeed(uint64_t* lootTableSeed) {
     setSeed(lootTableSeed, *lootTableSeed);
 
     // generate loot
-    for(const LootTable& table : loot_tables::SpawnBonusChest::lootTables){
+    for(const LootTable& table : loot_tables::StrongholdCorridor<false>::lootTables){
         rollCount = LootTable::getInt<false>(lootTableSeed, table.min, table.max);
         for (rollIndex = 0; rollIndex < rollCount; rollIndex++) {
             ItemStack result = table.createLootRoll<false>(lootTableSeed);
@@ -48,10 +49,9 @@ Container getLootFromLootTableSeed(uint64_t* lootTableSeed) {
     else
         return  {27, chestContents};
 }
-*/
 
-#include "LegacyCubiomes/loot/spawn_bonus_chest.hpp"
 
+#include "LegacyCubiomes/loot/setup.hpp"
 
 #include "LegacyCubiomes/enchants/enchantment.hpp"
 
@@ -63,7 +63,8 @@ int main(int argc, char* argv[]) {
     // Generator g = Generator(LCEVERSION::WIIU_LATEST, BIOMESCALE::SMALL);
     // g.applySeed(DIMENSIONS::OVERWORLD, 12349);
 
-    loot_tables::SpawnBonusChest::setup();
+    loot_tables::StrongholdCorridor<false>::setup();
+
 
 
     // std::cout << Pos2D(-108, 254).toChunkPos() << std::endl;
@@ -77,8 +78,9 @@ int main(int argc, char* argv[]) {
      -7139668156223608697 / books and paper / correct
      -4210146869381317490 / https://media.discordapp.net/attachments/753070027397398610/1149803061506752614/image.png
      */
-    uint64_t lootTableSeed = -3532906795931795829;
-    Container loot = loot_tables::SpawnBonusChest::getLootFromLootTableSeed<true>(lootTableSeed);
+
+    uint64_t lootTableSeed = 1068107887565861472;
+    Container loot = loot_tables::StrongholdCorridor<false>::getLootFromLootTableSeed<false>(lootTableSeed);
 
     /*
     std::cout << "Enchant List" << std::endl;
