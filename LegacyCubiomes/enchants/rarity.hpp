@@ -32,7 +32,7 @@ struct Rarities {
     static const Rarity COMMON;
     static const Rarity UNCOMMON;
     static const Rarity RARE;
-    static const Rarity VERY_RARE;
+    static const Rarity EPIC;
 };
 
 
