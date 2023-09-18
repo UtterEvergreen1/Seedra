@@ -1,9 +1,7 @@
-
 #include <vector>
 
 #include "StrongholdStructure.hpp"
 #include "LegacyCubiomes/utils/constants.hpp"
-
 
 namespace Structure {
     char StrongholdStructure::VALID_BIOMES[256];
@@ -17,8 +15,8 @@ namespace Structure {
             savanna, savanna_plateau, mesa, mesa_plateau_stone, mesa_plateau
         };
 
-        for (unsigned int i = 0; i < biomeList.size(); i++)
-            StrongholdStructure::VALID_BIOMES[(int)biomeList[i]] = 1;
+        for (char i : biomeList)
+            StrongholdStructure::VALID_BIOMES[(int)i] = 1;
     }
 
     Pos2D StrongholdStructure::getWorldPosition(Generator* g){
@@ -62,7 +60,7 @@ namespace Structure {
         return p;
     }
 
-    Pos2D StrongholdStructure::getRawWorldPosition(int64_t worldSeed, bool xboxStronghold){
+    Pos2D StrongholdStructure::getRawWorldPosition(int64_t worldSeed, bool xboxStronghold) {
         uint64_t rnds;
         setSeed(&rnds, worldSeed);
         double angle = 2.0 * PI * nextDouble(&rnds);

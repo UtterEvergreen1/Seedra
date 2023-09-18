@@ -3,7 +3,7 @@
 #include "LegacyCubiomes/building_blocks/BasePiece.hpp"
 #include "Enums.hpp"
 
-namespace stronghold_generator {
+namespace mineshaft_generator {
     class Piece : public BasePiece {
     public:
         PieceType type;

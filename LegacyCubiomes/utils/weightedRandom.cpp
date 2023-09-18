@@ -15,7 +15,7 @@ EnchantmentData WeightedRandom::getRandomItem(uint64_t *rng, const std::vector<E
         throw std::invalid_argument("Total weight must be greater than 0");
     }
 
-    int weight = nextInt(rng, totalWeight);
+    int weight = nextInt(rng, 106);
     // printf("weight chosen: %d, totalWeight %d\n", weight, totalWeight);
     return getRandomItem(collection, weight);
 }

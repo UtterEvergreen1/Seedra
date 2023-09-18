@@ -37,7 +37,7 @@ namespace Structure {
 
         Derived::CHUNK_BOUNDS = getChunkWorldBounds(worldSize) - 3;
 
-        Derived::HAS_SECOND_BIOME_CHECK = biomeListSecond.size() > 0;
+        Derived::HAS_SECOND_BIOME_CHECK = !biomeListSecond.empty();
 
         // This will only trigger if the setup values are changed, but it is neccassary to prevent an infinte loop in getPosition()
         if EXPECT_FALSE(Derived::CHUNK_RANGE * Derived::CHUNK_RANGE >= attempts)
@@ -45,12 +45,12 @@ namespace Structure {
 
 
         if (!MAIN_VALID_BIOMES[biomeListMain[0]])
-            for (unsigned int i = 0; i < biomeListMain.size(); i++)
-                Derived::MAIN_VALID_BIOMES[biomeListMain[i]] = 1;
+            for (int i : biomeListMain)
+                Derived::MAIN_VALID_BIOMES[i] = 1;
 
         if (Derived::HAS_SECOND_BIOME_CHECK && !SECOND_VALID_BIOMES[biomeListSecond[0]])
-            for (unsigned int i = 0; i < biomeListSecond.size(); i++)
-                Derived::SECOND_VALID_BIOMES[biomeListSecond[i]] = 1;
+            for (int i : biomeListSecond)
+                Derived::SECOND_VALID_BIOMES[i] = 1;
     }
 
     template<typename Derived>

@@ -1,17 +1,18 @@
 #pragma once
+
 #include "Enums.hpp"
 #include "PieceWeight.hpp"
 #include "PiecePlaceCount.hpp"
 #include "Piece.hpp"
-namespace stronghold_generator {
-    class StrongholdGenerator {
+
+namespace mineshaft_generator {
+    class MineshaftGenerator {
     public:
-        PiecePlaceCount piecePlaceCounts[11];
-        GenerationStep generationStep = GenerationStep::FULL;
+        PiecePlaceCount piecePlaceCounts[4];
+        // GenerationStep generationStep = GenerationStep::FULL;
         PieceType imposedPiece = PieceType::NONE;
         PieceType previousPiece = PieceType::NONE;
-        Piece *portalRoomPiece = nullptr;
-        Piece *altarChests[4];
+        Piece *minecartChests[4];
         Piece pieces[1024];
         int piecePlaceCountsSize = 0;
         int totalWeight = 0;
@@ -20,10 +21,10 @@ namespace stronghold_generator {
         int pendingPiecesSize = 0;
         int startX = 0;
         int startZ = 0;
-        int numAltarChests = 0;
+        int numMinecartChests = 0;
         bool generationStopped = false;
 
-        StrongholdGenerator();
+        MineshaftGenerator();
 
         void generate(int64_t worldSeed, int chunkX, int chunkZ);
         void generate(int64_t worldSeed, Pos2D chunkPos);
@@ -35,7 +36,6 @@ namespace stronghold_generator {
         Piece createPiece(PieceType pieceType, uint64_t* random, DIRECTION direction, int depth, BoundingBox boundingBox);
         void addPiece(Piece piece);
         bool tryAddPieceFromType(PieceType pieceType, uint64_t* random, int x, int y, int z, DIRECTION direction, int depth);
-        bool generatePieceFromSmallDoor(uint64_t* random, int x, int y, int z, DIRECTION direction, int depth);
         void generateAndAddPiece(uint64_t* random, int x, int y, int z, DIRECTION direction, int depth);
         void generateSmallDoorChildForward(Piece &piece, uint64_t* random, int n, int n2);
         void generateSmallDoorChildLeft(Piece &piece, uint64_t* random, int n, int n2);

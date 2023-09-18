@@ -41,18 +41,22 @@ namespace Structure {
     public:
         static void setup(WORLDSIZE worldSize);
     };
+
     class Monument : public DynamicStructure<Monument> {
     public:
         static void setup(WORLDSIZE worldSize);
     };
+
     class Treasure : public DynamicStructure<Treasure> {
     public:
         static void setup(WORLDSIZE worldSize);
     };
+
     class Shipwreck : public DynamicStructure<Shipwreck> {
     public:
         static void setup(WORLDSIZE worldSize);
     };
+
     class Outpost : public DynamicStructure<Outpost> {
     public:
         static void setup(WORLDSIZE worldSize);

@@ -3,9 +3,9 @@
 #include "Enums.hpp"
 #include "PieceWeight.hpp"
 
-namespace stronghold_generator {
+namespace mineshaft_generator {
     struct PiecePlaceCount {
-        static const PiecePlaceCount DEFAULT[11];
+        static const PiecePlaceCount DEFAULT[4];
 
         PieceType pieceType;
         int placeCount;
@@ -20,20 +20,12 @@ namespace stronghold_generator {
         }
     };
 
+
     inline const PiecePlaceCount PiecePlaceCount::DEFAULT[] = {
-            { PieceType::STRAIGHT            , 0},
-            { PieceType::PRISON_HALL         , 0},
-            { PieceType::LEFT_TURN           , 0},
-            { PieceType::RIGHT_TURN          , 0},
-            { PieceType::ROOM_CROSSING       , 0},
-            { PieceType::STRAIGHT_STAIRS_DOWN, 0},
-            { PieceType::STAIRS_DOWN         , 0},
-            { PieceType::FIVE_CROSSING       , 0},
-            { PieceType::CHEST_CORRIDOR      , 0},
-            { PieceType::LIBRARY             , 0},
-            { PieceType::PORTAL_ROOM         , 0}
+            { PieceType::CORRIDOR, 0},
+            { PieceType::CROSSING, 0},
+            { PieceType::ROOM    , 0},
+            { PieceType::STAIRS  , 0},
     };
 
-
 }
-

@@ -6,18 +6,15 @@
 
 namespace structure_rolls {
 
-    bool BaseRolls::isLiquidInStructureBoundingBox(const BoundingBox& chunkBoundingBoxIn, const BoundingBox& pieceBoundingBox, ChunkPrimer* chunk)
-    {
+    bool BaseRolls::isLiquidInStructureBoundingBox(const BoundingBox& chunkBoundingBoxIn, const BoundingBox& pieceBoundingBox, ChunkPrimer* chunk) {
         int minX = std::max(pieceBoundingBox.minX - 1, chunkBoundingBoxIn.minX) & 15;
         int minY = std::max(pieceBoundingBox.minY - 1, chunkBoundingBoxIn.minY);
         int minZ = std::max(pieceBoundingBox.minZ - 1, chunkBoundingBoxIn.minZ) & 15;
         int maxX = std::min(pieceBoundingBox.maxX + 1, chunkBoundingBoxIn.maxX) & 15;
         int maxY = std::min(pieceBoundingBox.maxY + 1, chunkBoundingBoxIn.maxY);
         int maxZ = std::min(pieceBoundingBox.maxZ + 1, chunkBoundingBoxIn.maxZ) & 15;
-        for (int x = minX; x <= maxX; ++x)
-        {
-            for (int z = minZ; z <= maxZ; ++z)
-            {
+        for (int x = minX; x <= maxX; ++x) {
+            for (int z = minZ; z <= maxZ; ++z) {
                 uint16_t block = chunk->getBlock(x, minY, z);
                 //if(block == Items::ItemID::FLOWING_WATER_ID || block == Items::ItemID::STILL_WATER_ID || block == Items::ItemID::FLOWING_LAVA_ID || block == Items::ItemID::STILL_LAVA_ID)
                 if(block >= Items::ItemID::FLOWING_WATER_ID && block <= Items::ItemID::STILL_LAVA_ID)
@@ -29,10 +26,8 @@ namespace structure_rolls {
             }
         }
 
-        for (int x = minX; x <= maxX; ++x)
-        {
-            for (int y = minY; y <= maxY; ++y)
-            {
+        for (int x = minX; x <= maxX; ++x) {
+            for (int y = minY; y <= maxY; ++y) {
                 uint16_t block = chunk->getBlock(x, y, minZ);
                 if(block >= Items::ItemID::FLOWING_WATER_ID && block <= Items::ItemID::STILL_LAVA_ID)
                     return true;
@@ -43,10 +38,8 @@ namespace structure_rolls {
             }
         }
 
-        for (int z = minZ; z <= maxZ; ++z)
-        {
-            for (int y = minY; y <= maxY; ++y)
-            {
+        for (int z = minZ; z <= maxZ; ++z) {
+            for (int y = minY; y <= maxY; ++y) {
                 uint16_t block = chunk->getBlock(minX, y, z);
                 if(block >= Items::ItemID::FLOWING_WATER_ID && block <= Items::ItemID::STILL_LAVA_ID)
                     return true;
