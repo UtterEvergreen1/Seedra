@@ -7,7 +7,7 @@ enum class Value {
     COMMON,
     UNCOMMON,
     RARE,
-    VERY_RARE,
+    EPIC,
     NONE
 };
 
