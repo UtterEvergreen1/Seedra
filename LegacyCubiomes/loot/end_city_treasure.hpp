@@ -24,14 +24,14 @@ namespace loot_tables {
         items.emplace_back(&DIAMOND_HORSE_ARMOR,    1);
         items.emplace_back(&DIAMOND_SWORD,          3); // enchant with levels, treasure=true, levels=20-39
         items.emplace_back(&DIAMOND_BOOTS,          3); // enchant with levels, treasure=true, levels=20-39
-        items.emplace_back(&DIAMOND_CHESTPLATE,     3);  // enchant with levels, treasure=true, levels=20-39
+        items.emplace_back(&DIAMOND_CHESTPLATE,     3); // enchant with levels, treasure=true, levels=20-39
         items.emplace_back(&DIAMOND_LEGGINGS,       3); // enchant with levels, treasure=true, levels=20-39
         items.emplace_back(&DIAMOND_HELMET,         3); // enchant with levels, treasure=true, levels=20-39
         items.emplace_back(&DIAMOND_PICKAXE,        3); // enchant with levels, treasure=true, levels=20-39
         items.emplace_back(&DIAMOND_SHOVEL,         3); // enchant with levels, treasure=true, levels=20-39
         items.emplace_back(&IRON_SWORD,             3); // enchant with levels, treasure=true, levels=20-39
         items.emplace_back(&IRON_BOOTS,             3); // enchant with levels, treasure=true, levels=20-39
-        items.emplace_back(&IRON_CHESTPLATE,        3);  // enchant with levels, treasure=true, levels=20-39
+        items.emplace_back(&IRON_CHESTPLATE,        3); // enchant with levels, treasure=true, levels=20-39
         items.emplace_back(&IRON_LEGGINGS,          3); // enchant with levels, treasure=true, levels=20-39
         items.emplace_back(&IRON_HELMET,            3); // enchant with levels, treasure=true, levels=20-39
         items.emplace_back(&IRON_PICKAXE,           3); // enchant with levels, treasure=true, levels=20-39

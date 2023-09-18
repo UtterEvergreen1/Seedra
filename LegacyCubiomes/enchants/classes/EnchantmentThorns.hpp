@@ -10,7 +10,7 @@ public:
             Enchantment(std::move(name), rarity, &Type::ARMOR_CHEST, EnumName::THORNS, 3) {};
 
     int getMinEnchantability(int enchantmentLevel) override {
-        return 10 + 20 * (enchantmentLevel - 1);
+        return 20 * enchantmentLevel - 10;
     }
 
     int getMaxEnchantability(int enchantmentLevel) override {

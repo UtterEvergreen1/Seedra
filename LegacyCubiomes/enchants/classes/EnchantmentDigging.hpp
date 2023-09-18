@@ -10,7 +10,7 @@ public:
         Enchantment(std::move(name), rarity, &Type::DIGGER, EnumName::DIGGING, 5) {};
 
     int getMinEnchantability(int enchantmentLevel) override {
-        return 1 + 10 * (enchantmentLevel - 1);
+        return 10 * enchantmentLevel - 9;
     }
 
     int getMaxEnchantability(int enchantmentLevel) override {

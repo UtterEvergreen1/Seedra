@@ -11,7 +11,7 @@ public:
     };
 
     int getMinEnchantability(int enchantmentLevel) override {
-        return 10 + 20 * (enchantmentLevel - 1);
+        return enchantmentLevel * 20 - 10;
     }
 
     int getMaxEnchantability(int enchantmentLevel) override {
