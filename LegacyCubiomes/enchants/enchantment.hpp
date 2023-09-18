@@ -4,6 +4,7 @@
 #include <utility>
 #include <map>
 #include <iostream>
+#include <unordered_map>
 
 #include "rarity.hpp"
 #include "LegacyCubiomes/mc/items.hpp"
@@ -134,7 +135,7 @@ private:
 
 
 
-class EnchantmentData : public WeightedRandom::Item {
+class EnchantmentData {
 public:
     Enchantment* obj = nullptr;
     int level = 0;
@@ -143,18 +144,11 @@ public:
 
     EnchantmentData() = default;
 
-    EnchantmentData(Enchantment *enchantmentObj, int enchLevel)
-            : WeightedRandom::Item(enchantmentObj->rarity->getWeight()),
+    EnchantmentData(Enchantment *enchantmentObj, int enchLevel) :
               obj(enchantmentObj),
               level(enchLevel) {}
 
-    ND std::string toString() const {
-        if (obj == nullptr)
-            return "NULLPTR";
-        if (level < 2)
-            return obj->name;
-        return obj->name + " " + LEVEL_ROMAN[level];
-    }
+    ND std::string toString() const;
 };
 
 

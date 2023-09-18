@@ -6,6 +6,9 @@ set(CMAKE_CXX_STANDARD 17)
 include_directories(${CMAKE_SOURCE_DIR})
 include_directories(${CMAKE_SOURCE_DIR}/src)
 
+# used for distinguishing code between consoles, WIIU specific.
+add_definitions(-DIS_WIIU)
+
 # This is used for testing java loot tables and enchantments.
 # add_definitions(-DINCLUDE_JAVA)
 
@@ -14,5 +17,5 @@ include_directories(${CMAKE_SOURCE_DIR}/src)
 
 # recursively grabs all files inside the project folder
 file(GLOB_RECURSE LEGACY_CUBIOMES LegacyCubiomes/*)
-add_executable(LCE_Cubiomes "main1.cpp" ${LEGACY_CUBIOMES})
+add_executable(LCE_Cubiomes "main1.cpp" ${LEGACY_CUBIOMES} LegacyCubiomes/utils/weightedRandom.cpp LegacyCubiomes/loot/base_classes/stronghold_loot.cpp LegacyCubiomes/structures/structure_rolls/base_rolls.cpp)
 

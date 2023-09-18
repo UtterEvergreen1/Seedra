@@ -35,6 +35,7 @@ Container getLootFromLootTableSeed(uint64_t* lootTableSeed) {
             ItemStack result = table.createLootRoll<false>(lootTableSeed);
 
             if EXPECT_FALSE(result.item == &Items::ENCHANTED_BOOK) {
+                std::cout << "\nENCHANTED BOOK" << std::endl;
                 EnchantmentHelper::EnchantWithLevels::apply(lootTableSeed, &result, 30, true, true);
             }
 
@@ -58,16 +59,12 @@ Container getLootFromLootTableSeed(uint64_t* lootTableSeed) {
 
 int main(int argc, char* argv[]) {
     // Biome::registerBiomes();
-    // Enchantment::registerEnchantments();
+    Enchantment::registerEnchantments();
 
     // Generator g = Generator(LCEVERSION::WIIU_LATEST, BIOMESCALE::SMALL);
     // g.applySeed(DIMENSIONS::OVERWORLD, 12349);
 
-    loot_tables::StrongholdCorridor<false>::setup();
-
-
-
-    // std::cout << Pos2D(-108, 254).toChunkPos() << std::endl;
+    // std::cout << Pos2D(-161, 207).toChunkPos() << std::endl;
     /*
      -7254631889086558805 / (12348)(wiiu) two enchanted books
      -5989332256310069151 / (12348)(ps3)
@@ -79,8 +76,22 @@ int main(int argc, char* argv[]) {
      -4210146869381317490 / https://media.discordapp.net/attachments/753070027397398610/1149803061506752614/image.png
      */
 
-    uint64_t lootTableSeed = 1068107887565861472;
-    Container loot = loot_tables::StrongholdCorridor<false>::getLootFromLootTableSeed<false>(lootTableSeed);
+    // loot_tables::StrongholdCorridor<false>::setup();
+    // uint64_t lootTableSeed = 1068107887565861472;
+    // Container loot = loot_tables::StrongholdCorridor<false>::getLootFromLootTableSeed<false>(lootTableSeed);
+    // std::cout << std::endl << "Loot:" << loot << std::endl;
+
+    // loot_tables::StrongholdLibrary::setup();
+    // uint64_t  lootTableSeed = -5989332256310069151;
+    // Container loot = getLootFromLootTableSeed<false>(&lootTableSeed);
+    // std::cout << std::endl << "Loot:" << loot << std::endl;
+    loot_tables::StrongholdCorridor<false>::setup();
+    loot_tables::StrongholdLibrary::setup();
+    uint64_t  lootTableSeed = -5989332256310069151;
+    Container loot = loot_tables::StrongholdLibrary::getLootFromLootTableSeed<false>(&lootTableSeed);
+    std::cout << std::endl << "Loot:" << loot << std::endl;
+
+
 
     /*
     std::cout << "Enchant List" << std::endl;
@@ -91,20 +102,8 @@ int main(int argc, char* argv[]) {
     }
      */
 
-    // std::cout << chunkPos.toBlockPos() << std::endl;
-    // Pos2D chest = Pos2D(16, 232).toChunkPos();
-    // std::cout << chest << std::endl;
 
-    std::cout << std::endl << "Loot:" << loot << std::endl;
 
-    /*
-     1.
-     (id 1, lvl 3) Fire Protection III
-
-     2.
-     (id 35, lvl 2) Sharpness III
-     (id 16, lvl 3) Efficiency IV
-     */
 }
 
 // Pos2D chunkPos = g.getStronghold();

@@ -15,7 +15,7 @@ namespace loot_tables {
 
         /*combine base loot seeding and generation to get the base loot*/
         template<bool shuffle, bool legacy>
-        [[nodiscard]] static Container getLootFromChunk(int64_t worldSeed, int chunkX, int chunkZ);
+        ND static Container getLootFromChunk(int64_t worldSeed, int chunkX, int chunkZ);
 
         /*loot generation from seed, don't use in a search unless you know the exact seed*/
         template<bool shuffle>
@@ -109,7 +109,7 @@ namespace loot_tables {
     }
 
 
-    /*other paramater options for loot finding*/
+    /*other parameter options for loot finding*/
     template <typename T>
     template<bool shuffle, bool legacy>
     inline Container Loot<T>::getLootFromChunk(int64_t worldSeed, Pos2D chunkPos) {

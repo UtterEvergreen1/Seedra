@@ -1,5 +1,6 @@
 #include <utility>
 
+
 #include "enchantment.hpp"
 
 #include "LegacyCubiomes/enchants/classes/EnchantmentArrowDamage.hpp"
@@ -121,90 +122,103 @@ void Enchantment::initializeTypeIterable() {
 void Enchantment::registerEnchantments() {
     initializeTypeIterable();
 
-    /*
-     // This is the bedrock ids
-    registerEnchantment(0, new EnchantmentProtection("Protection", &Rarities::COMMON, 0));
-    registerEnchantment(1, new EnchantmentProtection("Fire Protection", &Rarities::UNCOMMON, 1));
-    registerEnchantment(2, new EnchantmentProtection("Feather Falling", &Rarities::UNCOMMON, 2));
-    registerEnchantment(3, new EnchantmentProtection("Blast Protection", &Rarities::RARE, 3));
-    registerEnchantment(4, new EnchantmentProtection("Projectile Protection", &Rarities::UNCOMMON, 4));
+    #ifdef IS_WIIU
+    registerEnchantment(0, new EnchantmentMending(         "Mending",              &Rarities::RARE));
+    registerEnchantment(1, new EnchantmentLootBonus(       "Luck of the Sea",      &Rarities::RARE, &Type::FISHING_ROD));
+    registerEnchantment(2, new EnchantmentArrowKnockback(  "Punch",                &Rarities::UNCOMMON));
+    registerEnchantment(3, new EnchantmentLootBonus(       "fortune",              &Rarities::RARE, &Type::DIGGER));
+    registerEnchantment(4, new EnchantmentDurability(      "Unbreaking",           &Rarities::UNCOMMON));
+    registerEnchantment(5, new EnchantmentDigging(         "Efficiency",           &Rarities::COMMON));
+    registerEnchantment(6, new EnchantmentLootBonus(       "Looting",              &Rarities::RARE, &Type::WEAPON));
+    registerEnchantment(7, new EnchantmentDamage(          "Smite",                &Rarities::UNCOMMON, 1));
+    registerEnchantment(8, new EnchantmentVanishingCurse(  "Curse of Vanishing",   &Rarities::VERY_RARE));
+    registerEnchantment(9, new EnchantmentBindingCurse(    "Curse Of Binding",     &Rarities::VERY_RARE));
+    registerEnchantment(10, new EnchantmentUntouching(      "Silk Touch",           &Rarities::VERY_RARE));
+    registerEnchantment(11, new EnchantmentFrostWalker(      "Frost Walker",         &Rarities::RARE));
+    registerEnchantment(12, new EnchantmentArrowFire(       "Flame",                &Rarities::RARE));
+    registerEnchantment(13, new EnchantmentWaterWalker(      "Depth Strider",        &Rarities::RARE));
+    registerEnchantment(14, new EnchantmentKnockback(       "Knockback",            &Rarities::UNCOMMON));
+    registerEnchantment(15, new EnchantmentDamage(          "Bane of Arthropods",   &Rarities::UNCOMMON, 2));
+    registerEnchantment(16, new EnchantmentOxygen(           "Respiration",          &Rarities::RARE));
+    registerEnchantment(17, new EnchantmentThorns(           "Thorns",               &Rarities::VERY_RARE));
+    registerEnchantment(18, new EnchantmentDamage(          "Sharpness",            &Rarities::COMMON, 0));
+    registerEnchantment(19, new EnchantmentWaterWorker(      "Aqua Affinity",        &Rarities::RARE));
+    registerEnchantment(20, new EnchantmentArrowInfinite(   "Infinity",             &Rarities::VERY_RARE));
+    registerEnchantment(21, new EnchantmentProtection(       "Projectile Protection",&Rarities::UNCOMMON, 4));
+    registerEnchantment(22, new EnchantmentProtection(       "Blast Protection",     &Rarities::RARE, 3));
+    registerEnchantment(23, new EnchantmentFishingSpeed(    "Lure",                 &Rarities::RARE));
+    registerEnchantment(24, new EnchantmentProtection(       "Feather Falling",      &Rarities::UNCOMMON, 2));
+    registerEnchantment(25, new EnchantmentFireAspect(      "Fire Aspect",          &Rarities::RARE));
+    registerEnchantment(26, new EnchantmentProtection(       "Fire Protection",      &Rarities::UNCOMMON, 1));
+    registerEnchantment(27, new EnchantmentArrowDamage(     "Power",                &Rarities::COMMON));
+    registerEnchantment(28, new EnchantmentProtection(       "Protection",           &Rarities::COMMON, 0));
+    // 80 impaling      UNCOMMON
+    // 81 riptide       RARE
+    // 82 loyalty       COMMON
+    // 83 channeling    VERY_RARE
+    #else
+    registerEnchantment(0, new EnchantmentProtection(       "Protection",           &Rarities::COMMON, 0));
+    registerEnchantment(1, new EnchantmentProtection(       "Fire Protection",      &Rarities::UNCOMMON, 1));
+    registerEnchantment(2, new EnchantmentProtection(       "Feather Falling",      &Rarities::UNCOMMON, 2));
+    registerEnchantment(3, new EnchantmentProtection(       "Blast Protection",     &Rarities::RARE, 3));
+    registerEnchantment(4, new EnchantmentProtection(       "Projectile Protection",&Rarities::UNCOMMON, 4));
 
-    registerEnchantment(6, new EnchantmentOxygen("Respiration", &Rarities::RARE));
-    registerEnchantment(8, new EnchantmentWaterWorker("Aqua Affinity", &Rarities::RARE));
-    registerEnchantment(5, new EnchantmentThorns("Thorns", &Rarities::VERY_RARE));
-    registerEnchantment(7, new EnchantmentWaterWalker("Depth Strider", &Rarities::RARE));
-    registerEnchantment(25, new EnchantmentFrostWalker("Frost Walker", &Rarities::RARE));
-    registerEnchantment(27, new EnchantmentBindingCurse("Curse Of Binding", &Rarities::VERY_RARE));
+    registerEnchantment(5, new EnchantmentOxygen(           "Respiration",          &Rarities::RARE));
+    registerEnchantment(6, new EnchantmentWaterWorker(      "Aqua Affinity",        &Rarities::RARE));
+    registerEnchantment(7, new EnchantmentThorns(           "Thorns",               &Rarities::VERY_RARE));
+    registerEnchantment(8, new EnchantmentWaterWalker(      "Depth Strider",        &Rarities::RARE));
+    registerEnchantment(9, new EnchantmentFrostWalker(      "Frost Walker",         &Rarities::RARE));
+    registerEnchantment(10, new EnchantmentBindingCurse(    "Curse Of Binding",     &Rarities::VERY_RARE));
 
-    registerEnchantment(9, new EnchantmentDamage("Sharpness", &Rarities::COMMON, 0));
-    registerEnchantment(10, new EnchantmentDamage("Smite", &Rarities::UNCOMMON, 1));
-    registerEnchantment(11, new EnchantmentDamage("Bane of Arthropods", &Rarities::UNCOMMON, 2));
-    registerEnchantment(12, new EnchantmentKnockback("Knockback", &Rarities::UNCOMMON));
-    registerEnchantment(13, new EnchantmentFireAspect("Fire Aspect", &Rarities::RARE));
-    registerEnchantment(14, new EnchantmentLootBonus("Looting", &Rarities::RARE, &ENCHANTMENT_TYPE::WEAPON));
-
-    registerEnchantment(15, new EnchantmentDigging("Efficiency", &Rarities::COMMON));
-    registerEnchantment(16, new EnchantmentUntouching("Silk Touch", &Rarities::VERY_RARE));
-    registerEnchantment(17, new EnchantmentDurability("Unbreaking", &Rarities::UNCOMMON));
-    registerEnchantment(18, new EnchantmentLootBonus("Fortune", &Rarities::RARE, &ENCHANTMENT_TYPE::DIGGER));
-    registerEnchantment(19, new EnchantmentArrowDamage("Power", &Rarities::COMMON));
-    registerEnchantment(20, new EnchantmentArrowKnockback("Punch", &Rarities::RARE));
-    registerEnchantment(21, new EnchantmentArrowFire("Flame", &Rarities::RARE));
-    registerEnchantment(22, new EnchantmentArrowInfinite("Infinity", &Rarities::VERY_RARE));
-    registerEnchantment(23, new EnchantmentLootBonus("Luck of the Sea", &Rarities::RARE, &ENCHANTMENT_TYPE::FISHING_ROD));
-    registerEnchantment(24, new EnchantmentFishingSpeed("Lure", &Rarities::RARE));
-    registerEnchantment(26, new EnchantmentMending("Mending", &Rarities::RARE));
-    registerEnchantment(28, new EnchantmentVanishingCurse("Curse of Vanishing", &Rarities::VERY_RARE));
-    // 29 impaling
-    // 81 riptide
-    // 82 loyalty
-    // 32 channeling
-     */
-
-
-    registerEnchantment(0, new EnchantmentProtection("Protection", &Rarities::COMMON, 0));
-    registerEnchantment(1, new EnchantmentProtection("Fire Protection", &Rarities::UNCOMMON, 1));
-    registerEnchantment(2, new EnchantmentProtection("Feather Falling", &Rarities::UNCOMMON, 2));
-    registerEnchantment(3, new EnchantmentProtection("Blast Protection", &Rarities::RARE, 3));
-    registerEnchantment(4, new EnchantmentProtection("Projectile Protection", &Rarities::UNCOMMON, 4));
-
-    registerEnchantment(5, new EnchantmentOxygen("Respiration", &Rarities::RARE));
-    registerEnchantment(6, new EnchantmentWaterWorker("Aqua Affinity", &Rarities::RARE));
-    registerEnchantment(7, new EnchantmentThorns("Thorns", &Rarities::VERY_RARE));
-    registerEnchantment(8, new EnchantmentWaterWalker("Depth Strider", &Rarities::RARE));
-    registerEnchantment(9, new EnchantmentFrostWalker("Frost Walker", &Rarities::RARE));
-    registerEnchantment(10, new EnchantmentBindingCurse("Curse Of Binding", &Rarities::VERY_RARE));
-
-    registerEnchantment(16, new EnchantmentDamage("Sharpness", &Rarities::COMMON, 0));
-    registerEnchantment(17, new EnchantmentDamage("Smite", &Rarities::UNCOMMON, 1));
-    registerEnchantment(18, new EnchantmentDamage("Bane of Arthropods", &Rarities::UNCOMMON, 2));
-    registerEnchantment(19, new EnchantmentKnockback("Knockback", &Rarities::UNCOMMON));
-    registerEnchantment(20, new EnchantmentFireAspect("Fire Aspect", &Rarities::RARE));
-    registerEnchantment(21, new EnchantmentLootBonus("Looting", &Rarities::RARE, &Type::WEAPON));
-
+    registerEnchantment(16, new EnchantmentDamage(          "Sharpness",            &Rarities::COMMON, 0));
+    registerEnchantment(17, new EnchantmentDamage(          "Smite",                &Rarities::UNCOMMON, 1));
+    registerEnchantment(18, new EnchantmentDamage(          "Bane of Arthropods",   &Rarities::UNCOMMON, 2));
+    registerEnchantment(19, new EnchantmentKnockback(       "Knockback",            &Rarities::UNCOMMON));
+    registerEnchantment(20, new EnchantmentFireAspect(      "Fire Aspect",          &Rarities::RARE));
+    registerEnchantment(21, new EnchantmentLootBonus(       "Looting",              &Rarities::RARE, &Type::WEAPON));
     #ifdef INCLUDE_JAVA
-    registerEnchantment(22, new EnchantmentSweepingEdge("sweeping", &Rarities::RARE));
+    registerEnchantment(22, new EnchantmentSweepingEdge(    "sweeping",             &Rarities::RARE));
     #endif
-
-    registerEnchantment(32, new EnchantmentDigging("Efficiency", &Rarities::COMMON));
-    registerEnchantment(33, new EnchantmentUntouching("Silk Touch", &Rarities::VERY_RARE));
-    registerEnchantment(34, new EnchantmentDurability("Unbreaking", &Rarities::UNCOMMON));
-    registerEnchantment(35, new EnchantmentLootBonus("fortune", &Rarities::RARE, &Type::DIGGER));
-    registerEnchantment(48, new EnchantmentArrowDamage("Power", &Rarities::COMMON));
-    registerEnchantment(49, new EnchantmentArrowKnockback("Punch", &Rarities::RARE));
-    registerEnchantment(50, new EnchantmentArrowFire("Flame", &Rarities::RARE));
-    registerEnchantment(51, new EnchantmentArrowInfinite("Infinity", &Rarities::VERY_RARE));
-    registerEnchantment(61, new EnchantmentLootBonus("Luck of the Sea", &Rarities::RARE, &Type::FISHING_ROD));
-    registerEnchantment(62, new EnchantmentFishingSpeed("Lure", &Rarities::RARE));
-    registerEnchantment(70, new EnchantmentMending("Mending", &Rarities::RARE));
-    registerEnchantment(71, new EnchantmentVanishingCurse("Curse of Vanishing", &Rarities::VERY_RARE));
-        // 80 impaling
-        // 81 riptide
-        // 82 loyalty
-        // 83 channeling`
+    registerEnchantment(32, new EnchantmentDigging(         "Efficiency",           &Rarities::COMMON));
+    registerEnchantment(33, new EnchantmentUntouching(      "Silk Touch",           &Rarities::VERY_RARE));
+    registerEnchantment(34, new EnchantmentDurability(      "Unbreaking",           &Rarities::UNCOMMON));
+    registerEnchantment(35, new EnchantmentLootBonus(       "fortune",              &Rarities::RARE, &Type::DIGGER));
+    registerEnchantment(48, new EnchantmentArrowDamage(     "Power",                &Rarities::COMMON));
+    registerEnchantment(49, new EnchantmentArrowKnockback(  "Punch",                &Rarities::UNCOMMON));
+    registerEnchantment(50, new EnchantmentArrowFire(       "Flame",                &Rarities::RARE));
+    registerEnchantment(51, new EnchantmentArrowInfinite(   "Infinity",             &Rarities::VERY_RARE));
+    registerEnchantment(61, new EnchantmentLootBonus(       "Luck of the Sea",      &Rarities::RARE, &Type::FISHING_ROD));
+    registerEnchantment(62, new EnchantmentFishingSpeed(    "Lure",                 &Rarities::RARE));
+    registerEnchantment(70, new EnchantmentMending(         "Mending",              &Rarities::RARE));
+    registerEnchantment(71, new EnchantmentVanishingCurse(  "Curse of Vanishing",   &Rarities::VERY_RARE));
+    // 80 impaling      UNCOMMON
+    // 81 riptide       RARE
+    // 82 loyalty       COMMON
+    // 83 channeling    VERY_RARE
+    #endif
 
 }
 
 std::string EnchantmentData::LEVEL_ROMAN[6] = {"", "", "II", "III", "IV", "V"};
+
+
+
+std::string EnchantmentData::toString() const {
+    if (obj == nullptr)
+        return "NULLPTR";
+    if (level < 2)
+        return obj->name;
+    return obj->name + " " + LEVEL_ROMAN[level];
+}
+
+
+
+
+
+
+
+
+
+
 
 

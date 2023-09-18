@@ -60,23 +60,13 @@ std::vector<EnchantmentData> EnchantmentHelper::buildEnchantmentList(uint64_t *r
     if (i == 0)
         return list;
 
-    // #ifdef INCLUDE_JAVA
     level = level + 1 + nextInt(rng, i / 4 + 1) + nextInt(rng, i / 4 + 1);
     float f = (nextFloat(rng) + nextFloat(rng) - 1.0F) * 0.15F;
     level = clamp((int)std::round((float)level + (float)level * f), 1, std::numeric_limits<int>::max()); // 0x7fffffff
-    // #else
 
-    // #endif
-
+    // std::cout << "Level: " << level << std::endl;
 
     std::vector<EnchantmentData> list1 = getEnchantmentDataList(level, itemStackIn, isBook, allowTreasure);
-    /*std::cout << std::endl << "Enchant List" << std::endl;
-    int count = 0;
-    for (auto ench = list1.rbegin(); ench != list1.rend(); ++ench) {
-        count += ench->obj->rarity->getWeight();
-        std::cout << count << " " << ench->obj->name << std::endl;
-    }
-    std::cout << std::endl;*/
 
     if (!list1.empty()) {
         EnchantmentData data = WeightedRandom::getRandomItem(rng, list1);
@@ -121,8 +111,8 @@ std::vector<EnchantmentData> EnchantmentHelper::getEnchantmentDataList(int encha
 
     isBook = ItemStackIn->getItem()->id == ENCHANTED_BOOK.id;
 
-    for (auto & enchData : Enchantment::REGISTRY) {
-        pointer = enchData.second;
+    for (auto & it : Enchantment::REGISTRY) {
+        pointer = it.second;
 
         allowed = ((!pointer->isTreasure || allowTreasure)
                 && (pointer->type->canEnchantItem(ItemStackIn->getItem()) || isBook));

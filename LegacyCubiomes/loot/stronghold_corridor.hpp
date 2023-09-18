@@ -9,7 +9,7 @@ using stronghold_generator::StrongholdGenerator;
 
 namespace loot_tables {
     template<bool isAquatic>
-    class StrongholdCorridor : public StrongholdLoot {
+    class StrongholdCorridor : public StrongholdLoot<StrongholdCorridor<isAquatic>> {
     public:
         static void setup();
         template <bool shuffle>
@@ -53,7 +53,7 @@ namespace loot_tables {
         } else {
             StrongholdCorridor<isAquatic>::lootTables.emplace_back(items, 2, 3, 496);
         }
-        maxItemsPossible = 3;
+        StrongholdCorridor<isAquatic>::maxItemsPossible = 3;
     }
 
     template<bool isAquatic>
@@ -91,12 +91,12 @@ namespace loot_tables {
     Container StrongholdCorridor<isAquatic>::getAltarChestLoot(int64_t seed, BIOMESCALE biomeSize,
                                                                BasePiece* alterChestPiece,
                                                                StrongholdGenerator* strongholdGenerator) {
-        uint64_t lootSeed = getLootSeed<checkCaves>(seed, biomeSize,
+        uint64_t lootSeed = Loot<StrongholdCorridor<isAquatic>>::getLootSeed<checkCaves>(seed, biomeSize,
                                                 alterChestPiece->getWorldX(3, 3),
                                                 alterChestPiece->getWorldY(2),
                                                 alterChestPiece->getWorldZ(3, 3),
                                                 strongholdGenerator);
-        return getLootFromSeed<shuffle>(&lootSeed);
+        return Loot<StrongholdCorridor<isAquatic>>::getLootFromSeed<shuffle>(&lootSeed);
     }
 
     template<bool isAquatic>
