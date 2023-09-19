@@ -142,18 +142,21 @@ public:
     template<bool legacy>
     ItemStack createLootRoll(uint64_t *rng) const {
         int randomWeight = nextInt(rng, totalWeight);
-        size_t index, low, high;
-        for (low = 0, high = cumulativeWeights.size(); low < high;) {
-            size_t mid = (low + high) / 2;
+
+        size_t high = cumulativeWeights.size();
+        size_t low = high >> 2;
+        while (low < high) {
+            size_t mid = (low + high) >> 1;
             if (cumulativeWeights[mid] > randomWeight) {
                 high = mid;
             } else {
                 low = mid + 1;
             }
         }
-        index = low;
-        const ItemEntry &selectedItem = items[index];
+
+        const ItemEntry &selectedItem = items[low];
         return {selectedItem.item, LootTable::getInt<legacy>(rng, selectedItem.min, selectedItem.max)};
+
     }
 };
 
@@ -162,7 +165,7 @@ public:
 
 class Container {
 public:
-    int numSlots{};
+    size_t numSlots{};
     std::vector<ItemStack> inventorySlots;
 
     Container() = default;
@@ -225,14 +228,12 @@ public:
         items.resize(writeIter - items.begin());
 
         numSlots -= items.size();
-        while(numSlots > 0 && !stackableItems.empty())
-            //while (numSlots > static_cast<int>(items.size() + stackableItems.size()) && !stackableItems.empty())
-        {
+        while(numSlots > 0 && !stackableItems.empty()) {
             itemIndex = LootTable::getInt<false>(&rngState, 0, static_cast<int>(stackableItems.size()) - 1);
             ItemStack originalStack = stackableItems[itemIndex];
             stackableItems.erase(stackableItems.begin() + itemIndex);
 
-            splitAmount = LootTable::getInt<false>(&rngState, 1, originalStack.stackSize / 2);
+            splitAmount = LootTable::getInt<false>(&rngState, 1, originalStack.stackSize >> 1);
             ItemStack splittedStack = originalStack.splitStack(splitAmount);
 
             if (originalStack.stackSize == 0 || next(&rngState, 1) == 0)

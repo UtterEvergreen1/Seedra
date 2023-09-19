@@ -28,7 +28,7 @@ Container getLootFromLootTableSeed(uint64_t* lootTableSeed) {
     int rollIndex;
     std::vector<ItemStack> chestContents;
     setSeed(lootTableSeed, *lootTableSeed);
-    int count = 0;
+
     // generate loot
     for(const LootTable& table : loot_tables::StrongholdLibrary::lootTables){
         rollCount = LootTable::getInt<false>(lootTableSeed, table.min, table.max);
@@ -36,13 +36,7 @@ Container getLootFromLootTableSeed(uint64_t* lootTableSeed) {
             ItemStack result = table.createLootRoll<false>(lootTableSeed);
 
             if EXPECT_FALSE(result.item == &Items::ENCHANTED_BOOK) {
-                // std::cout << "\nBook " << count << std::endl;
-                count += 1;
-                if (false) {
-                    EnchantmentHelper::EnchantWithLevels::apply<true, true>(lootTableSeed, &result, 30);
-                } else {
-                    EnchantmentHelperBook::EnchantWithLevels::apply(lootTableSeed, &result, 30);
-                }
+                EnchantmentHelperBook::EnchantWithLevels::apply(lootTableSeed, &result, 30);
             }
 
             chestContents.push_back(result);
@@ -65,7 +59,7 @@ int main(int argc, char* argv[]) {
     // Biome::registerBiomes();
     Enchantment::registerEnchantments();
 
-    EnchantmentHelperBook::BOOK_LEVEL_TABLE.setup();
+    EnchantmentHelperBook::setup();
 
     // Generator g = Generator(LCEVERSION::WIIU_LATEST, BIOMESCALE::SMALL);
     // g.applySeed(DIMENSIONS::OVERWORLD, 12349);
@@ -93,7 +87,7 @@ int main(int argc, char* argv[]) {
 
     Container loot;
 
-    const int ROLLS = 100000;
+    const int ROLLS = 1000000;
     auto start = getMilliseconds();
     for (int i = 0; i < ROLLS; i++) {
         setSeed(&lootTableSeed, lootTableSeed);

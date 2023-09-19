@@ -95,7 +95,7 @@ static inline uint64_t getPopulationSeed(int64_t worldSeed, int chunkX, int chun
     return rng;
 }
 
-static int clamp(int num, int min, int max) {
+static inline int clamp(int num, int min, int max) {
     if (num < min) {
         return min;
     } else {

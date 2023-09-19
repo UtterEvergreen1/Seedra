@@ -6,17 +6,15 @@
 //==============================================================================
 
 
-
 void ELDataArray::addData(Enchantment* ench, int id) {
     data[totalEnchants++] = EnchantmentData(ench, id);
 }
+
 
 EnchantmentData* ELDataArray::getIndex(int indexIn) {
     indexIn = deletions.getEnchantmentIndex(indexIn);
     return &data[indexIn];
 }
-
-
 
 
 EnchantmentData* ELDataArray::getLastEnchantmentAdded() {
@@ -35,35 +33,42 @@ void ELDataArray::addRandomItem(uint64_t *rng) {
 
     // get the rng weight
     int weight = nextInt(rng, theTotalWeight);
-    // std::cout << "weight " << weight << std::endl;
-    // std::cout << "total weight " << theTotalWeight << std::endl;
+
+    // if it's the full enchantment list,
+    // use a faster function
+    if (theTotalWeight == EnchantedBookEnchantsLookupTable::TOTAL_WEIGHT) {
+        size_t low = weight >> 2;
+        size_t high = 29;
+        while (low < high) {
+            size_t mid = (low + high) >> 1;
+            if (EnchantedBookEnchantsLookupTable::CUMULATIVE_WEIGHT_ALL[mid] > weight) {
+                high = mid;
+            } else {
+                low = mid + 1;
+            }
+        }
+        enchants.addItem((int)low);
+        return;
+    }
 
     // get the enchantment
     for (int enchIndex = 0; enchIndex < totalEnchants; enchIndex++) {
 
-        // Check if the enchantment is in the deletion list
-        bool isDeleted = false;
-        for (int i = 0; i < deletions.getIndex(); i++) {
-            if (enchIndex == deletions.getValueAt(i)) {
-                isDeleted = true;
-                break;
-            }
+        for (int i = 0; i < deletions.getIndex(); i++)
+            if (enchIndex == deletions.getValueAt(i))
+                goto END;
+
+        weight -= data[enchIndex].obj->rarity->getWeight();
+
+        // If the right weight is found, add it to the enchantments
+        if (weight < 0) {
+            enchants.addItem(enchIndex);
+            return;
         }
 
-        // If not in the deletion list, decrement weight and check
-        if (!isDeleted) {
-            weight -= data[enchIndex].obj->rarity->getWeight();
-
-            // If the right weight is found, add it to the enchantments
-            if (weight < 0) {
-                enchants.addItem(enchIndex);
-                return;
-            }
-        }
-
+        END:;
     }
 }
-
 
 
 void ELDataArray::addEnchantments(ItemStack *itemStackIn) {
@@ -89,14 +94,22 @@ ELDataArray* EnchantedBookEnchantsLookupTable::get(int cost) {
 
 
 void EnchantedBookEnchantsLookupTable::setup() {
-    Enchantment *ench_pt;
 
+    // sets up base cumulative weights
+    int sum = 0;
+    for (int i = 0; i < 29; ++i) {
+        auto ench = Enchantment::REGISTRY[i];
+        sum += ench->rarity->getWeight();
+        CUMULATIVE_WEIGHT_ALL[i] = sum;
+    }
+    TOTAL_WEIGHT = sum;
+
+    // sets up the dataArrays
+    Enchantment *ench_pt;
     for (int cost = 0; cost < VECTOR_COUNT; cost++) {
-        int enchIndex = 0;
         dataArrays[cost] = new ELDataArray();
         auto array = dataArrays[cost];
 
-        bool enchantFound = false;
         for (auto & it : Enchantment::REGISTRY) {
             ench_pt = it.second;
             for (int level = ench_pt->maxLevel; level > 0; --level) {
@@ -104,13 +117,8 @@ void EnchantedBookEnchantsLookupTable::setup() {
                 if (cost >= ench_pt->getMinCost(level) && cost <= ench_pt->getMaxCost(level)) {
                     array->addData(ench_pt, level);
                     array->totalWeight += ench_pt->rarity->getWeight();
-                    enchantFound = true;
                     break;
                 }
-            }
-
-            if (!enchantFound) {
-
             }
         }
     }
@@ -126,3 +134,5 @@ void EnchantedBookEnchantsLookupTable::deallocate() {
     areVectorsSetup = false;
 }
 
+int EnchantedBookEnchantsLookupTable::TOTAL_WEIGHT = 0;
+int EnchantedBookEnchantsLookupTable::CUMULATIVE_WEIGHT_ALL[29] = {0};

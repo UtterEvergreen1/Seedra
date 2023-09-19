@@ -1,6 +1,8 @@
 #include "enchantmentHelperBook.hpp"
 
+
 EnchantedBookEnchantsLookupTable EnchantmentHelperBook::BOOK_LEVEL_TABLE;
+
 
 //==============================================================================
 //                              Enchant With Levels
@@ -14,7 +16,6 @@ void EnchantmentHelperBook::EnchantWithLevels::apply(uint64_t *rng, ItemStack *s
 
 
 void EnchantmentHelperBook::EnchantWithLevels::apply(uint64_t *rng, ItemStack *stack, int level) {
-    int rand = nextInt(rng, level, level);
     EnchantmentHelperBook::addRandomEnchantment(rng, stack, level);
 }
 
@@ -27,46 +28,31 @@ void EnchantmentHelperBook::EnchantWithLevels::apply(uint64_t *rng, ItemStack *s
 ELDataArray* EnchantmentHelperBook::buildEnchantmentList(uint64_t *rng, ItemStack *itemStackIn, int level) {
 
     const Items::Item* item = itemStackIn->getItem();
-    int cost = item->getCost();
+    int cost = (item->getCost() >> 2) + 1;
 
-    level = level + 1 + nextInt(rng, cost / 4 + 1) + nextInt(rng, cost / 4 + 1);
+    level = level + 1 + nextInt(rng, cost) + nextInt(rng, cost);
     float f = (nextFloat(rng) + nextFloat(rng) - 1.0F) * 0.15F;
-    level = clamp((int)std::round((float)level + (float)level * f), 1, std::numeric_limits<int>::max()); // 0x7fffffff
+    level = clamp((int)std::round((float)level + (float)level * f), 1, 0x7fffffff);
 
-    // std::cout << "Level: " << level << std::endl;
-
-    ELDataArray* enchants = getEnchantmentDataList(level, itemStackIn);
+    ELDataArray* enchants = BOOK_LEVEL_TABLE.get(level);
     enchants->addRandomItem(rng);
 
     while (nextInt(rng, 50) <= level) {
         EnchantmentData* back = enchants->getLastEnchantmentAdded();
 
-        int count = 0;
-        bool canAdd;
-
         for (int enchIndex = 0; enchIndex < enchants->totalEnchants; enchIndex++) {
-
-            canAdd = true;
             if (!back->obj->canApplyTogether(enchants->data[enchIndex].obj)) {
-
-                for (int i = 0; i < enchants->deletions.getIndex(); i++) {
-                    if (count == enchants->deletions.getValueAt(i)) {
-                        canAdd = false;
-                        break;
-                    }
-                }
-
-                if (canAdd) {
-                    enchants->deletions.addItem(count);
-                }
+                for (int i = 0; i < enchants->deletions.getIndex(); i++)
+                    if (enchIndex == enchants->deletions.getValueAt(i))
+                        goto END;
+                enchants->deletions.addItem(enchIndex);
             }
-            count++;
+            END:;
         }
 
         enchants->addRandomItem(rng);
         level /= 2;
     }
-
     return enchants;
 }
 
@@ -75,7 +61,3 @@ void EnchantmentHelperBook::addRandomEnchantment(uint64_t *const rng, ItemStack 
     enchantmentVector->addEnchantments(itemStackIn);
 }
 
-
-ELDataArray* EnchantmentHelperBook::getEnchantmentDataList(int enchantCost, ItemStack *ItemStackIn) {
-    return BOOK_LEVEL_TABLE.get(enchantCost);
-}

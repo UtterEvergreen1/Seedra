@@ -11,15 +11,15 @@ private:
     static constexpr int ITEM_COUNT = 16;
     int indexes[ITEM_COUNT] = {0};
     int currentIndex = 0;
+
 public:
     IndexArray() = default;
     inline void clear() {
-        indexes[0] = 0;
         currentIndex = 0;
     }
 
     ND inline int getValueAt(int indexIn) const {return indexes[indexIn];}
-    ND inline int getLastValueIndex() const {return indexes[getIndex() - 1];}
+    ND inline int getLastValueIndex() const {return indexes[currentIndex - 1];}
 
     ND inline int getIndex() const {return currentIndex;}
 
@@ -95,8 +95,8 @@ public:
 
     void deallocate();
 
-
-
+    static int TOTAL_WEIGHT;
+    static int CUMULATIVE_WEIGHT_ALL[29];
 };
 
 
