@@ -9,6 +9,8 @@
 
 #include "rarity.hpp"
 #include "LegacyCubiomes/mc/items.hpp"
+#include "LegacyCubiomes/mc/itemID.hpp"
+
 
 // #include "LegacyCubiomes/utils/weightedRandom.hpp"
 

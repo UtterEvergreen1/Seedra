@@ -7,11 +7,13 @@ using namespace Items;
 
 namespace loot_tables {
     class SpawnBonusChest : public Loot<SpawnBonusChest> {
+    private:
+        static const Item* LOG1_vec[2];
+        static const Item* LOG2_vec[4];
     public:
         static void setup();
-
         template<bool shuffle>
-        static Container getLootFromLootTableSeed(uint64_t lootTableSeed);
+        static Container getLootFromLootTableSeed(uint64_t* lootTableSeed);
     };
 
     void SpawnBonusChest::setup() {
@@ -68,24 +70,32 @@ namespace loot_tables {
 
 
 
-    template <bool shuffle>
-    Container SpawnBonusChest::getLootFromLootTableSeed(uint64_t lootTableSeed) {
+
+
+
+    template<bool shuffle>
+    Container SpawnBonusChest::getLootFromLootTableSeed(uint64_t * lootTableSeed) {
         int rollCount;
         int rollIndex;
+        int rollType;
         std::vector<ItemStack> chestContents;
-        setSeed(&lootTableSeed, lootTableSeed);
+        setSeed(lootTableSeed, *lootTableSeed);
 
         // generate loot
         for(const LootTable& table : loot_tables::SpawnBonusChest::lootTables){
-            rollCount = LootTable::getInt<false>(&lootTableSeed, table.min, table.max);
+            rollCount = LootTable::getInt<false>(lootTableSeed, table.min, table.max);
             for (rollIndex = 0; rollIndex < rollCount; rollIndex++) {
-                ItemStack result = table.createLootRoll<false>(&lootTableSeed);
+                ItemStack result = table.createLootRoll<false>(lootTableSeed);
+
+                if EXPECT_FALSE(result.item == &Items::OAK_WOOD) {
+                    rollType = nextInt(lootTableSeed, 0, 3);
+                    result.item = LOG1_vec[rollType];
+                }
 
                 if EXPECT_FALSE(result.item == &Items::ACACIA_WOOD) {
-                    nextInt(&lootTableSeed, 0, 1);
-                }
-                else if EXPECT_FALSE(result.item == &Items::OAK_WOOD) {
-                    nextInt(&lootTableSeed, 0, 3);
+                    rollType = nextInt(lootTableSeed, 0, 1);
+                    result.item = LOG1_vec[rollType];
+
                 }
 
                 chestContents.push_back(result);
@@ -93,7 +103,7 @@ namespace loot_tables {
         }
         if constexpr (shuffle){
             Container container = Container(27);
-            container.shuffleIntoContainer(chestContents, lootTableSeed);
+            container.shuffleIntoContainer(chestContents, *lootTableSeed);
             return container;
         }
         else
@@ -103,6 +113,12 @@ namespace loot_tables {
 
 
 
+    const Item* SpawnBonusChest::LOG1_vec[2] = {&Items::ACACIA_WOOD, &Items::DARK_OAK_WOOD};
+    const Item* SpawnBonusChest::LOG2_vec[4] = {
+            &Items::OAK_WOOD, &Items::SPRUCE_WOOD, &Items::BIRCH_WOOD, &Items::JUNGLE_WOOD};
 
 }
+
+
+
 

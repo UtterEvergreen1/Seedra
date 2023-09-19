@@ -41,7 +41,7 @@ public:
 
     void setBlockAndData(int64_t x, int64_t y, int64_t z, const Items::Item& item)
     {
-        this->blocks[getBlockIndex(x, y, z)] = ((item.id << 4) | item.dataTag);
+        this->blocks[getBlockIndex(x, y, z)] = ((item.getID() << 4) | item.getDataTag());
     }
 
     //in block cords not chunk cords

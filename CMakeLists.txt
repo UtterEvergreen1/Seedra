@@ -17,5 +17,5 @@ add_definitions(-DIS_WIIU)
 
 # recursively grabs all files inside the project folder
 file(GLOB_RECURSE LEGACY_CUBIOMES LegacyCubiomes/*)
-add_executable(LCE_Cubiomes "main1.cpp" ${LEGACY_CUBIOMES})
+add_executable(LCE_Cubiomes "main1.cpp" ${LEGACY_CUBIOMES} LegacyCubiomes/mc/types/Item.hpp LegacyCubiomes/mc/types/Tool.hpp LegacyCubiomes/mc/types/Sword.hpp LegacyCubiomes/mc/types/Armor.hpp LegacyCubiomes/mc/types/ItemData.hpp)
 

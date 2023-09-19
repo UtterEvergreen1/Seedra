@@ -13,11 +13,11 @@ namespace loot_tables {
         static std::vector<LootTable> lootTables;
         static int maxItemsPossible;
 
-        /*combine base loot seeding and generation to get the base loot*/
+        /** combine base loot seeding and generation to get the base loot */
         template<bool shuffle, bool legacy>
         ND static Container getLootFromChunk(int64_t worldSeed, int chunkX, int chunkZ);
 
-        /*loot generation from seed, don't use in a search unless you know the exact seed*/
+        /** loot generation from seed, don't use in a search unless you know the exact seed */
         template<bool shuffle>
         static Container getLootFromSeed(uint64_t* seed);
         template<bool shuffle>
@@ -25,7 +25,7 @@ namespace loot_tables {
 
         static Container getLootLegacyFromSeed(uint64_t* seed);
 
-        /*other parameter options for loot finding*/
+        /** other parameter options for loot finding */
         template<bool shuffle, bool legacy>
         static Container getLootFromChunk(int64_t worldSeed, Pos2D chunkPos);
         template<bool shuffle, bool legacy>
@@ -33,7 +33,7 @@ namespace loot_tables {
         template<bool shuffle, bool legacy>
         static Container getLootFromBlock(int64_t worldSeed, Pos2D blockPos);
 
-        /*generate loot chests in a row eg. needed to get all desert temple chests*/
+        /** generate loot chests in a row eg. needed to get all desert temple chests */
         template<bool shuffle, bool legacy>
         [[nodiscard]] static std::vector<Container> getLootChests(int numChests, int64_t worldSeed, int chunkX, int chunkZ);
 
@@ -109,7 +109,7 @@ namespace loot_tables {
     }
 
 
-    /*other parameter options for loot finding*/
+    /** other parameter options for loot finding */
     template <typename T>
     template<bool shuffle, bool legacy>
     inline Container Loot<T>::getLootFromChunk(int64_t worldSeed, Pos2D chunkPos) {
@@ -129,7 +129,7 @@ namespace loot_tables {
     }
 
 
-    /*generate loot chests in a row eg. needed to get all desert temple chests*/
+    /** generate loot chests in a row eg. needed to get all desert temple chests */
     template <typename T>
     template<bool shuffle, bool legacy>
     std::vector<Container> Loot<T>::getLootChests(int numChests, int64_t worldSeed, int chunkX, int chunkZ){

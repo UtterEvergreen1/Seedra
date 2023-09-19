@@ -28,7 +28,7 @@ public:
     }
 
     ND bool canApply(const Items::Item *item) const override {
-        return item->id == Items::IRON_AXE_ID || Enchantment::canApply(item);
+        return item->getID() == Items::IRON_AXE_ID || Enchantment::canApply(item);
     }
 };
 

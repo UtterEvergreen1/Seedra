@@ -13,5 +13,5 @@ public:
     Block() : block(0), data(0) {}
     explicit Block(uint16_t blockIn) : block(blockIn), data(0) {}
     Block(uint16_t blockIn, uint8_t dataIn) : block(blockIn), data(dataIn) {}
-    explicit Block(const Items::Item& item) : block(item.id), data(item.dataTag) {}
+    explicit Block(const Items::Item& item) : block(item.getID()), data(item.getDataTag()) {}
 };

@@ -30,13 +30,26 @@ Container getLootFromLootTableSeed(uint64_t* lootTableSeed) {
     setSeed(lootTableSeed, *lootTableSeed);
 
     // generate loot
-    for(const LootTable& table : loot_tables::StrongholdLibrary::lootTables){
+    for(const LootTable& table : loot_tables::SpawnBonusChest::lootTables){
         rollCount = LootTable::getInt<false>(lootTableSeed, table.min, table.max);
         for (rollIndex = 0; rollIndex < rollCount; rollIndex++) {
             ItemStack result = table.createLootRoll<false>(lootTableSeed);
 
-            if EXPECT_FALSE(result.item == &Items::ENCHANTED_BOOK) {
-                EnchantmentHelperBook::EnchantWithLevels::apply(lootTableSeed, &result, 30);
+            if EXPECT_FALSE(result.item == &Items::OAK_WOOD) {
+                std::cout << "OAK WOOD" << std::endl;
+                int data = nextInt(lootTableSeed, 0, 3);
+            }
+
+            if EXPECT_FALSE(result.item == &Items::ACACIA_WOOD) {
+                std::cout << "ACACIA WOOD" << std::endl;
+                int data = nextInt(lootTableSeed, 0, 1);
+                std::cout << "ACACIA WOOD: " << nextInt(lootTableSeed, 0, 1) << std::endl;
+            }
+            else if EXPECT_FALSE(result.item == &Items::OAK_WOOD) {
+                std::cout << "OAK WOOD: " << nextInt(lootTableSeed, 0, 3) << std::endl;
+            }
+            else {
+                std::cout << result << std::endl;
             }
 
             chestContents.push_back(result);
@@ -59,7 +72,7 @@ int main(int argc, char* argv[]) {
     // Biome::registerBiomes();
     Enchantment::registerEnchantments();
 
-    EnchantmentHelperBook::setup();
+    // EnchantmentHelperBook::setup();
 
     // Generator g = Generator(LCEVERSION::WIIU_LATEST, BIOMESCALE::SMALL);
     // g.applySeed(DIMENSIONS::OVERWORLD, 12349);
@@ -82,10 +95,9 @@ int main(int argc, char* argv[]) {
     // Container loot = loot_tables::StrongholdCorridor<false>::getLootFromLootTableSeed<false>(lootTableSeed);
     // std::cout << std::endl << "Loot:" << loot << std::endl;
 
-    loot_tables::StrongholdLibrary::setup();
-    uint64_t  lootTableSeed = -5989332256310069151;
+    loot_tables::SpawnBonusChest::setup();
 
-    Container loot;
+    /*
 
     const int ROLLS = 1000000;
     auto start = getMilliseconds();
@@ -98,9 +110,9 @@ int main(int argc, char* argv[]) {
 
     auto diff = end - start;
     std::cout << "rolls: " << ROLLS << " | time: " << diff << "ms" << std::endl;
-
-    lootTableSeed = -5989332256310069151;
-    loot = getLootFromLootTableSeed<false>(&lootTableSeed);
+    */
+    uint64_t  lootTableSeed = -3532906795931795829;
+    Container loot = loot_tables::SpawnBonusChest::getLootFromLootTableSeed<false>(&lootTableSeed);
     std::cout << std::endl << "Loot:" << loot << std::endl;
 
     int x = 0;
@@ -329,7 +341,7 @@ int main(int argc, char* argv[]) {
         const Container& container = alterChestsLoot[alterChestIndex];
         for(int itemIndex = 0; itemIndex < container.inventorySlots.size() && (!foundEnderPearls || !foundIron); itemIndex++){
             const ItemStack& itemStack = container.inventorySlots[itemIndex];
-            switch(itemStack.itemEntry.id){
+            switch(itemStack.itemEntry.getID()){
                 case Items::ItemID::ENDER_PEARL_ID:
                     numPearls++;
                     if(numPearls == 2){

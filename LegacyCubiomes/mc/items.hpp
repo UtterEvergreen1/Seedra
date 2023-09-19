@@ -1,151 +1,15 @@
 #pragma once
 
-#include <string>
-#include <utility>
-
-#include "itemTypes.hpp"
-#include "itemID.hpp"
-#include "LegacyCubiomes/cubiomes/processor.hpp"
-
-#ifdef INCLUDE_QT
-#include <QDebug>
-#endif
+#include "LegacyCubiomes/mc/types/Item.hpp"
+#include "LegacyCubiomes/mc/types/Armor.hpp"
+#include "LegacyCubiomes/mc/types/Sword.hpp"
+#include "LegacyCubiomes/mc/types/Tool.hpp"
 
 
 namespace Items {
 
-    struct EntityEquipmentSlot {
-        static constexpr int NONE = -1;
-        static constexpr int FEET = 0;
-        static constexpr int LEGS = 1;
-        static constexpr int CHEST = 2;
-        static constexpr int HEAD = 3;
-    };
-
-    class Item {
-    public:
-        const int id{};
-        const int dataTag{};
-        const ItemType type{};
-        const std::string name;
-        const std::string identifier;
-        const bool damageable{};
-        const int armorType = EntityEquipmentSlot::NONE;
-        const int enchantability = 1;
-
-        Item() = default;
-
-        // could probably be refactored but idc
-
-        // 6 args
-        Item(int id, char dataTag, ItemType type, std::string itemName, std::string identifier, bool damageable = false)
-                : id(id), dataTag(dataTag), type(type), name(std::move(itemName)), identifier(std::move(identifier)), damageable(damageable) {
-        }
-
-        Item(int id, char dataTag, ItemType type, std::string itemName, std::string identifier, bool damageable, int enchantability)
-                : id(id), dataTag(dataTag), type(type), name(std::move(itemName)), identifier(std::move(identifier)), damageable(damageable), enchantability(enchantability) {
-        }
-
-        Item(int id, char dataTag, ItemType type, std::string itemName, std::string identifier, int enchantability)
-                : id(id), dataTag(dataTag), type(type), name(std::move(itemName)), identifier(std::move(identifier)), enchantability(enchantability) {
-        }
-
-        Item(int id, char dataTag, ItemType type, std::string itemName, std::string identifier, int armorType, int enchantability)
-                : id(id), dataTag(dataTag), type(type), name(std::move(itemName)), identifier(std::move(identifier)), armorType(armorType), enchantability(enchantability) {
-        }
-
-        // 4 args
-        Item(int id, char dataTag, std::string itemName, std::string  identifier)
-                : id(id), dataTag(dataTag), type(ItemType::ItemBlock), name(std::move(itemName)), identifier(std::move(identifier)) {
-        }
-
-        explicit inline operator int() const {
-            return id;
-        }
-
-        ND inline std::string getName() const {
-            return name;
-        }
-
-        ND inline bool isDamageable() const {
-            return damageable;
-        }
-
-        ND inline int getCost() const {
-            return enchantability;
-        }
-
-        friend std::ostream& operator<<(std::ostream& out, MU const Item &item) {
-            out << item.name;
-            return out;
-        }
-
-        #ifdef INCLUDE_QT
-        friend QDebug operator<<(QDebug out, MU const Item &item) {
-            out.nospace() << item.name;
-            return out.nospace();
-        }
-        #endif
-
-    };
-
-    class Armor : public Item {
-    public:
-
-        // represents enchantability for a specific material
-        struct Materials {
-            static constexpr int LEATHER = 15;
-            static constexpr int CHAIN = 12;
-            static constexpr int IRON = 9;
-            static constexpr int GOLD = 25;
-            static constexpr int DIAMOND = 1;
-        };
-
-        Armor(int id, std::string itemName, std::string ident, int slot, int materialEnchantability)
-                : Item(id, 0, ItemArmor, std::move(itemName), std::move(ident), slot, materialEnchantability) {
-        }
-    };
-
-    class Tool : public Item {
-    public:
-
-        // represents enchantability for a specific material
-        struct Materials {
-            static constexpr int WOOD = 15;
-            static constexpr int STONE = 5;
-            static constexpr int IRON = 14;
-            static constexpr int DIAMOND = 10;
-            static constexpr int GOLD = 22;
-        };
-
-        Tool(int id, std::string itemName, std::string ident, int materialEnchantability)
-                : Item(id, 0, ItemTool, std::move(itemName), std::move(ident), true, materialEnchantability) {
-        }
-    };
-
-    class Sword : public Item {
-    public:
-
-        // represents enchantability for a specific material
-        struct MU Materials {
-            MU static constexpr int WOOD = 15;
-            MU static constexpr int STONE = 5;
-            MU static constexpr int IRON = 14;
-            MU static constexpr int DIAMOND = 10;
-            MU static constexpr int GOLD = 22;
-        };
-
-        Sword(int id, std::string itemName, std::string ident, int materialEnchantability)
-                : Item(id, 0, ItemSword, std::move(itemName), std::move(ident), true, materialEnchantability) {
-        }
-    };
-
-
-
-
-
-
     MU const Item AIR = Item(0, 0, "Air", "minecraft:air");
+
     MU const Item STONE = Item(1, 0, "Stone", "minecraft:stone");
     MU const Item GRANITE = Item(1, 1, "Granite", "minecraft:stone");
     MU const Item POLISHED_GRANITE = Item(1, 2, "Polished Granite", "minecraft:stone");
@@ -155,6 +19,7 @@ namespace Items {
     MU const Item POLISHED_ANDESITE = Item(1, 6, "Polished Andesite", "minecraft:stone");
 
     MU const Item GRASS = Item(2, 0, "Grass", "minecraft:grass");
+
     MU const Item DIRT = Item(3, 0, "Dirt", "minecraft:dirt");
     MU const Item COARSE_DIRT = Item(3, 1, "Coarse Dirt", "minecraft:dirt");
     MU const Item PODZOL = Item(3, 2, "Podzol", "minecraft:dirt");
@@ -686,68 +551,68 @@ namespace Items {
 
     MU const Item IRON_SWORD = Item(267, 0, ItemSword, "Iron Sword", "minecraft:iron_sword", true);
 
-    MU const Sword WOODEN_SWORD = Sword(268, "Wooden Sword", "minecraft:wooden_sword", Tool::Materials::WOOD);
-    MU const Tool WOODEN_SHOVEL = Tool(269, "Wooden Shovel", "minecraft:wooden_shovel", Tool::Materials::WOOD);
-    MU const Tool WOODEN_PICKAXE = Tool(270, "Wooden Pickaxe", "minecraft:wooden_pickaxe", Tool::Materials::WOOD);
-    MU const Tool WOODEN_AXE = Tool(271, "Wooden Axe", "minecraft:wooden_axe", Tool::Materials::WOOD);
+    MU const Sword WOODEN_SWORD = Sword(268, "Wooden Sword", "minecraft:wooden_sword", ToolMaterials::WOOD);
+    MU const Tool WOODEN_SHOVEL = Tool(269, "Wooden Shovel", "minecraft:wooden_shovel", ToolMaterials::WOOD);
+    MU const Tool WOODEN_PICKAXE = Tool(270, "Wooden Pickaxe", "minecraft:wooden_pickaxe", ToolMaterials::WOOD);
+    MU const Tool WOODEN_AXE = Tool(271, "Wooden Axe", "minecraft:wooden_axe", ToolMaterials::WOOD);
 
-    MU const Sword STONE_SWORD = Sword(272, "Stone Sword", "minecraft:stone_sword", Tool::Materials::STONE);
-    MU const Tool STONE_SHOVEL = Tool(273, "Stone Shovel", "minecraft:stone_shovel", Tool::Materials::STONE);
-    MU const Tool STONE_PICKAXE = Tool(274, "Stone Pickaxe", "minecraft:stone_pickaxe", Tool::Materials::STONE);
-    MU const Tool STONE_AXE = Tool(275, "Stone Axe", "minecraft:stone_axe", Tool::Materials::STONE);
+    MU const Sword STONE_SWORD = Sword(272, "Stone Sword", "minecraft:stone_sword", ToolMaterials::STONE);
+    MU const Tool STONE_SHOVEL = Tool(273, "Stone Shovel", "minecraft:stone_shovel", ToolMaterials::STONE);
+    MU const Tool STONE_PICKAXE = Tool(274, "Stone Pickaxe", "minecraft:stone_pickaxe", ToolMaterials::STONE);
+    MU const Tool STONE_AXE = Tool(275, "Stone Axe", "minecraft:stone_axe", ToolMaterials::STONE);
 
-    MU const Sword DIAMOND_SWORD = Sword(276, "Diamond Sword", "minecraft:diamond_sword", Tool::Materials::DIAMOND);
-    MU const Tool DIAMOND_SHOVEL = Tool(277, "Diamond Shovel", "minecraft:diamond_shovel", Tool::Materials::DIAMOND);
-    MU const Tool DIAMOND_PICKAXE = Tool(278, "Diamond Pickaxe", "minecraft:diamond_pickaxe", Tool::Materials::DIAMOND);
-    MU const Tool DIAMOND_AXE = Tool(279, "Diamond Axe", "minecraft:diamond_axe", Tool::Materials::DIAMOND);
+    MU const Sword DIAMOND_SWORD = Sword(276, "Diamond Sword", "minecraft:diamond_sword", ToolMaterials::DIAMOND);
+    MU const Tool DIAMOND_SHOVEL = Tool(277, "Diamond Shovel", "minecraft:diamond_shovel", ToolMaterials::DIAMOND);
+    MU const Tool DIAMOND_PICKAXE = Tool(278, "Diamond Pickaxe", "minecraft:diamond_pickaxe", ToolMaterials::DIAMOND);
+    MU const Tool DIAMOND_AXE = Tool(279, "Diamond Axe", "minecraft:diamond_axe", ToolMaterials::DIAMOND);
 
     MU const Item STICK = Item(280, 0, "Stick", "minecraft:stick");
     MU const Item BOWL = Item(281, 0, "Bowl", "minecraft:bowl");
     MU const Item MUSHROOM_STEW = Item(282, 0, "Mushroom Stew", "minecraft:mushroom_stew");
 
-    MU const Sword GOLDEN_SWORD = Sword(283, "Golden Sword", "minecraft:golden_sword", Tool::Materials::GOLD);
-    MU const Tool GOLDEN_SHOVEL = Tool(284, "Golden Shovel", "minecraft:golden_shovel", Tool::Materials::GOLD);
-    MU const Tool GOLDEN_PICKAXE = Tool(285, "Golden Pickaxe", "minecraft:golden_pickaxe", Tool::Materials::GOLD);
-    MU const Tool GOLDEN_AXE = Tool(286, "Golden Axe", "minecraft:golden_axe", Tool::Materials::GOLD);
+    MU const Sword GOLDEN_SWORD = Sword(283, "Golden Sword", "minecraft:golden_sword", ToolMaterials::GOLD);
+    MU const Tool GOLDEN_SHOVEL = Tool(284, "Golden Shovel", "minecraft:golden_shovel", ToolMaterials::GOLD);
+    MU const Tool GOLDEN_PICKAXE = Tool(285, "Golden Pickaxe", "minecraft:golden_pickaxe", ToolMaterials::GOLD);
+    MU const Tool GOLDEN_AXE = Tool(286, "Golden Axe", "minecraft:golden_axe", ToolMaterials::GOLD);
 
     MU const Item STRING = Item(287, 0, "String", "minecraft:string");
     MU const Item FEATHER = Item(288, 0, "Feather", "minecraft:feather");
     MU const Item GUNPOWDER = Item(289, 0, "Gunpowder", "minecraft:gunpowder");
 
-    MU const Tool WOODEN_HOE = Tool(290, "Wooden Hoe", "minecraft:wooden_hoe", Tool::Materials::WOOD);
-    MU const Tool STONE_HOE = Tool(291, "Stone Hoe", "minecraft:stone_hoe", Tool::Materials::STONE);
-    MU const Tool IRON_HOE = Tool(292, "Iron Hoe", "minecraft:iron_hoe", Tool::Materials::IRON);
-    MU const Tool DIAMOND_HOE = Tool(293, "Diamond Hoe", "minecraft:diamond_hoe", Tool::Materials::DIAMOND);
-    MU const Tool GOLDEN_HOE = Tool(294, "Golden Hoe", "minecraft:golden_hoe", Tool::Materials::GOLD);
+    MU const Tool WOODEN_HOE = Tool(290, "Wooden Hoe", "minecraft:wooden_hoe", ToolMaterials::WOOD);
+    MU const Tool STONE_HOE = Tool(291, "Stone Hoe", "minecraft:stone_hoe", ToolMaterials::STONE);
+    MU const Tool IRON_HOE = Tool(292, "Iron Hoe", "minecraft:iron_hoe", ToolMaterials::IRON);
+    MU const Tool DIAMOND_HOE = Tool(293, "Diamond Hoe", "minecraft:diamond_hoe", ToolMaterials::DIAMOND);
+    MU const Tool GOLDEN_HOE = Tool(294, "Golden Hoe", "minecraft:golden_hoe", ToolMaterials::GOLD);
 
     MU const Item WHEAT_SEEDS = Item(295, 0, "Wheat Seeds", "minecraft:wheat_seeds");
     MU const Item WHEAT = Item(296, 0, "Wheat", "minecraft:wheat");
     MU const Item BREAD = Item(297, 0, "Bread", "minecraft:bread");
 
-    MU const Armor LEATHER_HELMET = Armor(298, "Leather Helmet", "minecraft:leather_helmet", EntityEquipmentSlot::HEAD, Armor::Materials::LEATHER);
-    MU const Armor LEATHER_TUNIC = Armor(299, "Leather Tunic", "minecraft:leather_chestplate", EntityEquipmentSlot::CHEST, Armor::Materials::LEATHER);
-    MU const Armor LEATHER_PANTS = Armor(300, "Leather Pants", "minecraft:leather_leggings", EntityEquipmentSlot::LEGS, Armor::Materials::LEATHER);
-    MU const Armor LEATHER_BOOTS = Armor(301, "Leather Boots", "minecraft:leather_boots", EntityEquipmentSlot::FEET, Armor::Materials::LEATHER);
+    MU const Armor LEATHER_HELMET = Armor(298, "Leather Helmet", "minecraft:leather_helmet", EntityEquipmentSlot::HEAD, ArmorMaterials::LEATHER);
+    MU const Armor LEATHER_TUNIC = Armor(299, "Leather Tunic", "minecraft:leather_chestplate", EntityEquipmentSlot::CHEST, ArmorMaterials::LEATHER);
+    MU const Armor LEATHER_PANTS = Armor(300, "Leather Pants", "minecraft:leather_leggings", EntityEquipmentSlot::LEGS, ArmorMaterials::LEATHER);
+    MU const Armor LEATHER_BOOTS = Armor(301, "Leather Boots", "minecraft:leather_boots", EntityEquipmentSlot::FEET, ArmorMaterials::LEATHER);
 
-    MU const Armor CHAINMAIL_HELMET = Armor(302, "Chainmail Helmet", "minecraft:chainmail_helmet", EntityEquipmentSlot::HEAD, Armor::Materials::CHAIN);
-    MU const Armor CHAINMAIL_CHESTPLATE = Armor(303, "Chainmail Chestplate", "minecraft:chainmail_chestplate", EntityEquipmentSlot::CHEST, Armor::Materials::CHAIN);
-    MU const Armor CHAINMAIL_LEGGINGS = Armor(304, "Chainmail Leggings", "minecraft:chainmail_leggings", EntityEquipmentSlot::LEGS, Armor::Materials::CHAIN);
-    MU const Armor CHAINMAIL_BOOTS = Armor(305, "Chainmail Boots", "minecraft:chainmail_boots", EntityEquipmentSlot::FEET, Armor::Materials::CHAIN);
+    MU const Armor CHAINMAIL_HELMET = Armor(302, "Chainmail Helmet", "minecraft:chainmail_helmet", EntityEquipmentSlot::HEAD, ArmorMaterials::CHAIN);
+    MU const Armor CHAINMAIL_CHESTPLATE = Armor(303, "Chainmail Chestplate", "minecraft:chainmail_chestplate", EntityEquipmentSlot::CHEST, ArmorMaterials::CHAIN);
+    MU const Armor CHAINMAIL_LEGGINGS = Armor(304, "Chainmail Leggings", "minecraft:chainmail_leggings", EntityEquipmentSlot::LEGS, ArmorMaterials::CHAIN);
+    MU const Armor CHAINMAIL_BOOTS = Armor(305, "Chainmail Boots", "minecraft:chainmail_boots", EntityEquipmentSlot::FEET, ArmorMaterials::CHAIN);
 
-    MU const Armor IRON_HELMET = Armor(306, "Iron Helmet", "minecraft:iron_helmet", EntityEquipmentSlot::HEAD, Armor::Materials::IRON);
-    MU const Armor IRON_CHESTPLATE = Armor(307, "Iron Chestplate", "minecraft:iron_chestplate", EntityEquipmentSlot::CHEST, Armor::Materials::IRON);
-    MU const Armor IRON_LEGGINGS = Armor(308, "Iron Leggings", "minecraft:iron_leggings", EntityEquipmentSlot::LEGS, Armor::Materials::IRON);
-    MU const Armor IRON_BOOTS = Armor(309, "Iron Boots", "minecraft:iron_boots", EntityEquipmentSlot::FEET, Armor::Materials::IRON);
+    MU const Armor IRON_HELMET = Armor(306, "Iron Helmet", "minecraft:iron_helmet", EntityEquipmentSlot::HEAD, ArmorMaterials::IRON);
+    MU const Armor IRON_CHESTPLATE = Armor(307, "Iron Chestplate", "minecraft:iron_chestplate", EntityEquipmentSlot::CHEST, ArmorMaterials::IRON);
+    MU const Armor IRON_LEGGINGS = Armor(308, "Iron Leggings", "minecraft:iron_leggings", EntityEquipmentSlot::LEGS, ArmorMaterials::IRON);
+    MU const Armor IRON_BOOTS = Armor(309, "Iron Boots", "minecraft:iron_boots", EntityEquipmentSlot::FEET, ArmorMaterials::IRON);
 
-    MU const Armor DIAMOND_HELMET = Armor(310, "Diamond Helmet", "minecraft:diamond_helmet", EntityEquipmentSlot::HEAD, Armor::Materials::DIAMOND);
-    MU const Armor DIAMOND_CHESTPLATE = Armor(311, "Diamond Chestplate", "minecraft:diamond_chestplate", EntityEquipmentSlot::CHEST, Armor::Materials::DIAMOND);
-    MU const Armor DIAMOND_LEGGINGS = Armor(312, "Diamond Leggings", "minecraft:diamond_leggings", EntityEquipmentSlot::LEGS, Armor::Materials::DIAMOND);
-    MU const Armor DIAMOND_BOOTS = Armor(313, "Diamond Boots", "minecraft:diamond_boots", EntityEquipmentSlot::FEET, Armor::Materials::DIAMOND);
+    MU const Armor DIAMOND_HELMET = Armor(310, "Diamond Helmet", "minecraft:diamond_helmet", EntityEquipmentSlot::HEAD, ArmorMaterials::DIAMOND);
+    MU const Armor DIAMOND_CHESTPLATE = Armor(311, "Diamond Chestplate", "minecraft:diamond_chestplate", EntityEquipmentSlot::CHEST, ArmorMaterials::DIAMOND);
+    MU const Armor DIAMOND_LEGGINGS = Armor(312, "Diamond Leggings", "minecraft:diamond_leggings", EntityEquipmentSlot::LEGS, ArmorMaterials::DIAMOND);
+    MU const Armor DIAMOND_BOOTS = Armor(313, "Diamond Boots", "minecraft:diamond_boots", EntityEquipmentSlot::FEET, ArmorMaterials::DIAMOND);
 
-    MU const Armor GOLDEN_HELMET = Armor(314, "Golden Helmet", "minecraft:golden_helmet", EntityEquipmentSlot::HEAD, Armor::Materials::GOLD);
-    MU const Armor GOLDEN_CHESTPLATE = Armor(315, "Golden Chestplate", "minecraft:golden_chestplate", EntityEquipmentSlot::CHEST, Armor::Materials::GOLD);
-    MU const Armor GOLDEN_LEGGINGS = Armor(316, "Golden Leggings", "minecraft:golden_leggings", EntityEquipmentSlot::LEGS, Armor::Materials::GOLD);
-    MU const Armor GOLDEN_BOOTS = Armor(317, "Golden Boots", "minecraft:golden_boots", EntityEquipmentSlot::FEET, Armor::Materials::GOLD);
+    MU const Armor GOLDEN_HELMET = Armor(314, "Golden Helmet", "minecraft:golden_helmet", EntityEquipmentSlot::HEAD, ArmorMaterials::GOLD);
+    MU const Armor GOLDEN_CHESTPLATE = Armor(315, "Golden Chestplate", "minecraft:golden_chestplate", EntityEquipmentSlot::CHEST, ArmorMaterials::GOLD);
+    MU const Armor GOLDEN_LEGGINGS = Armor(316, "Golden Leggings", "minecraft:golden_leggings", EntityEquipmentSlot::LEGS, ArmorMaterials::GOLD);
+    MU const Armor GOLDEN_BOOTS = Armor(317, "Golden Boots", "minecraft:golden_boots", EntityEquipmentSlot::FEET, ArmorMaterials::GOLD);
 
     MU const Item FLINT = Item(318, 0, "Flint", "minecraft:flint");
     MU const Item RAW_PORKCHOP = Item(319, 0, "Raw Porkchop", "minecraft:porkchop");

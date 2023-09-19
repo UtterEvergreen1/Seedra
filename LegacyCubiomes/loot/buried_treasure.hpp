@@ -86,7 +86,7 @@ namespace loot_tables {
 
         for (int rollIndex = 0; rollIndex < rollCount; rollIndex++) {
             ItemStack result = lootTables[1].createLootRoll<false>(&lootSeed);
-            if (result.item->id == ItemID::CAKE_ID) {
+            if (result.item->getID() == ItemID::CAKE_ID) {
                 ++cakeCount;
             }
         }

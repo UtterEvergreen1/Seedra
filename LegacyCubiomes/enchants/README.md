@@ -16,8 +16,8 @@ these are the functions to use for enchanting:
 
 ```c++
 // EnchantmentHelper::EnchantWithLevels::
-static void apply(uint64_t *rng, ItemStack *stack, int min, int max, bool isBook, bool isTreasure);
-static void apply(uint64_t *rng, ItemStack *stack, int level, bool isBook, bool isTreasure);
+static void apply(uint64_t *rng, ItemStack *stack, int min, int max, bool isBook, bool allowTreasure);
+static void apply(uint64_t *rng, ItemStack *stack, int level, bool isBook, bool allowTreasure);
 // EnchantmentHelper::EnchantRandomly::
 static void apply(uint64_t *rng, ItemStack *stack);
 ```

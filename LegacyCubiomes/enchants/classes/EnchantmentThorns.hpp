@@ -18,7 +18,7 @@ public:
     }
 
     ND bool canApply(const Items::Item *item) const override {
-        return item->armorType == Items::ItemArmor || Enchantment::canApply(item);
+        return item->getArmorType() == Items::ItemArmor || Enchantment::canApply(item);
     }
 };
 

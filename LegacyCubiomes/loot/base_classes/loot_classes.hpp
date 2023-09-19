@@ -21,8 +21,7 @@
  * LootItem
  * UniformRoll
  * ItemEntry
- * InventoryPos
- * LootPool
+ * ItemStack
  * LootTable
  */
 
@@ -264,7 +263,6 @@ public:
             }
         }
     }
-
 
     friend std::ostream& operator<<(std::ostream& out, const Container &container) {
         int contents = (int)container.inventorySlots.size();

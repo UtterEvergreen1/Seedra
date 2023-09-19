@@ -18,7 +18,7 @@ public:
     }
 
     ND bool canApply(const Items::Item *item) const override {
-        return item->id == Items::SHEARS_ID || Enchantment::canApply(item);
+        return item->getID() == Items::SHEARS_ID || Enchantment::canApply(item);
     }
 };
 

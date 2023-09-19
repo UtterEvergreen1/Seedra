@@ -46,21 +46,21 @@ bool Enchantment::Type::All::canEnchantItem(const Items::Item *itemIn) const {
     return false;
 }
 
-bool      Enchantment::Type::Armor::canEnchantItem(const Items::Item *itemIn) const {return itemIn->type == Items::ItemType::ItemArmor;}
-bool  Enchantment::Type::ArmorFeet::canEnchantItem(const Items::Item *itemIn) const {return itemIn->armorType == Items::EntityEquipmentSlot::FEET;}
-bool  Enchantment::Type::ArmorLegs::canEnchantItem(const Items::Item *itemIn) const {return itemIn->armorType == Items::EntityEquipmentSlot::LEGS;}
-bool Enchantment::Type::ArmorChest::canEnchantItem(const Items::Item *itemIn) const {return itemIn->armorType == Items::EntityEquipmentSlot::CHEST;}
-bool  Enchantment::Type::ArmorHead::canEnchantItem(const Items::Item *itemIn) const {return itemIn->armorType == Items::EntityEquipmentSlot::HEAD;}
-bool     Enchantment::Type::Weapon::canEnchantItem(const Items::Item *itemIn) const {return itemIn->type == Items::ItemType::ItemSword;}
-bool     Enchantment::Type::Digger::canEnchantItem(const Items::Item *itemIn) const {return itemIn->type == Items::ItemType::ItemTool;}
-bool Enchantment::Type::FishingRod::canEnchantItem(const Items::Item *itemIn) const {return itemIn->type == Items::ItemType::ItemFishingRod;}
+bool      Enchantment::Type::Armor::canEnchantItem(const Items::Item *itemIn) const {return itemIn->getItemType() == Items::ItemType::ItemArmor;}
+bool  Enchantment::Type::ArmorFeet::canEnchantItem(const Items::Item *itemIn) const {return itemIn->getArmorType() == Items::EntityEquipmentSlot::FEET;}
+bool  Enchantment::Type::ArmorLegs::canEnchantItem(const Items::Item *itemIn) const {return itemIn->getArmorType() == Items::EntityEquipmentSlot::LEGS;}
+bool Enchantment::Type::ArmorChest::canEnchantItem(const Items::Item *itemIn) const {return itemIn->getArmorType() == Items::EntityEquipmentSlot::CHEST;}
+bool  Enchantment::Type::ArmorHead::canEnchantItem(const Items::Item *itemIn) const {return itemIn->getArmorType() == Items::EntityEquipmentSlot::HEAD;}
+bool     Enchantment::Type::Weapon::canEnchantItem(const Items::Item *itemIn) const {return itemIn->getItemType() == Items::ItemType::ItemSword;}
+bool     Enchantment::Type::Digger::canEnchantItem(const Items::Item *itemIn) const {return itemIn->getItemType() == Items::ItemType::ItemTool;}
+bool Enchantment::Type::FishingRod::canEnchantItem(const Items::Item *itemIn) const {return itemIn->getItemType() == Items::ItemType::ItemFishingRod;}
 bool  Enchantment::Type::Breakable::canEnchantItem(const Items::Item *itemIn) const {return itemIn->isDamageable();}
-bool        Enchantment::Type::Bow::canEnchantItem(const Items::Item *itemIn) const {return itemIn->type == Items::ItemType::ItemBow;}
+bool        Enchantment::Type::Bow::canEnchantItem(const Items::Item *itemIn) const {return itemIn->getItemType() == Items::ItemType::ItemBow;}
 
 bool Enchantment::Type::Wearable::canEnchantItem(const Items::Item *itemIn) const {
-    return itemIn->armorType != Items::EntityEquipmentSlot::NONE
-           || itemIn->type == Items::ItemSkull
-           || itemIn->type == Items::ItemElytra;
+    return itemIn->getArmorType() != Items::EntityEquipmentSlot::NONE
+           || itemIn->getItemType() == Items::ItemSkull
+           || itemIn->getItemType() == Items::ItemElytra;
 }
 
 const Enchantment::Type::All Enchantment::Type::ALL;
