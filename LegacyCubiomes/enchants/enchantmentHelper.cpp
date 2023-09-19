@@ -66,7 +66,7 @@ std::vector<EnchantmentData> EnchantmentHelper::buildEnchantmentList(uint64_t *r
     float f = (nextFloat(rng) + nextFloat(rng) - 1.0F) * 0.15F;
     level = clamp((int)std::round((float)level + (float)level * f), 1, std::numeric_limits<int>::max()); // 0x7fffffff
 
-    std::cout << "Level: " << level << std::endl;
+    // std::cout << "Level: " << level << std::endl;
 
     std::vector<EnchantmentData> list1 = getEnchantmentDataList<isBook, allowTreasure>(level, itemStackIn);
 

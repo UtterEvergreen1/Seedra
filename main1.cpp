@@ -92,7 +92,7 @@ int main(int argc, char* argv[]) {
     uint64_t  lootTableSeed = -5989332256310069151;
 
     Container loot;
-    /*
+
     const int ROLLS = 10000;
     auto start = getMilliseconds();
     for (int i = 0; i < 10000; i++) {
@@ -104,7 +104,7 @@ int main(int argc, char* argv[]) {
 
     auto diff = end - start;
     std::cout << "rolls: " << ROLLS << " | time: " << diff << "ms" << std::endl;
-    */
+
     lootTableSeed = -5989332256310069151;
     loot = getLootFromLootTableSeed<false>(&lootTableSeed);
     std::cout << std::endl << "Loot:" << loot << std::endl;

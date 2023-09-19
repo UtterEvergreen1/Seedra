@@ -35,8 +35,8 @@ void ELDataArray::addRandomItem(uint64_t *rng) {
 
     // get the rng weight
     int weight = nextInt(rng, theTotalWeight);
-    std::cout << "weight " << weight << std::endl;
-    std::cout << "total weight " << theTotalWeight << std::endl;
+    // std::cout << "weight " << weight << std::endl;
+    // std::cout << "total weight " << theTotalWeight << std::endl;
 
     // get the enchantment
     for (int enchIndex = 0; enchIndex < totalEnchants; enchIndex++) {

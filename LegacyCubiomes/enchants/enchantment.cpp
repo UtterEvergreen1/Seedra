@@ -84,7 +84,7 @@ int Enchantment::getMinCost(int enchantmentLevel) {
     return 1 + enchantmentLevel * 10;
 }
 int Enchantment::getMaxCost(int enchantmentLevel) {
-    return this->getMinCost(enchantmentLevel) + 5;
+    return 6+ enchantmentLevel * 10;
 }
 
 bool Enchantment::canApplyTogether(const Enchantment *enchantment) const {
