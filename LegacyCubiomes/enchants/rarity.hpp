@@ -13,8 +13,8 @@ enum class Value {
 
 class Rarity {
 private:
-    Value value;
-    int weight;
+    const Value value = Value::NONE;
+    const int weight = 0;
 public:
     Rarity() = default;
 

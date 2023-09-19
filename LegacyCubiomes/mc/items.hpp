@@ -59,19 +59,19 @@ namespace Items {
                 : id(id), dataTag(dataTag), type(ItemType::ItemBlock), name(std::move(itemName)), identifier(std::move(identifier)) {
         }
 
-        explicit operator int() const {
+        explicit inline operator int() const {
             return id;
         }
 
-        ND std::string getName() const {
+        ND inline std::string getName() const {
             return name;
         }
 
-        ND bool isDamageable() const {
+        ND inline bool isDamageable() const {
             return damageable;
         }
 
-        ND int getCost() const {
+        ND inline int getCost() const {
             return enchantability;
         }
 

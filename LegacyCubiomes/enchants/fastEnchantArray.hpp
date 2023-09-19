@@ -14,7 +14,7 @@ private:
 public:
     IndexArray() = default;
     inline void clear() {
-        std::fill(indexes, indexes + ITEM_COUNT, 0);
+        indexes[0] = 0;
         currentIndex = 0;
     }
 

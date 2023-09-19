@@ -93,9 +93,9 @@ int main(int argc, char* argv[]) {
 
     Container loot;
 
-    const int ROLLS = 10000;
+    const int ROLLS = 100000;
     auto start = getMilliseconds();
-    for (int i = 0; i < 10000; i++) {
+    for (int i = 0; i < ROLLS; i++) {
         setSeed(&lootTableSeed, lootTableSeed);
         loot = getLootFromLootTableSeed<false>(&lootTableSeed);
     }
