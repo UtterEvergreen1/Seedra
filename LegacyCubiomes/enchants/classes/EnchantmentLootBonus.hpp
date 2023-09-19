@@ -9,12 +9,12 @@ public:
     EnchantmentLootBonus(const std::string& name, const Rarity *rarity, const Type::Base* type) :
         Enchantment(name, rarity, type, EnumName::LOOT_BONUS, 3) {};
 
-    int getMinEnchantability(int enchantmentLevel) override {
+    int getMinCost(int enchantmentLevel) override {
         return 15 + (enchantmentLevel - 1) * 9;
     }
 
-    int getMaxEnchantability(int enchantmentLevel) override {
-        return Enchantment::getMinEnchantability(enchantmentLevel) + 50;
+    int getMaxCost(int enchantmentLevel) override {
+        return Enchantment::getMinCost(enchantmentLevel) + 50;
     }
 
     ND bool canApplyTogether(const Enchantment *enchantment) const override {

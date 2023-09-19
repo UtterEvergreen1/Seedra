@@ -15,12 +15,12 @@ public:
     EnchantmentDamage(std::string name, const Rarity *rarity, int damage_type) :
         Enchantment(std::move(name), rarity, &Type::WEAPON, EnumName::DAMAGE, 5), damageType(damage_type) {};
 
-    int getMinEnchantability(int enchantmentLevel) override {
+    int getMinCost(int enchantmentLevel) override {
         return BASE_ENCHANTABILITY[this->damageType] + (enchantmentLevel - 1) * LEVEL_ENCHANTABILITY[this->damageType];
     }
 
-    int getMaxEnchantability(int enchantmentLevel) override {
-        return this->getMinEnchantability(enchantmentLevel) + THRESHOLD_ENCHANTABILITY[this->damageType];
+    int getMaxCost(int enchantmentLevel) override {
+        return this->getMinCost(enchantmentLevel) + THRESHOLD_ENCHANTABILITY[this->damageType];
     }
 
     ND bool canApplyTogether(const Enchantment *enchantment) const override {

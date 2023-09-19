@@ -9,12 +9,12 @@ public:
     EnchantmentFishingSpeed(std::string name, const Rarity *rarity) :
         Enchantment(std::move(name), rarity, &Type::FISHING_ROD, EnumName::FISHING_SPEED, 3) {};
 
-    int getMinEnchantability(int enchantmentLevel) override {
+    int getMinCost(int enchantmentLevel) override {
         return enchantmentLevel * 9 + 6;
     }
 
-    int getMaxEnchantability(int enchantmentLevel) override {
-        return Enchantment::getMinEnchantability(enchantmentLevel) + 50;
+    int getMaxCost(int enchantmentLevel) override {
+        return Enchantment::getMinCost(enchantmentLevel) + 50;
     }
 };
 

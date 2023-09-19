@@ -60,13 +60,13 @@ public:
 
     };
 
-    int getMinEnchantability(int enchantmentLevel) override {
+    int getMinCost(int enchantmentLevel) override {
         return protType->getMinimalEnchantability() +
                (enchantmentLevel - 1) * protType->getEnchantIncreasePerLevel();
     }
 
-    int getMaxEnchantability(int enchantmentLevel) override {
-        return getMinEnchantability(enchantmentLevel) +
+    int getMaxCost(int enchantmentLevel) override {
+        return getMinCost(enchantmentLevel) +
                protType->getEnchantIncreasePerLevel();
     }
 

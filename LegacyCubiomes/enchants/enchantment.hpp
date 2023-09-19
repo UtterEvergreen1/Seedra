@@ -5,10 +5,12 @@
 #include <map>
 #include <iostream>
 #include <unordered_map>
+#include <vector>
 
 #include "rarity.hpp"
 #include "LegacyCubiomes/mc/items.hpp"
-#include "LegacyCubiomes/utils/weightedRandom.hpp"
+
+// #include "LegacyCubiomes/utils/weightedRandom.hpp"
 
 
 class EnchantmentArrowDamage;
@@ -71,8 +73,8 @@ public:
     };
 
     enum EnumName {
-        PROTECTION,
         OXYGEN,
+        PROTECTION,
         WATER_WORKER,
         THORNS,
         WATER_WALKER,
@@ -119,8 +121,8 @@ public:
 
     ~Enchantment();
 
-    virtual int getMinEnchantability(int enchantmentLevel);
-    virtual int getMaxEnchantability(int enchantmentLevel);
+    virtual int getMinCost(int enchantmentLevel);
+    virtual int getMaxCost(int enchantmentLevel);
 
     ND virtual bool canApplyTogether(const Enchantment *enchantment) const;
     ND virtual bool canApply(const Items::Item *item) const;
@@ -134,22 +136,6 @@ private:
 };
 
 
-
-class EnchantmentData {
-public:
-    Enchantment* obj = nullptr;
-    int level = 0;
-
-    static std::string LEVEL_ROMAN[6];
-
-    EnchantmentData() = default;
-
-    EnchantmentData(Enchantment *enchantmentObj, int enchLevel) :
-              obj(enchantmentObj),
-              level(enchLevel) {}
-
-    ND std::string toString() const;
-};
 
 
 

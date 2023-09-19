@@ -71,7 +71,7 @@ namespace Items {
             return damageable;
         }
 
-        ND int getEnchantability() const {
+        ND int getCost() const {
             return enchantability;
         }
 

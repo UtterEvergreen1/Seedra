@@ -4,13 +4,11 @@
 #include <stdexcept>
 
 #include "LegacyCubiomes/cubiomes/rng.hpp"
-#include "LegacyCubiomes/enchants/enchantment.hpp"
-
-class EnchantmentData;
+#include "LegacyCubiomes/enchants/enchantmentData.hpp"
 
 class WeightedRandom {
 public:
-    /*
+
     class Item {
     public:
         int itemWeight{};
@@ -19,7 +17,7 @@ public:
         explicit Item(int itemWeightIn) : itemWeight(itemWeightIn) {}
 
     };
-     */
+
 
     static int getTotalWeight(const std::vector<EnchantmentData>& collection);
 
@@ -30,7 +28,6 @@ public:
     static EnchantmentData getRandomItem(uint64_t *rng, const std::vector<EnchantmentData>& collection);
 
 };
-
 
 
 

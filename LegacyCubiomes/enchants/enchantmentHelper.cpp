@@ -5,14 +5,16 @@
 //                              Enchant With Levels
 //==============================================================================
 
-void EnchantmentHelper::EnchantWithLevels::apply(uint64_t *rng, ItemStack *stack, int min, int max, bool isBook, bool isTreasure) {
+template<bool isBook, bool allowTreasure>
+void EnchantmentHelper::EnchantWithLevels::apply(uint64_t *rng, ItemStack *stack, int min, int max) {
     int rand = nextInt(rng, min, max);
-    EnchantmentHelper::addRandomEnchantment(rng, stack, rand, isBook, isTreasure);
+    EnchantmentHelper::addRandomEnchantment<isBook, allowTreasure>(rng, stack, rand);
 }
 
-void EnchantmentHelper::EnchantWithLevels::apply(uint64_t *rng, ItemStack *stack, int level, bool isBook, bool isTreasure) {
+template<bool isBook, bool allowTreasure>
+void EnchantmentHelper::EnchantWithLevels::apply(uint64_t *rng, ItemStack *stack, int level) {
     int rand = nextInt(rng, level, level);
-    EnchantmentHelper::addRandomEnchantment(rng, stack, level, isBook, isTreasure);
+    EnchantmentHelper::addRandomEnchantment<isBook, allowTreasure>(rng, stack, level);
 }
 
 
@@ -21,27 +23,27 @@ void EnchantmentHelper::EnchantWithLevels::apply(uint64_t *rng, ItemStack *stack
 //==============================================================================
 
 
+template<bool isBook>
 void EnchantmentHelper::EnchantRandomly::apply(uint64_t *rng, ItemStack *stack) {
-    Enchantment *enchantment;
+    Enchantment *enchantmentPointer;
 
     if (enchantments.empty()) {
-
         std::vector<Enchantment*> list;
-        for (auto enchantment1 : Enchantment::REGISTRY) {
-            if (stack->item == &Items::ENCHANTED_BOOK || enchantment1.second->canApply(stack->item)) {
-                list.emplace_back(enchantment1.second);
+        for (auto it : Enchantment::REGISTRY) {
+            if (stack->item == &Items::ENCHANTED_BOOK || it.second->canApply(stack->item)) {
+                list.emplace_back(it.second);
             }
         }
 
-        enchantment = (Enchantment*)list[nextInt(rng, (int)list.size())];
+        enchantmentPointer = list[nextInt(rng, (int)list.size())];
 
     } else {
-        enchantment = (Enchantment*)&enchantments[nextInt(rng, (int)enchantments.size())];
+        enchantmentPointer = &enchantments[nextInt(rng, (int)enchantments.size())];
     }
 
-    int i = nextInt(rng, enchantment->minLevel, enchantment->maxLevel);
+    int i = nextInt(rng, enchantmentPointer->minLevel, enchantmentPointer->maxLevel);
 
-    stack->addEnchantment(enchantment, i);
+    stack->addEnchantment(enchantmentPointer, i);
 
 }
 
@@ -49,13 +51,13 @@ void EnchantmentHelper::EnchantRandomly::apply(uint64_t *rng, ItemStack *stack) 
 //                              Enchantment Helpers
 //==============================================================================
 
-std::vector<EnchantmentData> EnchantmentHelper::buildEnchantmentList(uint64_t *rng, ItemStack *itemStackIn,
-                                                         int level, bool isBook, bool allowTreasure) {
+template<bool isBook, bool allowTreasure>
+std::vector<EnchantmentData> EnchantmentHelper::buildEnchantmentList(uint64_t *rng, ItemStack *itemStackIn, int level) {
     std::vector<EnchantmentData> list;
-    list.clear();
+    list.reserve(MAX_ENCHANT_LIST_SIZE);
 
-    const Item* item = itemStackIn->getItem();
-    int i = item->getEnchantability();
+    const Items::Item* item = itemStackIn->getItem();
+    int i = item->getCost();
 
     if (i == 0)
         return list;
@@ -64,9 +66,9 @@ std::vector<EnchantmentData> EnchantmentHelper::buildEnchantmentList(uint64_t *r
     float f = (nextFloat(rng) + nextFloat(rng) - 1.0F) * 0.15F;
     level = clamp((int)std::round((float)level + (float)level * f), 1, std::numeric_limits<int>::max()); // 0x7fffffff
 
-    // std::cout << "Level: " << level << std::endl;
+    std::cout << "Level: " << level << std::endl;
 
-    std::vector<EnchantmentData> list1 = getEnchantmentDataList(level, itemStackIn, isBook, allowTreasure);
+    std::vector<EnchantmentData> list1 = getEnchantmentDataList<isBook, allowTreasure>(level, itemStackIn);
 
     if (!list1.empty()) {
         EnchantmentData data = WeightedRandom::getRandomItem(rng, list1);
@@ -85,7 +87,7 @@ std::vector<EnchantmentData> EnchantmentHelper::buildEnchantmentList(uint64_t *r
 
 void EnchantmentHelper::removeIncompatible(std::vector<EnchantmentData>& enchDataList, EnchantmentData enchData) {
     for (auto it = enchDataList.begin(); it != enchDataList.end(); ) {
-        if (!enchData.obj->canApplyTogether(it->obj)) { // I HAVE NO CLUE WHAT FUNCTION THIS ACTUALLY IS
+        if (!enchData.obj->canApplyTogether(it->obj)) {
             it = enchDataList.erase(it);
         } else {
             ++it;
@@ -93,41 +95,36 @@ void EnchantmentHelper::removeIncompatible(std::vector<EnchantmentData>& enchDat
     }
 }
 
-void EnchantmentHelper::addRandomEnchantment(uint64_t *rng, ItemStack *itemStackIn, int level, bool isBook, bool allowTreasure) {
-    std::vector<EnchantmentData> enchantmentList = buildEnchantmentList(rng, itemStackIn, level, isBook, allowTreasure);
+template<bool isBook, bool allowTreasure>
+void EnchantmentHelper::addRandomEnchantment(uint64_t *const rng, ItemStack *const itemStackIn, int level) {
+    std::vector<EnchantmentData> enchantmentList = buildEnchantmentList<isBook, allowTreasure>(rng, itemStackIn, level);
 
-    for (EnchantmentData enchantmentData : enchantmentList) {
+    for (const auto &enchantmentData : enchantmentList) {
         itemStackIn->addEnchantment(enchantmentData.obj, enchantmentData.level);
     }
 }
 
 
 
-
-std::vector<EnchantmentData> EnchantmentHelper::getEnchantmentDataList(int enchantmentLevelIn, ItemStack *ItemStackIn, bool isBook, bool allowTreasure) {
+template<bool isBook, bool allowTreasure>
+std::vector<EnchantmentData> EnchantmentHelper::getEnchantmentDataList(int enchantmentLevelIn, ItemStack *ItemStackIn) {
     std::vector<EnchantmentData> list;
     Enchantment *pointer = nullptr;
-    bool allowed;
-
-    isBook = ItemStackIn->getItem()->id == ENCHANTED_BOOK.id;
 
     for (auto & it : Enchantment::REGISTRY) {
         pointer = it.second;
 
-        allowed = ((!pointer->isTreasure || allowTreasure)
-                && (pointer->type->canEnchantItem(ItemStackIn->getItem()) || isBook));
+        if (pointer->isTreasure && !allowTreasure) continue;
+        if (!pointer->type->canEnchantItem(ItemStackIn->getItem()) && !isBook) continue;
 
-        if (allowed) {
-            for (int i = pointer->maxLevel; i > pointer->minLevel - 1; --i) { // minLevel can just be replaced with 1
+        for (int i = pointer->maxLevel; i > 0; --i) { // maxLevel to minLevel - 1 (always 0)
 
-                if (enchantmentLevelIn >= pointer->getMinEnchantability(i)
-                    && enchantmentLevelIn <= pointer->getMaxEnchantability(i)) {
-                    list.emplace_back(pointer, i);
-                    break;
-                }
+            if (enchantmentLevelIn >= pointer->getMinCost(i)
+                && enchantmentLevelIn <= pointer->getMaxCost(i)) {
+                list.emplace_back(pointer, i);
+                break;
             }
         }
-
     }
 
     return list;
@@ -135,6 +132,9 @@ std::vector<EnchantmentData> EnchantmentHelper::getEnchantmentDataList(int encha
 
 
 
-
+template void EnchantmentHelper::EnchantWithLevels::apply<true, true>(uint64_t*, ItemStack*, int);
+template void EnchantmentHelper::EnchantWithLevels::apply<false, true>(uint64_t*, ItemStack*, int);
+template void EnchantmentHelper::EnchantWithLevels::apply<true, false>(uint64_t*, ItemStack*, int);
+template void EnchantmentHelper::EnchantWithLevels::apply<false, false>(uint64_t*, ItemStack*, int);
 
 

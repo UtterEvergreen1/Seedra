@@ -8,11 +8,11 @@ public:
     EnchantmentBindingCurse(const std::string& name, const Rarity *rarity) :
         Enchantment(name, rarity, &Type::WEARABLE, EnumName::BINDING_CURSE, 1, true) {};
 
-    int getMinEnchantability(int enchantmentLevel) override {
+    int getMinCost(int enchantmentLevel) override {
         return 25;
     }
 
-    int getMaxEnchantability(int enchantmentLevel) override {
+    int getMaxCost(int enchantmentLevel) override {
         return 50;
     }
 

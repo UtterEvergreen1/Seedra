@@ -2,6 +2,8 @@
 
 #include "base_classes/loot.hpp"
 
+#include "LegacyCubiomes/enchants/enchantmentHelperBook.hpp"
+
 using namespace Items;
 
 namespace loot_tables {
@@ -45,7 +47,7 @@ namespace loot_tables {
                 ItemStack result = table.createLootRoll<false>(lootTableSeed);
 
                 if EXPECT_FALSE(result.item == &Items::ENCHANTED_BOOK) {
-                    EnchantmentHelper::EnchantWithLevels::apply(lootTableSeed, &result, 30, true, true);
+                    EnchantmentHelperBook::EnchantWithLevels::apply(lootTableSeed, &result, 30);
                 }
 
                 chestContents.push_back(result);

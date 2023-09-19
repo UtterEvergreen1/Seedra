@@ -1,21 +1,22 @@
 
-#include "LegacyCubiomes/cubiomes/generator.hpp"
-#include "LegacyCubiomes/structures/structure_generation/stronghold_generator/StrongholdGenerator.hpp"
+#include <iostream>
+#include <vector>
+#include "LegacyCubiomes/structures/structure_generation/stronghold_generator/GenStronghold.hpp"
 #include "LegacyCubiomes/loot/base_classes/loot_classes.hpp"
+#include "LegacyCubiomes/enchants/enchantmentHelper.hpp"
+#include "LegacyCubiomes/enchants/enchantmentHelperBook.hpp"
+#include "LegacyCubiomes/loot/setup.hpp"
+
+
 // #include "LegacyCubiomes/loot/buried_treasure.hpp"
-
+#include "LegacyCubiomes/cubiomes/generator.hpp"
 // #include "LegacyCubiomes/loot/stronghold_corridor.hpp"
-
 #include "LegacyCubiomes/structures/structure_placement/DynamicStructures.hpp"
 #include "LegacyCubiomes/chunk_generator/RavineGenerator.hpp"
 #include "LegacyCubiomes/chunk_generator/ChunkGenerator.hpp"
 
-#include "LegacyCubiomes/enchants/enchantmentHelper.hpp"
-#include "LegacyCubiomes/loot/setup.hpp"
 
 
-#include <iostream>
-#include <vector>
 
 using stronghold_generator::StrongholdGenerator;
 
@@ -27,16 +28,21 @@ Container getLootFromLootTableSeed(uint64_t* lootTableSeed) {
     int rollIndex;
     std::vector<ItemStack> chestContents;
     setSeed(lootTableSeed, *lootTableSeed);
-
+    int count = 0;
     // generate loot
-    for(const LootTable& table : loot_tables::StrongholdCorridor<false>::lootTables){
+    for(const LootTable& table : loot_tables::StrongholdLibrary::lootTables){
         rollCount = LootTable::getInt<false>(lootTableSeed, table.min, table.max);
         for (rollIndex = 0; rollIndex < rollCount; rollIndex++) {
             ItemStack result = table.createLootRoll<false>(lootTableSeed);
 
             if EXPECT_FALSE(result.item == &Items::ENCHANTED_BOOK) {
-                std::cout << "\nENCHANTED BOOK" << std::endl;
-                EnchantmentHelper::EnchantWithLevels::apply(lootTableSeed, &result, 30, true, true);
+                // std::cout << "\nBook " << count << std::endl;
+                count += 1;
+                if (false) {
+                    EnchantmentHelper::EnchantWithLevels::apply<true, true>(lootTableSeed, &result, 30);
+                } else {
+                    EnchantmentHelperBook::EnchantWithLevels::apply(lootTableSeed, &result, 30);
+                }
             }
 
             chestContents.push_back(result);
@@ -52,19 +58,20 @@ Container getLootFromLootTableSeed(uint64_t* lootTableSeed) {
 }
 
 
-#include "LegacyCubiomes/loot/setup.hpp"
 
-#include "LegacyCubiomes/enchants/enchantment.hpp"
 
 
 int main(int argc, char* argv[]) {
     // Biome::registerBiomes();
     Enchantment::registerEnchantments();
 
+    EnchantmentHelperBook::BOOK_LEVEL_TABLE.setup();
+
     // Generator g = Generator(LCEVERSION::WIIU_LATEST, BIOMESCALE::SMALL);
     // g.applySeed(DIMENSIONS::OVERWORLD, 12349);
 
-    // std::cout << Pos2D(-161, 207).toChunkPos() << std::endl;
+    std::cout << Pos2D(-114, 181).toChunkPos() << std::endl;
+    // std::cout << Pos2D(1, 148).toChunkPos() << std::endl;
     /*
      -7254631889086558805 / (12348)(wiiu) two enchanted books
      -5989332256310069151 / (12348)(ps3)
@@ -81,30 +88,47 @@ int main(int argc, char* argv[]) {
     // Container loot = loot_tables::StrongholdCorridor<false>::getLootFromLootTableSeed<false>(lootTableSeed);
     // std::cout << std::endl << "Loot:" << loot << std::endl;
 
-    // loot_tables::StrongholdLibrary::setup();
-    // uint64_t  lootTableSeed = -5989332256310069151;
-    // Container loot = getLootFromLootTableSeed<false>(&lootTableSeed);
-    // std::cout << std::endl << "Loot:" << loot << std::endl;
-    loot_tables::StrongholdCorridor<false>::setup();
     loot_tables::StrongholdLibrary::setup();
     uint64_t  lootTableSeed = -5989332256310069151;
-    Container loot = loot_tables::StrongholdLibrary::getLootFromLootTableSeed<false>(&lootTableSeed);
+
+    Container loot;
+    /*
+    const int ROLLS = 10000;
+    auto start = getMilliseconds();
+    for (int i = 0; i < 10000; i++) {
+        setSeed(&lootTableSeed, lootTableSeed);
+        loot = getLootFromLootTableSeed<false>(&lootTableSeed);
+    }
+
+    auto end = getMilliseconds();
+
+    auto diff = end - start;
+    std::cout << "rolls: " << ROLLS << " | time: " << diff << "ms" << std::endl;
+    */
+    lootTableSeed = -5989332256310069151;
+    loot = getLootFromLootTableSeed<false>(&lootTableSeed);
     std::cout << std::endl << "Loot:" << loot << std::endl;
 
+    int x = 0;
+    std::cin >> x;
+    // wiiu
+    // loot_tables::StrongholdCorridor<false>::setup();
+    // loot_tables::StrongholdLibrary::setup();
+    // uint64_t  lootTableSeed = -5989332256310069151;
+    // Container loot = loot_tables::StrongholdLibrary
+    //         ::getLootFromLootTableSeed<false>(&lootTableSeed);
+    // std::cout << std::endl << "Loot:" << loot << std::endl;
 
-
-    /*
-    std::cout << "Enchant List" << std::endl;
-    int count;
-    for (auto ench = Enchantment::REGISTRY.rbegin(); ench != Enchantment::REGISTRY.rend(); ++ench) {
-        count += ench->second->rarity->getWeight();
-        std::cout << count << " " << ench->second->name << std::endl;
-    }
-     */
-
-
+    // ps3
+    // loot_tables::StrongholdLibrary::setup();
+    // uint64_t  lootTableSeed = 3076128080566098038;
+    // Container loot = loot_tables::StrongholdLibrary
+    // ::getLootFromLootTableSeed<true>(&lootTableSeed);
+    // std::cout << std::endl << "Loot:" << loot << std::endl;
 
 }
+
+
 
 // Pos2D chunkPos = g.getStronghold();
 // auto stronghold = StrongholdGenerator();

@@ -14,8 +14,7 @@
 #include "LegacyCubiomes/mc/items.hpp"
 #include "LegacyCubiomes/cubiomes/rng.hpp"
 #include "LegacyCubiomes/enchants/enchantment.hpp"
-
-using namespace Items;
+#include "LegacyCubiomes/enchants/enchantmentData.hpp"
 
 /**
  * Classes in this file:
@@ -28,14 +27,14 @@ using namespace Items;
  */
 
 
+
 class LootItem {
 public:
-    const Item* item;
+    const Items::Item* item;
     int weight;
     LootItem() : item(nullptr), weight(0) {}
-    LootItem(const Item* item, int weight) : item(item), weight(weight) {}
+    LootItem(const Items::Item* item, int weight) : item(item), weight(weight) {}
 };
-
 
 
 class UniformRoll {
@@ -47,71 +46,50 @@ public:
 };
 
 
-class ItemEntry : public LootItem, public UniformRoll
-{
+class ItemEntry : public LootItem, public UniformRoll {
 public:
     ItemEntry() = default;
-    ItemEntry(const Item* item, int weight) : LootItem(item, weight), UniformRoll(1, 1) {}
-    ItemEntry(const Item* item, int weight, int min, int max) : LootItem(item, weight), UniformRoll(min, max) {}
+    ItemEntry(const Items::Item* item, int weight) : LootItem(item, weight), UniformRoll(1, 1) {}
+    ItemEntry(const Items::Item* item, int weight, int min, int max) : LootItem(item, weight), UniformRoll(min, max) {}
 };
 
 
-class ItemStack
-{
+class ItemStack {
 public:
-    const Item* item;
+    const Items::Item* item;
     int stackSize{};
     std::vector<EnchantmentData> enchantments;
 
-    // for now
-    // std::vector<std::pair<const Enchantment*, int>> enchantments;
-
     ItemStack() : item(nullptr), stackSize(0) {}
-    explicit ItemStack(const Item* item) : item(item), stackSize(0) {}
-    ItemStack(const Item* item, int stackSize) : item(item), stackSize(stackSize) {}
+    explicit ItemStack(const Items::Item* item) : item(item), stackSize(0) {}
+    ItemStack(const Items::Item* item, int stackSize) : item(item), stackSize(stackSize) {}
 
-    ItemStack splitStack(int amount) {
-        int splitCount = std::min(amount, this->stackSize);
-        ItemStack splitItem(this->item, splitCount);
-        this->stackSize -= splitCount;
-        return splitItem;
-    }
+    ItemStack splitStack(int amount);
+    ND const Items::Item* getItem() const;
 
-    ND const Item* getItem() const {
-        return this->item;
-    }
-
-    void addEnchantment(Enchantment* enchantment, int level) {
-        enchantments.emplace_back(enchantment, level);
-    }
+    void addEnchantment(Enchantment* enchantment, int level);
+    void addEnchantmentData(EnchantmentData* enchantmentData);
 
     friend std::ostream& operator<<(std::ostream& out, const ItemStack &itemStack) {
-        // prints the name
         if (itemStack.stackSize > 1) {
             out << itemStack.item->getName() << " (" << itemStack.stackSize << ")";
-        }
-        else {
+        } else {
             out << itemStack.item->getName();
         }
-        // [prints the enchantments
         if (!itemStack.enchantments.empty()) {
             out << " [";
             for (size_t i = 0; i < itemStack.enchantments.size(); ++i) {
                 out << itemStack.enchantments[i].toString();
-                if (i < itemStack.enchantments.size() - 1) {
+                if (i < itemStack.enchantments.size() - 1)
                     out << ", ";
-                }
             }
             out << "]";
         }
-
-
-
         return out;
     }
 
     #ifdef INCLUDE_QT
-    friend QDebug operator<<(QDebug out, const ItemStack &itemStack) {
+    friend QDebug ItemStack::operator<<(QDebug out, const ItemStack &itemStack) {
         if (itemStack.stackSize > 1) {
             out.nospace() << *(itemStack.itemEntry) << " (" << itemStack.stackSize << ")";
         }
@@ -134,31 +112,26 @@ public:
     int maxItemsPossible{};
 
     LootTable() = default;
-    LootTable(const std::vector<ItemEntry>& items, int amount, int totalWeight) :
-        UniformRoll(amount, amount), items(items), totalWeight(totalWeight) {
+
+    LootTable(const std::vector<ItemEntry> &items, int amount, int totalWeight) :
+            UniformRoll(amount, amount), items(items), totalWeight(totalWeight) {
         computeCumulativeWeights();
     }
-    LootTable(const std::vector<ItemEntry>& items, int min, int max, int totalWeight) :
-        UniformRoll(min, max), items(items), totalWeight(totalWeight) {
+
+    LootTable(const std::vector<ItemEntry> &items, int min, int max, int totalWeight) :
+            UniformRoll(min, max), items(items), totalWeight(totalWeight) {
         computeCumulativeWeights();
     }
 
     template<bool legacy>
-    static int getInt(uint64_t* random, int minimum, int maximum) {
+    static int getInt(uint64_t *random, int minimum, int maximum) {
         if constexpr (legacy)
             return nextInt(random, maximum - minimum + 1) + minimum;
         else
             return minimum >= maximum ? minimum : (nextInt(random, maximum - minimum + 1) + minimum);
     }
 
-    void computeCumulativeWeights() {
-        cumulativeWeights.resize(items.size());
-        int sum = 0;
-        for (size_t i = 0; i < items.size(); ++i) {
-            sum += items[i].weight;
-            cumulativeWeights[i] = sum;
-        }
-    }
+    void computeCumulativeWeights();
 
     /**
      * Uses a custom binary search and cumulative weights to find the items.
@@ -167,10 +140,10 @@ public:
      * @return
      */
     template<bool legacy>
-    ItemStack createLootRoll(uint64_t* rng) const {
+    ItemStack createLootRoll(uint64_t *rng) const {
         int randomWeight = nextInt(rng, totalWeight);
         size_t index, low, high;
-        for (low = 0, high = cumulativeWeights.size(); low < high; ) {
+        for (low = 0, high = cumulativeWeights.size(); low < high;) {
             size_t mid = (low + high) / 2;
             if (cumulativeWeights[mid] > randomWeight) {
                 high = mid;
@@ -179,11 +152,12 @@ public:
             }
         }
         index = low;
-        const ItemEntry& selectedItem = items[index];
+        const ItemEntry &selectedItem = items[index];
         return {selectedItem.item, LootTable::getInt<legacy>(rng, selectedItem.min, selectedItem.max)};
     }
-
 };
+
+
 
 
 class Container {
@@ -222,8 +196,7 @@ public:
      * @param items
      * @param rng
      */
-    void shuffleIntoContainer(std::vector<ItemStack>& items, uint64_t rng)
-    {
+    void shuffleIntoContainer(std::vector<ItemStack>& items, uint64_t rng) {
         // pre-allocate here
         int itemIndex;
         int splitAmount;
@@ -253,7 +226,7 @@ public:
 
         numSlots -= items.size();
         while(numSlots > 0 && !stackableItems.empty())
-        //while (numSlots > static_cast<int>(items.size() + stackableItems.size()) && !stackableItems.empty())
+            //while (numSlots > static_cast<int>(items.size() + stackableItems.size()) && !stackableItems.empty())
         {
             itemIndex = LootTable::getInt<false>(&rngState, 0, static_cast<int>(stackableItems.size()) - 1);
             ItemStack originalStack = stackableItems[itemIndex];

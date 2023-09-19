@@ -10,7 +10,7 @@ namespace loot_tables {
         static void setup();
 
         template <bool shuffle>
-        static Container getLoot(int64_t worldSeed, int chunkX, int chunkZ);
+        Container getLoot(int64_t worldSeed, int chunkX, int chunkZ);
         static Container getLootLegacy(int64_t worldSeed, int chunkX, int chunkZ);
     };
 

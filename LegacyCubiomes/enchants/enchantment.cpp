@@ -80,11 +80,11 @@ std::vector<const Enchantment::Type::Base*> Enchantment::Type::ALL_ITERABLE = {}
 
 std::map<int, Enchantment*> Enchantment::REGISTRY = {};
 
-int Enchantment::getMinEnchantability(int enchantmentLevel) {
+int Enchantment::getMinCost(int enchantmentLevel) {
     return 1 + enchantmentLevel * 10;
 }
-int Enchantment::getMaxEnchantability(int enchantmentLevel) {
-    return this->getMinEnchantability(enchantmentLevel) + 5;
+int Enchantment::getMaxCost(int enchantmentLevel) {
+    return this->getMinCost(enchantmentLevel) + 5;
 }
 
 bool Enchantment::canApplyTogether(const Enchantment *enchantment) const {
@@ -94,11 +94,6 @@ bool Enchantment::canApplyTogether(const Enchantment *enchantment) const {
 bool Enchantment::canApply(const Items::Item *item) const {
     return this->type->canEnchantItem(item);
 }
-
-void Enchantment::registerEnchantment(int id, Enchantment* enchantment) {
-    REGISTRY.emplace(id, enchantment);
-}
-
 
 void Enchantment::initializeTypeIterable() {
     Type::ALL_ITERABLE = {
@@ -115,8 +110,12 @@ void Enchantment::initializeTypeIterable() {
             &Type::BOW,
             &Type::WEARABLE
     };
-
 }
+
+void Enchantment::registerEnchantment(int id, Enchantment* enchantment) {
+    REGISTRY.emplace(id, enchantment);
+}
+
 
 
 void Enchantment::registerEnchantments() {
@@ -152,6 +151,8 @@ void Enchantment::registerEnchantments() {
     registerEnchantment(26, new EnchantmentProtection(       "Fire Protection",      &Rarities::UNCOMMON, 1));
     registerEnchantment(27, new EnchantmentArrowDamage(     "Power",                &Rarities::COMMON));
     registerEnchantment(28, new EnchantmentProtection(       "Protection",           &Rarities::COMMON, 0));
+
+
     // 80 impaling      UNCOMMON
     // 81 riptide       RARE
     // 82 loyalty       COMMON
@@ -165,10 +166,10 @@ void Enchantment::registerEnchantments() {
 
     registerEnchantment(5, new EnchantmentOxygen(           "Respiration",          &Rarities::RARE));
     registerEnchantment(6, new EnchantmentWaterWorker(      "Aqua Affinity",        &Rarities::RARE));
-    registerEnchantment(7, new EnchantmentThorns(           "Thorns",               &Rarities::VERY_RARE));
+    registerEnchantment(7, new EnchantmentThorns(           "Thorns",               &Rarities::EPIC));
     registerEnchantment(8, new EnchantmentWaterWalker(      "Depth Strider",        &Rarities::RARE));
     registerEnchantment(9, new EnchantmentFrostWalker(      "Frost Walker",         &Rarities::RARE));
-    registerEnchantment(10, new EnchantmentBindingCurse(    "Curse Of Binding",     &Rarities::VERY_RARE));
+    registerEnchantment(10, new EnchantmentBindingCurse(    "Curse Of Binding",     &Rarities::EPIC));
 
     registerEnchantment(16, new EnchantmentDamage(          "Sharpness",            &Rarities::COMMON, 0));
     registerEnchantment(17, new EnchantmentDamage(          "Smite",                &Rarities::UNCOMMON, 1));
@@ -180,17 +181,17 @@ void Enchantment::registerEnchantments() {
     registerEnchantment(22, new EnchantmentSweepingEdge(    "sweeping",             &Rarities::RARE));
     #endif
     registerEnchantment(32, new EnchantmentDigging(         "Efficiency",           &Rarities::COMMON));
-    registerEnchantment(33, new EnchantmentUntouching(      "Silk Touch",           &Rarities::VERY_RARE));
+    registerEnchantment(33, new EnchantmentUntouching(      "Silk Touch",           &Rarities::EPIC));
     registerEnchantment(34, new EnchantmentDurability(      "Unbreaking",           &Rarities::UNCOMMON));
     registerEnchantment(35, new EnchantmentLootBonus(       "fortune",              &Rarities::RARE, &Type::DIGGER));
     registerEnchantment(48, new EnchantmentArrowDamage(     "Power",                &Rarities::COMMON));
     registerEnchantment(49, new EnchantmentArrowKnockback(  "Punch",                &Rarities::UNCOMMON));
     registerEnchantment(50, new EnchantmentArrowFire(       "Flame",                &Rarities::RARE));
-    registerEnchantment(51, new EnchantmentArrowInfinite(   "Infinity",             &Rarities::VERY_RARE));
+    registerEnchantment(51, new EnchantmentArrowInfinite(   "Infinity",             &Rarities::EPIC));
     registerEnchantment(61, new EnchantmentLootBonus(       "Luck of the Sea",      &Rarities::RARE, &Type::FISHING_ROD));
     registerEnchantment(62, new EnchantmentFishingSpeed(    "Lure",                 &Rarities::RARE));
     registerEnchantment(70, new EnchantmentMending(         "Mending",              &Rarities::RARE));
-    registerEnchantment(71, new EnchantmentVanishingCurse(  "Curse of Vanishing",   &Rarities::VERY_RARE));
+    registerEnchantment(71, new EnchantmentVanishingCurse(  "Curse of Vanishing",   &Rarities::EPIC));
     // 80 impaling      UNCOMMON
     // 81 riptide       RARE
     // 82 loyalty       COMMON
@@ -198,20 +199,6 @@ void Enchantment::registerEnchantments() {
     #endif
 
 }
-
-std::string EnchantmentData::LEVEL_ROMAN[6] = {"", "", "II", "III", "IV", "V"};
-
-
-
-std::string EnchantmentData::toString() const {
-    if (obj == nullptr)
-        return "NULLPTR";
-    if (level < 2)
-        return obj->name;
-    return obj->name + " " + LEVEL_ROMAN[level];
-}
-
-
 
 
 

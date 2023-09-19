@@ -10,12 +10,12 @@ public:
         Enchantment(std::move(name), rarity, &Type::WEAPON, EnumName::FIRE_ASPECT, 2) {
     };
 
-    int getMinEnchantability(int enchantmentLevel) override {
+    int getMinCost(int enchantmentLevel) override {
         return enchantmentLevel * 20 - 10;
     }
 
-    int getMaxEnchantability(int enchantmentLevel) override {
-        return Enchantment::getMinEnchantability(enchantmentLevel) + 50;
+    int getMaxCost(int enchantmentLevel) override {
+        return Enchantment::getMinCost(enchantmentLevel) + 50;
     }
 };
 

@@ -9,12 +9,12 @@ public:
     EnchantmentUntouching(std::string name, const Rarity *rarity) :
             Enchantment(std::move(name), rarity, &Type::DIGGER, EnumName::UNTOUCHING, 1) {};
 
-    int getMinEnchantability(int enchantmentLevel) override {
+    int getMinCost(int enchantmentLevel) override {
         return 15;
     }
 
-    int getMaxEnchantability(int enchantmentLevel) override {
-        return Enchantment::getMinEnchantability(enchantmentLevel) + 50;
+    int getMaxCost(int enchantmentLevel) override {
+        return Enchantment::getMinCost(enchantmentLevel) + 50;
     }
 
     ND bool canApplyTogether(const Enchantment *enchantment) const override {

@@ -10,12 +10,12 @@ public:
         Enchantment(name, rarity, &Type::BOW, EnumName::ARROW_DAMAGE, 5) {
     };
 
-    int getMinEnchantability(int enchantmentLevel) override {
+    int getMinCost(int enchantmentLevel) override {
         return enchantmentLevel * 10 - 9;
     }
 
-    int getMaxEnchantability(int enchantmentLevel) override {
-        return this->getMinEnchantability(enchantmentLevel) + 15;
+    int getMaxCost(int enchantmentLevel) override {
+        return this->getMinCost(enchantmentLevel) + 15;
     }
 };
 
