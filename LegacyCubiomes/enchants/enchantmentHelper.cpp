@@ -31,19 +31,14 @@ template<bool isBook>
 void EnchantmentHelper::EnchantRandomly::apply(uint64_t *rng, ItemStack *stack) {
     Enchantment *enchantmentPointer;
 
-    if (enchantments.empty()) {
-        std::vector<Enchantment*> list;
-        for (auto it : Enchantment::REGISTRY) {
-            if (stack->item == &Items::ENCHANTED_BOOK || it.second->canApply(stack->item)) {
-                list.emplace_back(it.second);
-            }
+    std::vector<Enchantment*> list;
+    for (auto it : Enchantment::REGISTRY) {
+        if (stack->item == &Items::ENCHANTED_BOOK || it.second->canApply(stack->item)) {
+            list.emplace_back(it.second);
         }
-
-        enchantmentPointer = list[nextInt(rng, (int)list.size())];
-
-    } else {
-        enchantmentPointer = &enchantments[nextInt(rng, (int)enchantments.size())];
     }
+
+    enchantmentPointer = list[nextInt(rng, (int)list.size())];
 
     int i = nextInt(rng, enchantmentPointer->minLevel, enchantmentPointer->maxLevel);
 
@@ -134,7 +129,8 @@ std::vector<EnchantmentData> EnchantmentHelper::getEnchantmentDataList(int encha
     return list;
 }
 
-
+template void EnchantmentHelper::EnchantRandomly::apply<true>(uint64_t*, ItemStack*);
+template void EnchantmentHelper::EnchantRandomly::apply<false>(uint64_t*, ItemStack*);
 
 template void EnchantmentHelper::EnchantWithLevels::apply<true, true>(uint64_t*, ItemStack*, int);
 template void EnchantmentHelper::EnchantWithLevels::apply<false, true>(uint64_t*, ItemStack*, int);

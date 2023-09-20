@@ -4,6 +4,7 @@
 #include "LegacyCubiomes/mc/types/Armor.hpp"
 #include "LegacyCubiomes/mc/types/Sword.hpp"
 #include "LegacyCubiomes/mc/types/Tool.hpp"
+#include "LegacyCubiomes/mc/types/Skull.hpp"
 
 
 namespace Items {
@@ -697,7 +698,15 @@ namespace Items {
 
     MU const Item REDSTONE_REPEATER = Item(356, 0, "Redstone Repeater", "minecraft:repeater");
     MU const Item COOKIE = Item(357, 0, "Cookie", "minecraft:cookie");
+
     MU const Item MAP = Item(358, 0, "Map", "minecraft:filled_map");
+    MU const Item LOCATOR_MAP = Item(358, 2, "Locator Map", "minecraft:filled_map");
+    MU const Item OCEAN_EXPLORER_MAP = Item(358, 3, "Ocean Explorer Map", "minecraft:filled_map");
+    MU const Item WOODLAND_EXPLORER_MAP = Item(358, 4, "Woodland Explorer Map", "minecraft:filled_map");
+    MU const Item TREASURE_MAP = Item(358, 5, "Treasure Map", "minecraft:filled_map");
+    MU const Item LOCKED_MAP = Item(358, 6, "Locked Map", "minecraft:filled_map");
+
+
     MU const Item SHEARS = Item(359, 0, ItemTool, "Shears", "minecraft:shears", true);
     MU const Item MELON = Item(360, 0, "Melon", "minecraft:melon");
     MU const Item PUMPKIN_SEEDS = Item(361, 0, "Pumpkin Seeds", "minecraft:pumpkin_seeds");
@@ -779,12 +788,12 @@ namespace Items {
     MU const Item EMPTY_MAP = Item(395, 0, "Empty Map", "minecraft:map");
     MU const Item GOLDEN_CARROT = Item(396, 0, "Golden Carrot", "minecraft:golden_carrot");
 
-    MU const Item SKELETON_SKULL = Item(397, 0, ItemSkull, "Skeleton Skull", "minecraft:skull");
-    MU const Item WITHER_SKELETON_SKULL = Item(397, 1, ItemSkull, "Wither Skeleton Skull", "minecraft:skull");
-    MU const Item ZOMBIE_HEAD = Item(397, 2, ItemSkull, "Zombie Head", "minecraft:skull");
-    MU const Item PLAYER_HEAD = Item(397, 3, ItemSkull, "Player Head", "minecraft:skull");
-    MU const Item CREEPER_HEAD = Item(397, 4, ItemSkull, "Creeper Head", "minecraft:skull");
-    MU const Item DRAGON_HEAD = Item(397, 5, ItemSkull, "Dragon Head", "minecraft:skull");
+    MU const Skull SKELETON_SKULL = Skull(397, 0, "Skeleton Skull", "minecraft:skull");
+    MU const Skull WITHER_SKELETON_SKULL = Skull(397, 1, "Wither Skeleton Skull", "minecraft:skull");
+    MU const Skull ZOMBIE_HEAD = Skull(397, 2, "Zombie Head", "minecraft:skull");
+    MU const Skull PLAYER_HEAD = Skull(397, 3, "Player Head", "minecraft:skull");
+    MU const Skull CREEPER_HEAD = Skull(397, 4, "Creeper Head", "minecraft:skull");
+    MU const Skull DRAGON_HEAD = Skull(397, 5, "Dragon Head", "minecraft:skull");
 
     MU const Item CARROT_ON_A_STICK = Item(398, 0, "Carrot on a Stick", "minecraft:carrot_on_a_stick");
     MU const Item NETHER_STAR = Item(399, 0, "Nether Star", "minecraft:nether_star");

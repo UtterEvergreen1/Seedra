@@ -25,19 +25,19 @@ namespace Items {
 
     public:
         Item() = default;
-        Item(int id, char dataTag, ItemType type, std::string itemName, std::string identifier,
+        Item(int id, int dataTag, ItemType type, std::string itemName, std::string identifier,
              bool damageable, int armorType, int enchantability)
                 : id(id), dataTag(dataTag), type(type), name(std::move(itemName)), identifier(std::move(identifier)),
                   damageable(damageable), armorType(armorType), enchantability(enchantability) {}
-        Item(int id, char dataTag, ItemType type, std::string itemName, std::string identifier, bool damageable = false)
+        Item(int id, int dataTag, ItemType type, std::string itemName, std::string identifier, bool damageable = false)
                 : Item(id, dataTag, type, std::move(itemName), std::move(identifier), damageable, EntityEquipmentSlot::NONE, 1) {}
-        Item(int id, char dataTag, ItemType type, std::string itemName, std::string identifier, bool damageable, int enchantability)
+        Item(int id, int dataTag, ItemType type, std::string itemName, std::string identifier, bool damageable, int enchantability)
                 : Item(id, dataTag, type, std::move(itemName), std::move(identifier), damageable, EntityEquipmentSlot::NONE, enchantability) {}
-        Item(int id, char dataTag, ItemType type, std::string itemName, std::string identifier, int enchantability)
+        Item(int id, int dataTag, ItemType type, std::string itemName, std::string identifier, int enchantability)
                 : Item(id, dataTag, type, std::move(itemName), std::move(identifier), false, EntityEquipmentSlot::NONE, enchantability) {}
-        Item(int id, char dataTag, ItemType type, std::string itemName, std::string identifier, int armorType, int enchantability)
+        Item(int id, int dataTag, ItemType type, std::string itemName, std::string identifier, int armorType, int enchantability)
                 : Item(id, dataTag, type, std::move(itemName), std::move(identifier), false, armorType, enchantability) {}
-        Item(int id, char dataTag, std::string itemName, std::string identifier)
+        Item(int id, int dataTag, std::string itemName, std::string identifier)
                 : Item(id, dataTag, ItemType::ItemBlock, std::move(itemName), std::move(identifier), false, EntityEquipmentSlot::NONE, 1) {}
 
 

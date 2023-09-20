@@ -24,7 +24,7 @@ public:
         std::vector<Enchantment> enchantments;
 
         template<bool isBook>
-        void apply(uint64_t *rng, ItemStack *stack);
+        static void apply(uint64_t *rng, ItemStack *stack);
     };
 
     static void setup();
