@@ -112,13 +112,13 @@ public:
 
     LootTable() = default;
 
-    LootTable(const std::vector<ItemEntry> &items, int amount, int totalWeight) :
-            UniformRoll(amount, amount), items(items), totalWeight(totalWeight) {
+    LootTable(const std::vector<ItemEntry> &items, int amount) :
+            UniformRoll(amount, amount), items(items) {
         computeCumulativeWeights();
     }
 
-    LootTable(const std::vector<ItemEntry> &items, int min, int max, int totalWeight) :
-            UniformRoll(min, max), items(items), totalWeight(totalWeight) {
+    LootTable(const std::vector<ItemEntry> &items, int min, int max) :
+            UniformRoll(min, max), items(items) {
         computeCumulativeWeights();
     }
 
@@ -141,9 +141,10 @@ public:
     template<bool legacy>
     ItemStack createLootRoll(uint64_t *rng) const {
         int randomWeight = nextInt(rng, totalWeight);
+        std::cout << randomWeight << " " << totalWeight << std::endl;
 
         size_t high = cumulativeWeights.size();
-        size_t low = high >> 2;
+        size_t low = 0;
         while (low < high) {
             size_t mid = (low + high) >> 1;
             if (cumulativeWeights[mid] > randomWeight) {

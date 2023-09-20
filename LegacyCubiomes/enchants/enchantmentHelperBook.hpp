@@ -13,6 +13,7 @@ public:
     static EnchantedBookEnchantsLookupTable BOOK_LEVEL_TABLE;
 
     static void setup() {
+        Enchantment::registerEnchantments();
         BOOK_LEVEL_TABLE.setup();
     }
 

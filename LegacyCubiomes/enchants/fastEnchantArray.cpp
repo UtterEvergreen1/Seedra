@@ -37,7 +37,7 @@ void ELDataArray::addRandomItem(uint64_t *rng) {
     // if it's the full enchantment list,
     // use a faster function
     if (theTotalWeight == EnchantedBookEnchantsLookupTable::TOTAL_WEIGHT) {
-        size_t low = weight >> 2;
+        size_t low = 0;
         size_t high = 29;
         while (low < high) {
             size_t mid = (low + high) >> 1;

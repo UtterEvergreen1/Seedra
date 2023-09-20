@@ -22,11 +22,11 @@ namespace loot_tables {
         items1.emplace_back(&ROTTEN_FLESH, 10);
         items1.emplace_back(&EMERALD,      1);
         items1.emplace_back(&WHEAT,        10, 2, 3);
-        lootTables.emplace_back(items1,    2, 8, 63);
+        lootTables.emplace_back(items1,    2, 8);
 
         // table 2
         items2.emplace_back(&GOLDEN_APPLE, 1);
-        lootTables.emplace_back(items2,   1, 1);
+        lootTables.emplace_back(items2,   1);
 
         maxItemsPossible = 9;
     }

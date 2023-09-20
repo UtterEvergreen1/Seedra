@@ -49,11 +49,8 @@ namespace loot_tables {
         items.emplace_back(&GOLDEN_HORSE_ARMOR,  5);
         items.emplace_back(&DIAMOND_HORSE_ARMOR, 5);
         items.emplace_back(&ENCHANTED_BOOK,      6); // function=enchant_with_levels, levels=30, treasure=true
-        if constexpr (isAquatic) {
-            StrongholdCorridor<isAquatic>::lootTables.emplace_back(items, 2, 3, 511);
-        } else {
-            StrongholdCorridor<isAquatic>::lootTables.emplace_back(items, 2, 3, 496);
-        }
+
+        StrongholdCorridor<isAquatic>::lootTables.emplace_back(items, 2, 3);
         StrongholdCorridor<isAquatic>::maxItemsPossible = 3;
     }
 

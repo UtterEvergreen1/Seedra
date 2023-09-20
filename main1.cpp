@@ -69,17 +69,29 @@ Container getLootFromLootTableSeed(uint64_t* lootTableSeed) {
 
 
 int main(int argc, char* argv[]) {
+
+    std::cout << Pos2D(-121, -2).toChunkPos() << std::endl;
+    EnchantmentHelper::setup();
+    uint64_t  lootTableSeed = 12345;
+
+    loot_tables::EndCityTreasure
+    ::setup();
+    Container loot = loot_tables::EndCityTreasure
+            ::getLootFromLootTableSeed<true>(lootTableSeed);
+    std::cout << std::endl << "Loot:" << loot << std::endl;
+
+    int x = 0;
+    std::cin >> x;
+
+
+
+
+    /*
     // Biome::registerBiomes();
-    Enchantment::registerEnchantments();
-
-    // EnchantmentHelperBook::setup();
-
     // Generator g = Generator(LCEVERSION::WIIU_LATEST, BIOMESCALE::SMALL);
     // g.applySeed(DIMENSIONS::OVERWORLD, 12349);
 
-    std::cout << Pos2D(-114, 181).toChunkPos() << std::endl;
     // std::cout << Pos2D(1, 148).toChunkPos() << std::endl;
-    /*
      -7254631889086558805 / (12348)(wiiu) two enchanted books
      -5989332256310069151 / (12348)(ps3)
 
@@ -88,16 +100,15 @@ int main(int argc, char* argv[]) {
 
      -7139668156223608697 / books and paper / correct
      -4210146869381317490 / https://media.discordapp.net/attachments/753070027397398610/1149803061506752614/image.png
-     */
+
 
     // loot_tables::StrongholdCorridor<false>::setup();
     // uint64_t lootTableSeed = 1068107887565861472;
     // Container loot = loot_tables::StrongholdCorridor<false>::getLootFromLootTableSeed<false>(lootTableSeed);
     // std::cout << std::endl << "Loot:" << loot << std::endl;
 
-    loot_tables::SpawnBonusChest::setup();
 
-    /*
+
 
     const int ROLLS = 1000000;
     auto start = getMilliseconds();
@@ -111,12 +122,7 @@ int main(int argc, char* argv[]) {
     auto diff = end - start;
     std::cout << "rolls: " << ROLLS << " | time: " << diff << "ms" << std::endl;
     */
-    uint64_t  lootTableSeed = -3532906795931795829;
-    Container loot = loot_tables::SpawnBonusChest::getLootFromLootTableSeed<false>(&lootTableSeed);
-    std::cout << std::endl << "Loot:" << loot << std::endl;
 
-    int x = 0;
-    std::cin >> x;
     // wiiu
     // loot_tables::StrongholdCorridor<false>::setup();
     // loot_tables::StrongholdLibrary::setup();

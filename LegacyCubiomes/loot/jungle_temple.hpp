@@ -28,7 +28,7 @@ namespace loot_tables {
         items.emplace_back(&GOLDEN_HORSE_ARMOR,  1);
         items.emplace_back(&DIAMOND_HORSE_ARMOR, 1);
         items.emplace_back(&ENCHANTED_BOOK,      1); // function=enchant_with_levels, levels=30, treasure=true
-        lootTables.emplace_back(items,                2, 6, 73);
+        lootTables.emplace_back(items,                2, 6);
 
         maxItemsPossible = 6;
     }

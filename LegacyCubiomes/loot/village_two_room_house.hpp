@@ -22,7 +22,7 @@ namespace loot_tables {
         items.emplace_back(&WHEAT_SEEDS,         5, 2, 4);
         items.emplace_back(&BEETROOT,            5, 5, 8);
         items.emplace_back(&WOODEN_HOE,          1);
-        lootTables.emplace_back(items,                6, 8, 46);
+        lootTables.emplace_back(items,                6, 8);
 
         maxItemsPossible = 6;
     }

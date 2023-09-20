@@ -31,7 +31,7 @@ namespace loot_tables {
             items.emplace_back(&IRON_HORSE_ARMOR,     1);
             items.emplace_back(&GOLDEN_HORSE_ARMOR,   1);
             items.emplace_back(&DIAMOND_HORSE_ARMOR,  1);
-            lootTables.emplace_back(items,                 3, 8, 94);
+            lootTables.emplace_back(items,            3, 8);
 
             maxItemsPossible = 8;
         }

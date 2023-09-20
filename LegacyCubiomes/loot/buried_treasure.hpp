@@ -21,7 +21,7 @@ namespace loot_tables {
 
         // table 1
         items1.emplace_back(&HEART_OF_THE_SEA,           1);
-        lootTables.emplace_back(items1,                 1, 1, 1);
+        lootTables.emplace_back(items1,                 1, 1);
 
         // table 2
         items2.emplace_back(&PRISMARINE_CRYSTALS,        5, 1, 5);
@@ -42,7 +42,7 @@ namespace loot_tables {
         items2.emplace_back(&POTION_OF_WATER_BREATHING,  15);
         items2.emplace_back(&POTION_OF_REGENERATION,     10);
         items2.emplace_back(&CAKE,                       1);
-        lootTables.emplace_back(items2,                 5, 12, 204);
+        lootTables.emplace_back(items2,                 5, 12);
 
         maxItemsPossible = 13;
 

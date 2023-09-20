@@ -26,7 +26,7 @@ namespace loot_tables {
         items1.emplace_back(&IRON_HORSE_ARMOR,            15);
         items1.emplace_back(&DIAMOND_HORSE_ARMOR,         5);
         items1.emplace_back(&ENCHANTED_BOOK,              10); // function=enchant_randomly
-        lootTables.emplace_back(items1,                  1, 3, 127);
+        lootTables.emplace_back(items1,                  1, 3);
 
         // table 2
         items2.emplace_back(&IRON_INGOT,                  10, 1, 4);
@@ -39,14 +39,14 @@ namespace loot_tables {
         items2.emplace_back(&MELON_SEEDS,                 10, 2, 4);
         items2.emplace_back(&PUMPKIN_SEEDS,               10, 2, 4);
         items2.emplace_back(&BEETROOT_SEEDS,              10, 2, 4);
-        lootTables.emplace_back(items2,                  1, 4, 125);
+        lootTables.emplace_back(items2,                  1, 4);
 
         // table 3
         items3.emplace_back(&BONE,                        10, 1, 8);
         items3.emplace_back(&GUNPOWDER,                   10, 1, 8);
         items3.emplace_back(&ROTTEN_FLESH,                10, 1, 8);
         items3.emplace_back(&STRING,                      10, 1, 8);
-        lootTables.emplace_back(items3,                    3, 40);
+        lootTables.emplace_back(items3,                    3);
 
         maxItemsPossible = 10;
     }

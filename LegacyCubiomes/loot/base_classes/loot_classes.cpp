@@ -21,16 +21,23 @@ void ItemStack::addEnchantmentData(EnchantmentData* enchantmentData) {
 }
 
 
-
+void printVector(const std::vector<int>& vec) {
+    for (int value : vec) {
+        std::cout << value << " ";
+    }
+    std::cout << std::endl;
+}
 
 
 void LootTable::computeCumulativeWeights() {
     cumulativeWeights.resize(items.size());
     int sum = 0;
-    for (size_t i = 0; i < items.size(); ++i) {
+    for (int i = 0; i < items.size(); ++i) {
         sum += items[i].weight;
         cumulativeWeights[i] = sum;
     }
+    printVector(cumulativeWeights);
+    totalWeight = sum;
 }
 
 

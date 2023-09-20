@@ -27,6 +27,8 @@ public:
         void apply(uint64_t *rng, ItemStack *stack);
     };
 
+    static void setup();
+
 
 private:
     template<bool isBook, bool allowTreasure>

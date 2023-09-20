@@ -8,6 +8,8 @@ namespace loot_tables {
     class DesertTemple : public Loot<DesertTemple> {
     public:
         static void setup();
+        template<bool shuffle>
+        static Container getLootFromLootTableSeed(uint64_t lootTableSeed);
     };
 
     void DesertTemple::setup() {
@@ -30,7 +32,7 @@ namespace loot_tables {
         items1.emplace_back(&GOLDEN_APPLE,            20);
         items1.emplace_back(&ENCHANTED_GOLDEN_APPLE,  2);
         items1.emplace_back(&AIR,                     15);
-        lootTables.emplace_back(items1,              2, 4, 232);
+        lootTables.emplace_back(items1,              2, 4);
 
         // table 2
         items2.emplace_back(&BONE,                    10, 1, 8);
@@ -38,9 +40,35 @@ namespace loot_tables {
         items2.emplace_back(&ROTTEN_FLESH,            10, 1, 8);
         items2.emplace_back(&STRING,                  10, 1, 8);
         items2.emplace_back(&SAND,                    10, 1, 8);
-        lootTables.emplace_back(items2,              4, 50);
+        lootTables.emplace_back(items2,              4);
 
         maxItemsPossible = 8;
+    }
+
+    template<bool shuffle>
+    Container DesertTemple::getLootFromLootTableSeed(uint64_t lootTableSeed) {
+        int rollCount;
+        int rollIndex;
+        std::vector<ItemStack> chestContents;
+        setSeed(&lootTableSeed, lootTableSeed);
+
+        // generate loot
+        for (const LootTable& table : lootTables) {
+            rollCount = LootTable::getInt<false>(&lootTableSeed, table.min, table.max);
+            for (rollIndex = 0; rollIndex < rollCount; rollIndex++) {
+                ItemStack result = table.createLootRoll<false>(&lootTableSeed);
+                if EXPECT_FALSE(result.item == &Items::AIR)
+                    continue;
+                chestContents.push_back(result);
+            }
+        }
+        if constexpr (shuffle) {
+            Container container = Container(27);
+            container.shuffleIntoContainer(chestContents, lootTableSeed);
+            return container;
+        }
+        else
+            return  { 27, chestContents };
     }
 }
 

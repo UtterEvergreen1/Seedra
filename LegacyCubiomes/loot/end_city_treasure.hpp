@@ -5,7 +5,7 @@
 using namespace Items;
 
 namespace loot_tables {
-    class EndCityTreasure : Loot<EndCityTreasure> {
+    class EndCityTreasure : public Loot<EndCityTreasure> {
     public:
         static void setup();
     };
@@ -37,7 +37,7 @@ namespace loot_tables {
         items.emplace_back(&IRON_PICKAXE,           3); // enchant with levels, treasure=true, levels=20-39
         items.emplace_back(&IRON_SHOVEL,            3); // enchant with levels, treasure=true, levels=20-39
 
-        lootTables.emplace_back(items,2, 6);
+        lootTables.emplace_back(items, 2, 6);
 
         maxItemsPossible = 6;
     }

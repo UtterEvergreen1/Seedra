@@ -25,7 +25,7 @@ namespace loot_tables {
         items.emplace_back(&COMPASS,           1      );
         items.emplace_back(&ENCHANTED_BOOK,   10      );
         // function=enchant_with_levels, levels=30, treasure=true
-        lootTables.emplace_back(items, 2, 10, 52);
+        lootTables.emplace_back(items, 2, 10);
         #else
         items.emplace_back(&BOOK,             100, 1, 3);
         items.emplace_back(&PAPER,            100, 2, 7);
@@ -33,7 +33,7 @@ namespace loot_tables {
         items.emplace_back(&COMPASS,          5);
         items.emplace_back(&ENCHANTED_BOOK,   60);
         // function=enchant_with_levels, levels=30, treasure=true
-        lootTables.emplace_back(items,             2, 10, 270);
+        lootTables.emplace_back(items,             2, 10);
         #endif
 
         maxItemsPossible = 10;
@@ -53,7 +53,7 @@ namespace loot_tables {
                 ItemStack result = table.createLootRoll<false>(lootTableSeed);
 
                 if EXPECT_FALSE(result.item == &Items::ENCHANTED_BOOK) {
-                    EnchantmentHelperBook::EnchantWithLevels::apply(lootTableSeed, &result, 30);
+                    EnchantmentHelper::EnchantWithLevels::apply<true, true>(lootTableSeed, &result, 30);
                 }
 
                 chestContents.push_back(result);

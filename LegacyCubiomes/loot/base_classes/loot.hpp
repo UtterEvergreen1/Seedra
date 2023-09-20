@@ -59,7 +59,7 @@ namespace loot_tables {
             return getLootFromSeed<shuffle>(&seed);
     }
 
-    /* loot generation from seed */
+    /** loot generation from seed */
     template <typename T>
     template <bool shuffle>
     Container Loot<T>::getLootFromLootTableSeed(uint64_t lootTableSeed) {
