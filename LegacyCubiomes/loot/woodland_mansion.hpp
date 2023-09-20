@@ -16,16 +16,16 @@ namespace loot_tables {
         std::vector<ItemEntry> items3;
 
         // table 1
-        items1.emplace_back(&LEAD,                       100);
-        items1.emplace_back(&GOLDEN_APPLE,                75);
-        items1.emplace_back(&ENCHANTED_GOLDEN_APPLE,      10);
-        items1.emplace_back(&DISC_13,                     75);
-        items1.emplace_back(&DISC_CAT,                    75);
-        items1.emplace_back(&NAME_TAG,                   100);
-        items1.emplace_back(&CHAINMAIL_CHESTPLATE,        50);
-        items1.emplace_back(&DIAMOND_HOE,                 75);
-        items1.emplace_back(&DIAMOND_CHESTPLATE,          25);
-        items1.emplace_back(&ENCHANTED_BOOK,              60);
+        items1.emplace_back(&LEAD,                       100);// 100);
+        items1.emplace_back(&GOLDEN_APPLE,               75);//  75);
+        items1.emplace_back(&ENCHANTED_GOLDEN_APPLE,     10);//  10);
+        items1.emplace_back(&DISC_13,                    15);//  75);
+        items1.emplace_back(&DISC_CAT,                   15);//  75);
+        items1.emplace_back(&NAME_TAG,                   100);// 100);
+        items1.emplace_back(&CHAINMAIL_CHESTPLATE,       50);//  50);
+        items1.emplace_back(&DIAMOND_HOE,                75);//  75);
+        items1.emplace_back(&DIAMOND_CHESTPLATE,         25);//  25);
+        items1.emplace_back(&ENCHANTED_BOOK,             60);//  60);
         // function=enchant_randomly
         lootTables.emplace_back(items1,                  1, 3);
 
