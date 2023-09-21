@@ -26,9 +26,11 @@ namespace loot_tables {
         items.emplace_back(&BREAD,            75, 1, 3);
         items.emplace_back(&APPLE,            75, 1, 3);
         items.emplace_back(&IRON_PICKAXE,     5);
-        items.emplace_back(&ENCHANTED_BOOK,   6); // function=enchant_with_levels, levels=30, treasure=true
+        items.emplace_back(&ENCHANTED_BOOK,   6);
+        // function=enchant_with_levels, levels=30, treasure=true
         items.emplace_back(&INK_SACK,         75, 1, 3);
-        lootTables.emplace_back(items,             1, 4);
+
+        lootTables.emplace_back(items,            1, 4);
 
         maxItemsPossible = 4;
     }
@@ -46,7 +48,7 @@ namespace loot_tables {
             for (rollIndex = 0; rollIndex < rollCount; rollIndex++) {
                 ItemStack result = table.createLootRoll<false>(lootTableSeed);
 
-                if EXPECT_FALSE(result.item == &Items::ENCHANTED_BOOK) {
+                if EXPECT_FALSE(result.item->getID() == Items::ENCHANTED_BOOK_ID) {
                     EnchantmentHelperBook::EnchantWithLevels::apply(lootTableSeed, &result, 30);
                 }
 

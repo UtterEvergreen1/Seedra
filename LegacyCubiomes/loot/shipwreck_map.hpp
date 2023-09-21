@@ -14,7 +14,7 @@ namespace loot_tables {
         std::vector<ItemEntry> items1;
         std::vector<ItemEntry> items2;
 
-        items1.emplace_back(&TREASURE_MAP,  1);
+        items1.emplace_back(&NAUTILUS_CORE,  1); // TREASURE MAP in java?
         lootTables.emplace_back(items1,     1);
 
         items2.emplace_back(&COMPASS,     1);

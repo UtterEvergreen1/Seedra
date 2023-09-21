@@ -23,12 +23,14 @@ namespace loot_tables {
         items.emplace_back(&EMERALD,             10, 1, 3);
         items.emplace_back(&BONE,               100, 4, 6);
         items.emplace_back(&ROTTEN_FLESH,        80, 3, 7);
-        items.emplace_back(&SADDLE,              3);
-        items.emplace_back(&IRON_HORSE_ARMOR,    1);
-        items.emplace_back(&GOLDEN_HORSE_ARMOR,  1);
-        items.emplace_back(&DIAMOND_HORSE_ARMOR, 1);
-        items.emplace_back(&ENCHANTED_BOOK,      1); // function=enchant_with_levels, levels=30, treasure=true
-        lootTables.emplace_back(items,                2, 6);
+        items.emplace_back(&SADDLE,              15);
+        items.emplace_back(&IRON_HORSE_ARMOR,    5);
+        items.emplace_back(&GOLDEN_HORSE_ARMOR,  5);
+        items.emplace_back(&DIAMOND_HORSE_ARMOR, 5);
+        items.emplace_back(&ENCHANTED_BOOK,      6);
+        // function=enchant_with_levels, levels=30, treasure=true
+
+        lootTables.emplace_back(items,           2, 6);
 
         maxItemsPossible = 6;
     }
@@ -46,8 +48,8 @@ namespace loot_tables {
             for (rollIndex = 0; rollIndex < rollCount; rollIndex++) {
                 ItemStack result = table.createLootRoll<false>(lootTableSeed);
 
-                if EXPECT_FALSE(result.item == &Items::ENCHANTED_BOOK) {
-                    EnchantmentHelperBook::EnchantWithLevels::apply(lootTableSeed, &result, 30);
+                if EXPECT_FALSE(result.item->getID() == Items::ENCHANTED_BOOK_ID) {
+                    EnchantmentHelper::EnchantWithLevels::apply<true, true>(lootTableSeed, &result, 30);
                 }
 
                 chestContents.push_back(result);

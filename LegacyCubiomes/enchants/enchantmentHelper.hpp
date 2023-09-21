@@ -27,6 +27,7 @@ public:
         static void apply(uint64_t *rng, ItemStack *stack);
     };
 
+    template<bool isAquatic>
     static void setup();
 
 

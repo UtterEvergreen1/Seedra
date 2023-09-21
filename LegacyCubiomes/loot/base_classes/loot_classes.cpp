@@ -8,24 +8,19 @@ ItemStack ItemStack::splitStack(int amount) {
     return splitItem;
 }
 
+
 ND const Items::Item* ItemStack::getItem() const {
     return this->item;
 }
+
 
 void ItemStack::addEnchantment(Enchantment* enchantment, int level) {
     enchantments.emplace_back(enchantment, level);
 }
 
+
 void ItemStack::addEnchantmentData(EnchantmentData* enchantmentData) {
     enchantments.emplace_back(*enchantmentData);
-}
-
-
-void printVector(const std::vector<int>& vec) {
-    for (int value : vec) {
-        std::cout << value << " ";
-    }
-    std::cout << std::endl;
 }
 
 
@@ -36,8 +31,6 @@ void LootTable::computeCumulativeWeights() {
         sum += items[i].weight;
         cumulativeWeights[i] = sum;
     }
-    printVector(cumulativeWeights);
     totalWeight = sum;
 }
-
 

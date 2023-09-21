@@ -16,6 +16,7 @@ public:
         return 50;
     }
 
+    // checkCompatability
     ND bool canApplyTogether(const Enchantment *enchantment) const override {
         return enchantment->enumID != EnumName::ARROW_INFINITE
         && Enchantment::canApplyTogether(enchantment);

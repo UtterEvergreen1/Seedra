@@ -11,7 +11,8 @@ namespace Items {
         ItemFishingRod,
         ItemSkull,
         ItemSword,
-        ItemTool
+        ItemTool,
+        ItemTrident
     };
 
     struct EntityEquipmentSlot {

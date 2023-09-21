@@ -42,6 +42,7 @@ ELDataArray* EnchantmentHelperBook::buildEnchantmentList(uint64_t *rng, ItemStac
 
         for (int enchIndex = 0; enchIndex < enchants->totalEnchants; enchIndex++) {
             if (!back->obj->canApplyTogether(enchants->data[enchIndex].obj)) {
+                // std::cout << enchants->data[enchIndex].obj->name << " removed" << std::endl;
                 for (int i = 0; i < enchants->deletions.getIndex(); i++)
                     if (enchIndex == enchants->deletions.getValueAt(i))
                         goto END;

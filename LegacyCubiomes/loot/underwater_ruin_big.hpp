@@ -9,8 +9,8 @@ namespace loot_tables {
     public:
         static void setup();
 
-        // template<bool shuffle>
-        // static Container getLootFromLootTableSeed(uint64_t *lootTableSeed);
+        template<bool shuffle>
+        static Container getLootFromLootTableSeed(uint64_t *lootTableSeed);
     };
 
     void UnderwaterRuinBig::setup() {
@@ -28,29 +28,43 @@ namespace loot_tables {
         items2.emplace_back(&LEATHER_TUNIC, 1);
         items2.emplace_back(&GOLDEN_HELMET, 1);
         items2.emplace_back(&FISHING_ROD, 5); // enchant_randomly
-        items2.emplace_back(&TREASURE_MAP, 10); // zoom=1
+        items2.emplace_back(&TREASURE_MAP, 10); // IDK the weight
+        items2.emplace_back(&POISONOUS_POTATO, 10); // zoom=1
+
         lootTables.emplace_back(items2, 1);
 
         maxItemsPossible = 9;
 
     }
-    /*
+
+
     template<bool shuffle>
-    Container UnderwaterRuinBig::getLootFromLootTableSeed(uint64_t *lootTableSeed) {
+    Container UnderwaterRuinBig::getLootFromLootTableSeed(uint64_t* lootTableSeed) {
         int rollCount;
         int rollIndex;
         std::vector<ItemStack> chestContents;
         setSeed(lootTableSeed, *lootTableSeed);
 
-        // generate loot
-        for(const LootTable& table : loot_tables::SpawnBonusChest::lootTables){
+        for(const LootTable& table : lootTables){
             rollCount = LootTable::getInt<false>(lootTableSeed, table.min, table.max);
             for (rollIndex = 0; rollIndex < rollCount; rollIndex++) {
                 ItemStack result = table.createLootRoll<false>(lootTableSeed);
 
-                if (result.item == &ENCHANTED_BOOK) {
-                    EnchantmentHelper::EnchantRandomly::apply<true>(lootTableSeed, &result);
+                switch (result.item->getID()) {
+                    case (Items::ENCHANTED_BOOK_ID): {
+                        EnchantmentHelper::EnchantRandomly::apply<true>(lootTableSeed, &result);
+                        break;
+                    }
+                    case (Items::FISHING_ROD_ID): {
+                        EnchantmentHelper::EnchantRandomly::apply<false>(lootTableSeed, &result);
+                        break;
+                    }
+                    default:
+                        break;
+
+
                 }
+
 
                 chestContents.push_back(result);
             }
@@ -63,5 +77,5 @@ namespace loot_tables {
         else
             return  {27, chestContents};
     }
-     */
+
 }

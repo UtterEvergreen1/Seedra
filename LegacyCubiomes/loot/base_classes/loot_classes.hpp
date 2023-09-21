@@ -141,7 +141,7 @@ public:
     template<bool legacy>
     ItemStack createLootRoll(uint64_t *rng) const {
         int randomWeight = nextInt(rng, totalWeight);
-        std::cout << randomWeight << " " << totalWeight << std::endl;
+        // std::cout << randomWeight << " " << totalWeight << std::endl;
 
         size_t high = cumulativeWeights.size();
         size_t low = 0;
@@ -191,6 +191,25 @@ public:
             if (rangeLimit != randomIndex) {
                 std::swap(items[randomIndex], items[rangeLimit]);
             }
+        }
+    }
+
+    void printCombinedItems() {
+        std::map<const Items::Item*, int> itemCount;
+
+        for (const auto& itemStack : inventorySlots) {
+            if (itemStack.stackSize > 0) {
+                if (itemCount.find(itemStack.item) != itemCount.end()) {
+                    itemCount[itemStack.item] += itemStack.stackSize;
+                } else {
+                    itemCount[itemStack.item] = itemStack.stackSize;
+                }
+            }
+        }
+
+        for (const auto& pair : itemCount) {
+            ItemStack itemStack = ItemStack(pair.first, pair.second);
+            std::cout << itemStack << std::endl;
         }
     }
 

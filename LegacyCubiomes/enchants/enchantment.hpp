@@ -36,11 +36,19 @@ class EnchantmentUntouching;
 class EnchantmentVanishingCurse;
 class EnchantmentWaterWalker;
 class EnchantmentWaterWorker;
+class EnchantmentTridentChanneling;
+class EnchantmentTridentImpaler;
+class EnchantmentTridentLoyalty;
+class EnchantmentTridentRiptide;
 
 
 class Enchantment {
+private:
+    static bool isSetup;
 public:
     static std::map<int, Enchantment*> REGISTRY;
+    static constexpr int MAX_ENCHANTMENT_COUNT = 33;
+    static int count;
 
     class Type {
     public:
@@ -57,6 +65,7 @@ public:
         class Breakable  : public Base {public: bool canEnchantItem(const Items::Item *itemIn) const override;};
         class Bow        : public Base {public: bool canEnchantItem(const Items::Item *itemIn) const override;};
         class Wearable   : public Base {public: bool canEnchantItem(const Items::Item *itemIn) const override;};
+        class Trident    : public Base {public: bool canEnchantItem(const Items::Item *itemIn) const override;};
 
         static const All ALL;
         static const Armor ARMOR;
@@ -70,6 +79,7 @@ public:
         static const Breakable BREAKABLE;
         static const Bow BOW;
         static const Wearable WEARABLE;
+        static const Trident TRIDENT;
 
         static std::vector<const Base*> ALL_ITERABLE;
     };
@@ -99,6 +109,10 @@ public:
         FISHING_SPEED,
         MENDING,
         VANISHING_CURSE,
+        TRIDENT_IMPALER,
+        TRIDENT_RIPTIDE,
+        TRIDENT_LOYALTY,
+        TRIDENT_CHANNELING,
         NONE
     };
 
@@ -129,10 +143,11 @@ public:
     ND virtual bool canApplyTogether(const Enchantment *enchantment) const;
     ND virtual bool canApply(const Items::Item *item) const;
 
+    template<bool isAquatic>
     static void registerEnchantments();
 
 private:
-    static void registerEnchantment(int id, Enchantment* enchantment);
+    static void registerEnch(int *id, Enchantment* enchantment);
     static void initializeTypeIterable();
 
 };

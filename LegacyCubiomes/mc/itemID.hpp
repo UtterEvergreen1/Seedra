@@ -452,6 +452,7 @@ namespace Items {
         IRON_NUGGET_ID = 452,
         KNOWLEDGE_BOOK_ID = 453,
 
+        TRIDENT_ID = 546,
         HEART_OF_THE_SEA_ID = 571,
 
         DISC_13_ID = 2256,

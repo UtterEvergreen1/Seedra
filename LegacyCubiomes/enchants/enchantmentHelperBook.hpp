@@ -9,11 +9,11 @@
 
 class EnchantmentHelperBook {
 public:
-    static constexpr int MAX_ENCHANT_LIST_SIZE = 29;
     static EnchantedBookEnchantsLookupTable BOOK_LEVEL_TABLE;
 
+    template<bool isAquatic>
     static void setup() {
-        Enchantment::registerEnchantments();
+        // Enchantment::registerEnchantments<isAquatic>();
         BOOK_LEVEL_TABLE.setup();
     }
 

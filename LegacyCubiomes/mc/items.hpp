@@ -5,6 +5,7 @@
 #include "LegacyCubiomes/mc/types/Sword.hpp"
 #include "LegacyCubiomes/mc/types/Tool.hpp"
 #include "LegacyCubiomes/mc/types/Skull.hpp"
+#include "LegacyCubiomes/mc/types/Trident.hpp"
 
 
 namespace Items {
@@ -868,7 +869,12 @@ namespace Items {
     MU const Item IRON_NUGGET = Item(452, 0, "Iron Nugget", "minecraft:iron_nugget");
     MU const Item KNOWLEDGE_BOOK = Item(453, 0, "Knowledge Book", "minecraft:knowledge_book");
 
+    MU const Trident TRIDENT = Trident(546, 0, "Trident", "minecraft:trident");
+
     MU const Item HEART_OF_THE_SEA = Item(571, 0, "Heart of the Sea", "minecraft:heart_of_the_sea");
+    MU const Item NAUTILUS_CORE = HEART_OF_THE_SEA;
+
+
 
     MU const Item DISC_13 = Item(2256, 0, "13 Disc", "minecraft:record_13");
     MU const Item DISC_CAT = Item(2257, 0, "Cat Disc", "minecraft:record_cat");

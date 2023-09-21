@@ -8,6 +8,8 @@ namespace loot_tables {
     class EndCityTreasure : public Loot<EndCityTreasure> {
     public:
         static void setup();
+        template <bool shuffle>
+        static Container getLootFromLootTableSeed(uint64_t* lootTableSeed);
     };
 
     void EndCityTreasure::setup() {
@@ -22,6 +24,7 @@ namespace loot_tables {
         items.emplace_back(&IRON_HORSE_ARMOR,       1);
         items.emplace_back(&GOLDEN_HORSE_ARMOR,     1);
         items.emplace_back(&DIAMOND_HORSE_ARMOR,    1);
+
         items.emplace_back(&DIAMOND_SWORD,          3); // enchant with levels, treasure=true, levels=20-39
         items.emplace_back(&DIAMOND_BOOTS,          3); // enchant with levels, treasure=true, levels=20-39
         items.emplace_back(&DIAMOND_CHESTPLATE,     3); // enchant with levels, treasure=true, levels=20-39
@@ -29,6 +32,7 @@ namespace loot_tables {
         items.emplace_back(&DIAMOND_HELMET,         3); // enchant with levels, treasure=true, levels=20-39
         items.emplace_back(&DIAMOND_PICKAXE,        3); // enchant with levels, treasure=true, levels=20-39
         items.emplace_back(&DIAMOND_SHOVEL,         3); // enchant with levels, treasure=true, levels=20-39
+
         items.emplace_back(&IRON_SWORD,             3); // enchant with levels, treasure=true, levels=20-39
         items.emplace_back(&IRON_BOOTS,             3); // enchant with levels, treasure=true, levels=20-39
         items.emplace_back(&IRON_CHESTPLATE,        3); // enchant with levels, treasure=true, levels=20-39
@@ -40,6 +44,42 @@ namespace loot_tables {
         lootTables.emplace_back(items, 2, 6);
 
         maxItemsPossible = 6;
+    }
+
+    template <bool shuffle>
+    Container EndCityTreasure::getLootFromLootTableSeed(uint64_t* lootTableSeed) {
+        int rollCount;
+        int rollIndex;
+        std::vector<ItemStack> chestContents;
+        setSeed(lootTableSeed, *lootTableSeed);
+
+        // generate loot
+        for (const LootTable& table : lootTables) {
+            rollCount = LootTable::getInt<false>(lootTableSeed, table.min, table.max);
+            for (rollIndex = 0; rollIndex < rollCount; rollIndex++) {
+                ItemStack result = table.createLootRoll<false>(lootTableSeed);
+
+                switch (result.item->getItemType()) {
+                    case Items::ItemType::ItemTool:
+                    case Items::ItemType::ItemSword:
+                    case Items::ItemType::ItemArmor: {
+                        EnchantmentHelper::EnchantWithLevels::apply<false, true>(lootTableSeed, &result, 20, 39);
+                    }
+                    default:
+                        break;
+                }
+
+
+                chestContents.push_back(result);
+            }
+        }
+        if constexpr (shuffle) {
+            Container container = Container(27);
+            container.shuffleIntoContainer(chestContents, *lootTableSeed);
+            return container;
+        }
+        else
+            return  { 27, chestContents };
     }
 }
 

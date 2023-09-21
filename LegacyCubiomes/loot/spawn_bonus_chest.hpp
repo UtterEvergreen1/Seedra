@@ -74,7 +74,7 @@ namespace loot_tables {
 
 
     template<bool shuffle>
-    Container SpawnBonusChest::getLootFromLootTableSeed(uint64_t * lootTableSeed) {
+    Container SpawnBonusChest::getLootFromLootTableSeed(uint64_t* lootTableSeed) {
         int rollCount;
         int rollIndex;
         int rollType;

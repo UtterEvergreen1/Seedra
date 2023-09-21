@@ -35,23 +35,6 @@ Container getLootFromLootTableSeed(uint64_t* lootTableSeed) {
         for (rollIndex = 0; rollIndex < rollCount; rollIndex++) {
             ItemStack result = table.createLootRoll<false>(lootTableSeed);
 
-            if EXPECT_FALSE(result.item == &Items::OAK_WOOD) {
-                std::cout << "OAK WOOD" << std::endl;
-                int data = nextInt(lootTableSeed, 0, 3);
-            }
-
-            if EXPECT_FALSE(result.item == &Items::ACACIA_WOOD) {
-                std::cout << "ACACIA WOOD" << std::endl;
-                int data = nextInt(lootTableSeed, 0, 1);
-                std::cout << "ACACIA WOOD: " << nextInt(lootTableSeed, 0, 1) << std::endl;
-            }
-            else if EXPECT_FALSE(result.item == &Items::OAK_WOOD) {
-                std::cout << "OAK WOOD: " << nextInt(lootTableSeed, 0, 3) << std::endl;
-            }
-            else {
-                std::cout << result << std::endl;
-            }
-
             chestContents.push_back(result);
         }
     }
@@ -68,21 +51,132 @@ Container getLootFromLootTableSeed(uint64_t* lootTableSeed) {
 
 
 
+int findItemFromLootTableSeed(uint64_t* lootTableSeed, int itemID) {
+    int rollCount;
+    int rollIndex;
+    std::vector<ItemStack> chestContents;
+    setSeed(lootTableSeed, *lootTableSeed);
+    int total = 0;
+
+    // generate loot
+    for(const LootTable& table : loot_tables::EndCityTreasure::lootTables){
+        rollCount = LootTable::getInt<false>(lootTableSeed, table.min, table.max);
+        for (rollIndex = 0; rollIndex < rollCount; rollIndex++) {
+            ItemStack result = table.createLootRoll<false>(lootTableSeed);
+
+            if (result.item->getID() == ENCHANTED_BOOK_ID) {
+                EnchantmentHelperBook::EnchantWithLevels::apply(lootTableSeed, &result, 30);
+            }
+
+            if (result.item->getID() == itemID) {
+                total++;
+            }
+
+            chestContents.push_back(result);
+        }
+    }
+    return total;
+}
+
+
+void findSeedWithItem(int itemID, int total, int count) {
+    uint64_t start = 0;
+    uint64_t seed = 0;
+    int amount;
+
+    bool found;
+    while (true) {
+        amount = findItemFromLootTableSeed(&seed, itemID);
+        found = amount >= total;
+        if (found) {
+            std::cout << start << ", ";
+            count--;
+            if (count <= 0) {
+                break;
+            }
+        }
+        start++;
+        seed = start;
+    }
+}
+
+
+
+
+
 int main(int argc, char* argv[]) {
+    constexpr bool isAquatic = false;
 
-    std::cout << Pos2D(-121, -2).toChunkPos() << std::endl;
-    EnchantmentHelper::setup();
-    uint64_t  lootTableSeed = 12345;
+    Enchantment::registerEnchantments<isAquatic>();
+    // EnchantmentHelper::setup<isAquatic>();
+    EnchantmentHelperBook::setup<isAquatic>();
 
-    loot_tables::EndCityTreasure
-    ::setup();
+    // std::cout << Pos2D(238, -368).toChunkPos() << std::endl;
+
+    //int x = 0;
+
+
+    loot_tables::EndCityTreasure::setup();
+
+    // findSeedWithItem(Items::ENCHANTED_BOOK_ID, 5, 1); int x; std::cin >> x;
+
+
+    uint64_t lootTableSeed = 12345;
+
     Container loot = loot_tables::EndCityTreasure
-            ::getLootFromLootTableSeed<true>(lootTableSeed);
-    std::cout << std::endl << "Loot:" << loot << std::endl;
+    ::getLootFromLootTableSeed<true>(&lootTableSeed);
 
-    int x = 0;
-    std::cin >> x;
+    std::cout << std::endl << "Loot:" << loot << std::endl << std::endl;
 
+    std::cout << "Combined Items:" << std::endl;
+    loot.printCombinedItems();
+
+
+
+
+    /*
+    uint64_t lootTableSeed = 0;
+    uint64_t start = 12358;
+    bool found;
+    while (true) {
+        found = false;
+        lootTableSeed = start;
+        start++;
+
+        Container loot = loot_tables::StrongholdCorridor<isAquatic>
+        ::getLootFromLootTableSeed<true>(&lootTableSeed);
+
+        std::map<const Items::Item*, int> itemCount;
+
+        for (const auto& itemStack : loot.inventorySlots) {
+            if (itemStack.stackSize > 0) {
+                if (itemCount.find(itemStack.item) != itemCount.end()) {
+                    itemCount[itemStack.item] += itemStack.stackSize;
+                } else {
+                    itemCount[itemStack.item] = itemStack.stackSize;
+                }
+            }
+        }
+
+        for (const auto& pair : itemCount) {
+            ItemStack itemStack = ItemStack(pair.first, pair.second);
+            if (itemStack.item->getID() == ENCHANTED_BOOK_ID) {
+                std::cout << lootTableSeed << std::endl;
+                found = true;
+                break;
+            }
+        }
+        if (found)
+            break;
+    }
+        // std::cout << std::endl << "Loot:" << loot << std::endl << std::endl;
+
+        // std::cout << "Combined Items:" << std::endl;
+        // loot.printCombinedItems();
+
+        // std::cout << "\n\n\n" << std::endl;
+    //}
+*/
 
 
 

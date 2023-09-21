@@ -14,13 +14,14 @@ namespace loot_tables {
     public:
         static void setup();
         template <bool shuffle>
-        static Container getLootFromLootTableSeed(uint64_t lootTableSeed);
+        static Container getLootFromLootTableSeed(uint64_t* lootTableSeed);
 
         template<bool checkCaves, bool shuffle>
-        [[nodiscard]] static Container getAltarChestLoot(int64_t seed, BIOMESCALE biomeSize, BasePiece* alterChestPiece,
+        ND static Container getAltarChestLoot(int64_t seed,
+                                              BIOMESCALE biomeSize, BasePiece* alterChestPiece,
                                                          StrongholdGenerator* strongholdGenerator);
         template<bool checkCaves, bool shuffle>
-        [[nodiscard]] static std::vector<Container> getAllAlterChestLoot(
+        ND static std::vector<Container> getAllAltarChestLoot(
                 int64_t worldSeed, BIOMESCALE biomeSize, StrongholdGenerator* strongholdGenerator);
     };
 
@@ -48,7 +49,8 @@ namespace loot_tables {
         items.emplace_back(&IRON_HORSE_ARMOR,    5);
         items.emplace_back(&GOLDEN_HORSE_ARMOR,  5);
         items.emplace_back(&DIAMOND_HORSE_ARMOR, 5);
-        items.emplace_back(&ENCHANTED_BOOK,      6); // function=enchant_with_levels, levels=30, treasure=true
+        items.emplace_back(&ENCHANTED_BOOK,      6);
+        // function=enchant_with_levels, levels=30, treasure=true
 
         StrongholdCorridor<isAquatic>::lootTables.emplace_back(items, 2, 3);
         StrongholdCorridor<isAquatic>::maxItemsPossible = 3;
@@ -56,20 +58,20 @@ namespace loot_tables {
 
     template<bool isAquatic>
     template <bool shuffle>
-    Container StrongholdCorridor<isAquatic>::getLootFromLootTableSeed(uint64_t lootTableSeed) {
+    Container StrongholdCorridor<isAquatic>::getLootFromLootTableSeed(uint64_t* lootTableSeed) {
         int rollCount;
         int rollIndex;
         std::vector<ItemStack> chestContents;
-        setSeed(&lootTableSeed, lootTableSeed);
+        setSeed(lootTableSeed, *lootTableSeed);
 
         // generate loot
-        for(const LootTable& table : loot_tables::StrongholdCorridor<isAquatic>::lootTables){
-            rollCount = LootTable::getInt<false>(&lootTableSeed, table.min, table.max);
+        for(const LootTable& table : StrongholdCorridor<isAquatic>::lootTables){
+            rollCount = LootTable::getInt<false>(lootTableSeed, table.min, table.max);
             for (rollIndex = 0; rollIndex < rollCount; rollIndex++) {
-                ItemStack result = table.createLootRoll<false>(&lootTableSeed);
+                ItemStack result = table.createLootRoll<false>(lootTableSeed);
 
-                if EXPECT_FALSE(result.item == &Items::ENCHANTED_BOOK) {
-                    EnchantmentHelperBook::EnchantWithLevels::apply(&lootTableSeed, &result, 30);
+                if EXPECT_FALSE(result.item->getID() == Items::ENCHANTED_BOOK_ID) {
+                    EnchantmentHelperBook::EnchantWithLevels::apply(lootTableSeed, &result, 30);
                 }
 
                 chestContents.push_back(result);
@@ -77,7 +79,7 @@ namespace loot_tables {
         }
         if constexpr (shuffle){
             Container container = Container(27);
-            container.shuffleIntoContainer(chestContents, lootTableSeed);
+            container.shuffleIntoContainer(chestContents, *lootTableSeed);
             return container;
         }
         else
@@ -86,27 +88,31 @@ namespace loot_tables {
 
     template<bool isAquatic>
     template<bool checkCaves, bool shuffle>
-    Container StrongholdCorridor<isAquatic>::getAltarChestLoot(int64_t seed, BIOMESCALE biomeSize,
-                                                               BasePiece* alterChestPiece,
-                                                               StrongholdGenerator* strongholdGenerator) {
-        uint64_t lootSeed = Loot<StrongholdCorridor<isAquatic>>::getLootSeed<checkCaves>(seed, biomeSize,
-                                                alterChestPiece->getWorldX(3, 3),
-                                                alterChestPiece->getWorldY(2),
-                                                alterChestPiece->getWorldZ(3, 3),
-                                                strongholdGenerator);
-        return Loot<StrongholdCorridor<isAquatic>>::getLootFromSeed<shuffle>(&lootSeed);
+    Container StrongholdCorridor<isAquatic>
+            ::getAltarChestLoot(int64_t seed, BIOMESCALE biomeSize,
+               BasePiece* alterChestPiece,
+               StrongholdGenerator* strongholdGenerator) {
+        uint64_t lootSeed = Loot<StrongholdCorridor<isAquatic>>
+                ::getLootSeed<checkCaves>(seed, biomeSize,
+                    alterChestPiece->getWorldX(3, 3),
+                    alterChestPiece->getWorldY(2),
+                    alterChestPiece->getWorldZ(3, 3),
+                    strongholdGenerator);
+        return Loot<StrongholdCorridor<isAquatic>>
+                ::getLootFromSeed<shuffle>(&lootSeed);
     }
 
     template<bool isAquatic>
     template<bool checkCaves, bool shuffle>
-    std::vector<Container> StrongholdCorridor<isAquatic>::getAllAlterChestLoot(int64_t worldSeed, BIOMESCALE biomeSize,
-                                                                               StrongholdGenerator* strongholdGenerator) {
-        std::vector<Container> alterChests(strongholdGenerator->numAltarChests);
-        for(int alterChestIndex = 0; alterChestIndex < strongholdGenerator->numAltarChests; alterChestIndex++) {
-            alterChests[alterChestIndex] = getAltarChestLoot<checkCaves, shuffle>(
-                    worldSeed, biomeSize, strongholdGenerator->altarChests[alterChestIndex], strongholdGenerator);
+    std::vector<Container> StrongholdCorridor<isAquatic>
+            ::getAllAltarChestLoot(int64_t worldSeed, BIOMESCALE biomeSize,
+                                   StrongholdGenerator* strongholdGenerator) {
+        std::vector<Container> altarChests(strongholdGenerator->numAltarChests);
+        for(int altarChestIndex = 0; altarChestIndex < strongholdGenerator->numAltarChests; altarChestIndex++) {
+            altarChests[altarChestIndex] = getAltarChestLoot<checkCaves, shuffle>(
+                    worldSeed, biomeSize, strongholdGenerator->altarChests[altarChestIndex], strongholdGenerator);
         }
-        return alterChests;
+        return altarChests;
     }
 }
 

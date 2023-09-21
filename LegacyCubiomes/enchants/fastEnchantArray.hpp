@@ -37,13 +37,12 @@ public:
 
 class ELDataArray {
 public:
-    static constexpr int ENCHANTMENT_COUNT = 29;
     int totalWeight = 0;
     int totalEnchants = 0;
 
     IndexArray deletions = IndexArray();
     IndexArray enchants = IndexArray();
-    EnchantmentData data[ENCHANTMENT_COUNT] = {};
+    EnchantmentData data[Enchantment::MAX_ENCHANTMENT_COUNT] = {};
     ELDataArray() = default;
 
     void addData(Enchantment* ench, int id);
@@ -96,7 +95,7 @@ public:
     void deallocate();
 
     static int TOTAL_WEIGHT;
-    static int CUMULATIVE_WEIGHT_ALL[29];
+    static int CUMULATIVE_WEIGHT_ALL[Enchantment::MAX_ENCHANTMENT_COUNT];
 };
 
 

@@ -38,7 +38,7 @@ void ELDataArray::addRandomItem(uint64_t *rng) {
     // use a faster function
     if (theTotalWeight == EnchantedBookEnchantsLookupTable::TOTAL_WEIGHT) {
         size_t low = 0;
-        size_t high = 29;
+        size_t high = Enchantment::count;
         while (low < high) {
             size_t mid = (low + high) >> 1;
             if (EnchantedBookEnchantsLookupTable::CUMULATIVE_WEIGHT_ALL[mid] > weight) {
@@ -97,7 +97,7 @@ void EnchantedBookEnchantsLookupTable::setup() {
 
     // sets up base cumulative weights
     int sum = 0;
-    for (int i = 0; i < 29; ++i) {
+    for (int i = 0; i < Enchantment::count; ++i) {
         auto ench = Enchantment::REGISTRY[i];
         sum += ench->rarity->getWeight();
         CUMULATIVE_WEIGHT_ALL[i] = sum;
@@ -135,4 +135,4 @@ void EnchantedBookEnchantsLookupTable::deallocate() {
 }
 
 int EnchantedBookEnchantsLookupTable::TOTAL_WEIGHT = 0;
-int EnchantedBookEnchantsLookupTable::CUMULATIVE_WEIGHT_ALL[29] = {0};
+int EnchantedBookEnchantsLookupTable::CUMULATIVE_WEIGHT_ALL[Enchantment::MAX_ENCHANTMENT_COUNT] = {0};

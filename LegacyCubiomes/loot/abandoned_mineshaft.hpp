@@ -65,9 +65,11 @@ namespace loot_tables {
             rollCount = LootTable::getInt<false>(lootTableSeed, table.min, table.max);
             for (rollIndex = 0; rollIndex < rollCount; rollIndex++) {
                 ItemStack result = table.createLootRoll<false>(lootTableSeed);
-                if EXPECT_FALSE(result.item == &Items::ENCHANTED_BOOK) {
-                    EnchantmentHelperBook::EnchantWithLevels::apply(lootTableSeed, &result, 30);
+
+                if EXPECT_FALSE(result.item->getID() == Items::ENCHANTED_BOOK_ID) {
+                    EnchantmentHelper::EnchantRandomly::apply<true>(lootTableSeed, &result);
                 }
+
                 chestContents.push_back(result);
             }
         }

@@ -57,8 +57,6 @@ namespace loot_tables {
 
         std::vector<ItemStack> chestContents(maxItemsPossible);
 
-        std::cout << lootTableSeed << std::endl;
-
         //generate loot
         int slotIndex = 0;
         for(const LootTable& table : lootTables){

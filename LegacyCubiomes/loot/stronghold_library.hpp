@@ -18,23 +18,15 @@ namespace loot_tables {
     void StrongholdLibrary::setup() {
         std::vector<ItemEntry> items;
 
-        #ifdef INCLUDE_JAVA
-        items.emplace_back(&BOOK,             20, 1, 3);
-        items.emplace_back(&PAPER,            20, 2, 7);
-        items.emplace_back(&MAP,               1      );
-        items.emplace_back(&COMPASS,           1      );
-        items.emplace_back(&ENCHANTED_BOOK,   10      );
-        // function=enchant_with_levels, levels=30, treasure=true
-        lootTables.emplace_back(items, 2, 10);
-        #else
         items.emplace_back(&BOOK,             100, 1, 3);
         items.emplace_back(&PAPER,            100, 2, 7);
         items.emplace_back(&MAP,              5);
         items.emplace_back(&COMPASS,          5);
         items.emplace_back(&ENCHANTED_BOOK,   60);
         // function=enchant_with_levels, levels=30, treasure=true
+
         lootTables.emplace_back(items,             2, 10);
-        #endif
+
 
         maxItemsPossible = 10;
     }
@@ -52,8 +44,8 @@ namespace loot_tables {
             for (rollIndex = 0; rollIndex < rollCount; rollIndex++) {
                 ItemStack result = table.createLootRoll<false>(lootTableSeed);
 
-                if EXPECT_FALSE(result.item == &Items::ENCHANTED_BOOK) {
-                    EnchantmentHelper::EnchantWithLevels::apply<true, true>(lootTableSeed, &result, 30);
+                if EXPECT_FALSE(result.item->getID() == Items::ENCHANTED_BOOK_ID) {
+                    EnchantmentHelperBook::EnchantWithLevels::apply(lootTableSeed, &result, 30);
                 }
 
                 chestContents.push_back(result);

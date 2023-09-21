@@ -8,6 +8,8 @@ namespace loot_tables {
     class SimpleDungeon : public Loot<SimpleDungeon> {
     public:
         static void setup();
+        template <bool shuffle>
+        static Container getLootFromLootTableSeed(uint64_t* lootTableSeed);
     };
 
     void SimpleDungeon::setup() {
@@ -25,7 +27,8 @@ namespace loot_tables {
         items1.emplace_back(&GOLDEN_HORSE_ARMOR,          10);
         items1.emplace_back(&IRON_HORSE_ARMOR,            15);
         items1.emplace_back(&DIAMOND_HORSE_ARMOR,         5);
-        items1.emplace_back(&ENCHANTED_BOOK,              10); // function=enchant_randomly
+        items1.emplace_back(&ENCHANTED_BOOK,              10);
+        // function=enchant_randomly
         lootTables.emplace_back(items1,                  1, 3);
 
         // table 2
@@ -49,6 +52,35 @@ namespace loot_tables {
         lootTables.emplace_back(items3,                    3);
 
         maxItemsPossible = 10;
+    }
+
+    template <bool shuffle>
+    Container SimpleDungeon::getLootFromLootTableSeed(uint64_t* lootTableSeed) {
+        int rollCount;
+        int rollIndex;
+        std::vector<ItemStack> chestContents;
+        setSeed(lootTableSeed, *lootTableSeed);
+
+        // generate loot
+        for(const LootTable& table : lootTables){
+            rollCount = LootTable::getInt<false>(lootTableSeed, table.min, table.max);
+            for (rollIndex = 0; rollIndex < rollCount; rollIndex++) {
+                ItemStack result = table.createLootRoll<false>(lootTableSeed);
+
+                if EXPECT_FALSE(result.item->getID() == Items::ENCHANTED_BOOK_ID) {
+                    EnchantmentHelper::EnchantRandomly::apply<true>(lootTableSeed, &result);
+                }
+
+                chestContents.push_back(result);
+            }
+        }
+        if constexpr (shuffle){
+            Container container = Container(27);
+            container.shuffleIntoContainer(chestContents, *lootTableSeed);
+            return container;
+        }
+        else
+            return  {27, chestContents};
     }
 }
 
