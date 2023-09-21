@@ -34,15 +34,7 @@
 
 
 
-bool Enchantment::isSetup = false;
 
-
-Enchantment::~Enchantment() {
-    for (auto &pair : REGISTRY) {
-        delete pair.second;
-    }
-    REGISTRY.clear();
-}
 
 bool Enchantment::Type::Base::canEnchantItem(const Items::Item *itemIn) const {
     return true;
@@ -75,23 +67,6 @@ bool Enchantment::Type::Wearable::canEnchantItem(const Items::Item *itemIn) cons
 }
 
 
-const Enchantment::Type::All Enchantment::Type::ALL;
-const Enchantment::Type::Armor Enchantment::Type::ARMOR;
-const Enchantment::Type::ArmorFeet Enchantment::Type::ARMOR_FEET;
-const Enchantment::Type::ArmorLegs Enchantment::Type::ARMOR_LEGS;
-const Enchantment::Type::ArmorChest Enchantment::Type::ARMOR_CHEST;
-const Enchantment::Type::ArmorHead Enchantment::Type::ARMOR_HEAD;
-const Enchantment::Type::Weapon Enchantment::Type::WEAPON;
-const Enchantment::Type::Digger Enchantment::Type::DIGGER;
-const Enchantment::Type::FishingRod Enchantment::Type::FISHING_ROD;
-const Enchantment::Type::Breakable Enchantment::Type::BREAKABLE;
-const Enchantment::Type::Bow Enchantment::Type::BOW;
-const Enchantment::Type::Wearable Enchantment::Type::WEARABLE;
-const Enchantment::Type::Trident Enchantment::Type::TRIDENT;
-
-std::vector<const Enchantment::Type::Base*> Enchantment::Type::ALL_ITERABLE = {};
-
-std::map<int, Enchantment*> Enchantment::REGISTRY = {};
 
 int Enchantment::getMinCost(int enchantmentLevel) {
     return 1 + enchantmentLevel * 10;
@@ -106,24 +81,6 @@ bool Enchantment::canApplyTogether(const Enchantment *enchantment) const {
 
 bool Enchantment::canApply(const Items::Item *item) const {
     return this->type->canEnchantItem(item);
-}
-
-void Enchantment::initializeTypeIterable() {
-    Type::ALL_ITERABLE = {
-            &Type::ALL,
-            &Type::ARMOR,
-            &Type::ARMOR_FEET,
-            &Type::ARMOR_LEGS,
-            &Type::ARMOR_CHEST,
-            &Type::ARMOR_HEAD,
-            &Type::WEAPON,
-            &Type::DIGGER,
-            &Type::FISHING_ROD,
-            &Type::BREAKABLE,
-            &Type::BOW,
-            &Type::WEARABLE,
-            &Type::TRIDENT
-    };
 }
 
 void Enchantment::registerEnch(int *id, Enchantment* enchantment) {
@@ -141,8 +98,6 @@ void Enchantment::registerEnchantments() {
         return;
     }
     isSetup = true;
-
-    initializeTypeIterable();
 
     int id = 0;
 
@@ -270,7 +225,6 @@ void Enchantment::registerEnchantments() {
 
 
 
-int Enchantment::count = 0;
 template void Enchantment::registerEnchantments<true>();
 template void Enchantment::registerEnchantments<false>();
 

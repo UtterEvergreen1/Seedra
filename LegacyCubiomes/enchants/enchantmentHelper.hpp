@@ -4,44 +4,73 @@
 
 #include "enchantment.hpp"
 #include "weightedRandom.hpp"
+#include "fastBookEnchantArray.hpp"
+
 #include "LegacyCubiomes/loot/base_classes/loot_classes.hpp"
 
+constexpr int MAX_ENCHANT_LIST_SIZE = 33;
+
+
+struct EnchantWithLevelsItem {
+    void removeIncompatible(EnchDataVec_t& enchDataList, EnchantmentData enchData);
+
+    template<bool allowTreasure>
+    void apply(uint64_t *rng, ItemStack *stack, int min, int max);
+    template<bool allowTreasure>
+    void apply(uint64_t *rng, ItemStack *stack, int level);
+    template<bool allowTreasure>
+    EnchDataVec_t buildEnchantmentList(uint64_t *rng, ItemStack *itemStackIn, int level);
+    template<bool allowTreasure>
+    void addRandomEnchantment(uint64_t *rng, ItemStack *itemStackIn, int level);
+    template<bool allowTreasure>
+    EnchDataVec_t getEnchantmentDataList(int enchantmentLevelIn, ItemStack *ItemStackIn);
+};
+
+
+struct EnchantWithLevelsBook {
+    EnchantedBookEnchantsLookupTable BOOK_LEVEL_TABLE = EnchantedBookEnchantsLookupTable();
+    ELDataArray* buildEnchantmentList(uint64_t *rng, ItemStack *itemStackIn, int level);
+
+    template<bool allowTreasure>
+    void apply(uint64_t *rng, ItemStack *stack, int level);
+};
+
+
+struct EnchantRandomlyItem {
+    void apply(uint64_t *rng, ItemStack *stack);
+};
+
+
+struct EnchantRandomlyBook {
+    void apply(uint64_t *rng, ItemStack *stack);
+};
+
+
+
+template<bool isAquatic>
 class EnchantmentHelper {
 public:
-    static constexpr int MAX_ENCHANT_LIST_SIZE = 29;
+    EnchantWithLevelsItem enchantWithLevelsItem = EnchantWithLevelsItem();
+    EnchantWithLevelsBook enchantWithLevelsBook = EnchantWithLevelsBook();
+    EnchantRandomlyItem enchantRandomlyItem = EnchantRandomlyItem();
+    EnchantRandomlyBook enchantRandomlyBook = EnchantRandomlyBook();
 
-    class EnchantWithLevels {
-    public:
-        template<bool isBook, bool allowTreasure>
-        static void apply(uint64_t *rng, ItemStack *stack, int min, int max);
+    EnchantmentHelper() {
+        Enchantment::registerEnchantments<isAquatic>();
+        enchantWithLevelsBook.BOOK_LEVEL_TABLE.setup();
+    }
 
-        template<bool isBook, bool allowTreasure>
-        static void apply(uint64_t *rng, ItemStack *stack, int level);
-    };
-
-    class EnchantRandomly {
-    public:
-        std::vector<Enchantment> enchantments;
-
-        template<bool isBook>
-        static void apply(uint64_t *rng, ItemStack *stack);
-    };
-
-    template<bool isAquatic>
-    static void setup();
+    void deallocate() {
+        enchantWithLevelsBook.BOOK_LEVEL_TABLE.deallocate();
+        Enchantment::REGISTRY.clear();
+        Enchantment::count = 0;
+        Enchantment::isSetup = false;
+        Enchantment::Type::ALL_ITERABLE.clear();
+    }
 
 
-private:
-    template<bool isBook, bool allowTreasure>
-    static std::vector<EnchantmentData> buildEnchantmentList(uint64_t *rng, ItemStack *itemStackIn, int level);
 
-    static void removeIncompatible(std::vector<EnchantmentData>& enchDataList, EnchantmentData enchData);
 
-    template<bool isBook, bool allowTreasure>
-    static void addRandomEnchantment(uint64_t *rng, ItemStack *itemStackIn, int level);
-
-    template<bool isBook, bool allowTreasure>
-    static std::vector<EnchantmentData> getEnchantmentDataList(int enchantmentLevelIn, ItemStack *ItemStackIn);
 };
 
 

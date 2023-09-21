@@ -1,4 +1,4 @@
-#include "fastEnchantArray.hpp"
+#include "fastBookEnchantArray.hpp"
 
 
 //==============================================================================
@@ -36,12 +36,12 @@ void ELDataArray::addRandomItem(uint64_t *rng) {
 
     // if it's the full enchantment list,
     // use a faster function
-    if (theTotalWeight == EnchantedBookEnchantsLookupTable::TOTAL_WEIGHT) {
+    if (theTotalWeight == rootPtr->TOTAL_WEIGHT) {
         size_t low = 0;
         size_t high = Enchantment::count;
         while (low < high) {
             size_t mid = (low + high) >> 1;
-            if (EnchantedBookEnchantsLookupTable::CUMULATIVE_WEIGHT_ALL[mid] > weight) {
+            if (rootPtr->CUMULATIVE_WEIGHT_ALL[mid] > weight) {
                 high = mid;
             } else {
                 low = mid + 1;
@@ -106,8 +106,8 @@ void EnchantedBookEnchantsLookupTable::setup() {
 
     // sets up the dataArrays
     Enchantment *ench_pt;
-    for (int cost = 0; cost < VECTOR_COUNT; cost++) {
-        dataArrays[cost] = new ELDataArray();
+    for (int cost = 0; cost < 48; cost++) {
+        dataArrays[cost] = new ELDataArray(this);
         auto array = dataArrays[cost];
 
         for (auto & it : Enchantment::REGISTRY) {
@@ -133,6 +133,3 @@ void EnchantedBookEnchantsLookupTable::deallocate() {
     }
     areVectorsSetup = false;
 }
-
-int EnchantedBookEnchantsLookupTable::TOTAL_WEIGHT = 0;
-int EnchantedBookEnchantsLookupTable::CUMULATIVE_WEIGHT_ALL[Enchantment::MAX_ENCHANTMENT_COUNT] = {0};

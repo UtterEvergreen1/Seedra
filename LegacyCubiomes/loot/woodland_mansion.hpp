@@ -9,8 +9,9 @@ namespace loot_tables {
     public:
         static void setup();
 
-        template <bool shuffle>
-        static Container getLootFromLootTableSeed(uint64_t* lootTableSeed);
+        template <bool isAquatic, bool shuffle>
+        static Container getLootFromLootTableSeed(
+                EnchantmentHelper<isAquatic>* helper, uint64_t* lootTableSeed);
     };
 
     void Mansion::setup() {
@@ -55,8 +56,8 @@ namespace loot_tables {
         maxItemsPossible = 10;
     }
 
-    template <bool shuffle>
-    Container Mansion::getLootFromLootTableSeed(uint64_t* lootTableSeed) {
+    template <bool isAquatic, bool shuffle>
+    Container Mansion::getLootFromLootTableSeed(EnchantmentHelper<isAquatic>* helper, uint64_t* lootTableSeed) {
         int rollCount;
         int rollIndex;
         std::vector<ItemStack> chestContents;
@@ -69,7 +70,7 @@ namespace loot_tables {
                 ItemStack result = table.createLootRoll<false>(lootTableSeed);
 
                 if EXPECT_FALSE(result.item->getID() == Items::ENCHANTED_BOOK_ID) {
-                    EnchantmentHelper::EnchantRandomly::apply<false>(lootTableSeed, &result);
+                    helper->enchantRandomlyBook.template apply(lootTableSeed, &result);
                 }
 
                 chestContents.push_back(result);

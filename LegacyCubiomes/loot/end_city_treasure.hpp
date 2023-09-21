@@ -8,8 +8,9 @@ namespace loot_tables {
     class EndCityTreasure : public Loot<EndCityTreasure> {
     public:
         static void setup();
-        template <bool shuffle>
-        static Container getLootFromLootTableSeed(uint64_t* lootTableSeed);
+        template <bool isAquatic, bool shuffle>
+        static Container getLootFromLootTableSeed(
+                EnchantmentHelper<isAquatic>* helper, uint64_t* lootTableSeed);
     };
 
     void EndCityTreasure::setup() {
@@ -46,8 +47,8 @@ namespace loot_tables {
         maxItemsPossible = 6;
     }
 
-    template <bool shuffle>
-    Container EndCityTreasure::getLootFromLootTableSeed(uint64_t* lootTableSeed) {
+    template <bool isAquatic, bool shuffle>
+    Container EndCityTreasure::getLootFromLootTableSeed(EnchantmentHelper<isAquatic>* helper, uint64_t* lootTableSeed) {
         int rollCount;
         int rollIndex;
         std::vector<ItemStack> chestContents;
@@ -63,7 +64,7 @@ namespace loot_tables {
                     case Items::ItemType::ItemTool:
                     case Items::ItemType::ItemSword:
                     case Items::ItemType::ItemArmor: {
-                        EnchantmentHelper::EnchantWithLevels::apply<false, true>(lootTableSeed, &result, 20, 39);
+                        helper->enchantWithLevelsItem.template apply<true>(lootTableSeed, &result, 20, 39);
                     }
                     default:
                         break;

@@ -25,7 +25,7 @@ public:
 
     inline void addItem(int indexIn) {indexes[currentIndex++] = indexIn;}
 
-    inline int getEnchantmentIndex(int indexIn) {
+    MU inline int getEnchantmentIndex(int indexIn) {
         for (int i = 0; i < currentIndex; i++)
             if (currentIndex > indexes[i])
                 indexIn--;
@@ -47,7 +47,7 @@ public:
     }
 
     ND inline int getValueAt(int indexIn) const {return indexes[indexIn];}
-    ND inline int getLastValueIndex() const {return indexes[currentIndex - 1];}
+    ND MU inline int getLastValueIndex() const {return indexes[currentIndex - 1];}
 
     ND inline int getIndex() const {return currentIndex;}
 
@@ -62,9 +62,11 @@ public:
 };
 
 
+class EnchantedBookEnchantsLookupTable;
 
 class ELDataArray {
 public:
+    EnchantedBookEnchantsLookupTable* rootPtr = nullptr;
     int totalWeight = 0;
     int totalEnchants = 0;
 
@@ -73,6 +75,10 @@ public:
     EnchantmentData data[Enchantment::MAX_ENCHANTMENT_COUNT] = {};
     ELDataArray() = default;
 
+    explicit ELDataArray(EnchantedBookEnchantsLookupTable* rootPtrIn) {
+        rootPtr = rootPtrIn;
+    }
+
     void addData(Enchantment* ench, int id);
 
     inline void clear() {
@@ -80,7 +86,8 @@ public:
         enchants.clear();
     }
 
-    EnchantmentData* getIndex(int indexIn);
+    MU EnchantmentData* getIndex(int indexIn);
+
     EnchantmentData* getLastEnchantmentAdded();
     void addRandomItem(uint64_t *rng);
 
@@ -97,15 +104,15 @@ public:
 
 class EnchantedBookEnchantsLookupTable {
 private:
-    static constexpr int VECTOR_COUNT = 48;
-    ELDataArray* dataArrays[VECTOR_COUNT] = {nullptr};
+    ELDataArray* dataArrays[48] = {nullptr};
     bool areVectorsSetup = false;
 
 public:
     EnchantedBookEnchantsLookupTable() = default;
-    explicit EnchantedBookEnchantsLookupTable(bool allocate) {if (allocate) setup();}
+    MU explicit EnchantedBookEnchantsLookupTable(bool allocate) {if (allocate) setup();}
+
     ~EnchantedBookEnchantsLookupTable() {deallocate();}
-    ND bool isSetup() const {return areVectorsSetup;}
+    ND MU bool isSetup() const {return areVectorsSetup;}
 
     /**
      * level must be between 0 and 47 or bad things will happen.
@@ -122,8 +129,8 @@ public:
 
     void deallocate();
 
-    static int TOTAL_WEIGHT;
-    static int CUMULATIVE_WEIGHT_ALL[Enchantment::MAX_ENCHANTMENT_COUNT];
+    int TOTAL_WEIGHT = 0;
+    int CUMULATIVE_WEIGHT_ALL[Enchantment::MAX_ENCHANTMENT_COUNT] = {0};
 };
 
 
