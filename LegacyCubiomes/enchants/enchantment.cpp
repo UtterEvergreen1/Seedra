@@ -91,14 +91,13 @@ const Enchantment::Type::Trident Enchantment::Type::TRIDENT;
 
 std::vector<const Enchantment::Type::Base*> Enchantment::Type::ALL_ITERABLE = {};
 
-
 std::map<int, Enchantment*> Enchantment::REGISTRY = {};
 
 int Enchantment::getMinCost(int enchantmentLevel) {
     return 1 + enchantmentLevel * 10;
 }
 int Enchantment::getMaxCost(int enchantmentLevel) {
-    return 6+ enchantmentLevel * 10;
+    return 6 + enchantmentLevel * 10;
 }
 
 bool Enchantment::canApplyTogether(const Enchantment *enchantment) const {

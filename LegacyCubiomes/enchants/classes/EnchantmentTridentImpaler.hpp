@@ -4,13 +4,15 @@
 
 
 class EnchantmentTridentImpaler : public Enchantment {
+private:
+    static constexpr inline int LEVELS_MIN[5] = {17, 24, 31, 38, 45};
 public:
     EnchantmentTridentImpaler(std::string name, const Rarity *rarity) :
             Enchantment(std::move(name), rarity, &Type::TRIDENT,
                         EnumName::TRIDENT_IMPALER, 5) {};
 
     int getMinCost(int enchantmentLevel) override {
-        return enchantmentLevel * 7 + 10;
+        return LEVELS_MIN[enchantmentLevel];
     }
 
     int getMaxCost(int enchantmentLevel) override {

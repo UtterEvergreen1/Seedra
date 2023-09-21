@@ -4,17 +4,20 @@
 
 
 class EnchantmentDigging : public Enchantment {
+private:
+    static constexpr inline int LEVELS_MIN[5] = {1, 11, 21, 31, 41};
+    static constexpr inline int LEVELS_MAX[5] = {61, 71, 81, 91, 101};
 public:
 
     EnchantmentDigging(std::string name, const Rarity *rarity) :
         Enchantment(std::move(name), rarity, &Type::DIGGER, EnumName::DIGGING, 5) {};
 
     int getMinCost(int enchantmentLevel) override {
-        return 10 * enchantmentLevel - 9;
+        return LEVELS_MIN[enchantmentLevel];
     }
 
     int getMaxCost(int enchantmentLevel) override {
-        return Enchantment::getMinCost(enchantmentLevel) + 50;
+        return LEVELS_MAX[enchantmentLevel];
     }
 
     ND bool canApply(const Items::Item *item) const override {

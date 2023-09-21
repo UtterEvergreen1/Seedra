@@ -56,10 +56,11 @@ int findItemFromLootTableSeed(uint64_t* lootTableSeed, int itemID) {
     int rollIndex;
     std::vector<ItemStack> chestContents;
     setSeed(lootTableSeed, *lootTableSeed);
+    int amount = 0;
     int total = 0;
 
     // generate loot
-    for(const LootTable& table : loot_tables::EndCityTreasure::lootTables){
+    for(const LootTable& table : loot_tables::StrongholdLibrary::lootTables){
         rollCount = LootTable::getInt<false>(lootTableSeed, table.min, table.max);
         for (rollIndex = 0; rollIndex < rollCount; rollIndex++) {
             ItemStack result = table.createLootRoll<false>(lootTableSeed);
@@ -69,7 +70,10 @@ int findItemFromLootTableSeed(uint64_t* lootTableSeed, int itemID) {
             }
 
             if (result.item->getID() == itemID) {
-                total++;
+                amount = (int)result.enchantments.size();
+                if (amount > total) {
+                    total = amount;
+                }
             }
 
             chestContents.push_back(result);
@@ -80,7 +84,7 @@ int findItemFromLootTableSeed(uint64_t* lootTableSeed, int itemID) {
 
 
 void findSeedWithItem(int itemID, int total, int count) {
-    uint64_t start = 0;
+    uint64_t start = 216000000;
     uint64_t seed = 0;
     int amount;
 
@@ -108,29 +112,43 @@ int main(int argc, char* argv[]) {
     constexpr bool isAquatic = false;
 
     Enchantment::registerEnchantments<isAquatic>();
-    // EnchantmentHelper::setup<isAquatic>();
     EnchantmentHelperBook::setup<isAquatic>();
 
     // std::cout << Pos2D(238, -368).toChunkPos() << std::endl;
 
-    //int x = 0;
+
+    loot_tables::StrongholdLibrary::setup();
+
+    uint64_t lootTableSeed = 216765366;
+    const int ROLLS = 1000000;
+    Container loot;
+    auto start = getMilliseconds();
+    for (int i = 0; i < ROLLS; i++) {
+        setSeed(&lootTableSeed, lootTableSeed);
+        loot = loot_tables::StrongholdLibrary::getLootFromLootTableSeed<false>(&lootTableSeed);
+    }
+
+    auto end = getMilliseconds();
+
+    auto diff = end - start;
+    std::cout << "rolls: " << ROLLS <<
+    " | time: " << diff << "ms" << std::endl;
 
 
-    loot_tables::EndCityTreasure::setup();
+    /*
+    // find specific item in loot table
+    findSeedWithItem(Items::ENCHANTED_BOOK_ID, 10, 1); int x; std::cin >> x;
 
-    // findSeedWithItem(Items::ENCHANTED_BOOK_ID, 5, 1); int x; std::cin >> x;
 
+    uint64_t lootTableSeed = 216765366;
 
-    uint64_t lootTableSeed = 12345;
+    Container loot = loot_tables::StrongholdLibrary::getLootFromLootTableSeed<true>(&lootTableSeed);
 
-    Container loot = loot_tables::EndCityTreasure
-    ::getLootFromLootTableSeed<true>(&lootTableSeed);
-
+    // print details
     std::cout << std::endl << "Loot:" << loot << std::endl << std::endl;
-
     std::cout << "Combined Items:" << std::endl;
     loot.printCombinedItems();
-
+    */
 
 
 

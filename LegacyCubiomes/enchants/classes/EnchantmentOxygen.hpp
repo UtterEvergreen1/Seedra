@@ -4,16 +4,19 @@
 
 
 class EnchantmentOxygen : public Enchantment {
+private:
+    static constexpr inline int LEVELS_MIN[3] = {10, 20, 30};
+    static constexpr inline int LEVELS_MAX[3] = {40, 50, 60};
 public:
     EnchantmentOxygen(std::string name, const Rarity *rarity) :
         Enchantment(std::move(name), rarity, &Type::ARMOR_HEAD, EnumName::OXYGEN, 3) {};
 
     int getMinCost(int enchantmentLevel) override {
-        return 10 * enchantmentLevel;
+        return LEVELS_MIN[enchantmentLevel];
     }
 
     int getMaxCost(int enchantmentLevel) override {
-        return this->getMinCost(enchantmentLevel) + 30;
+        return LEVELS_MAX[enchantmentLevel];
     }
 };
 

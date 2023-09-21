@@ -14,7 +14,7 @@ public:
     }
 
     int getMaxCost(int enchantmentLevel) override {
-        return getMinCost(enchantmentLevel) + 40;
+        return 41;
     }
 };
 

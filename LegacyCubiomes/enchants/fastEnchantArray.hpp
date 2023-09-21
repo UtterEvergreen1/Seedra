@@ -6,14 +6,42 @@
 #include "LegacyCubiomes/loot/base_classes/loot_classes.hpp"
 
 
-class IndexArray {
+class IndexArraySmall {
+private:
+    static constexpr int ITEM_COUNT = 12;
+    int indexes[ITEM_COUNT] = {0};
+    int currentIndex = 0;
+
+public:
+    IndexArraySmall() = default;
+    inline void clear() {
+        currentIndex = 0;
+    }
+
+    ND inline int getValueAt(int indexIn) const {return indexes[indexIn];}
+    ND inline int getLastValueIndex() const {return indexes[currentIndex - 1];}
+
+    ND inline int getIndex() const {return currentIndex;}
+
+    inline void addItem(int indexIn) {indexes[currentIndex++] = indexIn;}
+
+    inline int getEnchantmentIndex(int indexIn) {
+        for (int i = 0; i < currentIndex; i++)
+            if (currentIndex > indexes[i])
+                indexIn--;
+        return indexIn;
+    }
+};
+
+
+class IndexArrayLarge {
 private:
     static constexpr int ITEM_COUNT = 16;
     int indexes[ITEM_COUNT] = {0};
     int currentIndex = 0;
 
 public:
-    IndexArray() = default;
+    IndexArrayLarge() = default;
     inline void clear() {
         currentIndex = 0;
     }
@@ -40,8 +68,8 @@ public:
     int totalWeight = 0;
     int totalEnchants = 0;
 
-    IndexArray deletions = IndexArray();
-    IndexArray enchants = IndexArray();
+    IndexArrayLarge deletions = IndexArrayLarge();
+    IndexArraySmall enchants = IndexArraySmall();
     EnchantmentData data[Enchantment::MAX_ENCHANTMENT_COUNT] = {};
     ELDataArray() = default;
 

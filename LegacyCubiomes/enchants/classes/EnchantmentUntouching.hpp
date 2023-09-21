@@ -14,7 +14,7 @@ public:
     }
 
     int getMaxCost(int enchantmentLevel) override {
-        return Enchantment::getMinCost(enchantmentLevel) + 50;
+        return 61;
     }
 
     ND bool canApplyTogether(const Enchantment *enchantment) const override {

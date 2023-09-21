@@ -4,17 +4,20 @@
 
 
 class EnchantmentFrostWalker : public Enchantment {
+private:
+    static constexpr inline int LEVELS_MIN[2] = {10, 20};
+    static constexpr inline int LEVELS_MAX[2] = {25, 35};
 public:
 
     EnchantmentFrostWalker(std::string name, const Rarity *rarity) :
         Enchantment(std::move(name), rarity, &Type::ARMOR_FEET, FROST_WALKER, 2, true) {};
 
     int getMinCost(int enchantmentLevel) override {
-        return enchantmentLevel * 10;
+        return LEVELS_MIN[enchantmentLevel];
     }
 
     int getMaxCost(int enchantmentLevel) override {
-        return this->getMinCost(enchantmentLevel) + 15;
+        return LEVELS_MAX[enchantmentLevel];
     }
 
     ND bool canApplyTogether(const Enchantment *enchantment) const override {

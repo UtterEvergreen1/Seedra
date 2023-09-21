@@ -15,10 +15,6 @@ public:
     int getMaxCost(int enchantmentLevel) override {
         return 50;
     }
-
-    static bool func_190936_d() {
-        return true;
-    }
 };
 
 

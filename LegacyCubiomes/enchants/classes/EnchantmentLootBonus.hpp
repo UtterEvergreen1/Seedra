@@ -4,17 +4,20 @@
 
 
 class EnchantmentLootBonus : public Enchantment {
+private:
+    static constexpr inline int LEVELS_MIN[3] = {15, 24, 33};
+    static constexpr inline int LEVELS_MAX[3] = {61, 71, 81};
 public:
 
     EnchantmentLootBonus(const std::string& name, const Rarity *rarity, const Type::Base* type) :
         Enchantment(name, rarity, type, EnumName::LOOT_BONUS, 3) {};
 
     int getMinCost(int enchantmentLevel) override {
-        return 15 + (enchantmentLevel - 1) * 9;
+        return LEVELS_MIN[enchantmentLevel];
     }
 
     int getMaxCost(int enchantmentLevel) override {
-        return Enchantment::getMinCost(enchantmentLevel) + 50;
+        return LEVELS_MAX[enchantmentLevel];
     }
 
     ND bool canApplyTogether(const Enchantment *enchantment) const override {

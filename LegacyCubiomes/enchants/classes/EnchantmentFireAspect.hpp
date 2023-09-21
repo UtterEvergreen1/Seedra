@@ -4,6 +4,9 @@
 
 
 class EnchantmentFireAspect : public Enchantment {
+private:
+    static constexpr inline int LEVELS_MIN[2] = {};
+    static constexpr inline int LEVELS_MAX[2] = {};
 public:
 
     EnchantmentFireAspect(std::string name, const Rarity *rarity) :
@@ -15,7 +18,7 @@ public:
     }
 
     int getMaxCost(int enchantmentLevel) override {
-        return Enchantment::getMinCost(enchantmentLevel) + 50;
+        return enchantmentLevel * 10 + 51;
     }
 };
 

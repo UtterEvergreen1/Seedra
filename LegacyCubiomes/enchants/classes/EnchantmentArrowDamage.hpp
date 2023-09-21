@@ -4,6 +4,9 @@
 
 
 class EnchantmentArrowDamage : public Enchantment {
+private:
+    static constexpr inline int LEVELS_MIN[5] = {9, 19, 29, 39, 49};
+    static constexpr inline int LEVELS_MAX[5] = {16, 26, 36, 46, 56};
 public:
 
     EnchantmentArrowDamage(const std::string& name, const Rarity *rarity) :
@@ -11,11 +14,11 @@ public:
     };
 
     int getMinCost(int enchantmentLevel) override {
-        return enchantmentLevel * 10 - 9;
+        return LEVELS_MIN[enchantmentLevel];
     }
 
     int getMaxCost(int enchantmentLevel) override {
-        return this->getMinCost(enchantmentLevel) + 15;
+        return LEVELS_MAX[enchantmentLevel];
     }
 };
 

@@ -4,17 +4,21 @@
 
 
 class EnchantmentArrowKnockback : public Enchantment {
+private:
+    static constexpr inline int LEVELS_MIN[2] = {12, 32};
+    static constexpr inline int LEVELS_MAX[2] = {37, 57};
+
 public:
 
     EnchantmentArrowKnockback(std::string name, const Rarity *rarity) :
         Enchantment(std::move(name), rarity, &Type::BOW, EnumName::ARROW_KNOCKBACK, 2) {};
 
     int getMinCost(int enchantmentLevel) override {
-        return enchantmentLevel * 20 - 8;
+        return LEVELS_MIN[enchantmentLevel];
     }
 
     int getMaxCost(int enchantmentLevel) override {
-        return this->getMinCost(enchantmentLevel) + 25;
+        return LEVELS_MAX[enchantmentLevel];
     }
 };
 
