@@ -39,7 +39,7 @@ namespace Structure {
 
         Derived::HAS_SECOND_BIOME_CHECK = !biomeListSecond.empty();
 
-        // This will only trigger if the setup values are changed, but it is neccassary to prevent an infinte loop in getPosition()
+        // This will only trigger if the setup values are changed, but it is necessary to prevent an infinite loop in getPosition()
         if EXPECT_FALSE(Derived::CHUNK_RANGE * Derived::CHUNK_RANGE >= attempts)
             attempts = Derived::CHUNK_RANGE * Derived::CHUNK_RANGE;
 
