@@ -30,22 +30,16 @@ public:
 
 
     struct EnchantWithLevelsItem {
-        template<bool allowTreasure>
         static void apply(uint64_t *rng, ItemStack *stack, int min, int max);
-        template<bool allowTreasure>
         static void apply(uint64_t *rng, ItemStack *stack, int level);
-        template<bool allowTreasure>
         static EnchDataVec_t buildEnchantmentList(uint64_t *rng, ItemStack *itemStackIn, int level);
         static void removeIncompatible(EnchDataVec_t& enchDataList, EnchantmentData enchData);
-        template<bool allowTreasure>
         static void addRandomEnchantment(uint64_t *rng, ItemStack *itemStackIn, int level);
-        template<bool allowTreasure>
         static EnchDataVec_t getEnchantmentDataList(int enchantmentLevelIn, ItemStack *ItemStackIn);
     };
 
 
     struct EnchantWithLevelsBook {
-        template<bool allowTreasure>
         static void apply(uint64_t *rng, ItemStack *stack, int level);
         static ELDataArray* buildEnchantmentList(uint64_t *rng, ItemStack *itemStackIn, int level);
     };
