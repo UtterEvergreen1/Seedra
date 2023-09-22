@@ -62,11 +62,9 @@ public:
 };
 
 
-class EnchantedBookEnchantsLookupTable;
 
 class ELDataArray {
 public:
-    EnchantedBookEnchantsLookupTable* rootPtr = nullptr;
     int totalWeight = 0;
     int totalEnchants = 0;
 
@@ -74,10 +72,6 @@ public:
     IndexArraySmall enchants = IndexArraySmall();
     EnchantmentData data[Enchantment::MAX_ENCHANTMENT_COUNT] = {};
     ELDataArray() = default;
-
-    explicit ELDataArray(EnchantedBookEnchantsLookupTable* rootPtrIn) {
-        rootPtr = rootPtrIn;
-    }
 
     void addData(Enchantment* ench, int id);
 
@@ -104,13 +98,13 @@ public:
 
 class EnchantedBookEnchantsLookupTable {
 private:
-    ELDataArray* dataArrays[48] = {nullptr};
+    static constexpr int VECTOR_COUNT = 48;
+    ELDataArray* dataArrays[VECTOR_COUNT] = {nullptr};
     bool areVectorsSetup = false;
 
 public:
     EnchantedBookEnchantsLookupTable() = default;
     MU explicit EnchantedBookEnchantsLookupTable(bool allocate) {if (allocate) setup();}
-
     ~EnchantedBookEnchantsLookupTable() {deallocate();}
     ND MU bool isSetup() const {return areVectorsSetup;}
 
@@ -129,8 +123,8 @@ public:
 
     void deallocate();
 
-    int TOTAL_WEIGHT = 0;
-    int CUMULATIVE_WEIGHT_ALL[Enchantment::MAX_ENCHANTMENT_COUNT] = {0};
+    static int TOTAL_WEIGHT;
+    static int CUMULATIVE_WEIGHT_ALL[Enchantment::MAX_ENCHANTMENT_COUNT];
 };
 
 

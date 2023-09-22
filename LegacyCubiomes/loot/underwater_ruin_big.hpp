@@ -9,9 +9,8 @@ namespace loot_tables {
     public:
         static void setup();
 
-        template <bool shuffle>
-        static Container getLootFromLootTableSeed(
-                EnchantmentHelper<true>* helper, uint64_t* lootTableSeed);
+        template<bool shuffle>
+        static Container getLootFromLootTableSeed(uint64_t *lootTableSeed);
     };
 
     void UnderwaterRuinBig::setup() {
@@ -39,8 +38,8 @@ namespace loot_tables {
     }
 
 
-    template <bool shuffle>
-    Container UnderwaterRuinBig::getLootFromLootTableSeed(EnchantmentHelper<true>* helper, uint64_t* lootTableSeed) {
+    template<bool shuffle>
+    Container UnderwaterRuinBig::getLootFromLootTableSeed(uint64_t* lootTableSeed) {
         int rollCount;
         int rollIndex;
         std::vector<ItemStack> chestContents;
@@ -53,11 +52,11 @@ namespace loot_tables {
 
                 switch (result.item->getID()) {
                     case (Items::ENCHANTED_BOOK_ID): {
-                        helper->enchantRandomlyBook.apply(lootTableSeed, &result);
+                        EnchantmentHelper::EnchantRandomlyBook::apply(lootTableSeed, &result);
                         break;
                     }
                     case (Items::FISHING_ROD_ID): {
-                        helper->enchantRandomlyItem.apply(lootTableSeed, &result);
+                        EnchantmentHelper::EnchantRandomlyItem::apply(lootTableSeed, &result);
                         break;
                     }
                     default:

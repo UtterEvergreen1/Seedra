@@ -9,10 +9,8 @@ namespace loot_tables {
     class AbandonedMineshaft : public Loot<AbandonedMineshaft> {
     public:
         static void setup();
-
-        template <bool isAquatic, bool shuffle>
-        static Container getLootFromLootTableSeed(
-                EnchantmentHelper<isAquatic>* helper, uint64_t* lootTableSeed);
+        template <bool shuffle>
+        static Container getLootFromLootTableSeed(uint64_t* lootTableSeed);
     };
 
     void AbandonedMineshaft::setup() {
@@ -55,9 +53,8 @@ namespace loot_tables {
     }
 
 
-    template <bool isAquatic, bool shuffle>
-    Container AbandonedMineshaft::getLootFromLootTableSeed(
-            EnchantmentHelper<isAquatic>* helper, uint64_t* lootTableSeed) {
+    template <bool shuffle>
+    Container AbandonedMineshaft::getLootFromLootTableSeed(uint64_t* lootTableSeed) {
         int rollCount;
         int rollIndex;
         std::vector<ItemStack> chestContents;
@@ -70,8 +67,7 @@ namespace loot_tables {
                 ItemStack result = table.createLootRoll<false>(lootTableSeed);
 
                 if EXPECT_FALSE(result.item->getID() == Items::ENCHANTED_BOOK_ID) {
-                    helper->enchantRandomlyBook.apply(lootTableSeed, &result);
-                    // helper->EnchantWithLevelsBook.apply<true>(lootTableSeed, &result, 30);
+                    EnchantmentHelper::EnchantRandomlyBook::apply(lootTableSeed, &result);
                 }
 
                 chestContents.push_back(result);

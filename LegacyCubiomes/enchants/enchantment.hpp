@@ -40,16 +40,14 @@ class EnchantmentTridentChanneling;
 class EnchantmentTridentImpaler;
 class EnchantmentTridentLoyalty;
 class EnchantmentTridentRiptide;
+class EnchantmentHelper;
 
-template<bool> class EnchantmentHelper;
 
 class Enchantment {
 private:
     static inline bool isSetup = false;
 public:
-    friend class EnchantmentHelper<true>;
-    friend class EnchantmentHelper<false>;
-
+    friend class EnchantmentHelper;
     static constexpr int MAX_ENCHANTMENT_COUNT = 33;
 
     static inline std::map<int, Enchantment*> REGISTRY = {};
@@ -72,35 +70,21 @@ public:
         class Wearable   : public Base {public: bool canEnchantItem(const Items::Item *itemIn) const override;};
         class Trident    : public Base {public: bool canEnchantItem(const Items::Item *itemIn) const override;};
 
-        static inline const All ALL;
-        static inline const Armor ARMOR;
-        static inline const ArmorFeet ARMOR_FEET;
-        static inline const ArmorLegs ARMOR_LEGS;
-        static inline const ArmorChest ARMOR_CHEST;
-        static inline const ArmorHead ARMOR_HEAD;
-        static inline const Weapon WEAPON;
-        static inline const Digger DIGGER;
-        static inline const FishingRod FISHING_ROD;
-        static inline const Breakable BREAKABLE;
-        static inline const Bow BOW;
-        static inline const Wearable WEARABLE;
-        static inline const Trident TRIDENT;
+        static const All ALL;
+        static const Armor ARMOR;
+        static const ArmorFeet ARMOR_FEET;
+        static const ArmorLegs ARMOR_LEGS;
+        static const ArmorChest ARMOR_CHEST;
+        static const ArmorHead ARMOR_HEAD;
+        static const Weapon WEAPON;
+        static const Digger DIGGER;
+        static const FishingRod FISHING_ROD;
+        static const Breakable BREAKABLE;
+        static const Bow BOW;
+        static const Wearable WEARABLE;
+        static const Trident TRIDENT;
 
-        static inline std::vector<const Base*> ALL_ITERABLE = {
-                &Type::ALL,
-                &Type::ARMOR,
-                &Type::ARMOR_FEET,
-                &Type::ARMOR_LEGS,
-                &Type::ARMOR_CHEST,
-                &Type::ARMOR_HEAD,
-                &Type::WEAPON,
-                &Type::DIGGER,
-                &Type::FISHING_ROD,
-                &Type::BREAKABLE,
-                &Type::BOW,
-                &Type::WEARABLE,
-                &Type::TRIDENT
-        };
+        static std::vector<const Base*> ALL_ITERABLE;
     };
 
     enum EnumName {
@@ -153,12 +137,7 @@ public:
     Enchantment(std::string name, const Rarity *rarity, const Type::Base* type, EnumName enchantName, int maxLevel, bool isTreasure = false) :
             name(std::move(name)), rarity(rarity), type(type), enumID(enchantName), maxLevel(maxLevel), isTreasure(isTreasure) {};
 
-    ~Enchantment() {
-        for (auto &pair : REGISTRY) {
-            delete pair.second;
-        }
-        REGISTRY.clear();
-    }
+    ~Enchantment();
 
     virtual int getMinCost(int enchantmentLevel);
     virtual int getMaxCost(int enchantmentLevel);
@@ -171,6 +150,7 @@ public:
 
 private:
     static void registerEnch(int *id, Enchantment* enchantment);
+    static void initializeTypeIterable();
 
 };
 

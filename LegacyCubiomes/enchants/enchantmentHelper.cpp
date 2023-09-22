@@ -7,26 +7,20 @@
 
 
 template<bool allowTreasure>
-void EnchantWithLevelsItem::apply(uint64_t *rng, ItemStack *stack, int min, int max) {
+void EnchantmentHelper::EnchantWithLevelsItem::apply(uint64_t *rng, ItemStack *stack, int min, int max) {
     int rand = nextInt(rng, min, max);
     addRandomEnchantment<allowTreasure>(rng, stack, rand);
 }
-template void EnchantWithLevelsItem::apply<true>(uint64_t*, ItemStack*, int, int);
-template void EnchantWithLevelsItem::apply<false>(uint64_t*, ItemStack*, int, int);
-
-
 
 
 template<bool allowTreasure>
-void EnchantWithLevelsItem::apply(uint64_t *rng, ItemStack *stack, int level) {
+void EnchantmentHelper::EnchantWithLevelsItem::apply(uint64_t *rng, ItemStack *stack, int level) {
     addRandomEnchantment<allowTreasure>(rng, stack, level);
 }
-template void EnchantWithLevelsItem::apply<true>(uint64_t *, ItemStack *, int);
-template void EnchantWithLevelsItem::apply<false>(uint64_t *, ItemStack *, int);
 
 
 template<bool allowTreasure>
-EnchDataVec_t EnchantWithLevelsItem::buildEnchantmentList(uint64_t *rng, ItemStack *itemStackIn, int level) {
+EnchDataVec_t EnchantmentHelper::EnchantWithLevelsItem::buildEnchantmentList(uint64_t *rng, ItemStack *itemStackIn, int level) {
     std::vector<EnchantmentData> list;
     list.reserve(MAX_ENCHANT_LIST_SIZE);
 
@@ -58,12 +52,9 @@ EnchDataVec_t EnchantWithLevelsItem::buildEnchantmentList(uint64_t *rng, ItemSta
     }
     return list;
 }
-template EnchDataVec_t EnchantWithLevelsItem::buildEnchantmentList<false>(uint64_t*, ItemStack*, int);
-template EnchDataVec_t EnchantWithLevelsItem::buildEnchantmentList<true>(uint64_t*, ItemStack*, int);
 
 
-
-void EnchantWithLevelsItem::removeIncompatible(EnchDataVec_t& enchDataList, EnchantmentData enchData) {
+void EnchantmentHelper::EnchantWithLevelsItem::removeIncompatible(EnchDataVec_t& enchDataList, EnchantmentData enchData) {
     std::cout << "REMOVE_INCOMPATIBLE" << std::endl;
 
     for (auto it = enchDataList.begin(); it != enchDataList.end(); ) {
@@ -74,25 +65,22 @@ void EnchantWithLevelsItem::removeIncompatible(EnchDataVec_t& enchDataList, Ench
             ++it;
         }
     }
+
 }
 
 
-
 template<bool allowTreasure>
-void EnchantWithLevelsItem::addRandomEnchantment(uint64_t *const rng, ItemStack *const itemStackIn, int level) {
+inline void EnchantmentHelper::EnchantWithLevelsItem::addRandomEnchantment(uint64_t *const rng, ItemStack *const itemStackIn, int level) {
     EnchDataVec_t enchantmentList = buildEnchantmentList<allowTreasure>(rng, itemStackIn, level);
 
     for (const auto &enchantmentData : enchantmentList) {
         itemStackIn->addEnchantment(enchantmentData.obj, enchantmentData.level);
     }
 }
-template void EnchantWithLevelsItem::addRandomEnchantment<true>(uint64_t*, ItemStack*, int);
-template void EnchantWithLevelsItem::addRandomEnchantment<false>(uint64_t*, ItemStack*, int);
-
 
 
 template<bool allowTreasure>
-EnchDataVec_t EnchantWithLevelsItem::getEnchantmentDataList(int enchantmentLevelIn, ItemStack *ItemStackIn) {
+EnchDataVec_t EnchantmentHelper::EnchantWithLevelsItem::getEnchantmentDataList(int enchantmentLevelIn, ItemStack *ItemStackIn) {
     EnchDataVec_t list;
     Enchantment *pointer = nullptr;
     bool added;
@@ -121,8 +109,6 @@ EnchDataVec_t EnchantWithLevelsItem::getEnchantmentDataList(int enchantmentLevel
 
     return list;
 }
-template EnchDataVec_t EnchantWithLevelsItem::getEnchantmentDataList<false>(int , ItemStack*);
-template EnchDataVec_t EnchantWithLevelsItem::getEnchantmentDataList<true>(int , ItemStack*);
 
 
 //==============================================================================
@@ -130,18 +116,17 @@ template EnchDataVec_t EnchantWithLevelsItem::getEnchantmentDataList<true>(int ,
 //==============================================================================
 
 
+EnchantedBookEnchantsLookupTable EnchantmentHelper::BOOK_LEVEL_TABLE;
+
 
 template<bool allowTreasure>
-void EnchantWithLevelsBook::apply(uint64_t *rng, ItemStack *stack, int level) {
+void EnchantmentHelper::EnchantWithLevelsBook::apply(uint64_t *rng, ItemStack *stack, int level) {
     ELDataArray* enchantmentVector = buildEnchantmentList(rng, stack, level);
     enchantmentVector->addEnchantments(stack);
 }
-template void EnchantWithLevelsBook::apply<false>(uint64_t*, ItemStack*, int);
-template void EnchantWithLevelsBook::apply<true>(uint64_t*, ItemStack*, int);
 
 
-
-ELDataArray* EnchantWithLevelsBook::buildEnchantmentList(uint64_t *rng, ItemStack *itemStackIn, int level) {
+ELDataArray* EnchantmentHelper::EnchantWithLevelsBook::buildEnchantmentList(uint64_t *rng, ItemStack *itemStackIn, int level) {
 
     const Items::Item* item = itemStackIn->getItem();
     int cost = (item->getCost() >> 2) + 1;
@@ -179,8 +164,7 @@ ELDataArray* EnchantWithLevelsBook::buildEnchantmentList(uint64_t *rng, ItemStac
 //==============================================================================
 
 
-
-void EnchantRandomlyItem::apply(uint64_t *rng, ItemStack *stack) {
+void EnchantmentHelper::EnchantRandomlyItem::apply(uint64_t *rng, ItemStack *stack) {
     Enchantment *enchantmentPointer;
 
     std::vector<Enchantment*> list;
@@ -202,12 +186,31 @@ void EnchantRandomlyItem::apply(uint64_t *rng, ItemStack *stack) {
 //==============================================================================
 
 
-
-void EnchantRandomlyBook::apply(uint64_t *rng, ItemStack *stack) {
+void EnchantmentHelper::EnchantRandomlyBook::apply(uint64_t *rng, ItemStack *stack) {
     Enchantment *enchantmentPointer;
     int rand = nextInt(rng, (int)Enchantment::REGISTRY.size());
     enchantmentPointer = Enchantment::REGISTRY[rand];
     int level = nextInt(rng, enchantmentPointer->minLevel, enchantmentPointer->maxLevel);
     stack->addEnchantment(enchantmentPointer, level);
 }
+
+
+//==============================================================================
+//                              Template Instantiation
+//==============================================================================
+
+
+template void EnchantmentHelper::EnchantWithLevelsItem::apply<true>(uint64_t*, ItemStack*, int, int);
+template void EnchantmentHelper::EnchantWithLevelsItem::apply<true>(uint64_t*, ItemStack*, int);
+template void EnchantmentHelper::EnchantWithLevelsItem::apply<false>(uint64_t*, ItemStack*, int, int);
+template void EnchantmentHelper::EnchantWithLevelsItem::apply<false>(uint64_t*, ItemStack*, int);
+
+template EnchDataVec_t EnchantmentHelper::EnchantWithLevelsItem::buildEnchantmentList<true>(uint64_t*, ItemStack*, int);
+template EnchDataVec_t EnchantmentHelper::EnchantWithLevelsItem::buildEnchantmentList<false>(uint64_t*, ItemStack*, int);
+
+template void EnchantmentHelper::EnchantWithLevelsItem::addRandomEnchantment<true>(uint64_t*, ItemStack*, int);
+template void EnchantmentHelper::EnchantWithLevelsItem::addRandomEnchantment<false>(uint64_t*, ItemStack*, int);
+
+template void EnchantmentHelper::EnchantWithLevelsBook::apply<true>(uint64_t*, ItemStack*, int);
+template void EnchantmentHelper::EnchantWithLevelsBook::apply<false>(uint64_t*, ItemStack*, int);
 

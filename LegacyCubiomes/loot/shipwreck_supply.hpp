@@ -9,8 +9,7 @@ namespace loot_tables {
     public:
         static void setup();
         template <bool shuffle>
-        static Container getLootFromLootTableSeed(
-                EnchantmentHelper<true>* helper, uint64_t* lootTableSeed);
+        static Container getLootFromLootTableSeed(uint64_t* lootTableSeed);
     };
 
     void ShipwreckSupply::setup() {
@@ -38,7 +37,7 @@ namespace loot_tables {
 
 
     template <bool shuffle>
-    Container ShipwreckSupply::getLootFromLootTableSeed(EnchantmentHelper<true>* helper, uint64_t* lootTableSeed) {
+    Container ShipwreckSupply::getLootFromLootTableSeed(uint64_t* lootTableSeed) {
         int rollCount;
         int rollIndex;
         std::vector<ItemStack> chestContents;
@@ -50,7 +49,7 @@ namespace loot_tables {
                 ItemStack result = table.createLootRoll<false>(lootTableSeed);
 
                 if (result.item->getItemType() == Items::ItemType::ItemArmor) {
-                    helper->enchantRandomlyItem.apply(lootTableSeed, &result);
+                    EnchantmentHelper::EnchantRandomlyItem::apply(lootTableSeed, &result);
                 }
 
                 chestContents.push_back(result);

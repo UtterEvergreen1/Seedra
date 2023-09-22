@@ -8,8 +8,8 @@ namespace loot_tables {
     class DesertTemple : public Loot<DesertTemple> {
     public:
         static void setup();
-        template <bool isAquatic, bool shuffle>
-        static Container getLootFromLootTableSeed(EnchantmentHelper<isAquatic>* helper, uint64_t* lootTableSeed);
+        template<bool shuffle>
+        static Container getLootFromLootTableSeed(uint64_t *lootTableSeed);
     };
 
     void DesertTemple::setup() {
@@ -45,8 +45,8 @@ namespace loot_tables {
         maxItemsPossible = 8;
     }
 
-    template <bool isAquatic, bool shuffle>
-    Container DesertTemple::getLootFromLootTableSeed(EnchantmentHelper<isAquatic>* helper, uint64_t* lootTableSeed) {
+    template<bool shuffle>
+    Container DesertTemple::getLootFromLootTableSeed(uint64_t *lootTableSeed) {
         int rollCount;
         int rollIndex;
         std::vector<ItemStack> chestContents;
@@ -62,7 +62,7 @@ namespace loot_tables {
                         continue;
                     }
                     case (Items::ENCHANTED_BOOK_ID): {
-                        helper->enchantRandomlyBook.template apply(lootTableSeed, &result);
+                        EnchantmentHelper::EnchantRandomlyBook::apply(lootTableSeed, &result);
                         break;
                     }
                     default:

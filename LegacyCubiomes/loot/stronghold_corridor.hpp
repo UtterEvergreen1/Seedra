@@ -13,10 +13,8 @@ namespace loot_tables {
     class StrongholdCorridor : public StrongholdLoot<StrongholdCorridor<isAquatic>> {
     public:
         static void setup();
-
         template <bool shuffle>
-        static Container getLootFromLootTableSeed(
-                EnchantmentHelper<isAquatic>* helper, uint64_t* lootTableSeed);
+        static Container getLootFromLootTableSeed(uint64_t* lootTableSeed);
 
         template<bool checkCaves, bool shuffle>
         ND static Container getAltarChestLoot(int64_t seed,
@@ -60,7 +58,7 @@ namespace loot_tables {
 
     template<bool isAquatic>
     template <bool shuffle>
-    Container StrongholdCorridor<isAquatic>::getLootFromLootTableSeed(EnchantmentHelper<isAquatic>* helper, uint64_t* lootTableSeed) {
+    Container StrongholdCorridor<isAquatic>::getLootFromLootTableSeed(uint64_t* lootTableSeed) {
         int rollCount;
         int rollIndex;
         std::vector<ItemStack> chestContents;
@@ -73,7 +71,7 @@ namespace loot_tables {
                 ItemStack result = table.createLootRoll<false>(lootTableSeed);
 
                 if EXPECT_FALSE(result.item->getID() == Items::ENCHANTED_BOOK_ID) {
-                    helper->EnchantWithLevelsBook.template apply<true>(lootTableSeed, &result, 30);
+                    EnchantmentHelper::EnchantWithLevelsBook::apply<true>(lootTableSeed, &result, 30);
                 }
 
                 chestContents.push_back(result);
