@@ -62,7 +62,7 @@ namespace loot_tables {
                         continue;
                     }
                     case (Items::ENCHANTED_BOOK_ID): {
-                        EnchantmentHelper::EnchantRandomly::apply<true>(lootTableSeed, &result);
+                        EnchantmentHelper::EnchantRandomlyBook::apply(lootTableSeed, &result);
                         break;
                     }
                     default:

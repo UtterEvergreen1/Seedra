@@ -34,7 +34,7 @@
 
 
 
-bool Enchantment::isSetup = false;
+
 
 
 Enchantment::~Enchantment() {
@@ -91,7 +91,7 @@ const Enchantment::Type::Trident Enchantment::Type::TRIDENT;
 
 std::vector<const Enchantment::Type::Base*> Enchantment::Type::ALL_ITERABLE = {};
 
-std::map<int, Enchantment*> Enchantment::REGISTRY = {};
+// std::map<int, Enchantment*> Enchantment::REGISTRY = {};
 
 int Enchantment::getMinCost(int enchantmentLevel) {
     return 1 + enchantmentLevel * 10;
@@ -270,7 +270,6 @@ void Enchantment::registerEnchantments() {
 
 
 
-int Enchantment::count = 0;
 template void Enchantment::registerEnchantments<true>();
 template void Enchantment::registerEnchantments<false>();
 

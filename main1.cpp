@@ -4,7 +4,7 @@
 #include "LegacyCubiomes/structures/structure_generation/stronghold_generator/GenStronghold.hpp"
 #include "LegacyCubiomes/loot/base_classes/loot_classes.hpp"
 #include "LegacyCubiomes/enchants/enchantmentHelper.hpp"
-#include "LegacyCubiomes/enchants/enchantmentHelperBook.hpp"
+
 #include "LegacyCubiomes/loot/setup.hpp"
 
 
@@ -50,8 +50,8 @@ Container getLootFromLootTableSeed(uint64_t* lootTableSeed) {
 
 
 
-
-int findItemFromLootTableSeed(uint64_t* lootTableSeed, int itemID) {
+template <bool isAquatic>
+int findItemFromLootTableSeed(EnchantmentHelper<isAquatic>* helper, uint64_t* lootTableSeed, int itemID) {
     int rollCount;
     int rollIndex;
     std::vector<ItemStack> chestContents;
@@ -66,7 +66,7 @@ int findItemFromLootTableSeed(uint64_t* lootTableSeed, int itemID) {
             ItemStack result = table.createLootRoll<false>(lootTableSeed);
 
             if (result.item->getID() == ENCHANTED_BOOK_ID) {
-                EnchantmentHelperBook::EnchantWithLevels::apply(lootTableSeed, &result, 30);
+                helper->enchantWithLevelsBook.apply<true>(lootTableSeed, &result, 30);
             }
 
             if (result.item->getID() == itemID) {
@@ -82,15 +82,15 @@ int findItemFromLootTableSeed(uint64_t* lootTableSeed, int itemID) {
     return total;
 }
 
-
-void findSeedWithItem(int itemID, int total, int count) {
+template <bool isAquatic>
+void findSeedWithItem(EnchantmentHelper<isAquatic>* helper, int itemID, int total, int count) {
     uint64_t start = 216000000;
     uint64_t seed = 0;
     int amount;
 
     bool found;
     while (true) {
-        amount = findItemFromLootTableSeed(&seed, itemID);
+        amount = findItemFromLootTableSeed(&helper, &seed, itemID);
         found = amount >= total;
         if (found) {
             std::cout << start << ", ";
@@ -111,8 +111,9 @@ void findSeedWithItem(int itemID, int total, int count) {
 int main(int argc, char* argv[]) {
     constexpr bool isAquatic = false;
 
-    Enchantment::registerEnchantments<isAquatic>();
-    EnchantmentHelperBook::setup<isAquatic>();
+    EnchantmentHelper<isAquatic> helper;
+
+    // EnchantmentHelper::setup<isAquatic>();
 
     // std::cout << Pos2D(238, -368).toChunkPos() << std::endl;
 
@@ -125,7 +126,7 @@ int main(int argc, char* argv[]) {
     auto start = getMilliseconds();
     for (int i = 0; i < ROLLS; i++) {
         setSeed(&lootTableSeed, lootTableSeed);
-        loot = loot_tables::StrongholdLibrary::getLootFromLootTableSeed<false>(&lootTableSeed);
+        loot = loot_tables::StrongholdLibrary::getLootFromLootTableSeed<isAquatic, false>(&helper, &lootTableSeed);
     }
 
     auto end = getMilliseconds();
@@ -135,20 +136,20 @@ int main(int argc, char* argv[]) {
     " | time: " << diff << "ms" << std::endl;
 
 
-    /*
+
     // find specific item in loot table
-    findSeedWithItem(Items::ENCHANTED_BOOK_ID, 10, 1); int x; std::cin >> x;
+    // findSeedWithItem(Items::ENCHANTED_BOOK_ID, 10, 1); int x; std::cin >> x;
 
 
-    uint64_t lootTableSeed = 216765366;
+    uint64_t lootTableSeed1 = 216765366;
 
-    Container loot = loot_tables::StrongholdLibrary::getLootFromLootTableSeed<true>(&lootTableSeed);
+    Container loot1 = loot_tables::StrongholdLibrary::getLootFromLootTableSeed<isAquatic, true>(&helper, &lootTableSeed1);
 
     // print details
-    std::cout << std::endl << "Loot:" << loot << std::endl << std::endl;
+    std::cout << std::endl << "Loot:" << loot1 << std::endl << std::endl;
     std::cout << "Combined Items:" << std::endl;
-    loot.printCombinedItems();
-    */
+    loot1.printCombinedItems();
+
 
 
 

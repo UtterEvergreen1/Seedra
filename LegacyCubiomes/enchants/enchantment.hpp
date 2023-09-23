@@ -40,15 +40,18 @@ class EnchantmentTridentChanneling;
 class EnchantmentTridentImpaler;
 class EnchantmentTridentLoyalty;
 class EnchantmentTridentRiptide;
+class EnchantmentHelper;
 
 
 class Enchantment {
 private:
-    static bool isSetup;
+    static inline bool isSetup = false;
 public:
-    static std::map<int, Enchantment*> REGISTRY;
+    friend class EnchantmentHelper;
     static constexpr int MAX_ENCHANTMENT_COUNT = 33;
-    static int count;
+
+    static inline std::map<int, Enchantment*> REGISTRY = {};
+    static inline int count = 0;
 
     class Type {
     public:
@@ -115,7 +118,6 @@ public:
         TRIDENT_CHANNELING,
         NONE
     };
-
 
     // attributes of each class
     const std::string name;

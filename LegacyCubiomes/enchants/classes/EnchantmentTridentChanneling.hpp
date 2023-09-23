@@ -6,7 +6,7 @@
 class EnchantmentTridentChanneling : public Enchantment {
 public:
     EnchantmentTridentChanneling(std::string name, const Rarity *rarity) :
-            Enchantment(std::move(name), rarity, &Type::TRIDENT,
+            Enchantment(std::move(name), rarity, &Enchantment::Type::TRIDENT,
                         EnumName::TRIDENT_CHANNELING, 1) {};
 
     int getMinCost(int enchantmentLevel) override {
