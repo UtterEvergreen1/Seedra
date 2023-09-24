@@ -99,8 +99,7 @@ namespace Structure {
     const int DynamicStructure<Mansion>::SECOND_RADIUS = 32;
     template <>
     const uint64_t DynamicStructure<Mansion>::MAIN_VALID_BIOMES =
-            (1ULL << dark_forest) |
-            (1ULL << dark_forest_hills);
+            (1ULL << dark_forest);
     template <>
     const uint64_t DynamicStructure<Mansion>::SECONDARY_VALID_BIOMES = DEFAULT_SECONDARY_VALID_BIOMES;
     template <>
