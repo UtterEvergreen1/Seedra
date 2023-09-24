@@ -1,17 +1,41 @@
 #pragma once
 
-enum DIMENSIONS {
+enum DIMENSION {
     NETHER   = -1,
     HELL     = -1,
     OVERWORLD = 0,
     END       = 1
 };
 
-enum CONSOLES {
+enum CONSOLE {
     XBOX = 0,
     PS3  = 1,
     WIIU = 1,
     PS4  = 2
+};
+
+enum LCEVERSION
+{
+    //PISTON,
+    //GENERATION, // not supported yet
+    ADVENTURE,
+    POTIONS,
+    HORSE,
+    BOUNTIFUL,
+    ELYTRA,
+    AQUATIC,
+    PS4_VP
+};
+
+/**
+ * Minecraft Java versions
+ */
+enum MCversion
+{
+    MC_1_0, // <=1.0 Experimental!
+    MC_1_1,  MC_1_2,  MC_1_3,  MC_1_4,  MC_1_5,  MC_1_6,
+    MC_1_7,  MC_1_8,  MC_1_9,  MC_1_10, MC_1_11, MC_1_12,
+    MC_1_13, MC_1_14
 };
 
 enum class DIRECTION {
@@ -45,6 +69,30 @@ inline static int getChunkWorldBounds(WORLDSIZE worldSize) {
         return 96;
     case WORLDSIZE::LARGE:
         return 160;
+    }
+}
+
+inline static MCversion getMCVersion(LCEVERSION lceversion) {
+    switch (lceversion) {
+        case LCEVERSION::AQUATIC:
+        default:
+            return MCversion::MC_1_13;
+        case LCEVERSION::ELYTRA:
+            return MCversion::MC_1_12;
+        case LCEVERSION::BOUNTIFUL:
+            return MCversion::MC_1_8;
+        case LCEVERSION::HORSE:
+            return MCversion::MC_1_6;
+        case LCEVERSION::POTIONS:
+            return MCversion::MC_1_2;
+        case LCEVERSION::ADVENTURE:
+            return MCversion::MC_1_0;
+        case LCEVERSION::PS4_VP:
+            return MCversion::MC_1_14;
+        //case LCEVERSION::GENERATION:
+            //return MCversion::MC_1_14;
+        //case LCEVERSION::PISTON:
+            //return MCversion::MC_1_14;
     }
 }
 

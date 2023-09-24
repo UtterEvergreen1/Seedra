@@ -13,13 +13,13 @@ namespace loot_tables {
     class StrongholdLoot : public Loot<StrongholdLoot<T>> {
     public:
 
-        /** loot seeding with stronghold stone rolls */
+        /// loot seeding with stronghold stone rolls
         template<bool checkCaves>
-        static uint64_t getLootSeed(int64_t worldSeed, BIOMESCALE biomeSize, int chestX, int chestY, int chestZ, StrongholdGenerator* strongholdGenerator);
+        static uint64_t getLootSeed(const Generator& g, int chestX, int chestY, int chestZ, StrongholdGenerator* strongholdGenerator);
 
-        /** combine loot seeding and generation to get the stronghold loot */
+        /// Combine loot seeding and generation to get the stronghold loot.
         template<bool checkCaves, bool shuffle>
-        ND static Container getLoot(int64_t seed, BIOMESCALE biomeSize, int chestX, int chestY, int chestZ, StrongholdGenerator* strongholdGenerator);
+        ND static Container getLoot(const Generator& g, int chestX, int chestY, int chestZ, StrongholdGenerator* strongholdGenerator);
     };
 
 }

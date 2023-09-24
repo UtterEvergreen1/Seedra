@@ -1,4 +1,3 @@
-
 #include <cstdio>
 #include <cstring>
 #include <cstdlib>
@@ -6,7 +5,9 @@
 
 #include "util.hpp"
 #include "layers.hpp"
+#ifdef _MSC_VER
 #pragma warning(disable : 4996)
+#endif
 const char* mc2str(int mc)
 {
     switch (mc)
@@ -26,20 +27,12 @@ const char* mc2str(int mc)
     case MC_1_12: return "1.12";
     case MC_1_13: return "1.13";
     case MC_1_14: return "1.14";
-    case MC_1_15: return "1.15";
-    case MC_1_16: return "1.16";
-    case MC_1_17: return "1.17";
-    case MC_1_18: return "1.18";
     default: return nullptr;
     }
 }
 
 int str2mc(const char *s)
 {
-    if (!strcmp(s, "1.18")) return MC_1_18;
-    if (!strcmp(s, "1.17")) return MC_1_17;
-    if (!strcmp(s, "1.16")) return MC_1_16;
-    if (!strcmp(s, "1.15")) return MC_1_15;
     if (!strcmp(s, "1.14")) return MC_1_14;
     if (!strcmp(s, "1.13")) return MC_1_13;
     if (!strcmp(s, "1.12")) return MC_1_12;

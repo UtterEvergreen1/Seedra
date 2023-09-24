@@ -25,24 +25,6 @@ enum StructureType
     st_NONE
 };
 
-
-/* Minecraft versions */
-enum MCversion
-{
-    MC_1_0, // <=1.0 Experimental!
-    MC_1_1,  MC_1_2,  MC_1_3,  MC_1_4,  MC_1_5,  MC_1_6,
-    MC_1_7,  MC_1_8,  MC_1_9,  MC_1_10, MC_1_11, MC_1_12,
-    MC_1_13, MC_1_14, MC_1_15, MC_1_16, MC_1_17, MC_1_18,
-    MC_NEWEST = MC_1_18,
-};
-
-
-enum LCEVERSION
-{
-    WIIU_LATEST,
-    XBOX_TU45, XBOX_TU75
-};
-
 enum BiomeID
 {
     none = -1,
@@ -145,40 +127,39 @@ enum BiomeTempCategory
 /* Enumeration of the layer indices in the layer stack. */
 enum LayerId
 {
-    // new                  [[deprecated]]
-    L_CONTINENT_4096 = 0,   L_ISLAND_4096 = L_CONTINENT_4096,
+    L_CONTINENT_4096 = 0,
     L_ZOOM_2048,
-    L_LAND_2048,            L_ADD_ISLAND_2048 = L_LAND_2048,
+    L_LAND_2048,
     L_ZOOM_1024,
-    L_LAND_1024_A,          L_ADD_ISLAND_1024A = L_LAND_1024_A,
-    L_LAND_1024_B,          L_ADD_ISLAND_1024B = L_LAND_1024_B,     // 1.7+
-    L_LAND_1024_C,          L_ADD_ISLAND_1024C = L_LAND_1024_C,     // 1.7+
-    L_ISLAND_1024,          L_REMOVE_OCEAN_1024 = L_ISLAND_1024,    // 1.7+
-    L_SNOW_1024,            L_ADD_SNOW_1024 = L_SNOW_1024,
-    L_LAND_1024_D,          L_ADD_ISLAND_1024D = L_LAND_1024_D,     // 1.7+
-    L_COOL_1024,            L_COOL_WARM_1024 = L_COOL_1024,         // 1.7+
-    L_HEAT_1024,            L_HEAT_ICE_1024 = L_HEAT_1024,          // 1.7+
+    L_LAND_1024_A,
+    L_LAND_1024_B,                                                  // 1.7+
+    L_LAND_1024_C,                                                  // 1.7+
+    L_ISLAND_1024,                                                  // 1.7+
+    L_SNOW_1024,
+    L_LAND_1024_D,                                                  // 1.7+
+    L_COOL_1024,                                                    // 1.7+
+    L_HEAT_1024,                                                    // 1.7+
     L_SPECIAL_1024,                                                 // 1.7+
     L_ZOOM_512,
-    L_LAND_512,                                                     // 1.6-
+    //L_LAND_512,                                                     // 1.6-
     L_ZOOM_256,
-    L_LAND_256,             L_ADD_ISLAND_256 = L_LAND_256,
-    L_MUSHROOM_256,         L_ADD_MUSHROOM_256 = L_MUSHROOM_256,
+    L_LAND_256,
+    L_MUSHROOM_256,
     L_DEEP_OCEAN_256,                                               // 1.7+
     L_BIOME_256,
-    L_BAMBOO_256,           L14_BAMBOO_256 = L_BAMBOO_256,          // 1.14+
+    L_BAMBOO_256,                                                   // 1.14+
     L_ZOOM_128,
     L_ZOOM_64,
     L_BIOME_EDGE_64,
-    L_NOISE_256,            L_RIVER_INIT_256 = L_NOISE_256,
+    L_RIVER_INIT_256,
     L_ZOOM_128_HILLS,
     L_ZOOM_64_HILLS,
     L_HILLS_64,
-    L_SUNFLOWER_64,         L_RARE_BIOME_64 = L_SUNFLOWER_64,       // 1.7+
+    L_SUNFLOWER_64,                                                 // 1.7+
     L_ZOOM_32,
-    L_LAND_32,              L_ADD_ISLAND_32 = L_LAND_32,
+    L_LAND_32,
     L_ZOOM_16,
-    L_SHORE_16,             // NOTE: in 1.0 this slot is scale 1:32
+    L_SHORE_16,
     L_SWAMP_RIVER_16,                                               // 1.6-
     L_ZOOM_8,
     L_ZOOM_4,
@@ -192,22 +173,16 @@ enum LayerId
     L_RIVER_4,
     L_SMOOTH_4_RIVER,
     L_RIVER_MIX_4,
-    L_OCEAN_TEMP_256,       L13_OCEAN_TEMP_256 = L_OCEAN_TEMP_256,  // 1.13+
-    L_ZOOM_128_OCEAN,       L13_ZOOM_128 = L_ZOOM_128_OCEAN,        // 1.13+
-    L_ZOOM_64_OCEAN,        L13_ZOOM_64 = L_ZOOM_64_OCEAN,          // 1.13+
-    L_ZOOM_32_OCEAN,        L13_ZOOM_32 = L_ZOOM_32_OCEAN,          // 1.13+
-    L_ZOOM_16_OCEAN,        L13_ZOOM_16 = L_ZOOM_16_OCEAN,          // 1.13+
-    L_ZOOM_8_OCEAN,         L13_ZOOM_8 = L_ZOOM_8_OCEAN,            // 1.13+
-    L_ZOOM_4_OCEAN,         L13_ZOOM_4 = L_ZOOM_4_OCEAN,            // 1.13+
-    L_OCEAN_MIX_4,          L13_OCEAN_MIX_4 = L_OCEAN_MIX_4,        // 1.13+
+    L_OCEAN_TEMP_256,                                               // 1.13+
+    L_ZOOM_128_OCEAN,                                               // 1.13+
+    L_ZOOM_64_OCEAN,                                                // 1.13+
+    L_ZOOM_32_OCEAN,                                                // 1.13+
+    L_ZOOM_16_OCEAN,                                                // 1.13+
+    L_ZOOM_8_OCEAN,                                                 // 1.13+
+    L_ZOOM_4_OCEAN,                                                 // 1.13+
+    L_OCEAN_MIX_4,                                                  // 1.13+
 
-    L_VORONOI_1,            L_VORONOI_ZOOM_1 = L_VORONOI_1,
-
-    // largeBiomes layers
-    L_ZOOM_LARGE_A,
-    L_ZOOM_LARGE_B,
-    L_ZOOM_L_RIVER_A,
-    L_ZOOM_L_RIVER_B,
+    L_VORONOI_1,
 
     // LCE
     L_A_MUSHROOM_32,
@@ -274,12 +249,10 @@ struct Layer
     uint64_t startSalt; // (depends on world seed) used to step PRNG forward
     uint64_t startSeed; // (depends on world seed) start for chunk seeds
 
-    void *data;         // generic data for custom layers
-
     Layer *p, *p2;      // parent layers
 };
 
-// Overworld biome generator up to 1.17
+// Overworld biome generator
 struct LayerStack
 {
     Layer layers[L_NUM];
@@ -319,16 +292,15 @@ int getBiomeDepthAndScale(int id, double *depth, double *scale, int *grass);
 // End (1.9+) Biome Noise Generation
 //==============================================================================
 void setEndSeed(EndNoise *en, uint64_t seed);
-int getSurfaceHeightEnd(int mc, uint64_t seed, int x, int z);
+MU int getSurfaceHeightEnd(int mc, uint64_t seed, int x, int z);
 
 
 //==============================================================================
 // BiomeID Helpers
 //==============================================================================
 
-int isViableFeatureBiome(int structureType, int biomeID);
-int biomeExists(int mc, int id);
-int isOverworld(int mc, int id);
+MU int biomeExists(int mc, int id);
+MU int isOverworld(int mc, int id);
 int getMutated(int mc, int id);
 int getCategory(int mc, int id);
 int areSimilar(int mc, int id1, int id2);
@@ -348,10 +320,8 @@ mapfunc_t mapContinent;     // mapIsland
 mapfunc_t mapZoomFuzzy;
 mapfunc_t mapZoom;
 mapfunc_t mapLand;          // mapAddIsland
-mapfunc_t mapLand16;
 mapfunc_t mapIsland;        // mapRemoveTooMuchOcean
 mapfunc_t mapSnow;          // mapAddSnow
-mapfunc_t mapSnow16;
 mapfunc_t mapCool;          // mapCoolWarm
 mapfunc_t mapHeat;          // mapHeatIce
 mapfunc_t mapSpecial;
@@ -366,7 +336,6 @@ mapfunc_t mapRiver;
 mapfunc_t mapSmooth;
 mapfunc_t mapSunflower;     // mapRareBiome
 mapfunc_t mapShore;
-mapfunc_t mapSwampRiver;
 mapfunc_t mapRiverMix;
 mapfunc_t mapOceanTemp;
 mapfunc_t mapOceanMix;
@@ -375,7 +344,7 @@ mapfunc_t mapOceanMix;
 Layer *setupLayer(Layer *l, mapfunc_t *map, int theMc, int8_t zoom, int8_t edge, uint64_t saltbase, Layer *p, Layer *p2);
 void setupScale(Layer *l, int scale);
 int genArea(const Layer *layer, int *out, int areaX, int areaZ, int areaWidth, int areaHeight);
-void setupLayerStack(LayerStack *layerStack, int mc, LCEVERSION lceVersion, BIOMESCALE biomeSize);
+void setupLayerStack(LayerStack *layerStack, LCEVERSION lceVersion, BIOMESCALE biomeSize);
 void getMaxArea(const Layer *layer, int areaX, int areaZ, int *maxX, int *maxZ, size_t *siz);
 size_t getMinLayerCacheSize(const Layer *layer, int sizeX, int sizeZ);
 
@@ -386,10 +355,3 @@ mapfunc_t mapOceanEdge;
 // final layer 1:1
 mapfunc_t mapVoronoi114;
 
-// Gets the range in the parent/source layer which may be accessed by voronoi.
-Range getVoronoiSrcRange(Range r);
-
-// Applies a 2D voronoi mapping at height 'y' to a 'src' plane, where
-// src_range [px,pz,pw,ph] -> out_range [x,z,w,h] have to match the scaling.
-void mapVoronoiPlane(uint64_t sha, int *out, int *src,
-    int x, int z, int w, int h, int y, int px, int pz, int pw, int ph);

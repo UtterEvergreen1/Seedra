@@ -6,6 +6,7 @@
 #include <utility>
 #include <vector>
 #include <iostream>
+#include <map>
 
 #ifdef INCLUDE_QT
 #include <QDebug>
@@ -296,7 +297,6 @@ public:
         out << "}";
         return out;
     }
-
 
     #ifdef INCLUDE_QT
     friend QDebug operator<<(QDebug out, const Container &container) {

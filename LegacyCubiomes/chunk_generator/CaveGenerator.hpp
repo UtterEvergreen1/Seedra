@@ -7,7 +7,7 @@ class CaveGenerator : public MapGenBase
 {
 public:
     explicit CaveGenerator(const Generator& generator) : MapGenBase(generator) {}
-    CaveGenerator(int64_t worldSeed, BIOMESCALE biomeScale) : MapGenBase(worldSeed, biomeScale) {}
+    CaveGenerator(int64_t worldSeed, LCEVERSION lceVersion, CONSOLE console, BIOMESCALE biomeScale) : MapGenBase(worldSeed, lceVersion, console, biomeScale) {}
     unsigned char topBlock(int x, int z) {
         int biomeID = g.getBiomeAt(1, x, z);
         switch (biomeID) {

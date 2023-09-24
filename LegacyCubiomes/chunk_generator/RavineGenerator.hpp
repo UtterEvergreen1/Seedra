@@ -7,7 +7,7 @@ class RavineGenerator : public MapGenBase
 {
 public:
     explicit RavineGenerator(const Generator& generator) : MapGenBase(generator) {}
-    RavineGenerator(int64_t worldSeed, BIOMESCALE biomeScale) : MapGenBase(worldSeed, biomeScale) {}
+    RavineGenerator(int64_t worldSeed, LCEVERSION lceVersion, CONSOLE console, BIOMESCALE biomeScale) : MapGenBase(worldSeed, lceVersion, console, biomeScale) {}
     std::vector<float> rs = std::vector<float>(1024, 0.0F);
     unsigned char topBlock(int x, int z) {
         int biomeID = g.getBiomeAt(1, x, z);

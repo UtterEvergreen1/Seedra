@@ -1,57 +1,26 @@
 #pragma once
-
 #include <string>
 #include <utility>
-#include <map>
 #include <iostream>
-#include <unordered_map>
 #include <vector>
 
 #include "rarity.hpp"
 #include "LegacyCubiomes/mc/items.hpp"
 #include "LegacyCubiomes/mc/itemID.hpp"
-
-
-// #include "LegacyCubiomes/utils/weightedRandom.hpp"
-
-
-class EnchantmentArrowDamage;
-class EnchantmentArrowFire;
-class EnchantmentArrowInfinite;
-class EnchantmentArrowKnockback;
-class EnchantmentBindingCurse;
-class EnchantmentDamage;
-class EnchantmentDigging;
-class EnchantmentDurability;
-class EnchantmentFireAspect;
-class EnchantmentFishingSpeed;
-class EnchantmentFrostWalker;
-class EnchantmentKnockback;
-class EnchantmentLootBonus;
-class EnchantmentMending;
-class EnchantmentOxygen;
-class EnchantmentProtection;
-class EnchantmentThorns;
-class EnchantmentUntouching;
-class EnchantmentVanishingCurse;
-class EnchantmentWaterWalker;
-class EnchantmentWaterWorker;
-class EnchantmentTridentChanneling;
-class EnchantmentTridentImpaler;
-class EnchantmentTridentLoyalty;
-class EnchantmentTridentRiptide;
-class EnchantmentHelper;
-
-
+#include "LegacyCubiomes/utils/RegistryNamespaced.hpp"
+#include "LegacyCubiomes/cubiomes/generator.hpp"
 class Enchantment {
 private:
-    static inline bool isSetup = false;
+    static bool isSetup;
 public:
-    friend class EnchantmentHelper;
-    static constexpr int MAX_ENCHANTMENT_COUNT = 33;
+    static RegistryNamespaced<Enchantment> REGISTRY;
+    static CONSOLE currentConsole;
+    static LCEVERSION currentVersion;
+    /// the order is: [console][version][pointer]
+    static const std::vector<std::vector<std::vector<int>>> tableOfPointers;
 
-    static inline std::map<int, Enchantment*> REGISTRY = {};
-    static inline int count = 0;
+    static constexpr int MAX_ENCHANTMENT_COUNT = 33;
+    static int count;
 
     class Type {
     public:
@@ -99,9 +68,9 @@ public:
         KNOCKBACK,
         FIRE_ASPECT,
         LOOT_BONUS,
-        #ifdef INCLUDE_JAVA
+#ifdef INCLUDE_JAVA
         SWEEPING,
-        #endif
+#endif
         DIGGING,
         UNTOUCHING,
         DURABILITY,
@@ -118,6 +87,7 @@ public:
         TRIDENT_CHANNELING,
         NONE
     };
+
 
     // attributes of each class
     const std::string name;
@@ -137,21 +107,26 @@ public:
     Enchantment(std::string name, const Rarity *rarity, const Type::Base* type, EnumName enchantName, int maxLevel, bool isTreasure = false) :
             name(std::move(name)), rarity(rarity), type(type), enumID(enchantName), maxLevel(maxLevel), isTreasure(isTreasure) {};
 
-    ~Enchantment();
-
     virtual int getMinCost(int enchantmentLevel);
     virtual int getMaxCost(int enchantmentLevel);
 
     ND virtual bool canApplyTogether(const Enchantment *enchantment) const;
     ND virtual bool canApply(const Items::Item *item) const;
 
-    template<bool isAquatic>
+    /**
+     * Sets the order of the enchantments according to the console and version
+     * @param console the LCE console type
+     * @param version the LCE version
+     */
+    static void setConsoleAndVersion(CONSOLE console, LCEVERSION version);
+
+    /**
+     * Registers all the enchantments
+     */
     static void registerEnchantments();
 
 private:
-    static void registerEnch(int *id, Enchantment* enchantment);
-    static void initializeTypeIterable();
-
+    static void registerEnchantment(int id, std::string name, Enchantment *enchantment, int fakePointer);
 };
 
 

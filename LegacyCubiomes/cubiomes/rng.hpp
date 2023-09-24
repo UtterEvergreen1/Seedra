@@ -153,8 +153,8 @@ static inline void skipNextN(uint64_t *seed, uint64_t n)
 /**
  * The seed pipeline:
  *
- * getLayerSalt(n)                -> layerSalt (ls)
- * layerSalt (ls), worldSeed (ws) -> startSalt (st), startSeed (ss)
+ * getLayerSalt(n)                -> layerSalt (layerStack)
+ * layerSalt (layerStack), worldSeed (ws) -> startSalt (st), startSeed (ss)
  * startSeed (ss), coords (x,z)   -> chunkSeed (cs)
  *
  * The chunkSeed alone is enough to generate the first PRNG integer with:
@@ -208,7 +208,7 @@ static inline uint64_t getStartSalt(uint64_t ws, uint64_t ls)
     return st;
 }
 
-static inline uint64_t getStartSeed(uint64_t ws, uint64_t ls)
+MU static inline uint64_t getStartSeed(uint64_t ws, uint64_t ls)
 {
     uint64_t ss = ws;
     ss = getStartSalt(ss, ls);
@@ -255,7 +255,7 @@ static inline double clampedLerp(double part, double from, double to)
 /* Find the modular inverse: (1/x) | mod m.
  * Assumes x and m are positive (less than 2^63), co-prime.
  */
-static inline ATTR(const)
+MU static inline ATTR(const)
 uint64_t mulInv(uint64_t x, uint64_t m)
 {
     uint64_t t, q, a, b, n;

@@ -10,15 +10,15 @@ namespace Structure {
     template<class Derived>
     class StaticStructure {
     public:
-        static char VALID_BIOMES[256];
+        static const uint64_t VALID_BIOMES;
 
-        static int SALT;
+        static const int SALT;
         static int REGION_SIZE;
         static int CHUNK_RANGE;
 
         static int CHUNK_BOUNDS;
+        static bool REDUCED_SPACING;
 
-        static void setupDerived(int salt, int regionSize, int spacing, const std::vector<int>& biomeList, WORLDSIZE worldSize);
         static Pos2D getRegionChunkPosition(int64_t worldSeed, int regionX, int regionZ);
         static Pos2D getRegionBlockPosition(int64_t worldSeed, int regionX, int regionZ);
 
@@ -62,7 +62,7 @@ namespace Structure {
 
     class Feature : public StaticStructure<Feature> {
     public:
-        static void setup(WORLDSIZE worldSize);
+        static void setWorldSize(WORLDSIZE worldSize);
         static StructureType getFeatureType(Generator* g, int blockX, int blockZ);
         inline static StructureType getFeatureType(Generator* g, const Pos2D& block) {
             return getFeatureType(g, block.x, block.z);
@@ -73,12 +73,12 @@ namespace Structure {
     template<bool PS4Village>
     class Village : public StaticStructure<Village<PS4Village>> {
     public:
-        static void setup(WORLDSIZE worldSize);
+        static void setWorldSize(WORLDSIZE worldSize);
     };
 
     class OceanRuin : public StaticStructure<OceanRuin> {
     public:
-        static void setup(WORLDSIZE worldSize);
+        static void setWorldSize(WORLDSIZE worldSize);
     };
 }
 

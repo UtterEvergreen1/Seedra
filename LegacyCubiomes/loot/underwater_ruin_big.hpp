@@ -52,11 +52,11 @@ namespace loot_tables {
 
                 switch (result.item->getID()) {
                     case (Items::ENCHANTED_BOOK_ID): {
-                        EnchantmentHelper::EnchantRandomlyBook::apply(lootTableSeed, &result);
+                        EnchantmentHelper::EnchantRandomly::apply<true>(lootTableSeed, &result);
                         break;
                     }
                     case (Items::FISHING_ROD_ID): {
-                        EnchantmentHelper::EnchantRandomlyItem::apply(lootTableSeed, &result);
+                        EnchantmentHelper::EnchantRandomly::apply<false>(lootTableSeed, &result);
                         break;
                     }
                     default:

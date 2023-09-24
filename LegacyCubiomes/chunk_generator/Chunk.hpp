@@ -7,21 +7,21 @@
 
 namespace Chunk {
     template<bool generateCaves, bool generateRavines>
-    static ChunkPrimer* provideChunk(int64_t seed, int chunkX, int chunkZ, BIOMESCALE biome_scale) {
-        ChunkGeneratorOverWorld chunk = ChunkGeneratorOverWorld(seed, biome_scale);
+    static ChunkPrimer* provideChunk(const Generator& g, int chunkX, int chunkZ) {
+        ChunkGeneratorOverWorld chunk(g);
         ChunkPrimer* chunkPrimer = chunk.provideChunk(chunkX, chunkZ);
         if constexpr (generateCaves) {
-            CaveGenerator caveGenerator = CaveGenerator(seed, biome_scale);
+            CaveGenerator caveGenerator = CaveGenerator(g);
             caveGenerator.generate(chunkX, chunkZ, chunkPrimer);
         }
         if constexpr (generateRavines) {
-            RavineGenerator ravineGenerator = RavineGenerator(seed, biome_scale);
+            RavineGenerator ravineGenerator = RavineGenerator(g);
             ravineGenerator.generate(chunkX, chunkZ, chunkPrimer);
         }
         return chunkPrimer;
     }
 
-    [[maybe_unused]] static void populate(Generator* g, int64_t seed, int chunkX, int chunkZ, BIOMESCALE biome_scale, ChunkPrimer *chunkData) {
+    MU static void populate(const Generator& g, int chunkX, int chunkZ, ChunkPrimer *chunkData) {
         int xStart = chunkX * 16;
         int zStart = chunkZ * 16;
         for (int xPos = 0; xPos < 16; ++xPos) {

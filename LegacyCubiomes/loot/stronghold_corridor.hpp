@@ -2,7 +2,7 @@
 
 #include "base_classes/stronghold_loot.hpp"
 
-#include "LegacyCubiomes/enchants/enchantmentHelper.hpp"
+#include "LegacyCubiomes/enchants/enchantmentHelperBook.hpp"
 
 
 using namespace Items;
@@ -71,7 +71,7 @@ namespace loot_tables {
                 ItemStack result = table.createLootRoll<false>(lootTableSeed);
 
                 if EXPECT_FALSE(result.item->getID() == Items::ENCHANTED_BOOK_ID) {
-                    EnchantmentHelper::EnchantWithLevelsBook::apply(lootTableSeed, &result, 30);
+                    EnchantmentHelperBook::EnchantWithLevels::apply(lootTableSeed, &result, 30);
                 }
 
                 chestContents.push_back(result);
@@ -92,21 +92,18 @@ namespace loot_tables {
             ::getAltarChestLoot(int64_t seed, BIOMESCALE biomeSize,
                BasePiece* alterChestPiece,
                StrongholdGenerator* strongholdGenerator) {
-        uint64_t lootSeed = Loot<StrongholdCorridor<isAquatic>>
+        uint64_t lootSeed = StrongholdCorridor<isAquatic>
                 ::getLootSeed<checkCaves>(seed, biomeSize,
                     alterChestPiece->getWorldX(3, 3),
                     alterChestPiece->getWorldY(2),
                     alterChestPiece->getWorldZ(3, 3),
                     strongholdGenerator);
-        return Loot<StrongholdCorridor<isAquatic>>
-                ::getLootFromSeed<shuffle>(&lootSeed);
+        return StrongholdCorridor<isAquatic>::getLootFromSeed<shuffle>(&lootSeed);
     }
 
     template<bool isAquatic>
     template<bool checkCaves, bool shuffle>
-    std::vector<Container> StrongholdCorridor<isAquatic>
-            ::getAllAltarChestLoot(int64_t worldSeed, BIOMESCALE biomeSize,
-                                   StrongholdGenerator* strongholdGenerator) {
+    std::vector<Container> StrongholdCorridor<isAquatic>::getAllAltarChestLoot(int64_t worldSeed, BIOMESCALE biomeSize, StrongholdGenerator* strongholdGenerator) {
         std::vector<Container> altarChests(strongholdGenerator->numAltarChests);
         for(int altarChestIndex = 0; altarChestIndex < strongholdGenerator->numAltarChests; altarChestIndex++) {
             altarChests[altarChestIndex] = getAltarChestLoot<checkCaves, shuffle>(

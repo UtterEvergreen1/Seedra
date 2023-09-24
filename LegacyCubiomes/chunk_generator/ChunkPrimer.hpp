@@ -89,8 +89,8 @@ public:
         return Pos3D(pos.x, precipitationHeightMap[k], pos.z);
     }
 
-    bool canBlockFreeze(Generator* g, Pos3D pos, bool noWaterAdj){
-        Biome* biome = Biome::getBiomeForId(g->getBiomeAt(1, pos.x, pos.z));
+    bool canBlockFreeze(const Generator& g, Pos3D pos, bool noWaterAdj){
+        Biome* biome = Biome::getBiomeForId(g.getBiomeAt(1, pos.x, pos.z));
         float f = biome->getFloatTemperature(pos);
         if (f >= 0.15F)
             return false;
@@ -123,8 +123,8 @@ public:
         }
     }
 
-    bool canSnowAt(Generator* g, Pos3D pos, bool checkLight){
-        Biome* biome = Biome::getBiomeForId(g->getBiomeAt(1, pos.x, pos.z));
+    bool canSnowAt(const Generator& g, Pos3D pos, bool checkLight){
+        Biome* biome = Biome::getBiomeForId(g.getBiomeAt(1, pos.x, pos.z));
         float temp = biome->getFloatTemperature(pos);
         if (temp >= 0.15F)
             return false;

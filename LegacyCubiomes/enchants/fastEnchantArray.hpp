@@ -25,7 +25,7 @@ public:
 
     inline void addItem(int indexIn) {indexes[currentIndex++] = indexIn;}
 
-    MU inline int getEnchantmentIndex(int indexIn) {
+    inline int getEnchantmentIndex(int indexIn) {
         for (int i = 0; i < currentIndex; i++)
             if (currentIndex > indexes[i])
                 indexIn--;
@@ -47,7 +47,7 @@ public:
     }
 
     ND inline int getValueAt(int indexIn) const {return indexes[indexIn];}
-    ND MU inline int getLastValueIndex() const {return indexes[currentIndex - 1];}
+    ND inline int getLastValueIndex() const {return indexes[currentIndex - 1];}
 
     ND inline int getIndex() const {return currentIndex;}
 
@@ -80,8 +80,7 @@ public:
         enchants.clear();
     }
 
-    MU EnchantmentData* getIndex(int indexIn);
-
+    EnchantmentData* getIndex(int indexIn);
     EnchantmentData* getLastEnchantmentAdded();
     void addRandomItem(uint64_t *rng);
 
@@ -104,9 +103,9 @@ private:
 
 public:
     EnchantedBookEnchantsLookupTable() = default;
-    MU explicit EnchantedBookEnchantsLookupTable(bool allocate) {if (allocate) setup();}
+    explicit EnchantedBookEnchantsLookupTable(bool allocate) {if (allocate) setup();}
     ~EnchantedBookEnchantsLookupTable() {deallocate();}
-    ND MU bool isSetup() const {return areVectorsSetup;}
+    ND bool isSetup() const {return areVectorsSetup;}
 
     /**
      * level must be between 0 and 47 or bad things will happen.

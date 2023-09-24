@@ -1,68 +1,31 @@
 #include "DynamicStructures.hpp"
 namespace Structure {
+    // defaults
     template<typename Derived>
-    char DynamicStructure<Derived>::MAIN_VALID_BIOMES[256];
+    const uint64_t DynamicStructure<Derived>::SECONDARY_VALID_BIOMES = 0;
     template<typename Derived>
-    char DynamicStructure<Derived>::SECOND_VALID_BIOMES[256];
-
+    const uint64_t DynamicStructure<Derived>::SECONDARY_VALID_BIOMES_MUTATED = 0;
+    template <typename Derived>
+    int DynamicStructure<Derived>::REGION_SIZE = 32;
+    template <typename Derived>
+    int DynamicStructure<Derived>::ATTEMPTS = 60;
     template<typename Derived>
-    int DynamicStructure<Derived>::SALT = 0;
+    const bool DynamicStructure<Derived>::HAS_SECOND_BIOME_CHECK = true;
     template<typename Derived>
-    int DynamicStructure<Derived>::REGION_SIZE = 0;
+    int DynamicStructure<Derived>::CHUNK_BOUNDS = 24;
     template<typename Derived>
-    int DynamicStructure<Derived>::CHUNK_RANGE = 0;
-    template<typename Derived>
-    int DynamicStructure<Derived>::MAX_ATTEMPT = 0;
-    template<typename Derived>
-    int DynamicStructure<Derived>::MAIN_RADIUS = 0;
-    template<typename Derived>
-    int DynamicStructure<Derived>::SECOND_RADIUS = 0;
-
-    template<typename Derived>
-    bool DynamicStructure<Derived>::HAS_SECOND_BIOME_CHECK = false;
-
-    template<typename Derived>
-    int DynamicStructure<Derived>::CHUNK_BOUNDS = 0;
-
-    template<typename Derived>
-    void DynamicStructure<Derived>::setupDerived(int salt, int regionSize, int spacing, int attempts, int mainRadius,
-                                        int secondRadius, const std::vector<int> &biomeListMain,
-                                        const std::vector<int> &biomeListSecond, WORLDSIZE worldSize) {
-        Derived::SALT = salt;
-        Derived::REGION_SIZE = regionSize;
-        Derived::CHUNK_RANGE = regionSize - spacing;
-        Derived::MAX_ATTEMPT = attempts;
-        Derived::MAIN_RADIUS = mainRadius;
-        Derived::SECOND_RADIUS = secondRadius;
-
-        Derived::CHUNK_BOUNDS = getChunkWorldBounds(worldSize) - 3;
-
-        Derived::HAS_SECOND_BIOME_CHECK = !biomeListSecond.empty();
-
-        // This will only trigger if the setup values are changed, but it is necessary to prevent an infinite loop in getPosition()
-        if EXPECT_FALSE(Derived::CHUNK_RANGE * Derived::CHUNK_RANGE >= attempts)
-            attempts = Derived::CHUNK_RANGE * Derived::CHUNK_RANGE;
-
-
-        if (!MAIN_VALID_BIOMES[biomeListMain[0]])
-            for (int i : biomeListMain)
-                Derived::MAIN_VALID_BIOMES[i] = 1;
-
-        if (Derived::HAS_SECOND_BIOME_CHECK && !SECOND_VALID_BIOMES[biomeListSecond[0]])
-            for (int i : biomeListSecond)
-                Derived::SECOND_VALID_BIOMES[i] = 1;
-    }
+    bool DynamicStructure<Derived>::REDUCED_SPACING = true;
 
     template<typename Derived>
     Pos2D DynamicStructure<Derived>::getPosition(Generator* g, int regionX, int regionZ) {
         uint64_t rnds;
         int64_t featureSeed = ((int64_t) regionX * REGION_SIZE) * 341873128712ULL +
-                              ((int64_t) regionZ * REGION_SIZE) * 132897987541ULL + g->seed + SALT;
+                              ((int64_t) regionZ * REGION_SIZE) * 132897987541ULL + g->getWorldSeed() + SALT;
         setSeed(&rnds, featureSeed);
         std::unordered_set<Pos2D, Pos2D::Hasher> attempted;
         int xChunk;
         int zChunk;
-        for (int attempts = 0; attempts < MAX_ATTEMPT; attempts++) {
+        for (int attempts = 0; attempts < ATTEMPTS; attempts++) {
             xChunk = nextInt(&rnds, CHUNK_RANGE);
             zChunk = nextInt(&rnds, CHUNK_RANGE);
             if (attempted.emplace(xChunk, zChunk).second) { // successfully placed
@@ -72,9 +35,9 @@ namespace Structure {
                 int xPos = (xChunk << 4) + 8;
                 int zPos = (zChunk << 4) + 8;
                 if (xChunk < CHUNK_BOUNDS && xChunk >= -CHUNK_BOUNDS && zChunk < CHUNK_BOUNDS && zChunk >= -CHUNK_BOUNDS) {
-                    if (g->areBiomesViable(xPos, zPos, MAIN_RADIUS, MAIN_VALID_BIOMES, 0)) {
+                    if (g->areBiomesViable(xPos, zPos, MAIN_RADIUS, MAIN_VALID_BIOMES)) {
                         if (!HAS_SECOND_BIOME_CHECK ||
-                            g->areBiomesViable(xPos, zPos, SECOND_RADIUS, SECOND_VALID_BIOMES, 0)) {
+                            g->areBiomesViable(xPos, zPos, SECOND_RADIUS, SECONDARY_VALID_BIOMES, SECONDARY_VALID_BIOMES_MUTATED)) {
                             return {xPos, zPos};
                         }
                     }
@@ -110,7 +73,7 @@ namespace Structure {
         std::unordered_set<Pos2D, Pos2D::Hasher> attempted;
         int xChunk;
         int zChunk;
-        for (int attempts = 0; attempts < MAX_ATTEMPT; attempts++) {
+        for (int attempts = 0; attempts < ATTEMPTS; attempts++) {
             xChunk = nextInt(&rnds, CHUNK_RANGE);
             zChunk = nextInt(&rnds, CHUNK_RANGE);
             if (attempted.emplace(xChunk, zChunk).second) { // successfully placed
@@ -126,100 +89,178 @@ namespace Structure {
         return false;
     }
 
-    void Mansion::setup(WORLDSIZE worldSize) {
-        std::vector<int> biomeListMain = { dark_forest, roofed_forest_mutated};
+    template <>
+    const int DynamicStructure<Mansion>::SALT = 10387319;
+    template <>
+    int DynamicStructure<Mansion>::CHUNK_RANGE = 26;
+    template <>
+    const int DynamicStructure<Mansion>::MAIN_RADIUS = 4;
+    template <>
+    const int DynamicStructure<Mansion>::SECOND_RADIUS = 32;
+    template <>
+    const uint64_t DynamicStructure<Mansion>::MAIN_VALID_BIOMES =
+            (1ULL << dark_forest) |
+            (1ULL << dark_forest_hills);
+    template <>
+    const uint64_t DynamicStructure<Mansion>::SECONDARY_VALID_BIOMES = DEFAULT_SECONDARY_VALID_BIOMES;
+    template <>
+    const uint64_t DynamicStructure<Mansion>::SECONDARY_VALID_BIOMES_MUTATED = DEFAULT_SECONDARY_VALID_BIOMES_MUTATED;
 
-        std::vector<int> biomeListSecond = {
-            ocean, deep_ocean, warm_ocean, deep_warm_ocean, lukewarm_ocean,
-            deep_lukewarm_ocean, cold_ocean, deep_cold_ocean, frozen_ocean,
-            deep_frozen_ocean, plains, desert, forest, taiga, swampland, river, hell, the_end, legacy_frozen_ocean,
-            frozen_river, ice_plains, ice_mountains,
-            mushroom_island, mushroom_island_shore, beach, desert_hills, forest_hills, taiga_hills,
-            extreme_hills_edge,
-            jungle, jungle_hills, jungle_edge, cold_beach, birch_forest, birch_forest_hills,
-            roofed_forest, cold_taiga, cold_taiga_hills, mega_taiga, mega_taiga_hills, savanna, savanna_plateau,
-            mesa,
-            mesa_plateau_stone, mesa_plateau, the_void, sunflower_plains, desert_mutated, swampland_mutated,
-            mega_spruce_taiga, redwood_taiga_hills_mutated, mesa_bryce, mesa_plateau_stone_mutated,
-            mesa_plateau_mutated
-        };
 
-        bool useReducedSpacing = worldSize < WORLDSIZE::MEDIUM;
-        setupDerived(10387319, useReducedSpacing ? 32 : 80, 6,
-                     useReducedSpacing ? 60 : 40, 4, 32, biomeListMain, biomeListSecond, worldSize);
+    void Mansion::setWorldSize(WORLDSIZE worldSize) {
+        CHUNK_BOUNDS = getChunkWorldBounds(worldSize) - 3;
+        // prevent from setting the same values
+        bool reducedSpacing = worldSize < WORLDSIZE::MEDIUM;
+        if(REDUCED_SPACING == reducedSpacing)
+            return;
+        REGION_SIZE = reducedSpacing ? 32 : 80;
+        CHUNK_RANGE = REGION_SIZE - 6;
+        ATTEMPTS = reducedSpacing ? 60 : 40;
     }
 
-    void Monument::setup(WORLDSIZE worldSize) {
-        std::vector<int> biomeListMain =
-        {
-            ocean, deep_ocean, cold_ocean, deep_cold_ocean,
-            frozen_ocean, deep_frozen_ocean, lukewarm_ocean,
-            deep_lukewarm_ocean, warm_ocean, deep_warm_ocean,
-            river, frozen_river
-        };
+    template <>
+    const int DynamicStructure<Monument>::SALT = 10387313;
+    template <>
+    int DynamicStructure<Monument>::CHUNK_RANGE = 27;
+    template <>
+    const int DynamicStructure<Monument>::MAIN_RADIUS = 8;
+    template <>
+    const int DynamicStructure<Monument>::SECOND_RADIUS = 29;
+    template <>
+    const uint64_t DynamicStructure<Monument>::MAIN_VALID_BIOMES =
+            (1ULL << ocean) |
+            (1ULL << river) |
+            (1ULL << frozen_river) |
+            (1ULL << deep_ocean) |
+            (1ULL << warm_ocean) |
+            (1ULL << deep_warm_ocean) |
+            (1ULL << lukewarm_ocean) |
+            (1ULL << deep_lukewarm_ocean) |
+            (1ULL << cold_ocean) |
+            (1ULL << deep_cold_ocean) |
+            (1ULL << frozen_ocean) |
+            (1ULL << deep_frozen_ocean);
 
-        std::vector<int> biomeListSecond =
-        {
-            deep_ocean, deep_cold_ocean, deep_lukewarm_ocean, deep_warm_ocean, deep_frozen_ocean
-        };
+    template <>
+    const uint64_t DynamicStructure<Monument>::SECONDARY_VALID_BIOMES =
+            (1ULL << deep_ocean) |
+            (1ULL << deep_warm_ocean) |
+            (1ULL << deep_lukewarm_ocean) |
+            (1ULL << deep_cold_ocean) |
+            (1ULL << deep_frozen_ocean);
 
-        bool useReducedSpacing = worldSize < WORLDSIZE::MEDIUM;
-        setupDerived(10387313, useReducedSpacing ? 32 : 80, 5,
-                     useReducedSpacing ? 60 : 40, 8, 29, biomeListMain, biomeListSecond, worldSize);
+    void Monument::setWorldSize(WORLDSIZE worldSize) {
+        CHUNK_BOUNDS = getChunkWorldBounds(worldSize) - 3;
+        // prevent from setting the same values
+        bool reducedSpacing = worldSize < WORLDSIZE::MEDIUM;
+        if(REDUCED_SPACING == reducedSpacing)
+            return;
+        REGION_SIZE = reducedSpacing ? 32 : 80;
+        CHUNK_RANGE = REGION_SIZE - 5;
+        ATTEMPTS = reducedSpacing ? 60 : 40;
     }
 
-    void Treasure::setup(WORLDSIZE worldSize) {
-        std::vector<int> biomeListMain = {
-            stone_beach, mushroom_island_shore, beach, cold_beach
-        };
+    template <>
+    const int DynamicStructure<Treasure>::SALT = 16842397;
+    template <>
+    int DynamicStructure<Treasure>::CHUNK_RANGE = 30;
+    template <>
+    const int DynamicStructure<Treasure>::MAIN_RADIUS = 0;
+    template <>
+    const int DynamicStructure<Treasure>::SECOND_RADIUS = 16;
+    template <>
+    const uint64_t DynamicStructure<Treasure>::MAIN_VALID_BIOMES =
+            (1ULL << mushroom_island_shore) |
+            (1ULL << beach) |
+            (1ULL << stone_beach) |
+            (1ULL << cold_beach);
 
-        std::vector<int> biomeListSecond = {
-            ocean, deep_ocean, warm_ocean, deep_warm_ocean, lukewarm_ocean,
-            deep_lukewarm_ocean, cold_ocean, deep_cold_ocean, frozen_ocean,
-            deep_frozen_ocean, plains, desert, forest, taiga, swampland, river, hell, the_end, legacy_frozen_ocean,
-            frozen_river, ice_plains, ice_mountains,
-            mushroom_island, mushroom_island_shore, beach, desert_hills, forest_hills, taiga_hills,
-            extreme_hills_edge,
-            jungle, jungle_hills, jungle_edge, cold_beach, birch_forest, birch_forest_hills,
-            roofed_forest, cold_taiga, cold_taiga_hills, mega_taiga, mega_taiga_hills, savanna, savanna_plateau,
-            mesa,
-            mesa_plateau_stone, mesa_plateau, the_void, sunflower_plains, desert_mutated, swampland_mutated,
-            mega_spruce_taiga, redwood_taiga_hills_mutated, mesa_bryce, mesa_plateau_stone_mutated,
-            mesa_plateau_mutated
-        };
+    template <>
+    const uint64_t DynamicStructure<Treasure>::SECONDARY_VALID_BIOMES = DEFAULT_SECONDARY_VALID_BIOMES;
+    template <>
+    const uint64_t DynamicStructure<Treasure>::SECONDARY_VALID_BIOMES_MUTATED = DEFAULT_SECONDARY_VALID_BIOMES_MUTATED;
 
-        bool useReducedSpacing = worldSize < WORLDSIZE::MEDIUM;
-        setupDerived(16842397, useReducedSpacing ? 32 : 4, 2,
-                     useReducedSpacing ? 60 : 4, 0, 16, biomeListMain, biomeListSecond, worldSize);
+    void Treasure::setWorldSize(WORLDSIZE worldSize) {
+        CHUNK_BOUNDS = getChunkWorldBounds(worldSize) - 3;
+        // prevent from setting the same values
+        bool reducedSpacing = worldSize < WORLDSIZE::MEDIUM;
+        if(REDUCED_SPACING == reducedSpacing)
+            return;
+        REGION_SIZE = reducedSpacing ? 32 : 4;
+        CHUNK_RANGE = REGION_SIZE - 2;
+        ATTEMPTS = reducedSpacing ? 60 : 4;
     }
 
-    void Shipwreck::setup(WORLDSIZE worldSize) {
-        std::vector<int> biomeListMain = {
-            beach, snowy_beach, mushroom_island_shore, ocean, deep_ocean, cold_ocean,
-            deep_cold_ocean, lukewarm_ocean, deep_lukewarm_ocean, frozen_ocean,
-            deep_frozen_ocean, warm_ocean
-        };
+    template <>
+    const int DynamicStructure<Shipwreck>::SALT = 14357617;
+    template <>
+    int DynamicStructure<Shipwreck>::CHUNK_RANGE = 27;
+    template <>
+    const int DynamicStructure<Shipwreck>::MAIN_RADIUS = 10;
+    template <>
+    const int DynamicStructure<Shipwreck>::SECOND_RADIUS = 0;
+    template <>
+    const uint64_t DynamicStructure<Shipwreck>::MAIN_VALID_BIOMES =
+            (1ULL << ocean) |
+            (1ULL << mushroom_island_shore) |
+            (1ULL << beach) |
+            (1ULL << snowy_beach) |
+            (1ULL << deep_ocean) |
+            (1ULL << warm_ocean) |
+            (1ULL << lukewarm_ocean) |
+            (1ULL << deep_lukewarm_ocean) |
+            (1ULL << cold_ocean) |
+            (1ULL << deep_cold_ocean) |
+            (1ULL << frozen_ocean) |
+            (1ULL << deep_frozen_ocean);
 
-        std::vector<int> biomeListSecond;
+    template <>
+    const bool DynamicStructure<Shipwreck>::HAS_SECOND_BIOME_CHECK = false;
 
-        bool useReducedSpacing = worldSize < WORLDSIZE::MEDIUM;
-        setupDerived(14357617, useReducedSpacing ? 32 : 10, 5,
-                     useReducedSpacing ? 60 : 20, 0, 16, biomeListMain, biomeListSecond, worldSize);
+    void Shipwreck::setWorldSize(WORLDSIZE worldSize) {
+        CHUNK_BOUNDS = getChunkWorldBounds(worldSize) - 3;
+        // prevent from setting the same values
+        bool reducedSpacing = worldSize < WORLDSIZE::MEDIUM;
+        if(REDUCED_SPACING == reducedSpacing)
+            return;
+        REGION_SIZE = reducedSpacing ? 32 : 10;
+        CHUNK_RANGE = REGION_SIZE - 5;
+        ATTEMPTS = reducedSpacing ? 60 : 20;
     }
 
-    void Outpost::setup(WORLDSIZE worldSize) {
-        std::vector<int> biomeListMain = {
-            plains, desert, savanna, taiga, cold_taiga, ice_plains
-        };
+    template <>
+    const int DynamicStructure<Outpost>::SALT = 165745296;
+    template <>
+    int DynamicStructure<Outpost>::CHUNK_RANGE = 26;
+    template <>
+    const int DynamicStructure<Outpost>::MAIN_RADIUS = 32;
+    template <>
+    const int DynamicStructure<Outpost>::SECOND_RADIUS = 0;
+    template <>
+    const uint64_t DynamicStructure<Outpost>::MAIN_VALID_BIOMES =
+            (1ULL << plains) |
+            (1ULL << desert) |
+            (1ULL << taiga) |
+            (1ULL << ice_plains) |
+            (1ULL << cold_taiga) |
+            (1ULL << savanna);
 
-        std::vector<int> biomeListSecond;
+    template <>
+    const uint64_t DynamicStructure<Outpost>::SECONDARY_VALID_BIOMES = DEFAULT_SECONDARY_VALID_BIOMES;
+    template <>
+    const uint64_t DynamicStructure<Outpost>::SECONDARY_VALID_BIOMES_MUTATED = DEFAULT_SECONDARY_VALID_BIOMES_MUTATED;
 
-        bool useReducedSpacing = worldSize < WORLDSIZE::MEDIUM;
-        setupDerived(165745296, useReducedSpacing ? 32 : 80, 6,
-                     useReducedSpacing ? 60 : 40, 32, 0, biomeListMain, biomeListSecond, worldSize);
+    void Outpost::setWorldSize(WORLDSIZE worldSize) {
+        CHUNK_BOUNDS = getChunkWorldBounds(worldSize) - 3;
+        // prevent from setting the same values
+        bool reducedSpacing = worldSize < WORLDSIZE::MEDIUM;
+        if(REDUCED_SPACING == reducedSpacing)
+            return;
+        REGION_SIZE = reducedSpacing ? 32 : 80;
+        CHUNK_RANGE = REGION_SIZE - 6;
+        ATTEMPTS = reducedSpacing ? 60 : 40;
     }
 }
-
 
 template class Structure::DynamicStructure<Structure::Mansion>;
 template class Structure::DynamicStructure<Structure::Monument>;

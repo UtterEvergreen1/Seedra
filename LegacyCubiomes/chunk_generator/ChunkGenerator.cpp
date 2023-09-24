@@ -2,8 +2,8 @@
 #include "ChunkGenerator.hpp"
 #include "biome.hpp"
 
-ChunkGeneratorOverWorld::ChunkGeneratorOverWorld(const Generator& generator) : ChunkGeneratorOverWorld(generator.seed, generator.biomeSize) {}
-ChunkGeneratorOverWorld::ChunkGeneratorOverWorld(int64_t worldSeed, BIOMESCALE biomeScale) : g(WIIU_LATEST, biomeScale) {
+ChunkGeneratorOverWorld::ChunkGeneratorOverWorld(const Generator& generator) : g(generator) {}
+ChunkGeneratorOverWorld::ChunkGeneratorOverWorld(int64_t worldSeed, LCEVERSION lceVersion, CONSOLE console, BIOMESCALE biomeScale) : g(lceVersion, console, biomeScale) {
     setSeed(&this->random, worldSeed);
     this->minLimitPerlinNoise.setNoiseGeneratorOctaves(&this->random, 16);
     this->maxLimitPerlinNoise.setNoiseGeneratorOctaves(&this->random, 16);
@@ -24,9 +24,10 @@ ChunkGeneratorOverWorld::ChunkGeneratorOverWorld(int64_t worldSeed, BIOMESCALE b
             this->biomeWeights[i + 2 + (j + 2) * 5] = f;
         }
     }
-    g.applySeed(DIMENSIONS::OVERWORLD, worldSeed);
+    g.applyWorldSeed(worldSeed);
     this->biomesForGeneration = nullptr;
 }
+
 ChunkGeneratorOverWorld::~ChunkGeneratorOverWorld(){
     if(biomesForGeneration)
         free(biomesForGeneration);
@@ -126,7 +127,7 @@ void ChunkGeneratorOverWorld::replaceBiomeBlocks(int x, int z, ChunkPrimer *prim
         for (int j = 0; j < 16; ++j)
         {
             Biome* biome = Biome::getBiomeForId(biomesIn[j + i * 16]);
-            biome->genTerrainBlocks(this->g.seed, &this->random, primer, x * 16 + i, z * 16 + j, this->depthBuffer[j + i * 16]);
+            biome->genTerrainBlocks(this->g.getWorldSeed(), &this->random, primer, x * 16 + i, z * 16 + j, this->depthBuffer[j + i * 16]);
         }
     }
 }

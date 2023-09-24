@@ -10,21 +10,6 @@ double maintainPrecision(double x)
     return x - floor(x / 33554432.0 + 0.5) * 33554432.0;
 }
 
-// grad()
-/*
-static double indexedLerp(int idx, double d1, double d2, double d3)
-{
-    const double cEdgeX[] = { 1.0,-1.0, 1.0,-1.0, 1.0,-1.0, 1.0,-1.0,
-                              0.0, 0.0, 0.0, 0.0, 1.0, 0.0,-1.0, 0.0 };
-    const double cEdgeY[] = { 1.0, 1.0,-1.0,-1.0, 0.0, 0.0, 0.0, 0.0,
-                              1.0,-1.0, 1.0,-1.0, 1.0,-1.0, 1.0,-1.0 };
-    const double cEdgeZ[] = { 0.0, 0.0, 0.0, 0.0, 1.0, 1.0,-1.0,-1.0,
-                              1.0, 1.0,-1.0,-1.0, 0.0, 1.0, 0.0,-1.0 };
-
-    idx &= 0xf;
-    return cEdgeX[idx] * d1 + cEdgeY[idx] * d2 + cEdgeZ[idx] * d3;
-}
-*/
 ATTR(hot, const, always_inline, artificial)
 static inline double indexedLerp(int idx, double a, double b, double c)
 {
@@ -93,8 +78,6 @@ double samplePerlin(const PerlinNoise *noise, double d1, double d2, double d3,
     d1 -= i1;
     d2 -= i2;
     d3 -= i3;
-    //if(yamp){
-    //}
 
 
     double t1 = d1*d1*d1 * (d1 * (d1*6.0-15.0) + 10.0);
@@ -239,14 +222,14 @@ double sampleOctave(const OctaveNoise *noise, double x, double y, double z)
 }
 
 
-void initSurfaceNoise(SurfaceNoise *sn, DIMENSIONS dimension, uint64_t worldSeed)
+void initSurfaceNoise(SurfaceNoise *sn, DIMENSION dimension, uint64_t worldSeed)
 {
     uint64_t s;
     setSeed(&s, worldSeed);
     octaveInit(&sn->octaveMin, &s, sn->oct+0, -15, 16);
     octaveInit(&sn->octaveMax, &s, sn->oct+16, -15, 16);
     octaveInit(&sn->octaveMain, &s, sn->oct+32, -7, 8);
-    if (dimension == DIMENSIONS::END)
+    if (dimension == DIMENSION::END)
     {
         sn->xzScale = 2.0;
         sn->yScale = 1.0;

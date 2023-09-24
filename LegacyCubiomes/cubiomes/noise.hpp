@@ -1,7 +1,6 @@
 #pragma once
 
 #include "rng.hpp"
-
 #include "LegacyCubiomes/utils/enums.hpp"
 
 struct PerlinNoise
@@ -22,14 +21,14 @@ struct OctaveNoise
 
 struct SurfaceNoise
 {
-    double xzScale, yScale;
-    double xzFactor, yFactor;
+    double xzScale{}, yScale{};
+    double xzFactor{}, yFactor{};
     OctaveNoise octaveMin;
     OctaveNoise octaveMax;
     OctaveNoise octaveMain;
     OctaveNoise octaveSurf;
     OctaveNoise octaveDepth;
-    PerlinNoise oct[16+16+8+4+16];
+    PerlinNoise oct[16+16+8+4+16]{};
 };
 
 struct DoublePerlinNoise
@@ -53,17 +52,10 @@ double sampleSimplex2D(const PerlinNoise *noise, double x, double y);
 void octaveInit(OctaveNoise *noise, uint64_t *seed, PerlinNoise *octaves,
         int omin, int len);
 
-double sampleOctave(const OctaveNoise *noise, double x, double y, double z);
-
-/// Double Perlin
-void doublePerlinInit(DoublePerlinNoise *noise, uint64_t *seed,
-        PerlinNoise *octavesA, PerlinNoise *octavesB, int omin, int len);
-
-double sampleDoublePerlin(const DoublePerlinNoise *noise,
-        double x, double y, double z);
+MU double sampleOctave(const OctaveNoise *noise, double x, double y, double z);
 
 double sampleOctaveAmp(const OctaveNoise *noise, double x, double y, double z,
                        double yamp, double ymin, int ydefault);
 
-void initSurfaceNoise(SurfaceNoise *sn, DIMENSIONS dimension, uint64_t worldSeed);
+void initSurfaceNoise(SurfaceNoise *sn, DIMENSION dimension, uint64_t worldSeed);
 

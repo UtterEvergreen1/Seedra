@@ -63,7 +63,7 @@ namespace loot_tables {
                     case Items::ItemType::ItemTool:
                     case Items::ItemType::ItemSword:
                     case Items::ItemType::ItemArmor: {
-                        EnchantmentHelper::EnchantWithLevelsItem::apply(lootTableSeed, &result, 20, 39);
+                        EnchantmentHelper::EnchantWithLevels::apply<false, true>(lootTableSeed, &result, 20, 39);
                     }
                     default:
                         break;

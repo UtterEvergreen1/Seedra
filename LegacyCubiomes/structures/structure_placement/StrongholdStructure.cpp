@@ -1,39 +1,21 @@
-#include <vector>
-
 #include "StrongholdStructure.hpp"
 #include "LegacyCubiomes/utils/constants.hpp"
 
 namespace Structure {
-    char StrongholdStructure::VALID_BIOMES[256];
-
-    void StrongholdStructure::setup(){
-        std::vector<char> biomeList = {
-            plains, desert, extreme_hills, forest, taiga, hell, the_end, ice_plains, ice_mountains,
-            mushroom_island, desert_hills, forest_hills, taiga_hills, extreme_hills_edge, jungle,
-            jungle_hills, jungle_edge, stone_beach, birch_forest, birch_forest_hills, roofed_forest,
-            cold_taiga, cold_taiga_hills, mega_taiga, mega_taiga_hills, extreme_hills_plus_trees,
-            savanna, savanna_plateau, mesa, mesa_plateau_stone, mesa_plateau
-        };
-
-        for (char i : biomeList)
-            StrongholdStructure::VALID_BIOMES[(int)i] = 1;
-    }
-
-    Pos2D StrongholdStructure::getWorldPosition(Generator* g){
+    Pos2D StrongholdStructure::getWorldPosition(const Generator& g){
         double dist, angle;
+        int multiplier;
         uint64_t rnds;
         Pos2D p{};
         int out;
 
-        setSeed(&rnds, g->seed);
+        setSeed(&rnds, g.getWorldSeed());
 
         angle = 2.0 * PI * nextDouble(&rnds);
+        bool xboxStronghold = g.getConsole() == CONSOLE::XBOX;
 
         for (int var7 = 0; var7 < 10; ++var7)
-        {
-            int xboxStronghold = g->lceVersion >= XBOX_TU75 && g->lceVersion <= XBOX_TU75;
-
-            int multiplier;
+        {;
             if (xboxStronghold)
                 multiplier = nextInt(&rnds, 4);
             dist = nextDouble(&rnds) + 1.25;
@@ -45,7 +27,7 @@ namespace Structure {
             p.x = ((int)round(cos(angle) * dist) << 4) + 8;
             p.z = ((int)round(sin(angle) * dist) << 4) + 8;
 
-            p = g->locateBiome(p.x, p.z, 112, VALID_BIOMES, &rnds, &out);
+            p = g.locateBiome(p.x, p.z, 112, stronghold_biomes, &rnds, &out);
 
             if(out || (var7 == 9)) {
                 return p;

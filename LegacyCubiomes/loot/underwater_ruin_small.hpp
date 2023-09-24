@@ -48,7 +48,7 @@ namespace loot_tables {
                 ItemStack result = table.createLootRoll<false>(lootTableSeed);
 
                 if EXPECT_FALSE(result.item->getID() == Items::FISHING_ROD_ID) {
-                    EnchantmentHelper::EnchantRandomlyItem::apply(lootTableSeed, &result);
+                    EnchantmentHelper::EnchantRandomly::apply<false>(lootTableSeed, &result);
                 }
 
                 chestContents.push_back(result);

@@ -7,7 +7,7 @@ public:
     Enchantment* obj = nullptr;
     int level = 0;
 
-    static inline std::string LEVEL_ROMAN[6] = {"", "", "II", "III", "IV", "V"};
+    static std::string LEVEL_ROMAN[6];
 
     EnchantmentData() = default;
     EnchantmentData(Enchantment *enchantmentObj, int enchLevel) :
@@ -26,7 +26,5 @@ public:
     }
 
 };
-
-typedef std::vector<EnchantmentData> EnchDataVec_t;
 
 
