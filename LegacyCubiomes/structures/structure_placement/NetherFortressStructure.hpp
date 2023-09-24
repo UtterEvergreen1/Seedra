@@ -4,6 +4,7 @@
 
 namespace Structure {
     class NetherFortressStructure {
+    public:
         ND static Pos2D getWorldPosition(int64_t worldSeed);
     };
 }
