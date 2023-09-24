@@ -132,7 +132,9 @@ public:
      * @param pos coordinates to generate the biome at
      * @return biome id or -1 if failed
      */
-    MU ND int getBiomeAt(int scale, Pos2D pos) const;
+    MU ND inline int getBiomeAt(int scale, Pos2D pos) const {
+        return getBiomeAt(scale, pos.x, pos.z);
+    }
 
     /**
      * Generates a biome range (x -> x + w, z -> z + h).
@@ -166,7 +168,9 @@ public:
      * @param mutatedValidBiomes uint64_t value of the valid mutated biomes
      * @return true if the biome id exists in the valid biomes
      */
-    static bool id_matches(int id, uint64_t validBiomes, uint64_t mutatedValidBiomes = 0);
+    static inline bool id_matches(int id, uint64_t validBiomes, uint64_t mutatedValidBiomes = 0) {
+        return id < 128 ? (validBiomes & (1ULL << id)) != 0 : (mutatedValidBiomes & (1ULL << (id - 128))) != 0;
+    }
 
     /**
      * Checks corners in range 'r' for non-valid biomes for quick filter.
@@ -200,7 +204,9 @@ public:
      * @param mutatedValidBiomes uint64_t value of the valid mutated biomes
      * @return true if all the biomes are valid within the radius
      */
-    MU ND bool areBiomesViable(Pos2D pos, int rad, uint64_t validBiomes, uint64_t mutatedValidBiomes = 0) const;
+    MU ND inline bool areBiomesViable(Pos2D pos, int rad, uint64_t validBiomes, uint64_t mutatedValidBiomes = 0) const {
+        return areBiomesViable(pos.x, pos.z, rad, validBiomes, mutatedValidBiomes);
+    }
 
     /**
      * Finds a valid biome within 'rad' blocks from origin (x, z) with the rng state 'rng'.
@@ -226,7 +232,9 @@ public:
      * @param[out] passes returns the total amount of positions picked
      * @return the found position, not found if passes = 0
      */
-    MU Pos2D locateBiome(Pos2D pos, int radius, uint64_t validBiomes, uint64_t* rng, int* passes) const;
+    MU inline Pos2D locateBiome(Pos2D pos, int radius, uint64_t validBiomes, uint64_t* rng, int* passes) const {
+        return locateBiome(pos.x, pos.z, radius, validBiomes, rng, passes);
+    }
 
     /**
      * Generates the approximate terrain height range (x -> x + w, z -> z + h) into 'y'.

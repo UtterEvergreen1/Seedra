@@ -85,10 +85,6 @@ int Generator::getBiomeAt(int scale, int x, int z) const {
     return id;
 }
 
-inline int Generator::getBiomeAt(int scale, Pos2D pos) const {
-    return getBiomeAt(scale, pos.x, pos.z);
-}
-
 int* Generator::getBiomeRange(int scale, int x, int z, int w, int h) const {
     Range r = { scale, x, z, w, h };
     int* ids = allocCache(r);
@@ -121,11 +117,7 @@ Layer* Generator::getLayerForScale(int scale) const {
 // Checking Biomes & Biome Helper Functions
 //==============================================================================
 
-inline bool Generator::id_matches(int id, uint64_t validBiomes, uint64_t mutatedValidBiomes) {
-    return id < 128 ? (validBiomes & (1ULL << id)) != 0 : (mutatedValidBiomes & (1ULL << (id - 128))) != 0;
-}
-
-inline bool Generator::validCorners(int x, int z, const Range& r, uint64_t validBiomes, uint64_t mutatedValidBiomes) const {
+bool Generator::validCorners(int x, int z, const Range& r, uint64_t validBiomes, uint64_t mutatedValidBiomes) const {
     int xCorner = x - r.x;
     int zCorner = (z - r.z) * r.sx; // top left
     if(!id_matches(this->getBiomeAt(4, xCorner, zCorner), validBiomes, mutatedValidBiomes)) return false;
@@ -173,10 +165,6 @@ bool Generator::areBiomesViable(int x, int z, int rad, uint64_t validBiomes, uin
     return viable;
 }
 
-inline bool Generator::areBiomesViable(Pos2D pos, int rad, uint64_t validBiomes, uint64_t mutatedValidBiomes) const {
-    return areBiomesViable(pos.x, pos.z, rad, validBiomes, mutatedValidBiomes);
-}
-
 Pos2D Generator::locateBiome(int x, int z, int radius, uint64_t validBiomes,
                              uint64_t* rng, int* passes) const
 {
@@ -216,10 +204,6 @@ Pos2D Generator::locateBiome(int x, int z, int radius, uint64_t validBiomes,
     }
 
     return out;
-}
-
-inline Pos2D Generator::locateBiome(Pos2D pos, int radius, uint64_t validBiomes, uint64_t* rng, int* passes) const {
-    return locateBiome(pos.x, pos.z, radius, validBiomes, rng, passes);
 }
 
 int Generator::mapApproxHeight(float* y, int* ids, const SurfaceNoise* sn,
