@@ -1,4 +1,4 @@
-#include "fastEnchantArray.hpp"
+#include "fastBookEnchantArray.hpp"
 
 
 //==============================================================================
@@ -97,11 +97,10 @@ void EnchantedBookEnchantsLookupTable::setup() {
 
     // sets up base cumulative weights
     int sum = 0;
-    int i = 0;
-    for (Enchantment* ench : Enchantment::REGISTRY.getRegistry()) {
+    for (int i = 0; i < Enchantment::count; ++i) {
+        auto ench = Enchantment::REGISTRY[i];
         sum += ench->rarity->getWeight();
         CUMULATIVE_WEIGHT_ALL[i] = sum;
-        i++;
     }
     TOTAL_WEIGHT = sum;
 
@@ -135,4 +134,3 @@ void EnchantedBookEnchantsLookupTable::deallocate() {
 
 int EnchantedBookEnchantsLookupTable::TOTAL_WEIGHT = 0;
 int EnchantedBookEnchantsLookupTable::CUMULATIVE_WEIGHT_ALL[Enchantment::MAX_ENCHANTMENT_COUNT] = {0};
-

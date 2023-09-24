@@ -4,7 +4,7 @@
 #include "LegacyCubiomes/structures/structure_generation/stronghold_generator/GenStronghold.hpp"
 #include "LegacyCubiomes/loot/base_classes/loot_classes.hpp"
 #include "LegacyCubiomes/enchants/enchantmentHelper.hpp"
-#include "LegacyCubiomes/enchants/enchantmentHelperBook.hpp"
+
 #include "LegacyCubiomes/loot/setup.hpp"
 
 
@@ -14,6 +14,9 @@
 #include "LegacyCubiomes/structures/structure_placement/DynamicStructures.hpp"
 #include "LegacyCubiomes/chunk_generator/RavineGenerator.hpp"
 #include "LegacyCubiomes/chunk_generator/ChunkGenerator.hpp"
+
+
+
 
 using stronghold_generator::StrongholdGenerator;
 
@@ -63,7 +66,7 @@ int findItemFromLootTableSeed(uint64_t* lootTableSeed, int itemID) {
             ItemStack result = table.createLootRoll<false>(lootTableSeed);
 
             if (result.item->getID() == ENCHANTED_BOOK_ID) {
-                EnchantmentHelperBook::EnchantWithLevels::apply(lootTableSeed, &result, 30);
+                EnchantmentHelper::EnchantWithLevelsBook::apply(lootTableSeed, &result, 30);
             }
 
             if (result.item->getID() == itemID) {
@@ -108,8 +111,7 @@ void findSeedWithItem(int itemID, int total, int count) {
 int main(int argc, char* argv[]) {
     constexpr bool isAquatic = false;
 
-    Enchantment::registerEnchantments();
-    EnchantmentHelperBook::setup();
+    EnchantmentHelper::setup();
 
     // std::cout << Pos2D(238, -368).toChunkPos() << std::endl;
 
@@ -129,7 +131,7 @@ int main(int argc, char* argv[]) {
 
     auto diff = end - start;
     std::cout << "rolls: " << ROLLS <<
-    " | time: " << diff << "ms" << std::endl;
+              " | time: " << diff << "ms" << std::endl;
 
 
     /*
@@ -198,7 +200,7 @@ int main(int argc, char* argv[]) {
     /*
     // Biome::registerBiomes();
     // Generator g = Generator(LCEVERSION::WIIU_LATEST, BIOMESCALE::SMALL);
-    // g.applyWorldSeed(DIMENSION::OVERWORLD, 12349);
+    // g.applySeed(DIMENSIONS::OVERWORLD, 12349);
 
     // std::cout << Pos2D(1, 148).toChunkPos() << std::endl;
      -7254631889086558805 / (12348)(wiiu) two enchanted books
@@ -287,7 +289,7 @@ int main(int argc, char* argv[]) {
     StrongholdLibrary::setup();
 
     Generator g = Generator(LCEVERSION::WIIU_LATEST, BIOMESCALE::SMALL);
-    g.applyWorldSeed(DIMENSION::OVERWORLD, 12346);
+    g.applySeed(DIMENSIONS::OVERWORLD, 12346);
 
     // std::cout << Pos2D(-145, 171).toChunkPos() << std::endl;
     // uint64_t lootTableSeed = -4210146869381317490;
@@ -353,7 +355,7 @@ std::vector<RavineData> ravineInChunk(const Generator &g, ChunkPrimer* chunkPrim
 /*
 int main(int argc, char* argv[]) {
     Generator g = Generator(LCEVERSION::WIIU_LATEST, BIOMESCALE::SMALL);
-    g.applyWorldSeed(DIMENSION::OVERWORLD, -6883608035857155058);
+    g.applySeed(DIMENSIONS::OVERWORLD, -6883608035857155058);
 
     Pos2D chunkPos = Pos2D(-219, 215).toChunkPos();
 
@@ -382,7 +384,7 @@ int main(int argc, char* argv[]) {
 /*
 int main(int argc, char* argv[]) {
     Generator g = Generator(LCEVERSION::WIIU_LATEST, BIOMESCALE::SMALL);
-    g.applyWorldSeed(DIMENSION::OVERWORLD, 2220913686226291287);
+    g.applySeed(DIMENSIONS::OVERWORLD, 2220913686226291287);
 
     loot_tables::BuriedTreasure::setup();
     Structure::Treasure::setup(WORLDSIZE::CLASSIC);
@@ -438,7 +440,7 @@ int main(int argc, char* argv[]) {
 /*
 int main(int argc, char* argv[]) {
     Generator g = Generator(LCEVERSION::WIIU_LATEST, BIOMESCALE::SMALL);
-    g.applyWorldSeed(1405922471972256859);
+    g.applySeed(1405922471972256859);
     stronghold_generator::StrongholdGenerator strongholdGen = stronghold_generator::StrongholdGenerator();
 
     Pos2D strongholdChunk = g.getStronghold();
@@ -486,23 +488,4 @@ int main(int argc, char* argv[]) {
 
 }
 */
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 

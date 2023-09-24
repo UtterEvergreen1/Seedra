@@ -17,7 +17,7 @@ namespace loot_tables {
         template<bool checkCaves>
         static uint64_t getLootSeed(const Generator& g, int chestX, int chestY, int chestZ, StrongholdGenerator* strongholdGenerator);
 
-        /// Combine loot seeding and generation to get the stronghold loot.
+        /// combine loot seeding and generation to get the stronghold loot
         template<bool checkCaves, bool shuffle>
         ND static Container getLoot(const Generator& g, int chestX, int chestY, int chestZ, StrongholdGenerator* strongholdGenerator);
     };

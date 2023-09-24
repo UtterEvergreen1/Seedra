@@ -9,10 +9,13 @@
 #include "LegacyCubiomes/mc/itemID.hpp"
 #include "LegacyCubiomes/utils/RegistryNamespaced.hpp"
 #include "LegacyCubiomes/cubiomes/generator.hpp"
+//#include "LegacyCubiomes/enchants/enchantmentHelper.hpp"
+class EnchantmentHelper;
 class Enchantment {
 private:
     static bool isSetup;
 public:
+    friend class EnchantmentHelper;
     static RegistryNamespaced<Enchantment> REGISTRY;
     static CONSOLE currentConsole;
     static LCEVERSION currentVersion;

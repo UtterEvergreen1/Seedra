@@ -24,6 +24,7 @@ namespace loot_tables {
     template <typename T>
     template<bool checkCaves, bool shuffle>
     Container StrongholdLoot<T>::getLoot(const Generator& g, int chestX, int chestY, int chestZ, StrongholdGenerator* strongholdGenerator) {
-        return T::getLootFromSeed<shuffle>(&getLootSeed<checkCaves>(g, chestX, chestY, chestZ, strongholdGenerator));
+        return T::getLootFromSeed<shuffle>(getLootSeed<checkCaves>(g, chestX, chestY, chestZ, strongholdGenerator));
     }
+
 }

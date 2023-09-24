@@ -11,11 +11,6 @@ public:
         }
     };
     RegistryNamespaced() {}
-    ~RegistryNamespaced() {
-        for(const T* value : allValues){
-            delete value;
-        }
-    }
     void registerMapping(int id, const ResourceLocation& key, T* value, int fakePointer) {
         //this->idLookup.emplace(value, id);
         //this->registryObjects.emplace(key, value);
@@ -58,6 +53,16 @@ public:
      */
     inline int size() {
         return this->sortedRegistry.size();
+    }
+
+    /// Deallocates all the stored values
+    inline void clear() {
+        for(const T* value : allValues){
+            delete value;
+        }
+        allValues.clear();
+        sortedRegistry.clear();
+        pointerLookup.clear();
     }
 
 

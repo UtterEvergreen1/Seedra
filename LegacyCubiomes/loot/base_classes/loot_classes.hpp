@@ -88,7 +88,7 @@ public:
         return out;
     }
 
-    #ifdef INCLUDE_QT
+#ifdef INCLUDE_QT
     friend QDebug ItemStack::operator<<(QDebug out, const ItemStack &itemStack) {
         if (itemStack.stackSize > 1) {
             out.nospace() << *(itemStack.itemEntry) << " (" << itemStack.stackSize << ")";
@@ -98,7 +98,7 @@ public:
         }
         return out.nospace();
     }
-    #endif
+#endif
 };
 
 
@@ -297,6 +297,7 @@ public:
         out << "}";
         return out;
     }
+
 
     #ifdef INCLUDE_QT
     friend QDebug operator<<(QDebug out, const Container &container) {

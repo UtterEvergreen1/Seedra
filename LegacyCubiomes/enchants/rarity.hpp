@@ -3,36 +3,23 @@
 
 #include "LegacyCubiomes/cubiomes/processor.hpp"
 
-enum class Value {
-    COMMON,
-    UNCOMMON,
-    RARE,
-    EPIC,
-    NONE
-};
-
 class Rarity {
 private:
-    const Value value = Value::NONE;
     const int weight = 0;
 public:
     Rarity() = default;
 
-    Rarity(Value value, int weight) : value(value), weight(weight) {}
-    ND Value getValue() const {
-        return value;
-    }
-    ND int getWeight() const {
+    Rarity(int weight) : weight(weight) {}
+    ND inline int getWeight() const {
         return weight;
     }
 };
 
 struct Rarities {
-    static const Rarity NONE;
-    static const Rarity COMMON;
-    static const Rarity UNCOMMON;
-    static const Rarity RARE;
-    static const Rarity EPIC;
+    static inline const Rarity NONE = Rarity(0);
+    static inline const Rarity COMMON = Rarity(10);
+    static inline const Rarity UNCOMMON = Rarity(5);
+    static inline const Rarity RARE = Rarity(2);
+    static inline const Rarity EPIC = Rarity(1);
 };
-
 

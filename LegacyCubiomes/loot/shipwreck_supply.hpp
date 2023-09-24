@@ -49,7 +49,7 @@ namespace loot_tables {
                 ItemStack result = table.createLootRoll<false>(lootTableSeed);
 
                 if (result.item->getItemType() == Items::ItemType::ItemArmor) {
-                    EnchantmentHelper::EnchantRandomly::apply<false>(lootTableSeed, &result);
+                    EnchantmentHelper::EnchantRandomlyItem::apply(lootTableSeed, &result);
                 }
 
                 chestContents.push_back(result);
