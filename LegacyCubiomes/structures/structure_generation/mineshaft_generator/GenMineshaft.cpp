@@ -85,9 +85,6 @@ namespace mineshaft_generator {
             for(i = nextInt(random, 3) + 2; i > 0; --i) {
                 int j = i * 5;
                 corridorBoundingBox = BoundingBox::orientBox(x, y, z, 0, 0, 0, 3, 3, j, direction);
-                if(corridorBoundingBox.minX == 17 && corridorBoundingBox.minZ == -273) {
-                    j = i * 5;
-                }
 
                 Piece *collidingPiece = this->findCollisionPiece(corridorBoundingBox);
                 if (collidingPiece == nullptr) {
