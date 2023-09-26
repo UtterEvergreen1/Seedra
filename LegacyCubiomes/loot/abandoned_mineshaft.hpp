@@ -2,7 +2,10 @@
 
 #include "base_classes/loot.hpp"
 
+#include "LegacyCubiomes/structures/structure_generation/mineshaft_generator/GenMineshaft.hpp"
+
 using namespace Items;
+using mineshaft_generator::MineshaftGenerator;
 
 namespace loot_tables {
     //TODO: make base mineshaft class that generates the rolls in the chunk like stronghold
@@ -81,16 +84,5 @@ namespace loot_tables {
         else
             return  {27, chestContents};
     }
-
-
-
-
-
-
-
-
-
-
-
 }
 

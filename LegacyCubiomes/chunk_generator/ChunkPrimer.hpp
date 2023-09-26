@@ -13,35 +13,53 @@ class ChunkPrimer
 {
 public:
     uint16_t blocks[65536]; // all the blocks along with data in the chunk
+    std::vector<uint8_t> skyLight;
     std::vector<int> precipitationHeightMap = std::vector<int>(256, -999);
+    ChunkPrimer() {}
+    /// do not allow copy
+    ChunkPrimer(const ChunkPrimer &) = delete;
+    ChunkPrimer &operator=(const ChunkPrimer &) = delete;
+
+    ///do not allow move
+    //ChunkPrimer(ChunkPrimer &&) = delete;
+    //ChunkPrimer &operator=(ChunkPrimer &&) = delete;
+
     inline uint16_t getBlockAtIndex(int64_t index) {
         return index >= 0 && index < 65536 ? blocks[index] : 0;
     }
     uint16_t getBlock(int64_t x, int64_t y, int64_t z) {
-        return getBlockAtIndex(getBlockIndex(x, y, z)) >> 4;
+        return getBlockAtIndex(getStorageIndex(x, y, z)) >> 4;
     }
     void setBlock(int64_t x, int64_t y, int64_t z, uint16_t block)
     {
-        this->blocks[getBlockIndex(x, y, z)] = block << 4;
+        this->blocks[getStorageIndex(x, y, z)] = block << 4;
     }
 
     uint16_t getData(int64_t x, int64_t y, int64_t z)
     {
-        return getBlockAtIndex(getBlockIndex(x, y, z)) & 15;
+        return getBlockAtIndex(getStorageIndex(x, y, z)) & 15;
     }
     void setData(int64_t x, int64_t y, int64_t z, uint8_t data)
     {
-        this->blocks[getBlockIndex(x, y, z)] |= data;
+        this->blocks[getStorageIndex(x, y, z)] |= data;
+    }
+
+    uint16_t getSkyLight(int64_t x, int64_t y, int64_t z) {
+        return getBlockAtIndex(getStorageIndex(x, y, z));
+    }
+    void setSkyLight(int64_t x, int64_t y, int64_t z, uint8_t lightValue)
+    {
+        this->skyLight[getStorageIndex(x, y, z)] = lightValue;
     }
 
     void setBlockAndData(int64_t x, int64_t y, int64_t z, uint16_t block, uint8_t data)
     {
-        this->blocks[getBlockIndex(x, y, z)] = ((block << 4) | data);
+        this->blocks[getStorageIndex(x, y, z)] = ((block << 4) | data);
     }
 
     void setBlockAndData(int64_t x, int64_t y, int64_t z, const Items::Item& item)
     {
-        this->blocks[getBlockIndex(x, y, z)] = ((item.getID() << 4) | item.getDataTag());
+        this->blocks[getStorageIndex(x, y, z)] = ((item.getID() << 4) | item.getDataTag());
     }
 
     //in block cords not chunk cords
@@ -58,16 +76,62 @@ public:
         return 0;
     }
 
-    static inline int64_t getBlockIndex(int64_t x, int64_t y, int64_t z)
+    static inline int64_t getStorageIndex(int64_t x, int64_t y, int64_t z)
     {
         int64_t value = (x << 12) | (z << 8) | y;
         return value;
     }
 
-    Pos3D getPrecipitationHeight(Pos2D pos)
+    ///TODO add all the blocks or make a block class and get the value from that
+    static int getBlockLightOpacity(uint16_t blockId) {
+        switch(blockId){
+            case 0:
+            case 78:
+            case 171:
+                return 0;
+            case 30:
+                return 1;
+            case 8:
+            case 9:
+            case 79:
+            case 212:
+                return 3;
+            default:
+                return 255;
+        }
+    }
+
+    void generateSkylightMap() {
+        skyLight.resize(65536, 0);
+        int topFilledSegment = getHighestYChunk();
+        for (int x = 0; x < 16; ++x) {
+            for (int z = 0; z < 16; ++z) {
+
+                int lightValue = 15;
+                int topPos = topFilledSegment + 15;
+                while (true) {
+                    int blockOpacity = getBlockLightOpacity(this->getBlock(x, topPos, z));
+                    if (blockOpacity == 0 && lightValue != 15) blockOpacity = 1;
+
+                    lightValue -= blockOpacity;
+
+                    if (lightValue > 0) {
+                        setSkyLight(x, topPos, z, lightValue);
+                    }
+
+                    topPos--;
+
+                    if (lightValue <= 0 || topPos <= 0)
+                        break;
+                }
+            }
+        }
+    }
+
+    int getPrecipitationHeight(int x, int z)
     {
-        int i = pos.x & 15;
-        int j = pos.z & 15;
+        int i = x & 15;
+        int j = z & 15;
         int k = i | j << 4;
 
         if (precipitationHeightMap[k] == -999)
@@ -85,8 +149,7 @@ public:
 
             precipitationHeightMap[k] = i1;
         }
-
-        return Pos3D(pos.x, precipitationHeightMap[k], pos.z);
+        return precipitationHeightMap[k];
     }
 
     bool canBlockFreeze(const Generator& g, Pos3D pos, bool noWaterAdj){
@@ -132,7 +195,7 @@ public:
             return true;
         else
         {
-            //TODO: check light
+            // needs to check block light later on to replace a perfect chunk
             if (pos.y >= 0 && pos.y < 256 /* && this.getLightFor(EnumSkyBlock.BLOCK, pos) < 10*/)
             {
                 uint16_t iblockstate = getBlock(pos.x, pos.y, pos.z);

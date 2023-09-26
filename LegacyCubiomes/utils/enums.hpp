@@ -1,20 +1,20 @@
 #pragma once
 
-enum DIMENSION {
+enum class DIMENSION {
     NETHER   = -1,
     HELL     = -1,
     OVERWORLD = 0,
     END       = 1
 };
 
-enum CONSOLE {
+enum class CONSOLE {
     XBOX = 0,
     PS3  = 1,
     WIIU = 1,
     PS4  = 2
 };
 
-enum LCEVERSION
+enum class LCEVERSION
 {
     //PISTON,
     //GENERATION, // not supported yet

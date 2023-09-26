@@ -1,5 +1,5 @@
 #pragma once
-
+#include <iostream>
 #include "LegacyCubiomes/utils/enums.hpp"
 #include "LegacyCubiomes/cubiomes/processor.hpp"
 
@@ -24,11 +24,27 @@ struct BoundingBox {
 
     MU void offset(int x, int y, int z);
 
-    MU ND int getSizeY() const;
+    MU ND inline int getXSize() const {
+        return this->maxX - this->minX + 1;
+    }
+
+    MU ND inline int getYSize() const {
+        return this->maxY - this->minY + 1;
+    }
+
+    MU ND inline int getZSize() const {
+        return this->maxZ - this->minZ + 1;
+    }
 
     static BoundingBox orientBox(int x, int y, int z, int offsetWidth, int offsetHeight, int offsetDepth,
                                  int width, int height, int depth, DIRECTION direction);
 
     static BoundingBox orientBox(int x, int y, int z, int width, int height, int depth, DIRECTION direction);
+
+    friend std::ostream &operator<<(std::ostream &out, const BoundingBox &boundingBox) {
+        out << "(" << boundingBox.minX << ", " << boundingBox.minY << ", " << boundingBox.minZ << ") -> (" <<
+                boundingBox.maxX << ", " << boundingBox.maxY << ", " << boundingBox.maxZ << ")";
+        return out;
+    }
 
 };

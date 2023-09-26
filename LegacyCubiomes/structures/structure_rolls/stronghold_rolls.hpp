@@ -10,22 +10,21 @@ namespace structure_rolls {
     public:
         /** generate all stronghold rolls in the chunk */
         template<bool isStrongholdChest>
-        static void generateStructure(uint64_t *random, int chestX, int chestY, int chestZ, StrongholdGenerator* strongholdGenerator, ChunkPrimer *chunk);
+        MU static void generateStructure(ChunkPrimer *chunk, StrongholdGenerator *strongholdGenerator, uint64_t *random, int chestX, int chestY, int chestZ);
     };
 
     template<bool isStrongholdChest>
-    void StrongholdRolls::generateStructure(uint64_t *random, int chestX, int chestY, int chestZ, StrongholdGenerator* strongholdGenerator, ChunkPrimer *chunk) {
+    void StrongholdRolls::generateStructure(ChunkPrimer *chunk, StrongholdGenerator *strongholdGenerator, uint64_t *random, int chestX, int chestY, int chestZ) {
         int chunkX = chestX >> 4;
         int chunkZ = chestZ >> 4;
-        for (Piece &piece: strongholdGenerator->pieces) {
+        for (int pieceIndex = 0; pieceIndex < strongholdGenerator->piecesSize; ++pieceIndex) {
+            const Piece &piece = strongholdGenerator->pieces[pieceIndex];
             if (piece.type != PieceType::NONE) {
                 const BoundingBox chunkBoundingBox = BoundingBox((chunkX << 4), 0, (chunkZ << 4), (chunkX << 4) + 15, 255, (chunkZ << 4) + 15);
                 const BoundingBox& pieceBoundingBox = piece.boundingBox;
                 if (pieceBoundingBox.intersects(chunkBoundingBox)) {
-                    if(chunk){
-                        if(isLiquidInStructureBoundingBox(chunkBoundingBox, pieceBoundingBox, chunk))
-                            continue;
-                    }
+                    if(chunk && piece.type != PieceType::PORTAL_ROOM && isLiquidInStructureBoundingBox(chunkBoundingBox, pieceBoundingBox, chunk))
+                        continue;
 
                     switch (piece.type) {
                     case PieceType::STRAIGHT:

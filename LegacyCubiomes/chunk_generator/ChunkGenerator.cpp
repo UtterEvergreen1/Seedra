@@ -2,9 +2,8 @@
 #include "ChunkGenerator.hpp"
 #include "biome.hpp"
 
-ChunkGeneratorOverWorld::ChunkGeneratorOverWorld(const Generator& generator) : g(generator) {}
-ChunkGeneratorOverWorld::ChunkGeneratorOverWorld(int64_t worldSeed, LCEVERSION lceVersion, CONSOLE console, BIOMESCALE biomeScale) : g(lceVersion, console, biomeScale) {
-    setSeed(&this->random, worldSeed);
+ChunkGeneratorOverWorld::ChunkGeneratorOverWorld(const Generator& generator) : g(generator) {
+    setSeed(&this->random, g.getWorldSeed());
     this->minLimitPerlinNoise.setNoiseGeneratorOctaves(&this->random, 16);
     this->maxLimitPerlinNoise.setNoiseGeneratorOctaves(&this->random, 16);
     this->mainPerlinNoise.setNoiseGeneratorOctaves(&this->random, 8);
@@ -24,7 +23,6 @@ ChunkGeneratorOverWorld::ChunkGeneratorOverWorld(int64_t worldSeed, LCEVERSION l
             this->biomeWeights[i + 2 + (j + 2) * 5] = f;
         }
     }
-    g.applyWorldSeed(worldSeed);
     this->biomesForGeneration = nullptr;
 }
 

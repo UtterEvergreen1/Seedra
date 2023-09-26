@@ -272,6 +272,6 @@ private:
 
     int worldCoordinateBounds;      // block positions of the world bounds
 
-    LayerStack layerStack{};          // stack for entries
+    LayerStack layerStack{};        // stack for entries
 };
 

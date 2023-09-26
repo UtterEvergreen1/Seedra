@@ -180,7 +180,7 @@ void Enchantment::setConsoleAndVersion(CONSOLE console, LCEVERSION version){
 
     Enchantment::currentConsole = console;
     Enchantment::currentVersion = version;
-    Enchantment::REGISTRY.reorderMapping(Enchantment::tableOfPointers[console][version]);
+    Enchantment::REGISTRY.reorderMapping(Enchantment::tableOfPointers[static_cast<int>(console)][static_cast<int>(version)]);
 }
 
 void Enchantment::registerEnchantments() {

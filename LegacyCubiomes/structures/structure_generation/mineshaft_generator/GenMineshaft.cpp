@@ -9,147 +9,342 @@ namespace mineshaft_generator {
 
     void MineshaftGenerator::generate(int64_t worldSeed, int chunkX, int chunkZ) {
         uint64_t random = getLargeFeatureSeed(worldSeed, chunkX, chunkZ);
-        random = (random * 0x5deece66d + 0xb) & 0xFFFFFFFFFFFF; // advance rng
+        random = (random * 0x32EB772C5F11 + 0x2D3873C4CD04) & 0xFFFFFFFFFFFF; // 4 rolls (1 for skip, 3 for is feature chunk rolls (2 double, 1 int))
         int x = (chunkX << 4) + 2;
         int z = (chunkZ << 4) + 2;
         this->startX = x;
         this->startZ = z;
-    }
 
-    void MineshaftGenerator::generate(int64_t worldSeed, Pos2D chunkPos) {
-        return generate(worldSeed, chunkPos.x, chunkPos.z);
-    }
-
-    MineshaftGenerator::MineshaftGenerator() {
-        this->resetPieces();
-    }
-
-    void MineshaftGenerator::resetPieces() {
-        for (int i = 0; i < 4; i++) {
-            this->piecePlaceCounts[i] = PiecePlaceCount::DEFAULT[i];
-        }
-        this->numMinecartChests = 0;
-        this->piecePlaceCountsSize = 4;
-        this->imposedPiece = PieceType::NONE;
-        this->totalWeight = 145; // WRONG
-        this->previousPiece = PieceType::NONE;
         this->piecesSize = 0;
-        this->pendingPiecesSize = 0;
-        this->generationStopped = false;
-    }
+        BoundingBox roomBoundingBox(x, 50, z,
+                                    x + 7 + nextInt(&random, 6),
+                                    54 + nextInt(&random, 6),
+                                    z + 7 + nextInt(&random, 6));
+        Piece startPiece = Piece(PieceType::ROOM, 0, roomBoundingBox, DIRECTION::NORTH, 1);
+        this->pieces[this->piecesSize++] = startPiece;
+        this->buildComponent(startPiece, &random);
 
-    void MineshaftGenerator::updatePieceWeight() {
-        for (int i = 0; i < this->piecePlaceCountsSize; i++) {
-            PiecePlaceCount piecePlaceCount = this->piecePlaceCounts[i];
-            PieceWeight pieceWeight = PieceWeight::PIECE_WEIGHTS[static_cast<int>(piecePlaceCount.pieceType)];
-            if (pieceWeight.maxPlaceCount > 0 && piecePlaceCount.placeCount < pieceWeight.maxPlaceCount) {
-                return;
+        // get Y level
+        this->structureBoundingBox = BoundingBox::EMPTY;
+        for (int pieceIndex = 0; pieceIndex < this->piecesSize; pieceIndex++) {
+            this->structureBoundingBox.encompass(this->pieces[pieceIndex].boundingBox);
+        }
+
+        if(this->mineShaftType == MineshaftType::MESA) {
+            int i = 63 - this->structureBoundingBox.maxY + this->structureBoundingBox.getYSize() / 2 + 5;
+            this->structureBoundingBox.offset(0, i, 0);
+            for (int pieceIndex = 0; pieceIndex < this->piecesSize; pieceIndex++) {
+                this->pieces[pieceIndex].boundingBox.offset(0, i, 0);
             }
         }
-        // printf("Stopping because all weights are used up\n");
-        this->generationStopped = true;
-    }
+        else {
+            const int i = 53;//63 - 10
+            int j = this->structureBoundingBox.getYSize() + 1;
 
-    void MineshaftGenerator::onWeightedPiecePlaced(int piecePlaceCountIndex) {
-        PiecePlaceCount &piecePlaceCount = this->piecePlaceCounts[piecePlaceCountIndex];
-
-        piecePlaceCount.placeCount++;
-        this->previousPiece = piecePlaceCount.pieceType;
-        if (!piecePlaceCount.isValid()) {
-            // printf("Removed weight %i %i\n", piecePlaceCountIndex, piecePlaceCount.pieceType);
-            this->totalWeight -= PieceWeight::PIECE_WEIGHTS[static_cast<int>(piecePlaceCount.pieceType)].weight;
-            this->piecePlaceCountsSize--;
-            for (int i = piecePlaceCountIndex; i < this->piecePlaceCountsSize; i++) {
-                this->piecePlaceCounts[i] = this->piecePlaceCounts[i + 1];
+            if (j < i) {
+                j += nextInt(&random, i - j);
             }
-            this->updatePieceWeight();
-        }
-    }
 
-    BoundingBox
-    MineshaftGenerator::createPieceBoundingBox(PieceType pieceType, int x, int y, int z,
-                                                DIRECTION direction) {
-        switch (pieceType) {
-            default: {
-                return BoundingBox::EMPTY;
+            int k = j - this->structureBoundingBox.maxY;
+            for (int pieceIndex = 0; pieceIndex < this->piecesSize; pieceIndex++) {
+                this->pieces[pieceIndex].boundingBox.offset(0, k, 0);
             }
         }
     }
 
-    Piece
-    MineshaftGenerator::createPiece(PieceType pieceType, uint64_t *random,
-                                     DIRECTION direction, int depth, BoundingBox boundingBox) {
-        switch (pieceType) {
-            default: {
-                int additionalData = 0;
-                return {pieceType, depth, boundingBox, direction, additionalData};
+    bool MineshaftGenerator::createPiece(uint64_t *random, int x, int y, int z, DIRECTION direction, int depth) {
+        int randomRoom = nextInt(random, 100);
+
+        if(randomRoom >= 80) {
+            int additionalData = 0;
+            BoundingBox crossingBoundingBox = BoundingBox::orientBox(x, y, z, -1, 0, 0, 5, 3, 5, direction);
+
+            if(nextInt(random, 4) == 0) {
+                crossingBoundingBox.maxY += 4;
+                additionalData = 1;
             }
+
+            Piece *collidingPiece = this->findCollisionPiece(crossingBoundingBox);
+            if (collidingPiece != nullptr) {
+                return false;
+            }
+            this->pieces[this->piecesSize++] = {PieceType::CROSSING, depth, crossingBoundingBox, direction, additionalData};
         }
-    }
+        else if(randomRoom >= 70) {
+            BoundingBox stairsBoundingBox = BoundingBox::orientBox(x, y, z, 0, -5, 0, 3, 8, 9, direction);
 
-    void MineshaftGenerator::addPiece(Piece piece) {
-        // printf("Adding piece at %i with rotation %i and depth %i\n", piece.boundingBox.minX, piece.boundingBox.minZ, piece.orientation, piece.depth);
-        this->pendingPieces[this->pendingPiecesSize++] = this->piecesSize;
-        this->pieces[this->piecesSize++] = piece;
-    }
+            Piece *collidingPiece = this->findCollisionPiece(stairsBoundingBox);
+            if (collidingPiece != nullptr) {
+                return false;
+            }
+            this->pieces[this->piecesSize++] = {PieceType::STAIRS, depth, stairsBoundingBox, direction, 0};
+        }
+        else {
+            BoundingBox corridorBoundingBox;
+            int i;
+            for(i = nextInt(random, 3) + 2; i > 0; --i) {
+                int j = i * 5;
+                corridorBoundingBox = BoundingBox::orientBox(x, y, z, 0, 0, 0, 3, 3, j, direction);
+                if(corridorBoundingBox.minX == 17 && corridorBoundingBox.minZ == -273) {
+                    j = i * 5;
+                }
 
-    bool
-    MineshaftGenerator::tryAddPieceFromType(PieceType pieceType, uint64_t *random, int x, int y,
-                                             int z, DIRECTION direction, int depth) {
-        BoundingBox boundingBox = this->createPieceBoundingBox(pieceType, x, y, z, direction);
+                Piece *collidingPiece = this->findCollisionPiece(corridorBoundingBox);
+                if (collidingPiece == nullptr) {
+                    break;
+                }
+            }
+            if(i == 0) return false;
+            bool hasRails = nextInt(random, 3) == 0;
+            bool hasSpiders = !hasRails && nextInt(random, 23) == 0;
+            int additionalData = 0;
+            additionalData |= hasRails;
+            additionalData |= (hasSpiders) << 1;
+            this->pieces[this->piecesSize++] = {PieceType::CORRIDOR, depth, corridorBoundingBox, direction, additionalData};
+        }
         return true;
     }
 
     void MineshaftGenerator::generateAndAddPiece(uint64_t *random, int x, int y, int z,
                                                   DIRECTION direction, int depth) {
-    }
+        if (depth > 8) {
+            return;
+        }
 
-    void MineshaftGenerator::generateSmallDoorChildForward(Piece &piece, uint64_t *random, int n,
-                                                            int n2) {
-        DIRECTION direction = piece.orientation;
-        switch (direction) {
-            case DIRECTION::NORTH: {
-                return this->generateAndAddPiece(random, piece.boundingBox.minX + n, piece.boundingBox.minY + n2,
-                                                 piece.boundingBox.minZ - 1, direction, piece.depth);
-            }
-            case DIRECTION::SOUTH: {
-                return this->generateAndAddPiece(random, piece.boundingBox.minX + n, piece.boundingBox.minY + n2,
-                                                 piece.boundingBox.maxZ + 1, direction, piece.depth);
-            }
-            case DIRECTION::WEST: {
-                return this->generateAndAddPiece(random, piece.boundingBox.minX - 1, piece.boundingBox.minY + n2,
-                                                 piece.boundingBox.minZ + n, direction, piece.depth);
-            }
-            case DIRECTION::EAST: {
-                return this->generateAndAddPiece(random, piece.boundingBox.maxX + 1, piece.boundingBox.minY + n2,
-                                                 piece.boundingBox.minZ + n, direction, piece.depth);
-            }
+        if (abs(x - this->startX) > 80 || abs(z - this->startZ) > 80) {
+            return;
+        }
+
+        bool validRoom = this->createPiece(random, x, y, z, direction, depth + 1);
+        if(validRoom) {
+            buildComponent(this->pieces[this->piecesSize-1], random);
         }
     }
 
-    void MineshaftGenerator::generateSmallDoorChildLeft(Piece &piece, uint64_t *random, int n, int n2) {
-    }
-
-    void MineshaftGenerator::generateSmallDoorChildRight(Piece &piece, uint64_t *random, int n, int n2) {
-        DIRECTION direction = piece.orientation;
-        switch (direction) {
-            case DIRECTION::SOUTH:
-            case DIRECTION::NORTH: {
-                return this->generateAndAddPiece(random, piece.boundingBox.maxX + 1, piece.boundingBox.minY + n,
-                                                 piece.boundingBox.minZ + n2, DIRECTION::EAST, piece.depth);
-            }
-            case DIRECTION::EAST:
-            case DIRECTION::WEST: {
-                return this->generateAndAddPiece(random, piece.boundingBox.minX + n2, piece.boundingBox.minY + n,
-                                                 piece.boundingBox.maxZ + 1, DIRECTION::SOUTH, piece.depth);
-            }
-        }
-    }
-
-    void MineshaftGenerator::addChildren(Piece &piece, uint64_t *random) {
+    void MineshaftGenerator::buildComponent(Piece &piece, uint64_t *random) {
         switch (piece.type) {
-            default:
-                break;
+            case PieceType::ROOM: {
+                int k;
+                int j = piece.boundingBox.getYSize() - 4;
+                if(j <= 0) j = 1;
+                int roomXSize = piece.boundingBox.getXSize();
+                int roomZSize = piece.boundingBox.getZSize();
+                for(k = 0; k < roomXSize; k += 4) {
+                    k += nextInt(random, roomXSize);
+                    if(k + 3 > roomXSize) { break; }
+                    generateAndAddPiece(random, piece.boundingBox.minX + k,
+                                        piece.boundingBox.minY + nextInt(random, j) + 1,
+                                        piece.boundingBox.minZ - 1, DIRECTION::NORTH, piece.depth);
+                }
+
+                for(k = 0; k < roomXSize; k += 4) {
+                    k += nextInt(random, roomXSize);
+                    if(k + 3 > roomXSize) { break; }
+                    generateAndAddPiece(random, piece.boundingBox.minX + k,
+                                        piece.boundingBox.minY + nextInt(random, j) + 1,
+                                        piece.boundingBox.maxZ + 1, DIRECTION::SOUTH, piece.depth);
+                }
+
+                for(k = 0; k < roomZSize; k += 4) {
+                    k += nextInt(random, roomZSize);
+                    if(k + 3 > roomZSize) { break; }
+                    generateAndAddPiece(random, piece.boundingBox.minX - 1,
+                                        piece.boundingBox.minY + nextInt(random, j) + 1,
+                                        piece.boundingBox.minZ + k, DIRECTION::WEST, piece.depth);
+                }
+
+                for(k = 0; k < roomZSize; k += 4) {
+                    k += nextInt(random, roomZSize);
+                    if(k + 3 > roomZSize) { break; }
+                    generateAndAddPiece(random, piece.boundingBox.maxX + 1,
+                                        piece.boundingBox.minY + nextInt(random, j) + 1,
+                                        piece.boundingBox.minZ + k, DIRECTION::EAST, piece.depth);
+                }
+                return;
+            }
+            case PieceType::CORRIDOR: {
+                int j = nextInt(random, 4);
+                switch(piece.orientation) {
+                    case DIRECTION::NORTH:
+                    default:
+                        switch(j){
+                            case 0:
+                            case 1:
+                            default:
+                                generateAndAddPiece(random, piece.boundingBox.minX,
+                                                    piece.boundingBox.minY + nextInt(random, 3) - 1,
+                                                    piece.boundingBox.minZ - 1, piece.orientation, piece.depth);
+                                break;
+                            case 2:
+                                generateAndAddPiece(random, piece.boundingBox.minX - 1,
+                                                    piece.boundingBox.minY + nextInt(random, 3) - 1,
+                                                    piece.boundingBox.minZ, DIRECTION::WEST, piece.depth);
+                                break;
+                            case 3:
+                                generateAndAddPiece(random, piece.boundingBox.maxX + 1,
+                                                    piece.boundingBox.minY + nextInt(random, 3) - 1,
+                                                    piece.boundingBox.minZ, DIRECTION::EAST, piece.depth);
+                                break;
+                        }
+                        break;
+                    case DIRECTION::SOUTH:
+                        switch(j){
+                            case 0:
+                            case 1:
+                            default:
+                                generateAndAddPiece(random, piece.boundingBox.minX,
+                                                    piece.boundingBox.minY + nextInt(random, 3) - 1,
+                                                    piece.boundingBox.maxZ + 1, piece.orientation, piece.depth);
+                                break;
+                            case 2:
+                                generateAndAddPiece(random, piece.boundingBox.minX - 1,
+                                                    piece.boundingBox.minY + nextInt(random, 3) - 1,
+                                                    piece.boundingBox.maxZ - 3, DIRECTION::WEST, piece.depth);
+                                break;
+                            case 3:
+                                generateAndAddPiece(random, piece.boundingBox.maxX + 1,
+                                                    piece.boundingBox.minY + nextInt(random, 3) - 1,
+                                                    piece.boundingBox.maxZ - 3, DIRECTION::EAST, piece.depth);
+                                break;
+                        }
+                        break;
+                    case DIRECTION::WEST:
+                        switch(j){
+                            case 0:
+                            case 1:
+                            default:
+                                generateAndAddPiece(random, piece.boundingBox.minX - 1,
+                                                    piece.boundingBox.minY + nextInt(random, 3) - 1,
+                                                    piece.boundingBox.minZ, piece.orientation, piece.depth);
+                                break;
+                            case 2:
+                                generateAndAddPiece(random, piece.boundingBox.minX,
+                                                    piece.boundingBox.minY + nextInt(random, 3) - 1,
+                                                    piece.boundingBox.minZ - 1, DIRECTION::NORTH, piece.depth);
+                                break;
+                            case 3:
+                                generateAndAddPiece(random, piece.boundingBox.minX,
+                                                    piece.boundingBox.minY + nextInt(random, 3) - 1,
+                                                    piece.boundingBox.maxZ + 1, DIRECTION::SOUTH, piece.depth);
+                                break;
+                        }
+                        break;
+                    case DIRECTION::EAST:
+                        switch(j){
+                            case 0:
+                            case 1:
+                            default:
+                                generateAndAddPiece(random, piece.boundingBox.maxX + 1,
+                                                    piece.boundingBox.minY + nextInt(random, 3) - 1,
+                                                    piece.boundingBox.minZ, piece.orientation, piece.depth);
+                                break;
+                            case 2:
+                                generateAndAddPiece(random, piece.boundingBox.maxX - 3,
+                                                    piece.boundingBox.minY + nextInt(random, 3) - 1,
+                                                    piece.boundingBox.minZ - 1, DIRECTION::NORTH, piece.depth);
+                                break;
+                            case 3:
+                                generateAndAddPiece(random, piece.boundingBox.maxX - 3,
+                                                    piece.boundingBox.minY + nextInt(random, 3) - 1,
+                                                    piece.boundingBox.maxZ + 1, DIRECTION::SOUTH, piece.depth);
+                                break;
+                        }
+                        break;
+                }
+                if (piece.depth >= 8) return;
+                switch(piece.orientation) {
+                    case DIRECTION::NORTH:
+                    case DIRECTION::SOUTH:
+                        for(int k = piece.boundingBox.minZ + 3; k + 3 <= piece.boundingBox.maxZ; k += 5) {
+                            int l = nextInt(random, 5);
+                            if(l == 0) {
+                                generateAndAddPiece(random, piece.boundingBox.minX - 1,
+                                                    piece.boundingBox.minY, k, DIRECTION::WEST, piece.depth + 1);
+                            }
+                            else if(l == 1) {
+                                generateAndAddPiece(random, piece.boundingBox.maxX + 1,
+                                                    piece.boundingBox.minY, k, DIRECTION::EAST, piece.depth + 1);
+                            }
+                        }
+                        return;
+                    case DIRECTION::WEST:
+                    case DIRECTION::EAST:
+                        for(int k = piece.boundingBox.minX + 3; k + 3 <= piece.boundingBox.maxX; k += 5) {
+                            int l = nextInt(random, 5);
+                            if(l == 0) {
+                                generateAndAddPiece(random, k, piece.boundingBox.minY,
+                                                    piece.boundingBox.minZ - 1, DIRECTION::NORTH, piece.depth + 1);
+                            }
+                            else if(l == 1) {
+                                generateAndAddPiece(random, k, piece.boundingBox.minY,
+                                                    piece.boundingBox.maxZ + 1, DIRECTION::SOUTH, piece.depth + 1);
+                            }
+                        }
+                        return;
+                }
+                return;
+            }
+            case PieceType::CROSSING: {
+                switch(piece.orientation) {
+                    case DIRECTION::NORTH:
+                    default:
+                        generateAndAddPiece(random, piece.boundingBox.minX + 1, piece.boundingBox.minY, piece.boundingBox.minZ - 1, DIRECTION::NORTH, piece.depth);
+                        generateAndAddPiece(random, piece.boundingBox.minX - 1, piece.boundingBox.minY, piece.boundingBox.minZ + 1, DIRECTION::WEST, piece.depth);
+                        generateAndAddPiece(random, piece.boundingBox.maxX + 1, piece.boundingBox.minY, piece.boundingBox.minZ + 1, DIRECTION::EAST, piece.depth);
+                        break;
+                    case DIRECTION::SOUTH:
+                        generateAndAddPiece(random, piece.boundingBox.minX + 1, piece.boundingBox.minY, piece.boundingBox.maxZ + 1, DIRECTION::SOUTH, piece.depth);
+                        generateAndAddPiece(random, piece.boundingBox.minX - 1, piece.boundingBox.minY, piece.boundingBox.minZ + 1, DIRECTION::WEST, piece.depth);
+                        generateAndAddPiece(random, piece.boundingBox.maxX + 1, piece.boundingBox.minY, piece.boundingBox.minZ + 1, DIRECTION::EAST, piece.depth);
+                        break;
+                    case DIRECTION::WEST:
+                        generateAndAddPiece(random, piece.boundingBox.minX + 1, piece.boundingBox.minY, piece.boundingBox.minZ - 1, DIRECTION::NORTH, piece.depth);
+                        generateAndAddPiece(random, piece.boundingBox.minX + 1, piece.boundingBox.minY, piece.boundingBox.maxZ + 1, DIRECTION::SOUTH, piece.depth);
+                        generateAndAddPiece(random, piece.boundingBox.minX - 1, piece.boundingBox.minY, piece.boundingBox.minZ + 1, DIRECTION::WEST, piece.depth);
+                        break;
+                    case DIRECTION::EAST:
+                        generateAndAddPiece(random, piece.boundingBox.minX + 1, piece.boundingBox.minY, piece.boundingBox.minZ - 1, DIRECTION::NORTH, piece.depth);
+                        generateAndAddPiece(random, piece.boundingBox.minX + 1, piece.boundingBox.minY, piece.boundingBox.maxZ + 1, DIRECTION::SOUTH, piece.depth);
+                        generateAndAddPiece(random, piece.boundingBox.maxX + 1, piece.boundingBox.minY, piece.boundingBox.minZ + 1, DIRECTION::EAST, piece.depth);
+                        break;
+                }
+
+                if(piece.additionalData) {
+                    if(nextBoolean(random)) {
+                        generateAndAddPiece(random, piece.boundingBox.minX + 1, piece.boundingBox.minY + 4, piece.boundingBox.minZ - 1, DIRECTION::NORTH, piece.depth);
+                    }
+
+                    if(nextBoolean(random)) {
+                        generateAndAddPiece(random, piece.boundingBox.minX - 1, piece.boundingBox.minY + 4, piece.boundingBox.minZ + 1, DIRECTION::WEST, piece.depth);
+                    }
+
+                    if(nextBoolean(random)) {
+                        generateAndAddPiece(random, piece.boundingBox.maxX + 1, piece.boundingBox.minY + 4, piece.boundingBox.minZ + 1, DIRECTION::EAST, piece.depth);
+                    }
+
+                    if(nextBoolean(random)) {
+                        generateAndAddPiece(random, piece.boundingBox.minX + 1, piece.boundingBox.minY + 4, piece.boundingBox.maxZ + 1, DIRECTION::SOUTH, piece.depth);
+                    }
+                }
+                return;
+            }
+            case PieceType::STAIRS: {
+                switch(piece.orientation) {
+                    case DIRECTION::NORTH:
+                    default:
+                        generateAndAddPiece(random, piece.boundingBox.minX, piece.boundingBox.minY, piece.boundingBox.minZ - 1, DIRECTION::NORTH, piece.depth);
+                        return;
+                    case DIRECTION::SOUTH:
+                        generateAndAddPiece(random, piece.boundingBox.minX, piece.boundingBox.minY, piece.boundingBox.maxZ + 1, DIRECTION::SOUTH, piece.depth);
+                        return;
+                    case DIRECTION::WEST:
+                        generateAndAddPiece(random, piece.boundingBox.minX - 1, piece.boundingBox.minY, piece.boundingBox.minZ, DIRECTION::WEST, piece.depth);
+                        return;
+                    case DIRECTION::EAST:
+                        generateAndAddPiece(random, piece.boundingBox.maxX + 1, piece.boundingBox.minY, piece.boundingBox.minZ, DIRECTION::EAST, piece.depth);
+                        return;
+                }
+            }
         }
     }
 
@@ -163,9 +358,4 @@ namespace mineshaft_generator {
 
         return nullptr;
     }
-
-    bool MineshaftGenerator::isOkBox(BoundingBox &boundingBox) {
-        return boundingBox.minY > 10;
-    }
-
 }

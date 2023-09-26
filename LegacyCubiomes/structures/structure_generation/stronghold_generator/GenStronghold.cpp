@@ -42,27 +42,23 @@ namespace stronghold_generator {
                 return;
             }
 
-            BoundingBox boundingBox = BoundingBox::EMPTY;
+            this->structureBoundingBox = BoundingBox::EMPTY;
             for (int pieceIndex = 0; pieceIndex < this->piecesSize; pieceIndex++) {
-                boundingBox.encompass(this->pieces[pieceIndex].boundingBox);
+                this->structureBoundingBox.encompass(this->pieces[pieceIndex].boundingBox);
             }
 
             const int i = 53;//63 - 10
-            int j = boundingBox.getSizeY() + 1;
-
+            int j = this->structureBoundingBox.getYSize() + 1;
             if (j < i) {
                 j += nextInt(&random, i - j);
             }
 
-            int k = j - boundingBox.maxY;
+            int k = j - this->structureBoundingBox.maxY;
+            this->structureBoundingBox.offset(0, k, 0);
             for (int pieceIndex = 0; pieceIndex < this->piecesSize; pieceIndex++) {
                 this->pieces[pieceIndex].boundingBox.offset(0, k, 0);
             }
         } while (this->portalRoomPiece == nullptr);
-    }
-
-    void StrongholdGenerator::generate(int64_t worldSeed, Pos2D chunkPos) {
-        return generate(worldSeed, chunkPos.x, chunkPos.z);
     }
 
     StrongholdGenerator::StrongholdGenerator() {

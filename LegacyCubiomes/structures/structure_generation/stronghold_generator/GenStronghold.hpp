@@ -15,6 +15,7 @@ namespace stronghold_generator {
         Piece *portalRoomPiece = nullptr;
         Piece *altarChests[4];
         Piece pieces[1024];
+        BoundingBox structureBoundingBox;
         int piecePlaceCountsSize = 0;
         int totalWeight = 0;
         int piecesSize = 0;
@@ -28,7 +29,9 @@ namespace stronghold_generator {
         StrongholdGenerator();
 
         void generate(int64_t worldSeed, int chunkX, int chunkZ);
-        void generate(int64_t worldSeed, Pos2D chunkPos);
+        inline void generate(int64_t worldSeed, Pos2D chunkPos) {
+            return generate(worldSeed, chunkPos.x, chunkPos.z);
+        }
 
         void resetPieces();
         void updatePieceWeight();

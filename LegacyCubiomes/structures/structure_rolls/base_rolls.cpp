@@ -90,13 +90,13 @@ namespace structure_rolls {
         }
     }
 
-    // TODO: generate legacy chest where the loot is generated with the seed and doesn't use
+    // TODO: generate legacy chest where the loot is generated with the seed and doesn't use the loot table seed
     void BaseRolls::generateChest(const BoundingBox &chunkBoundingBox, const BasePiece &piece, uint64_t *random, int x, int y, int z) {
         int xPos = piece.getWorldX(x, z);
         int yPos = piece.getWorldY(y);
         int zPos = piece.getWorldZ(x, z);
-        if (intersectsWithBlock(chunkBoundingBox, xPos, yPos, zPos)) {
-            //nextLong for loot table seed
+        if (intersectsWithBlock(chunkBoundingBox, xPos & 15, yPos, zPos & 15)) {
+            // nextLong for loot table seed
             *random = (*random * 0xBB20B4600A69 + 0x40942DE6BA) & 0xFFFFFFFFFFFF; // 2 rolls
         }
     }

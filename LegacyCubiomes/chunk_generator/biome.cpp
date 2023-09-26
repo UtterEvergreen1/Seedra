@@ -44,6 +44,16 @@ void Biome::registerBiomes() {
     registerBiome(37, new BiomeMesa(false, false, "Mesa", 0.1F, 0.2F, false, 2.0F));
     registerBiome(38, new BiomeMesa(false, true, "Mesa_Plateau_F", 1.5F, 0.025F, false, 2.0F));
     registerBiome(39, new BiomeMesa(false, false, "Mesa_Plateau", 1.5F, 0.025F, false, 2.0F));
+    //new ocean temperatures are not correct
+    registerBiome(40, new BiomeOcean("Warm_Ocean", -1.0F, 0.1F, false, 0.5F));
+    registerBiome(41, new BiomeOcean("Deep_Warm_Ocean", -1.8F, 0.1F, false, 0.5F));
+    registerBiome(42, new BiomeOcean("Lukewarm_Ocean", -1.0F, 0.1F, false, 0.5F));
+    registerBiome(43, new BiomeOcean("Deep_Lukewarm_Ocean", -1.8F, 0.1F, false, 0.5F));
+    registerBiome(44, new BiomeOcean("Cold_Ocean", -1.0F, 0.1F, false, 0.5F));
+    registerBiome(45, new BiomeOcean("Deep_Cold_Ocean", -1.8F, 0.1F, false, 0.5F));
+    registerBiome(46, new BiomeOcean("Frozen_Ocean", -1.0F, 0.1F, false, 0.5F));
+    registerBiome(47, new BiomeOcean("Deep_Frozen_Ocean", -1.8F, 0.1F, false, 0.5F));
+
     //mutated
     registerBiome(129, new BiomePlains("Sunflower_Plains", 0.125F, 0.05F, false, 0.8F));
     registerBiome(130, new BiomeDesert("Desert_M", 0.225F, 0.25F, false, 2.0F));
@@ -66,6 +76,8 @@ void Biome::registerBiomes() {
     registerBiome(165, new BiomeMesa(true, false, "Mesa_Bryce", 0.1F, 0.2F, false, 2.0F));
     registerBiome(166, new BiomeMesa(false, true, "Mesa_Plateau_F_M", 0.45F, 0.3F, false, 2.0F));
     registerBiome(167, new BiomeMesa(false, false, "Mesa_Plateau_M", 0.45F, 0.3F, false, 2.0F));
+
+
 }
 
 void Biome::generateBiomeTerrain(uint64_t* rand, ChunkPrimer* chunkPrimerIn, int x, int z, double noiseVal)

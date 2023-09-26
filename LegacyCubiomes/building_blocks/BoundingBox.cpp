@@ -30,10 +30,6 @@ void BoundingBox::encompass(const BoundingBox &other) {
     if (other.maxZ > this->maxZ) this->maxZ = other.maxZ;
 }
 
-int BoundingBox::getSizeY() const {
-    return this->maxY - this->minY + 1;
-}
-
 void BoundingBox::offset(int x, int y, int z) {
     this->minX += x;
     this->minY += y;
