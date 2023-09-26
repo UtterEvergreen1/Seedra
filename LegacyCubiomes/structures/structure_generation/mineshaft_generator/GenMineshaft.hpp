@@ -1,7 +1,6 @@
 #pragma once
 
 #include "Enums.hpp"
-#include "PieceWeight.hpp"
 #include "Piece.hpp"
 
 namespace mineshaft_generator {
