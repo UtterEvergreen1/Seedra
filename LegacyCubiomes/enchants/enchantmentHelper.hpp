@@ -14,8 +14,9 @@ public:
     static constexpr int MAX_ENCHANT_LIST_SIZE = 29;
     static EnchantedBookEnchantsLookupTable BOOK_LEVEL_TABLE;
 
-    static void setup() {
+    static void setup(CONSOLE console, LCEVERSION version) {
         Enchantment::registerEnchantments();
+        Enchantment::setConsoleAndVersion(console, version);
         BOOK_LEVEL_TABLE.setup();
     }
 

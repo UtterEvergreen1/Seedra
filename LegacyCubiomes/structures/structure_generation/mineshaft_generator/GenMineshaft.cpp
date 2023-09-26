@@ -3,8 +3,6 @@
 #include "GenMineshaft.hpp"
 #include "LegacyCubiomes/cubiomes/rng.hpp"
 
-const DIRECTION HORIZONTAL[4] = {DIRECTION::NORTH, DIRECTION::EAST, DIRECTION::SOUTH, DIRECTION::WEST };
-
 namespace mineshaft_generator {
 
     void MineshaftGenerator::generate(int64_t worldSeed, int chunkX, int chunkZ) {

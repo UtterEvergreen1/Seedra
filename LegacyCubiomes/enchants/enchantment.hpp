@@ -20,7 +20,7 @@ public:
     static CONSOLE currentConsole;
     static LCEVERSION currentVersion;
     /// the order is: [console][version][pointer]
-    static const std::vector<std::vector<std::vector<int>>> tableOfPointers;
+    static const std::vector<std::vector<std::vector<int>>> tableOfOrders;
 
     static constexpr int MAX_ENCHANTMENT_COUNT = 33;
     static int count;
@@ -91,6 +91,42 @@ public:
         NONE
     };
 
+    enum EnchantmentOrder {
+        protection = 0,
+        fire_protection = 1,
+        feather_falling = 2,
+        blast_protection = 3,
+        projectile_protection = 4,
+        respiration = 5,
+        aqua_affinity = 6,
+        thorns = 7,
+        depth_strider = 8,
+        frost_walker = 9,
+        binding_curse = 10,
+        sharpness = 11,
+        smite = 12,
+        bane_of_arthropods = 13,
+        knockback = 14,
+        fire_aspect = 15,
+        looting = 16,
+        efficiency = 17,
+        silk_touch = 18,
+        unbreaking = 19,
+        fortune = 20,
+        power = 21,
+        punch = 22,
+        flame = 23,
+        infinity = 24,
+        luck_of_the_sea = 25,
+        lure = 26,
+        mending = 27,
+        vanishing_curse = 28,
+        impaling = 29,
+        riptide = 30,
+        loyalty = 31,
+        channeling = 32
+    };
+
 
     // attributes of each class
     const std::string name;
@@ -129,7 +165,7 @@ public:
     static void registerEnchantments();
 
 private:
-    static void registerEnchantment(int id, std::string name, Enchantment *enchantment, int fakePointer);
+    static void registerEnchantment(Enchantment *enchantment);
 };
 
 

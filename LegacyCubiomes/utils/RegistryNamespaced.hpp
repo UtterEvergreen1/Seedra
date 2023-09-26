@@ -1,22 +1,12 @@
 #pragma once
-#include <boost/unordered_map.hpp>
-#include "ResourceLocation.hpp"
+#include <vector>
 
 template<typename T>
 class RegistryNamespaced {
 public:
-    struct FakePointerHasher {
-        std::size_t operator()(const int& fakePointer) const {
-            return fakePointer + (fakePointer >> 3);
-        }
-    };
     RegistryNamespaced() {}
-    void registerMapping(int id, const ResourceLocation& key, T* value, int fakePointer) {
-        //this->idLookup.emplace(value, id);
-        //this->registryObjects.emplace(key, value);
-        this->pointerLookup.emplace(fakePointer, value);
+    inline void registerValue(T* value) {
         this->allValues.emplace_back(value);
-        //this->reverseLookup.emplace(value, key);
     }
 
     inline T* operator[](int index) const {
@@ -28,30 +18,21 @@ public:
     }
 
     /**
-     * Orders the values from pointerLookup into sortedRegistry for quick lookup
-     * crucial to be called at the end of setup
+     * Orders the values from allValues into sortedRegistry for accurate enchantment order for each console and version
+     * @param lookupValues the look up values obtained from the enchantment order table
      */
-    void orderMapping() {
-        typename boost::unordered_map<int, T*, FakePointerHasher>::const_iterator getOrder;
-        sortedRegistry.clear();
-        for(getOrder = pointerLookup.cbegin(); getOrder != pointerLookup.cend(); ++getOrder) {
-            sortedRegistry.push_back(getOrder->second);
+    void orderValues(const std::vector<int>& lookupValues) {
+        sortedRegistry.resize(lookupValues.size());
+        for (int sortedIndex : lookupValues) {
+            sortedRegistry.at(sortedIndex) = allValues[lookupValues.at(sortedIndex)];
         }
-    }
-
-    void reorderMapping(const std::vector<int>& lookupValues) {
-        pointerLookup.clear();
-        for (int i = 0; i < lookupValues.size(); ++i) {
-            pointerLookup.emplace(lookupValues[i], allValues[i]);
-        }
-        orderMapping();
     }
 
     /**
      * Returns the size of current registry
      * @return size of current registry
      */
-    inline int size() {
+    inline int size() const {
         return this->sortedRegistry.size();
     }
 
@@ -62,19 +43,9 @@ public:
         }
         allValues.clear();
         sortedRegistry.clear();
-        pointerLookup.clear();
     }
-
-
-    //inline int getId(const T* value) const { return this->idLookup.find(value); }
-
-    //inline T* get(ResourceLocation name) const { return this->registryObjects.at(name); }
 private:
-    //boost::unordered_map<ResourceLocation, T*> registryObjects;
-    //boost::unordered_map<T*, int> idLookup;
     std::vector<T*> allValues;
-    //boost::unordered_map<T*, ResourceLocation> reverseLookup;
     std::vector<T*> sortedRegistry;
-    boost::unordered_map<int, T*, FakePointerHasher> pointerLookup;
 };
 

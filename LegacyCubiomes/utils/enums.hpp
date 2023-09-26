@@ -10,21 +10,22 @@ enum class DIMENSION {
 enum class CONSOLE {
     XBOX = 0,
     PS3  = 1,
-    WIIU = 1,
-    PS4  = 2
+    WIIU = 2,
+    PS4  = 3
 };
 
 enum class LCEVERSION
 {
     //PISTON,
     //GENERATION, // not supported yet
-    ADVENTURE,
-    POTIONS,
-    HORSE,
-    BOUNTIFUL,
-    ELYTRA,
-    AQUATIC,
-    PS4_VP
+    AQUATIC = 0,
+    ELYTRA = 1,
+    BOUNTIFUL = 2,
+    HORSE = 3,
+    POTIONS = 4,
+    ADVENTURE = 5,
+
+    PS4_VP = 6
 };
 
 /**

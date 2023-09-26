@@ -29,23 +29,22 @@
 #include "LegacyCubiomes/enchants/classes/EnchantmentTridentRiptide.hpp"
 #include "LegacyCubiomes/enchants/classes/EnchantmentTridentLoyalty.hpp"
 #include "LegacyCubiomes/enchants/classes/EnchantmentTridentChanneling.hpp"
-
-///TODO: FINISH TABLE
-const std::vector<std::vector<std::vector<int>>> Enchantment::tableOfPointers = {
+///TODO: FINISH TABLE (PS3 and older versions)
+const std::vector<std::vector<std::vector<int>>> Enchantment::tableOfOrders = {
         { // XBOX
                 { // LATEST
-                        0, 1, 2, 3, 4, 5, 6,
-                        7, 8, 9, 10, 11, 12, 13,
-                        14,15, 16, 17, 18, 19, 20,
-                        21, 22, 23, 24, 25, 26, 27,
-                        28, 29, 30, 31, 32
+                        channeling, riptide, impaling, lure, luck_of_the_sea, punch, fortune,
+                        silk_touch, looting, depth_strider, unbreaking, bane_of_arthropods, frost_walker, projectile_protection,
+                        respiration, thorns, loyalty, infinity, power, efficiency, fire_aspect,
+                        smite, sharpness, protection, feather_falling, aqua_affinity, vanishing_curse, mending,
+                        flame, binding_curse, fire_protection, blast_protection, knockback
                 },
                 { // ELYTRA
-                        0, 1, 2, 3, 4, 5, 6,
-                        7, 8, 9, 10, 11, 12, 13,
-                        14,15, 16, 17, 18, 19, 20,
-                        21, 22, 23, 24, 25, 26, 27,
-                        28
+                        lure, luck_of_the_sea, punch, fortune, silk_touch, looting, depth_strider,
+                        unbreaking, bane_of_arthropods, frost_walker, projectile_protection, respiration, thorns, infinity,
+                        power, efficiency, fire_aspect, smite, sharpness, protection, feather_falling,
+                        aqua_affinity, vanishing_curse, mending, flame, binding_curse, fire_protection,
+                        blast_protection, knockback
                 }
         },
         { // PS3
@@ -66,22 +65,18 @@ const std::vector<std::vector<std::vector<int>>> Enchantment::tableOfPointers = 
         },
         { // WIIU
                 { // LATEST
-                        0x1827fb28, 0x1827fb00, 0x1827fe58, 0x18280030,
-                        0x1827fa60, 0x18280598, 0x182805c0, 0x1827ffe0,
-                        0x182801b8, 0x182809e8, 0x18280c38, 0x18280c60,
-                        0x18280760, 0x18281018, 0x182813e8, 0x18281288,
-                        0x182813c0, 0x18281a00, 0x18281528, 0x18281988,
-                        0x18281a28, 0x1827fdb8, 0x18281e68, 0x18281ad0,
-                        0x18282458, 0x182826a8, 0x182822e0, 0x18282830,
-                        0x18282108, 0x18282da0, 0x18281ab0, 0x18282f28,
-                        0x182834d8
+                        channeling, impaling, vanishing_curse, infinity, fire_aspect, flame, punch,
+                        efficiency, projectile_protection, thorns, looting, knockback, bane_of_arthropods, luck_of_the_sea,
+                        protection, loyalty, aqua_affinity, sharpness, lure, power, frost_walker,
+                        fire_protection, respiration, binding_curse, depth_strider, fortune, mending, silk_touch,
+                        unbreaking, feather_falling, riptide, blast_protection, smite
                 },
                 { // ELYTRA
-                        0, 1, 2, 3, 4, 5, 6,
-                        7, 8, 9, 10, 11, 12, 13,
-                        14,15, 16, 17, 18, 19, 20,
-                        21, 22, 23, 24, 25, 26, 27,
-                        28
+                        mending, luck_of_the_sea, punch, fortune, unbreaking, efficiency, looting,
+                        smite, vanishing_curse, binding_curse, silk_touch, frost_walker, flame, depth_strider,
+                        knockback, bane_of_arthropods, respiration, thorns, sharpness, aqua_affinity, infinity,
+                        projectile_protection, blast_protection, lure, feather_falling, fire_aspect, fire_protection,
+                        power, protection
                 }
         }
 };
@@ -169,9 +164,8 @@ bool Enchantment::canApply(const Items::Item *item) const {
     return this->type->canEnchantItem(item);
 }
 
-void Enchantment::registerEnchantment(int id, std::string name, Enchantment* enchantment, int fakePointer) {
-    ResourceLocation resourceLocation(name);
-    REGISTRY.registerMapping(id, resourceLocation, enchantment, fakePointer);
+void Enchantment::registerEnchantment(Enchantment* enchantment) {
+    REGISTRY.registerValue(enchantment);
 }
 
 void Enchantment::setConsoleAndVersion(CONSOLE console, LCEVERSION version){
@@ -180,7 +174,7 @@ void Enchantment::setConsoleAndVersion(CONSOLE console, LCEVERSION version){
 
     Enchantment::currentConsole = console;
     Enchantment::currentVersion = version;
-    Enchantment::REGISTRY.reorderMapping(Enchantment::tableOfPointers[static_cast<int>(console)][static_cast<int>(version)]);
+    Enchantment::REGISTRY.orderValues(Enchantment::tableOfOrders[static_cast<int>(console)][static_cast<int>(version)]);
 }
 
 void Enchantment::registerEnchantments() {
@@ -192,42 +186,41 @@ void Enchantment::registerEnchantments() {
     }
     isSetup = true;
 
-    registerEnchantment(0, "protection", new EnchantmentProtection("Protection", &Rarities::COMMON, 0), 0x1827fb28);
-    registerEnchantment(1, "fire_protection", new EnchantmentProtection("Fire Protection", &Rarities::UNCOMMON, 1), 0x1827fb00);
-    registerEnchantment(2, "feather_falling", new EnchantmentProtection("Feather Falling", &Rarities::UNCOMMON, 2), 0x1827fe58);
-    registerEnchantment(3, "blast_protection", new EnchantmentProtection("Blast Protection", &Rarities::RARE, 3), 0x18280030);
-    registerEnchantment(4, "projectile_protection", new EnchantmentProtection("Projectile Protection", &Rarities::UNCOMMON, 4), 0x1827fa60);
+    registerEnchantment(new EnchantmentProtection("Protection", &Rarities::COMMON, 0));
+    registerEnchantment(new EnchantmentProtection("Fire Protection", &Rarities::UNCOMMON, 1));
+    registerEnchantment(new EnchantmentProtection("Feather Falling", &Rarities::UNCOMMON, 2));
+    registerEnchantment(new EnchantmentProtection("Blast Protection", &Rarities::RARE, 3));
+    registerEnchantment(new EnchantmentProtection("Projectile Protection", &Rarities::UNCOMMON, 4));
 
-    registerEnchantment(5, "respiration", new EnchantmentOxygen("Respiration", &Rarities::RARE), 0x18280598);
-    registerEnchantment(6, "aqua_affinity", new EnchantmentWaterWorker("Aqua Affinity", &Rarities::RARE), 0x182805c0);
-    registerEnchantment(7, "thorns", new EnchantmentThorns("Thorns", &Rarities::EPIC), 0x1827ffe0);
-    registerEnchantment(8, "depth_strider", new EnchantmentWaterWalker("Depth Strider", &Rarities::RARE), 0x182801b8);
-    registerEnchantment(9, "frost_walker", new EnchantmentFrostWalker("Frost Walker", &Rarities::RARE), 0x182809e8);
-    registerEnchantment(10, "binding_curse", new EnchantmentBindingCurse("Curse Of Binding", &Rarities::EPIC), 0x18280c38);
+    registerEnchantment(new EnchantmentOxygen("Respiration", &Rarities::RARE));
+    registerEnchantment(new EnchantmentWaterWorker("Aqua Affinity", &Rarities::RARE));
+    registerEnchantment(new EnchantmentThorns("Thorns", &Rarities::EPIC));
+    registerEnchantment(new EnchantmentWaterWalker("Depth Strider", &Rarities::RARE));
+    registerEnchantment(new EnchantmentFrostWalker("Frost Walker", &Rarities::RARE));
+    registerEnchantment(new EnchantmentBindingCurse("Curse Of Binding", &Rarities::EPIC));
 
-    registerEnchantment(16, "sharpness", new EnchantmentDamage("Sharpness", &Rarities::COMMON, 0), 0x18280c60);
-    registerEnchantment(17, "smite", new EnchantmentDamage("Smite", &Rarities::UNCOMMON, 1), 0x18280760);
-    registerEnchantment(18, "bane_of_arthropods", new EnchantmentDamage("Bane of Arthropods", &Rarities::UNCOMMON, 2), 0x18281018);
-    registerEnchantment(19, "knockback", new EnchantmentKnockback("Knockback", &Rarities::UNCOMMON), 0x182813e8);
-    registerEnchantment(20, "fire_aspect", new EnchantmentFireAspect("Fire Aspect", &Rarities::RARE), 0x18281288);
-    registerEnchantment(21, "looting", new EnchantmentLootBonus("Looting", &Rarities::RARE, &Type::WEAPON), 0x182813c0);
-    registerEnchantment(32, "efficiency", new EnchantmentDigging("Efficiency", &Rarities::COMMON), 0x18281a00);
-    registerEnchantment(33, "silk_touch", new EnchantmentUntouching("Silk Touch", &Rarities::EPIC), 0x18281528);
-    registerEnchantment(34, "unbreaking", new EnchantmentDurability("Unbreaking", &Rarities::UNCOMMON), 0x18281988);
-    registerEnchantment(35, "fortune", new EnchantmentLootBonus("fortune", &Rarities::RARE, &Type::DIGGER), 0x18281a28);
-    registerEnchantment(48, "power", new EnchantmentArrowDamage("Power", &Rarities::COMMON), 0x1827fdb8);
-    registerEnchantment(49, "punch", new EnchantmentArrowKnockback("Punch", &Rarities::UNCOMMON), 0x18281e68);
-    registerEnchantment(50, "flame", new EnchantmentArrowFire("Flame", &Rarities::RARE), 0x18281ad0);
-    registerEnchantment(51, "infinity", new EnchantmentArrowInfinite("Infinity", &Rarities::EPIC), 0x18282458);
-    registerEnchantment(61, "luck_of_the_sea", new EnchantmentLootBonus("Luck of the Sea", &Rarities::RARE, &Type::FISHING_ROD), 0x182826a8);
-    registerEnchantment(62, "lure", new EnchantmentFishingSpeed("Lure", &Rarities::RARE), 0x182822e0);
-    registerEnchantment(70, "mending", new EnchantmentMending("Mending", &Rarities::RARE), 0x18282830);
-    registerEnchantment(71, "vanishing_curse", new EnchantmentVanishingCurse("Curse of Vanishing", &Rarities::EPIC), 0x18282108);
-    registerEnchantment(80, "impaling", new EnchantmentTridentImpaler("Impaling", &Rarities::UNCOMMON), 0x18282da0);
-    registerEnchantment(81, "riptide", new EnchantmentTridentRiptide("Riptide", &Rarities::RARE), 0x18281ab0);
-    registerEnchantment(82, "loyalty", new EnchantmentTridentLoyalty("Loyalty", &Rarities::COMMON), 0x18282f28);
-    registerEnchantment(83, "channeling", new EnchantmentTridentChanneling("Channeling", &Rarities::EPIC), 0x182834d8);
-    REGISTRY.orderMapping();
+    registerEnchantment(new EnchantmentDamage("Sharpness", &Rarities::COMMON, 0));
+    registerEnchantment(new EnchantmentDamage("Smite", &Rarities::UNCOMMON, 1));
+    registerEnchantment(new EnchantmentDamage("Bane of Arthropods", &Rarities::UNCOMMON, 2));
+    registerEnchantment(new EnchantmentKnockback("Knockback", &Rarities::UNCOMMON));
+    registerEnchantment(new EnchantmentFireAspect("Fire Aspect", &Rarities::RARE));
+    registerEnchantment(new EnchantmentLootBonus("Looting", &Rarities::RARE, &Type::WEAPON));
+    registerEnchantment(new EnchantmentDigging("Efficiency", &Rarities::COMMON));
+    registerEnchantment(new EnchantmentUntouching("Silk Touch", &Rarities::EPIC));
+    registerEnchantment(new EnchantmentDurability("Unbreaking", &Rarities::UNCOMMON));
+    registerEnchantment(new EnchantmentLootBonus("fortune", &Rarities::RARE, &Type::DIGGER));
+    registerEnchantment(new EnchantmentArrowDamage("Power", &Rarities::COMMON));
+    registerEnchantment(new EnchantmentArrowKnockback("Punch", &Rarities::UNCOMMON));
+    registerEnchantment(new EnchantmentArrowFire("Flame", &Rarities::RARE));
+    registerEnchantment(new EnchantmentArrowInfinite("Infinity", &Rarities::EPIC));
+    registerEnchantment(new EnchantmentLootBonus("Luck of the Sea", &Rarities::RARE, &Type::FISHING_ROD));
+    registerEnchantment(new EnchantmentFishingSpeed("Lure", &Rarities::RARE));
+    registerEnchantment(new EnchantmentMending("Mending", &Rarities::RARE));
+    registerEnchantment(new EnchantmentVanishingCurse("Curse of Vanishing", &Rarities::EPIC));
+    registerEnchantment(new EnchantmentTridentImpaler("Impaling", &Rarities::UNCOMMON));
+    registerEnchantment(new EnchantmentTridentRiptide("Riptide", &Rarities::RARE));
+    registerEnchantment(new EnchantmentTridentLoyalty("Loyalty", &Rarities::COMMON));
+    registerEnchantment(new EnchantmentTridentChanneling("Channeling", &Rarities::EPIC));
     count = (int)REGISTRY.size();
 }
 
