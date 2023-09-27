@@ -42,5 +42,11 @@ namespace loot_tables {
     };
 
 
+    template<typename T>
+    std::vector<LootTable> Loot<T>::lootTables;
+
+    template<typename T>
+    int Loot<T>::maxItemsPossible;
+
 }
 
