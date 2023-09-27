@@ -97,8 +97,8 @@ void EnchantedBookEnchantsLookupTable::setup() {
 
     // sets up base cumulative weights
     int sum = 0;
-    for (int i = 0; i < Enchantment::count; ++i) {
-        auto ench = Enchantment::REGISTRY[i];
+    for (int i = 0; i < Enchantment::REGISTRY.size(); ++i) {
+        Enchantment* ench = Enchantment::REGISTRY[i];
         sum += ench->rarity->getWeight();
         CUMULATIVE_WEIGHT_ALL[i] = sum;
     }

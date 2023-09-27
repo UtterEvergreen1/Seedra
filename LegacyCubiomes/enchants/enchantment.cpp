@@ -146,8 +146,8 @@ std::vector<const Enchantment::Type::Base*> Enchantment::Type::ALL_ITERABLE = {
 };
 
 RegistryNamespaced<Enchantment> Enchantment::REGISTRY;
-CONSOLE Enchantment::currentConsole;
-LCEVERSION Enchantment::currentVersion;
+CONSOLE Enchantment::currentConsole = CONSOLE::NONE;
+LCEVERSION Enchantment::currentVersion = LCEVERSION::NONE;
 
 int Enchantment::getMinCost(int enchantmentLevel) {
     return 1 + enchantmentLevel * 10;
@@ -174,7 +174,7 @@ void Enchantment::setConsoleAndVersion(CONSOLE console, LCEVERSION version){
 
     int consoleNum = static_cast<int>(console);
     int lceVersion = static_cast<int>(version);
-    if(consoleNum >= tableOfOrders.size() || lceVersion > tableOfOrders[lceVersion].size()) {
+    if(consoleNum >= tableOfOrders.size() || lceVersion >= tableOfOrders[consoleNum].size()) {
 #ifdef DEV_MODE
         std::cout << "Unable to order the enchantments, console and/or version order does not exist yet" << std::endl;
 #endif

@@ -11,7 +11,8 @@ enum class CONSOLE {
     XBOX = 0,
     PS3  = 1,
     WIIU = 2,
-    PS4  = 3
+    PS4  = 3,
+    NONE = 4
 };
 
 enum class LCEVERSION
@@ -25,7 +26,8 @@ enum class LCEVERSION
     POTIONS = 4,
     ADVENTURE = 5,
 
-    PS4_VP = 6
+    PS4_VP = 6,
+    NONE = 7
 };
 
 /**
