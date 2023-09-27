@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cmath>
+#include <cassert>
 
 #include "enchantment.hpp"
 #include "weightedRandom.hpp"
@@ -17,6 +18,7 @@ public:
     static void setup(CONSOLE console, LCEVERSION version) {
         Enchantment::registerEnchantments();
         try {
+            setConsoleAndVersion(console, version);
             BOOK_LEVEL_TABLE.setup();
         }
         catch(std::exception& exception) {

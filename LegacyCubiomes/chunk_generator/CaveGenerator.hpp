@@ -229,7 +229,7 @@ public:
     {
         int tunnelCount = nextInt(&rng, nextInt(&rng, nextInt(&rng, 40) + 1) + 1);
 
-        if EXPECT_FALSE(nextInt(&rng, 15) != 0)
+        if EXPECT_TRUE(nextInt(&rng, 15) != 0)
         {
             return;
         }
