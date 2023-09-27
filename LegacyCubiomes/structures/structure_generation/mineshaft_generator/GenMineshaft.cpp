@@ -14,10 +14,14 @@ namespace mineshaft_generator {
         this->startZ = z;
 
         this->piecesSize = 0;
+
+        int boundingBoxXUpper = x + nextInt(&random, 6) + 7;
+        int boundingBoxYUpper = 54 + nextInt(&random, 6);
+        int boundingBoxZUpper = z + nextInt(&random, 6) + 7;
         BoundingBox roomBoundingBox(x, 50, z,
-                                    x + 7 + nextInt(&random, 6),
-                                    54 + nextInt(&random, 6),
-                                    z + 7 + nextInt(&random, 6));
+                                    boundingBoxXUpper,
+                                    boundingBoxYUpper,
+                                    boundingBoxZUpper);
         Piece startPiece = Piece(PieceType::ROOM, 0, roomBoundingBox, DIRECTION::NORTH, 1);
         this->pieces[this->piecesSize++] = startPiece;
         this->buildComponent(startPiece, &random);
