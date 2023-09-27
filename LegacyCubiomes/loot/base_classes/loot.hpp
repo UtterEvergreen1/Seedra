@@ -51,7 +51,8 @@ namespace loot_tables {
     /* combine loot seeding and generation to get the base loot */
     template <typename T>
     template<bool shuffle, bool legacy>
-    Container Loot<T>::getLootFromChunk(int64_t worldSeed, int chunkX, int chunkZ){
+    Container Loot<T>::getLootFromChunk(int64_t worldSeed, int chunkX, int chunkZ) {
+        static_assert(!shuffle || !legacy, "Legacy loot does not shuffle: change shuffle to false");
         uint64_t seed = getPopulationSeed(worldSeed, chunkX, chunkZ);
         if constexpr (legacy)
             return getLootLegacyFromSeed(&seed);

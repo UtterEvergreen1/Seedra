@@ -17,7 +17,15 @@ public:
     static void setup(CONSOLE console, LCEVERSION version) {
         Enchantment::registerEnchantments();
         Enchantment::setConsoleAndVersion(console, version);
-        BOOK_LEVEL_TABLE.setup();
+        try {
+            BOOK_LEVEL_TABLE.setup();
+        }
+        catch(std::exception& exception) {
+#ifdef DEV_MODE
+            std::cout << exception.what();
+#endif
+            exit(-1);
+        }
     }
 
     static void deallocate() {

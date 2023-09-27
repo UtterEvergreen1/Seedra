@@ -172,9 +172,17 @@ void Enchantment::setConsoleAndVersion(CONSOLE console, LCEVERSION version){
     if(Enchantment::currentConsole == console && Enchantment::currentVersion == version)
         return;
 
+    int consoleNum = static_cast<int>(console);
+    int lceVersion = static_cast<int>(version);
+    if(consoleNum >= tableOfOrders.size() || lceVersion > tableOfOrders[lceVersion].size()) {
+#ifdef DEV_MODE
+        std::cout << "Unable to order the enchantments, console and/or version order does not exist yet" << std::endl;
+#endif
+        return;
+    }
     Enchantment::currentConsole = console;
     Enchantment::currentVersion = version;
-    Enchantment::REGISTRY.orderValues(Enchantment::tableOfOrders[static_cast<int>(console)][static_cast<int>(version)]);
+    Enchantment::REGISTRY.orderValues(Enchantment::tableOfOrders[consoleNum][lceVersion]);
 }
 
 void Enchantment::registerEnchantments() {

@@ -110,6 +110,7 @@ void EnchantedBookEnchantsLookupTable::setup() {
         auto array = dataArrays[cost];
 
         for (Enchantment* ench_pt : Enchantment::REGISTRY.getRegistry()) {
+            if(ench_pt == nullptr) throw std::runtime_error("Enchantment pointer is NULL; the table is incorrect!");
             for (int level = ench_pt->maxLevel; level > 0; --level) {
 
                 if (cost >= ench_pt->getMinCost(level) && cost <= ench_pt->getMaxCost(level)) {
