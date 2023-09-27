@@ -1,10 +1,12 @@
 #pragma once
+
 #include <vector>
+
 
 template<typename T>
 class RegistryNamespaced {
 public:
-    RegistryNamespaced() {}
+    RegistryNamespaced() = default;
     inline void registerValue(T* value) {
         this->allValues.emplace_back(value);
     }
@@ -32,7 +34,7 @@ public:
      * Returns the size of current registry
      * @return size of current registry
      */
-    inline int size() const {
+    ND inline int size() const {
         return this->sortedRegistry.size();
     }
 
