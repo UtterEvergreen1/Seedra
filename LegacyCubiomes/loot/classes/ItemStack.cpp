@@ -1,4 +1,4 @@
-#include "loot_classes.hpp"
+#include "ItemStack.hpp"
 
 
 ItemStack ItemStack::splitStack(int amount) {
@@ -22,15 +22,3 @@ void ItemStack::addEnchantment(Enchantment* enchantment, int level) {
 void ItemStack::addEnchantmentData(EnchantmentData* enchantmentData) {
     enchantments.emplace_back(*enchantmentData);
 }
-
-
-void LootTable::computeCumulativeWeights() {
-    cumulativeWeights.resize(items.size());
-    int sum = 0;
-    for (int i = 0; i < items.size(); ++i) {
-        sum += items[i].weight;
-        cumulativeWeights[i] = sum;
-    }
-    totalWeight = sum;
-}
-

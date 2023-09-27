@@ -1,4 +1,4 @@
-#include "stronghold_loot.hpp"
+#include "StrongholdLoot.hpp"
 
 namespace loot_tables {
 

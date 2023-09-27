@@ -4,7 +4,7 @@
 
 #include "LegacyCubiomes/utils/pos2D.hpp"
 
-#include "loot_classes.hpp"
+#include "LegacyCubiomes/loot/classes/Container.hpp"
 
 namespace loot_tables {
     template <typename T>
@@ -35,7 +35,7 @@ namespace loot_tables {
 
         /** generate loot chests in a row eg. needed to get all desert temple chests */
         template<bool shuffle, bool legacy>
-        [[nodiscard]] static std::vector<Container> getLootChests(int numChests, int64_t worldSeed, int chunkX, int chunkZ);
+        ND static std::vector<Container> getLootChests(int numChests, int64_t worldSeed, int chunkX, int chunkZ);
 
         template<bool shuffle, bool legacy>
         static std::vector<Container> getLootChestsFromSeed(int numChests, uint64_t* seed);
@@ -67,6 +67,7 @@ namespace loot_tables {
         int rollCount;
         int rollIndex;
         std::vector<ItemStack> chestContents;
+        chestContents.reserve(Loot<T>::maxItemsPossible);
         setSeed(lootTableSeed, *lootTableSeed);
 
         // generate loot

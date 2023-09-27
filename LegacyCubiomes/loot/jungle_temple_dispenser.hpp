@@ -1,8 +1,6 @@
 #pragma once
 
-#include "base_classes/loot.hpp"
-
-using namespace Items;
+#include "LegacyCubiomes/loot/classes/Loot.hpp"
 
 namespace loot_tables {
     class JungleTempleDispenser : public Loot<JungleTempleDispenser> {
@@ -17,7 +15,7 @@ namespace loot_tables {
     void JungleTempleDispenser::setup() {
         std::vector<ItemEntry> items;
 
-        items.emplace_back(&ARROW, 30, 2, 7);
+        items.emplace_back(&Items::ARROW, 30, 2, 7);
         lootTables = {{items,  1, 2}};
 
         maxItemsPossible = 2;

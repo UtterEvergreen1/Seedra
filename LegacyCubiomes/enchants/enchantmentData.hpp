@@ -1,6 +1,7 @@
 #pragma once
 
 #include "enchantment.hpp"
+
 class EnchantmentData {
 public:
     Enchantment* obj = nullptr;

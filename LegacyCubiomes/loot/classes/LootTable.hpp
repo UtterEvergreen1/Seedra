@@ -1,0 +1,69 @@
+#pragma once
+
+
+#include "LegacyCubiomes/mc/items.hpp"
+#include "LegacyCubiomes/cubiomes/rng.hpp"
+#include "LegacyCubiomes/enchants/enchantment.hpp"
+#include "LegacyCubiomes/enchants/enchantmentData.hpp"
+
+#include "LegacyCubiomes/loot/classes/ItemStack.hpp"
+
+class LootTable : public UniformRoll {
+public:
+    std::vector<ItemEntry> items;
+    std::vector<int> cumulativeWeights;
+
+    int totalWeight{};
+    int maxItemsPossible{};
+
+    LootTable() = default;
+
+    LootTable(const std::vector<ItemEntry> &items, int amount) :
+            UniformRoll(amount, amount), items(items) {
+        computeCumulativeWeights();
+    }
+
+    LootTable(const std::vector<ItemEntry> &items, int min, int max) :
+            UniformRoll(min, max), items(items) {
+        computeCumulativeWeights();
+    }
+
+    template<bool legacy>
+    static int getInt(uint64_t *random, int minimum, int maximum) {
+        if constexpr (legacy)
+            return nextInt(random, maximum - minimum + 1) + minimum;
+        else
+            return minimum >= maximum ? minimum : (nextInt(random, maximum - minimum + 1) + minimum);
+    }
+
+    void computeCumulativeWeights();
+
+    /**
+     * Uses a custom binary search and cumulative weights to find the items.
+     * @tparam legacy
+     * @param rng
+     * @return
+     */
+    template<bool legacy>
+    ItemStack createLootRoll(uint64_t *rng) const {
+        int randomWeight = nextInt(rng, totalWeight);
+        // std::cout << randomWeight << " " << totalWeight << std::endl;
+
+        size_t high = cumulativeWeights.size();
+        size_t low = 0;
+        while (low < high) {
+            size_t mid = (low + high) >> 1;
+            if (cumulativeWeights[mid] > randomWeight) {
+                high = mid;
+            } else {
+                low = mid + 1;
+            }
+        }
+
+        const ItemEntry &selectedItem = items[low];
+        return {selectedItem.item, LootTable::getInt<legacy>(rng, selectedItem.min, selectedItem.max)};
+
+    }
+};
+
+

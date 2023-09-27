@@ -4,7 +4,7 @@
 #include <exception>
 
 #include "enchantment.hpp"
-#include "LegacyCubiomes/loot/base_classes/loot_classes.hpp"
+#include "LegacyCubiomes/loot/classes/Loot.hpp"
 
 
 class IndexArraySmall {

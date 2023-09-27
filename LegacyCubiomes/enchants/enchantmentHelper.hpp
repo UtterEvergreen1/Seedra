@@ -6,7 +6,7 @@
 #include "weightedRandom.hpp"
 #include "fastBookEnchantArray.hpp"
 
-#include "LegacyCubiomes/loot/base_classes/loot_classes.hpp"
+#include "LegacyCubiomes/loot/classes/Loot.hpp"
 
 
 class EnchantmentHelper {
@@ -16,17 +16,24 @@ public:
 
     static void setup(CONSOLE console, LCEVERSION version) {
         Enchantment::registerEnchantments();
-        Enchantment::setConsoleAndVersion(console, version);
         try {
             BOOK_LEVEL_TABLE.setup();
         }
         catch(std::exception& exception) {
-#ifdef DEV_MODE
+            #ifdef DEV_MODE
             std::cout << exception.what();
-#endif
+            #endif
             exit(-1);
         }
     }
+
+    /**
+     * Sets the order of the enchantments according to the console and version
+     * @param console the LCE console type
+     * @param version the LCE version
+     */
+    static void setConsoleAndVersion(CONSOLE console, LCEVERSION version);
+
 
     static void deallocate() {
         BOOK_LEVEL_TABLE.deallocate();

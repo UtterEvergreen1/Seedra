@@ -1,6 +1,34 @@
 #include "enchantmentHelper.hpp"
 
 
+
+//==============================================================================
+//                           Set Up
+//==============================================================================
+
+
+void EnchantmentHelper::setConsoleAndVersion(CONSOLE console, LCEVERSION version) {
+    int consoleNum = static_cast<int>(console);
+    int lceVersion = static_cast<int>(version);
+
+    // error handling
+    if(consoleNum >= Enchantment::tableOfOrders.size())
+        throw std::range_error("Console not implemented.");
+    if(lceVersion >= Enchantment::tableOfOrders.at(consoleNum).size())
+        throw std::range_error("Version not implemented.");
+
+    if(Enchantment::currentConsole == console && Enchantment::currentVersion == version)
+        return;
+
+    Enchantment::currentConsole = console;
+    Enchantment::currentVersion = version;
+    Enchantment::REGISTRY.orderValues(Enchantment::tableOfOrders[consoleNum][lceVersion]);
+
+    BOOK_LEVEL_TABLE.deallocate();
+    BOOK_LEVEL_TABLE.setup();
+}
+
+
 //==============================================================================
 //                              Enchant With Levels Items
 //==============================================================================

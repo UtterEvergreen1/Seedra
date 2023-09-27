@@ -2,7 +2,7 @@
 #include <iostream>
 #include <vector>
 #include "LegacyCubiomes/structures/structure_generation/stronghold_generator/GenStronghold.hpp"
-#include "LegacyCubiomes/loot/base_classes/loot_classes.hpp"
+#include "LegacyCubiomes/loot/classes/Loot.hpp"
 #include "LegacyCubiomes/enchants/enchantmentHelper.hpp"
 
 #include "LegacyCubiomes/loot/setup.hpp"
@@ -14,7 +14,6 @@
 #include "LegacyCubiomes/structures/structure_placement/DynamicStructures.hpp"
 #include "LegacyCubiomes/chunk_generator/RavineGenerator.hpp"
 #include "LegacyCubiomes/chunk_generator/ChunkGenerator.hpp"
-
 
 
 
@@ -56,7 +55,7 @@ int findItemFromLootTableSeed(uint64_t* lootTableSeed, int itemID) {
     int rollIndex;
     std::vector<ItemStack> chestContents;
     setSeed(lootTableSeed, *lootTableSeed);
-    int amount = 0;
+    int amount;
     int total = 0;
 
     // generate loot
@@ -65,7 +64,7 @@ int findItemFromLootTableSeed(uint64_t* lootTableSeed, int itemID) {
         for (rollIndex = 0; rollIndex < rollCount; rollIndex++) {
             ItemStack result = table.createLootRoll<false>(lootTableSeed);
 
-            if (result.item->getID() == ENCHANTED_BOOK_ID) {
+            if (result.item->getID() == Items::ENCHANTED_BOOK_ID) {
                 EnchantmentHelper::EnchantWithLevelsBook::apply(lootTableSeed, &result, 30);
             }
 
@@ -109,18 +108,16 @@ void findSeedWithItem(int itemID, int total, int count) {
 
 
 int main(int argc, char* argv[]) {
-    constexpr bool isAquatic = false;
-
-    EnchantmentHelper::setup();
-
+    EnchantmentHelper::setup(CONSOLE::WIIU, LCEVERSION::ELYTRA);
     // std::cout << Pos2D(238, -368).toChunkPos() << std::endl;
 
-
-    loot_tables::StrongholdLibrary::setup();
+    Generator g(LCEVERSION::AQUATIC, CONSOLE::XBOX, BIOMESCALE::SMALL);
+    std::cout << Structure::StrongholdStructure::getWorldPosition(g) << std::endl;
 
     uint64_t lootTableSeed = 216765366;
-    const int ROLLS = 1000000;
     Container loot;
+    /*
+    const int ROLLS = 1000000;
     auto start = getMilliseconds();
     for (int i = 0; i < ROLLS; i++) {
         setSeed(&lootTableSeed, lootTableSeed);
@@ -134,21 +131,18 @@ int main(int argc, char* argv[]) {
               " | time: " << diff << "ms" << std::endl;
 
 
-    /*
     // find specific item in loot table
     findSeedWithItem(Items::ENCHANTED_BOOK_ID, 10, 1); int x; std::cin >> x;
 
+    */
+    loot_tables::StrongholdLibrary::setup();
 
-    uint64_t lootTableSeed = 216765366;
-
-    Container loot = loot_tables::StrongholdLibrary::getLootFromLootTableSeed<true>(&lootTableSeed);
+    loot = loot_tables::StrongholdLibrary::getLootFromLootTableSeed<true>(&lootTableSeed);
 
     // print details
     std::cout << std::endl << "Loot:" << loot << std::endl << std::endl;
     std::cout << "Combined Items:" << std::endl;
     loot.printCombinedItems();
-    */
-
 
 
     /*
@@ -194,9 +188,6 @@ int main(int argc, char* argv[]) {
         // std::cout << "\n\n\n" << std::endl;
     //}
 */
-
-
-
     /*
     // Biome::registerBiomes();
     // Generator g = Generator(LCEVERSION::WIIU_LATEST, BIOMESCALE::SMALL);
@@ -232,7 +223,6 @@ int main(int argc, char* argv[]) {
 
     auto diff = end - start;
     std::cout << "rolls: " << ROLLS << " | time: " << diff << "ms" << std::endl;
-    */
 
     // wiiu
     // loot_tables::StrongholdCorridor<false>::setup();
@@ -249,6 +239,7 @@ int main(int argc, char* argv[]) {
     // ::getLootFromLootTableSeed<true>(&lootTableSeed);
     // std::cout << std::endl << "Loot:" << loot << std::endl;
 
+    */
 }
 
 

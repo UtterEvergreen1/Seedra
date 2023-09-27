@@ -1,10 +1,8 @@
 #pragma once
 
-#include "base_classes/stronghold_loot.hpp"
+#include "LegacyCubiomes/loot/classes/StrongholdLoot.hpp"
 
 #include "LegacyCubiomes/enchants/enchantmentHelper.hpp"
-
-using namespace Items;
 
 namespace loot_tables {
     class StrongholdLibrary : public StrongholdLoot<StrongholdLibrary> {
@@ -18,11 +16,11 @@ namespace loot_tables {
     void StrongholdLibrary::setup() {
         std::vector<ItemEntry> items;
 
-        items.emplace_back(&BOOK,             100, 1, 3);
-        items.emplace_back(&PAPER,            100, 2, 7);
-        items.emplace_back(&MAP,              5);
-        items.emplace_back(&COMPASS,          5);
-        items.emplace_back(&ENCHANTED_BOOK,   60);
+        items.emplace_back(&Items::BOOK,             100, 1, 3);
+        items.emplace_back(&Items::PAPER,            100, 2, 7);
+        items.emplace_back(&Items::MAP,              5);
+        items.emplace_back(&Items::COMPASS,          5);
+        items.emplace_back(&Items::ENCHANTED_BOOK,   60);
         // function=enchant_with_levels, levels=30, treasure=true
 
         lootTables.emplace_back(items,             2, 10);
@@ -36,6 +34,7 @@ namespace loot_tables {
         int rollCount;
         int rollIndex;
         std::vector<ItemStack> chestContents;
+        chestContents.reserve(maxItemsPossible);
         setSeed(lootTableSeed, *lootTableSeed);
 
         // generate loot
