@@ -1,4 +1,5 @@
 #pragma once
+
 #include <string>
 #include <utility>
 #include <iostream>
@@ -10,8 +11,6 @@
 #include "LegacyCubiomes/utils/RegistryNamespaced.hpp"
 #include "LegacyCubiomes/cubiomes/generator.hpp"
 
-//#include "LegacyCubiomes/enchants/enchantmentHelper.hpp"
-
 class EnchantmentHelper;
 
 class Enchantment {
@@ -22,6 +21,7 @@ public:
     static RegistryNamespaced<Enchantment> REGISTRY;
     static CONSOLE currentConsole;
     static LCEVERSION currentVersion;
+
     /// the order is: [console][version][pointer]
     static const std::vector<std::vector<std::vector<int>>> tableOfOrders;
 
@@ -154,6 +154,7 @@ public:
 
     ND virtual bool canApplyTogether(const Enchantment *enchantment) const;
     ND virtual bool canApply(const Items::Item *item) const;
+
 
     /**
      * Registers all the enchantments

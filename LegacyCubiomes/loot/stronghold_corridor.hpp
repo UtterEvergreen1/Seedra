@@ -15,16 +15,18 @@ namespace loot_tables {
 
         template<bool checkCaves, bool shuffle>
         ND static Container getAltarChestLoot(int64_t seed,
-                                              BIOMESCALE biomeSize, BasePiece* alterChestPiece,
-                                                         StrongholdGenerator* strongholdGenerator);
+                                              BIOMESCALE biomescale, BasePiece* altarChestPiece,
+                                              StrongholdGenerator* strongholdGenerator);
+
         template<bool checkCaves, bool shuffle>
         ND static std::vector<Container> getAllAltarChestLoot(
-                int64_t worldSeed, BIOMESCALE biomeSize, StrongholdGenerator* strongholdGenerator);
+                int64_t worldSeed, BIOMESCALE biomescale, StrongholdGenerator* strongholdGenerator);
     };
 
     template<bool isAquatic>
     void StrongholdCorridor<isAquatic>::setup() {
         std::vector<ItemEntry> items;
+        items.reserve(21);
 
         items.emplace_back(&Items::ENDER_PEARL,         50);
         items.emplace_back(&Items::EMERALD,             15, 1, 3);
@@ -76,39 +78,37 @@ namespace loot_tables {
             }
         }
         if constexpr (shuffle){
-            Container container = Container(27);
+            Container container = Container();
             container.shuffleIntoContainer(chestContents, *lootTableSeed);
             return container;
         }
         else
-            return  {27, chestContents};
+            return  {std::move(chestContents)};
     }
 
     template<bool isAquatic>
     template<bool checkCaves, bool shuffle>
     Container StrongholdCorridor<isAquatic>
-            ::getAltarChestLoot(int64_t seed, BIOMESCALE biomeSize,
-               BasePiece* alterChestPiece,
+            ::getAltarChestLoot(int64_t seed, BIOMESCALE biomescale,
+               BasePiece* altarChestPiece,
                StrongholdGenerator* strongholdGenerator) {
-        uint64_t lootSeed = Loot<StrongholdCorridor<isAquatic>>
-                ::getLootSeed<checkCaves>(seed, biomeSize,
-                    alterChestPiece->getWorldX(3, 3),
-                    alterChestPiece->getWorldY(2),
-                    alterChestPiece->getWorldZ(3, 3),
-                    strongholdGenerator);
-        return Loot<StrongholdCorridor<isAquatic>>
-                ::getLootFromSeed<shuffle>(&lootSeed);
+        uint64_t lootSeed = Loot<StrongholdCorridor<isAquatic>>::template getLootSeed<checkCaves>(seed, biomescale,
+                                                                                                  altarChestPiece->getWorldX(3, 3),
+                                                                                                  altarChestPiece->getWorldY(2),
+                                                                                                  altarChestPiece->getWorldZ(3, 3),
+                                                                                                  strongholdGenerator);
+        return Loot<StrongholdCorridor<isAquatic>>::template getLootFromSeed<shuffle>(&lootSeed);
     }
 
     template<bool isAquatic>
     template<bool checkCaves, bool shuffle>
     std::vector<Container> StrongholdCorridor<isAquatic>
-            ::getAllAltarChestLoot(int64_t worldSeed, BIOMESCALE biomeSize,
+            ::getAllAltarChestLoot(int64_t worldSeed, BIOMESCALE biomescale,
                                    StrongholdGenerator* strongholdGenerator) {
         std::vector<Container> altarChests(strongholdGenerator->numAltarChests);
         for(int altarChestIndex = 0; altarChestIndex < strongholdGenerator->numAltarChests; altarChestIndex++) {
             altarChests[altarChestIndex] = getAltarChestLoot<checkCaves, shuffle>(
-                    worldSeed, biomeSize, strongholdGenerator->altarChests[altarChestIndex], strongholdGenerator);
+                    worldSeed, biomescale, strongholdGenerator->altarChests[altarChestIndex], strongholdGenerator);
         }
         return altarChests;
     }

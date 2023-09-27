@@ -17,23 +17,21 @@ enum class CONSOLE {
 
 enum class LCEVERSION
 {
-    //PISTON,
-    //GENERATION, // not supported yet
     AQUATIC = 0,
     ELYTRA = 1,
     BOUNTIFUL = 2,
     HORSE = 3,
     POTIONS = 4,
     ADVENTURE = 5,
+    //PISTON,
+    //GENERATION, // not supported yet
 
     PS4_VP = 6,
     NONE = 7
 };
 
-/**
- * Minecraft Java versions
- */
-enum MCversion
+/// Minecraft Java versions
+enum MCVERSION
 {
     MC_1_0, // <=1.0 Experimental!
     MC_1_1,  MC_1_2,  MC_1_3,  MC_1_4,  MC_1_5,  MC_1_6,
@@ -75,27 +73,27 @@ inline static int getChunkWorldBounds(WORLDSIZE worldSize) {
     }
 }
 
-inline static MCversion getMCVersion(LCEVERSION lceversion) {
-    switch (lceversion) {
+inline static MCVERSION getMCVersion(LCEVERSION lceVersionIn) {
+    switch (lceVersionIn) {
         case LCEVERSION::AQUATIC:
         default:
-            return MCversion::MC_1_13;
+            return MCVERSION::MC_1_13;
         case LCEVERSION::ELYTRA:
-            return MCversion::MC_1_12;
+            return MCVERSION::MC_1_12;
         case LCEVERSION::BOUNTIFUL:
-            return MCversion::MC_1_8;
+            return MCVERSION::MC_1_8;
         case LCEVERSION::HORSE:
-            return MCversion::MC_1_6;
+            return MCVERSION::MC_1_6;
         case LCEVERSION::POTIONS:
-            return MCversion::MC_1_2;
+            return MCVERSION::MC_1_2;
         case LCEVERSION::ADVENTURE:
-            return MCversion::MC_1_0;
+            return MCVERSION::MC_1_0;
         case LCEVERSION::PS4_VP:
-            return MCversion::MC_1_14;
-        //case LCEVERSION::GENERATION:
-            //return MCversion::MC_1_14;
-        //case LCEVERSION::PISTON:
-            //return MCversion::MC_1_14;
+            return MCVERSION::MC_1_14;
+        // case LCEVERSION::GENERATION:
+            // return MCVERSION::MC_1_14;
+        // case LCEVERSION::PISTON:
+            // return MCVERSION::MC_1_14;
     }
 }
 

@@ -7,10 +7,11 @@
 using mineshaft_generator::MineshaftGenerator;
 
 namespace loot_tables {
-    //TODO: make base mineshaft class that generates the rolls in the chunk like stronghold
+    // TODO: make base mineshaft class that generates the rolls in the chunk like stronghold
     class AbandonedMineshaft : public Loot<AbandonedMineshaft> {
     public:
         static void setup();
+
         template <bool shuffle>
         static Container getLootFromLootTableSeed(uint64_t* lootTableSeed);
     };
@@ -28,7 +29,7 @@ namespace loot_tables {
         // function=enchant_randomly
         items1.emplace_back(&Items::IRON_PICKAXE,               5);
         items1.emplace_back(&Items::AIR,                        5);
-        lootTables.emplace_back(items1,                  1); // 71
+        lootTables.emplace_back(items1,                  1);
 
         // table 2
         items2.emplace_back(&Items::IRON_INGOT,                10, 1, 5);
@@ -41,7 +42,7 @@ namespace loot_tables {
         items2.emplace_back(&Items::MELON_SEEDS,               10, 2, 4);
         items2.emplace_back(&Items::PUMPKIN_SEEDS,             10, 2, 4);
         items2.emplace_back(&Items::BEETROOT_SEEDS,            10, 2, 4);
-        lootTables.emplace_back(items2,                     2, 4); // 83
+        lootTables.emplace_back(items2,                     2, 4);
 
         // table 3
         items3.emplace_back(&Items::RAIL,                      20, 4,  8);
@@ -49,7 +50,7 @@ namespace loot_tables {
         items3.emplace_back(&Items::DETECTOR_RAIL,              5, 1,  4);
         items3.emplace_back(&Items::ACTIVATOR_RAIL,             5, 1,  4);
         items3.emplace_back(&Items::TORCH,                     15, 1, 16);
-        lootTables.emplace_back(items3,                  3); // 50
+        lootTables.emplace_back(items3,                  3);
 
         maxItemsPossible = 8;
     }
@@ -57,13 +58,14 @@ namespace loot_tables {
 
     template <bool shuffle>
     Container AbandonedMineshaft::getLootFromLootTableSeed(uint64_t* lootTableSeed) {
-        int rollCount;
-        int rollIndex;
+
         std::vector<ItemStack> chestContents;
         chestContents.reserve(maxItemsPossible);
         setSeed(lootTableSeed, *lootTableSeed);
 
         // generate loot
+        int rollCount;
+        int rollIndex;
         for(const LootTable& table : lootTables){
             rollCount = LootTable::getInt<false>(lootTableSeed, table.min, table.max);
             for (rollIndex = 0; rollIndex < rollCount; rollIndex++) {
@@ -76,13 +78,14 @@ namespace loot_tables {
                 chestContents.push_back(result);
             }
         }
+
         if constexpr (shuffle){
-            Container container = Container(27);
+            Container container = Container();
             container.shuffleIntoContainer(chestContents, *lootTableSeed);
             return container;
         }
         else
-            return  {27, chestContents};
+            return  {std::move(chestContents)};
     }
 }
 

@@ -14,7 +14,7 @@
 #include "LegacyCubiomes/structures/structure_placement/DynamicStructures.hpp"
 #include "LegacyCubiomes/chunk_generator/RavineGenerator.hpp"
 #include "LegacyCubiomes/chunk_generator/ChunkGenerator.hpp"
-
+#include "LegacyCubiomes/structures/structure_placement/StrongholdStructure.hpp"
 
 
 using stronghold_generator::StrongholdGenerator;
@@ -111,34 +111,32 @@ int main(int argc, char* argv[]) {
     EnchantmentHelper::setup(CONSOLE::WIIU, LCEVERSION::ELYTRA);
     // std::cout << Pos2D(238, -368).toChunkPos() << std::endl;
 
-    Generator g(LCEVERSION::AQUATIC, CONSOLE::XBOX, BIOMESCALE::SMALL);
-    std::cout << Structure::StrongholdStructure::getWorldPosition(g) << std::endl;
+    // Generator g(LCEVERSION::AQUATIC, CONSOLE::XBOX, BIOMESCALE::SMALL);
+    // std::cout << Structure::StrongholdStructure::getWorldPosition(g) << std::endl;
 
+    loot_tables::AbandonedMineshaft::setup();
     uint64_t lootTableSeed = 216765366;
     Container loot;
-    /*
-    const int ROLLS = 1000000;
+
+    const int ROLLS = 100000;
     auto start = getMilliseconds();
     for (int i = 0; i < ROLLS; i++) {
         setSeed(&lootTableSeed, lootTableSeed);
-        loot = loot_tables::StrongholdLibrary::getLootFromLootTableSeed<false>(&lootTableSeed);
+        loot = loot_tables::AbandonedMineshaft::
+                getLootFromLootTableSeed<true>(&lootTableSeed);
     }
 
     auto end = getMilliseconds();
 
     auto diff = end - start;
-    std::cout << "rolls: " << ROLLS <<
-              " | time: " << diff << "ms" << std::endl;
+    std::cout << "rolls: " << ROLLS << " | time: " << diff << "ms" << std::endl;
 
 
     // find specific item in loot table
     findSeedWithItem(Items::ENCHANTED_BOOK_ID, 10, 1); int x; std::cin >> x;
 
-    */
-    loot_tables::StrongholdLibrary::setup();
-
-    loot = loot_tables::StrongholdLibrary::getLootFromLootTableSeed<true>(&lootTableSeed);
-
+    lootTableSeed = 1;
+    loot = loot_tables::AbandonedMineshaft::getLootFromLootTableSeed<true>(&lootTableSeed);
     // print details
     std::cout << std::endl << "Loot:" << loot << std::endl << std::endl;
     std::cout << "Combined Items:" << std::endl;

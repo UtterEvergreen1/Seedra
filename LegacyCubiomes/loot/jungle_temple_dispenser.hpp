@@ -13,11 +13,8 @@ namespace loot_tables {
     };
 
     void JungleTempleDispenser::setup() {
-        std::vector<ItemEntry> items;
-
-        items.emplace_back(&Items::ARROW, 30, 2, 7);
-        lootTables = {{items,  1, 2}};
-
+        std::vector<ItemEntry> items = {{&Items::ARROW, 30, 2, 7}};
+        lootTables = {LootTable(items, 1, 2)};
         maxItemsPossible = 2;
     }
 
@@ -58,7 +55,7 @@ namespace loot_tables {
             rollCount = LootTable::getInt<true>(&lootTableSeed, table.min, table.max);
             for (int rollIndex = 0; rollIndex < rollCount; rollIndex++) {
                 ItemStack result = table.createLootRoll<true>(&lootTableSeed);
-                chestContents.setInventorySlotContents(nextInt(&lootTableSeed, 9), result);
+                chestContents.setInventorySlotContents(nextInt(&lootTableSeed, 9), std::move(result));
             }
         }
         return chestContents;

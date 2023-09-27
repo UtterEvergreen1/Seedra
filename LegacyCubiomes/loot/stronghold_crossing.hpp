@@ -53,12 +53,12 @@ namespace loot_tables {
             }
         }
         if constexpr (shuffle){
-            Container container = Container(27);
+            Container container = Container();
             container.shuffleIntoContainer(chestContents, *lootTableSeed);
             return container;
         }
         else
-            return  {27, chestContents};
+            return  {std::move(chestContents)};
     }
 }
 
