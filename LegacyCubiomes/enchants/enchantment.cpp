@@ -29,56 +29,58 @@
 #include "LegacyCubiomes/enchants/classes/EnchantmentTridentRiptide.hpp"
 #include "LegacyCubiomes/enchants/classes/EnchantmentTridentLoyalty.hpp"
 #include "LegacyCubiomes/enchants/classes/EnchantmentTridentChanneling.hpp"
-///TODO: FINISH TABLE (PS3 and older versions)
+
+
+// TODO: FINISH TABLE (PS3 and older versions)
 const std::vector<std::vector<std::vector<int>>> Enchantment::tableOfOrders = {
-        { // XBOX
-                { // LATEST
-                        channeling, riptide, impaling, lure, luck_of_the_sea, punch, fortune,
-                        silk_touch, looting, depth_strider, unbreaking, bane_of_arthropods, frost_walker, projectile_protection,
-                        respiration, thorns, loyalty, infinity, power, efficiency, fire_aspect,
-                        smite, sharpness, protection, feather_falling, aqua_affinity, vanishing_curse, mending,
-                        flame, binding_curse, fire_protection, blast_protection, knockback
-                },
-                { // ELYTRA
-                        lure, luck_of_the_sea, punch, fortune, silk_touch, looting, depth_strider,
-                        unbreaking, bane_of_arthropods, frost_walker, projectile_protection, respiration, thorns, infinity,
-                        power, efficiency, fire_aspect, smite, sharpness, protection, feather_falling,
-                        aqua_affinity, vanishing_curse, mending, flame, binding_curse, fire_protection,
-                        blast_protection, knockback
-                }
+    { // XBOX
+        { // LATEST
+            channeling, riptide, impaling, lure, luck_of_the_sea, punch, fortune,
+            silk_touch, looting, depth_strider, unbreaking, bane_of_arthropods, frost_walker, projectile_protection,
+            respiration, thorns, loyalty, infinity, power, efficiency, fire_aspect,
+            smite, sharpness, protection, feather_falling, aqua_affinity, vanishing_curse, mending,
+            flame, binding_curse, fire_protection, blast_protection, knockback
         },
-        { // PS3
-                { // LATEST
-                        0, 1, 2, 3, 4, 5, 6,
-                        7, 8, 9, 10, 11, 12, 13,
-                        14,15, 16, 17, 18, 19, 20,
-                        21, 22, 23, 24, 25, 26, 27,
-                        28, 29, 30, 31, 32
-                },
-                { // ELYTRA
-                        0, 1, 2, 3, 4, 5, 6,
-                        7, 8, 9, 10, 11, 12, 13,
-                        14,15, 16, 17, 18, 19, 20,
-                        21, 22, 23, 24, 25, 26, 27,
-                        28
-                }
-        },
-        { // WIIU
-                { // LATEST
-                        channeling, impaling, vanishing_curse, infinity, fire_aspect, flame, punch,
-                        efficiency, projectile_protection, thorns, looting, knockback, bane_of_arthropods, luck_of_the_sea,
-                        protection, loyalty, aqua_affinity, sharpness, lure, power, frost_walker,
-                        fire_protection, respiration, binding_curse, depth_strider, fortune, mending, silk_touch,
-                        unbreaking, feather_falling, riptide, blast_protection, smite
-                },
-                { // ELYTRA
-                        mending, luck_of_the_sea, punch, fortune, unbreaking, efficiency, looting,
-                        smite, vanishing_curse, binding_curse, silk_touch, frost_walker, flame, depth_strider,
-                        knockback, bane_of_arthropods, respiration, thorns, sharpness, aqua_affinity, infinity,
-                        projectile_protection, blast_protection, lure, feather_falling, fire_aspect, fire_protection,
-                        power, protection
-                }
+        { // ELYTRA
+            lure, luck_of_the_sea, punch, fortune, silk_touch, looting, depth_strider,
+            unbreaking, bane_of_arthropods, frost_walker, projectile_protection, respiration, thorns, infinity,
+            power, efficiency, fire_aspect, smite, sharpness, protection, feather_falling,
+            aqua_affinity, vanishing_curse, mending, flame, binding_curse, fire_protection,
+            blast_protection, knockback
         }
+    },
+    { // PS3
+        { // LATEST
+            0, 1, 2, 3, 4, 5, 6,
+            7, 8, 9, 10, 11, 12, 13,
+            14,15, 16, 17, 18, 19, 20,
+            21, 22, 23, 24, 25, 26, 27,
+            28, 29, 30, 31, 32
+        },
+        { // ELYTRA
+            0, 1, 2, 3, 4, 5, 6,
+            7, 8, 9, 10, 11, 12, 13,
+            14,15, 16, 17, 18, 19, 20,
+            21, 22, 23, 24, 25, 26, 27,
+            28
+        }
+    },
+    { // WIIU
+        { // LATEST
+            channeling, impaling, vanishing_curse, infinity, fire_aspect, flame, punch,
+            efficiency, projectile_protection, thorns, looting, knockback, bane_of_arthropods, luck_of_the_sea,
+            protection, loyalty, aqua_affinity, sharpness, lure, power, frost_walker,
+            fire_protection, respiration, binding_curse, depth_strider, fortune, mending, silk_touch,
+            unbreaking, feather_falling, riptide, blast_protection, smite
+        },
+        { // ELYTRA
+            mending, luck_of_the_sea, punch, fortune, unbreaking, efficiency, looting,
+            smite, vanishing_curse, binding_curse, silk_touch, frost_walker, flame, depth_strider,
+            knockback, bane_of_arthropods, respiration, thorns, sharpness, aqua_affinity, infinity,
+            projectile_protection, blast_protection, lure, feather_falling, fire_aspect, fire_protection,
+            power, protection
+        }
+    }
 };
 
 
@@ -88,6 +90,7 @@ bool Enchantment::Type::Base::canEnchantItem(const Items::Item *itemIn) const {
     return true;
 }
 
+
 bool Enchantment::Type::All::canEnchantItem(const Items::Item *itemIn) const {
     for (const Type::Base* enumType : ALL_ITERABLE) {
         if (enumType != &ALL && enumType->canEnchantItem(itemIn))
@@ -95,6 +98,7 @@ bool Enchantment::Type::All::canEnchantItem(const Items::Item *itemIn) const {
     }
     return false;
 }
+
 
 bool      Enchantment::Type::Armor::canEnchantItem(const Items::Item *itemIn) const {return itemIn->getItemType() == Items::ItemType::ItemArmor;}
 bool  Enchantment::Type::ArmorFeet::canEnchantItem(const Items::Item *itemIn) const {return itemIn->getArmorType() == Items::EntityEquipmentSlot::FEET;}
@@ -107,6 +111,7 @@ bool Enchantment::Type::FishingRod::canEnchantItem(const Items::Item *itemIn) co
 bool  Enchantment::Type::Breakable::canEnchantItem(const Items::Item *itemIn) const {return itemIn->isDamageable();}
 bool        Enchantment::Type::Bow::canEnchantItem(const Items::Item *itemIn) const {return itemIn->getItemType() == Items::ItemType::ItemBow;}
 bool    Enchantment::Type::Trident::canEnchantItem(const Items::Item *itemIn) const {return itemIn->getItemType() == Items::ItemType::ItemTrident;}
+
 
 bool Enchantment::Type::Wearable::canEnchantItem(const Items::Item *itemIn) const {
     return itemIn->getArmorType() != Items::EntityEquipmentSlot::NONE
@@ -129,6 +134,7 @@ const Enchantment::Type::Bow Enchantment::Type::BOW;
 const Enchantment::Type::Wearable Enchantment::Type::WEARABLE;
 const Enchantment::Type::Trident Enchantment::Type::TRIDENT;
 
+
 std::vector<const Enchantment::Type::Base*> Enchantment::Type::ALL_ITERABLE = {
     &Type::ALL,
     &Type::ARMOR,
@@ -145,51 +151,42 @@ std::vector<const Enchantment::Type::Base*> Enchantment::Type::ALL_ITERABLE = {
     &Type::TRIDENT
 };
 
+
 RegistryNamespaced<Enchantment> Enchantment::REGISTRY;
 CONSOLE Enchantment::currentConsole = CONSOLE::NONE;
 LCEVERSION Enchantment::currentVersion = LCEVERSION::NONE;
 
+
 int Enchantment::getMinCost(int enchantmentLevel) {
     return 1 + enchantmentLevel * 10;
 }
+
+
 int Enchantment::getMaxCost(int enchantmentLevel) {
     return 6 + enchantmentLevel * 10;
 }
+
 
 bool Enchantment::canApplyTogether(const Enchantment *enchantment) const {
     return this->name != enchantment->name;
 }
 
+
 bool Enchantment::canApply(const Items::Item *item) const {
     return this->type->canEnchantItem(item);
 }
+
 
 void Enchantment::registerEnchantment(Enchantment* enchantment) {
     REGISTRY.registerValue(enchantment);
 }
 
-void Enchantment::setConsoleAndVersion(CONSOLE console, LCEVERSION version){
-    if(Enchantment::currentConsole == console && Enchantment::currentVersion == version)
-        return;
-
-    int consoleNum = static_cast<int>(console);
-    int lceVersion = static_cast<int>(version);
-    if(consoleNum >= tableOfOrders.size() || lceVersion >= tableOfOrders[consoleNum].size()) {
-#ifdef DEV_MODE
-        std::cout << "Unable to order the enchantments, console and/or version order does not exist yet" << std::endl;
-#endif
-        return;
-    }
-    Enchantment::currentConsole = console;
-    Enchantment::currentVersion = version;
-    Enchantment::REGISTRY.orderValues(Enchantment::tableOfOrders[consoleNum][lceVersion]);
-}
 
 void Enchantment::registerEnchantments() {
     if (isSetup) {
-#ifdef DEV_MODE
-        std::cout << "attempt to register 'Enchantment' class, ignoring" << std::endl;
-#endif
+        #ifdef DEV_MODE
+            std::cout << "attempt to register 'Enchantment' class, ignoring" << std::endl;
+        #endif
         return;
     }
     isSetup = true;
@@ -231,4 +228,3 @@ void Enchantment::registerEnchantments() {
     registerEnchantment(new EnchantmentTridentChanneling("Channeling", &Rarities::EPIC));
     count = (int)REGISTRY.size();
 }
-

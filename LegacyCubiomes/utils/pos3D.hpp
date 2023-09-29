@@ -1,10 +1,13 @@
 #pragma once
 
-
-#pragma once
-
 #include <cmath>
 #include <ostream>
+#ifdef INCLUDE_QT
+#include <QDebug>
+#endif
+
+
+#include "LegacyCubiomes/cubiomes/processor.hpp"
 #include "pos2D.hpp"
 
 class Pos3D
@@ -15,17 +18,18 @@ public:
     int z;
 
     Pos3D() : x(0), y(0), z(0) {}
-    Pos3D(int x_val, int y_val, int z_val) : x(x_val), y(y_val), z(z_val) {}
+    explicit Pos3D(Pos2D pos) : x(pos.x), y(0), z(pos.z) {}
+    Pos3D(int xIn, int yIn, int zIn) : x(xIn), y(yIn), z(zIn) {}
 
-    bool operator==(const Pos3D& other) const;
-    Pos3D operator+(const Pos3D& other) const;
-    Pos3D operator+(int other) const;
-    Pos3D operator-(const Pos3D& other) const;
-    Pos3D operator-(int other) const;
-    bool operator>(int value) const;
-    bool operator<(int value) const;
-    bool operator>=(int value) const;
-    bool operator<=(int value) const;
+    bool  operator==(const Pos3D& other) const;
+    Pos3D operator +(const Pos3D& other) const;
+    Pos3D operator +(int other) const;
+    Pos3D operator -(const Pos3D& other) const;
+    Pos3D operator -(int other) const;
+    bool  operator >(int value) const;
+    bool  operator <(int value) const;
+    bool  operator>=(int value) const;
+    bool  operator<=(int value) const;
     Pos3D operator>>(int shiftAmount) const;
     Pos3D operator<<(int shiftAmount) const;
 
@@ -34,24 +38,24 @@ public:
         return out;
     }
 
-    /*
+#ifdef INCLUDE_QT
     friend QDebug operator<<(QDebug out, const Pos3D &pos) {
         out.nospace() << "(" << pos.x << ", " << pos.y << ", " << pos.z << ")";
         return out.space();
     }
-     */
+#endif
 
     friend Pos3D abs(const Pos3D& pos) {
         return { std::abs(pos.x), std::abs(pos.y), std::abs(pos.z) };
     }
 
-    void setPos(int x, int y, int z){
-        this->x = x;
-        this->y = y;
-        this->z = z;
+    void setPos(int xIn, int yIn, int zIn){
+        this->x = xIn;
+        this->y = yIn;
+        this->z = zIn;
     }
 
 
-    Pos2D convert2D();
-    bool insideBounds(int lower, int upper);
+    MU ND Pos2D convert2D();
+    MU ND bool insideBounds(int lower, int upper);
 };

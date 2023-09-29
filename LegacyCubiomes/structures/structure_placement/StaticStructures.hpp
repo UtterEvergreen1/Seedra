@@ -52,12 +52,12 @@ namespace Structure {
             return out;
         }
 
-        /*
+#ifdef INCLUDE_QT
         friend QDebug operator<<(QDebug out, const Pos2D &pos) {
             out.nospace() << "(" << pos.x << ", " << pos.z << ")";
             return out.space();
         }
-        */
+#endif
     };
 
     class Feature : public StaticStructure<Feature> {

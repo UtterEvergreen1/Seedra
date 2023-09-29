@@ -1,7 +1,7 @@
 #pragma once
 
-#include "loot.hpp"
-#include "loot_classes.hpp"
+#include "Loot.hpp"
+
 
 #include "LegacyCubiomes/structures/structure_rolls/stronghold_rolls.hpp"
 #include "LegacyCubiomes/chunk_generator/Chunk.hpp"

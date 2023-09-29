@@ -4,7 +4,7 @@
 #include <exception>
 
 #include "enchantment.hpp"
-#include "LegacyCubiomes/loot/base_classes/loot_classes.hpp"
+#include "LegacyCubiomes/loot/classes/Loot.hpp"
 
 
 class IndexArraySmall {
@@ -104,6 +104,9 @@ private:
     bool areVectorsSetup = false;
 
 public:
+    static int TOTAL_WEIGHT;
+    static int CUMULATIVE_WEIGHT_ALL[Enchantment::MAX_ENCHANTMENT_COUNT];
+
     EnchantedBookEnchantsLookupTable() = default;
     MU explicit EnchantedBookEnchantsLookupTable(bool allocate) {if (allocate) setup();}
     ~EnchantedBookEnchantsLookupTable() {deallocate();}
@@ -124,8 +127,6 @@ public:
 
     void deallocate();
 
-    static int TOTAL_WEIGHT;
-    static int CUMULATIVE_WEIGHT_ALL[Enchantment::MAX_ENCHANTMENT_COUNT];
 };
 
 

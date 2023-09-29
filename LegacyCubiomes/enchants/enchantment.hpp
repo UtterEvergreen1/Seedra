@@ -1,4 +1,5 @@
 #pragma once
+
 #include <string>
 #include <utility>
 #include <iostream>
@@ -9,8 +10,9 @@
 #include "LegacyCubiomes/mc/itemID.hpp"
 #include "LegacyCubiomes/utils/RegistryNamespaced.hpp"
 #include "LegacyCubiomes/cubiomes/generator.hpp"
-//#include "LegacyCubiomes/enchants/enchantmentHelper.hpp"
+
 class EnchantmentHelper;
+
 class Enchantment {
 private:
     static bool isSetup;
@@ -19,6 +21,7 @@ public:
     static RegistryNamespaced<Enchantment> REGISTRY;
     static CONSOLE currentConsole;
     static LCEVERSION currentVersion;
+
     /// the order is: [console][version][pointer]
     static const std::vector<std::vector<std::vector<int>>> tableOfOrders;
 
@@ -71,9 +74,9 @@ public:
         KNOCKBACK,
         FIRE_ASPECT,
         LOOT_BONUS,
-#ifdef INCLUDE_JAVA
-        SWEEPING,
-#endif
+        #ifdef INCLUDE_JAVA
+            SWEEPING,
+        #endif
         DIGGING,
         UNTOUCHING,
         DURABILITY,
@@ -152,12 +155,6 @@ public:
     ND virtual bool canApplyTogether(const Enchantment *enchantment) const;
     ND virtual bool canApply(const Items::Item *item) const;
 
-    /**
-     * Sets the order of the enchantments according to the console and version
-     * @param console the LCE console type
-     * @param version the LCE version
-     */
-    static void setConsoleAndVersion(CONSOLE console, LCEVERSION version);
 
     /**
      * Registers all the enchantments

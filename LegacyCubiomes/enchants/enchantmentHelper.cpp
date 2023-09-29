@@ -1,6 +1,34 @@
 #include "enchantmentHelper.hpp"
 
 
+
+//==============================================================================
+//                           Set Up
+//==============================================================================
+
+
+void EnchantmentHelper::setConsoleAndVersion(CONSOLE console, LCEVERSION version) {
+    int consoleNum = static_cast<int>(console);
+    int lceVersion = static_cast<int>(version);
+
+    // error handling
+    if(consoleNum >= Enchantment::tableOfOrders.size())
+        throw std::range_error("Console not implemented.");
+    if(lceVersion >= Enchantment::tableOfOrders.at(consoleNum).size())
+        throw std::range_error("Version not implemented.");
+
+    if(Enchantment::currentConsole == console && Enchantment::currentVersion == version)
+        return;
+
+    Enchantment::currentConsole = console;
+    Enchantment::currentVersion = version;
+    Enchantment::REGISTRY.orderValues(Enchantment::tableOfOrders[consoleNum][lceVersion]);
+
+    BOOK_LEVEL_TABLE.deallocate();
+    BOOK_LEVEL_TABLE.setup();
+}
+
+
 //==============================================================================
 //                              Enchant With Levels Items
 //==============================================================================
@@ -122,7 +150,7 @@ ELDataArray* EnchantmentHelper::EnchantWithLevelsBook::buildEnchantmentList(uint
     const Items::Item* item = itemStackIn->getItem();
     int cost = (item->getCost() >> 2) + 1;
 
-    level = level + 1 + nextInt(rng, cost) + nextInt(rng, cost);
+    level += 1 + nextInt(rng, cost) + nextInt(rng, cost);
     float f = (nextFloat(rng) + nextFloat(rng) - 1.0F) * 0.15F;
     level = clamp((int)std::round((float)level + (float)level * f), 1, 0x7fffffff);
 
@@ -161,13 +189,10 @@ void EnchantmentHelper::EnchantRandomlyItem::apply(uint64_t *rng, ItemStack *sta
         if (enchantmentPointer->canApply(stack->item))
             list.emplace_back(enchantmentPointer);
 
-    Enchantment* enchantmentPointer;
-    int rand = nextInt(rng, (int)list.size());
-    enchantmentPointer = list[rand];
 
-    int level = nextInt(rng, enchantmentPointer->minLevel, enchantmentPointer->maxLevel);
-
-    stack->addEnchantment(enchantmentPointer, level);
+    Enchantment* enchPtr = list[nextInt(rng, (int)list.size())];
+    int level = nextInt(rng, enchPtr->minLevel, enchPtr->maxLevel);
+    stack->addEnchantment(enchPtr, level);
 }
 
 
@@ -176,11 +201,9 @@ void EnchantmentHelper::EnchantRandomlyItem::apply(uint64_t *rng, ItemStack *sta
 //==============================================================================
 
 
-void EnchantmentHelper::EnchantRandomlyBook::apply(uint64_t *rng, ItemStack *stack) {
-    Enchantment *enchantmentPointer;
-    int rand = nextInt(rng, (int)Enchantment::REGISTRY.size());
-    enchantmentPointer = Enchantment::REGISTRY[rand];
-    int level = nextInt(rng, enchantmentPointer->minLevel, enchantmentPointer->maxLevel);
-    stack->addEnchantment(enchantmentPointer, level);
+void EnchantmentHelper::EnchantRandomlyBook::apply(uint64_t* rng, ItemStack* stack) {
+    Enchantment* enchPtr = Enchantment::REGISTRY[nextInt(rng, (int)Enchantment::REGISTRY.size())];
+    int level = nextInt(rng, enchPtr->minLevel, enchPtr->maxLevel);
+    stack->addEnchantment(enchPtr, level);
 }
 

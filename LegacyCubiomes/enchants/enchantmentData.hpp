@@ -1,12 +1,13 @@
 #pragma once
 
 #include "enchantment.hpp"
+
 class EnchantmentData {
 public:
     Enchantment* obj = nullptr;
     int level = 0;
 
-    static inline const std::string LEVEL_ROMAN[6] = {"", "", "II", "III", "IV", "V"};
+    static inline const std::string LEVEL_ROMAN[6] = {"", "I", "II", "III", "IV", "V"};
 
     EnchantmentData() = default;
     EnchantmentData(Enchantment *enchantmentObj, int enchLevel) :
@@ -25,5 +26,6 @@ public:
     }
 
 };
+
 typedef std::vector<EnchantmentData> EnchDataVec_t;
 

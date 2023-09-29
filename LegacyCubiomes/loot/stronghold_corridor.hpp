@@ -26,28 +26,29 @@ namespace loot_tables {
     template<bool isAquatic>
     void StrongholdCorridor<isAquatic>::setup() {
         std::vector<ItemEntry> items;
+        items.reserve(21);
 
-        items.emplace_back(&ENDER_PEARL,         50);
-        items.emplace_back(&EMERALD,             15, 1, 3);
+        items.emplace_back(&Items::ENDER_PEARL,         50);
+        items.emplace_back(&Items::EMERALD,             15, 1, 3);
         if constexpr (isAquatic)
-            items.emplace_back(&DIAMOND,         15, 1, 3);
-        items.emplace_back(&IRON_INGOT,          50, 1, 5);
-        items.emplace_back(&GOLD_INGOT,          25, 1, 3);
-        items.emplace_back(&REDSTONE,            25, 4, 9);
-        items.emplace_back(&BREAD,               75, 1, 3);
-        items.emplace_back(&APPLE,               75, 1, 3);
-        items.emplace_back(&IRON_PICKAXE,        25);
-        items.emplace_back(&IRON_SWORD,          25);
-        items.emplace_back(&IRON_CHESTPLATE,     25);
-        items.emplace_back(&IRON_HELMET,         25);
-        items.emplace_back(&IRON_LEGGINGS,       25);
-        items.emplace_back(&IRON_BOOTS,          25);
-        items.emplace_back(&GOLDEN_APPLE,        5);
-        items.emplace_back(&SADDLE,              5);
-        items.emplace_back(&IRON_HORSE_ARMOR,    5);
-        items.emplace_back(&GOLDEN_HORSE_ARMOR,  5);
-        items.emplace_back(&DIAMOND_HORSE_ARMOR, 5);
-        items.emplace_back(&ENCHANTED_BOOK,      6);
+            items.emplace_back(&Items::DIAMOND,         15, 1, 3);
+        items.emplace_back(&Items::IRON_INGOT,          50, 1, 5);
+        items.emplace_back(&Items::GOLD_INGOT,          25, 1, 3);
+        items.emplace_back(&Items::REDSTONE,            25, 4, 9);
+        items.emplace_back(&Items::BREAD,               75, 1, 3);
+        items.emplace_back(&Items::APPLE,               75, 1, 3);
+        items.emplace_back(&Items::IRON_PICKAXE,        25);
+        items.emplace_back(&Items::IRON_SWORD,          25);
+        items.emplace_back(&Items::IRON_CHESTPLATE,     25);
+        items.emplace_back(&Items::IRON_HELMET,         25);
+        items.emplace_back(&Items::IRON_LEGGINGS,       25);
+        items.emplace_back(&Items::IRON_BOOTS,          25);
+        items.emplace_back(&Items::GOLDEN_APPLE,        5);
+        items.emplace_back(&Items::SADDLE,              5);
+        items.emplace_back(&Items::IRON_HORSE_ARMOR,    5);
+        items.emplace_back(&Items::GOLDEN_HORSE_ARMOR,  5);
+        items.emplace_back(&Items::DIAMOND_HORSE_ARMOR, 5);
+        items.emplace_back(&Items::ENCHANTED_BOOK,      6);
         // function=enchant_with_levels, levels=30, treasure=true
 
         StrongholdCorridor<isAquatic>::lootTables.emplace_back(items, 2, 3);
@@ -60,6 +61,7 @@ namespace loot_tables {
         int rollCount;
         int rollIndex;
         std::vector<ItemStack> chestContents;
+        chestContents.reserve(StrongholdCorridor<isAquatic>::maxItemsPossible);
         setSeed(lootTableSeed, *lootTableSeed);
 
         // generate loot
@@ -76,12 +78,12 @@ namespace loot_tables {
             }
         }
         if constexpr (shuffle){
-            Container container = Container(27);
+            Container container = Container();
             container.shuffleIntoContainer(chestContents, *lootTableSeed);
             return container;
         }
         else
-            return  {27, chestContents};
+            return  {std::move(chestContents)};
     }
 
     template<bool isAquatic>

@@ -3,7 +3,11 @@
 #include <cmath>
 #include <iostream>
 #include <string>
-//#include <QDebug>
+#ifdef INCLUDE_QT
+#include <QDebug>
+#endif
+
+#include "LegacyCubiomes/cubiomes/processor.hpp"
 
 class Pos2D {
 public:
@@ -12,41 +16,28 @@ public:
 
     Pos2D() : x(0), z(0) {}
 
-    Pos2D(int x_val, int z_val) : x(x_val), z(z_val) {}
+    Pos2D(int xIn, int zIn) : x(xIn), z(zIn) {}
 
     bool operator==(const Pos2D &other) const;
-
     bool operator==(int other) const;
-
     bool operator!=(const Pos2D &other) const;
-
     bool operator!=(int other) const;
-
     Pos2D operator+(const Pos2D &other) const;
-
     Pos2D operator+(int other) const;
-
     Pos2D operator-(const Pos2D &other) const;
-
     Pos2D operator-(int other) const;
-
     bool operator>(int value) const;
-
     bool operator<(int value) const;
-
     bool operator>=(int value) const;
-
     bool operator<=(int value) const;
-
     Pos2D operator>>(int shiftAmount) const;
-
     Pos2D operator<<(int shiftAmount) const;
 
-    Pos2D toChunkPos(){
+    MU ND Pos2D toChunkPos() const {
         return {x >> 4, z >> 4};
     }
 
-    Pos2D toBlockPos(){
+    MU ND Pos2D toBlockPos() const {
         return {x << 4, z << 4};
     }
 
@@ -55,24 +46,24 @@ public:
         return out;
     }
 
-    /*
+#ifdef INCLUDE_QT
     friend QDebug operator<<(QDebug out, const Pos2D &pos) {
         out.nospace() << "(" << pos.x << ", " << pos.z << ")";
         return out.space();
     }
-    */
+#endif
 
-    friend Pos2D abs(const Pos2D &pos) {
+    MU friend Pos2D abs(const Pos2D &pos) {
         return {std::abs(pos.x), std::abs(pos.z)};
     }
 
-    void setPos(int x, int z){
-        this->x = x;
-        this->z = z;
+    MU void setPos(int xIn, int zIn){
+        this->x = xIn;
+        this->z = zIn;
     }
 
-    std::string toString();
-    bool insideBounds(int lower, int upper);
+    MU ND std::string toString();
+    MU ND bool insideBounds(int lower, int upper);
 
     struct Hasher {
         std::size_t operator()(const Pos2D &pos) const {

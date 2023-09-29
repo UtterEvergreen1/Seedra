@@ -15,8 +15,8 @@ public:
 
     void generate(int targetX, int targetZ, ChunkPrimer* primer) {
         setSeed(&rng, g.getWorldSeed());
-        int64_t seedMultiplierX = (int64_t)nextLong(&rng);
-        int64_t seedMultiplierZ = (int64_t)nextLong(&rng);
+        auto seedMultiplierX = (int64_t)nextLong(&rng);
+        auto seedMultiplierZ = (int64_t)nextLong(&rng);
 
         for (int currentX = targetX - this->range; currentX <= targetX + this->range; ++currentX) {
             for (int currentZ = targetZ - this->range; currentZ <= targetZ + this->range; ++currentZ) {

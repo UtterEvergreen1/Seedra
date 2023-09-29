@@ -1,15 +1,12 @@
 #pragma once
 
-#include "base_classes/loot.hpp"
-
-using namespace Items;
-
+#include "LegacyCubiomes/loot/classes/Loot.hpp"
 
 namespace loot_tables {
     class SpawnBonusChest : public Loot<SpawnBonusChest> {
     private:
-        static const Item* LOG1_vec[4];
-        static const Item* LOG2_vec[2];
+        static const Items::Item* LOG1_vec[4];
+        static const Items::Item* LOG2_vec[2];
     public:
         static void setup();
         template<bool shuffle>
@@ -27,42 +24,42 @@ namespace loot_tables {
         std::vector<ItemEntry> items8;
 
         // table 1
-        items1.emplace_back(&JUNGLE_SAPLING,       1, 1, 5);
+        items1.emplace_back(&Items::JUNGLE_SAPLING,       1, 1, 5);
         lootTables.emplace_back(items1,           1);
 
         // table 2
-        items2.emplace_back(&MELON_SEEDS,          1, 1, 5);
+        items2.emplace_back(&Items::MELON_SEEDS,          1, 1, 5);
         lootTables.emplace_back(items2,           1);
 
         // table 3
-        items3.emplace_back(&PUMPKIN_SEEDS,        1, 1, 5);
+        items3.emplace_back(&Items::PUMPKIN_SEEDS,        1, 1, 5);
         lootTables.emplace_back(items3,           1);
 
         // table 4
-        items4.emplace_back(&BEETROOT_SEEDS,       1, 1, 5);
+        items4.emplace_back(&Items::BEETROOT_SEEDS,       1, 1, 5);
         lootTables.emplace_back(items4,           1);
 
         // table 5
-        items5.emplace_back(&STONE_AXE,            1);
-        items5.emplace_back(&WOODEN_AXE,           3);
+        items5.emplace_back(&Items::STONE_AXE,            1);
+        items5.emplace_back(&Items::WOODEN_AXE,           3);
         lootTables.emplace_back(items5,           1);
 
         // table 6
-        items6.emplace_back(&STONE_PICKAXE,        1);
-        items6.emplace_back(&WOODEN_PICKAXE,       3);
+        items6.emplace_back(&Items::STONE_PICKAXE,        1);
+        items6.emplace_back(&Items::WOODEN_PICKAXE,       3);
         lootTables.emplace_back(items6,           1);
 
         // table 7
-        items7.emplace_back(&APPLE,                5, 1, 2);
-        items7.emplace_back(&BREAD,                3, 1, 2);
-        items7.emplace_back(&RAW_SALMON,           3, 1, 2);
+        items7.emplace_back(&Items::APPLE,                5, 1, 2);
+        items7.emplace_back(&Items::BREAD,                3, 1, 2);
+        items7.emplace_back(&Items::RAW_SALMON,           3, 1, 2);
         lootTables.emplace_back(items7,           3);
 
         // table 8
-        items8.emplace_back(&STICK,                10, 1, 8);
-        items8.emplace_back(&OAK_WOOD_PLANK,       10, 1, 12);
-        items8.emplace_back(&OAK_WOOD,             10, 1, 3); // another roll of setData 0-3
-        items8.emplace_back(&ACACIA_WOOD,          10, 1, 3);// another roll of setData 0-1
+        items8.emplace_back(&Items::STICK,                10, 1, 8);
+        items8.emplace_back(&Items::OAK_WOOD_PLANK,       10, 1, 12);
+        items8.emplace_back(&Items::OAK_WOOD,             10, 1, 3); // another roll of setData 0-3
+        items8.emplace_back(&Items::ACACIA_WOOD,          10, 1, 3);// another roll of setData 0-1
         lootTables.emplace_back(items8,           4);
 
         maxItemsPossible = 9;
@@ -79,6 +76,7 @@ namespace loot_tables {
         int rollIndex;
         int rollType;
         std::vector<ItemStack> chestContents;
+        chestContents.reserve(maxItemsPossible);
         setSeed(lootTableSeed, *lootTableSeed);
 
         // generate loot
@@ -115,9 +113,9 @@ namespace loot_tables {
 
 
 
-    const Item* SpawnBonusChest::LOG1_vec[4] = {
+    const Items::Item* SpawnBonusChest::LOG1_vec[4] = {
             &Items::OAK_WOOD, &Items::SPRUCE_WOOD, &Items::BIRCH_WOOD, &Items::JUNGLE_WOOD};
-    const Item* SpawnBonusChest::LOG2_vec[2] = {&Items::ACACIA_WOOD, &Items::DARK_OAK_WOOD};
+    const Items::Item* SpawnBonusChest::LOG2_vec[2] = {&Items::ACACIA_WOOD, &Items::DARK_OAK_WOOD};
 
 }
 
