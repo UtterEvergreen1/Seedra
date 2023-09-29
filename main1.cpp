@@ -1,57 +1,31 @@
 
 #include <iostream>
 #include <vector>
+#include <fstream>
 #include "LegacyCubiomes/structures/structure_generation/stronghold_generator/GenStronghold.hpp"
-#include "LegacyCubiomes/loot/base_classes/loot_classes.hpp"
+//#include "LegacyCubiomes/loot/base_classes/loot_classes.hpp"
 #include "LegacyCubiomes/enchants/enchantmentHelper.hpp"
 
-#include "LegacyCubiomes/loot/setup.hpp"
+//#include "LegacyCubiomes/loot/setup.hpp"
 
 
 // #include "LegacyCubiomes/loot/buried_treasure.hpp"
 #include "LegacyCubiomes/cubiomes/generator.hpp"
 // #include "LegacyCubiomes/loot/stronghold_corridor.hpp"
-#include "LegacyCubiomes/structures/structure_placement/DynamicStructures.hpp"
-#include "LegacyCubiomes/chunk_generator/RavineGenerator.hpp"
-#include "LegacyCubiomes/chunk_generator/ChunkGenerator.hpp"
-
+//#include "LegacyCubiomes/structures/structure_placement/DynamicStructures.hpp"
+//#include "LegacyCubiomes/chunk_generator/RavineGenerator.hpp"
+//#include "LegacyCubiomes/chunk_generator/ChunkGenerator.hpp"
+//#include "LegacyCubiomes/structures/structure_rolls/mineshaft_rolls.hpp"
+//#include "LegacyCubiomes/structures/structure_placement/MineshaftStructure.hpp"
+#include "LegacyCubiomes/structures/structure_placement/StrongholdStructure.hpp"
+#include "LegacyCubiomes/loot/base_classes/loot.hpp"
+#include "LegacyCubiomes/loot/stronghold_corridor.hpp"
+//#include "LegacyCubiomes/chunk_generator/Chunk.hpp"
 
 
 
 using stronghold_generator::StrongholdGenerator;
-
-
-// Testing enchantments
-template <bool shuffle>
-Container getLootFromLootTableSeed(uint64_t* lootTableSeed) {
-    int rollCount;
-    int rollIndex;
-    std::vector<ItemStack> chestContents;
-    setSeed(lootTableSeed, *lootTableSeed);
-
-    // generate loot
-    for(const LootTable& table : loot_tables::SpawnBonusChest::lootTables){
-        rollCount = LootTable::getInt<false>(lootTableSeed, table.min, table.max);
-        for (rollIndex = 0; rollIndex < rollCount; rollIndex++) {
-            ItemStack result = table.createLootRoll<false>(lootTableSeed);
-
-            chestContents.push_back(result);
-        }
-    }
-    if constexpr (shuffle){
-        Container container = Container(27);
-        container.shuffleIntoContainer(chestContents, *lootTableSeed);
-        return container;
-    }
-    else
-        return  {27, chestContents};
-}
-
-
-
-
-
-int findItemFromLootTableSeed(uint64_t* lootTableSeed, int itemID) {
+/*int findItemFromLootTableSeed(uint64_t* lootTableSeed, int itemID) {
     int rollCount;
     int rollIndex;
     std::vector<ItemStack> chestContents;
@@ -102,21 +76,172 @@ void findSeedWithItem(int itemID, int total, int count) {
         start++;
         seed = start;
     }
-}
-
-
-
-
+}*/
 
 int main(int argc, char* argv[]) {
-    constexpr bool isAquatic = false;
+    /*int64_t worldSeed = 1;
+    EnchantmentHelper::setup(CONSOLE::WIIU, LCEVERSION::AQUATIC);
+    Biome::registerBiomes();
+    loot_tables::AbandonedMineshaft::setup();
+    Generator g(LCEVERSION::AQUATIC, CONSOLE::WIIU, BIOMESCALE::SMALL, WORLDSIZE::CLASSIC);
+    g.applyWorldSeed(worldSeed);
+    MineshaftGenerator* mineshaftGenerator = new MineshaftGenerator();
+    structure_rolls::MineshaftRolls* mineshaftRolls = new structure_rolls::MineshaftRolls();
+    std::vector<Pos2D> mineshaftPoses = Structure::MineshaftStructure::getPositions(worldSeed, 0, 0, 27);
+    for(const Pos2D& pos: mineshaftPoses) {
+        std::cout << ((pos << 4) + 8) << std::endl;
+        mineshaftGenerator->generate(worldSeed, pos);
+        mineshaftRolls->generateAllChests(mineshaftGenerator, g, true);
+        if(pos.x == 1) {
+            for (int pieceIndex = 0; pieceIndex < mineshaftGenerator->piecesSize; ++pieceIndex) {
+                const mineshaft_generator::Piece &piece = mineshaftGenerator->pieces[pieceIndex];
+                std::cout << mineshaft_generator::PieceTypeName.find(piece.type)->second << ": " << piece.boundingBox << " type: "<< piece.additionalData << std::endl;
+            }
+        }
+    }
+    Container loot;
+    for(std::pair<Pos3D, int64_t> chest : mineshaftRolls->mineshaftChests) {
+        std::cout << std::endl << "Pos: " << chest.first << std::endl;
+        loot = loot_tables::AbandonedMineshaft::getLootFromLootTableSeed<true>(reinterpret_cast<uint64_t *>(&chest.second));
+        loot.printCombinedItems();
+    }
+    delete mineshaftGenerator;
+    delete mineshaftRolls;
+    return 0;*/
 
-    EnchantmentHelper::setup();
+    Biome::registerBiomes();
+    EnchantmentHelper::setup(CONSOLE::WIIU, LCEVERSION::AQUATIC);
+    //int64_t worldSeed = 48739;//98238811 = gelly, 48739 = 12d
+    Generator g(LCEVERSION::AQUATIC, CONSOLE::WIIU, BIOMESCALE::SMALL, WORLDSIZE::CLASSIC);
+    loot_tables::StrongholdCorridor<true>::setup();
+    StrongholdGenerator* stronghold_gen = new StrongholdGenerator();
+    std::ifstream inputFile;
+    std::string inputFileString = "small_wiiu.txt";
+    inputFile.open(inputFileString);
+    if(!inputFile.is_open()) {
+        std::cout << "Could not open in file \"" << inputFileString << "\"" << std::endl;
+        return 0;
+    }
 
-    // std::cout << Pos2D(238, -368).toChunkPos() << std::endl;
+    std::ofstream outputFile;
+    std::string outputFileString = "small_wiiu_out.txt";
+    outputFile.open(outputFileString);
+    if(!outputFile.is_open()) {
+        std::cout << "Could not open out file \"" << outputFileString << "\"" << std::endl;
+        return 0;
+    }
+    Container loot;
+    bool hasSword;
+    bool hasPearl;
+    Pos2D spawnBlock;
+    int64_t worldSeed;
+    int portalXChunk;
+    int portalZChunk;
+    int portalBlockX;
+    int portalBlockY;
+    int portalBlockZ;
 
+    int previousPortalBlockX = 0;
+    int previousPortalBlockY = 0;
+    int previousPortalBlockZ = 0;
+    bool sisterSeedHasValidAltarChest = false;
+    bool skipSisterSeeds = false;
+    stronghold_generator::Piece *altarChest;
 
-    loot_tables::StrongholdLibrary::setup();
+    bool isSisterSeed;
+    while(inputFile >> worldSeed >> portalXChunk >> portalZChunk >> portalBlockX >> portalBlockY >> portalBlockZ) {
+        isSisterSeed = portalBlockX == previousPortalBlockX && portalBlockY == previousPortalBlockY && portalBlockZ == previousPortalBlockZ;
+        if(isSisterSeed && skipSisterSeeds) continue;
+        g.applyWorldSeed(worldSeed);
+        spawnBlock = g.getSpawnBlock();
+        if(abs(spawnBlock.x - portalBlockX) > 50 || abs(spawnBlock.z - portalBlockZ) > 50) continue;
+        if(!isSisterSeed) {
+            sisterSeedHasValidAltarChest = false;
+            skipSisterSeeds = false;
+            previousPortalBlockX = portalBlockX;
+            previousPortalBlockY = portalBlockY;
+            previousPortalBlockZ = portalBlockZ;
+            stronghold_gen->generate(worldSeed, Structure::StrongholdStructure::getWorldPosition(g) >> 4);
+        }
+        for(int i = 0; i < stronghold_gen->numAltarChests && !sisterSeedHasValidAltarChest; ++i) {
+            altarChest = stronghold_gen->altarChests[i];
+            if(abs(altarChest->getWorldX(3, 3) - portalBlockX) > 50 ||
+            altarChest->getWorldY(2) < portalBlockY - 3 ||
+            abs(altarChest->getWorldZ(3, 3) - portalBlockZ) > 50) continue;
+            loot = loot_tables::StrongholdCorridor<true>::getAltarChestLoot<true, false>(g, altarChest, stronghold_gen);
+            hasPearl = false;
+            hasSword = false;
+            for(const ItemStack& item : loot.inventorySlots) {
+                if (item.stackSize == 0) break; // end of items
+                if (item.item->getID() == Items::ENDER_PEARL_ID) {
+                    hasPearl = true;
+                }
+                else if (item.item->getID() == Items::IRON_SWORD_ID) {
+                    hasSword = true;
+                }
+            }
+            if(!(hasPearl && hasSword)) continue;
+            sisterSeedHasValidAltarChest = true;
+        }
+        if(sisterSeedHasValidAltarChest) {
+            outputFile << std::endl << worldSeed << " -> (" <<
+                       portalBlockX << ", " <<
+                       portalBlockY << ", " <<
+                       portalBlockZ << ") (" <<
+                       altarChest->getWorldX(3, 3) << ", " <<
+                       altarChest->getWorldY(2) << ", " <<
+                       altarChest->getWorldZ(3, 3) << ") " <<
+                       spawnBlock << loot << std::endl;
+        }
+        else {
+            skipSisterSeeds = true;
+        }
+    }
+    outputFile.close();
+    delete stronghold_gen;
+    return 0;
+   /* stronghold_gen->generate(worldSeed, Structure::StrongholdStructure::getWorldPosition(g) >> 4);
+    for(int i = 0; i < stronghold_gen->numAltarChests; ++i) {
+        stronghold_generator::Piece *altarChest = stronghold_gen->altarChests[i];
+        Pos3D altarChestPos(altarChest->getWorldX(3, 3),
+                            altarChest->getWorldY(2),
+                            altarChest->getWorldZ(3, 3));
+        std::cout << std::endl << altarChestPos << loot_tables::StrongholdCorridor<true>::getAltarChestLoot<true, true>(g, altarChest, stronghold_gen) << std::endl;
+    }*/
+    //ChunkPrimer* chunk = Chunk::provideChunk<true, true, false>(g, 6, 14);
+    //std::cout << *chunk << std::endl;
+    //delete chunk;
+
+    /*Pos2D netherFortressPos;
+    const int ROLLS = INT32_MAX;
+    uint64_t start = getMilliseconds();
+    for(int i = INT32_MIN; i < ROLLS; i++){
+        netherFortressPos = Structure::NetherFortressStructure::getWorldPosition(i);
+        if(netherFortressPos == 7) {
+            std::cout << "Seed " << i << " has fortress at chunk (7, 7)" << std::endl;
+            break;
+        }
+    }
+    uint64_t end = getMilliseconds();
+
+    uint64_t diff = end - start;
+    std::cout << "rolls: " << ROLLS << " | time: " << diff << "ms" << std::endl;*/
+
+    /*EnchantmentHelper::setup(CONSOLE::XBOX, LCEVERSION::ADVENTURE);
+
+    loot_tables::DesertTemple::setup();
+    std::vector<uint64_t> lootTablesSeedsToTest = {
+            -8395339864670790781ULL,
+            6262159008576967325ULL,
+            -5945485444657331499ULL,
+    };
+    Container loot;
+    for(uint64_t& lootTableSeed : lootTablesSeedsToTest) {
+        loot = loot_tables::DesertTemple::getLootFromLootTableSeed<true>(&lootTableSeed);
+        std::cout << std::endl << "Loot:" << loot << std::endl << std::endl;
+    }
+    return 0;*/
+    /*loot_tables::StrongholdLibrary::setup();
 
     uint64_t lootTableSeed = 216765366;
     const int ROLLS = 1000000;
@@ -131,7 +256,7 @@ int main(int argc, char* argv[]) {
 
     auto diff = end - start;
     std::cout << "rolls: " << ROLLS <<
-              " | time: " << diff << "ms" << std::endl;
+              " | time: " << diff << "ms" << std::endl;*/
 
 
     /*
