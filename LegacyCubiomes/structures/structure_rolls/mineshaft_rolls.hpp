@@ -84,6 +84,12 @@ namespace structure_rolls {
                             if(nextInt(random, 100) == 0) {
                                 generateChest(chunk, chunkBoundingBox, piece, random, 0, 0, currentDepth + 1);
                             }
+                            //if it has spawner
+                            if (piece.additionalData & 2)
+                            {
+                                *random = (*random * 0x5deece66d + 0xb) & 0xFFFFFFFFFFFF; // advance rng for placement on the depth axis
+                            }
+
                             // if it has rails
                             if(piece.additionalData & 1) {
                                 for(int railPos = 0; railPos < depth; ++railPos) {

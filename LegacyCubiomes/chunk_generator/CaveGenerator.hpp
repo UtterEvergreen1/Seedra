@@ -41,10 +41,13 @@ public:
         case Items::MYCELIUM_ID:
         case Items::WHITE_HARDENED_CLAY_ID:
         case Items::HARDENED_CLAY_ID:
+        case Items::RED_SANDSTONE_ID:
             return true;
         case Items::SAND_ID:
         case Items::GRAVEL_ID:
-            return blockAbove != Items::STILL_WATER_ID;
+            return blockAbove != Items::AIR_ID &&
+            blockAbove != Items::STILL_WATER_ID; // wii u?
+            //return blockAbove != Items::STILL_WATER_ID;
         default:
             return false;
         }
@@ -53,8 +56,8 @@ public:
                    double startY, double startZ, float tunnelWidth, float tunnelDirection, float tunnelSlope,
                    int currentTunnelSegment, int maxTunnelSegment, double tunnelHeightMultiplier)
     {
-        auto targetCenterX = (double)(chunkX * 16 + 8);
-        auto targetCenterZ = (double)(chunkZ * 16 + 8);
+        double targetCenterX = chunkX * 16 + 8;
+        double targetCenterZ = chunkZ * 16 + 8;
         float directionModifier = 0.0F;
         float slopeModifier = 0.0F;
         uint64_t random;
@@ -99,13 +102,41 @@ public:
             tunnelDirection += directionModifier * 0.1F;
             slopeModifier = slopeModifier * 0.9F;
             directionModifier = directionModifier * 0.75F;
-            slopeModifier = slopeModifier + (nextFloat(&random) - nextFloat(&random)) * nextFloat(&random) * 2.0F;
-            directionModifier = directionModifier + (nextFloat(&random) - nextFloat(&random)) * nextFloat(&random) * 4.0F;
+
+            float f1_1 = nextFloat(&random);
+            float f1_2 = nextFloat(&random);
+            float f1_3 = nextFloat(&random);
+            float f1 = nextFloat(&random);
+            float f2 = nextFloat(&random);
+            float f3 = nextFloat(&random);
+            slopeModifier = slopeModifier + (f1_1 - f1_2) * f1_3 * 2.0F;// correct
+            directionModifier = directionModifier + (f1 - f2) * f3 * 4.0F;// correct
 
             if (!isMainTunnel && currentTunnelSegment == splitPoint && tunnelWidth > 1.0F && maxTunnelSegment > 0)
             {
-                addTunnel((int64_t)nextLong(&random), chunkX, chunkZ, chunk, startX, startY, startZ, nextFloat(&random) * 0.5F + 0.5F, tunnelDirection - ((float)PI / 2.0F), tunnelSlope / 3.0F, currentTunnelSegment, maxTunnelSegment, 1.0);
-                addTunnel((int64_t)nextLong(&random), chunkX, chunkZ, chunk, startX, startY, startZ, nextFloat(&random) * 0.5F + 0.5F, tunnelDirection + ((float)PI / 2.0F), tunnelSlope / 3.0F, currentTunnelSegment, maxTunnelSegment, 1.0);
+                bool isXbox = this->g.getConsole() == CONSOLE::XBOX;
+                float tunnelWidth1;
+                int64_t seed1;
+                if(isXbox) {
+                    tunnelWidth1 = nextFloat(&random);
+                    seed1 = (int64_t)nextLong(&random);
+                }
+                else {
+                    seed1 = (int64_t)nextLong(&random);
+                    tunnelWidth1 = nextFloat(&random);
+                }
+                addTunnel(seed1, chunkX, chunkZ, chunk, startX, startY, startZ, tunnelWidth1 * 0.5F + 0.5F, tunnelDirection - HALF_PI, tunnelSlope / 3.0F, currentTunnelSegment, maxTunnelSegment, 1.0);
+                float tunnelWidth2;
+                int64_t seed2;
+                if(isXbox) {
+                    tunnelWidth2 = nextFloat(&random);
+                    seed2 = (int64_t)nextLong(&random);
+                }
+                else {
+                    seed2 = (int64_t)nextLong(&random);
+                    tunnelWidth2 = nextFloat(&random);
+                }
+                addTunnel(seed2, chunkX, chunkZ, chunk, startX, startY, startZ, tunnelWidth2 * 0.5F + 0.5F, tunnelDirection + HALF_PI, tunnelSlope / 3.0F, currentTunnelSegment, maxTunnelSegment, 1.0);
                 return;
             }
 
@@ -113,8 +144,8 @@ public:
             {
                 double distanceX = startX - targetCenterX;
                 double distanceZ = startZ - targetCenterZ;
-                auto segmentsRemaining = (double)(maxTunnelSegment - currentTunnelSegment);
-                auto maxDistance = (double)(tunnelWidth + 18.0F);
+                double segmentsRemaining = maxTunnelSegment - currentTunnelSegment;
+                double maxDistance = tunnelWidth + 18.0F;
 
                 if (distanceX * distanceX + distanceZ * distanceZ - segmentsRemaining * segmentsRemaining > maxDistance * maxDistance)
                 {
@@ -162,7 +193,7 @@ public:
                         }
                     }
 
-                    if (!hasWater)
+                    if (!hasWater) //             ((dVar27 = (double)getDepth__5BiomeFv(uVar9), dVar27 < -0.9 && (iVar10 = isSnowCovered__5BiomeFv(uVar9), iVar10 != 0))
                     {
                         for (int currentX = minX; currentX < maxX; ++currentX)
                         {
@@ -175,7 +206,8 @@ public:
 
                                 if (scaleX * scaleX + scaleZ * scaleZ < 1.0)
                                 {
-                                    for (int currentY = maxY; currentY > minY; --currentY)
+                                    //for (int currentY = maxY; currentY > minY; --currentY)
+                                    for (int currentY = maxY - 1; currentY >= minY; --currentY)
                                     {
                                         double scaleY = ((double)(currentY - 1) + 0.5 - startY) / tunnelHeight;
 
@@ -243,15 +275,22 @@ public:
 
             if (nextInt(&rng, 4) == 0)
             {
-                addRoom((int64_t)nextLong(&rng), targetX, targetZ, chunkPrimer, tunnelStartX, tunnelStartY, tunnelStartZ, &rng);
+                float tunnelWidth = 1.0F + nextFloat(&rng) * 6.0F;
+                this->addTunnel((int64_t)nextLong(&rng), targetX, targetZ, chunkPrimer, tunnelStartX, tunnelStartY, tunnelStartZ, tunnelWidth, 0.0F, 0.0F, -1, -1, 0.5);
                 segmentCount = nextInt(&rng, 4) + 1;
+
+                //addRoom((int64_t)nextLong(&rng), targetX, targetZ, chunkPrimer, tunnelStartX, tunnelStartY, tunnelStartZ, &rng);
+                //segmentCount = nextInt(&rng, 4) + 1;
             }
 
             for (int currentSegment = 0; currentSegment < segmentCount; ++currentSegment)
             {
                 float yaw = nextFloat(&rng) * ((float)PI * 2.0F);
                 float pitch = (nextFloat(&rng) - 0.5F) * 2.0F / 8.0F;
-                float tunnelLength = nextFloat(&rng) * 2.0F + nextFloat(&rng);
+
+                float f1 = nextFloat(&rng);
+                float f2 = nextFloat(&rng);
+                float tunnelLength = f1 * 2.0F + f2;
 
                 if (nextInt(&rng, 10) == 0)
                 {

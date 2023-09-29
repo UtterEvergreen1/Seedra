@@ -3,6 +3,7 @@
 #include <vector>
 #include <cmath>
 #include <string>
+#include <iomanip>
 
 #include "LegacyCubiomes/chunk_generator/biome.hpp"
 #include "LegacyCubiomes/cubiomes/generator.hpp"
@@ -60,6 +61,16 @@ public:
     void setBlockAndData(int64_t x, int64_t y, int64_t z, const Items::Item& item)
     {
         this->blocks[getStorageIndex(x, y, z)] = ((item.getID() << 4) | item.getDataTag());
+    }
+
+    friend std::ostream &operator<<(std::ostream &out, const ChunkPrimer& chunkPrimer) {
+        int block;
+        for (int ii = 0; ii < 65536; ++ii) {
+            block = chunkPrimer.blocks[ii];
+            out << std::hex << std::setw(2) << std::setfill('0') << (block & 0xff);
+            out << std::hex << std::setw(2) << std::setfill('0') << (block >> 8);
+        }
+        return out;
     }
 
     //in block cords not chunk cords

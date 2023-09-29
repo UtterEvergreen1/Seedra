@@ -17,12 +17,10 @@ namespace loot_tables {
         static Container getLootFromLootTableSeed(uint64_t* lootTableSeed);
 
         template<bool checkCaves, bool shuffle>
-        ND static Container getAltarChestLoot(int64_t seed,
-                                              BIOMESCALE biomeSize, BasePiece* alterChestPiece,
-                                                         StrongholdGenerator* strongholdGenerator);
+        ND static Container getAltarChestLoot(const Generator& g, BasePiece* alterChestPiece, StrongholdGenerator* strongholdGenerator);
+
         template<bool checkCaves, bool shuffle>
-        ND static std::vector<Container> getAllAltarChestLoot(
-                int64_t worldSeed, BIOMESCALE biomeSize, StrongholdGenerator* strongholdGenerator);
+        ND static std::vector<Container> getAllAltarChestLoot(const Generator& g, StrongholdGenerator* strongholdGenerator);
     };
 
     template<bool isAquatic>
@@ -88,30 +86,28 @@ namespace loot_tables {
 
     template<bool isAquatic>
     template<bool checkCaves, bool shuffle>
-    Container StrongholdCorridor<isAquatic>
-            ::getAltarChestLoot(int64_t seed, BIOMESCALE biomeSize,
+    Container StrongholdCorridor<isAquatic>::getAltarChestLoot(const Generator& g,
                BasePiece* alterChestPiece,
                StrongholdGenerator* strongholdGenerator) {
-        uint64_t lootSeed = Loot<StrongholdCorridor<isAquatic>>
-                ::getLootSeed<checkCaves>(seed, biomeSize,
+        uint64_t lootSeed = StrongholdLoot<StrongholdCorridor<isAquatic>>::template getLootSeed<checkCaves>(g,
                     alterChestPiece->getWorldX(3, 3),
                     alterChestPiece->getWorldY(2),
                     alterChestPiece->getWorldZ(3, 3),
                     strongholdGenerator);
-        return Loot<StrongholdCorridor<isAquatic>>
-                ::getLootFromSeed<shuffle>(&lootSeed);
+        return Loot<StrongholdLoot<StrongholdCorridor<isAquatic>>>::template getLootFromSeed<shuffle>(&lootSeed);
     }
 
     template<bool isAquatic>
     template<bool checkCaves, bool shuffle>
-    std::vector<Container> StrongholdCorridor<isAquatic>
-            ::getAllAltarChestLoot(int64_t worldSeed, BIOMESCALE biomeSize,
+    std::vector<Container> StrongholdCorridor<isAquatic>::getAllAltarChestLoot(const Generator& g,
                                    StrongholdGenerator* strongholdGenerator) {
         std::vector<Container> altarChests(strongholdGenerator->numAltarChests);
-        for(int altarChestIndex = 0; altarChestIndex < strongholdGenerator->numAltarChests; altarChestIndex++) {
-            altarChests[altarChestIndex] = getAltarChestLoot<checkCaves, shuffle>(
-                    worldSeed, biomeSize, strongholdGenerator->altarChests[altarChestIndex], strongholdGenerator);
-        }
+        for (int altarChestIndex = 0; altarChestIndex < strongholdGenerator->numAltarChests; altarChestIndex++)
+            altarChests[altarChestIndex] = StrongholdCorridor<isAquatic>
+                                           ::template getAltarChestLoot<checkCaves, shuffle>(g,
+                                                                                             strongholdGenerator->altarChests[altarChestIndex],
+                                                                                             strongholdGenerator);
+
         return altarChests;
     }
 }

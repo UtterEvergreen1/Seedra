@@ -8,7 +8,7 @@ class RavineGenerator : public MapGenBase
 public:
     explicit RavineGenerator(const Generator& generator) : MapGenBase(generator) {}
     RavineGenerator(int64_t worldSeed, LCEVERSION lceVersion, CONSOLE console, BIOMESCALE biomeScale) : MapGenBase(worldSeed, lceVersion, console, biomeScale) {}
-    std::vector<float> rs = std::vector<float>(1024, 0.0F);
+    std::vector<float> rs = std::vector<float>(128, 0.0F);
     unsigned char topBlock(int x, int z) {
         int biomeID = g.getBiomeAt(1, x, z);
         switch (biomeID) {
@@ -31,14 +31,36 @@ public:
                 return Items::GRASS_ID;
         }
     }
+    static bool canReplaceBlock(uint16_t blockAt, uint16_t blockAbove)
+    {
+        switch (blockAt) {
+            case Items::STONE_ID:
+            case Items::GRASS_ID:
+            case Items::DIRT_ID:
+            case Items::SANDSTONE_ID:
+            case Items::SNOW_ID:
+            case Items::MYCELIUM_ID:
+            case Items::WHITE_HARDENED_CLAY_ID:
+            case Items::HARDENED_CLAY_ID:
+            case Items::RED_SANDSTONE_ID:
+                return true;
+            case Items::SAND_ID:
+            case Items::GRAVEL_ID:
+                return blockAbove != Items::AIR_ID &&
+                       blockAbove != Items::STILL_WATER_ID; // wii u?
+                //return blockAbove != Items::STILL_WATER_ID;
+            default:
+                return false;
+        }
+    }
     void addTunnel(int64_t randomSeed, int chunkX, int chunkZ, ChunkPrimer* chunk, double tunnelX,
                    double tunnelY, double tunnelZ, float angle, float slope, float curvature,
                    int tunnelStartSegment, int tunnelEndSegment, double widthMultiplier)
     {
         uint64_t random;
         setSeed(&random, randomSeed);
-        auto offsetX = (double)(chunkX * 16 + 8);
-        auto offsetZ = (double)(chunkX * 16 + 8);
+        double offsetX = (double)(chunkX * 16 + 8);
+        double offsetZ = (double)(chunkZ * 16 + 8);
         float curvatureChangeRate = 0.0F;
         float slopeChangeRate = 0.0F;
 
@@ -70,7 +92,7 @@ public:
 
         for (; tunnelStartSegment < tunnelEndSegment; tunnelStartSegment++)
         {
-            double adjustedWidth = 1.5 + (double)(std::sin((float)tunnelStartSegment * (float)PI / (float)tunnelEndSegment) * angle);
+            double adjustedWidth = 1.5 + (double)(std::sin((float)tunnelStartSegment * PI_FLOAT / (float)tunnelEndSegment) * angle);
             double adjustedHeight = adjustedWidth * widthMultiplier;
             adjustedWidth = adjustedWidth * ((double)nextFloat(&random) * 0.25 + 0.75);
             adjustedHeight = adjustedHeight * ((double)nextFloat(&random) * 0.25 + 0.75);
@@ -91,11 +113,14 @@ public:
             {
                 double distanceX = tunnelX - offsetX;
                 double distanceZ = tunnelZ - offsetZ;
-                auto remainingSegments = (double)(tunnelEndSegment - tunnelStartSegment);
-                auto maxDistance = (double)(angle + 2.0F + 16.0F);
+                double remainingSegments = (double)(tunnelEndSegment - tunnelStartSegment);
+                double maxDistance = (double)(angle + 2.0F + 16.0F);
+
+                //std::cout << distanceX << " " <<  distanceZ << " " << remainingSegments << " " << maxDistance << std::endl;
 
                 if (distanceX * distanceX + distanceZ * distanceZ - remainingSegments * remainingSegments > maxDistance * maxDistance)
                 {
+                    //std::cout << "returned" << std::endl;
                     return;
                 }
 
@@ -124,7 +149,7 @@ public:
                         {
                             for (int y = endY + 1; !waterOrLavaDetected && y >= startY - 1; --y)
                             {
-                                if (y >= 0 && y < 256)
+                                if (y >= 0 && y < 128)
                                 {
                                     uint16_t blockId = chunk->getBlock(x, y, z);
                                     if (blockId == Items::FLOWING_WATER_ID || blockId == Items::STILL_WATER_ID)
@@ -154,26 +179,30 @@ public:
 
                                 if (dX * dX + dZ * dZ < 1.0)
                                 {
-                                    for (int y = endY; y > startY; --y)
+                                    //startY - 1 <=
+                                    //for (int y = endY; y > startY; --y)
+                                    for (int y = endY - 1; y >= startY; --y)
                                     {
-                                        double dY = ((double)(y - 1) + 0.5 - tunnelY) / adjustedHeight;
+                                        double dY = ((double)y + 0.5 - tunnelY) / adjustedHeight;
 
-                                        if ((dX * dX + dZ * dZ) * (double)this->rs[y - 1] + dY * dY / 6.0 < 1.0)
+                                        if ((dX * dX + dZ * dZ) * (double)this->rs[y] + dY * dY / 6.0 < 1.0)
                                         {
-                                            uint16_t iBlockState1 = chunk->getBlock(x, y, z);
+                                            uint16_t currentBlock = chunk->getBlock(x, y, z);
+                                            uint16_t blockAbove = chunk->getBlock(x, y + 1, z);
 
-                                            if (iBlockState1 == Items::GRASS_ID)
+                                            if (currentBlock == Items::GRASS_ID)
                                             {
                                                 replaceableBlockDetected = true;
                                             }
 
-                                            if (iBlockState1 == Items::STONE_ID ||
+                                            /*if (iBlockState1 == Items::STONE_ID ||
                                                 iBlockState1 == Items::GRASS_ID ||
-                                                iBlockState1 == Items::DIRT_ID)
+                                                iBlockState1 == Items::DIRT_ID)*/
+                                            if(canReplaceBlock(currentBlock, blockAbove))
                                             {
-                                                if (y - 1 < 10)
+                                                if (y < 11)
                                                 {
-                                                    chunk->setBlock(x, y, z, Items::STILL_LAVA_ID);
+                                                    chunk->setBlock(x, y, z, Items::FLOWING_LAVA_ID);
                                                 }
                                                 else
                                                 {
@@ -207,7 +236,7 @@ public:
             double tunnelStartX = (double)(neighborChunkX * 16 + nextInt(&rng, 16));
             double tunnelStartY = (double)(nextInt(&rng, nextInt(&rng, 40) + 8) + 20);
             double tunnelStartZ = (double)(neighborChunkZ * 16 + nextInt(&rng, 16));
-            float tunnelDirection = nextFloat(&rng) * ((float)PI * 2.0F);
+            float tunnelDirection = nextFloat(&rng) * (PI_FLOAT * 2.0F);
             float tunnelSlope = (nextFloat(&rng) - 0.5F) * 2.0F / 8.0F;
             float tunnelLengthMultiplier = (nextFloat(&rng) * 2.0F + nextFloat(&rng)) * 2.0F;
             this->addTunnel((int64_t)nextLong(&rng), currentChunkX, currentChunkZ, chunkPrimerIn,
