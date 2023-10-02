@@ -1,33 +1,35 @@
 #include "StrongholdStructure.hpp"
 #include "LegacyCubiomes/utils/constants.hpp"
 
+
 namespace Structure {
+
     Pos2D StrongholdStructure::getWorldPosition(const Generator& g){
         double dist, angle;
         int multiplier;
-        uint64_t rnds;
+        uint64_t rng;
         Pos2D p{};
         int out;
 
-        setSeed(&rnds, g.getWorldSeed());
+        setSeed(&rng, g.getWorldSeed());
 
-        angle = 2.0 * PI * nextDouble(&rnds);
+        angle = 2.0 * PI * nextDouble(&rng);
         bool xboxStronghold = g.getConsole() == CONSOLE::XBOX;
 
         for (int var7 = 0; var7 < 10; ++var7)
         {;
             if (xboxStronghold)
-                multiplier = nextInt(&rnds, 4);
-            dist = nextDouble(&rnds) + 1.25;
+                multiplier = nextInt(&rng, 4);
+            dist = nextDouble(&rng) + 1.25;
             if (!xboxStronghold)
-                multiplier = nextInt(&rnds, 4);
+                multiplier = nextInt(&rng, 4);
 
             dist = dist * ((double)(multiplier) + 3.0);
 
             p.x = ((int)round(cos(angle) * dist) << 4) + 8;
             p.z = ((int)round(sin(angle) * dist) << 4) + 8;
 
-            p = g.locateBiome(p.x, p.z, 112, stronghold_biomes, &rnds, &out);
+            p = g.locateBiome(p.x, p.z, 112, stronghold_biomes, &rng, &out);
 
             if(out || (var7 == 9)) {
                 return p;
@@ -42,21 +44,23 @@ namespace Structure {
         return p;
     }
 
+
     Pos2D StrongholdStructure::getRawWorldPosition(int64_t worldSeed, bool xboxStronghold) {
-        uint64_t rnds;
-        setSeed(&rnds, worldSeed);
-        double angle = 2.0 * PI * nextDouble(&rnds);
+        uint64_t rng;
+        setSeed(&rng, worldSeed);
+        double angle = 2.0 * PI * nextDouble(&rng);
 
         int multiplier;
         if (xboxStronghold)
-            multiplier = nextInt(&rnds, 4);
+            multiplier = nextInt(&rng, 4);
 
-        double dist = nextDouble(&rnds) + 1.25;
+        double dist = nextDouble(&rng) + 1.25;
 
         if (!xboxStronghold)
-            multiplier = nextInt(&rnds, 4);
+            multiplier = nextInt(&rng, 4);
 
         dist *= ((double)(multiplier)+3.0);
         return {((int)round(cos(angle) * dist) << 4) + 8, ((int)round(sin(angle) * dist) << 4) + 8};
     }
+
 }

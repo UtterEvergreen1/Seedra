@@ -3,6 +3,7 @@
 #include <cmath>
 #include <iostream>
 #include <string>
+#include <vector>
 #ifdef INCLUDE_QT
 #include <QDebug>
 #endif
@@ -73,3 +74,5 @@ public:
         }
     };
 };
+
+typedef std::vector<Pos2D> Pos2DVec_t;

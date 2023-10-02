@@ -23,13 +23,11 @@ namespace loot_tables {
             if constexpr (checkCaves) {
                 ChunkPrimer* chunk = Chunk::provideChunk<true, true, false>(g, chunkX, chunkZ);
                 // we roll rng equal to the stone bricks in the chunk that generated before the chest corridor
-                structure_rolls::StrongholdRolls::generateStructure<true>(chunk, strongholdGenerator, &rng, chestX, chestY,
-                                                                          chestZ);
+                structure_rolls::StrongholdRolls::generateStructure<true>(chunk, strongholdGenerator, &rng, chestX, chestY, chestZ);
                 delete chunk;
             }
             else {
-                structure_rolls::StrongholdRolls::generateStructure<true>(nullptr, strongholdGenerator, &rng, chestX,
-                                                                          chestY, chestZ);
+                structure_rolls::StrongholdRolls::generateStructure<true>(nullptr, strongholdGenerator, &rng, chestX, chestY, chestZ);
             }
             return rng;
         }

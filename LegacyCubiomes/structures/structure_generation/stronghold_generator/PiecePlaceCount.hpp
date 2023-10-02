@@ -3,6 +3,8 @@
 #include "Enums.hpp"
 #include "PieceWeight.hpp"
 
+#include "LegacyCubiomes/cubiomes/processor.hpp"
+
 namespace stronghold_generator {
     struct PiecePlaceCount {
         static const PiecePlaceCount DEFAULT[11];
@@ -10,13 +12,13 @@ namespace stronghold_generator {
         PieceType pieceType;
         int placeCount;
 
-        [[nodiscard]] bool isValid() const {
-            int maxPlaceCount = PieceWeight::PIECE_WEIGHTS[static_cast<int>(this->pieceType)].maxPlaceCount;
-            return maxPlaceCount == 0 || this->placeCount < maxPlaceCount;
+        ND bool isValid() const {
+            int maxPlaceCount = PieceWeight::PIECE_WEIGHTS[static_cast<int>(pieceType)].maxPlaceCount;
+            return maxPlaceCount == 0 || placeCount < maxPlaceCount;
         }
 
-        [[nodiscard]] bool canPlace(int depth) const {
-            return this->isValid() && depth >= PieceWeight::PIECE_WEIGHTS[static_cast<int>(this->pieceType)].minDepth;
+        ND bool canPlace(int depth) const {
+            return isValid() && depth >= PieceWeight::PIECE_WEIGHTS[static_cast<int>(pieceType)].minDepth;
         }
     };
 

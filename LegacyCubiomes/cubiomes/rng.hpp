@@ -6,29 +6,34 @@
 ///                    C implementation of Java Random
 ///=============================================================================
 
-static inline void setSeed(uint64_t *seed, uint64_t value)
-{
+
+static inline void setSeed(uint64_t *seed, uint64_t value) {
     *seed = (value ^ 0x5deece66d) & 0xFFFFFFFFFFFF;
 }
 
-static inline int next(uint64_t *seed, const int bits)
-{
+
+static inline void advance(uint64_t *seed) {
+    *seed = (*seed * 0x5deece66d + 0xb) & 0xFFFFFFFFFFFF;
+}
+
+
+static inline int next(uint64_t *seed, const int bits) {
     *seed = (*seed * 0x5deece66d + 0xb) & 0xFFFFFFFFFFFF;
     return (int) ((int64_t)*seed >> (48 - bits));
 }
+
 
 static inline bool nextBoolean(uint64_t *seed){
     return next(seed, 1) != 0;
 }
 
 
-static inline int nextInt(uint64_t *seed)
-{
+static inline int nextInt(uint64_t *seed) {
     return next(seed, 32);
 }
 
-static inline int nextInt(uint64_t *seed, const int n)
-{
+
+static inline int nextInt(uint64_t *seed, const int n) {
     int bits, val;
     const int m = n - 1;
 
@@ -45,23 +50,26 @@ static inline int nextInt(uint64_t *seed, const int n)
     return val;
 }
 
+
 static int nextInt(uint64_t *rng, int minimum, int maximum) {
     return minimum >= maximum ? minimum : nextInt(rng, maximum - minimum + 1) + minimum;
 }
 
-static inline uint64_t nextLong(uint64_t *seed)
-{
+
+static inline uint64_t nextLong(uint64_t *seed) {
     return ((uint64_t) next(seed, 32) << 32) + next(seed, 32);
 }
 
-static inline float nextFloat(uint64_t *seed)
-{
+
+static inline float nextFloat(uint64_t *seed) {
     return (float)next(seed, 24) / (float)0x1000000;
 }
+
 
 MU static float nextFloat(uint64_t *rng, float minimum, float maximum) {
     return minimum >= maximum ? minimum : ::nextFloat(rng) * (maximum - minimum) + minimum;
 }
+
 
 static inline double nextDouble(uint64_t *seed) {
     uint64_t x = next(seed, 26);
@@ -70,9 +78,11 @@ static inline double nextDouble(uint64_t *seed) {
     return (int64_t) x / (double)0x20000000000000;
 }
 
+
 MU static double nextDouble(uint64_t *rng, double minimum, double maximum) {
     return minimum >= maximum ? minimum : ::nextDouble(rng) * (maximum - minimum) + minimum;
 }
+
 
 static inline uint64_t getLargeFeatureSeed(int64_t worldSeed, int chunkX, int chunkZ) {
     uint64_t rng;
@@ -83,6 +93,7 @@ static inline uint64_t getLargeFeatureSeed(int64_t worldSeed, int chunkX, int ch
     setSeed(&rng, l4);
     return rng;
 }
+
 
 static inline uint64_t getPopulationSeed(int64_t worldSeed, int chunkX, int chunkZ) {
     uint64_t rng;
@@ -95,6 +106,7 @@ static inline uint64_t getPopulationSeed(int64_t worldSeed, int chunkX, int chun
     return rng;
 }
 
+
 static inline int clamp(int num, int min, int max) {
     if (num < min) {
         return min;
@@ -102,6 +114,7 @@ static inline int clamp(int num, int min, int max) {
         return num > max ? max : num;
     }
 }
+
 
 /* A macro to generate the ideal assembly for X = nextInt(S, 24)
  * This is a macro and not an inline function, as many compilers can make use
@@ -120,18 +133,15 @@ static inline int clamp(int num, int min, int max) {
     } while (0)
 
 
-/* Jumps forwards in the random number sequence by simulating 'n' calls to next.
- */
-static inline void skipNextN(uint64_t *seed, uint64_t n)
-{
+/// Jumps forwards in the random number sequence by simulating 'n' calls to next.
+static inline void skipNextN(uint64_t *seed, uint64_t n) {
     uint64_t m = 1;
     uint64_t a = 0;
     uint64_t im = 0x5deece66dULL;
     uint64_t ia = 0xb;
     uint64_t k;
 
-    for (k = n; k; k >>= 1)
-    {
+    for (k = n; k; k >>= 1) {
         if (k & 1)
         {
             m *= im;
@@ -217,9 +227,9 @@ MU static inline uint64_t getStartSeed(uint64_t ws, uint64_t ls)
 }
 
 
-///============================================================================
+///========================================================================
 ///                               Arithmetic
-///============================================================================
+///========================================================================
 
 
 /* Linear interpolations

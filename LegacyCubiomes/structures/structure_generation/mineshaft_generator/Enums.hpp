@@ -3,7 +3,9 @@
 #include <map>
 #include <string>
 
+
 namespace mineshaft_generator {
+
     enum class PieceType {
         ROOM = 0,
         CORRIDOR = 1,

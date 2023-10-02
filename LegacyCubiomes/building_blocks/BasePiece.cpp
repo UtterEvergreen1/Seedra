@@ -1,62 +1,63 @@
 #include "BasePiece.hpp"
 
+
 BasePiece::BasePiece()
-        : boundingBox(0, 0, 0, 0, 0, 0), orientation(DIRECTION::NORTH) {
+        : BoundingBox(0, 0, 0, 0, 0, 0), orientation(DIRECTION::NORTH) {
 }
 
+
 BasePiece::BasePiece(BoundingBox boundingBox, DIRECTION orientation)
-        : boundingBox(boundingBox), orientation(orientation) {
+        : BoundingBox(boundingBox), orientation(DIRECTION::NORTH) {
 }
+
+
+BasePiece::BasePiece(int minX, int minY, int minZ, int maxX, int maxY, int maxZ, DIRECTION orientation)
+        : BoundingBox(minX, minY, minZ, maxX, maxY, maxZ), orientation(orientation) {
+}
+
 
 Pos2D BasePiece::getBoundingBoxCenter() const {
     Pos2D pos{};
-    pos.x = this->boundingBox.minX + this->boundingBox.maxX / 2;
-    pos.z = this->boundingBox.minZ + this->boundingBox.maxZ / 2;
+    pos.x = minX + maxX / 2;
+    pos.z = minZ + maxZ / 2;
     return pos;
 }
 
 
 int BasePiece::getWorldX(int offsetWidth, int offsetDepth) const {
-    switch (this->orientation) {
+    switch (orientation) {
         case DIRECTION::NORTH:
-        case DIRECTION::SOUTH: {
-            return this->boundingBox.minX + offsetWidth;
-        }
-        case DIRECTION::WEST: {
-            return this->boundingBox.maxX - offsetDepth;
-        }
+        case DIRECTION::SOUTH:
+            return minX + offsetWidth;
+        case DIRECTION::WEST:
+            return maxX - offsetDepth;
         default:
-        case DIRECTION::EAST: {
-            return this->boundingBox.minX + offsetDepth;
-        }
+        case DIRECTION::EAST:
+            return minX + offsetDepth;
     }
 }
 
-[[maybe_unused]] int BasePiece::getWorldY(int offsetHeight) const {
-    return this->boundingBox.minY + offsetHeight;
-}
 
 int BasePiece::getWorldZ(int offsetWidth, int offsetDepth) const {
-    switch (this->orientation) {
-        case DIRECTION::NORTH: {
-            return this->boundingBox.maxZ - offsetDepth;
-        }
-        case DIRECTION::SOUTH: {
-            return this->boundingBox.minZ + offsetDepth;
-        }
+    switch (orientation) {
+        case DIRECTION::NORTH:
+            return maxZ - offsetDepth;
+        case DIRECTION::SOUTH:
+            return minZ + offsetDepth;
         default:
         case DIRECTION::WEST:
-        case DIRECTION::EAST: {
-            return this->boundingBox.minZ + offsetWidth;
-        }
+        case DIRECTION::EAST:
+            return minZ + offsetWidth;
     }
 }
+
 
 Pos2D BasePiece::getWorldPos(int offsetWidth, int offsetDepth) const {
     return {getWorldX(offsetWidth, offsetDepth), getWorldZ(offsetWidth, offsetDepth)};
 }
 
-[[maybe_unused]] BoundingBox BasePiece::makeBoundingBox(int x, int y, int z,
+
+BoundingBox BasePiece::makeBoundingBox(int x, int y, int z,
                                                         DIRECTION direction,
                                                         int width, int height, int depth) {
     if (direction == DIRECTION::NORTH || direction == DIRECTION::SOUTH) {

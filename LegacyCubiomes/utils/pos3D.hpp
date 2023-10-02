@@ -59,3 +59,5 @@ public:
     MU ND Pos2D convert2D();
     MU ND bool insideBounds(int lower, int upper);
 };
+
+typedef std::vector<Pos3D> Pos3DVec_t;

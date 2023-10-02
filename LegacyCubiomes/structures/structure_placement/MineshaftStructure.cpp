@@ -1,5 +1,7 @@
 #include "MineshaftStructure.hpp"
+
 namespace Structure {
+
     std::vector<Pos2D> MineshaftStructure::getPositions(int64_t worldSeed, int xLower, int zLower, int xUpper, int zUpper) {
         uint64_t random;
         std::vector<Pos2D> positions;

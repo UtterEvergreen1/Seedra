@@ -4,9 +4,11 @@
 #include "LegacyCubiomes/building_blocks/BoundingBox.hpp"
 #include "LegacyCubiomes/chunk_generator/ChunkPrimer.hpp"
 
+
 namespace structure_rolls {
 
-    bool BaseRolls::isLiquidInStructureBoundingBox(const BoundingBox& chunkBoundingBoxIn, const BoundingBox& pieceBoundingBox, ChunkPrimer* chunk) {
+    bool BaseRolls::isLiquidInStructureBoundingBox(const BoundingBox& chunkBoundingBoxIn,
+                                                   const BoundingBox& pieceBoundingBox, ChunkPrimer* chunk) {
         int minX = std::max(pieceBoundingBox.minX - 1, chunkBoundingBoxIn.minX) & 15;
         int minY = std::max(pieceBoundingBox.minY - 1, chunkBoundingBoxIn.minY);
         int minZ = std::max(pieceBoundingBox.minZ - 1, chunkBoundingBoxIn.minZ) & 15;
@@ -16,36 +18,38 @@ namespace structure_rolls {
         for (int x = minX; x <= maxX; ++x) {
             for (int z = minZ; z <= maxZ; ++z) {
                 uint16_t block = chunk->getBlock(x, minY, z);
-                //if(block == Items::ItemID::FLOWING_WATER_ID || block == Items::ItemID::STILL_WATER_ID || block == Items::ItemID::FLOWING_LAVA_ID || block == Items::ItemID::STILL_LAVA_ID)
-                if(block >= Items::ItemID::FLOWING_WATER_ID && block <= Items::ItemID::STILL_LAVA_ID)
+                //if (block == Items::ItemID::FLOWING_WATER_ID || block == Items::ItemID::STILL_WATER_ID || block == Items::ItemID::FLOWING_LAVA_ID || block == Items::ItemID::STILL_LAVA_ID)
+                if (block >= Items::ItemID::FLOWING_WATER_ID && block <= Items::ItemID::STILL_LAVA_ID)
                     return true;
 
                 uint16_t block1 = chunk->getBlock(x, maxY, z);
-                if(block1 >= Items::ItemID::FLOWING_WATER_ID && block <= Items::ItemID::STILL_LAVA_ID)
+                if (block1 >= Items::ItemID::FLOWING_WATER_ID && block <= Items::ItemID::STILL_LAVA_ID)
                     return true;
             }
         }
+
 
         for (int x = minX; x <= maxX; ++x) {
             for (int y = minY; y <= maxY; ++y) {
                 uint16_t block = chunk->getBlock(x, y, minZ);
-                if(block >= Items::ItemID::FLOWING_WATER_ID && block <= Items::ItemID::STILL_LAVA_ID)
+                if (block >= Items::ItemID::FLOWING_WATER_ID && block <= Items::ItemID::STILL_LAVA_ID)
                     return true;
 
                 uint16_t block1 = chunk->getBlock(x, y, maxZ);
-                if(block1 >= Items::ItemID::FLOWING_WATER_ID && block <= Items::ItemID::STILL_LAVA_ID)
+                if (block1 >= Items::ItemID::FLOWING_WATER_ID && block <= Items::ItemID::STILL_LAVA_ID)
                     return true;
             }
         }
 
+
         for (int z = minZ; z <= maxZ; ++z) {
             for (int y = minY; y <= maxY; ++y) {
                 uint16_t block = chunk->getBlock(minX, y, z);
-                if(block >= Items::ItemID::FLOWING_WATER_ID && block <= Items::ItemID::STILL_LAVA_ID)
+                if (block >= Items::ItemID::FLOWING_WATER_ID && block <= Items::ItemID::STILL_LAVA_ID)
                     return true;
 
                 uint16_t block1 = chunk->getBlock(maxX, y, z);
-                if(block1 >= Items::ItemID::FLOWING_WATER_ID && block <= Items::ItemID::STILL_LAVA_ID)
+                if (block1 >= Items::ItemID::FLOWING_WATER_ID && block <= Items::ItemID::STILL_LAVA_ID)
                     return true;
             }
         }
@@ -53,11 +57,13 @@ namespace structure_rolls {
         return false;
     }
 
+
     bool BaseRolls::intersectsWithBlock(const BoundingBox &chunkBoundingBox, int x, int y, int z) {
         return chunkBoundingBox.maxX >= x && chunkBoundingBox.minX <= x &&
                chunkBoundingBox.maxY >= y && chunkBoundingBox.minY <= y &&
                chunkBoundingBox.maxZ >= z && chunkBoundingBox.minZ <= z;
     }
+
 
     bool BaseRolls::validToPlace(const BoundingBox &chunkBoundingBox, const BoundingBox& bb, int x, int y, int z) {
         if (intersectsWithBlock(chunkBoundingBox, x, y, z)) {
@@ -68,6 +74,7 @@ namespace structure_rolls {
             return false;
         }
     }
+
 
     void BaseRolls::fillWithRandomizedBlocks(const BoundingBox &chunkBoundingBox, const BasePiece &piece, int minX, int minY,
                                              int minZ, int maxX, int maxY, int maxZ, uint64_t *random, ChunkPrimer *chunk) {
@@ -89,6 +96,7 @@ namespace structure_rolls {
             }
         }
     }
+
 
     // TODO: generate legacy chest where the loot is generated with the seed and doesn't use the loot table seed
     void BaseRolls::generateChest(const BoundingBox &chunkBoundingBox, const BasePiece &piece, uint64_t *random, int x, int y, int z) {

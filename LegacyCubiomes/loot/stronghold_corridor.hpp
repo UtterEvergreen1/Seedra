@@ -1,11 +1,9 @@
 #pragma once
 
-#include "base_classes/stronghold_loot.hpp"
-
 #include "LegacyCubiomes/enchants/enchantmentHelper.hpp"
+#include "LegacyCubiomes/loot/classes/StrongholdLoot.hpp"
 
 
-using namespace Items;
 using stronghold_generator::StrongholdGenerator;
 
 namespace loot_tables {
@@ -17,7 +15,7 @@ namespace loot_tables {
         static Container getLootFromLootTableSeed(uint64_t* lootTableSeed);
 
         template<bool checkCaves, bool shuffle>
-        ND static Container getAltarChestLoot(const Generator& g, BasePiece* alterChestPiece, StrongholdGenerator* strongholdGenerator);
+        ND static Container getAltarChestLoot(const Generator& g, BasePiece* altarChestPiece, StrongholdGenerator* strongholdGenerator);
 
         template<bool checkCaves, bool shuffle>
         ND static std::vector<Container> getAllAltarChestLoot(const Generator& g, StrongholdGenerator* strongholdGenerator);
@@ -86,18 +84,20 @@ namespace loot_tables {
             return  {std::move(chestContents)};
     }
 
+
     template<bool isAquatic>
     template<bool checkCaves, bool shuffle>
     Container StrongholdCorridor<isAquatic>::getAltarChestLoot(const Generator& g,
-               BasePiece* alterChestPiece,
+               BasePiece* altarChestPiece,
                StrongholdGenerator* strongholdGenerator) {
         uint64_t lootSeed = StrongholdLoot<StrongholdCorridor<isAquatic>>::template getLootSeed<checkCaves>(g,
-                    alterChestPiece->getWorldX(3, 3),
-                    alterChestPiece->getWorldY(2),
-                    alterChestPiece->getWorldZ(3, 3),
-                    strongholdGenerator);
+                                                                                                            altarChestPiece->getWorldX(3, 3),
+                                                                                                            altarChestPiece->getWorldY(2),
+                                                                                                            altarChestPiece->getWorldZ(3, 3),
+                                                                                                            strongholdGenerator);
         return Loot<StrongholdLoot<StrongholdCorridor<isAquatic>>>::template getLootFromSeed<shuffle>(&lootSeed);
     }
+
 
     template<bool isAquatic>
     template<bool checkCaves, bool shuffle>

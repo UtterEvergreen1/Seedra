@@ -4,6 +4,7 @@
 #include "Piece.hpp"
 
 namespace mineshaft_generator {
+
     class MineshaftGenerator {
     public:
         Piece pieces[1024];
@@ -14,14 +15,13 @@ namespace mineshaft_generator {
         BoundingBox structureBoundingBox;
 
         void generate(int64_t worldSeed, int chunkX, int chunkZ);
-        inline void generate(int64_t worldSeed, Pos2D chunkPos) {
-            return generate(worldSeed, chunkPos.x, chunkPos.z);
-        }
-        bool createPiece(uint64_t *random, int x, int y, int z,
-                                                             DIRECTION direction, int depth);
-        void generateAndAddPiece(uint64_t* random, int x, int y, int z, DIRECTION direction, int depth);
-        void buildComponent(Piece &piece, uint64_t* random);
+        inline void generate(int64_t worldSeed, Pos2D chunkPos) { return generate(worldSeed, chunkPos.x, chunkPos.z);}
 
+    private:
+        void addPiece(PieceType type, int depth, const BoundingBox& boundingBox, DIRECTION direction, int additionalData);
+        bool createPiece(uint64_t *rng, int x, int y, int z, DIRECTION direction, int depth);
+        void genAndAddPiece(uint64_t* rng, int x, int y, int z, DIRECTION direction, int depth);
         Piece* findCollisionPiece(BoundingBox &boundingBox);
+        void buildComponent(Piece &piece, uint64_t* rng);
     };
 }
