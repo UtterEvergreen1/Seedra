@@ -1,7 +1,11 @@
 #pragma once
+
 #include <iostream>
+#include <climits>
+
 #include "LegacyCubiomes/utils/enums.hpp"
 #include "LegacyCubiomes/cubiomes/processor.hpp"
+#include "LegacyCubiomes/utils/pos3D.hpp"
 
 struct BoundingBox {
     static const BoundingBox EMPTY;
@@ -23,6 +27,9 @@ struct BoundingBox {
                                  int width, int height, int depth, DIRECTION direction);
 
     static BoundingBox orientBox(int x, int y, int z, int width, int height, int depth, DIRECTION direction);
+    static BoundingBox orientBox(Pos3D posXYZ, Pos3D posOffset, Pos3D size, DIRECTION direction);
+    static BoundingBox orientBox(Pos3D posXYZ, int offsetWidth, int offsetHeight, int offsetDepth,
+                                              int width, int height, int depth, DIRECTION direction);
 
     friend std::ostream &operator<<(std::ostream &out, const BoundingBox &boundingBox);
 

@@ -164,17 +164,17 @@ public:
     }
 
     bool canBlockFreeze(const Generator& g, Pos3D pos, bool noWaterAdj){
-        Biome* biome = Biome::getBiomeForId(g.getBiomeAt(1, pos.x, pos.z));
+        Biome* biome = Biome::getBiomeForId(g.getBiomeAt(1, pos.getX(), pos.getZ()));
         float f = biome->getFloatTemperature(pos);
         if (f >= 0.15F)
             return false;
         else
         {
-            if (pos.y >= 0 && pos.y < 256)
+            if (pos.getY() >= 0 && pos.getY() < 256)
             {
-                int x = pos.x & 15;
-                int z = pos.z & 15;
-                uint16_t iblockstate = getBlock(x, pos.y, z);
+                int x = pos.getX() & 15;
+                int z = pos.getZ() & 15;
+                uint16_t iblockstate = getBlock(x, pos.getY(), z);
                 uint16_t block = iblockstate;
 
                 if ((block == 8 || block == 9))
@@ -182,10 +182,10 @@ public:
                     if (!noWaterAdj)
                         return true;
 
-                    uint16_t flagBlockWest = getBlock(x - 1, pos.y, z);
-                    uint16_t flagBlockEast = getBlock(x + 1, pos.y, z);
-                    uint16_t flagBlockNorth = getBlock(x, pos.y, z - 1);
-                    uint16_t flagBlockSouth = getBlock(x, pos.y, z + 1);
+                    uint16_t flagBlockWest = getBlock(x - 1, pos.getY(), z);
+                    uint16_t flagBlockEast = getBlock(x + 1, pos.getY(), z);
+                    uint16_t flagBlockNorth = getBlock(x, pos.getY(), z - 1);
+                    uint16_t flagBlockSouth = getBlock(x, pos.getY(), z + 1);
                     bool flag = flagBlockWest == 9 && flagBlockEast == 9 && flagBlockNorth == 9 && flagBlockSouth == 9;
 
                     if (!flag)
@@ -198,7 +198,7 @@ public:
     }
 
     bool canSnowAt(const Generator& g, Pos3D pos, bool checkLight){
-        Biome* biome = Biome::getBiomeForId(g.getBiomeAt(1, pos.x, pos.z));
+        Biome* biome = Biome::getBiomeForId(g.getBiomeAt(1, pos.getX(), pos.getZ()));
         float temp = biome->getFloatTemperature(pos);
         if (temp >= 0.15F)
             return false;
@@ -207,9 +207,9 @@ public:
         else
         {
             // needs to check block light later on to replace a perfect chunk
-            if (pos.y >= 0 && pos.y < 256 /* && this.getLightFor(EnumSkyBlock.BLOCK, pos) < 10*/)
+            if (pos.getY() >= 0 && pos.getY() < 256 /* && this.getLightFor(EnumSkyBlock.BLOCK, pos) < 10*/)
             {
-                uint16_t iblockstate = getBlock(pos.x, pos.y, pos.z);
+                uint16_t iblockstate = getBlock(pos.getX(), pos.getY(), pos.getZ());
                 if (!iblockstate)
                     return true;
             }

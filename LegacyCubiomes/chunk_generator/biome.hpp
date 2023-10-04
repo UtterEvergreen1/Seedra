@@ -58,10 +58,10 @@ public:
     }
     float getFloatTemperature(Pos3D pos)
     {
-        if (pos.y > 64)
+        if (pos.getY() > 64)
         {
-            auto f = (float)(TEMPERATURE_NOISE.getValue((double)((float)pos.x / 8.0F), (double)((float)pos.z / 8.0F)) * 4.0);
-            return this->temperature - (f + (float)pos.y - 64.0F) * 0.05F / 30.0F;
+            auto f = (float)(TEMPERATURE_NOISE.getValue((double)((float)pos.getX() / 8.0F), (double)((float)pos.getZ() / 8.0F)) * 4.0);
+            return this->temperature - (f + (float)pos.getY() - 64.0F) * 0.05F / 30.0F;
         }
         else
             return this->temperature;

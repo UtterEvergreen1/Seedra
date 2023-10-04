@@ -10,16 +10,20 @@
 #include "LegacyCubiomes/cubiomes/processor.hpp"
 #include "pos2D.hpp"
 
-class Pos3D
-{
-public:
+class Pos3D {
+private:
     int x;
     int y;
     int z;
 
+public:
     Pos3D() : x(0), y(0), z(0) {}
     explicit Pos3D(Pos2D pos) : x(pos.x), y(0), z(pos.z) {}
     Pos3D(int xIn, int yIn, int zIn) : x(xIn), y(yIn), z(zIn) {}
+
+    inline int getX() {return x;}
+    inline int getY() {return y;}
+    inline int getZ() {return z;}
 
     bool  operator==(const Pos3D& other) const;
     Pos3D operator +(const Pos3D& other) const;

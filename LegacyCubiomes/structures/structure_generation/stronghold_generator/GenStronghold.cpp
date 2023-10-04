@@ -23,26 +23,27 @@ namespace stronghold_generator {
         do {
             resetPieces();
 
+            // creates starting staircase
             DIRECTION direction = HORIZONTAL[nextInt(&random, 4)];
             BoundingBox stairsBoundingBox = BasePiece::makeBoundingBox(startX, 64, startZ, direction, 5, 11, 5);
             Piece startPiece = Piece(PieceType::STAIRS_DOWN, 0, stairsBoundingBox, direction, 1);
-            pieces[piecesSize++] = startPiece;
+            pieceArray[pieceArraySize++] = startPiece;
+
+            // this only adds the 5-crossing room
             addChildren(startPiece, &random);
 
-            while (pendingPiecesSize != 0) {
-                int i = nextInt(&random, pendingPiecesSize);
-                Piece &piece = pieces[pendingPieces[i]];
-                pendingPiecesSize--;
-                for (int j = i; j < pendingPiecesSize; j++) {
-                    pendingPieces[j] = pendingPieces[j + 1];
+            while (pendingPiecesArraySize != 0) {
+                int i = nextInt(&random, pendingPiecesArraySize);
+                Piece &piece = pieceArray[pendingPieceArray[i]];
+                pendingPiecesArraySize--;
+                for (int j = i; j < pendingPiecesArraySize; j++) {
+                    pendingPieceArray[j] = pendingPieceArray[j + 1];
                 }
                 addChildren(piece, &random);
-                if (portalRoomPiece != nullptr && generationStep == GenerationStep::PORTAL) {
-                    return;
-                }
-                if (portalRoomPiece != nullptr && generationStopped && generationStep == GenerationStep::LAYOUT) {
-                    return;
-                }
+
+                bool isNullPtr = portalRoomPiece != nullptr;
+                if (isNullPtr && generationStep == GenerationStep::PORTAL) return;
+                if (isNullPtr && generationStopped && generationStep == GenerationStep::LAYOUT) return;
             }
 
             if (portalRoomPiece != nullptr && generationStep == GenerationStep::LAYOUT) {
@@ -50,8 +51,8 @@ namespace stronghold_generator {
             }
 
             structureBoundingBox = BoundingBox::EMPTY;
-            for (int pieceIndex = 0; pieceIndex < piecesSize; pieceIndex++) {
-                structureBoundingBox.encompass(pieces[pieceIndex]);
+            for (int index = 0; index < pieceArraySize; index++) {
+                structureBoundingBox.encompass(pieceArray[index]);
             }
 
             const int i = 53; // 63 - 10
@@ -62,8 +63,8 @@ namespace stronghold_generator {
 
             int k = j - structureBoundingBox.maxY;
             structureBoundingBox.offset(0, k, 0);
-            for (int pieceIndex = 0; pieceIndex < piecesSize; pieceIndex++) {
-                pieces[pieceIndex].offset(0, k, 0);
+            for (int index = 0; index < pieceArraySize; index++) {
+                pieceArray[index].offset(0, k, 0);
             }
         } while (portalRoomPiece == nullptr);
     }
@@ -73,132 +74,128 @@ namespace stronghold_generator {
         for (int i = 0; i < 11; i++) {
             piecePlaceCounts[i] = PiecePlaceCount::DEFAULT[i];
         }
-        numAltarChests = 0;
-        piecePlaceCountsSize = 11;
-        imposedPiece = PieceType::NONE;
-        totalWeight = 145;
-        previousPiece = PieceType::NONE;
-        piecesSize = 0;
-        pendingPiecesSize = 0;
-        portalRoomPiece = nullptr;
         generationStopped = false;
+        forcedPiece = PieceType::NONE;
+        previousPiece = PieceType::NONE;
+        pieceArraySize = 0;
+        pendingPiecesArraySize = 0;
+        portalRoomPiece = nullptr;
+        altarChestArraySize = 0;
+        piecePlaceCountsSize = 11;
+        totalWeight = 145;
     }
 
 
     void StrongholdGenerator::addPiece(Piece piece) {
         // printf("Adding piece at %i with rotation %i and depth %i\n", piece.minX, piece.minZ, piece.orientation, piece.depth);
-        pendingPieces[pendingPiecesSize++] = piecesSize;
-        pieces[piecesSize++] = piece;
-    }
-
-
-    void StrongholdGenerator::updatePieceWeight() {
-        for (int i = 0; i < piecePlaceCountsSize; i++) {
-            PiecePlaceCount piecePlaceCount = piecePlaceCounts[i];
-            PieceWeight pieceWeight = PieceWeight::PIECE_WEIGHTS[static_cast<int>(piecePlaceCount.pieceType)];
-            if (pieceWeight.maxPlaceCount > 0 && piecePlaceCount.placeCount < pieceWeight.maxPlaceCount) {
-                return;
-            }
-        }
-        // printf("Stopping because all weights are used up\n");
-        generationStopped = true;
+        pendingPieceArray[pendingPiecesArraySize++] = pieceArraySize;
+        pieceArray[pieceArraySize++] = piece;
     }
 
 
     void StrongholdGenerator::onWeightedPiecePlaced(int piecePlaceCountIndex) {
         PiecePlaceCount &piecePlaceCount = piecePlaceCounts[piecePlaceCountIndex];
-
         piecePlaceCount.placeCount++;
+
         previousPiece = piecePlaceCount.pieceType;
-        if (!piecePlaceCount.isValid()) {
-            // printf("Removed weight %i %i\n", piecePlaceCountIndex, piecePlaceCount.pieceType);
-            totalWeight -= PieceWeight::PIECE_WEIGHTS[static_cast<int>(piecePlaceCount.pieceType)].weight;
-            piecePlaceCountsSize--;
-            for (int i = piecePlaceCountIndex; i < piecePlaceCountsSize; i++) {
-                piecePlaceCounts[i] = piecePlaceCounts[i + 1];
-            }
-            updatePieceWeight();
+        if (piecePlaceCount.isValid()) return;
+
+        totalWeight -= PieceWeight::getWeight(piecePlaceCount.pieceType);
+
+        piecePlaceCountsSize--;
+        for (int i = piecePlaceCountIndex; i < piecePlaceCountsSize; i++) {
+            piecePlaceCounts[i] = piecePlaceCounts[i + 1];
         }
+
+        // function originally called "updatePieceWeight"
+        for (int index = 0; index < piecePlaceCountsSize; index++) {
+            PiecePlaceCount ppc = piecePlaceCounts[index];
+            PieceWeight pieceWeight = PieceWeight::PIECE_WEIGHTS[static_cast<int>(ppc.pieceType)];
+            if (pieceWeight.maxPlaceCount > 0 && ppc.placeCount < pieceWeight.maxPlaceCount) return;
+        }
+
+        generationStopped = true;
+
     }
 
 
     BoundingBox
-    StrongholdGenerator::createPieceBoundingBox(PieceType pieceType, int x, int y, int z, DIRECTION direction) {
+    StrongholdGenerator::createPieceBoundingBox(PieceType pieceType, Pos3D pos, DIRECTION dir) {
         switch (pieceType) {
             case PieceType::STRAIGHT:
-                return BoundingBox::orientBox(x, y, z, -1, -1, 0, 5, 5, 7, direction);
+                return BoundingBox::orientBox(pos, -1, -1, 0, 5, 5, 7, dir);
             case PieceType::PRISON_HALL:
-                return BoundingBox::orientBox(x, y, z, -1, -1, 0, 9, 5, 11, direction);
+                return BoundingBox::orientBox(pos, -1, -1, 0, 9, 5, 11, dir);
             case PieceType::RIGHT_TURN:
             case PieceType::LEFT_TURN:
-                return BoundingBox::orientBox(x, y, z, -1, -1, 0, 5, 5, 5, direction);
+                return BoundingBox::orientBox(pos, -1, -1, 0, 5, 5, 5, dir);
             case PieceType::ROOM_CROSSING:
-                return BoundingBox::orientBox(x, y, z, -4, -1, 0, 11, 7, 11, direction);
+                return BoundingBox::orientBox(pos, -4, -1, 0, 11, 7, 11, dir);
             case PieceType::STRAIGHT_STAIRS_DOWN:
-                return BoundingBox::orientBox(x, y, z, -1, -7, 0, 5, 11, 8, direction);
+                return BoundingBox::orientBox(pos, -1, -7, 0, 5, 11, 8, dir);
             case PieceType::STAIRS_DOWN:
-                return BoundingBox::orientBox(x, y, z, -1, -7, 0, 5, 11, 5, direction);
+                return BoundingBox::orientBox(pos, -1, -7, 0, 5, 11, 5, dir);
             case PieceType::FIVE_CROSSING:
-                return BoundingBox::orientBox(x, y, z, -4, -3, 0, 10, 9, 11, direction);
+                return BoundingBox::orientBox(pos, -4, -3, 0, 10, 9, 11, dir);
             case PieceType::CHEST_CORRIDOR:
-                return BoundingBox::orientBox(x, y, z, -1, -1, 0, 5, 5, 7, direction);
+                return BoundingBox::orientBox(pos, -1, -1, 0, 5, 5, 7, dir);
             case PieceType::LIBRARY:
-                return BoundingBox::orientBox(x, y, z, -4, -1, 0, 14, 11, 15, direction);
+                return BoundingBox::orientBox(pos, -4, -1, 0, 14, 11, 15, dir);
             case PieceType::PORTAL_ROOM:
-                return BoundingBox::orientBox(x, y, z, -4, -1, 0, 11, 8, 16, direction);
+                return BoundingBox::orientBox(pos, -4, -1, 0, 11, 8, 16, dir);
             default:
                 return BoundingBox::EMPTY;
         }
     }
 
 
-    Piece StrongholdGenerator::createPiece(PieceType pieceType, uint64_t *random,
-                                                           DIRECTION direction, int depth, BoundingBox boundingBox) {
+    Piece StrongholdGenerator::createPiece(PieceType pieceType, uint64_t *rng,
+                                           DIRECTION direction, int depth, BoundingBox boundingBox) {
         int additionalData = 0;
         switch (pieceType) {
             case PieceType::STRAIGHT:
-                // random.nextInt(5); //this is java
-                additionalData |= (nextInt(random, 2) == 0) << 0;
-                additionalData |= (nextInt(random, 2) == 0) << 1;
-                nextInt(random, 5);
+                // rng.nextInt(5); // this is java
+                additionalData |= (nextInt(rng, 2) == 0) << 0;
+                additionalData |= (nextInt(rng, 2) == 0) << 1;
+                nextInt(rng, 5);
                 break;
             case PieceType::PRISON_HALL:
-                nextInt(random, 5);
+                nextInt(rng, 5);
                 break;
             case PieceType::LEFT_TURN:
-                nextInt(random, 5);
+                nextInt(rng, 5);
                 break;
             case PieceType::RIGHT_TURN:
-                nextInt(random, 5);
+                nextInt(rng, 5);
                 return {PieceType::LEFT_TURN, depth, boundingBox, direction, additionalData};
             case PieceType::ROOM_CROSSING:
-                // random.nextInt(5); // this is java
-                additionalData = nextInt(random, 5);
-                nextInt(random, 5);
+                // rng.nextInt(5); // this is java
+                additionalData = nextInt(rng, 5);
+                nextInt(rng, 5);
                 break;
             case PieceType::STRAIGHT_STAIRS_DOWN:
-                nextInt(random, 5);
+                nextInt(rng, 5);
                 break;
             case PieceType::STAIRS_DOWN:
-                nextInt(random, 5);
+                nextInt(rng, 5);
                 break;
             case PieceType::FIVE_CROSSING:
-                nextInt(random, 5);
-                additionalData |= (nextBoolean(random)) << 0;
-                additionalData |= (nextBoolean(random)) << 1;
-                additionalData |= (nextBoolean(random)) << 2;
-                additionalData |= (nextInt(random, 3) > 0) << 3;
+                nextInt(rng, 5);
+                additionalData |= (nextBoolean(rng)) << 0;
+                additionalData |= (nextBoolean(rng)) << 1;
+                additionalData |= (nextBoolean(rng)) << 2;
+                additionalData |= (nextInt(rng, 3) > 0) << 3;
                 break;
             case PieceType::CHEST_CORRIDOR:
-                altarChests[numAltarChests++] = &pieces[piecesSize];
-                nextInt(random, 5);
+                altarChestsArray[altarChestArraySize++] = &pieceArray[pieceArraySize];
+                nextInt(rng, 5);
                 break;
             case PieceType::LIBRARY:
-                nextInt(random, 5);
+                nextInt(rng, 5);
                 if (boundingBox.maxY > 6) additionalData = 1;
                 break;
             case PieceType::PORTAL_ROOM:
-                portalRoomPiece = &pieces[piecesSize];
+                portalRoomPiece = &pieceArray[pieceArraySize];
                 break;
             default:
                 break;
@@ -207,89 +204,69 @@ namespace stronghold_generator {
     }
 
 
-    bool
-    StrongholdGenerator::tryAddPieceFromType(PieceType pieceType, uint64_t *random, int x, int y,
-                                                                   int z, DIRECTION direction, int depth) {
-        BoundingBox boundingBox = createPieceBoundingBox(pieceType, x, y, z, direction);
-        if (!isOkBox(boundingBox) || findCollisionPiece(boundingBox) != nullptr) {
+    bool StrongholdGenerator::tryAddPieceFromType(PieceType pieceType, uint64_t *rng, Pos3D pos, DIRECTION direction, int depth) {
+        BoundingBox bBox = createPieceBoundingBox(pieceType, pos, direction);
+        if (!isOkBox(bBox) || collidesWithPiece(bBox)) {
             if (pieceType == PieceType::LIBRARY) {
-                boundingBox = BoundingBox::orientBox(x, y, z, -4, -1, 0, 14, 6, 15, direction);
-                if (!isOkBox(boundingBox) || findCollisionPiece(boundingBox) != nullptr) {
-                    return false;
-                }
+                bBox = BoundingBox::orientBox(pos, -4, -1, 0, 14, 6, 15, direction);
+                if (!isOkBox(bBox) || collidesWithPiece(bBox)) return false;
             } else {
                 return false;
             }
         }
 
-        Piece piece = createPiece(pieceType, random, direction, depth, boundingBox);
+        Piece piece = createPiece(pieceType, rng, direction, depth, bBox);
         addPiece(piece);
-        if (pieceType == PieceType::PORTAL_ROOM && generationStep == GenerationStep::PORTAL) {
-            // printf("Stopping at portal 0\n");
+
+        if (pieceType == PieceType::PORTAL_ROOM && generationStep == GenerationStep::PORTAL)
             generationStopped = true;
-        }
+
 
         return true;
     }
 
-    bool StrongholdGenerator::genPieceFromSmallDoor(uint64_t *rng, int x, int y, int z, DIRECTION direction, int depth) {
-        // printf("Adding at %i %i %i\n", x, y, z);
+    bool StrongholdGenerator::genPieceFromSmallDoor(uint64_t *rng, Pos3D pos, DIRECTION direction, int depth) {
+        if EXPECT_FALSE(generationStopped) return false;
 
-        if (generationStopped) return false;
-
-        if (imposedPiece != PieceType::NONE) {
-            // printf("Adding forced piece\n");
-            PieceType theImposedPiece = imposedPiece;
-            imposedPiece = PieceType::NONE;
-            if (tryAddPieceFromType(theImposedPiece, rng, x, y, z, direction, depth)) {
-                // printf("Added forced piece\n");
-                return true;
-            }
+        if EXPECT_FALSE(forcedPiece != PieceType::NONE) {
+            bool canAdd = tryAddPieceFromType(forcedPiece, rng, pos, direction, depth);
+            forcedPiece = PieceType::NONE;
+            if (canAdd) return true;
         }
 
         int maxWeight = totalWeight;
 
         for (int attempt = 0; attempt < 5; attempt++) {
             int selectedWeight = nextInt(rng, maxWeight);
-            // printf("Selected weight %i %i\n", totalWeight, selectedWeight);
-
-            for (int piecePlaceCountIndex = 0; piecePlaceCountIndex < piecePlaceCountsSize; piecePlaceCountIndex++) {
-                PiecePlaceCount &piecePlaceCount = piecePlaceCounts[piecePlaceCountIndex];
+            /// printf("Selected weight %i %i", totalWeight, selectedWeight);
+            for (int index = 0; index < piecePlaceCountsSize; index++) {
+                PiecePlaceCount &piecePlaceCount = piecePlaceCounts[index];
                 PieceType pieceType = piecePlaceCount.pieceType;
-                int weight = PieceWeight::PIECE_WEIGHTS[static_cast<int>(pieceType)].weight;
+                int weight = PieceWeight::getWeight(pieceType);
 
                 if ((selectedWeight -= weight) >= 0) continue;
+                if (!piecePlaceCount.canPlace(depth) || pieceType == previousPiece) break;
+                if (!tryAddPieceFromType(pieceType, rng, pos, direction, depth)) continue;
 
-                // printf("Trying %llu %i\n", rng.seed, piecesSize);
-                if (!piecePlaceCount.canPlace(depth) || pieceType == previousPiece) {
-                    // printf("Can't add\n");
-                    break;
-                }
-                if (!tryAddPieceFromType(pieceType, rng, x, y, z, direction, depth)) {
-                    // printf("Failed\n");
-                    continue;
-                }
-                // printf("After place %llu %i\n", rng.seed, piecesSize);
-                onWeightedPiecePlaced(piecePlaceCountIndex);
+                onWeightedPiecePlaced(index);
                 return true;
             }
         }
 
-        BoundingBox boundingBox = BoundingBox::orientBox(x, y, z, -1, -1, 0, 5, 5, 4, direction);
+        BoundingBox boundingBox = BoundingBox::orientBox(pos, -1, -1, 0, 5, 5, 4, direction);
         Piece *collidingPiece = findCollisionPiece(boundingBox);
         if (collidingPiece == nullptr) return false;
 
         if (collidingPiece->minY == boundingBox.minY) {
             for (int i = 3; i >= 1; --i) {
-                boundingBox = BoundingBox::orientBox(x, y, z, -1, -1, 0, 5, 5, i - 1, direction);
+                boundingBox = BoundingBox::orientBox(pos, -1, -1, 0, 5, 5, i - 1, direction);
                 if (collidingPiece->intersects(boundingBox)) continue;
 
-                boundingBox = BoundingBox::orientBox(x, y, z, -1, -1, 0, 5, 5, i, direction);
+                boundingBox = BoundingBox::orientBox(pos, -1, -1, 0, 5, 5, i, direction);
                 if (boundingBox.minY > 1) {
                     addPiece(Piece(PieceType::FILLER_CORRIDOR, depth, boundingBox, direction, 0));
                     return true;
                 }
-
                 return false;
             }
         }
@@ -297,35 +274,39 @@ namespace stronghold_generator {
         return false;
     }
 
-    void StrongholdGenerator::genAndAddPiece(uint64_t *rng, int x, int y, int z, DIRECTION direction, int depth) {
+    void StrongholdGenerator::genAndAddPiece(uint64_t *rng, Pos3D pos, DIRECTION direction, int depth) {
         if (depth > 50) return;
 
-        if (abs(x - startX) <= 48 && abs(z - startZ) <= 48) {
-            genPieceFromSmallDoor(rng, x, y, z, direction, depth + 1);
+        if (abs(pos.getX() - startX) <= 48 && abs(pos.getZ() - startZ) <= 48) {
+            genPieceFromSmallDoor(rng, pos, direction, depth + 1);
             return;
         }
 
-        for (int piecePlaceCountIndex = 0; piecePlaceCountIndex < piecePlaceCountsSize; piecePlaceCountIndex++) {
-            PiecePlaceCount &piecePlaceCount = piecePlaceCounts[piecePlaceCountIndex];
+        for (int index = 0; index < piecePlaceCountsSize; index++) {
+            PiecePlaceCount &piecePlaceCount = piecePlaceCounts[index];
             if (piecePlaceCount.pieceType == PieceType::PORTAL_ROOM) {
-                BoundingBox boundingBox = BoundingBox::orientBox(x, y, z, -4, -1, 0, 11, 8, 16, direction);
-                if (isOkBox(boundingBox) && findCollisionPiece(boundingBox) == nullptr) {
-                    onWeightedPiecePlaced(piecePlaceCountIndex);
+                BoundingBox bBox = BoundingBox::orientBox(pos, -4, -1, 0, 11, 8, 16, direction);
+                if (isOkBox(bBox) && findCollisionPiece(bBox) == nullptr) {
+                    onWeightedPiecePlaced(index);
                 }
                 break;
             }
         }
-
     }
 
 
     Piece* StrongholdGenerator::findCollisionPiece(BoundingBox &boundingBox) {
-        for (int i = 0; i < piecesSize; i++) {
-            if (pieces[i].intersects(boundingBox)) {
-                return &pieces[i];
+        for (int i = 0; i < pieceArraySize; i++) {
+            if (pieceArray[i].intersects(boundingBox)) {
+                return &pieceArray[i];
             }
         }
         return nullptr;
+    }
+
+
+    bool StrongholdGenerator::collidesWithPiece(BoundingBox &boundingBox) {
+        return findCollisionPiece(boundingBox) != nullptr;
     }
 
 
@@ -338,25 +319,26 @@ namespace stronghold_generator {
         DIRECTION direction = piece.orientation;
         switch (direction) {
             case DIRECTION::NORTH:
-                return genAndAddPiece(rng, piece.minX + n, piece.minY + n2, piece.minZ - 1, direction, piece.depth);
+                return genAndAddPiece(rng, {piece.minX + n, piece.minY + n2, piece.minZ - 1}, direction, piece.depth);
             case DIRECTION::SOUTH:
-                return genAndAddPiece(rng, piece.minX + n, piece.minY + n2, piece.maxZ + 1, direction, piece.depth);
+                return genAndAddPiece(rng, {piece.minX + n, piece.minY + n2, piece.maxZ + 1}, direction, piece.depth);
             case DIRECTION::WEST:
-                return genAndAddPiece(rng, piece.minX - 1, piece.minY + n2, piece.minZ + n, direction, piece.depth);
+                return genAndAddPiece(rng, {piece.minX - 1, piece.minY + n2, piece.minZ + n}, direction, piece.depth);
             case DIRECTION::EAST:
-                return genAndAddPiece(rng, piece.maxX + 1, piece.minY + n2, piece.minZ + n, direction, piece.depth);
+                return genAndAddPiece(rng, {piece.maxX + 1, piece.minY + n2, piece.minZ + n}, direction, piece.depth);
         }
     }
+
 
     void StrongholdGenerator::genSmallDoorChildLeft(Piece &piece, uint64_t *rng, int n, int n2) {
         switch (piece.orientation) {
             case DIRECTION::SOUTH:
             case DIRECTION::NORTH:
-                genAndAddPiece(rng, piece.minX - 1, piece.minY + n, piece.minZ + n2, DIRECTION::WEST, piece.depth);
+                genAndAddPiece(rng, {piece.minX - 1, piece.minY + n, piece.minZ + n2}, DIRECTION::WEST, piece.depth);
                 break;
             case DIRECTION::EAST:
             case DIRECTION::WEST:
-                genAndAddPiece(rng, piece.minX + n2, piece.minY + n, piece.minZ - 1, DIRECTION::NORTH, piece.depth);
+                genAndAddPiece(rng, {piece.minX + n2, piece.minY + n, piece.minZ - 1}, DIRECTION::NORTH, piece.depth);
                 break;
         }
     }
@@ -365,11 +347,11 @@ namespace stronghold_generator {
         switch (piece.orientation) {
             case DIRECTION::SOUTH:
             case DIRECTION::NORTH:
-                genAndAddPiece(rng, piece.maxX + 1, piece.minY + n, piece.minZ + n2, DIRECTION::EAST, piece.depth);
+                genAndAddPiece(rng, {piece.maxX + 1, piece.minY + n, piece.minZ + n2}, DIRECTION::EAST, piece.depth);
                 break;
             case DIRECTION::EAST:
             case DIRECTION::WEST:
-                genAndAddPiece(rng, piece.minX + n2, piece.minY + n, piece.maxZ + 1, DIRECTION::SOUTH, piece.depth);
+                genAndAddPiece(rng, {piece.minX + n2, piece.minY + n, piece.maxZ + 1}, DIRECTION::SOUTH, piece.depth);
                 break;
         }
     }
@@ -415,7 +397,7 @@ namespace stronghold_generator {
                 break;
             case PieceType::STAIRS_DOWN: {
                 if (piece.additionalData != 0)
-                    imposedPiece = PieceType::FIVE_CROSSING;
+                    forcedPiece = PieceType::FIVE_CROSSING;
                 genSmallDoorChildForward(piece, rng, 1, 1);
                 break;
             }
@@ -448,5 +430,4 @@ namespace stronghold_generator {
                 break;
         }
     }
-
 }

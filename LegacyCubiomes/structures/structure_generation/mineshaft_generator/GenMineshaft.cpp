@@ -24,16 +24,16 @@ namespace mineshaft_generator {
 
         // get Y level
         structureBoundingBox = BoundingBox::EMPTY;
-        for (int pieceIndex = 0; pieceIndex < piecesSize; pieceIndex++) {
-            structureBoundingBox.encompass(pieces[pieceIndex]);
+        for (int index = 0; index < piecesSize; index++) {
+            structureBoundingBox.encompass(pieces[index]);
         }
 
         // specifically mesa
-        if(mineShaftType == MineshaftType::MESA) {
+        if (mineShaftType == MineshaftType::MESA) {
             int i = 63 - structureBoundingBox.maxY + structureBoundingBox.getYSize() / 2 + 5;
             structureBoundingBox.offset(0, i, 0);
-            for (int pieceIndex = 0; pieceIndex < piecesSize; pieceIndex++) {
-                pieces[pieceIndex].offset(0, i, 0);
+            for (int index = 0; index < piecesSize; index++) {
+                pieces[index].offset(0, i, 0);
             }
             return;
         }
@@ -45,25 +45,32 @@ namespace mineshaft_generator {
             j += nextInt(&rng, i - j);
         }
         int k = j - structureBoundingBox.maxY;
-        for (int pieceIndex = 0; pieceIndex < piecesSize; pieceIndex++) {
-            pieces[pieceIndex].offset(0, k, 0);
+        for (int piece = 0; piece < piecesSize; piece++) {
+            pieces[piece].offset(0, k, 0);
         }
 
     }
 
 
-    void MineshaftGenerator::addPiece(PieceType type, int depth, const BoundingBox& boundingBox,
-                                      DIRECTION direction, int additionalData) {
-        pieces[piecesSize++] = Piece(type, depth, boundingBox, direction, additionalData);
+    void MineshaftGenerator::reset() {
+        piecesSize = 0;
+        collisionChecks = 0;
     }
 
 
-    bool MineshaftGenerator::createPiece(uint64_t *rng, int x, int y, int z, DIRECTION direction, int depth) {
+    void MineshaftGenerator::addPiece(PieceType type, int depth, const BoundingBox& boundingBox,
+                                      DIRECTION direction, int additionalData) {
+        Piece piece = Piece(type, depth, boundingBox, direction, additionalData);
+        pieces[piecesSize++] = piece;
+    }
+
+
+    bool MineshaftGenerator::createPiece(uint64_t *rng, Pos3D pos, DIRECTION direction, int depth) {
         int randomRoom = nextInt(rng, 100);
 
         if (randomRoom >= 80) {
             int additionalData = 0;
-            BoundingBox crossingBoundingBox = BoundingBox::orientBox(x, y, z, -1, 0, 0, 5, 3, 5, direction);
+            BoundingBox crossingBoundingBox = BoundingBox::orientBox(pos, -1, 0, 0, 5, 3, 5, direction);
 
             if(nextInt(rng, 4) == 0) {
                 crossingBoundingBox.maxY += 4;
@@ -76,7 +83,7 @@ namespace mineshaft_generator {
             addPiece(PieceType::CROSSING, depth, crossingBoundingBox, direction, additionalData);
 
         } else if (randomRoom >= 70) {
-            BoundingBox stairsBoundingBox = BoundingBox::orientBox(x, y, z, 0, -5, 0, 3, 8, 9, direction);
+            BoundingBox stairsBoundingBox = BoundingBox::orientBox(pos, 0, -5, 0, 3, 8, 9, direction);
 
             Piece *collidingPiece = findCollisionPiece(stairsBoundingBox);
             if (collidingPiece != nullptr) return false;
@@ -88,7 +95,7 @@ namespace mineshaft_generator {
             int i;
             for (i = nextInt(rng, 3) + 2; i > 0; --i) {
                 int j = i * 5;
-                corridorBoundingBox = BoundingBox::orientBox(x, y, z, 0, 0, 0, 3, 3, j, direction);
+                corridorBoundingBox = BoundingBox::orientBox(pos, 0, 0, 0, 3, 3, j, direction);
 
                 Piece *collidingPiece = findCollisionPiece(corridorBoundingBox);
                 if (collidingPiece == nullptr) {
@@ -107,22 +114,26 @@ namespace mineshaft_generator {
     }
 
 
-    void MineshaftGenerator::genAndAddPiece(uint64_t *rng, int x, int y, int z, DIRECTION direction, int depth) {
+    void MineshaftGenerator::genAndAddPiece(uint64_t *rng, Pos3D pos, DIRECTION direction, int depth) {
         if (depth > 8) return;
-        if (abs(x - startX) > 80 || abs(z - startZ) > 80) return;
+        if (abs(pos.getX() - startX) > 80 || abs(pos.getZ() - startZ) > 80) return;
 
-        bool validRoom = createPiece(rng, x, y, z, direction, depth + 1);
-        if(validRoom) buildComponent(pieces[piecesSize - 1], rng);
+        bool validRoom = createPiece(rng, pos, direction, depth + 1);
+        if (validRoom) buildComponent(pieces[piecesSize - 1], rng);
     }
 
 
     Piece* MineshaftGenerator::findCollisionPiece(BoundingBox &boundingBox) {
+        // return collision.findCollisionPiece(boundingBox);
+
         for (int i = 0; i < piecesSize; i++) {
+            collisionChecks++;
             if (pieces[i].intersects(boundingBox)) {
                 return &pieces[i];
             }
         }
         return nullptr;
+
     }
 
 
@@ -137,33 +148,33 @@ namespace mineshaft_generator {
                 int roomZSize = piece.getZSize();
                 for (k = 0; k < roomXSize; k += 4) {
                     k += nextInt(rng, roomXSize);
-                    if(k + 3 > roomXSize) { break; }
-                    genAndAddPiece(rng, piece.minX + k, piece.minY + nextInt(rng, j) + 1,
-                                   piece.minZ - 1, DIRECTION::NORTH, piece.depth);
+                    if(k + 3 > roomXSize) break;
+                    genAndAddPiece(rng, {piece.minX + k, piece.minY + nextInt(rng, j) + 1,
+                                   piece.minZ - 1}, DIRECTION::NORTH, piece.depth);
                 }
 
                 for (k = 0; k < roomXSize; k += 4) {
                     k += nextInt(rng, roomXSize);
-                    if(k + 3 > roomXSize) { break; }
-                    genAndAddPiece(rng, piece.minX + k,
+                    if(k + 3 > roomXSize) break;
+                    genAndAddPiece(rng, {piece.minX + k,
                                    piece.minY + nextInt(rng, j) + 1,
-                                   piece.maxZ + 1, DIRECTION::SOUTH, piece.depth);
+                                   piece.maxZ + 1}, DIRECTION::SOUTH, piece.depth);
                 }
 
                 for (k = 0; k < roomZSize; k += 4) {
                     k += nextInt(rng, roomZSize);
-                    if (k + 3 > roomZSize) { break; }
-                    genAndAddPiece(rng, piece.minX - 1,
+                    if (k + 3 > roomZSize) break;
+                    genAndAddPiece(rng, {piece.minX - 1,
                                    piece.minY + nextInt(rng, j) + 1,
-                                   piece.minZ + k, DIRECTION::WEST, piece.depth);
+                                   piece.minZ + k}, DIRECTION::WEST, piece.depth);
                 }
 
                 for (k = 0; k < roomZSize; k += 4) {
                     k += nextInt(rng, roomZSize);
-                    if (k + 3 > roomZSize) { break; }
-                    genAndAddPiece(rng, piece.maxX + 1,
+                    if (k + 3 > roomZSize) break;
+                    genAndAddPiece(rng, {piece.maxX + 1,
                                    piece.minY + nextInt(rng, j) + 1,
-                                   piece.minZ + k, DIRECTION::EAST, piece.depth);
+                                   piece.minZ + k}, DIRECTION::EAST, piece.depth);
                 }
                 return;
             }
@@ -178,13 +189,13 @@ namespace mineshaft_generator {
                             case 0:
                             case 1:
                             default:
-                                genAndAddPiece(rng, piece.minX, yState, piece.minZ - 1, piece.orientation, piece.depth);
+                                genAndAddPiece(rng, {piece.minX, yState, piece.minZ - 1}, piece.orientation, piece.depth);
                                 break;
                             case 2:
-                                genAndAddPiece(rng, piece.minX - 1, yState, piece.minZ, DIRECTION::WEST, piece.depth);
+                                genAndAddPiece(rng, {piece.minX - 1, yState, piece.minZ}, DIRECTION::WEST, piece.depth);
                                 break;
                             case 3:
-                                genAndAddPiece(rng, piece.maxX + 1, yState, piece.minZ, DIRECTION::EAST, piece.depth);
+                                genAndAddPiece(rng, {piece.maxX + 1, yState, piece.minZ}, DIRECTION::EAST, piece.depth);
                                 break;
                         }
                         break;
@@ -194,13 +205,13 @@ namespace mineshaft_generator {
                             case 0:
                             case 1:
                             default:
-                                genAndAddPiece(rng, piece.minX, yState, piece.maxZ + 1, piece.orientation, piece.depth);
+                                genAndAddPiece(rng, {piece.minX, yState, piece.maxZ + 1}, piece.orientation, piece.depth);
                                 break;
                             case 2:
-                                genAndAddPiece(rng, piece.minX - 1, yState, piece.maxZ - 3, DIRECTION::WEST, piece.depth);
+                                genAndAddPiece(rng, {piece.minX - 1, yState, piece.maxZ - 3}, DIRECTION::WEST, piece.depth);
                                 break;
                             case 3:
-                                genAndAddPiece(rng, piece.maxX + 1, yState, piece.maxZ - 3, DIRECTION::EAST, piece.depth);
+                                genAndAddPiece(rng, {piece.maxX + 1, yState, piece.maxZ - 3}, DIRECTION::EAST, piece.depth);
                                 break;
                         }
                         break;
@@ -210,13 +221,13 @@ namespace mineshaft_generator {
                             case 0:
                             case 1:
                             default:
-                                genAndAddPiece(rng, piece.minX - 1, yState, piece.minZ, piece.orientation, piece.depth);
+                                genAndAddPiece(rng, {piece.minX - 1, yState, piece.minZ}, piece.orientation, piece.depth);
                                 break;
                             case 2:
-                                genAndAddPiece(rng, piece.minX, yState, piece.minZ - 1, DIRECTION::NORTH, piece.depth);
+                                genAndAddPiece(rng, {piece.minX, yState, piece.minZ - 1}, DIRECTION::NORTH, piece.depth);
                                 break;
                             case 3:
-                                genAndAddPiece(rng, piece.minX, yState, piece.maxZ + 1, DIRECTION::SOUTH, piece.depth);
+                                genAndAddPiece(rng, {piece.minX, yState, piece.maxZ + 1}, DIRECTION::SOUTH, piece.depth);
                                 break;
                         }
                         break;
@@ -226,13 +237,13 @@ namespace mineshaft_generator {
                             case 0:
                             case 1:
                             default:
-                                genAndAddPiece(rng, piece.maxX + 1, yState, piece.minZ, piece.orientation, piece.depth);
+                                genAndAddPiece(rng, {piece.maxX + 1, yState, piece.minZ}, piece.orientation, piece.depth);
                                 break;
                             case 2:
-                                genAndAddPiece(rng, piece.maxX - 3, yState, piece.minZ - 1, DIRECTION::NORTH, piece.depth);
+                                genAndAddPiece(rng, {piece.maxX - 3, yState, piece.minZ - 1}, DIRECTION::NORTH, piece.depth);
                                 break;
                             case 3:
-                                genAndAddPiece(rng, piece.maxX - 3, yState, piece.maxZ + 1, DIRECTION::SOUTH, piece.depth);
+                                genAndAddPiece(rng, {piece.maxX - 3, yState, piece.maxZ + 1}, DIRECTION::SOUTH, piece.depth);
                                 break;
                         }
                         break;
@@ -246,10 +257,10 @@ namespace mineshaft_generator {
                         for(int k = piece.minZ + 3; k + 3 <= piece.maxZ; k += 5) {
                             int l = nextInt(rng, 5);
                             if (l == 0) {
-                                genAndAddPiece(rng, piece.minX - 1, piece.minY, k, DIRECTION::WEST, piece.depth + 1);
+                                genAndAddPiece(rng, {piece.minX - 1, piece.minY, k}, DIRECTION::WEST, piece.depth + 1);
                             }
                             else if (l == 1) {
-                                genAndAddPiece(rng, piece.maxX + 1, piece.minY, k, DIRECTION::EAST, piece.depth + 1);
+                                genAndAddPiece(rng, {piece.maxX + 1, piece.minY, k}, DIRECTION::EAST, piece.depth + 1);
                             }
                         }
                         return;
@@ -258,10 +269,10 @@ namespace mineshaft_generator {
                         for (int k = piece.minX + 3; k + 3 <= piece.maxX; k += 5) {
                             int l = nextInt(rng, 5);
                             if (l == 0) {
-                                genAndAddPiece(rng, k, piece.minY, piece.minZ - 1, DIRECTION::NORTH, piece.depth + 1);
+                                genAndAddPiece(rng, {k, piece.minY, piece.minZ - 1}, DIRECTION::NORTH, piece.depth + 1);
                             }
                             else if (l == 1) {
-                                genAndAddPiece(rng, k, piece.minY, piece.maxZ + 1, DIRECTION::SOUTH, piece.depth + 1);
+                                genAndAddPiece(rng, {k, piece.minY, piece.maxZ + 1}, DIRECTION::SOUTH, piece.depth + 1);
                             }
                         }
                         return;
@@ -273,36 +284,36 @@ namespace mineshaft_generator {
                 switch(piece.orientation) {
                     case DIRECTION::NORTH:
                     default:
-                        genAndAddPiece(rng, piece.minX + 1, piece.minY, piece.minZ - 1, DIRECTION::NORTH, piece.depth);
-                        genAndAddPiece(rng, piece.minX - 1, piece.minY, piece.minZ + 1, DIRECTION::WEST, piece.depth);
-                        genAndAddPiece(rng, piece.maxX + 1, piece.minY, piece.minZ + 1, DIRECTION::EAST, piece.depth);
+                        genAndAddPiece(rng, {piece.minX + 1, piece.minY, piece.minZ - 1}, DIRECTION::NORTH, piece.depth);
+                        genAndAddPiece(rng, {piece.minX - 1, piece.minY, piece.minZ + 1}, DIRECTION::WEST, piece.depth);
+                        genAndAddPiece(rng, {piece.maxX + 1, piece.minY, piece.minZ + 1}, DIRECTION::EAST, piece.depth);
                         break;
                     case DIRECTION::SOUTH:
-                        genAndAddPiece(rng, piece.minX + 1, piece.minY, piece.maxZ + 1, DIRECTION::SOUTH, piece.depth);
-                        genAndAddPiece(rng, piece.minX - 1, piece.minY, piece.minZ + 1, DIRECTION::WEST, piece.depth);
-                        genAndAddPiece(rng, piece.maxX + 1, piece.minY, piece.minZ + 1, DIRECTION::EAST, piece.depth);
+                        genAndAddPiece(rng, {piece.minX + 1, piece.minY, piece.maxZ + 1}, DIRECTION::SOUTH, piece.depth);
+                        genAndAddPiece(rng, {piece.minX - 1, piece.minY, piece.minZ + 1}, DIRECTION::WEST, piece.depth);
+                        genAndAddPiece(rng, {piece.maxX + 1, piece.minY, piece.minZ + 1}, DIRECTION::EAST, piece.depth);
                         break;
                     case DIRECTION::WEST:
-                        genAndAddPiece(rng, piece.minX + 1, piece.minY, piece.minZ - 1, DIRECTION::NORTH, piece.depth);
-                        genAndAddPiece(rng, piece.minX + 1, piece.minY, piece.maxZ + 1, DIRECTION::SOUTH, piece.depth);
-                        genAndAddPiece(rng, piece.minX - 1, piece.minY, piece.minZ + 1, DIRECTION::WEST, piece.depth);
+                        genAndAddPiece(rng, {piece.minX + 1, piece.minY, piece.minZ - 1}, DIRECTION::NORTH, piece.depth);
+                        genAndAddPiece(rng, {piece.minX + 1, piece.minY, piece.maxZ + 1}, DIRECTION::SOUTH, piece.depth);
+                        genAndAddPiece(rng, {piece.minX - 1, piece.minY, piece.minZ + 1}, DIRECTION::WEST, piece.depth);
                         break;
                     case DIRECTION::EAST:
-                        genAndAddPiece(rng, piece.minX + 1, piece.minY, piece.minZ - 1, DIRECTION::NORTH, piece.depth);
-                        genAndAddPiece(rng, piece.minX + 1, piece.minY, piece.maxZ + 1, DIRECTION::SOUTH, piece.depth);
-                        genAndAddPiece(rng, piece.maxX + 1, piece.minY, piece.minZ + 1, DIRECTION::EAST, piece.depth);
+                        genAndAddPiece(rng, {piece.minX + 1, piece.minY, piece.minZ - 1}, DIRECTION::NORTH, piece.depth);
+                        genAndAddPiece(rng, {piece.minX + 1, piece.minY, piece.maxZ + 1}, DIRECTION::SOUTH, piece.depth);
+                        genAndAddPiece(rng, {piece.maxX + 1, piece.minY, piece.minZ + 1}, DIRECTION::EAST, piece.depth);
                         break;
                 }
 
                 if (piece.additionalData) {
                     if(nextBoolean(rng))
-                        genAndAddPiece(rng, piece.minX + 1, piece.minY + 4, piece.minZ - 1, DIRECTION::NORTH, piece.depth);
+                        genAndAddPiece(rng, {piece.minX + 1, piece.minY + 4, piece.minZ - 1}, DIRECTION::NORTH, piece.depth);
                     if(nextBoolean(rng))
-                        genAndAddPiece(rng, piece.minX - 1, piece.minY + 4, piece.minZ + 1, DIRECTION::WEST, piece.depth);
+                        genAndAddPiece(rng, {piece.minX - 1, piece.minY + 4, piece.minZ + 1}, DIRECTION::WEST, piece.depth);
                     if(nextBoolean(rng))
-                        genAndAddPiece(rng, piece.maxX + 1, piece.minY + 4, piece.minZ + 1, DIRECTION::EAST, piece.depth);
+                        genAndAddPiece(rng, {piece.maxX + 1, piece.minY + 4, piece.minZ + 1}, DIRECTION::EAST, piece.depth);
                     if(nextBoolean(rng))
-                        genAndAddPiece(rng, piece.minX + 1, piece.minY + 4, piece.maxZ + 1, DIRECTION::SOUTH, piece.depth);
+                        genAndAddPiece(rng, {piece.minX + 1, piece.minY + 4, piece.maxZ + 1}, DIRECTION::SOUTH, piece.depth);
                 }
                 return;
             }
@@ -311,16 +322,16 @@ namespace mineshaft_generator {
                 switch(piece.orientation) {
                     case DIRECTION::NORTH:
                     default:
-                        genAndAddPiece(rng, piece.minX, piece.minY, piece.minZ - 1, DIRECTION::NORTH, piece.depth);
+                        genAndAddPiece(rng, {piece.minX, piece.minY, piece.minZ - 1}, DIRECTION::NORTH, piece.depth);
                         return;
                     case DIRECTION::SOUTH:
-                        genAndAddPiece(rng, piece.minX, piece.minY, piece.maxZ + 1, DIRECTION::SOUTH, piece.depth);
+                        genAndAddPiece(rng, {piece.minX, piece.minY, piece.maxZ + 1}, DIRECTION::SOUTH, piece.depth);
                         return;
                     case DIRECTION::WEST:
-                        genAndAddPiece(rng, piece.minX - 1, piece.minY, piece.minZ, DIRECTION::WEST, piece.depth);
+                        genAndAddPiece(rng, {piece.minX - 1, piece.minY, piece.minZ}, DIRECTION::WEST, piece.depth);
                         return;
                     case DIRECTION::EAST:
-                        genAndAddPiece(rng, piece.maxX + 1, piece.minY, piece.minZ, DIRECTION::EAST, piece.depth);
+                        genAndAddPiece(rng, {piece.maxX + 1, piece.minY, piece.minZ}, DIRECTION::EAST, piece.depth);
                         return;
                 }
             }

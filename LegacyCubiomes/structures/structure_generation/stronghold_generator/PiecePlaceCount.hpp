@@ -12,13 +12,17 @@ namespace stronghold_generator {
         PieceType pieceType;
         int placeCount;
 
+        ND const PieceWeight* getPieceWeightFromType() const {
+            return &PieceWeight::PIECE_WEIGHTS[static_cast<int>(pieceType)];
+        }
+
         ND bool isValid() const {
-            int maxPlaceCount = PieceWeight::PIECE_WEIGHTS[static_cast<int>(pieceType)].maxPlaceCount;
+            int maxPlaceCount = getPieceWeightFromType()->maxPlaceCount;
             return maxPlaceCount == 0 || placeCount < maxPlaceCount;
         }
 
         ND bool canPlace(int depth) const {
-            return isValid() && depth >= PieceWeight::PIECE_WEIGHTS[static_cast<int>(pieceType)].minDepth;
+            return isValid() && depth >= getPieceWeightFromType()->minDepth;
         }
     };
 

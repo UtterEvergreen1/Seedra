@@ -1,4 +1,3 @@
-#include <climits>
 
 #include "BoundingBox.hpp"
 
@@ -96,6 +95,19 @@ BoundingBox BoundingBox::orientBox(int x, int y, int z,
                     y + height - 1 + offsetHeight,
                     z + width - 1 + offsetWidth};
     }
+}
+
+
+BoundingBox BoundingBox::orientBox(Pos3D posXYZ, Pos3D posOffset, Pos3D size, DIRECTION direction) {
+    return orientBox(posXYZ.getX(), posXYZ.getY(), posXYZ.getZ(),
+                     posOffset.getX(), posOffset.getY(), posOffset.getZ(),
+                     size.getX(), size.getY(), size.getZ(), direction);
+}
+
+BoundingBox BoundingBox::orientBox(Pos3D posXYZ, int offsetWidth, int offsetHeight, int offsetDepth,
+                                   int width, int height, int depth, DIRECTION direction) {
+    return orientBox(posXYZ.getX(), posXYZ.getY(), posXYZ.getZ(), offsetWidth, offsetHeight, offsetDepth,
+                     width, height, depth, direction);
 }
 
 
