@@ -1,7 +1,7 @@
 #pragma once
 
 #include "base_rolls.hpp"
-#include "LegacyCubiomes/structures/structure_generation/stronghold_generator/GenStronghold.hpp"
+#include "LegacyCubiomes/structures/generation/stronghold/GenStronghold.hpp"
 
 using namespace stronghold_generator;
 
@@ -19,8 +19,8 @@ namespace structure_rolls {
                                             uint64_t *rng, int chestX, int chestY, int chestZ) {
         int chunkX = chestX >> 4;
         int chunkZ = chestZ >> 4;
-        for (int pieceIndex = 0; pieceIndex < strongholdGenerator->piecesSize; ++pieceIndex) {
-            const Piece &piece = strongholdGenerator->pieces[pieceIndex];
+        for (int pieceIndex = 0; pieceIndex < strongholdGenerator->pieceArraySize; ++pieceIndex) {
+            const Piece &piece = strongholdGenerator->pieceArray[pieceIndex];
             if (piece.type == PieceType::NONE) continue;
             const BoundingBox chunkBoundingBox = BoundingBox((chunkX << 4), 0, (chunkZ << 4), (chunkX << 4) + 15, 255, (chunkZ << 4) + 15);
             const BoundingBox& pieceBoundingBox = piece;

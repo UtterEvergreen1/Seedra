@@ -1,8 +1,9 @@
 #pragma once
 
 #include "LegacyCubiomes/loot/classes/Loot.hpp"
+#include "LegacyCubiomes/enchants/enchantmentHelper.hpp"
 
-#include "LegacyCubiomes/structures/structure_generation/mineshaft_generator/GenMineshaft.hpp"
+#include "LegacyCubiomes/structures/generation/mineshaft/GenMineshaft.hpp"
 
 using mineshaft_generator::MineshaftGenerator;
 

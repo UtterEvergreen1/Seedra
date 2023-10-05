@@ -103,11 +103,11 @@ namespace loot_tables {
     template<bool checkCaves, bool shuffle>
     std::vector<Container> StrongholdCorridor<isAquatic>::getAllAltarChestLoot(const Generator& g,
                                    StrongholdGenerator* strongholdGenerator) {
-        std::vector<Container> altarChests(strongholdGenerator->numAltarChests);
-        for (int altarChestIndex = 0; altarChestIndex < strongholdGenerator->numAltarChests; altarChestIndex++)
+        std::vector<Container> altarChests(strongholdGenerator->altarChestArraySize);
+        for (int altarChestIndex = 0; altarChestIndex < strongholdGenerator->altarChestArraySize; altarChestIndex++)
             altarChests[altarChestIndex] = StrongholdCorridor<isAquatic>
                                            ::template getAltarChestLoot<checkCaves, shuffle>(g,
-                                                                                             strongholdGenerator->altarChests[altarChestIndex],
+                                                                                             strongholdGenerator->altarChestsArray[altarChestIndex],
                                                                                              strongholdGenerator);
 
         return altarChests;

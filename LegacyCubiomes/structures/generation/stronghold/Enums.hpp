@@ -3,14 +3,17 @@
 #include <map>
 #include <string>
 
+#include "LegacyCubiomes/building_blocks/PieceWeight.hpp"
+
 namespace stronghold_generator {
+
     enum class GenerationStep {
         PORTAL, // Generates the layout up to the portal room, Y level will be inaccurate
         LAYOUT, // Generates full layout, Y level will be inaccurate
         FULL,   // Generates full layout and calculates Y level for all pieces
     };
 
-    enum class PieceType {
+    enum PieceType {
         STRAIGHT = 0,
         PRISON_HALL = 1,
         LEFT_TURN = 2,
@@ -25,6 +28,7 @@ namespace stronghold_generator {
         FILLER_CORRIDOR = 11,
         NONE,
     };
+
 
     const std::map<PieceType, std::string> PieceTypeName = {
             { PieceType::STRAIGHT, "STRAIGHT" },
@@ -41,4 +45,6 @@ namespace stronghold_generator {
             { PieceType::FILLER_CORRIDOR, "FILLER_CORRIDOR" },
             { PieceType::NONE, "NONE -> something went wrong" }
     };
+
+
 }

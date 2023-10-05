@@ -1,32 +1,47 @@
 #pragma once
 
-#include "Enums.hpp"
-#include "PieceWeight.hpp"
+
 
 #include "LegacyCubiomes/cubiomes/processor.hpp"
 
 namespace stronghold_generator {
+
+    inline const PieceWeight PIECE_WEIGHTS[] = {
+            { 40, 0, 0 },
+            {  5, 5, 0 },
+            { 20, 0, 0 },
+            { 20, 0, 0 },
+            { 10, 6, 0 },
+            {  5, 5, 0 },
+            {  5, 5, 0 },
+            {  5, 4, 0 },
+            {  5, 4, 0 },
+            { 10, 2, 5 },
+            { 20, 1, 6 },
+    };
+
+
     struct PiecePlaceCount {
-        static const PiecePlaceCount DEFAULT[11];
+
 
         PieceType pieceType;
         int placeCount;
 
-        ND const PieceWeight* getPieceWeightFromType() const {
-            return &PieceWeight::PIECE_WEIGHTS[static_cast<int>(pieceType)];
+        ND static const PieceWeight* get(PieceType pieceType) {
+            return &PIECE_WEIGHTS[pieceType];
         }
 
         ND bool isValid() const {
-            int maxPlaceCount = getPieceWeightFromType()->maxPlaceCount;
+            int maxPlaceCount = PIECE_WEIGHTS[pieceType].maxPlaceCount;
             return maxPlaceCount == 0 || placeCount < maxPlaceCount;
         }
 
         ND bool canPlace(int depth) const {
-            return isValid() && depth >= getPieceWeightFromType()->minDepth;
+            return isValid() && depth >= PIECE_WEIGHTS[pieceType].minDepth;
         }
     };
 
-    inline const PiecePlaceCount PiecePlaceCount::DEFAULT[] = {
+    inline const PiecePlaceCount PIECE_PLACE_COUNT_DEFAULT[11] = {
             { PieceType::STRAIGHT            , 0},
             { PieceType::PRISON_HALL         , 0},
             { PieceType::LEFT_TURN           , 0},

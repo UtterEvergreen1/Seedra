@@ -72,7 +72,7 @@ namespace stronghold_generator {
 
     void StrongholdGenerator::resetPieces() {
         for (int i = 0; i < 11; i++) {
-            piecePlaceCounts[i] = PiecePlaceCount::DEFAULT[i];
+            piecePlaceCounts[i] = PIECE_PLACE_COUNT_DEFAULT[i];
         }
         generationStopped = false;
         forcedPiece = PieceType::NONE;
@@ -100,7 +100,7 @@ namespace stronghold_generator {
         previousPiece = piecePlaceCount.pieceType;
         if (piecePlaceCount.isValid()) return;
 
-        totalWeight -= PieceWeight::getWeight(piecePlaceCount.pieceType);
+        totalWeight -= PiecePlaceCount::get(piecePlaceCount.pieceType)->getWeight();
 
         piecePlaceCountsSize--;
         for (int i = piecePlaceCountIndex; i < piecePlaceCountsSize; i++) {
@@ -110,7 +110,7 @@ namespace stronghold_generator {
         // function originally called "updatePieceWeight"
         for (int index = 0; index < piecePlaceCountsSize; index++) {
             PiecePlaceCount ppc = piecePlaceCounts[index];
-            PieceWeight pieceWeight = PieceWeight::PIECE_WEIGHTS[static_cast<int>(ppc.pieceType)];
+            PieceWeight pieceWeight = PIECE_WEIGHTS[static_cast<int>(ppc.pieceType)];
             if (pieceWeight.maxPlaceCount > 0 && ppc.placeCount < pieceWeight.maxPlaceCount) return;
         }
 
@@ -242,7 +242,7 @@ namespace stronghold_generator {
             for (int index = 0; index < piecePlaceCountsSize; index++) {
                 PiecePlaceCount &piecePlaceCount = piecePlaceCounts[index];
                 PieceType pieceType = piecePlaceCount.pieceType;
-                int weight = PieceWeight::getWeight(pieceType);
+                int weight = PiecePlaceCount::get(pieceType)->getWeight();
 
                 if ((selectedWeight -= weight) >= 0) continue;
                 if (!piecePlaceCount.canPlace(depth) || pieceType == previousPiece) break;

@@ -1,9 +1,8 @@
 #pragma once
 
 #include "Enums.hpp"
-#include "PieceWeight.hpp"
-#include "PiecePlaceCount.hpp"
 #include "Piece.hpp"
+#include "PiecePlaceCount.hpp"
 
 namespace stronghold_generator {
     class StrongholdGenerator {

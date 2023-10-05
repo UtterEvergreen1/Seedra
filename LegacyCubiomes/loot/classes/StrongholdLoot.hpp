@@ -3,7 +3,7 @@
 #include "Loot.hpp"
 
 
-#include "LegacyCubiomes/structures/structure_rolls/stronghold_rolls.hpp"
+#include "LegacyCubiomes/structures/rolls/stronghold_rolls.hpp"
 #include "LegacyCubiomes/chunk_generator/Chunk.hpp"
 
 using stronghold_generator::StrongholdGenerator;
