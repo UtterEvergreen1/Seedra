@@ -10,15 +10,18 @@
 #include "LegacyCubiomes/utils/pos2D.hpp"
 #include "LegacyCubiomes/utils/pos3D.hpp"
 
-class ChunkPrimer
-{
+class ChunkPrimer {
 public:
-    uint16_t blocks[65536]; // all the blocks along with data in the chunk
+    /// all the blocks along with data in the chunk
+    uint16_t blocks[65536]{};
     std::vector<uint8_t> skyLight;
     std::vector<int> precipitationHeightMap = std::vector<int>(256, -999);
-    ChunkPrimer() {}
+
+    ChunkPrimer() = default;
+
     /// do not allow copy
     ChunkPrimer(const ChunkPrimer &) = delete;
+
     ChunkPrimer &operator=(const ChunkPrimer &) = delete;
 
     ///do not allow move
@@ -28,45 +31,43 @@ public:
     inline uint16_t getBlockAtIndex(int64_t index) {
         return index >= 0 && index < 65536 ? blocks[index] : 0;
     }
+
     uint16_t getBlock(int64_t x, int64_t y, int64_t z) {
         return getBlockAtIndex(getStorageIndex(x, y, z)) >> 4;
     }
-    void setBlock(int64_t x, int64_t y, int64_t z, uint16_t block)
-    {
+
+    void setBlock(int64_t x, int64_t y, int64_t z, uint16_t block) {
         this->blocks[getStorageIndex(x, y, z)] = block << 4;
     }
 
-    uint16_t getData(int64_t x, int64_t y, int64_t z)
-    {
+    uint16_t getData(int64_t x, int64_t y, int64_t z) {
         return getBlockAtIndex(getStorageIndex(x, y, z)) & 15;
     }
-    void setData(int64_t x, int64_t y, int64_t z, uint8_t data)
-    {
+
+    void setData(int64_t x, int64_t y, int64_t z, uint8_t data) {
         this->blocks[getStorageIndex(x, y, z)] |= data;
     }
 
     uint16_t getSkyLight(int64_t x, int64_t y, int64_t z) {
         return getBlockAtIndex(getStorageIndex(x, y, z));
     }
-    void setSkyLight(int64_t x, int64_t y, int64_t z, uint8_t lightValue)
-    {
+
+    void setSkyLight(int64_t x, int64_t y, int64_t z, uint8_t lightValue) {
         this->skyLight[getStorageIndex(x, y, z)] = lightValue;
     }
 
-    void setBlockAndData(int64_t x, int64_t y, int64_t z, uint16_t block, uint8_t data)
-    {
+    void setBlockAndData(int64_t x, int64_t y, int64_t z, uint16_t block, uint8_t data) {
         this->blocks[getStorageIndex(x, y, z)] = ((block << 4) | data);
     }
 
-    void setBlockAndData(int64_t x, int64_t y, int64_t z, const Items::Item& item)
-    {
+    void setBlockAndData(int64_t x, int64_t y, int64_t z, const Items::Item &item) {
         this->blocks[getStorageIndex(x, y, z)] = ((item.getID() << 4) | item.getDataTag());
     }
 
-    friend std::ostream &operator<<(std::ostream &out, const ChunkPrimer& chunkPrimer) {
+    friend std::ostream &operator<<(std::ostream &out, const ChunkPrimer &chunkPrimer) {
         int block;
-        for (int ii = 0; ii < 65536; ++ii) {
-            block = chunkPrimer.blocks[ii];
+        for (unsigned short ii : chunkPrimer.blocks) {
+            block = ii;
             out << std::hex << std::setw(2) << std::setfill('0') << (block & 0xff);
             out << std::hex << std::setw(2) << std::setfill('0') << (block >> 8);
         }
@@ -87,15 +88,14 @@ public:
         return 0;
     }
 
-    static inline int64_t getStorageIndex(int64_t x, int64_t y, int64_t z)
-    {
+    static inline int64_t getStorageIndex(int64_t x, int64_t y, int64_t z) {
         int64_t value = (x << 12) | (z << 8) | y;
         return value;
     }
 
     ///TODO add all the blocks or make a block class and get the value from that
     static int getBlockLightOpacity(uint16_t blockId) {
-        switch(blockId){
+        switch (blockId) {
             case 0:
             case 78:
             case 171:
@@ -139,19 +139,16 @@ public:
         }
     }
 
-    int getPrecipitationHeight(int x, int z)
-    {
+    int getPrecipitationHeight(int x, int z) {
         int i = x & 15;
         int j = z & 15;
         int k = i | j << 4;
 
-        if (precipitationHeightMap[k] == -999)
-        {
+        if (precipitationHeightMap[k] == -999) {
             int highestY = getHighestYChunk() + 15;
             int i1 = -1;
 
-            while (highestY > 0 && i1 == -1)
-            {
+            while (highestY > 0 && i1 == -1) {
                 if (!getBlock(i, highestY, j))
                     i1 = highestY + 1;
                 else
@@ -163,22 +160,19 @@ public:
         return precipitationHeightMap[k];
     }
 
-    bool canBlockFreeze(const Generator& g, Pos3D pos, bool noWaterAdj){
-        Biome* biome = Biome::getBiomeForId(g.getBiomeAt(1, pos.getX(), pos.getZ()));
+    bool canBlockFreeze(const Generator &g, Pos3D pos, bool noWaterAdj) {
+        Biome *biome = Biome::getBiomeForId(g.getBiomeAt(1, pos.getX(), pos.getZ()));
         float f = biome->getFloatTemperature(pos);
         if (f >= 0.15F)
             return false;
-        else
-        {
-            if (pos.getY() >= 0 && pos.getY() < 256)
-            {
+        else {
+            if (pos.getY() >= 0 && pos.getY() < 256) {
                 int x = pos.getX() & 15;
                 int z = pos.getZ() & 15;
-                uint16_t iblockstate = getBlock(x, pos.getY(), z);
-                uint16_t block = iblockstate;
+                uint16_t iBlockState = getBlock(x, pos.getY(), z);
+                uint16_t block = iBlockState;
 
-                if ((block == 8 || block == 9))
-                {
+                if ((block == 8 || block == 9)) {
                     if (!noWaterAdj)
                         return true;
 
@@ -197,20 +191,18 @@ public:
         }
     }
 
-    bool canSnowAt(const Generator& g, Pos3D pos, bool checkLight){
-        Biome* biome = Biome::getBiomeForId(g.getBiomeAt(1, pos.getX(), pos.getZ()));
+    bool canSnowAt(const Generator &g, Pos3D pos, bool checkLight) {
+        Biome *biome = Biome::getBiomeForId(g.getBiomeAt(1, pos.getX(), pos.getZ()));
         float temp = biome->getFloatTemperature(pos);
         if (temp >= 0.15F)
             return false;
         else if (!checkLight)
             return true;
-        else
-        {
+        else {
             // needs to check block light later on to replace a perfect chunk
-            if (pos.getY() >= 0 && pos.getY() < 256 /* && this.getLightFor(EnumSkyBlock.BLOCK, pos) < 10*/)
-            {
-                uint16_t iblockstate = getBlock(pos.getX(), pos.getY(), pos.getZ());
-                if (!iblockstate)
+            if (pos.getY() >= 0 && pos.getY() < 256 /* && this.getLightFor(EnumSkyBlock.BLOCK, pos) < 10*/) {
+                uint16_t iBlockState = getBlock(pos.getX(), pos.getY(), pos.getZ());
+                if (!iBlockState)
                     return true;
             }
             return false;
