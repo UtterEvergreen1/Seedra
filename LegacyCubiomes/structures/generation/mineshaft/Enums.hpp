@@ -7,7 +7,7 @@
 
 namespace mineshaft_generator {
 
-    enum class PieceType {
+    enum PieceType {
         ROOM = 0,
         CORRIDOR = 1,
         CROSSING = 2,

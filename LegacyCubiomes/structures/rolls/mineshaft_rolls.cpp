@@ -4,8 +4,8 @@
 namespace structure_rolls {
 
     void MineshaftRolls::generateStructure(MineshaftGenerator* mineshaftGenerator, ChunkPrimer *chunk, uint64_t *random, int chunkX, int chunkZ) {
-        for (int pieceIndex = 0; pieceIndex < mineshaftGenerator->piecesSize; ++pieceIndex) {
-            const mineshaft_generator::Piece &piece = mineshaftGenerator->pieces[pieceIndex];
+        for (int pieceIndex = 0; pieceIndex < mineshaftGenerator->pieceArraySize; ++pieceIndex) {
+            const mineshaft_generator::Piece &piece = mineshaftGenerator->pieceArray[pieceIndex];
             if (piece.type != mineshaft_generator::PieceType::NONE) {
                 const BoundingBox chunkBoundingBox = BoundingBox((chunkX << 4), 0, (chunkZ << 4), (chunkX << 4) + 15, 255, (chunkZ << 4) + 15);
                 const BoundingBox& pieceBoundingBox = piece;
