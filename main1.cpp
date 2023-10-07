@@ -1,12 +1,12 @@
 
-#include <iostream>
-#include <vector>
 #include <fstream>
 // #include "LegacyCubiomes/structures/generation/stronghold/GenStronghold.hpp"
+// #include "LegacyCubiomes/loot/stronghold_corridor.hpp"
+#include <iostream>
+#include <vector>
 #include "LegacyCubiomes/structures/generation/mineshaft/GenMineshaft.hpp"
 #include "LegacyCubiomes/enchants/enchantmentHelper.hpp"
 #include "LegacyCubiomes/cubiomes/generator.hpp"
-// #include "LegacyCubiomes/loot/stronghold_corridor.hpp"
 #include "LegacyCubiomes/chunk_generator/biome.hpp"
 
 

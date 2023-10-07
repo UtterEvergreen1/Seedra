@@ -1,8 +1,9 @@
 #pragma once
 
 #include "Enums.hpp"
-#include "Piece.hpp"
 #include "PiecePlaceCount.hpp"
+#include "LegacyCubiomes/building_blocks/Piece.hpp"
+
 
 namespace stronghold_generator {
     class StrongholdGenerator {

@@ -25,7 +25,7 @@ namespace stronghold_generator {
 
             // creates starting staircase
             DIRECTION direction = HORIZONTAL[nextInt(&random, 4)];
-            BoundingBox stairsBoundingBox = BasePiece::makeBoundingBox(startX, 64, startZ, direction, 5, 11, 5);
+            BoundingBox stairsBoundingBox = Piece::makeBoundingBox(startX, 64, startZ, direction, 5, 11, 5);
             Piece startPiece = Piece(PieceType::STAIRS_DOWN, 0, stairsBoundingBox, direction, 1);
             pieceArray[pieceArraySize++] = startPiece;
 

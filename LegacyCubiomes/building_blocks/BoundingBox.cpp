@@ -61,6 +61,25 @@ BoundingBox BoundingBox::orientBox(int x, int y, int z, int width, int height, i
 }
 
 
+BoundingBox BoundingBox::orientBox(Pos3D xyz, int width, int height, int depth, DIRECTION direction) {
+    switch (direction) {
+        case DIRECTION::NORTH:
+            return {xyz.getX(), xyz.getY(), xyz.getZ() - depth + 1,
+                    xyz.getX() + width - 1, xyz.getY() + height - 1, xyz.getZ()};
+        case DIRECTION::SOUTH:
+            return {xyz.getX(), xyz.getY(), xyz.getZ(),
+                    xyz.getX() + width - 1, xyz.getY() + height - 1, xyz.getZ() + depth - 1};
+        case DIRECTION::WEST:
+            return {xyz.getX() - depth + 1, xyz.getY(), xyz.getZ(),
+                    xyz.getX(), xyz.getY() + height - 1, xyz.getZ() + width - 1};
+        default:
+        case DIRECTION::EAST:
+            return {xyz.getX(), xyz.getY(), xyz.getZ(),
+                    xyz.getX() + depth - 1, xyz.getY() + height - 1, xyz.getZ() + width - 1};
+    }
+}
+
+
 BoundingBox BoundingBox::orientBox(int x, int y, int z,
                                    int offsetWidth, int offsetHeight, int offsetDepth,
                                    int width, int height, int depth, DIRECTION direction) {

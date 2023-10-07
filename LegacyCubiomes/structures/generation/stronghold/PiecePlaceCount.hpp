@@ -1,7 +1,6 @@
 #pragma once
 
 
-
 #include "LegacyCubiomes/cubiomes/processor.hpp"
 #include "LegacyCubiomes/building_blocks/PieceWeight.hpp"
 

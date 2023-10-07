@@ -1,7 +1,11 @@
 #pragma once
 
+#include <cmath>
+
 #include "Enums.hpp"
-#include "Piece.hpp"
+#include "LegacyCubiomes/building_blocks/Piece.hpp"
+#include "LegacyCubiomes/cubiomes/rng.hpp"
+
 
 namespace mineshaft_generator {
 

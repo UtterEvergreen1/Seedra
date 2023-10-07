@@ -1,22 +1,8 @@
-#include "BasePiece.hpp"
+#include "Piece.hpp"
 
 
-BasePiece::BasePiece()
-        : BoundingBox(0, 0, 0, 0, 0, 0), orientation(DIRECTION::NORTH) {
-}
 
-
-BasePiece::BasePiece(BoundingBox boundingBox, DIRECTION orientation)
-        : BoundingBox(boundingBox), orientation(DIRECTION::NORTH) {
-}
-
-
-BasePiece::BasePiece(int minX, int minY, int minZ, int maxX, int maxY, int maxZ, DIRECTION orientation)
-        : BoundingBox(minX, minY, minZ, maxX, maxY, maxZ), orientation(orientation) {
-}
-
-
-Pos2D BasePiece::getBoundingBoxCenter() const {
+Pos2D Piece::getBoundingBoxCenter() const {
     Pos2D pos{};
     pos.x = minX + maxX / 2;
     pos.z = minZ + maxZ / 2;
@@ -24,7 +10,7 @@ Pos2D BasePiece::getBoundingBoxCenter() const {
 }
 
 
-int BasePiece::getWorldX(int offsetWidth, int offsetDepth) const {
+int Piece::getWorldX(int offsetWidth, int offsetDepth) const {
     switch (orientation) {
         case DIRECTION::NORTH:
         case DIRECTION::SOUTH:
@@ -38,7 +24,7 @@ int BasePiece::getWorldX(int offsetWidth, int offsetDepth) const {
 }
 
 
-int BasePiece::getWorldZ(int offsetWidth, int offsetDepth) const {
+int Piece::getWorldZ(int offsetWidth, int offsetDepth) const {
     switch (orientation) {
         case DIRECTION::NORTH:
             return maxZ - offsetDepth;
@@ -52,14 +38,14 @@ int BasePiece::getWorldZ(int offsetWidth, int offsetDepth) const {
 }
 
 
-Pos2D BasePiece::getWorldPos(int offsetWidth, int offsetDepth) const {
+Pos2D Piece::getWorldPos(int offsetWidth, int offsetDepth) const {
     return {getWorldX(offsetWidth, offsetDepth), getWorldZ(offsetWidth, offsetDepth)};
 }
 
 
-BoundingBox BasePiece::makeBoundingBox(int x, int y, int z,
-                                                        DIRECTION direction,
-                                                        int width, int height, int depth) {
+BoundingBox Piece::makeBoundingBox(int x, int y, int z,
+                                   DIRECTION direction,
+                                   int width, int height, int depth) {
     if (direction == DIRECTION::NORTH || direction == DIRECTION::SOUTH) {
         return {x, y, z, x + width - 1, y + height - 1, z + depth - 1};
     } else {

@@ -14,23 +14,24 @@ namespace stronghold_generator {
     };
 
     enum PieceType {
-        STRAIGHT = 0,
-        PRISON_HALL = 1,
-        LEFT_TURN = 2,
-        RIGHT_TURN = 3,
-        ROOM_CROSSING = 4,
-        STRAIGHT_STAIRS_DOWN = 5,
-        STAIRS_DOWN = 6,
-        FIVE_CROSSING = 7,
-        CHEST_CORRIDOR = 8,
-        LIBRARY = 9,
-        PORTAL_ROOM = 10,
-        FILLER_CORRIDOR = 11,
         NONE,
+        STRAIGHT,
+        PRISON_HALL,
+        LEFT_TURN,
+        RIGHT_TURN,
+        ROOM_CROSSING,
+        STRAIGHT_STAIRS_DOWN,
+        STAIRS_DOWN,
+        FIVE_CROSSING,
+        CHEST_CORRIDOR,
+        LIBRARY,
+        PORTAL_ROOM,
+        FILLER_CORRIDOR,
     };
 
 
     const std::map<PieceType, std::string> PieceTypeName = {
+            { PieceType::NONE, "NONE -> something went wrong" },
             { PieceType::STRAIGHT, "STRAIGHT" },
             { PieceType::PRISON_HALL, "PRISON_HALL" },
             { PieceType::LEFT_TURN, "LEFT_TURN" },
@@ -42,8 +43,7 @@ namespace stronghold_generator {
             { PieceType::CHEST_CORRIDOR, "CHEST_CORRIDOR" },
             { PieceType::LIBRARY, "LIBRARY" },
             { PieceType::PORTAL_ROOM, "PORTAL_ROOM" },
-            { PieceType::FILLER_CORRIDOR, "FILLER_CORRIDOR" },
-            { PieceType::NONE, "NONE -> something went wrong" }
+            { PieceType::FILLER_CORRIDOR, "FILLER_CORRIDOR" }
     };
 
 

@@ -1,11 +1,12 @@
 #include "mineshaft_rolls.hpp"
 
 
+
 namespace structure_rolls {
 
     void MineshaftRolls::generateStructure(MineshaftGenerator* mineshaftGenerator, ChunkPrimer *chunk, uint64_t *random, int chunkX, int chunkZ) {
         for (int pieceIndex = 0; pieceIndex < mineshaftGenerator->pieceArraySize; ++pieceIndex) {
-            const mineshaft_generator::Piece &piece = mineshaftGenerator->pieceArray[pieceIndex];
+            const Piece &piece = mineshaftGenerator->pieceArray[pieceIndex];
             if (piece.type != mineshaft_generator::PieceType::NONE) {
                 const BoundingBox chunkBoundingBox = BoundingBox((chunkX << 4), 0, (chunkZ << 4), (chunkX << 4) + 15, 255, (chunkZ << 4) + 15);
                 const BoundingBox& pieceBoundingBox = piece;
@@ -124,7 +125,7 @@ namespace structure_rolls {
 
 
     // TODO: generate legacy chest where the loot is generated with the seed and doesn't use the loot table seed
-    void MineshaftRolls::generateChest(ChunkPrimer* chunk, const BoundingBox &chunkBoundingBox, const BasePiece &piece, uint64_t *random, int x, int y, int z) {
+    void MineshaftRolls::generateChest(ChunkPrimer* chunk, const BoundingBox &chunkBoundingBox, const Piece &piece, uint64_t *random, int x, int y, int z) {
         int xPos = piece.getWorldX(x, z);
         int yPos = piece.getWorldY(y);
         int zPos = piece.getWorldZ(x, z);
@@ -135,7 +136,7 @@ namespace structure_rolls {
     }
 
 
-    void MineshaftRolls::placeCobWeb(ChunkPrimer* chunk, const BoundingBox &chunkBoundingBox, const BasePiece &piece, uint64_t *random, int x, int z) {
+    void MineshaftRolls::placeCobWeb(ChunkPrimer* chunk, const BoundingBox &chunkBoundingBox, const Piece &piece, uint64_t *random, int x, int z) {
         int xPos = piece.getWorldX(x, z);
         int yPos = piece.getWorldY(2);
         int zPos = piece.getWorldZ(x, z);

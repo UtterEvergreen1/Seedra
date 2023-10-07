@@ -15,7 +15,7 @@ namespace loot_tables {
         static Container getLootFromLootTableSeed(uint64_t* lootTableSeed);
 
         template<bool checkCaves, bool shuffle>
-        ND static Container getAltarChestLoot(const Generator& g, BasePiece* altarChestPiece, StrongholdGenerator* strongholdGenerator);
+        ND static Container getAltarChestLoot(const Generator& g, Piece* altarChestPiece, StrongholdGenerator* strongholdGenerator);
 
         template<bool checkCaves, bool shuffle>
         ND static std::vector<Container> getAllAltarChestLoot(const Generator& g, StrongholdGenerator* strongholdGenerator);
@@ -88,8 +88,8 @@ namespace loot_tables {
     template<bool isAquatic>
     template<bool checkCaves, bool shuffle>
     Container StrongholdCorridor<isAquatic>::getAltarChestLoot(const Generator& g,
-               BasePiece* altarChestPiece,
-               StrongholdGenerator* strongholdGenerator) {
+                                                               Piece* altarChestPiece,
+                                                               StrongholdGenerator* strongholdGenerator) {
         uint64_t lootSeed = StrongholdLoot<StrongholdCorridor<isAquatic>>::template getLootSeed<checkCaves>(g,
                                                                                                             altarChestPiece->getWorldX(3, 3),
                                                                                                             altarChestPiece->getWorldY(2),

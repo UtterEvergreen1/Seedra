@@ -8,6 +8,7 @@
 namespace netherbridge_generator {
 
     enum PieceType {
+        NONE,
         CROSSING3,
         END,
         STRAIGHT,
@@ -23,11 +24,11 @@ namespace netherbridge_generator {
         CROSSING,
         STAIRS,
         START,
-        NONE
     };
 
 
     const std::map<PieceType, std::string> PieceTypeName = {
+            {NONE, "NONE -> something went wrong"},
             {CROSSING3, "CROSSING3"},
             {END, "END"},
             {STRAIGHT, "STRAIGHT"},
@@ -43,6 +44,5 @@ namespace netherbridge_generator {
             {CROSSING, "CROSSING"},
             {STAIRS, "STAIRS"},
             {START, "START"},
-            {NONE, "NONE -> something went wrong"},
     };
 }

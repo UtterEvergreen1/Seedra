@@ -1,7 +1,4 @@
-#include <cmath>
-
 #include "GenMineshaft.hpp"
-#include "LegacyCubiomes/cubiomes/rng.hpp"
 
 
 namespace mineshaft_generator {

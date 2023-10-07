@@ -1,6 +1,6 @@
 #include "base_rolls.hpp"
 
-#include "LegacyCubiomes/building_blocks/BasePiece.hpp"
+#include "LegacyCubiomes/building_blocks/Piece.hpp"
 #include "LegacyCubiomes/building_blocks/BoundingBox.hpp"
 #include "LegacyCubiomes/chunk_generator/ChunkPrimer.hpp"
 
@@ -76,7 +76,7 @@ namespace structure_rolls {
     }
 
 
-    void BaseRolls::fillWithRandomizedBlocks(const BoundingBox &chunkBoundingBox, const BasePiece &piece, int minX, int minY,
+    void BaseRolls::fillWithRandomizedBlocks(const BoundingBox &chunkBoundingBox, const Piece &piece, int minX, int minY,
                                              int minZ, int maxX, int maxY, int maxZ, uint64_t *random, ChunkPrimer *chunk) {
         int worldX;
         int worldY;
@@ -99,7 +99,7 @@ namespace structure_rolls {
 
 
     // TODO: generate legacy chest where the loot is generated with the seed and doesn't use the loot table seed
-    void BaseRolls::generateChest(const BoundingBox &chunkBoundingBox, const BasePiece &piece, uint64_t *random, int x, int y, int z) {
+    void BaseRolls::generateChest(const BoundingBox &chunkBoundingBox, const Piece &piece, uint64_t *random, int x, int y, int z) {
         int xPos = piece.getWorldX(x, z);
         int yPos = piece.getWorldY(y);
         int zPos = piece.getWorldZ(x, z);
