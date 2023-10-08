@@ -22,12 +22,23 @@ public:
     /**
      * Sets up a biome generator for a given LCE version.
      *
-     * @param lceVersion update version
      * @param console target console
+     * @param lceVersion update version
      * @param biomeSize the biome size for generating biomes
      * @param worldSize the world size for calculating world bounds, default = classic
      */
-    Generator(LCEVERSION lceVersion, CONSOLE console, BIOMESCALE biomeSize, WORLDSIZE worldSize = WORLDSIZE::CLASSIC);
+    Generator(CONSOLE console, LCEVERSION lceVersion, BIOMESCALE biomeSize, WORLDSIZE worldSize = WORLDSIZE::CLASSIC);
+
+    /**
+     * Sets up a biome generator for a given LCE version.
+     *
+     * @param console target console
+     * @param lceVersion update version
+     * @param biomeSize the biome size for generating biomes
+     * @param worldSeed the world seed to apply
+     * @param worldSize the world size for calculating world bounds, default = classic
+     */
+    Generator(CONSOLE console, LCEVERSION lceVersion, int64_t worldSeed, BIOMESCALE biomeSize, WORLDSIZE worldSize);
 
     /// returns the stored world seed
     ND inline int64_t getWorldSeed() const { return this->seed; }

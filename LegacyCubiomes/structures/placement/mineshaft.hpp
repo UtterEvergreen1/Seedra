@@ -4,9 +4,9 @@
 #include "LegacyCubiomes/cubiomes/generator.hpp"
 
 
-namespace Structure {
+namespace Placement {
 
-    class MineshaftStructure {
+    class mineshaft {
     public:
         /**
          * Gets all mineshafts within a range

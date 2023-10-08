@@ -1,21 +1,23 @@
 #include <cmath>
 
-#include "GenStronghold.hpp"
+#include "stronghold.hpp"
 #include "LegacyCubiomes/cubiomes/rng.hpp"
 
 
-const DIRECTION HORIZONTAL[4] = {DIRECTION::NORTH, DIRECTION::EAST, DIRECTION::SOUTH, DIRECTION::WEST };
+static const DIRECTION HORIZONTAL[4] = {
+        DIRECTION::NORTH, DIRECTION::EAST, DIRECTION::SOUTH, DIRECTION::WEST
+};
 
 
-namespace stronghold_generator {
+namespace generation {
 
 
-    StrongholdGenerator::StrongholdGenerator() {
+    Stronghold::Stronghold() {
         resetPieces();
     }
 
 
-    void StrongholdGenerator::generate(int64_t worldSeed, int chunkX, int chunkZ) {
+    void Stronghold::generate(int64_t worldSeed, int chunkX, int chunkZ) {
         uint64_t random = getLargeFeatureSeed(worldSeed, chunkX, chunkZ);
         random = (random * 0x5deece66d + 0xb) & 0xFFFFFFFFFFFF; // advance rng
         startX = (chunkX << 4) + 2;
@@ -70,7 +72,7 @@ namespace stronghold_generator {
     }
 
 
-    void StrongholdGenerator::resetPieces() {
+    void Stronghold::resetPieces() {
         for (int i = 0; i < 11; i++) {
             piecePlaceCounts[i] = PIECE_PLACE_COUNT_DEFAULT[i];
         }
@@ -86,14 +88,14 @@ namespace stronghold_generator {
     }
 
 
-    void StrongholdGenerator::addPiece(Piece piece) {
+    void Stronghold::addPiece(Piece piece) {
         // printf("Adding piece at %i with rotation %i and depth %i\n", piece.minX, piece.minZ, piece.orientation, piece.depth);
         pendingPieceArray[pendingPiecesArraySize++] = pieceArraySize;
         pieceArray[pieceArraySize++] = piece;
     }
 
 
-    void StrongholdGenerator::onWeightedPiecePlaced(int piecePlaceCountIndex) {
+    void Stronghold::onWeightedPiecePlaced(int piecePlaceCountIndex) {
         PiecePlaceCount &piecePlaceCount = piecePlaceCounts[piecePlaceCountIndex];
         piecePlaceCount.placeCount++;
 
@@ -120,7 +122,7 @@ namespace stronghold_generator {
 
 
     BoundingBox
-    StrongholdGenerator::createPieceBoundingBox(PieceType pieceType, Pos3D pos, DIRECTION dir) {
+    Stronghold::createPieceBoundingBox(PieceType pieceType, Pos3D pos, DIRECTION dir) {
         switch (pieceType) {
             case PieceType::STRAIGHT:
                 return BoundingBox::orientBox(pos, -1, -1, 0, 5, 5, 7, dir);
@@ -149,8 +151,8 @@ namespace stronghold_generator {
     }
 
 
-    Piece StrongholdGenerator::createPiece(PieceType pieceType, uint64_t *rng,
-                                           DIRECTION direction, int depth, BoundingBox boundingBox) {
+    Piece Stronghold::createPiece(PieceType pieceType, uint64_t *rng,
+                                  DIRECTION direction, int depth, BoundingBox boundingBox) {
         int additionalData = 0;
         switch (pieceType) {
             case PieceType::STRAIGHT:
@@ -204,7 +206,7 @@ namespace stronghold_generator {
     }
 
 
-    bool StrongholdGenerator::tryAddPieceFromType(PieceType pieceType, uint64_t *rng, Pos3D pos, DIRECTION direction, int depth) {
+    bool Stronghold::tryAddPieceFromType(PieceType pieceType, uint64_t *rng, Pos3D pos, DIRECTION direction, int depth) {
         BoundingBox bBox = createPieceBoundingBox(pieceType, pos, direction);
         if (!isOkBox(bBox) || collidesWithPiece(bBox)) {
             if (pieceType == PieceType::LIBRARY) {
@@ -225,7 +227,7 @@ namespace stronghold_generator {
         return true;
     }
 
-    bool StrongholdGenerator::genPieceFromSmallDoor(uint64_t *rng, Pos3D pos, DIRECTION direction, int depth) {
+    bool Stronghold::genPieceFromSmallDoor(uint64_t *rng, Pos3D pos, DIRECTION direction, int depth) {
         if EXPECT_FALSE(generationStopped) return false;
 
         if EXPECT_FALSE(forcedPiece != PieceType::NONE) {
@@ -274,7 +276,7 @@ namespace stronghold_generator {
         return false;
     }
 
-    void StrongholdGenerator::genAndAddPiece(uint64_t *rng, Pos3D pos, DIRECTION direction, int depth) {
+    void Stronghold::genAndAddPiece(uint64_t *rng, Pos3D pos, DIRECTION direction, int depth) {
         if (depth > 50) return;
 
         if (abs(pos.getX() - startX) <= 48 && abs(pos.getZ() - startZ) <= 48) {
@@ -295,7 +297,7 @@ namespace stronghold_generator {
     }
 
 
-    Piece* StrongholdGenerator::findCollisionPiece(BoundingBox &boundingBox) {
+    Piece* Stronghold::findCollisionPiece(BoundingBox &boundingBox) {
         for (int i = 0; i < pieceArraySize; i++) {
             if (pieceArray[i].intersects(boundingBox)) {
                 return &pieceArray[i];
@@ -305,17 +307,17 @@ namespace stronghold_generator {
     }
 
 
-    bool StrongholdGenerator::collidesWithPiece(BoundingBox &boundingBox) {
+    bool Stronghold::collidesWithPiece(BoundingBox &boundingBox) {
         return findCollisionPiece(boundingBox) != nullptr;
     }
 
 
-    bool StrongholdGenerator::isOkBox(BoundingBox &boundingBox) {
+    bool Stronghold::isOkBox(BoundingBox &boundingBox) {
         return boundingBox.minY > 10;
     }
 
 
-    void StrongholdGenerator::genSmallDoorChildForward(Piece &piece, uint64_t *rng, int n, int n2) {
+    void Stronghold::genSmallDoorChildForward(Piece &piece, uint64_t *rng, int n, int n2) {
         DIRECTION direction = piece.orientation;
         switch (direction) {
             case DIRECTION::NORTH:
@@ -330,7 +332,7 @@ namespace stronghold_generator {
     }
 
 
-    void StrongholdGenerator::genSmallDoorChildLeft(Piece &piece, uint64_t *rng, int n, int n2) {
+    void Stronghold::genSmallDoorChildLeft(Piece &piece, uint64_t *rng, int n, int n2) {
         switch (piece.orientation) {
             case DIRECTION::SOUTH:
             case DIRECTION::NORTH:
@@ -343,7 +345,7 @@ namespace stronghold_generator {
         }
     }
 
-    void StrongholdGenerator::genSmallDoorChildRight(Piece &piece, uint64_t *rng, int n, int n2) {
+    void Stronghold::genSmallDoorChildRight(Piece &piece, uint64_t *rng, int n, int n2) {
         switch (piece.orientation) {
             case DIRECTION::SOUTH:
             case DIRECTION::NORTH:
@@ -357,7 +359,7 @@ namespace stronghold_generator {
     }
 
 
-    void StrongholdGenerator::addChildren(Piece &piece, uint64_t *rng) {
+    void Stronghold::addChildren(Piece &piece, uint64_t *rng) {
         switch (piece.type) {
             case PieceType::STRAIGHT:
                 genSmallDoorChildForward(piece, rng, 1, 1);

@@ -1,8 +1,9 @@
 #pragma once
 
 #include "LegacyCubiomes/loot/classes/Loot.hpp"
+#include "LegacyCubiomes/enchants/include.hpp"
 
-namespace loot_tables {
+namespace loot {
     class DesertTemple : public Loot<DesertTemple> {
     public:
         static void setup();
@@ -15,7 +16,7 @@ namespace loot_tables {
         std::vector<ItemEntry> items2;
 
         // table 1
-        items1.emplace_back(&Items::DIAMOND,                 5, 1, 3);
+        items1.emplace_back(&Items::DIAMOND,                  5, 1, 3);
         items1.emplace_back(&Items::IRON_INGOT,              15, 1, 5);
         items1.emplace_back(&Items::GOLD_INGOT,              15, 2, 7);
         items1.emplace_back(&Items::EMERALD,                 15, 1, 3);

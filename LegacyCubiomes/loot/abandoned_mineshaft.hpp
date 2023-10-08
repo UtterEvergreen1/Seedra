@@ -1,13 +1,11 @@
 #pragma once
 
 #include "LegacyCubiomes/loot/classes/Loot.hpp"
-#include "LegacyCubiomes/enchants/enchantmentHelper.hpp"
+#include "LegacyCubiomes/enchants/include.hpp"
 
-#include "LegacyCubiomes/structures/generation/mineshaft/GenMineshaft.hpp"
+#include "LegacyCubiomes/structures/generation/mineshaft/mineshaft.hpp"
 
-using mineshaft_generator::MineshaftGenerator;
-
-namespace loot_tables {
+namespace loot {
     // TODO: make base mineshaft class that generates the rolls in the chunk like stronghold
     class AbandonedMineshaft : public Loot<AbandonedMineshaft> {
     public:

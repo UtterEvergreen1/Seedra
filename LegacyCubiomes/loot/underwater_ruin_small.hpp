@@ -1,8 +1,9 @@
 #pragma once
 
 #include "LegacyCubiomes/loot/classes/Loot.hpp"
+#include "LegacyCubiomes/enchants/include.hpp"
 
-namespace loot_tables {
+namespace loot {
     class UnderwaterRuinSmall : public Loot<UnderwaterRuinSmall> {
     public:
         static void setup();

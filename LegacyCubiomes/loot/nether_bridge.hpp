@@ -3,7 +3,7 @@
 #include "LegacyCubiomes/loot/classes/Loot.hpp"
 
 
-namespace loot_tables {
+namespace loot {
 
     class NetherBridge : public Loot<NetherBridge> {
     public:

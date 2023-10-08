@@ -147,21 +147,21 @@ const char *biome2str(int id)
 
 const char* getStructureName(StructureType type) {
     switch (type) {
-    case st_Desert_Pyramid: return "Desert_Pyramid";
-    case st_Jungle_Pyramid: return "Jungle_Pyramid";
-    case st_Swamp_Hut: return "Swamp_Hut";
-    case st_Igloo: return "Igloo";
-    case st_Village: return "Village";
-    case st_Ocean_Ruin: return "Ocean_Ruin";
-    case st_Mansion: return "Mansion";
-    case st_Monument: return "Monument";
-    case st_Treasure: return "Buried Treasure";
-    case st_Shipwreck: return "Shipwreck";
-    case st_Outpost: return "Outpost";
-    case st_Mineshaft: return "Mineshaft";
-    case st_Fortress: return "Fortress";
-    case st_End_City: return "End_City";
-    case st_End_Gateway: return "End_Gateway";
+    case StructureType::DesertPyramid: return "DesertPyramid";
+    case StructureType::JunglePyramid: return "JunglePyramid";
+    case StructureType::SwampHut: return "SwampHut";
+    case StructureType::Igloo: return "Igloo";
+    case StructureType::Village: return "Village";
+    case StructureType::OceanRuin: return "OceanRuin";
+    case StructureType::Mansion: return "Mansion";
+    case StructureType::Monument: return "Monument";
+    case StructureType::Treasure: return "Buried Treasure";
+    case StructureType::Shipwreck: return "Shipwreck";
+    case StructureType::Outpost: return "Outpost";
+    case StructureType::Mineshaft: return "Mineshaft";
+    case StructureType::Fortress: return "Fortress";
+    case StructureType::EndCity: return "EndCity";
+    case StructureType::EndGateway: return "EndGateway";
     default: return "NONE";
     }
 }

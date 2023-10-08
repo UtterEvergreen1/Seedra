@@ -17,4 +17,4 @@ add_definitions(-DDEV_MODE)
 
 # recursively grabs all files inside the project folder
 file(GLOB_RECURSE LEGACY_CUBIOMES LegacyCubiomes/*)
-add_executable(LCE_Cubiomes "main1.cpp" ${LEGACY_CUBIOMES})
+add_executable(LCE_Cubiomes "main1.cpp" ${LEGACY_CUBIOMES} LegacyCubiomes/mc/include.hpp LegacyCubiomes/enchants/include.hpp LegacyCubiomes/building_blocks/include.hpp LegacyCubiomes/cubiomes/include.hpp)

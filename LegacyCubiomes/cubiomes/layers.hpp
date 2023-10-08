@@ -5,24 +5,24 @@
 struct PerlinNoise;
 
 
-enum StructureType
+enum class StructureType
 {
-    st_Desert_Pyramid,
-    st_Jungle_Temple, st_Jungle_Pyramid = st_Jungle_Temple,
-    st_Swamp_Hut,
-    st_Igloo,
-    st_Village,
-    st_Ocean_Ruin,
-    st_Mansion,
-    st_Monument,
-    st_Treasure,
-    st_Shipwreck,
-    st_Outpost,
-    st_Mineshaft,
-    st_Fortress,
-    st_End_City,
-    st_End_Gateway,
-    st_NONE
+    DesertPyramid,
+    JungleTemple, JunglePyramid = JungleTemple,
+    SwampHut,
+    Igloo,
+    Village,
+    OceanRuin,
+    Mansion,
+    Monument,
+    Treasure,
+    Shipwreck,
+    Outpost,
+    Mineshaft,
+    Fortress,
+    EndCity,
+    EndGateway,
+    NONE
 };
 
 enum BiomeID

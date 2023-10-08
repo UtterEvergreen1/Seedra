@@ -2,7 +2,7 @@
 
 #include "LegacyCubiomes/loot/classes/Loot.hpp"
 
-namespace loot_tables {
+namespace loot {
     class JungleTempleDispenser : public Loot<JungleTempleDispenser> {
     public:
         static void setup();
@@ -55,7 +55,7 @@ namespace loot_tables {
             rollCount = LootTable::getInt<true>(&lootTableSeed, table.min, table.max);
             for (int rollIndex = 0; rollIndex < rollCount; rollIndex++) {
                 ItemStack result = table.createLootRoll<true>(&lootTableSeed);
-                chestContents.setInventorySlotContents(nextInt(&lootTableSeed, 9), std::move(result));
+                chestContents.setInventorySlotContents(nextInt(&lootTableSeed, 9), result);
             }
         }
         return chestContents;

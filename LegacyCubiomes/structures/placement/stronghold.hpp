@@ -2,8 +2,8 @@
 
 #include "LegacyCubiomes/cubiomes/generator.hpp"
 
-namespace Structure {
-    class StrongholdStructure {
+namespace Placement {
+    class Stronghold {
     public:
         static const uint64_t stronghold_biomes =
                 (1ULL << plains) |

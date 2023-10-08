@@ -11,7 +11,7 @@ namespace Chunk {
         ChunkGeneratorOverWorld chunk(g);
         ChunkPrimer* chunkPrimer = chunk.provideChunk(chunkX, chunkZ);
         if constexpr (generateCaves) {
-            CaveGenerator caveGenerator = CaveGenerator(g);
+            auto caveGenerator = CaveGenerator(g);
             caveGenerator.generate(chunkX, chunkZ, chunkPrimer);
         }
         if constexpr (generateRavines) {

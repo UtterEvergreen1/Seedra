@@ -1,10 +1,10 @@
-#include "MineshaftStructure.hpp"
+#include "mineshaft.hpp"
 
-namespace Structure {
+namespace Placement {
 
-    std::vector<Pos2D> MineshaftStructure::getPositions(int64_t worldSeed, int xLower, int zLower, int xUpper, int zUpper) {
+    std::vector<Pos2D> mineshaft::getPositions(int64_t worldSeed, int xLower, int zLower, int xUpper, int zUpper) {
         uint64_t random;
-        std::vector<Pos2D> positions;
+        Pos2DVec_t positions;
         setSeed(&random, worldSeed);
         uint64_t xModifier = nextLong(&random);
         uint64_t zModifier = nextLong(&random);

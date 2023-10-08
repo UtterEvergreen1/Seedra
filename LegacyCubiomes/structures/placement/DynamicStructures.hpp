@@ -8,7 +8,7 @@
 #include "LegacyCubiomes/cubiomes/layers.hpp"
 #include "LegacyCubiomes/cubiomes/generator.hpp"
 
-namespace Structure {
+namespace Placement {
     static constexpr uint64_t DEFAULT_SECONDARY_VALID_BIOMES =
             (1ULL << plains) |
             (1ULL << desert) |

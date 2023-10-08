@@ -3,7 +3,7 @@
 #include "LegacyCubiomes/loot/classes/Loot.hpp"
 
 
-namespace loot_tables {
+namespace loot {
     class BuriedTreasure : public Loot<BuriedTreasure> {
     public:
         static void setup();

@@ -1,7 +1,7 @@
-#include "NetherFortressStructure.hpp"
+#include "netherfortress.hpp"
 
-namespace Structure {
-    Pos2D NetherFortressStructure::getWorldPosition(int64_t worldSeed){
+namespace Placement {
+    Pos2D NetherFortress::getWorldPosition(int64_t worldSeed) {
         uint64_t rnd;
         setSeed(&rnd, worldSeed);
         next(&rnd, 32);

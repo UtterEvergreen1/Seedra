@@ -1,5 +1,5 @@
 #include "DynamicStructures.hpp"
-namespace Structure {
+namespace Placement {
     // defaults
     template<typename Derived>
     const uint64_t DynamicStructure<Derived>::SECONDARY_VALID_BIOMES = 0;
@@ -261,9 +261,9 @@ namespace Structure {
     }
 }
 
-template class Structure::DynamicStructure<Structure::Mansion>;
-template class Structure::DynamicStructure<Structure::Monument>;
-template class Structure::DynamicStructure<Structure::Treasure>;
-template class Structure::DynamicStructure<Structure::Shipwreck>;
-template class Structure::DynamicStructure<Structure::Outpost>;
+template class Placement::DynamicStructure<Placement::Mansion>;
+template class Placement::DynamicStructure<Placement::Monument>;
+template class Placement::DynamicStructure<Placement::Treasure>;
+template class Placement::DynamicStructure<Placement::Shipwreck>;
+template class Placement::DynamicStructure<Placement::Outpost>;
 

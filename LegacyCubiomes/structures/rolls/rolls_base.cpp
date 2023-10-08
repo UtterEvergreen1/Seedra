@@ -1,4 +1,4 @@
-#include "base_rolls.hpp"
+#include "rolls_base.hpp"
 
 #include "LegacyCubiomes/building_blocks/Piece.hpp"
 #include "LegacyCubiomes/building_blocks/BoundingBox.hpp"
@@ -7,7 +7,7 @@
 
 namespace structure_rolls {
 
-    bool BaseRolls::isLiquidInStructureBoundingBox(const BoundingBox& chunkBoundingBoxIn,
+    bool RollsBase::isLiquidInStructureBoundingBox(const BoundingBox& chunkBoundingBoxIn,
                                                    const BoundingBox& pieceBoundingBox, ChunkPrimer* chunk) {
         int minX = std::max(pieceBoundingBox.minX - 1, chunkBoundingBoxIn.minX) & 15;
         int minY = std::max(pieceBoundingBox.minY - 1, chunkBoundingBoxIn.minY);
@@ -58,14 +58,14 @@ namespace structure_rolls {
     }
 
 
-    bool BaseRolls::intersectsWithBlock(const BoundingBox &chunkBoundingBox, int x, int y, int z) {
+    bool RollsBase::intersectsWithBlock(const BoundingBox &chunkBoundingBox, int x, int y, int z) {
         return chunkBoundingBox.maxX >= x && chunkBoundingBox.minX <= x &&
                chunkBoundingBox.maxY >= y && chunkBoundingBox.minY <= y &&
                chunkBoundingBox.maxZ >= z && chunkBoundingBox.minZ <= z;
     }
 
 
-    bool BaseRolls::validToPlace(const BoundingBox &chunkBoundingBox, const BoundingBox& bb, int x, int y, int z) {
+    bool RollsBase::validToPlace(const BoundingBox &chunkBoundingBox, const BoundingBox& bb, int x, int y, int z) {
         if (intersectsWithBlock(chunkBoundingBox, x, y, z)) {
             return bb.maxX >= x && bb.minX <= x &&
                    bb.maxY >= y && bb.minY <= y &&
@@ -76,7 +76,7 @@ namespace structure_rolls {
     }
 
 
-    void BaseRolls::fillWithRandomizedBlocks(const BoundingBox &chunkBoundingBox, const Piece &piece, int minX, int minY,
+    void RollsBase::fillWithRandomizedBlocks(const BoundingBox &chunkBoundingBox, const Piece &piece, int minX, int minY,
                                              int minZ, int maxX, int maxY, int maxZ, uint64_t *random, ChunkPrimer *chunk) {
         int worldX;
         int worldY;
@@ -99,7 +99,7 @@ namespace structure_rolls {
 
 
     // TODO: generate legacy chest where the loot is generated with the seed and doesn't use the loot table seed
-    void BaseRolls::generateChest(const BoundingBox &chunkBoundingBox, const Piece &piece, uint64_t *random, int x, int y, int z) {
+    void RollsBase::generateChest(const BoundingBox &chunkBoundingBox, const Piece &piece, uint64_t *random, int x, int y, int z) {
         int xPos = piece.getWorldX(x, z);
         int yPos = piece.getWorldY(y);
         int zPos = piece.getWorldZ(x, z);

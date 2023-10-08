@@ -2,8 +2,8 @@
 #include "LegacyCubiomes/cubiomes/rng.hpp"
 #include "LegacyCubiomes/utils/pos2D.hpp"
 
-namespace Structure {
-    class NetherFortressStructure {
+namespace Placement {
+    class NetherFortress {
     public:
         ND static Pos2D getWorldPosition(int64_t worldSeed);
     };

@@ -6,7 +6,7 @@
 
 #include "LegacyCubiomes/loot/classes/Container.hpp"
 
-namespace loot_tables {
+namespace loot {
     template <typename T>
     class Loot {
     public:

@@ -1,11 +1,11 @@
 #pragma once
 
-#include "LegacyCubiomes/mc/types/Item.hpp"
-#include "LegacyCubiomes/mc/types/Armor.hpp"
-#include "LegacyCubiomes/mc/types/Sword.hpp"
-#include "LegacyCubiomes/mc/types/Tool.hpp"
-#include "LegacyCubiomes/mc/types/Skull.hpp"
-#include "LegacyCubiomes/mc/types/Trident.hpp"
+#include "LegacyCubiomes/mc/item_types/Item.hpp"
+#include "LegacyCubiomes/mc/item_types/Armor.hpp"
+#include "LegacyCubiomes/mc/item_types/Sword.hpp"
+#include "LegacyCubiomes/mc/item_types/Tool.hpp"
+#include "LegacyCubiomes/mc/item_types/Skull.hpp"
+#include "LegacyCubiomes/mc/item_types/Trident.hpp"
 
 
 namespace Items {

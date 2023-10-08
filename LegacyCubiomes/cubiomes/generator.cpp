@@ -1,9 +1,15 @@
 #include "generator.hpp"
 
-Generator::Generator(LCEVERSION lceVersion, CONSOLE console, BIOMESCALE biomeSize, WORLDSIZE worldSize)
+Generator::Generator(CONSOLE console, LCEVERSION lceVersion, BIOMESCALE biomeSize, WORLDSIZE worldSize)
 : seed(0), version(lceVersion), console(console), biomeSize(biomeSize),
-  worldSize(worldSize), worldCoordinateBounds(getChunkWorldBounds(worldSize) << 4)
-{
+  worldSize(worldSize), worldCoordinateBounds(getChunkWorldBounds(worldSize) << 4) {
+    setupLayerStack(&this->layerStack, lceVersion, biomeSize);
+    setLayerSeed(this->layerStack.entry_1, 0);
+}
+
+Generator::Generator(CONSOLE console, LCEVERSION lceVersion, int64_t worldSeed, BIOMESCALE biomeSize, WORLDSIZE worldSize = WORLDSIZE::CLASSIC)
+: seed(worldSeed), version(lceVersion), console(console), biomeSize(biomeSize),
+worldSize(worldSize), worldCoordinateBounds(getChunkWorldBounds(worldSize) << 4) {
     setupLayerStack(&this->layerStack, lceVersion, biomeSize);
     setLayerSeed(this->layerStack.entry_1, 0);
 }

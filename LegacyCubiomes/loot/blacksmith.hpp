@@ -2,7 +2,7 @@
 
 #include "LegacyCubiomes/loot/classes/Loot.hpp"
 
-namespace loot_tables {
+namespace loot {
 
     class Blacksmith : public Loot<Blacksmith> {
         public:

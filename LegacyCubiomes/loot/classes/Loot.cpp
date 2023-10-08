@@ -1,6 +1,6 @@
 #include "Loot.hpp"
 
-namespace loot_tables {
+namespace loot {
 
 
 /* combine loot seeding and generation to get the base loot */

@@ -6,16 +6,14 @@
 #include "LegacyCubiomes/cubiomes/generator.hpp"
 #include "LegacyCubiomes/cubiomes/util.hpp"
 
-namespace Structure {
+namespace Placement {
     template<class Derived>
     class StaticStructure {
     public:
         static const uint64_t VALID_BIOMES;
-
         static const int SALT;
         static int REGION_SIZE;
         static int CHUNK_RANGE;
-
         static int CHUNK_BOUNDS;
         static bool REDUCED_SPACING;
 
@@ -24,7 +22,7 @@ namespace Structure {
 
         static std::vector<Pos2D> getAllPositions(Generator* g);
 
-        /*do not use for feature, use getFeatureType instead*/
+        /// do not use for feature, use getFeatureType instead
         static bool verifyChunkPosition(Generator* g, int chunkX, int chunkZ);
 
         inline static bool verifyChunkPosition(Generator* g, Pos2D chunkPos) {
@@ -40,14 +38,18 @@ namespace Structure {
         }
     };
 
-    class FeatureStructure {
+    /**
+     * Represents a tuple of:
+     * Position, and structure Type
+     */
+    class FeatureStructurePair {
     public:
         Pos2D pos;
         StructureType type;
-        FeatureStructure(const Pos2D& position, StructureType structureType)
-            : pos(position), type(structureType) {}
 
-        friend std::ostream& operator<<(std::ostream& out, const FeatureStructure& feature) {
+        FeatureStructurePair(const Pos2D& pos, StructureType type) : pos(pos), type(type) {}
+
+        friend std::ostream& operator<<(std::ostream& out, const FeatureStructurePair& feature) {
             out << "Feature: " << feature.pos << " Type: " << getStructureName(feature.type);
             return out;
         }
@@ -67,11 +69,11 @@ namespace Structure {
         inline static StructureType getFeatureType(Generator* g, const Pos2D& block) {
             return getFeatureType(g, block.x, block.z);
         }
-        static std::vector<FeatureStructure> getAllFeaturePositions(Generator* g);
+        static std::vector<FeatureStructurePair> getAllFeaturePositions(Generator* g);
     };
 
-    template<bool PS4Village>
-    class Village : public StaticStructure<Village<PS4Village>> {
+    template<bool isPS4Village>
+    class Village : public StaticStructure<Village<isPS4Village>> {
     public:
         static void setWorldSize(WORLDSIZE worldSize);
     };
@@ -80,5 +82,6 @@ namespace Structure {
     public:
         static void setWorldSize(WORLDSIZE worldSize);
     };
+
 }
 

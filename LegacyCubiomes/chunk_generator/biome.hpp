@@ -7,11 +7,13 @@
 #include "block.hpp"
 #include "NoiseGenerator.hpp"
 
-#include "LegacyCubiomes/utils/pos3D.hpp"
 #include "LegacyCubiomes/cubiomes/rng.hpp"
+
 #include "LegacyCubiomes/mc/items.hpp"
 #include "LegacyCubiomes/mc/itemID.hpp"
+
 #include "LegacyCubiomes/utils/constants.hpp"
+#include "LegacyCubiomes/utils/pos3D.hpp"
 
 class ChunkPrimer;
 

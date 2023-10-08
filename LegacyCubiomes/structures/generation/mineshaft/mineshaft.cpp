@@ -1,14 +1,21 @@
-#include "GenMineshaft.hpp"
+#include "mineshaft.hpp"
 
 
-namespace mineshaft_generator {
+namespace generation {
 
-    void MineshaftGenerator::reset() {
+    void Mineshaft::reset() {
         pieceArraySize = 0;
         collisionChecks = 0;
     }
 
-    void MineshaftGenerator::generate(int64_t worldSeed, int chunkX, int chunkZ) {
+    /**
+     * \n
+     * Generates a mineshaft with the given seed and chunk coordinate.
+     * @param worldSeed the seed
+     * @param chunkX x coord. of the chunk
+     * @param chunkZ z coord. of the chunk
+     */
+    void Mineshaft::generate(int64_t worldSeed, int chunkX, int chunkZ) {
         uint64_t rng = getLargeFeatureSeed(worldSeed, chunkX, chunkZ);
         // 4 rolls (1 for skip, 3 for is feature chunk rolls (2 double, 1 int))
         rng = (rng * 0x32EB772C5F11 + 0x2D3873C4CD04) & 0xFFFFFFFFFFFF;
@@ -55,7 +62,7 @@ namespace mineshaft_generator {
     }
 
 
-    Piece* MineshaftGenerator::findCollisionPiece(BoundingBox &boundingBox) {
+    Piece* Mineshaft::findCollisionPiece(BoundingBox &boundingBox) {
         // return collision.findCollisionPiece(boundingBox);
 
         for (int i = 0; i < pieceArraySize; i++) {
@@ -69,7 +76,7 @@ namespace mineshaft_generator {
     }
 
 
-    void MineshaftGenerator::genAndAddPiece(uint64_t *rng, Pos3D pos, DIRECTION direction, int depth) {
+    void Mineshaft::genAndAddPiece(uint64_t *rng, Pos3D pos, DIRECTION direction, int depth) {
         // step 1: return early
         if (depth > 8) return;
         if (abs(pos.getX() - startX) > 80 || abs(pos.getZ() - startZ) > 80) return;
@@ -128,8 +135,8 @@ namespace mineshaft_generator {
      * @param p the piece to build
      * @param rng pointer to rng
      */
-    void MineshaftGenerator::buildComponent(uint64_t* rng, int type, int depth, const BoundingBox& boundingBox,
-                                            DIRECTION direction, int additionalData) {
+    void Mineshaft::buildComponent(uint64_t* rng, int type, int depth, const BoundingBox& boundingBox,
+                                   DIRECTION direction, int additionalData) {
         Piece p = Piece(type, depth, boundingBox, direction, additionalData);
         pieceArray[pieceArraySize++] = p;
 

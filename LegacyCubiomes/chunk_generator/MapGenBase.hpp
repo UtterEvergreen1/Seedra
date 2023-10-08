@@ -9,7 +9,7 @@ public:
     Generator g;
     uint64_t rng;
     explicit MapGenBase(const Generator& generator) : g(generator), rng(0) {}
-    MapGenBase(int64_t worldSeed, LCEVERSION lceVersion, CONSOLE console, BIOMESCALE biomeScale) : g(lceVersion, console, biomeScale), rng(0) {
+    MapGenBase(int64_t worldSeed, LCEVERSION lceVersion, CONSOLE console, BIOMESCALE biomeScale) : g(console, lceVersion, biomeScale), rng(0) {
         g.applyWorldSeed(worldSeed);
     }
 
@@ -20,8 +20,8 @@ public:
 
         for (int currentX = targetX - this->range; currentX <= targetX + this->range; ++currentX) {
             for (int currentZ = targetZ - this->range; currentZ <= targetZ + this->range; ++currentZ) {
-                int64_t adjustedX = (int64_t)currentX * seedMultiplierX;
-                int64_t adjustedZ = (int64_t)currentZ * seedMultiplierZ;
+                auto adjustedX = (int64_t)currentX * seedMultiplierX;
+                auto adjustedZ = (int64_t)currentZ * seedMultiplierZ;
                 setSeed(&rng, adjustedX ^ adjustedZ ^ g.getWorldSeed());
 
                 recursiveGenerate(currentX, currentZ, targetX, targetZ, primer);

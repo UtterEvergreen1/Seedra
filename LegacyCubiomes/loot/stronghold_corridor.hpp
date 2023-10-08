@@ -1,12 +1,12 @@
 #pragma once
 
-#include "LegacyCubiomes/enchants/enchantmentHelper.hpp"
 #include "LegacyCubiomes/loot/classes/StrongholdLoot.hpp"
+#include "LegacyCubiomes/enchants/include.hpp"
 
 
-using stronghold_generator::StrongholdGenerator;
 
-namespace loot_tables {
+
+namespace loot {
     template<bool isAquatic>
     class StrongholdCorridor : public StrongholdLoot<StrongholdCorridor<isAquatic>> {
     public:
@@ -15,10 +15,10 @@ namespace loot_tables {
         static Container getLootFromLootTableSeed(uint64_t* lootTableSeed);
 
         template<bool checkCaves, bool shuffle>
-        ND static Container getAltarChestLoot(const Generator& g, Piece* altarChestPiece, StrongholdGenerator* strongholdGenerator);
+        ND static Container getAltarChestLoot(const Generator& g, Piece* altarChestPiece, generation::Stronghold* strongholdGenerator);
 
         template<bool checkCaves, bool shuffle>
-        ND static std::vector<Container> getAllAltarChestLoot(const Generator& g, StrongholdGenerator* strongholdGenerator);
+        ND static std::vector<Container> getAllAltarChestLoot(const Generator& g, generation::Stronghold* strongholdGenerator);
     };
 
     template<bool isAquatic>
@@ -89,7 +89,7 @@ namespace loot_tables {
     template<bool checkCaves, bool shuffle>
     Container StrongholdCorridor<isAquatic>::getAltarChestLoot(const Generator& g,
                                                                Piece* altarChestPiece,
-                                                               StrongholdGenerator* strongholdGenerator) {
+                                                               generation::Stronghold* strongholdGenerator) {
         uint64_t lootSeed = StrongholdLoot<StrongholdCorridor<isAquatic>>::template getLootSeed<checkCaves>(g,
                                                                                                             altarChestPiece->getWorldX(3, 3),
                                                                                                             altarChestPiece->getWorldY(2),
@@ -102,7 +102,7 @@ namespace loot_tables {
     template<bool isAquatic>
     template<bool checkCaves, bool shuffle>
     std::vector<Container> StrongholdCorridor<isAquatic>::getAllAltarChestLoot(const Generator& g,
-                                   StrongholdGenerator* strongholdGenerator) {
+                                                                               generation::Stronghold* strongholdGenerator) {
         std::vector<Container> altarChests(strongholdGenerator->altarChestArraySize);
         for (int altarChestIndex = 0; altarChestIndex < strongholdGenerator->altarChestArraySize; altarChestIndex++)
             altarChests[altarChestIndex] = StrongholdCorridor<isAquatic>

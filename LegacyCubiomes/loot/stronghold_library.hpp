@@ -1,10 +1,9 @@
 #pragma once
 
 #include "LegacyCubiomes/loot/classes/StrongholdLoot.hpp"
+#include "LegacyCubiomes/enchants/include.hpp"
 
-#include "LegacyCubiomes/enchants/enchantmentHelper.hpp"
-
-namespace loot_tables {
+namespace loot {
     class StrongholdLibrary : public StrongholdLoot<StrongholdLibrary> {
     public:
         static void setup();

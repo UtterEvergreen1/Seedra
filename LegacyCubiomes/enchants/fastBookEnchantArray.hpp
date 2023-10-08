@@ -87,7 +87,7 @@ public:
     void addRandomItem(uint64_t *rng);
 
     /**
-     * This should only be used by a setup function!
+     * This should only be used by a setWorldSize function!
      * @param itemStackIn
      */
     void addEnchantments(ItemStack *itemStackIn);

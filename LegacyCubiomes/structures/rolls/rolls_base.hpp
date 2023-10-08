@@ -5,7 +5,7 @@
 #include "LegacyCubiomes/chunk_generator/ChunkPrimer.hpp"
 
 namespace structure_rolls {
-    class BaseRolls {
+    class RollsBase {
     public:
         static bool isLiquidInStructureBoundingBox(const BoundingBox& chunkBoundingBoxIn,
                                                    const BoundingBox& pieceBoundingBox, ChunkPrimer* chunk);

@@ -3,12 +3,12 @@
 #include "Loot.hpp"
 
 
-#include "LegacyCubiomes/structures/rolls/stronghold_rolls.hpp"
+#include "LegacyCubiomes/structures/rolls/stronghold.hpp"
 #include "LegacyCubiomes/chunk_generator/Chunk.hpp"
 
 using stronghold_generator::StrongholdGenerator;
 
-namespace loot_tables {
+namespace loot {
     template <typename T>
     class StrongholdLoot : public Loot<StrongholdLoot<T>> {
     public:
