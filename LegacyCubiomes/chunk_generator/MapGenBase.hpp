@@ -2,16 +2,22 @@
 
 #include "ChunkPrimer.hpp"
 
+#include "LegacyCubiomes/utils/pos2D.hpp"
+#include "LegacyCubiomes/utils/pos3D.hpp"
+#include "LegacyCubiomes/utils/DoublePos2D.hpp"
+#include "LegacyCubiomes/utils/DoublePos3D.hpp"
+
 class MapGenBase
 {
 public:
     const int range = 8;
     Generator g;
     uint64_t rng;
+
     explicit MapGenBase(const Generator& generator) : g(generator), rng(0) {}
-    MapGenBase(int64_t worldSeed, LCEVERSION lceVersion, CONSOLE console, BIOMESCALE biomeScale) : g(console, lceVersion, biomeScale), rng(0) {
-        g.applyWorldSeed(worldSeed);
-    }
+
+    MapGenBase(int64_t worldSeed, LCEVERSION lceVersion, CONSOLE console, BIOMESCALE biomeScale) :
+        g(console, lceVersion, biomeScale), rng(0) {g.applyWorldSeed(worldSeed);}
 
     void generate(int targetX, int targetZ, ChunkPrimer* primer) {
         setSeed(&rng, g.getWorldSeed());

@@ -297,9 +297,7 @@ public:
         }
     }
 
-    static double lerp(double p_76311_1_, double p_76311_3_, double p_76311_5_) {
-        return p_76311_3_ + p_76311_1_ * (p_76311_5_ - p_76311_3_);
-    }
+
 
     double grad2(int p_76309_1_, double p_76309_2_, double p_76309_4_) {
         int i = p_76309_1_ & 15;
@@ -355,12 +353,12 @@ public:
                     j5 = this->permutations[i5] + l6;
                     j = this->permutations[k2 + 1] + 0;
                     k5 = this->permutations[j] + l6;
-                    d14 = NoiseGeneratorImproved::lerp(d18, this->grad2(this->permutations[j5], d17, d19),
+                    d14 = lerp(d18, this->grad2(this->permutations[j5], d17, d19),
                                                        this->grad(this->permutations[k5], d17 - 1.0, 0.0, d19));
-                    d15 = NoiseGeneratorImproved::lerp(d18, this->grad(this->permutations[j5 + 1], d17, 0.0, d19 - 1.0),
+                    d15 = lerp(d18, this->grad(this->permutations[j5 + 1], d17, 0.0, d19 - 1.0),
                                                        this->grad(this->permutations[k5 + 1], d17 - 1.0, 0.0,
                                                                   d19 - 1.0));
-                    double d21 = NoiseGeneratorImproved::lerp(d20, d14, d15);
+                    double d21 = lerp(d20, d14, d15);
                     int i7 = l5++;
                     noiseArray[i7] += d21 * d16;
                 }
@@ -425,24 +423,24 @@ public:
                             k1 = this->permutations[j3 + 1] + l4;
                             l1 = this->permutations[k1] + i4;
                             i2 = this->permutations[k1 + 1] + i4;
-                            d1 = NoiseGeneratorImproved::lerp(d6, this->grad(this->permutations[i1], d5, d9, d7),
+                            d1 = lerp(d6, this->grad(this->permutations[i1], d5, d9, d7),
                                                               this->grad(this->permutations[l1], d5 - 1.0, d9, d7));
-                            d2 = NoiseGeneratorImproved::lerp(d6, this->grad(this->permutations[j1], d5, d9 - 1.0, d7),
+                            d2 = lerp(d6, this->grad(this->permutations[j1], d5, d9 - 1.0, d7),
                                                               this->grad(this->permutations[i2], d5 - 1.0, d9 - 1.0,
                                                                          d7));
-                            d3 = NoiseGeneratorImproved::lerp(d6,
+                            d3 = lerp(d6,
                                                               this->grad(this->permutations[i1 + 1], d5, d9, d7 - 1.0),
                                                               this->grad(this->permutations[l1 + 1], d5 - 1.0, d9,
                                                                          d7 - 1.0));
-                            d4 = NoiseGeneratorImproved::lerp(d6, this->grad(this->permutations[j1 + 1], d5, d9 - 1.0,
+                            d4 = lerp(d6, this->grad(this->permutations[j1 + 1], d5, d9 - 1.0,
                                                                              d7 - 1.0),
                                                               this->grad(this->permutations[i2 + 1], d5 - 1.0, d9 - 1.0,
                                                                          d7 - 1.0));
                         }
 
-                        double d11 = NoiseGeneratorImproved::lerp(d10, d1, d2);
-                        double d12 = NoiseGeneratorImproved::lerp(d10, d3, d4);
-                        double d13 = NoiseGeneratorImproved::lerp(d8, d11, d12);
+                        double d11 = lerp(d10, d1, d2);
+                        double d12 = lerp(d10, d3, d4);
+                        double d13 = lerp(d8, d11, d12);
                         int j7 = i++;
                         noiseArray[j7] += d13 * d0;
                     }

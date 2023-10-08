@@ -6,16 +6,17 @@
 #include "RavineGenerator.hpp"
 
 namespace Chunk {
+
     template<bool generateCaves, bool generateRavines, bool generateSkyLight>
     static ChunkPrimer* provideChunk(const Generator& g, int chunkX, int chunkZ) {
         ChunkGeneratorOverWorld chunk(g);
         ChunkPrimer* chunkPrimer = chunk.provideChunk(chunkX, chunkZ);
         if constexpr (generateCaves) {
-            auto caveGenerator = CaveGenerator(g);
+            CaveGenerator caveGenerator(g);
             caveGenerator.generate(chunkX, chunkZ, chunkPrimer);
         }
         if constexpr (generateRavines) {
-            RavineGenerator ravineGenerator = RavineGenerator(g);
+            RavineGenerator ravineGenerator(g);
             ravineGenerator.generate(chunkX, chunkZ, chunkPrimer);
         }
         if constexpr (generateSkyLight) {

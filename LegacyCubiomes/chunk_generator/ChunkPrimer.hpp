@@ -37,7 +37,7 @@ public:
     }
 
     void setBlock(int64_t x, int64_t y, int64_t z, uint16_t block) {
-        this->blocks[getStorageIndex(x, y, z)] = block << 4;
+        blocks[getStorageIndex(x, y, z)] = block << 4;
     }
 
     uint16_t getData(int64_t x, int64_t y, int64_t z) {
@@ -45,7 +45,7 @@ public:
     }
 
     void setData(int64_t x, int64_t y, int64_t z, uint8_t data) {
-        this->blocks[getStorageIndex(x, y, z)] |= data;
+        blocks[getStorageIndex(x, y, z)] |= data;
     }
 
     uint16_t getSkyLight(int64_t x, int64_t y, int64_t z) {
@@ -53,15 +53,15 @@ public:
     }
 
     void setSkyLight(int64_t x, int64_t y, int64_t z, uint8_t lightValue) {
-        this->skyLight[getStorageIndex(x, y, z)] = lightValue;
+        skyLight[getStorageIndex(x, y, z)] = lightValue;
     }
 
     void setBlockAndData(int64_t x, int64_t y, int64_t z, uint16_t block, uint8_t data) {
-        this->blocks[getStorageIndex(x, y, z)] = ((block << 4) | data);
+        blocks[getStorageIndex(x, y, z)] = ((block << 4) | data);
     }
 
     void setBlockAndData(int64_t x, int64_t y, int64_t z, const Items::Item &item) {
-        this->blocks[getStorageIndex(x, y, z)] = ((item.getID() << 4) | item.getDataTag());
+        blocks[getStorageIndex(x, y, z)] = ((item.getID() << 4) | item.getDataTag());
     }
 
     friend std::ostream &operator<<(std::ostream &out, const ChunkPrimer &chunkPrimer) {
@@ -121,14 +121,13 @@ public:
                 int lightValue = 15;
                 int topPos = topFilledSegment + 15;
                 while (true) {
-                    int blockOpacity = getBlockLightOpacity(this->getBlock(x, topPos, z));
+                    int blockOpacity = getBlockLightOpacity(getBlock(x, topPos, z));
                     if (blockOpacity == 0 && lightValue != 15) blockOpacity = 1;
 
                     lightValue -= blockOpacity;
 
-                    if (lightValue > 0) {
+                    if (lightValue > 0)
                         setSkyLight(x, topPos, z, lightValue);
-                    }
 
                     topPos--;
 
@@ -180,7 +179,8 @@ public:
                     uint16_t flagBlockEast = getBlock(x + 1, pos.getY(), z);
                     uint16_t flagBlockNorth = getBlock(x, pos.getY(), z - 1);
                     uint16_t flagBlockSouth = getBlock(x, pos.getY(), z + 1);
-                    bool flag = flagBlockWest == 9 && flagBlockEast == 9 && flagBlockNorth == 9 && flagBlockSouth == 9;
+                    bool flag = flagBlockWest == 9 && flagBlockEast == 9 &&
+                               flagBlockNorth == 9 && flagBlockSouth == 9;
 
                     if (!flag)
                         return true;
@@ -200,7 +200,7 @@ public:
             return true;
         else {
             // needs to check block light later on to replace a perfect chunk
-            if (pos.getY() >= 0 && pos.getY() < 256 /* && this.getLightFor(EnumSkyBlock.BLOCK, pos) < 10*/) {
+            if (pos.getY() >= 0 && pos.getY() < 256 /* && getLightFor(EnumSkyBlock.BLOCK, pos) < 10*/) {
                 uint16_t iBlockState = getBlock(pos.getX(), pos.getY(), pos.getZ());
                 if (!iBlockState)
                     return true;
