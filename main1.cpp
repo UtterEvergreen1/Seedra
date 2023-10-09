@@ -29,6 +29,9 @@ int main(int argc, char* argv[]) {
 
     writeBiomesToImage(&g, dir);
 
+
+
+
     return 0;
 }
 

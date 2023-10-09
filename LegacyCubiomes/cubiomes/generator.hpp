@@ -163,8 +163,12 @@ public:
      */
     ND int* getBiomeRange(int scale, int x, int z, int w, int h) const;
 
-    /// Generates all biomes, and returns a pointer to the cache.
-    MU ND int* generateAllBiomes() const;
+    /** Generates all biomes, and returns a std::pair of
+     *
+     * @return std::pair<N, *ids> where N is the NxN size of array size,
+     * and ids is the pointer to that data.
+     */
+    MU ND std::pair<int, int*> generateAllBiomes() const;
 
     /**
      * Returns the default layer that corresponds to the given scale.

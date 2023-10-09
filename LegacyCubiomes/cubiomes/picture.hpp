@@ -29,12 +29,13 @@ void writeBiomesToImage(Generator* g, const std::string& directory) {
     unsigned char biomeColors[256][3];
     initBiomeColors(biomeColors);
 
-    int size = g->getWorldCoordinateBounds() >> 1;
+    auto pair = g->generateAllBiomes();
+    int size = pair.first;
+    int* ids = pair.second;
+
     const int width = size;
     const int height = size;
     auto* data = new unsigned char[width * height * 3];
-
-    int *ids = g->generateAllBiomes();
 
     for(int y = 0; y < height; ++y) {
         for(int x = 0; x < width; ++x) {

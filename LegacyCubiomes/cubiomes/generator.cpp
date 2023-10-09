@@ -8,6 +8,7 @@ Generator::Generator(CONSOLE console, LCEVERSION version, WORLDSIZE size, BIOMES
     setLayerSeed(this->layerStack.entry_1, 0);
 }
 
+
 Generator::Generator(CONSOLE console, LCEVERSION version, int64_t seed, WORLDSIZE size, BIOMESCALE scale)
         : worldSeed(seed), version(version), console(console), biomeScale(scale),
           worldSize(size), worldCoordinateBounds(getChunkWorldBounds(size) << 4) {
@@ -15,19 +16,22 @@ Generator::Generator(CONSOLE console, LCEVERSION version, int64_t seed, WORLDSIZ
     setLayerSeed(this->layerStack.entry_1, 0);
 }
 
+
 void Generator::applyWorldSeed(int64_t seed) {
     this->worldSeed = seed;
     setLayerSeed(this->layerStack.entry_1, seed);
 }
 
-void Generator::changeLCEVersion(LCEVERSION version) {
+
+void Generator::changeLCEVersion(LCEVERSION versionIn) {
     // avoid setting up again when it's the same
-    if (this->version == version)
+    if (this->version == versionIn)
         return;
 
-    this->version = version;
-    setupLayerStack(&this->layerStack, version, this->biomeScale);
+    this->version = versionIn;
+    setupLayerStack(&this->layerStack, versionIn, this->biomeScale);
 }
+
 
 void Generator::changeBiomeSize(BIOMESCALE size) {
     // avoid setting up again when it's the same
@@ -38,6 +42,7 @@ void Generator::changeBiomeSize(BIOMESCALE size) {
     setupLayerStack(&this->layerStack, this->version, size);
 }
 
+
 void Generator::changeWorldSize(WORLDSIZE size) {
     // avoid recalculating when it's the same
     if (this->worldSize == size)
@@ -46,6 +51,7 @@ void Generator::changeWorldSize(WORLDSIZE size) {
     this->worldSize = size;
     this->worldCoordinateBounds = getChunkWorldBounds(size) << 4;
 }
+
 
 size_t Generator::getMinCacheSize(int scale, int sx, int sz) const {
     size_t len = (size_t) sx * sz;
@@ -61,10 +67,12 @@ size_t Generator::getMinCacheSize(int scale, int sx, int sz) const {
     return len;
 }
 
+
 int *Generator::allocCache(const Range &range) const {
     size_t len = getMinCacheSize(range.scale, range.sx, range.sz);
     return (int *) calloc(len, sizeof(int));
 }
+
 
 int Generator::genBiomes(int *cache, const Range &range) const {
     int i;
@@ -80,6 +88,7 @@ int Generator::genBiomes(int *cache, const Range &range) const {
     return 0;
 }
 
+
 int Generator::getBiomeAt(int scale, int x, int z) const {
     Range r = {scale, x, z, 1, 1};
     int *ids = allocCache(r);
@@ -92,6 +101,7 @@ int Generator::getBiomeAt(int scale, int x, int z) const {
     return id;
 }
 
+
 int *Generator::getBiomeRange(int scale, int x, int z, int w, int h) const {
     Range r = {scale, x, z, w, h};
     int *ids = allocCache(r);
@@ -99,15 +109,17 @@ int *Generator::getBiomeRange(int scale, int x, int z, int w, int h) const {
     return ids;
 }
 
-int *Generator::generateAllBiomes() const {
+
+std::pair<int, int*> Generator::generateAllBiomes() const {
     // Small World Size
     int size = getChunkWorldBounds(worldSize) << 2;
     Range r = {4, -size, -size, size * 2, size * 2};
     int *ids = allocCache(r);
     genBiomes(ids, r);
-    return ids;
-}
+    size = getWorldCoordinateBounds() >> 1;
+    return {size, ids};
 
+}
 
 
 Layer *Generator::getLayerForScale(int scale) const {
@@ -132,6 +144,7 @@ Layer *Generator::getLayerForScale(int scale) const {
 // Checking Biomes & Biome Helper Functions
 //==============================================================================
 
+
 bool Generator::validCorners(int x, int z, const Range &r, uint64_t validBiomes, uint64_t mutatedValidBiomes) const {
     int xCorner = x - r.x;
     int zCorner = (z - r.z) * r.sx; // top left
@@ -145,6 +158,7 @@ bool Generator::validCorners(int x, int z, const Range &r, uint64_t validBiomes,
 
     return true;
 }
+
 
 bool Generator::areBiomesViable(int x, int z, int rad, uint64_t validBiomes, uint64_t mutatedValidBiomes) const {
     if (x - rad < -this->worldCoordinateBounds || x + rad > this->worldCoordinateBounds ||
@@ -180,6 +194,7 @@ bool Generator::areBiomesViable(int x, int z, int rad, uint64_t validBiomes, uin
     return viable;
 }
 
+
 Pos2D Generator::locateBiome(int x, int z, int radius, uint64_t validBiomes,
                              uint64_t *rng, int *passes) const {
     Pos2D out = {x, z};
@@ -197,7 +212,6 @@ Pos2D Generator::locateBiome(int x, int z, int radius, uint64_t validBiomes,
     int *ids = allocCache(r);
     genBiomes(ids, r);
 
-
     for (i = 0; i < width * height; i++) {
         if (!id_matches(ids[i], validBiomes))
             continue;
@@ -210,12 +224,12 @@ Pos2D Generator::locateBiome(int x, int z, int radius, uint64_t validBiomes,
 
     free(ids);
 
-    if (passes != nullptr) {
+    if (passes != nullptr)
         *passes = found;
-    }
 
     return out;
 }
+
 
 int Generator::mapApproxHeight(float *y, int *ids, const SurfaceNoise *sn,
                                int x, int z, int w, int h) const {
@@ -228,7 +242,7 @@ int Generator::mapApproxHeight(float *y, int *ids, const SurfaceNoise *sn,
             3.302044127, 4.104975761, 4.545454545, 4.104975761, 3.302044127,
     };
 
-    double *depth = (double *) malloc(sizeof(double) * 2 * w * h);
+    auto *depth = (double *) malloc(sizeof(double) * 2 * w * h);
     double *scale = depth + w * h;
     int64_t i, j;
     int ii, jj;
@@ -319,6 +333,7 @@ int Generator::mapApproxHeight(float *y, int *ids, const SurfaceNoise *sn,
     return 0;
 }
 
+
 const uint64_t Generator::spawn_biomes =
         (1ULL << forest) |
         (1ULL << plains) |
@@ -328,24 +343,26 @@ const uint64_t Generator::spawn_biomes =
         (1ULL << jungle) |
         (1ULL << jungle_hills);
 
+
 Pos2D Generator::estimateSpawn(uint64_t *rng) const {
     Pos2D spawn;
     int found;
 
-    setSeed(rng, this->getWorldSeed());
-    spawn = locateBiome(0, 0, 256, this->spawn_biomes, rng, &found);
+    setSeed(rng, getWorldSeed());
+    spawn = locateBiome(0, 0, 256, Generator::spawn_biomes, rng, &found);
     if (!found)
         spawn.x = spawn.z = 8;
 
     return spawn;
 }
 
+
 Pos2D Generator::getSpawnBlock() const {
     uint64_t rng;
     Pos2D spawn = estimateSpawn(&rng);
 
     SurfaceNoise sn;
-    initSurfaceNoise(&sn, DIMENSION::OVERWORLD, this->getWorldSeed());
+    initSurfaceNoise(&sn, DIMENSION::OVERWORLD, \getWorldSeed());
 
     float y;
     int id = -1, grass = 0;
@@ -353,18 +370,17 @@ Pos2D Generator::getSpawnBlock() const {
         mapApproxHeight(&y, &id, &sn, spawn.x >> 2, spawn.z >> 2, 1, 1);
         getBiomeDepthAndScale(id, 0, 0, &grass);
 
-        if (grass > 0 && y >= grass)
+        if (grass > 0 && y >= (float)grass)
             break;
+
         spawn.x += nextInt(&rng, 64) - nextInt(&rng, 64);
         spawn.z += nextInt(&rng, 64) - nextInt(&rng, 64);
 
-        if (spawn.x > this->worldCoordinateBounds || spawn.x < -this->worldCoordinateBounds) {
+        if (spawn.x > worldCoordinateBounds || spawn.x < -worldCoordinateBounds)
             spawn.x = 0;
-        }
 
-        if (spawn.z > this->worldCoordinateBounds || spawn.z < -this->worldCoordinateBounds) {
+        if (spawn.z > worldCoordinateBounds || spawn.z < -worldCoordinateBounds)
             spawn.z = 0;
-        }
     };
 
     return spawn;
