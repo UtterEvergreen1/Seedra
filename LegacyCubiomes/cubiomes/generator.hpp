@@ -51,10 +51,11 @@ public:
     void applyWorldSeed(int64_t seed);
 
 
-    /// Fast way to increment the seed for for loops.
-    inline void incrementSeed() {
-        applyWorldSeed(getWorldSeed() + 1);
-    }
+    /// Fast way to increment the seed for for-loops.
+    inline void incrementSeed() { applyWorldSeed(getWorldSeed() + 1); }
+
+    /// Fast way to decrement the seed for for-loops.
+    inline void decrementSeed() { applyWorldSeed(getWorldSeed() - 1); }
 
     /// returns the stored LCE version
     MU ND inline LCEVERSION getLCEVersion() const { return this->version; }
@@ -74,7 +75,7 @@ public:
      *
      * @param console new console to apply
      */
-    MU inline void changeConsole(CONSOLE console) { this->console = console; }
+    MU inline void changeConsole(CONSOLE consoleIn) { this->console = consoleIn; }
 
     /// returns the stored biome size
     MU ND inline BIOMESCALE getBiomeScale() const { return this->biomeScale; }
