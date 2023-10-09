@@ -373,6 +373,7 @@ void setupScale(Layer *l, int scale) {
 
 //TODO: BIOMES FOR EARLY VERSIONS (before elytra)
 void setupLayerStack(LayerStack *g, LCEVERSION lceVersion, BIOMESCALE biomeSize) {
+
     int mc = getMCVersion(lceVersion);
     memset(g, 0, sizeof(LayerStack));
     Layer *p, *l = g->layers;
@@ -439,7 +440,7 @@ void setupLayerStack(LayerStack *g, LCEVERSION lceVersion, BIOMESCALE biomeSize)
 
     p = setupLayer(l + L_SUNFLOWER_64, mapSunflower, mc, 1, 0, 1001, p, 0);
 
-    // for i in 0..biomeSize
+    // for i in 0..biomeScale
 
     // iteration 0
     p = setupLayer(l + L_ZOOM_32, mapZoom, mc, 2, 3, 1000, p, 0);
@@ -475,7 +476,7 @@ void setupLayerStack(LayerStack *g, LCEVERSION lceVersion, BIOMESCALE biomeSize)
     p = setupLayer(l + L_RIVER_MIX_4, mapRiverMix, mc, 1, 0, 100,
                    l + L_SMOOTH_4, l + L_SMOOTH_4_RIVER);
 
-    int hasOceans = lceVersion >= LCEVERSION::AQUATIC;
+    int hasOceans = mc >= MCVERSION::MC_1_13;
 
     if (hasOceans) {
         // ocean variants

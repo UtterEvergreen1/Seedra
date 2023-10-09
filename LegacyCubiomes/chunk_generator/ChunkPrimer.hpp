@@ -74,7 +74,7 @@ public:
         return out;
     }
 
-    //in block cords not chunk cords
+    /// in block cords not chunk cords
     int getHighestYChunk() {
         for (int y = 255; y >= 0; y--) {
             for (int x = 0; x < 16; x++) {

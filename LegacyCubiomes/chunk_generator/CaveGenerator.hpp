@@ -7,8 +7,9 @@ class CaveGenerator : public MapGenBase {
 public:
     explicit CaveGenerator(const Generator &generator) : MapGenBase(generator) {}
 
-    CaveGenerator(int64_t worldSeed, LCEVERSION lceVersion, CONSOLE console, BIOMESCALE biomeScale) :
-        MapGenBase(worldSeed, lceVersion, console, biomeScale) {}
+    CaveGenerator(CONSOLE console, LCEVERSION version, int64_t seed, WORLDSIZE size, BIOMESCALE scale) :
+            MapGenBase(console, version, seed, size, scale) {}
+
 
     unsigned char topBlock(int x, int z);
 

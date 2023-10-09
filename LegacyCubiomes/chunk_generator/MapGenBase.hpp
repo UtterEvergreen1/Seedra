@@ -16,8 +16,8 @@ public:
 
     explicit MapGenBase(const Generator& generator) : g(generator), rng(0) {}
 
-    MapGenBase(int64_t worldSeed, LCEVERSION lceVersion, CONSOLE console, BIOMESCALE biomeScale) :
-        g(console, lceVersion, biomeScale), rng(0) {g.applyWorldSeed(worldSeed);}
+    MapGenBase(CONSOLE console, LCEVERSION version, int64_t seed, WORLDSIZE size, BIOMESCALE scale) :
+            g(console, version, seed, size, scale), rng(0) {}
 
     void generate(int targetX, int targetZ, ChunkPrimer* primer) {
         setSeed(&rng, g.getWorldSeed());

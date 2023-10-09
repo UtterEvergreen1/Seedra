@@ -33,6 +33,7 @@ ChunkGeneratorOverWorld::~ChunkGeneratorOverWorld() {
 
 void ChunkGeneratorOverWorld::setBiomesForGeneration(int x, int z, int width, int height, int scale) {
     Range r{};
+    // if ((scale & 0b1000000010101) == scale ) { // faster comparison
     if (scale == 1 || scale == 4 || scale == 16 || scale == 64 || scale == 256) {
         r.scale = scale;
     } else {
@@ -136,13 +137,13 @@ void ChunkGeneratorOverWorld::generateHeightmap(int x, int y, int z) {
     // double mainNoiseScaleX = 80.0;
     // double mainNoiseScaleY = 160.0;
     // double mainNoiseScaleZ = 80.0;
-    depthRegion = depthNoise.generateNoiseOctaves(depthRegion, x, z, 5, 5, 200.0, 200.0, 0.5);
-    mainNoiseRegion = mainPerlinNoise.generateNoiseOctaves(mainNoiseRegion, x, y, z, 5, 33, 5,
-                                                                       8.55515, 4.277575, 8.55515);
-    minLimitRegion = minLimitPerlinNoise.generateNoiseOctaves(minLimitRegion, x, y, z, 5, 33, 5,
-                                                                          684.412, 684.412, 684.412);
-    maxLimitRegion = maxLimitPerlinNoise.generateNoiseOctaves(maxLimitRegion, x, y, z, 5, 33, 5,
-                                                                          684.412, 684.412, 684.412);
+    depthRegion = depthNoise.genNoiseOctaves(depthRegion, x, z, 5, 5, 200.0, 200.0, 0.5);
+    mainNoiseRegion = mainPerlinNoise.genNoiseOctaves(mainNoiseRegion, x, y, z, 5, 33, 5,
+                                                      8.55515, 4.277575, 8.55515);
+    minLimitRegion = minLimitPerlinNoise.genNoiseOctaves(minLimitRegion, x, y, z, 5, 33, 5,
+                                                         684.412, 684.412, 684.412);
+    maxLimitRegion = maxLimitPerlinNoise.genNoiseOctaves(maxLimitRegion, x, y, z, 5, 33, 5,
+                                                         684.412, 684.412, 684.412);
     int i = 0;
     int j = 0;
 
@@ -222,6 +223,7 @@ void ChunkGeneratorOverWorld::generateHeightmap(int x, int y, int z) {
                 double d2 = minLimitRegion[i] / (double) 512.0; // lowerLimitScale = 512.0
                 double d3 = maxLimitRegion[i] / (double) 512.0; // upperLimitScale = 512.0
                 double d4 = (mainNoiseRegion[i] / 10.0 + 1.0) / 2.0;
+                // TODO: this could be the problem??? swap to d2, d3, d4
                 double d5 = clampedLerp(d4, d2, d3) - d1;
 
                 if (l1 > 29) {

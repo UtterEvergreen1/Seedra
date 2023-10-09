@@ -8,8 +8,8 @@ class RavineGenerator : public MapGenBase {
 public:
     explicit RavineGenerator(const Generator &generator) : MapGenBase(generator) {}
 
-    RavineGenerator(int64_t worldSeed, LCEVERSION lceVersion, CONSOLE console, BIOMESCALE biomeScale) :
-        MapGenBase(worldSeed, lceVersion, console, biomeScale) {}
+    RavineGenerator(CONSOLE console, LCEVERSION version, int64_t seed, WORLDSIZE size, BIOMESCALE scale) :
+        MapGenBase(console, version, seed, size, scale) {}
 
     std::vector<float> rs = std::vector<float>(128, 0.0F);
 

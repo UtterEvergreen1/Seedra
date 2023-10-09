@@ -23,32 +23,38 @@ public:
      * Sets up a biome generator for a given LCE version.
      *
      * @param console target console
-     * @param lceVersion update version
-     * @param biomeSize the biome size for generating biomes
-     * @param worldSize the world size for calculating world bounds, default = classic
+     * @param version update version
+     * @param size the world size for calculating world bounds
+     * @param scale the biome size for generating biomes
      */
-    Generator(CONSOLE console, LCEVERSION lceVersion, BIOMESCALE biomeSize, WORLDSIZE worldSize = WORLDSIZE::CLASSIC);
+    Generator(CONSOLE console, LCEVERSION version, WORLDSIZE size, BIOMESCALE scale);
 
     /**
      * Sets up a biome generator for a given LCE version.
      *
      * @param console target console
-     * @param lceVersion update version
-     * @param biomeSize the biome size for generating biomes
-     * @param worldSeed the world seed to apply
-     * @param worldSize the world size for calculating world bounds, default = classic
+     * @param version update version
+     * @param scale the biome size for generating biomes
+     * @param size the world size for calculating world bounds
+     * @param seed the world seed to apply
      */
-    Generator(CONSOLE console, LCEVERSION lceVersion, int64_t worldSeed, BIOMESCALE biomeSize, WORLDSIZE worldSize);
+    Generator(CONSOLE console, LCEVERSION version, int64_t seed, WORLDSIZE size, BIOMESCALE scale);
 
     /// returns the stored world seed
-    ND inline int64_t getWorldSeed() const { return this->seed; }
+    ND inline int64_t getWorldSeed() const { return this->worldSeed; }
 
     /**
      * Initializes the generator for a given world seed in the overworld.
      *
-     * @param worldSeed world worldSeed to apply
+     * @param seed world seed to apply
      */
-    void applyWorldSeed(int64_t worldSeed);
+    void applyWorldSeed(int64_t seed);
+
+
+    /// Fast way to increment the seed for for loops.
+    inline void incrementSeed() {
+        applyWorldSeed(getWorldSeed() + 1);
+    }
 
     /// returns the stored LCE version
     MU ND inline LCEVERSION getLCEVersion() const { return this->version; }
@@ -56,9 +62,9 @@ public:
     /**
      * Change the version of LCE.
      *
-     * @param lceVersion new LCE version to apply
+     * @param version new LCE version to apply
      */
-    MU void changeLCEVersion(LCEVERSION lceVersion);
+    MU void changeLCEVersion(LCEVERSION version);
 
     /// returns the stored LCE console
     ND inline CONSOLE getConsole() const { return this->console; }
@@ -71,7 +77,7 @@ public:
     MU inline void changeConsole(CONSOLE console) { this->console = console; }
 
     /// returns the stored biome size
-    MU ND inline BIOMESCALE getBiomeSize() const { return this->biomeSize; }
+    MU ND inline BIOMESCALE getBiomeScale() const { return this->biomeScale; }
 
     /**
      * Change the biome size.
@@ -275,10 +281,10 @@ public:
     MU ND Pos2D getSpawnBlock() const;
 
 private:
-    int64_t seed;                   // world seed
+    int64_t worldSeed;                   // world seed
     LCEVERSION version;             // LCE version, used to generate biomes
     CONSOLE console;                // LCE console, used to generate terrain and stronghold
-    BIOMESCALE biomeSize;           // biome size for biome generation
+    BIOMESCALE biomeScale;           // biome size for biome generation
     WORLDSIZE worldSize;            // world size for calculating world bounds
 
     int worldCoordinateBounds;      // block positions of the world bounds

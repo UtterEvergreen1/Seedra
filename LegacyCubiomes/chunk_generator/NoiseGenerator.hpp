@@ -14,18 +14,18 @@ static int64_t lfloor(double value) {
 
 class NoiseGeneratorSimplex {
 public:
-    int grad3[12][3] = {{ 1,  1,  0},
-                        {-1,  1,  0},
-                        { 1, -1,  0},
-                        {-1, -1,  0},
-                        { 1,  0,  1},
-                        {-1,  0,  1},
-                        { 1,  0, -1},
-                        {-1,  0, -1},
-                        { 0,  1,  1},
-                        { 0, -1,  1},
-                        { 0,  1, -1},
-                        { 0, -1, -1}};
+    int grad3[12][3] = {{1,  1,  0},
+                        {-1, 1,  0},
+                        {1,  -1, 0},
+                        {-1, -1, 0},
+                        {1,  0,  1},
+                        {-1, 0,  1},
+                        {1,  0,  -1},
+                        {-1, 0,  -1},
+                        {0,  1,  1},
+                        {0,  -1, 1},
+                        {0,  1,  -1},
+                        {0,  -1, -1}};
     double SQRT_3 = sqrt(3.0);
     int p[512]{};
     double xo{};
@@ -35,20 +35,20 @@ public:
     double G2 = (3.0 - SQRT_3) / 6.0;
 
     void setNoiseGeneratorSimplex(uint64_t *random) {
-        this->xo = nextDouble(random) * 256.0;
-        this->yo = nextDouble(random) * 256.0;
-        this->zo = nextDouble(random) * 256.0;
+        xo = nextDouble(random) * 256.0;
+        yo = nextDouble(random) * 256.0;
+        zo = nextDouble(random) * 256.0;
 
         for (int i = 0; i < 256; i++) {
-            this->p[i] = i;
+            p[i] = i;
         }
 
         for (int l = 0; l < 256; ++l) {
             int j = nextInt(random, 256 - l) + l;
-            int k = this->p[l];
-            this->p[l] = this->p[j];
-            this->p[j] = k;
-            this->p[l + 256] = this->p[l];
+            int k = p[l];
+            p[l] = p[j];
+            p[j] = k;
+            p[l + 256] = p[l];
         }
     }
 
@@ -88,9 +88,9 @@ public:
         double d14 = d10 - 1.0 + 2.0 * d5;
         int i1 = i & 255;
         int j1 = j & 255;
-        int k1 = this->p[i1 + this->p[j1]] % 12;
-        int l1 = this->p[i1 + k + this->p[j1 + l]] % 12;
-        int i2 = this->p[i1 + 1 + this->p[j1 + 1]] % 12;
+        int k1 = p[i1 + p[j1]] % 12;
+        int l1 = p[i1 + k + p[j1 + l]] % 12;
+        int i2 = p[i1 + 1 + p[j1 + 1]] % 12;
         double d15 = 0.5 - d9 * d9 - d10 * d10;
         double d0;
 
@@ -130,10 +130,10 @@ public:
         int i = 0;
 
         for (int j = 0; j < p_151606_7_; ++j) {
-            double d0 = (p_151606_4_ + (double) j) * p_151606_10_ + this->yo;
+            double d0 = (p_151606_4_ + (double) j) * p_151606_10_ + yo;
 
             for (int k = 0; k < p_151606_6_; ++k) {
-                double d1 = (p_151606_2_ + (double) k) * p_151606_8_ + this->xo;
+                double d1 = (p_151606_2_ + (double) k) * p_151606_8_ + xo;
                 double d5 = (d1 + d0) * F2;
                 int l = fastFloor(d1 + d5);
                 int i1 = fastFloor(d0 + d5);
@@ -159,9 +159,9 @@ public:
                 double d14 = d10 - 1.0 + 2.0 * G2;
                 int l1 = l & 255;
                 int i2 = i1 & 255;
-                int j2 = this->p[l1 + this->p[i2]] % 12;
-                int k2 = this->p[l1 + j1 + this->p[i2 + k1]] % 12;
-                int l2 = this->p[l1 + 1 + this->p[i2 + 1]] % 12;
+                int j2 = p[l1 + p[i2]] % 12;
+                int k2 = p[l1 + j1 + p[i2 + k1]] % 12;
+                int l2 = p[l1 + 1 + p[i2 + 1]] % 12;
                 double d15 = 0.5 - d9 * d9 - d10 * d10;
                 double d2;
 
@@ -207,11 +207,11 @@ public:
     int levels;
 
     void setNoiseGeneratorPerlin(uint64_t *p_i45470_1_, int p_i45470_2_) {
-        this->levels = p_i45470_2_;
-        this->noiseLevels = std::vector<NoiseGeneratorSimplex>(p_i45470_2_);
+        levels = p_i45470_2_;
+        noiseLevels = std::vector<NoiseGeneratorSimplex>(p_i45470_2_);
 
         for (int i = 0; i < p_i45470_2_; ++i) {
-            this->noiseLevels[i].setNoiseGeneratorSimplex(p_i45470_1_);
+            noiseLevels[i].setNoiseGeneratorSimplex(p_i45470_1_);
         }
     }
 
@@ -219,8 +219,8 @@ public:
         double d0 = 0.0;
         double d1 = 1.0;
 
-        for (int i = 0; i < this->levels; ++i) {
-            d0 += this->noiseLevels[i].getValue(p_151601_1_ * d1, p_151601_3_ * d1) / d1;
+        for (int i = 0; i < levels; ++i) {
+            d0 += noiseLevels[i].getValue(p_151601_1_ * d1, p_151601_3_ * d1) / d1;
             d1 /= 2.0;
         }
 
@@ -243,8 +243,8 @@ public:
         double d1 = 1.0;
         double d0 = 1.0;
 
-        for (int j = 0; j < this->levels; ++j) {
-            p_151600_1_ = this->noiseLevels[j].add(p_151600_1_, p_151600_2_, p_151600_4_, p_151600_6_, p_151600_7_,
+        for (int j = 0; j < levels; ++j) {
+            p_151600_1_ = noiseLevels[j].add(p_151600_1_, p_151600_2_, p_151600_4_, p_151600_6_, p_151600_7_,
                                                    p_151600_8_ * d0, p_151600_10_ * d0, (double) 0.55 / d1);
             d0 *= p_151600_12_;
             d1 *= p_151600_14_;
@@ -255,7 +255,7 @@ public:
     std::vector<double>
     getRegion(std::vector<double> p_151599_1_, double p_151599_2_, double p_151599_4_, int p_151599_6_, int p_151599_7_,
               double p_151599_8_, double p_151599_10_, double p_151599_12_) {
-        return this->getRegion(std::move(p_151599_1_), p_151599_2_, p_151599_4_, p_151599_6_, p_151599_7_, p_151599_8_,
+        return getRegion(std::move(p_151599_1_), p_151599_2_, p_151599_4_, p_151599_6_, p_151599_7_, p_151599_8_,
                                p_151599_10_, p_151599_12_, 0.5);
     }
 
@@ -279,34 +279,33 @@ public:
     double GRAD_2X[16] = {1.0, -1.0, 1.0, -1.0, 1.0, -1.0, 1.0, -1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, -1.0, 0.0};
     double GRAD_2Z[16] = {0.0, 0.0, 0.0, 0.0, 1.0, 1.0, -1.0, -1.0, 1.0, 1.0, -1.0, -1.0, 0.0, 1.0, 0.0, -1.0};
 
-    void setNoiseGeneratorImproved(uint64_t *p_i45469_1_) {
-        this->xCoord = nextDouble(p_i45469_1_) * 256.0;
-        this->yCoord = nextDouble(p_i45469_1_) * 256.0;
-        this->zCoord = nextDouble(p_i45469_1_) * 256.0;
+    void setNoiseGeneratorImproved(uint64_t *rng) {
+        xCoord = nextDouble(rng) * 256.0;
+        yCoord = nextDouble(rng) * 256.0;
+        zCoord = nextDouble(rng) * 256.0;
 
+        // TODO: this could definitely be statically loaded with a memcpy()
         for (int i = 0; i < 256; i++) {
-            this->permutations[i] = i;
+            permutations[i] = i;
         }
 
         for (int l = 0; l < 256; ++l) {
-            int j = nextInt(p_i45469_1_, 256 - l) + l;
-            int k = this->permutations[l];
-            this->permutations[l] = this->permutations[j];
-            this->permutations[j] = k;
-            this->permutations[l + 256] = this->permutations[l];
+            int j = nextInt(rng, 256 - l) + l;
+            int k = permutations[l];
+            permutations[l] = permutations[j];
+            permutations[j] = k;
+            permutations[l + 256] = permutations[l];
         }
-    }
-
-
-
-    double grad2(int p_76309_1_, double p_76309_2_, double p_76309_4_) {
-        int i = p_76309_1_ & 15;
-        return GRAD_2X[i] * p_76309_2_ + GRAD_2Z[i] * p_76309_4_;
     }
 
     double grad(int p_76310_1_, double p_76310_2_, double p_76310_4_, double p_76310_6_) {
         int i = p_76310_1_ & 15;
         return GRAD_X[i] * p_76310_2_ + GRAD_Y[i] * p_76310_4_ + GRAD_Z[i] * p_76310_6_;
+    }
+
+    double grad2(int p_76309_1_, double p_76309_2_, double p_76309_4_) {
+        int i = p_76309_1_ & 15;
+        return GRAD_2X[i] * p_76309_2_ + GRAD_2Z[i] * p_76309_4_;
     }
 
     /**
@@ -325,9 +324,9 @@ public:
             int l5 = 0;
             double d16 = 1.0 / noiseScale;
 
-            double d17 = xOffset + this->xCoord;
+            double d17 = xOffset + xCoord;
             for (int j2 = 0; j2 < xSize; ++j2) {
-                //double d17 = xOffset + (double)j2 * xScale + this->xCoord; //8942.070107
+                // double d17 = xOffset + (double)j2 * xScale + xCoord; // 8942.070107
                 int i6 = (int) d17;
 
                 if (d17 < (double) i6) {
@@ -335,11 +334,11 @@ public:
                 }
 
                 int k2 = i6 & 255;
-                //d17 = d17 - (double)i6;//only on xbox (and java)
-                double d18 = d17 * d17 * d17 * (d17 * (d17 * 6.0 - 15.0) + 10.0);//53637.420644
+                //d17 = d17 - (double)i6; // only on xbox (and java)
+                double d18 = d17 * d17 * d17 * (d17 * (d17 * 6.0 - 15.0) + 10.0); // 53637.420644
 
                 for (int j6 = 0; j6 < zSize; ++j6) {
-                    double d19 = zOffset + (double) j6 * zScale + this->zCoord; //d17 should equal 12973.405044
+                    double d19 = zOffset + (double) j6 * zScale + zCoord; // d17 should equal 12973.405044
                     int k6 = (int) d19;
 
                     if (d19 < (double) k6) {
@@ -347,17 +346,18 @@ public:
                     }
 
                     int l6 = k6 & 255;
-                    //d19 = d19 - (double)k6;//only on xbox (and java)
+                    //d19 = d19 - (double)k6; // only on xbox (and java)
                     double d20 = d19 * d19 * d19 * (d19 * (d19 * 6.0 - 15.0) + 10.0);
-                    i5 = this->permutations[k2] + 0;
-                    j5 = this->permutations[i5] + l6;
-                    j = this->permutations[k2 + 1] + 0;
-                    k5 = this->permutations[j] + l6;
-                    d14 = lerp(d18, this->grad2(this->permutations[j5], d17, d19),
-                                                       this->grad(this->permutations[k5], d17 - 1.0, 0.0, d19));
-                    d15 = lerp(d18, this->grad(this->permutations[j5 + 1], d17, 0.0, d19 - 1.0),
-                                                       this->grad(this->permutations[k5 + 1], d17 - 1.0, 0.0,
-                                                                  d19 - 1.0));
+                    i5 = permutations[k2] + 0;
+                    j5 = permutations[i5] + l6;
+                    j = permutations[k2 + 1] + 0;
+                    k5 = permutations[j] + l6;
+                    d14 = lerp(d18,
+                               grad2(permutations[j5], d17, d19),
+                               grad(permutations[k5], d17 - 1.0, 0.0, d19));
+                    d15 = lerp(d18,
+                               grad(permutations[j5 + 1], d17, 0.0, d19 - 1.0),
+                               grad(permutations[k5 + 1], d17 - 1.0, 0.0, d19 - 1.0));
                     double d21 = lerp(d20, d14, d15);
                     int i7 = l5++;
                     noiseArray[i7] += d21 * d16;
@@ -380,7 +380,7 @@ public:
             double d4 = 0.0;
 
             for (int l2 = 0; l2 < xSize; ++l2) {
-                double d5 = xOffset + (double) l2 * xScale + this->xCoord;
+                double d5 = xOffset + (double) l2 * xScale + xCoord;
                 int i3 = (int) d5;
 
                 if (d5 < (double) i3) {
@@ -392,7 +392,7 @@ public:
                 double d6 = d5 * d5 * d5 * (d5 * (d5 * 6.0 - 15.0) + 10.0);
 
                 for (int k3 = 0; k3 < zSize; ++k3) {
-                    double d7 = zOffset + (double) k3 * zScale + this->zCoord;
+                    double d7 = zOffset + (double) k3 * zScale + zCoord;
                     int l3 = (int) d7;
 
                     if (d7 < (double) l3) {
@@ -404,7 +404,7 @@ public:
                     double d8 = d7 * d7 * d7 * (d7 * (d7 * 6.0 - 15.0) + 10.0);
 
                     for (int j4 = 0; j4 < ySize; j4++) {
-                        double d9 = yOffset + (double) j4 * yScale + this->yCoord;
+                        double d9 = yOffset + (double) j4 * yScale + yCoord;
                         int k4 = (int) d9;
 
                         if (d9 < (double) k4) {
@@ -417,25 +417,24 @@ public:
 
                         if (j4 == 0 || l4 != k) {
                             k = l4;
-                            l = this->permutations[j3] + l4;
-                            i1 = this->permutations[l] + i4;
-                            j1 = this->permutations[l + 1] + i4;
-                            k1 = this->permutations[j3 + 1] + l4;
-                            l1 = this->permutations[k1] + i4;
-                            i2 = this->permutations[k1 + 1] + i4;
-                            d1 = lerp(d6, this->grad(this->permutations[i1], d5, d9, d7),
-                                                              this->grad(this->permutations[l1], d5 - 1.0, d9, d7));
-                            d2 = lerp(d6, this->grad(this->permutations[j1], d5, d9 - 1.0, d7),
-                                                              this->grad(this->permutations[i2], d5 - 1.0, d9 - 1.0,
-                                                                         d7));
+                            l = permutations[j3] + l4;
+                            i1 = permutations[l] + i4;
+                            j1 = permutations[l + 1] + i4;
+                            k1 = permutations[j3 + 1] + l4;
+                            l1 = permutations[k1] + i4;
+                            i2 = permutations[k1 + 1] + i4;
+                            d1 = lerp(d6,
+                                      grad(permutations[i1], d5, d9, d7),
+                                      grad(permutations[l1], d5 - 1.0, d9, d7));
+                            d2 = lerp(d6,
+                                      grad(permutations[j1], d5, d9 - 1.0, d7),
+                                      grad(permutations[i2], d5 - 1.0, d9 - 1.0, d7));
                             d3 = lerp(d6,
-                                                              this->grad(this->permutations[i1 + 1], d5, d9, d7 - 1.0),
-                                                              this->grad(this->permutations[l1 + 1], d5 - 1.0, d9,
-                                                                         d7 - 1.0));
-                            d4 = lerp(d6, this->grad(this->permutations[j1 + 1], d5, d9 - 1.0,
-                                                                             d7 - 1.0),
-                                                              this->grad(this->permutations[i2 + 1], d5 - 1.0, d9 - 1.0,
-                                                                         d7 - 1.0));
+                                      grad(permutations[i1 + 1], d5, d9, d7 - 1.0),
+                                      grad(permutations[l1 + 1], d5 - 1.0, d9, d7 - 1.0));
+                            d4 = lerp(d6,
+                                      grad(permutations[j1 + 1], d5, d9 - 1.0, d7 - 1.0),
+                                      grad(permutations[i2 + 1], d5 - 1.0, d9 - 1.0, d7 - 1.0));
                         }
 
                         double d11 = lerp(d10, d1, d2);
@@ -460,11 +459,11 @@ public:
     int octaves;
 
     void setNoiseGeneratorOctaves(uint64_t *seed, int octavesIn) {
-        this->octaves = octavesIn;
-        this->generatorCollection = std::vector<NoiseGeneratorImproved>(octavesIn);
+        octaves = octavesIn;
+        generatorCollection = std::vector<NoiseGeneratorImproved>(octavesIn);
 
         for (int i = 0; i < octavesIn; ++i) {
-            this->generatorCollection[i].setNoiseGeneratorImproved(seed);
+            generatorCollection[i].setNoiseGeneratorImproved(seed);
         }
     }
 
@@ -473,8 +472,10 @@ public:
      * x,y,z noiseScale)
      */
     std::vector<double>
-    generateNoiseOctaves(std::vector<double> noiseArray, int xOffset, int yOffset, int zOffset, int xSize, int ySize,
-                         int zSize, double xScale, double yScale, double zScale) {
+    genNoiseOctaves(std::vector<double> noiseArray,
+                    int xOffset, int yOffset, int zOffset,
+                    int xSize, int ySize, int zSize,
+                    double xScale, double yScale, double zScale) {
         if (noiseArray.empty()) {
             noiseArray.resize(xSize * ySize * zSize);
         } else {
@@ -485,7 +486,7 @@ public:
 
         double d3 = 1.0;
 
-        for (int j = 0; j < this->octaves; ++j) {
+        for (int j = 0; j < octaves; ++j) {
             double d0 = (double) xOffset * d3 * xScale;
             double d1 = (double) yOffset * d3 * yScale;
             double d2 = (double) zOffset * d3 * zScale;
@@ -497,8 +498,11 @@ public:
             l = l % 16777216LL;
             d0 = d0 + (double) k;
             d2 = d2 + (double) l;
-            noiseArray = this->generatorCollection[j].populateNoiseArray(noiseArray, d0, d1, d2, xSize, ySize, zSize,
-                                                                         xScale * d3, yScale * d3, zScale * d3, d3);
+            noiseArray = generatorCollection[j].populateNoiseArray(noiseArray,
+                                                                   d0, d1, d2,
+                                                                   xSize, ySize, zSize,
+                                                                   xScale * d3, yScale * d3, zScale * d3,
+                                                                   d3);
             d3 /= 2.0;
         }
         return noiseArray;
@@ -508,9 +512,8 @@ public:
      * Bouncer function to the main one with some default arguments.
      */
     std::vector<double>
-    generateNoiseOctaves(std::vector<double> noiseArray, int xOffset, int zOffset, int xSize, int zSize, double xScale,
-                         double zScale, double p_76305_10_) {
-        return this->generateNoiseOctaves(std::move(noiseArray), xOffset, 10, zOffset, xSize, 1, zSize, xScale, 1.0,
-                                          zScale);
+    genNoiseOctaves(std::vector<double> noiseArray, int xOffset, int zOffset, int xSize, int zSize, double xScale,
+                    double zScale, double p_76305_10_) {
+        return genNoiseOctaves(std::move(noiseArray), xOffset, 10, zOffset, xSize, 1, zSize, xScale, 1.0, zScale);
     }
 };

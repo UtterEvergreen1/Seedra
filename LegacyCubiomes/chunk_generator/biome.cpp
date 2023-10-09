@@ -5,6 +5,7 @@
 std::map<int, Biome *> Biome::registry;
 
 void Biome::registerBiomes() {
+    // frozenOcean,
     registerBiome(0, new BiomeOcean("Ocean", -1.0F, 0.1F, false, 0.5F));
     registerBiome(1, new BiomePlains("Plains", 0.125F, 0.05F, false, 0.8F));
     registerBiome(2, new BiomeDesert("Desert", 0.125F, 0.05F, false, 2.0F));
