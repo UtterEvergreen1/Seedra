@@ -101,10 +101,10 @@ bool Enchantment::Type::All::canEnchantItem(const Items::Item *itemIn) const {
 
 
 bool      Enchantment::Type::Armor::canEnchantItem(const Items::Item *itemIn) const {return itemIn->getItemType() == Items::ItemType::ItemArmor;}
-bool  Enchantment::Type::ArmorFeet::canEnchantItem(const Items::Item *itemIn) const {return itemIn->getArmorType() == Items::EntityEquipmentSlot::FEET;}
-bool  Enchantment::Type::ArmorLegs::canEnchantItem(const Items::Item *itemIn) const {return itemIn->getArmorType() == Items::EntityEquipmentSlot::LEGS;}
-bool Enchantment::Type::ArmorChest::canEnchantItem(const Items::Item *itemIn) const {return itemIn->getArmorType() == Items::EntityEquipmentSlot::CHEST;}
-bool  Enchantment::Type::ArmorHead::canEnchantItem(const Items::Item *itemIn) const {return itemIn->getArmorType() == Items::EntityEquipmentSlot::HEAD;}
+bool  Enchantment::Type::ArmorFeet::canEnchantItem(const Items::Item *itemIn) const {return itemIn->getArmorType() == Items::EntityEquipSlot::FEET;}
+bool  Enchantment::Type::ArmorLegs::canEnchantItem(const Items::Item *itemIn) const {return itemIn->getArmorType() == Items::EntityEquipSlot::LEGS;}
+bool Enchantment::Type::ArmorChest::canEnchantItem(const Items::Item *itemIn) const {return itemIn->getArmorType() == Items::EntityEquipSlot::CHEST;}
+bool  Enchantment::Type::ArmorHead::canEnchantItem(const Items::Item *itemIn) const {return itemIn->getArmorType() == Items::EntityEquipSlot::HEAD;}
 bool     Enchantment::Type::Weapon::canEnchantItem(const Items::Item *itemIn) const {return itemIn->getItemType() == Items::ItemType::ItemSword;}
 bool     Enchantment::Type::Digger::canEnchantItem(const Items::Item *itemIn) const {return itemIn->getItemType() == Items::ItemType::ItemTool;}
 bool Enchantment::Type::FishingRod::canEnchantItem(const Items::Item *itemIn) const {return itemIn->getItemType() == Items::ItemType::ItemFishingRod;}
@@ -114,7 +114,7 @@ bool    Enchantment::Type::Trident::canEnchantItem(const Items::Item *itemIn) co
 
 
 bool Enchantment::Type::Wearable::canEnchantItem(const Items::Item *itemIn) const {
-    return itemIn->getArmorType() != Items::EntityEquipmentSlot::NONE
+    return itemIn->getArmorType() != Items::EntityEquipSlot::NONE
            || itemIn->getItemType() == Items::ItemSkull
            || itemIn->getItemType() == Items::ItemElytra;
 }

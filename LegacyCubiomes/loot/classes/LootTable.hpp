@@ -11,10 +11,8 @@
 class LootTable : public UniformRoll {
 public:
     std::vector<ItemEntry> items;
-    std::vector<int> cumulativeWeights;
-
+    std::vector<uint16_t> cumulativeWeights;
     int totalWeight{};
-    int maxItemsPossible{};
 
     LootTable() = default;
 
@@ -29,11 +27,11 @@ public:
     }
 
     template<bool legacy>
-    static int getInt(uint64_t *random, int minimum, int maximum) {
+    static uint8_t getInt(uint64_t *rng, uint8_t minimum, uint8_t maximum) {
         if constexpr (legacy)
-            return nextInt(random, maximum - minimum + 1) + minimum;
+            return nextInt(rng, maximum - minimum + 1) + minimum;
         else
-            return minimum >= maximum ? minimum : (nextInt(random, maximum - minimum + 1) + minimum);
+            return minimum >= maximum ? minimum : (nextInt(rng, maximum - minimum + 1) + minimum);
     }
 
     void computeCumulativeWeights();
@@ -61,7 +59,7 @@ public:
         }
 
         const ItemEntry &selectedItem = items[low];
-        return {selectedItem.item, LootTable::getInt<legacy>(rng, selectedItem.min, selectedItem.max)};
+        return {selectedItem.item, LootTable::getInt<legacy>(rng, selectedItem.getMin(), selectedItem.getMax())};
 
     }
 };

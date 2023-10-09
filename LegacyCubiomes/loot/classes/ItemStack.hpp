@@ -10,7 +10,7 @@
 class ItemStack {
 public:
     const Items::Item* item;
-    int stackSize{};
+    uint8_t stackSize{};
     std::vector<EnchantmentData> enchantments;
 
     ItemStack() : item(nullptr), stackSize(0) {}
@@ -25,7 +25,7 @@ public:
 
     friend std::ostream& operator<<(std::ostream& out, const ItemStack &itemStack) {
         if (itemStack.stackSize > 1) {
-            out << itemStack.item->getName() << " (" << itemStack.stackSize << ")";
+            out << itemStack.item->getName() << " (" << (int)itemStack.stackSize << ")";
         } else {
             out << itemStack.item->getName();
         }

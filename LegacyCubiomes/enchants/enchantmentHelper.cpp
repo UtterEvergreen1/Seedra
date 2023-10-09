@@ -8,8 +8,8 @@
 
 
 void EnchantmentHelper::setConsoleAndVersion(CONSOLE console, LCEVERSION version) {
-    int consoleNum = static_cast<int>(console);
-    int lceVersion = static_cast<int>(version);
+    int consoleNum = static_cast<int8_t>(console);
+    int lceVersion = static_cast<int8_t>(version);
 
     // error handling
     if(consoleNum >= Enchantment::tableOfOrders.size())
@@ -50,7 +50,7 @@ EnchDataVec_t EnchantmentHelper::EnchantWithLevelsItem::buildEnchantmentList(uin
     list.reserve(MAX_ENCHANT_LIST_SIZE);
 
     const Items::Item* item = itemStackIn->getItem();
-    int i = item->getCost();
+    int i = static_cast<int>((unsigned char)item->getCost());
 
     if (i == 0)
         return list;
@@ -112,7 +112,7 @@ EnchDataVec_t EnchantmentHelper::EnchantWithLevelsItem::getEnchantmentDataList(i
 
         if (!pointer->type->canEnchantItem(ItemStackIn->getItem())) continue;
 
-        for (int i = pointer->maxLevel; i > 0; --i) { // maxLevel to minLevel - 1 (always 0)
+        for (int8_t i = pointer->maxLevel; i > 0; --i) { // maxLevel to minLevel - 1 (always 0)
 
             if (enchantmentLevelIn >= pointer->getMinCost(i)
                 && enchantmentLevelIn <= pointer->getMaxCost(i)) {
@@ -191,7 +191,7 @@ void EnchantmentHelper::EnchantRandomlyItem::apply(uint64_t *rng, ItemStack *sta
 
 
     Enchantment* enchPtr = list[nextInt(rng, (int)list.size())];
-    int level = nextInt(rng, enchPtr->minLevel, enchPtr->maxLevel);
+    int level = nextInt(rng, 1, enchPtr->maxLevel);
     stack->addEnchantment(enchPtr, level);
 }
 
@@ -203,7 +203,7 @@ void EnchantmentHelper::EnchantRandomlyItem::apply(uint64_t *rng, ItemStack *sta
 
 void EnchantmentHelper::EnchantRandomlyBook::apply(uint64_t* rng, ItemStack* stack) {
     Enchantment* enchPtr = Enchantment::REGISTRY[nextInt(rng, (int)Enchantment::REGISTRY.size())];
-    int level = nextInt(rng, enchPtr->minLevel, enchPtr->maxLevel);
+    int level = nextInt(rng, 1, enchPtr->maxLevel);
     stack->addEnchantment(enchPtr, level);
 }
 

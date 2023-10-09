@@ -2,7 +2,7 @@
 
 namespace Items {
 
-    enum ItemID {
+    enum ItemID : int16_t {
         AIR_ID = 0,
         STONE_ID = 1,
         GRASS_ID = 2,

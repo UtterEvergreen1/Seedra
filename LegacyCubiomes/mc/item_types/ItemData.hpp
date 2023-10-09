@@ -3,7 +3,7 @@
 
 namespace Items {
 
-    enum ItemType {
+    enum ItemType : int8_t {
         ItemArmor,
         ItemBlock,
         ItemBow,
@@ -15,33 +15,30 @@ namespace Items {
         ItemTrident
     };
 
-    struct EntityEquipmentSlot {
-        static constexpr int NONE = -1;
-        static constexpr int FEET = 0;
-        static constexpr int LEGS = 1;
-        static constexpr int CHEST = 2;
-        static constexpr int HEAD = 3;
+    enum class EntityEquipSlot : int8_t {
+        NONE = -1,
+        FEET = 0,
+        LEGS = 1,
+        CHEST = 2,
+        HEAD = 3,
     };
 
-    /** represents enchantability for a specific material */
-    struct ArmorMaterials {
-        static constexpr int LEATHER = 15;
-        static constexpr int CHAIN = 12;
-        static constexpr int IRON = 9;
-        static constexpr int GOLD = 25;
-        static constexpr int DIAMOND = 1;
+    /// represents enchantability for a specific material
+    enum ArmorMaterials : int8_t {
+        ARMOR_LEATHER = 15,
+        ARMOR_CHAIN = 12,
+        ARMOR_IRON = 9,
+        ARMOR_GOLD = 25,
+        ARMOR_DIAMOND = 1,
     };
 
-    /** represents enchantability for a specific material */
-    struct ToolMaterials {
-        static constexpr int WOOD = 15;
-        static constexpr int STONE = 5;
-        static constexpr int IRON = 14;
-        static constexpr int DIAMOND = 10;
-        static constexpr int GOLD = 22;
+    /// represents enchantability for a specific material
+    enum ToolMaterials : int8_t {
+        TOOL_WOOD = 15,
+        TOOL_STONE = 5,
+        TOOL_IRON = 14,
+        TOOL_DIAMOND = 10,
+        TOOL_GOLD = 22,
     };
-
-
-
 
 }

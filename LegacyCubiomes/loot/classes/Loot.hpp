@@ -11,7 +11,7 @@ namespace loot {
     class Loot {
     public:
         static std::vector<LootTable> lootTables;
-        static int maxItemsPossible;
+        static uint8_t maxItemsPossible;
 
         /// combine base loot seeding and generation to get the base loot
         template<bool shuffle, bool legacy>
@@ -46,7 +46,7 @@ namespace loot {
     std::vector<LootTable> Loot<T>::lootTables;
 
     template<typename T>
-    int Loot<T>::maxItemsPossible;
+    uint8_t Loot<T>::maxItemsPossible;
 
 }
 

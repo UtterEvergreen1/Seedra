@@ -64,7 +64,7 @@ namespace loot {
 
         // generate loot
         for(const LootTable& table : StrongholdCorridor<isAquatic>::lootTables){
-            rollCount = LootTable::getInt<false>(lootTableSeed, table.min, table.max);
+            rollCount = LootTable::getInt<false>(lootTableSeed, table.getMin(), table.getMax());
             for (rollIndex = 0; rollIndex < rollCount; rollIndex++) {
                 ItemStack result = table.createLootRoll<false>(lootTableSeed);
 

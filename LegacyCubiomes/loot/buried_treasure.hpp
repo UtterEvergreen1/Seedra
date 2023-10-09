@@ -59,7 +59,7 @@ namespace loot {
         //generate loot
         int slotIndex = 0;
         for(const LootTable& table : lootTables){
-            rollCount = LootTable::getInt<false>(&lootTableSeed, table.min, table.max);
+            rollCount = LootTable::getInt<false>(&lootTableSeed, table.getMin(), table.getMax());
             for (int rollIndex = 0; rollIndex < rollCount; rollIndex++) {
                 ItemStack result = table.createLootRoll<false>(&lootTableSeed);
                 chestContents[slotIndex++] = result;

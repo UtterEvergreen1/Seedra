@@ -6,6 +6,8 @@
 class ItemEntry : public LootItem, public UniformRoll {
 public:
     ItemEntry() = default;
-    ItemEntry(const Items::Item* item, int weight) : LootItem(item, weight), UniformRoll(1, 1) {}
-    ItemEntry(const Items::Item* item, int weight, int min, int max) : LootItem(item, weight), UniformRoll(min, max) {}
+    ItemEntry(const Items::Item* item, uint8_t weight) :
+        LootItem(item, weight), UniformRoll(1, 1) {}
+    ItemEntry(const Items::Item* item, uint8_t weight, uint8_t min, uint8_t max) :
+        LootItem(item, weight), UniformRoll(min, max) {}
 };

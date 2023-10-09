@@ -43,7 +43,7 @@ namespace loot {
         setSeed(lootTableSeed, *lootTableSeed);
 
         for (const LootTable& table : lootTables) {
-            rollCount = LootTable::getInt<false>(lootTableSeed, table.min, table.max);
+            rollCount = LootTable::getInt<false>(lootTableSeed, table.getMin(), table.getMax());
             for (rollIndex = 0; rollIndex < rollCount; rollIndex++) {
                 ItemStack result = table.createLootRoll<false>(lootTableSeed);
 

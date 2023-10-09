@@ -2,15 +2,15 @@
 
 
 ItemStack ItemStack::splitStack(int amount) {
-    int splitCount = std::min(amount, this->stackSize);
-    ItemStack splitItem(this->item, splitCount);
-    this->stackSize -= splitCount;
+    int splitCount = std::min(amount, (int)stackSize);
+    ItemStack splitItem(item, splitCount);
+    stackSize -= splitCount;
     return splitItem;
 }
 
 
 ND const Items::Item* ItemStack::getItem() const {
-    return this->item;
+    return item;
 }
 
 
