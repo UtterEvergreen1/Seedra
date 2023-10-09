@@ -1,5 +1,8 @@
 #pragma once
 
+#include <cstdint>
+#include <string>
+
 enum class DIMENSION : int8_t {
     NETHER   = -1,
     HELL     = -1,
@@ -31,10 +34,21 @@ enum class LCEVERSION : int8_t {
 
 /// Minecraft Java versions
 enum MCVERSION : int8_t {
-    MC_1_0, // <=1.0 Experimental!
-    MC_1_1,  MC_1_2,  MC_1_3,  MC_1_4,  MC_1_5,  MC_1_6,
-    MC_1_7,  MC_1_8,  MC_1_9,  MC_1_10, MC_1_11, MC_1_12,
-    MC_1_13, MC_1_14
+    MC_1_0 = 0, // <=1.0 Experimental!
+    MC_1_1 = 1,
+    MC_1_2 = 2,
+    MC_1_3 = 3,
+    MC_1_4 = 4,
+    MC_1_5 = 5,
+    MC_1_6 = 6,
+    MC_1_7 = 7,
+    MC_1_8 = 8,
+    MC_1_9 = 9,
+    MC_1_10 = 10,
+    MC_1_11 = 11,
+    MC_1_12 = 12,
+    MC_1_13 = 13,
+    MC_1_14 = 14
 };
 
 enum class DIRECTION : int8_t {
@@ -57,6 +71,27 @@ enum class WORLDSIZE : int8_t {
     LARGE   = 3
 };
 
+inline static std::string LceVersionToString(LCEVERSION version) {
+    switch(version) {
+        case LCEVERSION::PS4_VP:
+            return "PS4_VP";
+        case LCEVERSION::AQUATIC:
+            return "AQUATIC";
+        case LCEVERSION::ELYTRA:
+            return "ELYTRA";
+        case LCEVERSION::BOUNTIFUL:
+            return "BOUNTIFUL";
+        case LCEVERSION::HORSE:
+            return "HORSE";
+        case LCEVERSION::POTIONS:
+            return "POTIONS";
+        case LCEVERSION::ADVENTURE:
+            return "ADVENTURE";
+        default:
+            return "NONE";
+    }
+}
+
 inline static int getChunkWorldBounds(WORLDSIZE worldSize) {
     switch (worldSize) {
     case WORLDSIZE::CLASSIC:
@@ -70,6 +105,35 @@ inline static int getChunkWorldBounds(WORLDSIZE worldSize) {
         return 160;
     }
 }
+
+inline static std::string worldSizeToString(WORLDSIZE worldSize) {
+    switch (worldSize) {
+        case WORLDSIZE::CLASSIC:
+        default:
+            return "CLASSIC";
+        case WORLDSIZE::SMALL:
+            return "SMALL";
+        case WORLDSIZE::MEDIUM:
+            return "MEDIUM";
+        case WORLDSIZE::LARGE:
+            return "LARGE";
+    }
+}
+
+
+inline static std::string biomeScaleToString(BIOMESCALE biomeScale) {
+    switch (biomeScale) {
+        case BIOMESCALE::SMALL:
+            return "SMALL";
+        case BIOMESCALE::MEDIUM:
+            return "MEDIUM";
+        case BIOMESCALE::LARGE:
+            return "LARGE";
+        default:
+            return "NONE";
+    }
+}
+
 
 inline static MCVERSION getMCVersion(LCEVERSION lceVersionIn) {
     switch (lceVersionIn) {
