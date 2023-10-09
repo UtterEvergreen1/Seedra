@@ -1,11 +1,14 @@
-// "generator.hpp" -*- C++ -*-
-
 #pragma once
 
-#include "../utils/pos2D.hpp"
+#include "LegacyCubiomes/utils/pos2D.hpp"
 #include "LegacyCubiomes/utils/enums.hpp"
+
 #include "layers.hpp"
-#include "noise.hpp"
+
+struct Layer;
+struct LayerStack;
+struct Range;
+struct SurfaceNoise;
 
 #include <cstdio>
 #include <cstdlib>
@@ -13,11 +16,23 @@
 #include <memory>
 #include <iostream>
 
+
 class Generator {
+private:
+    int64_t worldSeed;                   // world seed
+    LCEVERSION version;             // LCE version, used to generate biomes
+    CONSOLE console;                // LCE console, used to generate terrain and stronghold
+    BIOMESCALE biomeScale;           // biome size for biome generation
+    WORLDSIZE worldSize;            // world size for calculating world bounds
+
+    int worldCoordinateBounds;      // block positions of the world bounds
+
+    LayerStack layerStack{};        // stack for entries
+
 public:
-    ///=============================================================================
+    ///========================================================================
     /// Biome Generation
-    ///=============================================================================
+    ///========================================================================
 
     /**
      * Sets up a biome generator for a given LCE version.
@@ -178,9 +193,9 @@ public:
      */
     ND Layer* getLayerForScale(int scale) const;
 
-    //==============================================================================
+    //========================================================================
     // Checking Biomes & Biome Helper Functions
-    //==============================================================================
+    //========================================================================
 
     /**
      * Checks the given id against the valid biomes.
@@ -284,16 +299,5 @@ public:
 
     /// Finds the spawn block coordinates (not currently correct in wooded_badlands_plateau or mesa_plateau_stone).
     MU ND Pos2D getSpawnBlock() const;
-
-private:
-    int64_t worldSeed;                   // world seed
-    LCEVERSION version;             // LCE version, used to generate biomes
-    CONSOLE console;                // LCE console, used to generate terrain and stronghold
-    BIOMESCALE biomeScale;           // biome size for biome generation
-    WORLDSIZE worldSize;            // world size for calculating world bounds
-
-    int worldCoordinateBounds;      // block positions of the world bounds
-
-    LayerStack layerStack{};        // stack for entries
 };
 

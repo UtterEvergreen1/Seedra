@@ -1,4 +1,7 @@
 #include "DynamicStructures.hpp"
+
+#include "LegacyCubiomes/cubiomes/rng.hpp"
+
 namespace Placement {
 
     // defaults

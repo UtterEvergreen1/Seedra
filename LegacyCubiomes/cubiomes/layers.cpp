@@ -3,10 +3,12 @@
 #include <cstring>
 #include <cstdio>
 #include <cmath>
-#include <iostream>
+
 
 #include "layers.hpp"
 #include "noise.hpp"
+#include "rng.hpp"
+
 //==============================================================================
 // Essentials
 //==============================================================================
@@ -330,7 +332,7 @@ void setLayerSeed(Layer *layer, uint64_t worldSeed) {
 
 
 ///=============================================================================
-/// Layered Biome Generation (old interface up to 1.17)
+/// Layered Biome const Generation (old interface up to 1.17)
 ///=============================================================================
 
 /* Set up custom layers. */
@@ -418,7 +420,7 @@ void setupLayerStack(LayerStack *g, LCEVERSION lceVersion, BIOMESCALE biomeSize)
         p = setupLayer(l + L_ZOOM_64, mapZoom, mc, 2, 3, 1001, p, 0);
 
     p = setupLayer(l + L_BIOME_EDGE_64, mapBiomeEdge, mc, 1, 2, 1000, p, 0);
-    // river noise layer chain, also used to determine where hills generate
+    // river noise layer chain, also used to determine where hills const generate
     p = setupLayer(l + L_RIVER_INIT_256, mapNoise, mc, 1, 0, 100,
                    l + L_DEEP_OCEAN_256, 0);
 
@@ -864,7 +866,7 @@ int getBiomeDepthAndScale(int id, double *depth, double *scale, int *grass) {
 }
 
 
-/* Recursively calculates the minimum buffer size required to generate an area
+/* Recursively calculates the minimum buffer size required to const generate an area
  * of the specified size from the current layer onwards.
  */
 void getMaxArea(const Layer *layer, int areaX, int areaZ, int *maxX, int *maxZ, size_t *siz) {
@@ -904,7 +906,7 @@ size_t getMinLayerCacheSize(const Layer *layer, int sizeX, int sizeZ) {
     return bufferSize + maxX * (size_t) maxZ;
 }
 
-/** Generates the specified area using the current generator settings and stores
+/** const Generates the specified area using the current const generator settings and stores
  * the biomeIDs in 'out'.
  * The biomeIDs will be indexed in the form: out[x + z*areaWidth]
  * It is recommended that 'out' is allocated using allocCache() for the correct
@@ -941,7 +943,7 @@ void initSurfaceNoiseEnd(SurfaceNoise *rnd, uint64_t seed) {
     initSurfaceNoiseOld(rnd, &s, 2.0, 1.0, 80.0, 160.0);
 }
 
-double sampleSurfaceNoise(const SurfaceNoise *rnd, int x, int y, int z) {
+double sampleSurfaceNoise(const Generator* g, const SurfaceNoise *rnd, int x, int y, int z) {
     double xzScale = 684.412 * rnd->xzScale;
     double yScale = 684.412 * rnd->yScale;
     double xzStep = xzScale / rnd->xzFactor;
@@ -961,8 +963,8 @@ double sampleSurfaceNoise(const SurfaceNoise *rnd, int x, int y, int z) {
         sy = yScale * persist;
         ty = y * sy;
 
-        minNoise += samplePerlin(&rnd->octaveMin.octaves[i], dx, dy, dz, sy, ty) / persist;
-        maxNoise += samplePerlin(&rnd->octaveMax.octaves[i], dx, dy, dz, sy, ty) / persist;
+        minNoise += samplePerlin(g, &rnd->octaveMin.octaves[i], dx, dy, dz, sy, ty) / persist;
+        maxNoise += samplePerlin(g, &rnd->octaveMax.octaves[i], dx, dy, dz, sy, ty) / persist;
 
         if (i < 8) {
             dx = maintainPrecision(x * xzStep * persist);
@@ -970,7 +972,7 @@ double sampleSurfaceNoise(const SurfaceNoise *rnd, int x, int y, int z) {
             dz = maintainPrecision(z * xzStep * persist);
             sy = yStep * persist;
             ty = y * sy;
-            mainNoise += samplePerlin(&rnd->octaveMain.octaves[i], dx, dy, dz, sy, ty) / persist;
+            mainNoise += samplePerlin(g, &rnd->octaveMain.octaves[i], dx, dy, dz, sy, ty) / persist;
         }
         persist /= 2.0;
     }
@@ -979,7 +981,7 @@ double sampleSurfaceNoise(const SurfaceNoise *rnd, int x, int y, int z) {
 }
 
 //==============================================================================
-// End Generation
+// End const Generation
 //==============================================================================
 
 void setEndSeed(EndNoise *en, uint64_t seed) {
@@ -1022,12 +1024,12 @@ float getEndHeightNoise(const EndNoise *en, int x, int z) {
 }
 
 
-void sampleNoiseColumnEnd(double column[], const SurfaceNoise *sn,
+void sampleNoiseColumnEnd(const Generator* g, double column[], const SurfaceNoise *sn,
                           const EndNoise *en, int x, int z, int colymin, int colymax) {
     double depth = getEndHeightNoise(en, x, z) - 8.0f;
     int y;
     for (y = colymin; y <= colymax; y++) {
-        double noise = sampleSurfaceNoise(sn, x, y, z);
+        double noise = sampleSurfaceNoise(g, sn, x, y, z);
         noise += depth; // falloff for the End is just the depth
         // clamp top and bottom slides from End settings
         noise = clampedLerp((32 + 46 - y) / 64.0, -3000, noise);
@@ -1072,7 +1074,7 @@ int getSurfaceHeight(
 }
 
 
-int getSurfaceHeightEnd(int mc, uint64_t seed, int x, int z) {
+int getSurfaceHeightEnd(const Generator* g, int mc, uint64_t seed, int x, int z) {
     (void) mc;
 
     EndNoise en;
@@ -1092,10 +1094,10 @@ int getSurfaceHeightEnd(int mc, uint64_t seed, int x, int z) {
     double ncol01[yn];
     double ncol10[yn];
     double ncol11[yn];
-    sampleNoiseColumnEnd(ncol00, &sn, &en, cellX, cellY, y0, y1);
-    sampleNoiseColumnEnd(ncol01, &sn, &en, cellX, cellY + 1, y0, y1);
-    sampleNoiseColumnEnd(ncol10, &sn, &en, cellX + 1, cellY, y0, y1);
-    sampleNoiseColumnEnd(ncol11, &sn, &en, cellX + 1, cellY + 1, y0, y1);
+    sampleNoiseColumnEnd(g, ncol00, &sn, &en, cellX, cellY, y0, y1);
+    sampleNoiseColumnEnd(g, ncol01, &sn, &en, cellX, cellY + 1, y0, y1);
+    sampleNoiseColumnEnd(g, ncol10, &sn, &en, cellX + 1, cellY, y0, y1);
+    sampleNoiseColumnEnd(g, ncol11, &sn, &en, cellX + 1, cellY + 1, y0, y1);
 
     return getSurfaceHeight(ncol00, ncol01, ncol10, ncol11, y0, y1, 4, dx, dz);
 }

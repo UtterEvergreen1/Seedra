@@ -1,5 +1,7 @@
 #include "CaveGenerator.hpp"
 
+#include "LegacyCubiomes/cubiomes/layers.hpp"
+
 
 unsigned char CaveGenerator::topBlock(int x, int z) {
     int biomeID = g.getBiomeAt(1, x, z);
