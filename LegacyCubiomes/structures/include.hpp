@@ -30,7 +30,7 @@ namespace Placement {
     static void setWorldSize(WORLDSIZE worldSize) {
         Mansion::setWorldSize(worldSize);
         Monument::setWorldSize(worldSize);
-        Treasure::setWorldSize(worldSize);
+        BuriedTreasure::setWorldSize(worldSize);
         Shipwreck::setWorldSize(worldSize);
         Outpost::setWorldSize(worldSize);
     }

@@ -89,7 +89,7 @@ namespace Placement {
         static void setWorldSize(WORLDSIZE worldSize);
     };
 
-    class Treasure : public DynamicStructure<Treasure> {
+    class BuriedTreasure : public DynamicStructure<BuriedTreasure> {
     public:
         static void setWorldSize(WORLDSIZE worldSize);
     };
