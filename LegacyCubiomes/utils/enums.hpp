@@ -25,8 +25,8 @@ enum class LCEVERSION : int8_t {
     HORSE = 3,
     POTIONS = 4,
     ADVENTURE = 5,
-    //PISTON,
-    //GENERATION, // not supported yet
+    // PISTON,
+    // GENERATION, // not supported yet
 
     PS4_VP = 6,
     NONE = 7

@@ -17,7 +17,7 @@ int main(int argc, char* argv[]) {
     std::string dir = R"(C:\Users\Jerrin\CLionProjects\LegacyCubiomes\)";
 
     auto console = CONSOLE::PS3;
-    auto version = LCEVERSION::ELYTRA;
+    auto version = LCEVERSION::AQUATIC;
     auto size = WORLDSIZE::LARGE;
     auto scale = BIOMESCALE::LARGE;
     auto seed = 0;
