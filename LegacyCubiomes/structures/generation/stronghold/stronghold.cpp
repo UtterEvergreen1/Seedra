@@ -1,7 +1,7 @@
 #include <cmath>
 
 #include "stronghold.hpp"
-#include "LegacyCubiomes/cubiomes/rng.hpp"
+#include "LegacyCubiomes/utils/rng.hpp"
 
 
 static const DIRECTION HORIZONTAL[4] = {
@@ -18,30 +18,30 @@ namespace generation {
 
 
     void Stronghold::generate(int64_t worldSeed, int chunkX, int chunkZ) {
-        uint64_t random = getLargeFeatureSeed(worldSeed, chunkX, chunkZ);
-        random = (random * 0x5deece66d + 0xb) & 0xFFFFFFFFFFFF; // advance rng
+        RNG rng = RNG::getLargeFeatureSeed(worldSeed, chunkX, chunkZ);
+        rng.advance();
         startX = (chunkX << 4) + 2;
         startZ = (chunkZ << 4) + 2;
         do {
             resetPieces();
 
             // creates starting staircase
-            DIRECTION direction = HORIZONTAL[nextInt(&random, 4)];
+            DIRECTION direction = HORIZONTAL[rng.nextInt(4)];
             BoundingBox stairsBoundingBox = Piece::makeBoundingBox(startX, 64, startZ, direction, 5, 11, 5);
             Piece startPiece = Piece(PieceType::STAIRS_DOWN, 0, stairsBoundingBox, direction, 1);
             pieceArray[pieceArraySize++] = startPiece;
 
             // this only adds the 5-crossing room
-            addChildren(startPiece, &random);
+            addChildren(startPiece, rng);
 
             while (pendingPiecesArraySize != 0) {
-                int i = nextInt(&random, pendingPiecesArraySize);
+                int i = rng.nextInt(pendingPiecesArraySize);
                 Piece &piece = pieceArray[pendingPieceArray[i]];
                 pendingPiecesArraySize--;
                 for (int j = i; j < pendingPiecesArraySize; j++) {
                     pendingPieceArray[j] = pendingPieceArray[j + 1];
                 }
-                addChildren(piece, &random);
+                addChildren(piece, rng);
 
                 bool isNullPtr = portalRoomPiece != nullptr;
                 if (isNullPtr && generationStep == GenerationStep::PORTAL) return;
@@ -60,7 +60,7 @@ namespace generation {
             const int i = 53; // 63 - 10
             int j = structureBoundingBox.getYSize() + 1;
             if (j < i) {
-                j += nextInt(&random, i - j);
+                j += rng.nextInt(i - j);
             }
 
             int k = j - structureBoundingBox.maxY;
@@ -151,49 +151,49 @@ namespace generation {
     }
 
 
-    Piece Stronghold::createPiece(PieceType pieceType, uint64_t *rng,
+    Piece Stronghold::createPiece(PieceType pieceType, RNG& rng,
                                   DIRECTION direction, int depth, BoundingBox boundingBox) {
         int additionalData = 0;
         switch (pieceType) {
             case PieceType::STRAIGHT:
                 // rng.nextInt(5); // this is java
-                additionalData |= (nextInt(rng, 2) == 0) << 0;
-                additionalData |= (nextInt(rng, 2) == 0) << 1;
-                nextInt(rng, 5);
+                additionalData |= (rng.nextInt(2) == 0) << 0;
+                additionalData |= (rng.nextInt(2) == 0) << 1;
+                rng.nextInt(5);
                 break;
             case PieceType::PRISON_HALL:
-                nextInt(rng, 5);
+                rng.nextInt(5);
                 break;
             case PieceType::LEFT_TURN:
-                nextInt(rng, 5);
+                rng.nextInt(5);
                 break;
             case PieceType::RIGHT_TURN:
-                nextInt(rng, 5);
+                rng.nextInt(5);
                 return {PieceType::LEFT_TURN, depth, boundingBox, direction, additionalData};
             case PieceType::ROOM_CROSSING:
                 // rng.nextInt(5); // this is java
-                additionalData = nextInt(rng, 5);
-                nextInt(rng, 5);
+                additionalData = rng.nextInt(5);
+                rng.nextInt(5);
                 break;
             case PieceType::STRAIGHT_STAIRS_DOWN:
-                nextInt(rng, 5);
+                rng.nextInt(5);
                 break;
             case PieceType::STAIRS_DOWN:
-                nextInt(rng, 5);
+                rng.nextInt(5);
                 break;
             case PieceType::FIVE_CROSSING:
-                nextInt(rng, 5);
-                additionalData |= (nextBoolean(rng)) << 0;
-                additionalData |= (nextBoolean(rng)) << 1;
-                additionalData |= (nextBoolean(rng)) << 2;
-                additionalData |= (nextInt(rng, 3) > 0) << 3;
+                rng.nextInt(5);
+                additionalData |= (rng.nextBoolean()) << 0;
+                additionalData |= (rng.nextBoolean()) << 1;
+                additionalData |= (rng.nextBoolean()) << 2;
+                additionalData |= (rng.nextInt(3) > 0) << 3;
                 break;
             case PieceType::CHEST_CORRIDOR:
                 altarChestsArray[altarChestArraySize++] = &pieceArray[pieceArraySize];
-                nextInt(rng, 5);
+                rng.nextInt(5);
                 break;
             case PieceType::LIBRARY:
-                nextInt(rng, 5);
+                rng.nextInt(5);
                 if (boundingBox.maxY > 6) additionalData = 1;
                 break;
             case PieceType::PORTAL_ROOM:
@@ -206,7 +206,7 @@ namespace generation {
     }
 
 
-    bool Stronghold::tryAddPieceFromType(PieceType pieceType, uint64_t *rng, Pos3D pos, DIRECTION direction, int depth) {
+    bool Stronghold::tryAddPieceFromType(PieceType pieceType, RNG& rng, Pos3D pos, DIRECTION direction, int depth) {
         BoundingBox bBox = createPieceBoundingBox(pieceType, pos, direction);
         if (!isOkBox(bBox) || collidesWithPiece(bBox)) {
             if (pieceType == PieceType::LIBRARY) {
@@ -227,7 +227,7 @@ namespace generation {
         return true;
     }
 
-    bool Stronghold::genPieceFromSmallDoor(uint64_t *rng, Pos3D pos, DIRECTION direction, int depth) {
+    bool Stronghold::genPieceFromSmallDoor(RNG& rng, Pos3D pos, DIRECTION direction, int depth) {
         if EXPECT_FALSE(generationStopped) return false;
 
         if EXPECT_FALSE(forcedPiece != PieceType::NONE) {
@@ -239,7 +239,7 @@ namespace generation {
         int maxWeight = totalWeight;
 
         for (int attempt = 0; attempt < 5; attempt++) {
-            int selectedWeight = nextInt(rng, maxWeight);
+            int selectedWeight = rng.nextInt(maxWeight);
             /// printf("Selected weight %i %i", totalWeight, selectedWeight);
             for (int index = 0; index < piecePlaceCountsSize; index++) {
                 PiecePlaceCount &piecePlaceCount = piecePlaceCounts[index];
@@ -276,7 +276,7 @@ namespace generation {
         return false;
     }
 
-    void Stronghold::genAndAddPiece(uint64_t *rng, Pos3D pos, DIRECTION direction, int depth) {
+    void Stronghold::genAndAddPiece(RNG& rng, Pos3D pos, DIRECTION direction, int depth) {
         if (depth > 50) return;
 
         if (abs(pos.getX() - startX) <= 48 && abs(pos.getZ() - startZ) <= 48) {
@@ -317,7 +317,7 @@ namespace generation {
     }
 
 
-    void Stronghold::genSmallDoorChildForward(Piece &piece, uint64_t *rng, int n, int n2) {
+    void Stronghold::genSmallDoorChildForward(Piece &piece, RNG& rng, int n, int n2) {
         DIRECTION direction = piece.orientation;
         switch (direction) {
             case DIRECTION::NORTH:
@@ -332,7 +332,7 @@ namespace generation {
     }
 
 
-    void Stronghold::genSmallDoorChildLeft(Piece &piece, uint64_t *rng, int n, int n2) {
+    void Stronghold::genSmallDoorChildLeft(Piece &piece, RNG& rng, int n, int n2) {
         switch (piece.orientation) {
             case DIRECTION::SOUTH:
             case DIRECTION::NORTH:
@@ -345,7 +345,7 @@ namespace generation {
         }
     }
 
-    void Stronghold::genSmallDoorChildRight(Piece &piece, uint64_t *rng, int n, int n2) {
+    void Stronghold::genSmallDoorChildRight(Piece &piece, RNG& rng, int n, int n2) {
         switch (piece.orientation) {
             case DIRECTION::SOUTH:
             case DIRECTION::NORTH:
@@ -359,7 +359,7 @@ namespace generation {
     }
 
 
-    void Stronghold::addChildren(Piece &piece, uint64_t *rng) {
+    void Stronghold::addChildren(Piece &piece, RNG& rng) {
         switch (piece.type) {
             case PieceType::STRAIGHT:
                 genSmallDoorChildForward(piece, rng, 1, 1);

@@ -1,4 +1,4 @@
-#include "pos2D.hpp"
+#include "Pos2D.hpp"
 
 
 bool Pos2D::operator==(const Pos2D& other) const {

@@ -4,9 +4,9 @@
 #include "LegacyCubiomes/building_blocks/Piece.hpp"
 #include "LegacyCubiomes/cubiomes/layers.hpp"
 #include "LegacyCubiomes/cubiomes/generator.hpp"
-#include "LegacyCubiomes/cubiomes/rng.hpp"
-#include "LegacyCubiomes/utils/pos2D.hpp"
-#include "LegacyCubiomes/utils/pos3D.hpp"
+#include "LegacyCubiomes/utils/rng.hpp"
+#include "LegacyCubiomes/utils/Pos2D.hpp"
+#include "LegacyCubiomes/utils/Pos3D.hpp"
 
 namespace generation {
 
@@ -64,25 +64,25 @@ namespace generation {
                     : pieceType(pieceType), weight(weight), maxPlaceCount(maxPlaceCount), amountPlaced(amountPlaced) {}
         };
 
-        bool isZombieInfested;
+        bool isZombieInfested{};
 
         std::vector<FinalPieceWeight> currentVillagePW;
         const Generator* g;
         GenerationStep generationStep = GenerationStep::FULL;
 
-        int previousPiece;
+        int previousPiece{};
         Piece pieces[1024];
-        int piecesSize;
+        int piecesSize{};
 
-        int pendingRoads[1024];
-        int pendingRoadsSize;
+        int pendingRoads[1024]{};
+        int pendingRoadsSize{};
 
         Piece* blackSmithPiece{};
 
-        int startX;
-        int startZ;
+        int startX{};
+        int startZ{};
 
-        bool hasMoreThanTwoComponents;
+        bool hasMoreThanTwoComponents{};
 
         Village(const Generator* generator);
 
@@ -92,16 +92,16 @@ namespace generation {
             generate(chunk.x, chunk.z);
         }
 
-        void setupPieces(uint64_t* rng);
+        void setupPieces(RNG& rng);
         int updatePieceWeight();
         static BoundingBox createPieceBoundingBox(int pieceType, Pos3D pos, DIRECTION direction);
-        void buildComponentStart(Piece piece, uint64_t* rng);
-        void buildComponent(Piece piece, uint64_t* rand);
-        BoundingBox road(uint64_t *rng, Pos3D pos, DIRECTION facing);
-        void additionalRngRolls(uint64_t* rng, const Piece& p);
-        Piece generateComponent(uint64_t* rng, Pos3D pos, DIRECTION facing);
-        Piece generateAndAddRoadPiece(uint64_t *rng, Pos3D pos, DIRECTION facing);
-        Piece generateAndAddComponent(uint64_t *rng, Pos3D pos, DIRECTION facing);
+        void buildComponentStart(Piece piece, RNG& rng);
+        void buildComponent(Piece piece, RNG& rng);
+        BoundingBox road(RNG& rng, Pos3D pos, DIRECTION facing);
+        void additionalRngRolls(RNG& rng, const Piece& p);
+        Piece generateComponent(RNG& rng, Pos3D pos, DIRECTION facing);
+        Piece generateAndAddRoadPiece(RNG& rng, Pos3D pos, DIRECTION facing);
+        Piece generateAndAddComponent(RNG& rng, Pos3D pos, DIRECTION facing);
         void addPiece(Piece& piece);
         bool hasCollisionPiece(const BoundingBox& boundingBox);
     };

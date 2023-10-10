@@ -5,51 +5,7 @@
 
 #include "util.hpp"
 #include "layers.hpp"
-#ifdef _MSC_VER
-#pragma warning(disable : 4996)
-#endif
-const char* mc2str(int mc)
-{
-    switch (mc)
-    {
-    case MC_1_0:  return "1.0";
-    case MC_1_1:  return "1.1";
-    case MC_1_2:  return "1.2";
-    case MC_1_3:  return "1.3";
-    case MC_1_4:  return "1.4";
-    case MC_1_5:  return "1.5";
-    case MC_1_6:  return "1.6";
-    case MC_1_7:  return "1.7";
-    case MC_1_8:  return "1.8";
-    case MC_1_9:  return "1.9";
-    case MC_1_10: return "1.10";
-    case MC_1_11: return "1.11";
-    case MC_1_12: return "1.12";
-    case MC_1_13: return "1.13";
-    case MC_1_14: return "1.14";
-    default: return nullptr;
-    }
-}
 
-int str2mc(const char *s)
-{
-    if (!strcmp(s, "1.14")) return MC_1_14;
-    if (!strcmp(s, "1.13")) return MC_1_13;
-    if (!strcmp(s, "1.12")) return MC_1_12;
-    if (!strcmp(s, "1.11")) return MC_1_11;
-    if (!strcmp(s, "1.10")) return MC_1_10;
-    if (!strcmp(s, "1.9")) return MC_1_9;
-    if (!strcmp(s, "1.8")) return MC_1_8;
-    if (!strcmp(s, "1.7")) return MC_1_7;
-    if (!strcmp(s, "1.6")) return MC_1_6;
-    if (!strcmp(s, "1.5")) return MC_1_5;
-    if (!strcmp(s, "1.4")) return MC_1_4;
-    if (!strcmp(s, "1.3")) return MC_1_3;
-    if (!strcmp(s, "1.2")) return MC_1_2;
-    if (!strcmp(s, "1.1")) return MC_1_1;
-    if (!strcmp(s, "1.0")) return MC_1_0;
-    return -1;
-}
 
 
 const char *biome2str(int id)
@@ -180,8 +136,7 @@ void setMutationColor(unsigned char biomeColor[256][3], int mutated, int parent)
     biomeColor[mutated][2] = (c = biomeColor[parent][2] + 40) > 255 ? 255 : c;
 }
 
-void initBiomeColors(unsigned char biomeColors[256][3])
-{
+void initBiomeColors(unsigned char biomeColors[256][3]) {
     // This coloring scheme is largely inspired by the AMIDST program:
     // https://github.com/toolbox4minecraft/amidst
     // https://sourceforge.net/projects/amidst.mirror/
@@ -270,10 +225,8 @@ void initBiomeColors(unsigned char biomeColors[256][3])
     setBiomeColor(biomeColors, bamboo_jungle_hills, 92, 108, 4);//;59, 71, 10);
 }
 
-void initBiomeTypeColors(unsigned char biomeColors[256][3])
-{
+void initBiomeTypeColors(unsigned char biomeColors[256][3]) {
     memset(biomeColors, 0, 256 * 3);
-
     setBiomeColor(biomeColors, Oceanic,  0x00, 0x00, 0xa0);
     setBiomeColor(biomeColors, Warm,     0xff, 0xc0, 0x00);
     setBiomeColor(biomeColors, Lush,     0x00, 0xa0, 0x00);
@@ -361,67 +314,3 @@ int parseBiomeColors(unsigned char biomeColors[256][3], const char *buf)
     }
     return n;
 }
-
-
-int biomesToImage(unsigned char *pixels,
-                  unsigned char biomeColors[256][3], const int *biomes,
-                  const unsigned int sx, const unsigned int sy,
-                  const unsigned int pixScale, const int flip)
-{
-    unsigned int i, j;
-    int containsInvalidBiomes = 0;
-
-    for (j = 0; j < sy; j++)
-    {
-        for (i = 0; i < sx; i++)
-        {
-            int id = biomes[j*sx+i];
-            unsigned int r, g, b;
-
-            if (id < 0 || id >= 256)
-            {
-                // This may happen for some intermediate layers
-                containsInvalidBiomes = 1;
-                r = biomeColors[id&0x7f][0]-40; r = (r>0xff) ? 0x00 : r&0xff;
-                g = biomeColors[id&0x7f][1]-40; g = (g>0xff) ? 0x00 : g&0xff;
-                b = biomeColors[id&0x7f][2]-40; b = (b>0xff) ? 0x00 : b&0xff;
-            }
-            else
-            {
-                r = biomeColors[id][0];
-                g = biomeColors[id][1];
-                b = biomeColors[id][2];
-            }
-
-            unsigned int m, n;
-            for (m = 0; m < pixScale; m++) {
-                for (n = 0; n < pixScale; n++) {
-                    int idx = (int)(pixScale * i + n);
-                    if (flip)
-                        idx += (sx * pixScale) * ((pixScale * j) + m);
-                    else
-                        idx += (sx * pixScale) * ((pixScale * (sy - 1 - j)) + m);
-
-                    unsigned char *pix = pixels + 3*idx;
-                    pix[0] = (unsigned char)r;
-                    pix[1] = (unsigned char)g;
-                    pix[2] = (unsigned char)b;
-                }
-            }
-        }
-    }
-
-    return containsInvalidBiomes;
-}
-
-int savePPM(const char *path, const unsigned char *pixels, const unsigned int sx, const unsigned int sy)
-{
-    FILE *fp = fopen(path, "wb"); 
-    if (!fp)
-        return -1;
-    fprintf(fp, "P6\n%d %d\n255\n", sx, sy);
-    int written = (int)fwrite(pixels, sx*sy, 3, fp);
-    fclose(fp);
-    return (unsigned int)written != 3*sx*sy;
-}
-

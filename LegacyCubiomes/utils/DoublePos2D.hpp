@@ -8,7 +8,7 @@
 #include <QDebug>
 #endif
 
-#include "LegacyCubiomes/cubiomes/processor.hpp"
+#include "processor.hpp"
 
 class DoublePos2D {
 public:

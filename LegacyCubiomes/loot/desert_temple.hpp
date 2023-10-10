@@ -8,7 +8,7 @@ namespace loot {
     public:
         static void setup();
         template<bool shuffle>
-        static Container getLootFromLootTableSeed(uint64_t *lootTableSeed);
+        static Container getLootFromLootTableSeed(RNG& lootTableSeed);
     };
 
     void DesertTemple::setup() {
@@ -45,12 +45,12 @@ namespace loot {
     }
 
     template<bool shuffle>
-    Container DesertTemple::getLootFromLootTableSeed(uint64_t *lootTableSeed) {
+    Container DesertTemple::getLootFromLootTableSeed(RNG& lootTableSeed) {
         int rollCount;
         int rollIndex;
         std::vector<ItemStack> chestContents;
         chestContents.reserve(maxItemsPossible);
-        setSeed(lootTableSeed, *lootTableSeed);
+        lootTableSeed.setSeed(lootTableSeed.getSeed());
 
         // generate loot
         for (const LootTable& table : lootTables) {
@@ -74,7 +74,7 @@ namespace loot {
         }
         if constexpr (shuffle) {
             Container container = Container(27);
-            container.shuffleIntoContainer(chestContents, *lootTableSeed);
+            container.shuffleIntoContainer(chestContents, lootTableSeed);
             return container;
         }
         else

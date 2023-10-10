@@ -1,4 +1,5 @@
 #include "enchantmentHelper.hpp"
+#include "LegacyCubiomes/utils/MathHelper.hpp"
 
 
 
@@ -34,18 +35,18 @@ void EnchantmentHelper::setConsoleAndVersion(CONSOLE console, LCEVERSION version
 //==============================================================================
 
 
-void EnchantmentHelper::EnchantWithLevelsItem::apply(uint64_t *rng, ItemStack *stack, int min, int max) {
-    int rand = nextInt(rng, min, max);
+void EnchantmentHelper::EnchantWithLevelsItem::apply(RNG& rng, ItemStack *stack, int min, int max) {
+    int rand = rng.nextInt(min, max);
     addRandomEnchantment(rng, stack, rand);
 }
 
 
-void EnchantmentHelper::EnchantWithLevelsItem::apply(uint64_t *rng, ItemStack *stack, int level) {
+void EnchantmentHelper::EnchantWithLevelsItem::apply(RNG& rng, ItemStack *stack, int level) {
     addRandomEnchantment(rng, stack, level);
 }
 
 
-EnchDataVec_t EnchantmentHelper::EnchantWithLevelsItem::buildEnchantmentList(uint64_t *rng, ItemStack *itemStackIn, int level) {
+EnchDataVec_t EnchantmentHelper::EnchantWithLevelsItem::buildEnchantmentList(RNG& rng, ItemStack *itemStackIn, int level) {
     std::vector<EnchantmentData> list;
     list.reserve(MAX_ENCHANT_LIST_SIZE);
 
@@ -55,9 +56,9 @@ EnchDataVec_t EnchantmentHelper::EnchantWithLevelsItem::buildEnchantmentList(uin
     if (i == 0)
         return list;
 
-    level = level + 1 + nextInt(rng, i / 4 + 1) + nextInt(rng, i / 4 + 1);
-    float f = (nextFloat(rng) + nextFloat(rng) - 1.0F) * 0.15F;
-    level = clamp((int)std::round((float)level + (float)level * f), 1, std::numeric_limits<int>::max()); // 0x7fffffff
+    level = level + 1 + rng.nextInt(i / 4 + 1) + rng.nextInt(i / 4 + 1);
+    float f = (rng.nextFloat() + rng.nextFloat() - 1.0F) * 0.15F;
+    level = MathHelper::clamp((int)std::round((float)level + (float)level * f), 1, std::numeric_limits<int>::max()); // 0x7fffffff
 
     std::cout << "Level: " << level << std::endl;
 
@@ -66,7 +67,7 @@ EnchDataVec_t EnchantmentHelper::EnchantWithLevelsItem::buildEnchantmentList(uin
     if (!list1.empty()) {
         EnchantmentData data = WeightedRandom::getRandomItem(rng, list1);
         list.push_back(data);
-        while (nextInt(rng, 50) <= level) {
+        while (rng.nextInt(50) <= level) {
             removeIncompatible(list1, list.back());
             if (list1.empty())
                 break;
@@ -93,7 +94,7 @@ void EnchantmentHelper::EnchantWithLevelsItem::removeIncompatible(EnchDataVec_t&
 }
 
 
-inline void EnchantmentHelper::EnchantWithLevelsItem::addRandomEnchantment(uint64_t *const rng, ItemStack *const itemStackIn, int level) {
+inline void EnchantmentHelper::EnchantWithLevelsItem::addRandomEnchantment(RNG& rng, ItemStack *const itemStackIn, int level) {
     EnchDataVec_t enchantmentList = buildEnchantmentList(rng, itemStackIn, level);
 
     for (const auto &enchantmentData : enchantmentList) {
@@ -110,12 +111,13 @@ EnchDataVec_t EnchantmentHelper::EnchantWithLevelsItem::getEnchantmentDataList(i
     for (Enchantment* pointer : Enchantment::REGISTRY.getRegistry()) {
         added = false;
 
-        if (!pointer->type->canEnchantItem(ItemStackIn->getItem())) continue;
+        if (!pointer->type->canEnchantItem(ItemStackIn->getItem())) {
+            continue;
+        }
 
         for (int8_t i = pointer->maxLevel; i > 0; --i) { // maxLevel to minLevel - 1 (always 0)
 
-            if (enchantmentLevelIn >= pointer->getMinCost(i)
-                && enchantmentLevelIn <= pointer->getMaxCost(i)) {
+            if (enchantmentLevelIn >= pointer->getMinCost(i) && enchantmentLevelIn <= pointer->getMaxCost(i)) {
                 list.emplace_back(pointer, i);
                 added = true;
                 break;
@@ -139,25 +141,25 @@ EnchDataVec_t EnchantmentHelper::EnchantWithLevelsItem::getEnchantmentDataList(i
 EnchantedBookEnchantsLookupTable EnchantmentHelper::BOOK_LEVEL_TABLE;
 
 
-void EnchantmentHelper::EnchantWithLevelsBook::apply(uint64_t *rng, ItemStack *stack, int level) {
+void EnchantmentHelper::EnchantWithLevelsBook::apply(RNG& rng, ItemStack *stack, int level) {
     ELDataArray* enchantmentVector = buildEnchantmentList(rng, stack, level);
     enchantmentVector->addEnchantments(stack);
 }
 
 
-ELDataArray* EnchantmentHelper::EnchantWithLevelsBook::buildEnchantmentList(uint64_t *rng, ItemStack *itemStackIn, int level) {
+ELDataArray* EnchantmentHelper::EnchantWithLevelsBook::buildEnchantmentList(RNG& rng, ItemStack *itemStackIn, int level) {
 
     const Items::Item* item = itemStackIn->getItem();
     int cost = (item->getCost() >> 2) + 1;
 
-    level += 1 + nextInt(rng, cost) + nextInt(rng, cost);
-    float f = (nextFloat(rng) + nextFloat(rng) - 1.0F) * 0.15F;
-    level = clamp((int)std::round((float)level + (float)level * f), 1, 0x7fffffff);
+    level += 1 + rng.nextInt(cost) + rng.nextInt(cost);
+    float f = (rng.nextFloat() + rng.nextFloat() - 1.0F) * 0.15F;
+    level = MathHelper::clamp((int)std::round((float)level + (float)level * f), 1, 0x7fffffff);
 
     ELDataArray* enchants = BOOK_LEVEL_TABLE.get(level);
     enchants->addRandomItem(rng);
 
-    while (nextInt(rng, 50) <= level) {
+    while (rng.nextInt(50) <= level) {
         EnchantmentData* back = enchants->getLastEnchantmentAdded();
 
         for (int enchIndex = 0; enchIndex < enchants->totalEnchants; enchIndex++) {
@@ -183,15 +185,15 @@ ELDataArray* EnchantmentHelper::EnchantWithLevelsBook::buildEnchantmentList(uint
 //==============================================================================
 
 
-void EnchantmentHelper::EnchantRandomlyItem::apply(uint64_t *rng, ItemStack *stack) {
+void EnchantmentHelper::EnchantRandomlyItem::apply(RNG& rng, ItemStack *stack) {
     std::vector<Enchantment*> list;
     for (Enchantment* enchantmentPointer : Enchantment::REGISTRY.getRegistry())
         if (enchantmentPointer->canApply(stack->item))
             list.emplace_back(enchantmentPointer);
 
 
-    Enchantment* enchPtr = list[nextInt(rng, (int)list.size())];
-    int level = nextInt(rng, 1, enchPtr->maxLevel);
+    Enchantment* enchPtr = list[rng.nextInt((int)list.size())];
+    int level = rng.nextInt(1, enchPtr->maxLevel);
     stack->addEnchantment(enchPtr, level);
 }
 
@@ -201,9 +203,9 @@ void EnchantmentHelper::EnchantRandomlyItem::apply(uint64_t *rng, ItemStack *sta
 //==============================================================================
 
 
-void EnchantmentHelper::EnchantRandomlyBook::apply(uint64_t* rng, ItemStack* stack) {
-    Enchantment* enchPtr = Enchantment::REGISTRY[nextInt(rng, (int)Enchantment::REGISTRY.size())];
-    int level = nextInt(rng, 1, enchPtr->maxLevel);
+void EnchantmentHelper::EnchantRandomlyBook::apply(RNG& rng, ItemStack* stack) {
+    Enchantment* enchPtr = Enchantment::REGISTRY[rng.nextInt((int)Enchantment::REGISTRY.size())];
+    int level = rng.nextInt(1, enchPtr->maxLevel);
     stack->addEnchantment(enchPtr, level);
 }
 

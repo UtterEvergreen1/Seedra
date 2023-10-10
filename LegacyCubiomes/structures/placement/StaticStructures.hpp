@@ -2,7 +2,7 @@
 
 #include <vector>
 
-#include "LegacyCubiomes/utils/pos2D.hpp"
+#include "LegacyCubiomes/utils/Pos2D.hpp"
 #include "LegacyCubiomes/cubiomes/generator.hpp"
 #include "LegacyCubiomes/cubiomes/util.hpp"
 

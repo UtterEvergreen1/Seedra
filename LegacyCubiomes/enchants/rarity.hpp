@@ -1,7 +1,7 @@
 #pragma once
 
 
-#include "LegacyCubiomes/cubiomes/processor.hpp"
+#include "LegacyCubiomes/utils/processor.hpp"
 
 class Rarity {
 private:

@@ -4,17 +4,17 @@
 #include <string>
 
 enum class DIMENSION : int8_t {
-    NETHER   = -1,
-    HELL     = -1,
+    NETHER = -1,
+    HELL = -1,
     OVERWORLD = 0,
-    END       = 1
+    END = 1
 };
 
 enum class CONSOLE : int8_t {
     XBOX = 0,
-    PS3  = 1,
+    PS3 = 1,
     WIIU = 2,
-    PS4  = 3,
+    PS4 = 3,
     NONE = 4
 };
 
@@ -54,25 +54,25 @@ enum MCVERSION : int8_t {
 enum class DIRECTION : int8_t {
     NORTH = 0,
     SOUTH = 1,
-    WEST  = 2,
-    EAST  = 3,
+    WEST = 2,
+    EAST = 3,
 };
 
 enum class BIOMESCALE : int8_t {
-    SMALL  = 0,
+    SMALL = 0,
     MEDIUM = 1,
-    LARGE  = 2
+    LARGE = 2
 };
 
 enum class WORLDSIZE : int8_t {
     CLASSIC = 0,
-    SMALL   = 1,
-    MEDIUM  = 2,
-    LARGE   = 3
+    SMALL = 1,
+    MEDIUM = 2,
+    LARGE = 3
 };
 
 inline static std::string LceVersionToString(LCEVERSION version) {
-    switch(version) {
+    switch (version) {
         case LCEVERSION::PS4_VP:
             return "PS4_VP";
         case LCEVERSION::AQUATIC:
@@ -94,15 +94,15 @@ inline static std::string LceVersionToString(LCEVERSION version) {
 
 inline static int getChunkWorldBounds(WORLDSIZE worldSize) {
     switch (worldSize) {
-    case WORLDSIZE::CLASSIC:
-    default:
-        return 27;
-    case WORLDSIZE::SMALL:
-        return 32;
-    case WORLDSIZE::MEDIUM:
-        return 96;
-    case WORLDSIZE::LARGE:
-        return 160;
+        case WORLDSIZE::CLASSIC:
+        default:
+            return 27;
+        case WORLDSIZE::SMALL:
+            return 32;
+        case WORLDSIZE::MEDIUM:
+            return 96;
+        case WORLDSIZE::LARGE:
+            return 160;
     }
 }
 
@@ -152,10 +152,48 @@ inline static MCVERSION getMCVersion(LCEVERSION lceVersionIn) {
             return MCVERSION::MC_1_0;
         case LCEVERSION::PS4_VP:
             return MCVERSION::MC_1_14;
-        // case LCEVERSION::GENERATION:
+            // case LCEVERSION::GENERATION:
             // return MCVERSION::MC_1_14;
-        // case LCEVERSION::PISTON:
+            // case LCEVERSION::PISTON:
             // return MCVERSION::MC_1_14;
+    }
+}
+
+
+inline std::string mcVersionToString(MCVERSION version) {
+    switch (version) {
+        case MC_1_0:
+            return "1.0";
+        case MC_1_1:
+            return "1.1";
+        case MC_1_2:
+            return "1.2";
+        case MC_1_3:
+            return "1.3";
+        case MC_1_4:
+            return "1.4";
+        case MC_1_5:
+            return "1.5";
+        case MC_1_6:
+            return "1.6";
+        case MC_1_7:
+            return "1.7";
+        case MC_1_8:
+            return "1.8";
+        case MC_1_9:
+            return "1.9";
+        case MC_1_10:
+            return "1.10";
+        case MC_1_11:
+            return "1.11";
+        case MC_1_12:
+            return "1.12";
+        case MC_1_13:
+            return "1.13";
+        case MC_1_14:
+            return "1.14";
+        default:
+            return "NONE";
     }
 }
 

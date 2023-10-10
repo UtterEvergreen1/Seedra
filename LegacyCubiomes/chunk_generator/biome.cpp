@@ -82,12 +82,12 @@ void Biome::registerBiomes() {
 
 }
 
-void Biome::generateBiomeTerrain(uint64_t *rand, ChunkPrimer *chunkPrimerIn, int x, int z, double noiseVal) {
+void Biome::generateBiomeTerrain(RNG& rng, ChunkPrimer *chunkPrimerIn, int x, int z, double noiseVal) {
     int seaLevel = 63; // sea level
     uint16_t iBlockState = this->topBlock.block;
     uint16_t iBlockState1 = this->fillerBlock.block;
     int j = -1;
-    int k = (int) (((double) noiseVal / 3.0) + 3.0 + nextDouble(rand) * 0.25);
+    int k = (int) (((double) noiseVal / 3.0) + 3.0 + rng.nextDouble() * 0.25);
     int l = x & 15;
     int i1 = z & 15;
     Pos3D blockPos;
@@ -96,7 +96,7 @@ void Biome::generateBiomeTerrain(uint64_t *rand, ChunkPrimer *chunkPrimerIn, int
         if (j1 == 0)
             break;
 
-        if (nextInt(rand, 2) + 1 >= j1 - 1)
+        if (rng.nextInt(2) + 1 >= j1 - 1)
             chunkPrimerIn->setBlock(i1, j1 - 1, l, Items::BEDROCK_ID);
         else {
             uint16_t iBlockState2 = chunkPrimerIn->getBlock(i1, j1, l);
@@ -136,7 +136,7 @@ void Biome::generateBiomeTerrain(uint64_t *rand, ChunkPrimer *chunkPrimerIn, int
                     chunkPrimerIn->setBlock(i1, j1, l, iBlockState1);
 
                     if (j == 0 && iBlockState1 == Items::SAND_ID && k > 1) {
-                        j = nextInt(rand, 4) + std::max(0, j1 - 63);
+                        j = rng.nextInt(4) + std::max(0, j1 - 63);
                         iBlockState1 = Items::SANDSTONE_ID; // 179 for redsandstone //((iblockstate1) == "red_sand" ? "red_sandstone" : "sandstone");
                     }
                 }
@@ -145,7 +145,7 @@ void Biome::generateBiomeTerrain(uint64_t *rand, ChunkPrimer *chunkPrimerIn, int
     }
 }
 
-void BiomeMesa::genTerrainBlocks(int64_t worldSeedIn, uint64_t *rand, ChunkPrimer *chunkPrimerIn, int x, int z,
+void BiomeMesa::genTerrainBlocks(int64_t worldSeedIn, RNG& rng, ChunkPrimer *chunkPrimerIn, int x, int z,
                                  double noiseVal) {
     this->worldSeed = worldSeedIn;
     if (this->clayBands.empty()) {
@@ -153,10 +153,10 @@ void BiomeMesa::genTerrainBlocks(int64_t worldSeedIn, uint64_t *rand, ChunkPrime
     }
 
     if (this->pillarNoise.noiseLevels.empty() || this->pillarRoofNoise.noiseLevels.empty()) {
-        uint64_t random;
-        setSeed(&random, worldSeedIn);
-        this->pillarNoise.setNoiseGeneratorPerlin(&random, 4);
-        this->pillarRoofNoise.setNoiseGeneratorPerlin(&random, 1);
+        RNG rng1;
+        rng1.setSeed(worldSeedIn);
+        this->pillarNoise.setNoiseGeneratorPerlin(rng, 4);
+        this->pillarRoofNoise.setNoiseGeneratorPerlin(rng, 1);
     }
     double d4 = 0.0;
 
@@ -181,7 +181,7 @@ void BiomeMesa::genTerrainBlocks(int64_t worldSeedIn, uint64_t *rand, ChunkPrime
     int l1 = z & 15;
     int seaLevel = 63; // sea level
     uint16_t fillerBlock = this->fillerBlock.block;
-    int k = (int) (noiseVal / 3.0 + 3.0 + nextDouble(rand) * 0.25);
+    int k = (int) (noiseVal / 3.0 + 3.0 + rng.nextDouble() * 0.25);
     bool flag = cos(noiseVal / 3.0 * PI) > 0.0;
     int l = -1;
     bool flag1 = false;
@@ -194,7 +194,7 @@ void BiomeMesa::genTerrainBlocks(int64_t worldSeedIn, uint64_t *rand, ChunkPrime
         if (j1 == 0)
             break;
 
-        if (nextInt(rand, 2) + 1 >= j1 - 1)
+        if (rng.nextInt(2) + 1 >= j1 - 1)
             chunkPrimerIn->setBlock(l1, j1 - 1, k1, Items::BEDROCK_ID);
         else if (i1 < 15 || this->brycePillars) {
             uint16_t iBlockState1 = chunkPrimerIn->getBlock(l1, j1, k1);

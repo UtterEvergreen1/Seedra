@@ -16,21 +16,21 @@ namespace generation {
      * @param chunkZ z coord. of the chunk
      */
     void Mineshaft::generate(int64_t worldSeed, int chunkX, int chunkZ) {
-        uint64_t rng = getLargeFeatureSeed(worldSeed, chunkX, chunkZ);
+        RNG rng = RNG::getLargeFeatureSeed(worldSeed, chunkX, chunkZ);
         // 4 rolls (1 for skip, 3 for is feature chunk rolls (2 double, 1 int))
-        rng = (rng * 0x32EB772C5F11 + 0x2D3873C4CD04) & 0xFFFFFFFFFFFF;
+        rng = RNG((rng.getSeed() * 0x32EB772C5F11 + 0x2D3873C4CD04) & 0xFFFFFFFFFFFF);
         startX = (chunkX << 4) + 2;
         startZ = (chunkZ << 4) + 2;
         pieceArraySize = 0;
 
         // build the entire structure
-        int boundingBoxXUpper = startX + nextInt(&rng, 6) + 7;
-        int boundingBoxYUpper = 54 + nextInt(&rng, 6);
-        int boundingBoxZUpper = startZ + nextInt(&rng, 6) + 7;
+        int boundingBoxXUpper = startX + rng.nextInt(6) + 7;
+        int boundingBoxYUpper = 54 + rng.nextInt(6);
+        int boundingBoxZUpper = startZ + rng.nextInt(6) + 7;
         BoundingBox roomBoundingBox(startX, 50, startZ, boundingBoxXUpper, boundingBoxYUpper, boundingBoxZUpper);
 
         // recursive gen
-        buildComponent(&rng, PieceType::ROOM, 0, roomBoundingBox, DIRECTION::NORTH, 1);
+        buildComponent(rng, PieceType::ROOM, 0, roomBoundingBox, DIRECTION::NORTH, 1);
 
         // get Y level
         structureBoundingBox = BoundingBox::EMPTY;
@@ -52,7 +52,7 @@ namespace generation {
         const int i = 53; // 63 - 10
         int j = structureBoundingBox.getYSize() + 1;
         if (j < i) {
-            j += nextInt(&rng, i - j);
+            j += rng.nextInt(i - j);
         }
         int k = j - structureBoundingBox.maxY;
         for (int piece = 0; piece < pieceArraySize; piece++) {
@@ -76,13 +76,13 @@ namespace generation {
     }
 
 
-    void Mineshaft::genAndAddPiece(uint64_t *rng, Pos3D pos, DIRECTION direction, int depth) {
+    void Mineshaft::genAndAddPiece(RNG& rng, Pos3D pos, DIRECTION direction, int depth) {
         // step 1: return early
         if (depth > 8) return;
         if (abs(pos.getX() - startX) > 80 || abs(pos.getZ() - startZ) > 80) return;
 
         // step 2: create the piece
-        int randomRoom = nextInt(rng, 100);
+        int randomRoom = rng.nextInt(100);
         BoundingBox boundingBox;
         int additionalData = 0;
 
@@ -90,7 +90,7 @@ namespace generation {
 
         if (randomRoom >= 80) { // CASE CROSSING
             boundingBox = BoundingBox::orientBox(pos, -1, 0, 0, 5, 3, 5, direction);
-            if(nextInt(rng, 4) == 0) {
+            if(rng.nextInt(4) == 0) {
                 boundingBox.maxY += 4;
                 additionalData = 1;
             }
@@ -110,15 +110,15 @@ namespace generation {
 
         } else {
             volatile int i; // CASE CORRIDOR
-            for (i = nextInt(rng, 3) + 2; i > 0; --i) {
+            for (i = rng.nextInt(3) + 2; i > 0; --i) {
                 int j = i * 5;
                 boundingBox = BoundingBox::orientBox(pos, 0, 0, 0, 3, 3, j, direction);
                 Piece *collidingPiece = findCollisionPiece(boundingBox);
                 if (collidingPiece == nullptr) break;
             }
             if (i == 0) return;
-            bool hasRails = nextInt(rng, 3) == 0;
-            bool hasSpiders = !hasRails && nextInt(rng, 23) == 0;
+            bool hasRails = rng.nextInt(3) == 0;
+            bool hasSpiders = !hasRails && rng.nextInt(23) == 0;
             additionalData |= hasRails;
             additionalData |= (hasSpiders) << 1;
             buildComponent(rng, PieceType::CORRIDOR, depth + 1, boundingBox, direction, additionalData);
@@ -135,7 +135,7 @@ namespace generation {
      * @param p the piece to build
      * @param rng pointer to rng
      */
-    void Mineshaft::buildComponent(uint64_t* rng, int type, int depth, const BoundingBox& boundingBox,
+    void Mineshaft::buildComponent(RNG& rng, int type, int depth, const BoundingBox& boundingBox,
                                    DIRECTION direction, int additionalData) {
         Piece p = Piece(type, depth, boundingBox, direction, additionalData);
         pieceArray[pieceArraySize++] = p;
@@ -151,31 +151,31 @@ namespace generation {
                 int roomXSize = p.getXSize();
                 int roomZSize = p.getZSize();
                 for (k = 0; k < roomXSize; k += 4) {
-                    k += nextInt(rng, roomXSize);
+                    k += rng.nextInt(roomXSize);
                     if (k + 3 > roomXSize) break;
-                    genAndAddPiece(rng, {p.minX + k, p.minY + nextInt(rng, j) + 1, p.minZ - 1}, DIRECTION::NORTH, p.depth);
+                    genAndAddPiece(rng, {p.minX + k, p.minY + rng.nextInt(j) + 1, p.minZ - 1}, DIRECTION::NORTH, p.depth);
                 }
                 for (k = 0; k < roomXSize; k += 4) {
-                    k += nextInt(rng, roomXSize);
+                    k += rng.nextInt(roomXSize);
                     if (k + 3 > roomXSize) break;
-                    genAndAddPiece(rng, {p.minX + k, p.minY + nextInt(rng, j) + 1, p.maxZ + 1}, DIRECTION::SOUTH, p.depth);
+                    genAndAddPiece(rng, {p.minX + k, p.minY + rng.nextInt(j) + 1, p.maxZ + 1}, DIRECTION::SOUTH, p.depth);
                 }
                 for (k = 0; k < roomZSize; k += 4) {
-                    k += nextInt(rng, roomZSize);
+                    k += rng.nextInt(roomZSize);
                     if (k + 3 > roomZSize) break;
-                    genAndAddPiece(rng, {p.minX - 1, p.minY + nextInt(rng, j) + 1, p.minZ + k}, DIRECTION::WEST, p.depth);
+                    genAndAddPiece(rng, {p.minX - 1, p.minY + rng.nextInt(j) + 1, p.minZ + k}, DIRECTION::WEST, p.depth);
                 }
                 for (k = 0; k < roomZSize; k += 4) {
-                    k += nextInt(rng, roomZSize);
+                    k += rng.nextInt(roomZSize);
                     if (k + 3 > roomZSize) break;
-                    genAndAddPiece(rng, {p.maxX + 1, p.minY + nextInt(rng, j) + 1, p.minZ + k}, DIRECTION::EAST, p.depth);
+                    genAndAddPiece(rng, {p.maxX + 1, p.minY + rng.nextInt(j) + 1, p.minZ + k}, DIRECTION::EAST, p.depth);
                 }
                 return;
             }
 
             case PieceType::CORRIDOR: {
-                int corridorType = nextInt(rng, 4);
-                int yState = p.minY + nextInt(rng, 3) - 1;
+                int corridorType = rng.nextInt(4);
+                int yState = p.minY + rng.nextInt(3) - 1;
                 switch(p.orientation) {
                     case DIRECTION::NORTH:
                     default:
@@ -217,7 +217,7 @@ namespace generation {
                     case DIRECTION::NORTH:
                     case DIRECTION::SOUTH:
                         for(int k = p.minZ + 3; k + 3 <= p.maxZ; k += 5) {
-                            int l = nextInt(rng, 5);
+                            int l = rng.nextInt(5);
                             if (l == 0)
                                 genAndAddPiece(rng, {p.minX - 1, p.minY, k}, DIRECTION::WEST, p.depth + 1);
                             else if (l == 1)
@@ -227,7 +227,7 @@ namespace generation {
                     case DIRECTION::WEST:
                     case DIRECTION::EAST:
                         for (int k = p.minX + 3; k + 3 <= p.maxX; k += 5) {
-                            int l = nextInt(rng, 5);
+                            int l = rng.nextInt(5);
                             if (l == 0)
                                 genAndAddPiece(rng, {k, p.minY, p.minZ - 1}, DIRECTION::NORTH, p.depth + 1);
                             else if (l == 1)
@@ -261,13 +261,13 @@ namespace generation {
                 }
 
                 if (p.additionalData) {
-                    if(nextBoolean(rng))
+                    if(rng.nextBoolean())
                         genAndAddPiece(rng, {p.minX + 1, p.minY + 4, p.minZ - 1}, DIRECTION::NORTH, p.depth);
-                    if(nextBoolean(rng))
+                    if(rng.nextBoolean())
                         genAndAddPiece(rng, {p.minX - 1, p.minY + 4, p.minZ + 1}, DIRECTION::WEST, p.depth);
-                    if(nextBoolean(rng))
+                    if(rng.nextBoolean())
                         genAndAddPiece(rng, {p.maxX + 1, p.minY + 4, p.minZ + 1}, DIRECTION::EAST, p.depth);
-                    if(nextBoolean(rng))
+                    if(rng.nextBoolean())
                         genAndAddPiece(rng, {p.minX + 1, p.minY + 4, p.maxZ + 1}, DIRECTION::SOUTH, p.depth);
                 }
                 return;

@@ -1,6 +1,6 @@
 #include "StaticStructures.hpp"
 
-#include "LegacyCubiomes/cubiomes/rng.hpp"
+#include "LegacyCubiomes/utils/rng.hpp"
 
 typedef  int8_t   i8;
 typedef  int16_t i16;
@@ -31,12 +31,12 @@ namespace Placement {
 
     template<typename Derived>
     Pos2D StaticStructure<Derived>::getRegionChunkPosition(int64_t worldSeed, int regionX, int regionZ) {
-        uint64_t rng;
-        setSeed(&rng, (int64_t) regionX * 341873128712ULL +
-                          (int64_t) regionZ * 132897987541ULL + worldSeed + Derived::SALT);
+        RNG rng;
+        rng.setSeed((int64_t) regionX * 341873128712ULL +
+                    (int64_t) regionZ * 132897987541ULL + worldSeed + Derived::SALT);
         return {
-            regionX * Derived::REGION_SIZE + nextInt(&rng, Derived::CHUNK_RANGE),
-            regionZ * Derived::REGION_SIZE + nextInt(&rng, Derived::CHUNK_RANGE)
+            regionX * Derived::REGION_SIZE + rng.nextInt(Derived::CHUNK_RANGE),
+            regionZ * Derived::REGION_SIZE + rng.nextInt(Derived::CHUNK_RANGE)
         };
     }
 

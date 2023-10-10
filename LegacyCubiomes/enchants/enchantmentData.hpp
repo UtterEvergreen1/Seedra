@@ -16,8 +16,6 @@ public:
     ND std::string toString() const {
         if (obj == nullptr)
             return "NULLPTR";
-        if (level < 2)
-            return obj->name;
         return obj->name + " " + LEVEL_ROMAN[level];
     }
 

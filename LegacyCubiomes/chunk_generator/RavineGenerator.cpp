@@ -52,8 +52,8 @@ bool RavineGenerator::canReplaceBlock(uint16_t blockAt, uint16_t blockAbove) {
 void RavineGenerator::addTunnel(int64_t randomSeed, Pos2D chunk, ChunkPrimer *chunkPrimer,
                                 DoublePos3D tunnel, float angle, float slope, float curvature,
                                 int tunnelStartSegment, int tunnelEndSegment, double widthMultiplier) {
-    uint64_t rng;
-    setSeed(&rng, randomSeed);
+    RNG rng;
+    rng.setSeed(randomSeed);
     auto offsetX = (double) (chunk.x * 16 + 8);
     auto offsetZ = (double) (chunk.z * 16 + 8);
     float curvatureChangeRate = 0.0F;
@@ -61,7 +61,7 @@ void RavineGenerator::addTunnel(int64_t randomSeed, Pos2D chunk, ChunkPrimer *ch
 
     if (tunnelEndSegment <= 0) {
         int maxSegment = (int) range * 16 - 16;
-        tunnelEndSegment = maxSegment - nextInt(&rng, maxSegment / 4);
+        tunnelEndSegment = maxSegment - rng.nextInt(maxSegment / 4);
     }
 
     bool isSegmentAtCenter = false;
@@ -74,8 +74,8 @@ void RavineGenerator::addTunnel(int64_t randomSeed, Pos2D chunk, ChunkPrimer *ch
     float tunnelRadiusMultiplier = 1.0F;
 
     for (int segment = 0; segment < 128; ++segment) {
-        if (segment == 0 || nextInt(&rng, 3) == 0) {
-            tunnelRadiusMultiplier = 1.0F + nextFloat(&rng) * nextFloat(&rng);
+        if (segment == 0 || rng.nextInt(3) == 0) {
+            tunnelRadiusMultiplier = 1.0F + rng.nextFloat() * rng.nextFloat();
         }
 
         rs[segment] = tunnelRadiusMultiplier * tunnelRadiusMultiplier;
@@ -85,8 +85,8 @@ void RavineGenerator::addTunnel(int64_t randomSeed, Pos2D chunk, ChunkPrimer *ch
         double adjustedWidth =
                 1.5 + (double) (MathHelper::sin((float) tunnelStartSegment * PI_FLOAT / (float) tunnelEndSegment) * angle);
         double adjustedHeight = adjustedWidth * widthMultiplier;
-        adjustedWidth = adjustedWidth * ((double) nextFloat(&rng) * 0.25 + 0.75);
-        adjustedHeight = adjustedHeight * ((double) nextFloat(&rng) * 0.25 + 0.75);
+        adjustedWidth = adjustedWidth * ((double) rng.nextFloat() * 0.25 + 0.75);
+        adjustedHeight = adjustedHeight * ((double) rng.nextFloat() * 0.25 + 0.75);
         float cosCurvature = MathHelper::cos(curvature);
         float sinCurvature = MathHelper::sin(curvature);
         tunnel.x += (double) (MathHelper::cos(slope) * cosCurvature);
@@ -97,11 +97,11 @@ void RavineGenerator::addTunnel(int64_t randomSeed, Pos2D chunk, ChunkPrimer *ch
         slope += curvatureChangeRate * 0.05F;
         slopeChangeRate = slopeChangeRate * 0.8F;
         curvatureChangeRate = curvatureChangeRate * 0.5F;
-        slopeChangeRate = slopeChangeRate + (nextFloat(&rng) - nextFloat(&rng)) * nextFloat(&rng) * 2.0F;
+        slopeChangeRate = slopeChangeRate + (rng.nextFloat() - rng.nextFloat()) * rng.nextFloat() * 2.0F;
         curvatureChangeRate =
-                curvatureChangeRate + (nextFloat(&rng) - nextFloat(&rng)) * nextFloat(&rng) * 4.0F;
+                curvatureChangeRate + (rng.nextFloat() - rng.nextFloat()) * rng.nextFloat() * 4.0F;
 
-        if (isSegmentAtCenter || nextInt(&rng, 4) != 0) {
+        if (isSegmentAtCenter || rng.nextInt(4) != 0) {
             double distanceX = tunnel.x - offsetX;
             double distanceZ = tunnel.z - offsetZ;
             auto remainingSegments = (double) (tunnelEndSegment - tunnelStartSegment);
@@ -210,14 +210,14 @@ void RavineGenerator::addTunnel(int64_t randomSeed, Pos2D chunk, ChunkPrimer *ch
 void RavineGenerator::recursiveGenerate(int neighborChunkX, int neighborChunkZ,
                                         int currentChunkX, int currentChunkZ,
                        ChunkPrimer *chunkPrimerIn) {
-    if EXPECT_FALSE(nextInt(&rng, 50) == 0) {
-    auto tunnelStartX = (double) (neighborChunkX * 16 + nextInt(&rng, 16));
-    auto tunnelStartY = (double) (nextInt(&rng, nextInt(&rng, 40) + 8) + 20);
-    auto tunnelStartZ = (double) (neighborChunkZ * 16 + nextInt(&rng, 16));
-    float tunnelDirection = nextFloat(&rng) * (PI_FLOAT * 2.0F);
-    float tunnelSlope = (nextFloat(&rng) - 0.5F) * 2.0F / 8.0F;
-    float tunnelLengthMultiplier = (nextFloat(&rng) * 2.0F + nextFloat(&rng)) * 2.0F;
-    addTunnel((int64_t) nextLong(&rng), {currentChunkX, currentChunkZ}, chunkPrimerIn,
+    if EXPECT_FALSE(rng.nextInt(50) == 0) {
+    auto tunnelStartX = (double) (neighborChunkX * 16 + rng.nextInt(16));
+    auto tunnelStartY = (double) (rng.nextInt(rng.nextInt(40) + 8) + 20);
+    auto tunnelStartZ = (double) (neighborChunkZ * 16 + rng.nextInt(16));
+    float tunnelDirection = rng.nextFloat() * (PI_FLOAT * 2.0F);
+    float tunnelSlope = (rng.nextFloat() - 0.5F) * 2.0F / 8.0F;
+    float tunnelLengthMultiplier = (rng.nextFloat() * 2.0F + rng.nextFloat()) * 2.0F;
+    addTunnel((int64_t) rng.nextLong(), {currentChunkX, currentChunkZ}, chunkPrimerIn,
               {tunnelStartX, tunnelStartY, tunnelStartZ}, tunnelLengthMultiplier,
               tunnelDirection, tunnelSlope, 0, 0, 3.0);
     }

@@ -1,6 +1,6 @@
 #include "generator.hpp"
 
-#include "rng.hpp"
+#include "LegacyCubiomes/utils/rng.hpp"
 #include "noise.hpp"
 
 
@@ -16,7 +16,7 @@ Generator::Generator(CONSOLE console, LCEVERSION version, int64_t seed, WORLDSIZ
         : worldSeed(seed), version(version), console(console), biomeScale(scale),
           worldSize(size), worldCoordinateBounds(getChunkWorldBounds(size) << 4) {
     setupLayerStack(&this->layerStack, version, scale);
-    setLayerSeed(this->layerStack.entry_1, 0);
+    setLayerSeed(this->layerStack.entry_1, seed);
 }
 
 
@@ -199,7 +199,7 @@ bool Generator::areBiomesViable(int x, int z, int rad, uint64_t validBiomes, uin
 
 
 Pos2D Generator::locateBiome(int x, int z, int radius, uint64_t validBiomes,
-                             uint64_t *rng, int *passes) const {
+                             RNG& rng, int *passes) const {
     Pos2D out = {x, z};
     int i, found;
     found = 0;
@@ -218,7 +218,7 @@ Pos2D Generator::locateBiome(int x, int z, int radius, uint64_t validBiomes,
     for (i = 0; i < width * height; i++) {
         if (!id_matches(ids[i], validBiomes))
             continue;
-        if (found == 0 || nextInt(rng, found + 1) == 0) {
+        if (found == 0 || rng.nextInt(found + 1) == 0) {
             out.x = (x1 + i % width) * 4;
             out.z = (z1 + i / width) * 4;
             ++found;
@@ -347,11 +347,11 @@ const uint64_t Generator::spawn_biomes =
         (1ULL << jungle_hills);
 
 
-Pos2D Generator::estimateSpawn(uint64_t *rng) const {
+Pos2D Generator::estimateSpawn(RNG& rng) const {
     Pos2D spawn;
     int found;
 
-    setSeed(rng, getWorldSeed());
+    rng.setSeed(getWorldSeed());
     spawn = locateBiome(0, 0, 256, Generator::spawn_biomes, rng, &found);
     if (!found)
         spawn.x = spawn.z = 8;
@@ -361,8 +361,8 @@ Pos2D Generator::estimateSpawn(uint64_t *rng) const {
 
 
 Pos2D Generator::getSpawnBlock() const {
-    uint64_t rng;
-    Pos2D spawn = estimateSpawn(&rng);
+    RNG rng;
+    Pos2D spawn = estimateSpawn(rng);
 
     SurfaceNoise sn;
     initSurfaceNoise(&sn, DIMENSION::OVERWORLD, getWorldSeed());
@@ -376,8 +376,8 @@ Pos2D Generator::getSpawnBlock() const {
         if (grass > 0 && y >= (float)grass)
             break;
 
-        spawn.x += nextInt(&rng, 64) - nextInt(&rng, 64);
-        spawn.z += nextInt(&rng, 64) - nextInt(&rng, 64);
+        spawn.x += rng.nextInt(64) - rng.nextInt(64);
+        spawn.z += rng.nextInt(64) - rng.nextInt(64);
 
         if (spawn.x > worldCoordinateBounds || spawn.x < -worldCoordinateBounds)
             spawn.x = 0;

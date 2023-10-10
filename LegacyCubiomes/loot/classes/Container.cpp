@@ -23,14 +23,14 @@ void Container::printCombinedItems() {
 
 
 
-void Container::shuffleIntoContainer(std::vector<ItemStack>& items, uint64_t rng) {
-    uint64_t rngState = rng;
+void Container::shuffleIntoContainer(std::vector<ItemStack>& items, RNG& rng) {
+    RNG rngState = rng;
     std::vector<int> slotOrder(numSlots);
     std::iota(slotOrder.begin(), slotOrder.end(), 0);
 
     std::vector<ItemStack> stackableItems;
 
-    randomShuffle<int>(slotOrder, &rngState);
+    randomShuffle<int>(slotOrder, rngState);
 
     // Separate items with stackSize > 1 into stackableItems and keep others in items
     items.erase(std::remove_if(items.begin(), items.end(),
@@ -44,21 +44,21 @@ void Container::shuffleIntoContainer(std::vector<ItemStack>& items, uint64_t rng
 
     numSlots -= items.size();
     while(numSlots > 0 && !stackableItems.empty()) {
-        int itemIndex = LootTable::getInt<false>(&rngState, 0, (int)stackableItems.size() - 1);
+        int itemIndex = LootTable::getInt<false>(rngState, 0, (int)stackableItems.size() - 1);
         auto iter = std::next(stackableItems.begin(), itemIndex);
         ItemStack originalStack = std::move(*iter);
 
         stackableItems.erase(iter);
 
-        int splitAmount = LootTable::getInt<false>(&rngState, 1, originalStack.stackSize >> 1);
+        int splitAmount = LootTable::getInt<false>(rngState, 1, originalStack.stackSize >> 1);
         ItemStack splittedStack = originalStack.splitStack(splitAmount);
 
-        if (originalStack.stackSize == 0 || next(&rngState, 1) == 0)
+        if (originalStack.stackSize == 0 || rngState.next(1) == 0)
             items.emplace_back(std::move(originalStack));
         else
             stackableItems.emplace_back(std::move(originalStack));
 
-        if (splittedStack.stackSize == 0 || next(&rngState, 1) == 0)
+        if (splittedStack.stackSize == 0 || rngState.next(1) == 0)
             items.emplace_back(std::move(splittedStack));
         else
             stackableItems.emplace_back(std::move(splittedStack));
@@ -66,7 +66,7 @@ void Container::shuffleIntoContainer(std::vector<ItemStack>& items, uint64_t rng
 
     items.insert(items.end(), std::make_move_iterator(stackableItems.begin()), std::make_move_iterator(stackableItems.end()));
 
-    randomShuffle<ItemStack>(items, &rngState);
+    randomShuffle<ItemStack>(items, rngState);
     for (ItemStack& itemStack : items) {
         if (slotOrder.empty()) // Tried to over-fill a container
             return;

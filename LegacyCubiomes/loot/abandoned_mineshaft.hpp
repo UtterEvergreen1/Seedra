@@ -12,7 +12,7 @@ namespace loot {
         static void setup();
 
         template <bool shuffle>
-        static Container getLootFromLootTableSeed(uint64_t* lootTableSeed);
+        static Container getLootFromLootTableSeed(RNG& lootTableSeed);
     };
 
     void AbandonedMineshaft::setup() {
@@ -55,11 +55,11 @@ namespace loot {
 
 
     template <bool shuffle>
-    Container AbandonedMineshaft::getLootFromLootTableSeed(uint64_t* lootTableSeed) {
+    Container AbandonedMineshaft::getLootFromLootTableSeed(RNG& lootTableSeed) {
 
         std::vector<ItemStack> chestContents;
         chestContents.reserve(maxItemsPossible);
-        setSeed(lootTableSeed, *lootTableSeed);
+        lootTableSeed.setSeed(lootTableSeed.getSeed());
 
         // generate loot
         int rollCount;
@@ -80,7 +80,7 @@ namespace loot {
 
         if constexpr (shuffle){
             Container container = Container();
-            container.shuffleIntoContainer(chestContents, *lootTableSeed);
+            container.shuffleIntoContainer(chestContents, lootTableSeed);
             return container;
         }
         else

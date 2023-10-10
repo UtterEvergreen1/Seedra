@@ -1,6 +1,6 @@
 #include "DynamicStructures.hpp"
 
-#include "LegacyCubiomes/cubiomes/rng.hpp"
+#include "LegacyCubiomes/utils/rng.hpp"
 
 namespace Placement {
 
@@ -15,16 +15,16 @@ namespace Placement {
 
     template<typename Derived>
     Pos2D DynamicStructure<Derived>::getPosition(Generator* g, int regionX, int regionZ) {
-        uint64_t rnds;
+        RNG rnds;
         int64_t featureSeed = ((int64_t) regionX * REGION_SIZE) * 341873128712ULL +
                               ((int64_t) regionZ * REGION_SIZE) * 132897987541ULL + g->getWorldSeed() + SALT;
-        setSeed(&rnds, featureSeed);
+        rnds.setSeed(featureSeed);
         std::unordered_set<Pos2D, Pos2D::Hasher> attempted;
         int xChunk;
         int zChunk;
         for (int attempts = 0; attempts < ATTEMPTS; attempts++) {
-            xChunk = nextInt(&rnds, CHUNK_RANGE);
-            zChunk = nextInt(&rnds, CHUNK_RANGE);
+            xChunk = rnds.nextInt(CHUNK_RANGE);
+            zChunk = rnds.nextInt(CHUNK_RANGE);
             if (attempted.emplace(xChunk, zChunk).second) { // successfully placed
                 xChunk = regionX * REGION_SIZE + xChunk;
                 zChunk = regionZ * REGION_SIZE + zChunk;
@@ -67,16 +67,16 @@ namespace Placement {
 
     template<typename Derived>
     bool DynamicStructure<Derived>::canSpawnAtChunk(int64_t worldSeed, int chunkX, int chunkZ, int regionX, int regionZ) {
-        uint64_t rnds;
+        RNG rnds;
         int64_t featureSeed = ((int64_t)regionX * REGION_SIZE) * 341873128712ULL +
             ((int64_t)regionZ * REGION_SIZE) * 132897987541ULL + worldSeed + SALT;
-        setSeed(&rnds, featureSeed);
+        rnds.setSeed(featureSeed);
         std::unordered_set<Pos2D, Pos2D::Hasher> attempted;
         int xChunk;
         int zChunk;
         for (int attempts = 0; attempts < ATTEMPTS; attempts++) {
-            xChunk = nextInt(&rnds, CHUNK_RANGE);
-            zChunk = nextInt(&rnds, CHUNK_RANGE);
+            xChunk = rnds.nextInt(CHUNK_RANGE);
+            zChunk = rnds.nextInt(CHUNK_RANGE);
             if (attempted.emplace(xChunk, zChunk).second) { // successfully placed
                 xChunk = regionX * REGION_SIZE + xChunk;
                 zChunk = regionZ * REGION_SIZE + zChunk;

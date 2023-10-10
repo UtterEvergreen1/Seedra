@@ -7,13 +7,13 @@
 #include "block.hpp"
 #include "NoiseGenerator.hpp"
 
-#include "LegacyCubiomes/cubiomes/rng.hpp"
+#include "LegacyCubiomes/utils/rng.hpp"
 
 #include "LegacyCubiomes/mc/items.hpp"
 #include "LegacyCubiomes/mc/itemID.hpp"
 
 #include "LegacyCubiomes/utils/constants.hpp"
-#include "LegacyCubiomes/utils/pos3D.hpp"
+#include "LegacyCubiomes/utils/Pos3D.hpp"
 
 class ChunkPrimer;
 
@@ -68,9 +68,9 @@ public:
     virtual ~Biome() = default;
 
     void setTemperatureNoise() {
-        uint64_t rand;
-        setSeed(&rand, 1234);
-        this->TEMPERATURE_NOISE.setNoiseGeneratorPerlin(&rand, 1);
+        RNG rng{};
+        rng.setSeed(1234);
+        this->TEMPERATURE_NOISE.setNoiseGeneratorPerlin(rng, 1);
     }
 
     float getFloatTemperature(Pos3D pos) {
@@ -82,11 +82,11 @@ public:
             return this->temperature;
     }
 
-    void generateBiomeTerrain(uint64_t *rand, ChunkPrimer *chunkPrimerIn, int x, int z, double noiseVal);
+    void generateBiomeTerrain(RNG& rng, ChunkPrimer *chunkPrimerIn, int x, int z, double noiseVal);
 
     virtual void
-    genTerrainBlocks(int64_t worldSeed, uint64_t *rand, ChunkPrimer *chunkPrimerIn, int x, int z, double noiseVal) {
-        this->generateBiomeTerrain(rand, chunkPrimerIn, x, z, noiseVal);
+    genTerrainBlocks(int64_t worldSeed, RNG& rng, ChunkPrimer *chunkPrimerIn, int x, int z, double noiseVal) {
+        this->generateBiomeTerrain(rng, chunkPrimerIn, x, z, noiseVal);
     }
 
     static void registerBiomes();
@@ -116,7 +116,7 @@ public:
     BiomeHills(std::string biomeName, float baseHeight, float heightVariation, bool enableSnow, float temperature)
             : Biome(std::move(biomeName), baseHeight, heightVariation, enableSnow, temperature) {}
 
-    void genTerrainBlocks(int64_t worldSeed, uint64_t *rand, ChunkPrimer *chunkPrimerIn, int x, int z,
+    void genTerrainBlocks(int64_t worldSeed, RNG& rng, ChunkPrimer *chunkPrimerIn, int x, int z,
                           double noiseVal) override {
         this->topBlock.block = Items::GRASS_ID;
         this->fillerBlock.block = Items::DIRT_ID;
@@ -132,7 +132,7 @@ public:
             this->fillerBlock.block = Items::STONE_ID;
         }
 
-        generateBiomeTerrain(rand, chunkPrimerIn, x, z, noiseVal);
+        generateBiomeTerrain(rng, chunkPrimerIn, x, z, noiseVal);
     }
 };
 
@@ -157,7 +157,7 @@ public:
                int type)
             : Biome(std::move(biomeName), baseHeight, heightVariation, enableSnow, temperature), type(type) {}
 
-    void genTerrainBlocks(int64_t worldSeed, uint64_t *rand, ChunkPrimer *chunkPrimerIn, int x, int z,
+    void genTerrainBlocks(int64_t worldSeed, RNG& rng, ChunkPrimer *chunkPrimerIn, int x, int z,
                           double noiseVal) override {
         if (this->type == 1) {
             if (noiseVal > 1.75) {
@@ -166,7 +166,7 @@ public:
                 this->topBlock = Block(Items::PODZOL);
             }
         }
-        return this->generateBiomeTerrain(rand, chunkPrimerIn, x, z, noiseVal);
+        return this->generateBiomeTerrain(rng, chunkPrimerIn, x, z, noiseVal);
     }
 };
 
@@ -243,65 +243,65 @@ public:
             : Biome(std::move(biomeName), baseHeight, heightVariation, enableSnow, temperature), worldSeed(0),
               brycePillars(hasBrycePillars), hasForest(hasForest) {}
 
-    void genTerrainBlocks(int64_t worldSeed, uint64_t *rand, ChunkPrimer *chunkPrimerIn, int x, int z,
+    void genTerrainBlocks(int64_t worldSeed, RNG& rng, ChunkPrimer *chunkPrimerIn, int x, int z,
                           double noiseVal) override;
 
     void generateClayBands(int64_t seed) {
         this->clayBands.resize(64, Block(Items::HARDENED_CLAY_ID));
-        uint64_t random;
-        setSeed(&random, seed);
-        this->clayBandsOffsetNoise.setNoiseGeneratorPerlin(&random, 1);
+        RNG rng;
+        rng.setSeed(seed);
+        this->clayBandsOffsetNoise.setNoiseGeneratorPerlin(rng, 1);
 
         for (int index = 0; index < 64; ++index) {
-            index += nextInt(&random, 5) + 1;
+            index += rng.nextInt(5) + 1;
 
             if (index < 64)
                 this->clayBands[index] = Block(Items::WHITE_HARDENED_CLAY);
         }
 
-        int orangeBands = nextInt(&random, 4) + 2;
+        int orangeBands = rng.nextInt(4) + 2;
 
         for (int i = 0; i < orangeBands; ++i) {
-            int bandLength = nextInt(&random, 3) + 1;
-            int startPos = nextInt(&random, 64);
+            int bandLength = rng.nextInt(3) + 1;
+            int startPos = rng.nextInt(64);
 
             for (int offset = 0; startPos + offset < 64 && offset < bandLength; ++offset)
                 this->clayBands[startPos + offset] = Block(Items::YELLOW_HARDENED_CLAY);
         }
 
-        int brownBands = nextInt(&random, 4) + 2;
+        int brownBands = rng.nextInt(4) + 2;
 
         for (int i = 0; i < brownBands; ++i) {
-            int bandLength = nextInt(&random, 3) + 2;
-            int startPos = nextInt(&random, 64);
+            int bandLength = rng.nextInt(3) + 2;
+            int startPos = rng.nextInt(64);
 
             for (int offset = 0; startPos + offset < 64 && offset < bandLength; ++offset)
                 this->clayBands[startPos + offset] = Block(Items::BROWN_HARDENED_CLAY);
         }
 
-        int redBands = nextInt(&random, 4) + 2;
+        int redBands = rng.nextInt(4) + 2;
 
         for (int i = 0; i < redBands; ++i) {
-            int bandLength = nextInt(&random, 3) + 1;
-            int startPos = nextInt(&random, 64);
+            int bandLength = rng.nextInt(3) + 1;
+            int startPos = rng.nextInt(64);
 
             for (int offset = 0; startPos + offset < 64 && offset < bandLength; ++offset)
                 this->clayBands[startPos + offset] = Block(Items::RED_HARDENED_CLAY);
         }
 
-        int grayBands = nextInt(&random, 3) + 3;
+        int grayBands = rng.nextInt(3) + 3;
         int previousPos = 0;
 
         for (int i = 0; i < grayBands; ++i) {
-            previousPos += nextInt(&random, 16) + 4;
+            previousPos += rng.nextInt(16) + 4;
 
             for (int offset = 0; previousPos + offset < 64 && offset < 1; ++offset) {
                 this->clayBands[previousPos + offset] = Block(Items::WHITE_HARDENED_CLAY);
 
-                if (previousPos + offset > 1 && nextBoolean(&random))
+                if (previousPos + offset > 1 && rng.nextBoolean())
                     this->clayBands[previousPos + offset - 1] = Block(Items::LIGHT_GRAY_HARDENED_CLAY);
 
-                if (previousPos + offset < 63 && nextBoolean(&random))
+                if (previousPos + offset < 63 && rng.nextBoolean())
                     this->clayBands[previousPos + offset + 1] = Block(Items::LIGHT_GRAY_HARDENED_CLAY);
             }
         }
@@ -321,13 +321,13 @@ public:
                         float temperature)
             : Biome(std::move(biomeName), baseHeight, heightVariation, enableSnow, temperature) {}
 
-    void genTerrainBlocks(int64_t worldSeed, uint64_t *rand, ChunkPrimer *chunkPrimerIn, int x, int z,
+    void genTerrainBlocks(int64_t worldSeed, RNG& rng, ChunkPrimer *chunkPrimerIn, int x, int z,
                           double noiseVal) override {
         if (noiseVal > 1.75) {
             this->topBlock.block = Items::STONE_ID;
             this->fillerBlock.block = Items::STONE_ID;
         } else if (noiseVal > -0.5)
             this->topBlock = Block(Items::COARSE_DIRT);
-        return generateBiomeTerrain(rand, chunkPrimerIn, x, z, noiseVal);
+        return generateBiomeTerrain(rng, chunkPrimerIn, x, z, noiseVal);
     }
 };

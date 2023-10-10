@@ -126,16 +126,16 @@ bool getIsMatch(int* biomes)
     return true;
 }
 
-int64_t findBalancedSeed(Generator* g, uint64_t rnd) {
-    int64_t timeStart = getSeconds();
+int64_t findBalancedSeed(Generator* g, RNG rng) {
+    uint64_t timeStart = getSeconds();
     while (true) {
-        int64_t seed = nextLong(&rnd);
+        int64_t seed = rng.nextLong();
         int* biomes = g->getBiomeRange(4, -100, -100, 200, 200);
         bool isMatch = getIsMatch(biomes);
         free(biomes);
-        if(isMatch)
+        if (isMatch)
             return seed;
-        if(10 < (getSeconds() - timeStart))
+        if (10 < (getSeconds() - timeStart))
             return -1;
     }
 }

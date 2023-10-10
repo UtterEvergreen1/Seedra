@@ -2,7 +2,7 @@
 
 
 #include "LegacyCubiomes/mc/items.hpp"
-#include "LegacyCubiomes/cubiomes/rng.hpp"
+#include "LegacyCubiomes/utils/rng.hpp"
 #include "LegacyCubiomes/enchants/enchantment.hpp"
 #include "LegacyCubiomes/enchants/enchantmentData.hpp"
 
@@ -27,11 +27,11 @@ public:
     }
 
     template<bool legacy>
-    static uint8_t getInt(uint64_t *rng, uint8_t minimum, uint8_t maximum) {
+    static uint8_t getInt(RNG& rng, uint8_t minimum, uint8_t maximum) {
         if constexpr (legacy)
-            return nextInt(rng, maximum - minimum + 1) + minimum;
+            return rng.nextInt(maximum - minimum + 1) + minimum;
         else
-            return minimum >= maximum ? minimum : (nextInt(rng, maximum - minimum + 1) + minimum);
+            return minimum >= maximum ? minimum : (rng.nextInt(maximum - minimum + 1) + minimum);
     }
 
     void computeCumulativeWeights();
@@ -43,8 +43,8 @@ public:
      * @return
      */
     template<bool legacy>
-    ItemStack createLootRoll(uint64_t *rng) const {
-        int randomWeight = nextInt(rng, totalWeight);
+    ND ItemStack createLootRoll(RNG& rng) const {
+        int randomWeight = rng.nextInt(totalWeight);
         // std::cout << randomWeight << " " << totalWeight << std::endl;
 
         size_t high = cumulativeWeights.size();

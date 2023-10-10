@@ -15,20 +15,20 @@ namespace loot {
 
         /// loot seeding with stronghold stone rolls
         template<bool checkCaves>
-        static uint64_t getLootSeed(const Generator& g, generation::Stronghold* strongholdGenerator, const Piece& piece, int chestChunkX, int chestChunkZ) {
-            uint64_t rng = getPopulationSeed(g.getWorldSeed(), chestChunkX, chestChunkZ);
+        static RNG getLootSeed(const Generator& g, generation::Stronghold* strongholdGenerator, const Piece& piece, int chestChunkX, int chestChunkZ) {
+            RNG rng = RNG::getPopulationSeed(g.getWorldSeed(), chestChunkX, chestChunkZ);
 
             if constexpr (checkCaves) {
                 ChunkPrimer* chunk = Chunk::provideChunk<true, true, false>(g, chestChunkX, chestChunkZ);
                 // we roll rng equal to the stone bricks in the chunk that generated before the chest corridor
-                if(!structure_rolls::Stronghold::generateStructure<true>(chunk, strongholdGenerator, &rng, piece, chestChunkX, chestChunkZ)) {
+                if(!structure_rolls::Stronghold::generateStructure<true>(chunk, strongholdGenerator, rng, piece, chestChunkX, chestChunkZ)) {
                     delete chunk;
-                    return -1;
+                    return RNG(-1);
                 }
                 delete chunk;
             }
             else {
-                structure_rolls::Stronghold::generateStructure<true>(nullptr, strongholdGenerator, &rng, piece, chestChunkX, chestChunkZ);
+                structure_rolls::Stronghold::generateStructure<true>(nullptr, strongholdGenerator, rng, piece, chestChunkX, chestChunkZ);
             }
             return rng;
         }

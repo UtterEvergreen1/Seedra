@@ -50,18 +50,18 @@ namespace loot {
     template <bool shuffle>
     Container BuriedTreasure::getLoot(int64_t worldSeed, int chunkX, int chunkZ) {
         int rollCount;
-        uint64_t seed = getPopulationSeed(worldSeed, chunkX, chunkZ);
-        uint64_t lootTableSeed = (int)nextLong(&seed);
-        setSeed(&lootTableSeed, lootTableSeed);
+        RNG seed = RNG::getPopulationSeed(worldSeed, chunkX, chunkZ);
+        RNG lootTableSeed = RNG((int)seed.nextLong());
+        lootTableSeed.setSeed(lootTableSeed.getSeed());
 
         std::vector<ItemStack> chestContents(maxItemsPossible);
 
         //generate loot
         int slotIndex = 0;
         for(const LootTable& table : lootTables){
-            rollCount = LootTable::getInt<false>(&lootTableSeed, table.getMin(), table.getMax());
+            rollCount = LootTable::getInt<false>(lootTableSeed, table.getMin(), table.getMax());
             for (int rollIndex = 0; rollIndex < rollCount; rollIndex++) {
-                ItemStack result = table.createLootRoll<false>(&lootTableSeed);
+                ItemStack result = table.createLootRoll<false>(lootTableSeed);
                 chestContents[slotIndex++] = result;
             }
         }
@@ -76,13 +76,13 @@ namespace loot {
     }
 
     int BuriedTreasure::checkFor5Cakes(int seed) {
-        uint64_t lootSeed = seed ^ 0x5deece66d;
-        nextInt(&lootSeed, 1);
-        int rollCount = LootTable::getInt<false>(&lootSeed, 5, 12);
+        RNG lootSeed = RNG(seed ^ 0x5deece66d);
+        lootSeed.nextInt(1);
+        int rollCount = LootTable::getInt<false>(lootSeed, 5, 12);
         int cakeCount = 0;
 
         for (int rollIndex = 0; rollIndex < rollCount; rollIndex++) {
-            ItemStack result = lootTables[1].createLootRoll<false>(&lootSeed);
+            ItemStack result = lootTables[1].createLootRoll<false>(lootSeed);
             if (result.item->getID() == Items::ItemID::CAKE_ID) {
                 ++cakeCount;
             }

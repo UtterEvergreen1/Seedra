@@ -13,9 +13,8 @@ namespace structure_rolls {
         static bool validToPlace(const BoundingBox &chunkBoundingBox, const BoundingBox& bb, int x, int y, int z);
         static void fillWithRandomizedBlocks(const BoundingBox &chunkBoundingBox, const Piece &piece,
                                              int minX, int minY, int minZ, int maxX, int maxY, int maxZ,
-                                             uint64_t *random, ChunkPrimer *chunk);
-        static void generateChest(const BoundingBox &chunkBoundingBox, const Piece &piece,
-                                  uint64_t *random, int x, int y, int z);
+                                             RNG& rng, ChunkPrimer *chunk);
+        static void generateChest(const BoundingBox &chunkBoundingBox, const Piece &piece, RNG& rng, int x, int y, int z);
     };
 
 }

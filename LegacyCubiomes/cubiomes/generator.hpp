@@ -1,8 +1,9 @@
 #pragma once
 
-#include "LegacyCubiomes/utils/pos2D.hpp"
+#include "LegacyCubiomes/utils/Pos2D.hpp"
 #include "LegacyCubiomes/utils/enums.hpp"
 
+#include "LegacyCubiomes/utils/rng.hpp"
 #include "layers.hpp"
 
 struct Layer;
@@ -255,8 +256,7 @@ public:
      * @param[out] passes returns the total amount of positions picked
      * @return the found position, not found if passes = 0
      */
-    Pos2D locateBiome(int x, int z, int radius,
-        uint64_t validBiomes, uint64_t* rng, int* passes) const;
+    Pos2D locateBiome(int x, int z, int radius, uint64_t validBiomes, RNG& rng, int* passes) const;
 
     /**
      * Overload function for that allows for using Pos2D as position in locateBiome.
@@ -269,7 +269,7 @@ public:
      * @param[out] passes returns the total amount of positions picked
      * @return the found position, not found if passes = 0
      */
-    MU inline Pos2D locateBiome(Pos2D pos, int radius, uint64_t validBiomes, uint64_t* rng, int* passes) const {
+    MU inline Pos2D locateBiome(Pos2D pos, int radius, uint64_t validBiomes, RNG& rng, int* passes) const {
         return locateBiome(pos.x, pos.z, radius, validBiomes, rng, passes);
     }
 
@@ -295,7 +295,7 @@ public:
      * @param rng the current rng state
      * @return found spawn block coordinates, if not found, then (8, 8)
      */
-    ND Pos2D estimateSpawn(uint64_t* rng) const;
+    ND Pos2D estimateSpawn(RNG& rng) const;
 
     /// Finds the spawn block coordinates (not currently correct in wooded_badlands_plateau or mesa_plateau_stone).
     MU ND Pos2D getSpawnBlock() const;

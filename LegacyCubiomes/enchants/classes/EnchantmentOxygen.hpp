@@ -12,11 +12,11 @@ public:
         Enchantment(std::move(name), rarity, &Type::ARMOR_HEAD, EnumName::OXYGEN, 3) {};
 
     int getMinCost(int enchantmentLevel) override {
-        return LEVELS_MIN[enchantmentLevel];
+        return LEVELS_MIN[enchantmentLevel - 1];
     }
 
     int getMaxCost(int enchantmentLevel) override {
-        return LEVELS_MAX[enchantmentLevel];
+        return LEVELS_MAX[enchantmentLevel - 1];
     }
 };
 

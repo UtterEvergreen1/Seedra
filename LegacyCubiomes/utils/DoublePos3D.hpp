@@ -7,7 +7,7 @@
 #endif
 
 
-#include "LegacyCubiomes/cubiomes/processor.hpp"
+#include "processor.hpp"
 #include "DoublePos2D.hpp"
 
 class DoublePos3D {

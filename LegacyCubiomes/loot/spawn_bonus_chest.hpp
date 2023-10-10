@@ -10,7 +10,7 @@ namespace loot {
     public:
         static void setup();
         template<bool shuffle>
-        static Container getLootFromLootTableSeed(uint64_t* lootTableSeed);
+        static Container getLootFromLootTableSeed(RNG& lootTableSeed);
     };
 
     void SpawnBonusChest::setup() {
@@ -71,13 +71,13 @@ namespace loot {
 
 
     template<bool shuffle>
-    Container SpawnBonusChest::getLootFromLootTableSeed(uint64_t* lootTableSeed) {
+    Container SpawnBonusChest::getLootFromLootTableSeed(RNG& lootTableSeed) {
         int rollCount;
         int rollIndex;
         int rollType;
         std::vector<ItemStack> chestContents;
         chestContents.reserve(maxItemsPossible);
-        setSeed(lootTableSeed, *lootTableSeed);
+        lootTableSeed.setSeed(lootTableSeed.getSeed());
 
         // generate loot
         for(const LootTable& table : loot::SpawnBonusChest::lootTables){
@@ -86,13 +86,13 @@ namespace loot {
                 ItemStack result = table.createLootRoll<false>(lootTableSeed);
 
                 if EXPECT_FALSE(result.item == &Items::OAK_WOOD) {
-                    rollType = nextInt(lootTableSeed, 0, 3);
+                    rollType = lootTableSeed.nextInt(0, 3);
                     std::cout << rollType << std::endl;
                     result.item = LOG1_vec[rollType];
                 }
 
                 if EXPECT_FALSE(result.item == &Items::ACACIA_WOOD) {
-                    rollType = nextInt(lootTableSeed, 0, 1);
+                    rollType = lootTableSeed.nextInt(0, 1);
                     std::cout << rollType << std::endl;
                     result.item = LOG2_vec[rollType];
 
@@ -103,7 +103,7 @@ namespace loot {
         }
         if constexpr (shuffle){
             Container container = Container(27);
-            container.shuffleIntoContainer(chestContents, *lootTableSeed);
+            container.shuffleIntoContainer(chestContents, lootTableSeed);
             return container;
         }
         else

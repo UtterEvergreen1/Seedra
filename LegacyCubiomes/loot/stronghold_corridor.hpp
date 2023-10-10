@@ -12,9 +12,9 @@ namespace loot {
     public:
         static void setup();
         template <bool shuffle>
-        ND static Container getLootFromLootTableSeedCorridor(uint64_t lootTableSeed);
+        ND static Container getLootFromLootTableSeedCorridor(RNG& lootTableSeed);
         template <bool shuffle>
-        ND static Container getLootFromSeed(uint64_t* seed);
+        ND static Container getLootFromSeed(RNG& seed);
 
         template<bool checkCaves, bool shuffle>
         ND static Container getAltarChestLoot(const Generator& g, const Piece& altarChestPiece, generation::Stronghold* strongholdGenerator);
@@ -58,21 +58,21 @@ namespace loot {
 
     template<bool isAquatic>
     template <bool shuffle>
-    Container StrongholdCorridor<isAquatic>::getLootFromLootTableSeedCorridor(uint64_t lootTableSeed) {
+    Container StrongholdCorridor<isAquatic>::getLootFromLootTableSeedCorridor(RNG& lootTableSeed) {
         int rollCount;
         int rollIndex;
         std::vector<ItemStack> chestContents;
         chestContents.reserve(StrongholdCorridor<isAquatic>::maxItemsPossible);
-        setSeed(&lootTableSeed, lootTableSeed);
+        lootTableSeed.setSeed(lootTableSeed.getSeed());
 
         // generate loot
         for(const LootTable& table : StrongholdCorridor<isAquatic>::lootTables){
-            rollCount = LootTable::getInt<false>(&lootTableSeed, table.getMin(), table.getMax());
+            rollCount = LootTable::getInt<false>(lootTableSeed, table.getMin(), table.getMax());
             for (rollIndex = 0; rollIndex < rollCount; rollIndex++) {
-                ItemStack result = table.createLootRoll<false>(&lootTableSeed);
+                ItemStack result = table.createLootRoll<false>(lootTableSeed);
 
                 if EXPECT_FALSE(result.item->getID() == Items::ENCHANTED_BOOK_ID) {
-                    EnchantmentHelper::EnchantWithLevelsBook::apply(&lootTableSeed, &result, 30);
+                    EnchantmentHelper::EnchantWithLevelsBook::apply(lootTableSeed, &result, 30);
                 }
 
                 chestContents.push_back(result);
@@ -90,8 +90,8 @@ namespace loot {
 
     template <bool isAquatic>
     template <bool shuffle>
-    inline Container StrongholdCorridor<isAquatic>::getLootFromSeed(uint64_t* seed) {
-        return StrongholdCorridor<isAquatic>::getLootFromLootTableSeedCorridor<shuffle>(nextLong(seed));
+    inline Container StrongholdCorridor<isAquatic>::getLootFromSeed(RNG& seed) {
+        return StrongholdCorridor<isAquatic>::getLootFromLootTableSeedCorridor<shuffle>(seed.nextLong());
     }
 
     template<bool isAquatic>

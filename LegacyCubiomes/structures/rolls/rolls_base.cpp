@@ -77,7 +77,7 @@ namespace structure_rolls {
 
 
     void RollsBase::fillWithRandomizedBlocks(const BoundingBox &chunkBoundingBox, const Piece &piece, int minX, int minY,
-                                             int minZ, int maxX, int maxY, int maxZ, uint64_t *random, ChunkPrimer *chunk) {
+                                             int minZ, int maxX, int maxY, int maxZ, RNG& rng, ChunkPrimer *chunk) {
         int worldX;
         int worldY;
         int worldZ;
@@ -89,7 +89,7 @@ namespace structure_rolls {
                         worldY = piece.getWorldY(y);
                         worldZ = piece.getWorldZ(x, z);
                         if (intersectsWithBlock(chunkBoundingBox, worldX, worldY, worldZ) && (chunk == nullptr || chunk->getBlock(worldX & 15, worldY, worldZ & 15))) {
-                            *random = (*random * 0x5deece66d + 0xb) & 0xFFFFFFFFFFFF; // advance rng
+                            rng.advance(); // advance rng
                         }
                     }
                 }
@@ -99,13 +99,12 @@ namespace structure_rolls {
 
 
     // TODO: generate legacy chest where the loot is generated with the seed and doesn't use the loot table seed
-    void RollsBase::generateChest(const BoundingBox &chunkBoundingBox, const Piece &piece, uint64_t *random, int x, int y, int z) {
+    void RollsBase::generateChest(const BoundingBox &chunkBoundingBox, const Piece &piece, RNG& rng, int x, int y, int z) {
         int xPos = piece.getWorldX(x, z);
         int yPos = piece.getWorldY(y);
         int zPos = piece.getWorldZ(x, z);
         if (intersectsWithBlock(chunkBoundingBox, xPos & 15, yPos, zPos & 15)) {
-            // nextLong for loot table seed
-            *random = (*random * 0xBB20B4600A69 + 0x40942DE6BA) & 0xFFFFFFFFFFFF; // 2 rolls
+            rng.advance2(); // nextLong for loot table seed
         }
     }
 }

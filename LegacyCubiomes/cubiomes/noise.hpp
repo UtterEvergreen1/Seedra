@@ -1,5 +1,6 @@
 #pragma once
 
+#include "LegacyCubiomes/utils/rng.hpp"
 #include "LegacyCubiomes/utils/enums.hpp"
 
 class Generator;
@@ -43,14 +44,14 @@ struct DoublePerlinNoise {
 double maintainPrecision(double x);
 
 /// Perlin noise
-void perlinInit(PerlinNoise *noise, uint64_t *seed);
+void perlinInit(PerlinNoise *noise, RNG& seed);
 
 double samplePerlin(const Generator* g, const PerlinNoise *noise, double x, double y, double z,
                     double yAmp, double yMin);
 double sampleSimplex2D(const PerlinNoise *noise, double x, double y);
 
 /// Perlin Octaves
-void octaveInit(OctaveNoise *noise, uint64_t *seed, PerlinNoise *octaves, int oMin, int len);
+void octaveInit(OctaveNoise *noise, RNG& rng, PerlinNoise *octaves, int oMin, int len);
 
 MU double sampleOctave(const Generator* g, const OctaveNoise *noise, double x, double y, double z);
 

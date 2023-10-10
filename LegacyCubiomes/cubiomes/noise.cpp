@@ -3,9 +3,10 @@
 #include <cstdio>
 #include <cstring>
 
-#include "rng.hpp"
+#include "LegacyCubiomes/utils/rng.hpp"
 #include "noise.hpp"
 #include "generator.hpp"
+#include "LegacyCubiomes/utils/MathHelper.hpp"
 
 double maintainPrecision(double x) {
     return x - floor(x / 33554432.0 + 0.5) * 33554432.0;
@@ -53,12 +54,12 @@ static inline double indexedLerp(int idx, double a, double b, double c) {
     return 0;
 }
 
-void perlinInit(PerlinNoise *noise, uint64_t *seed) {
+void perlinInit(PerlinNoise *noise, RNG& rng) {
     int i = 0;
     memset(noise, 0, sizeof(*noise));
-    noise->a = nextDouble(seed) * 256.0;
-    noise->b = nextDouble(seed) * 256.0;
-    noise->c = nextDouble(seed) * 256.0;
+    noise->a = rng.nextDouble() * 256.0;
+    noise->b = rng.nextDouble() * 256.0;
+    noise->c = rng.nextDouble() * 256.0;
     noise->amplitude = 1.0;
     noise->lacunarity = 1.0;
 
@@ -66,7 +67,7 @@ void perlinInit(PerlinNoise *noise, uint64_t *seed) {
         noise->d[i] = i;
     }
     for (i = 0; i < 256; i++) {
-        int j = nextInt(seed, 256 - i) + i;
+        int j = rng.nextInt(256 - i) + i;
         uint8_t n = noise->d[i];
         noise->d[i] = noise->d[j];
         noise->d[j] = n;
@@ -121,15 +122,15 @@ double samplePerlin(const Generator *g, const PerlinNoise *noise,
     double l7 = indexedLerp(noise->d[a3 + 1], d1, d2 - 1, d3 - 1);
     double l8 = indexedLerp(noise->d[b3 + 1], d1 - 1, d2 - 1, d3 - 1);
 
-    l1 = lerp(t1, l1, l2);
-    l3 = lerp(t1, l3, l4);
-    l5 = lerp(t1, l5, l6);
-    l7 = lerp(t1, l7, l8);
+    l1 = MathHelper::lerp(t1, l1, l2);
+    l3 = MathHelper::lerp(t1, l3, l4);
+    l5 = MathHelper::lerp(t1, l5, l6);
+    l7 = MathHelper::lerp(t1, l7, l8);
 
-    l1 = lerp(t2, l1, l3);
-    l5 = lerp(t2, l5, l7);
+    l1 = MathHelper::lerp(t2, l1, l3);
+    l5 = MathHelper::lerp(t2, l5, l7);
 
-    return lerp(t3, l1, l5);
+    return MathHelper::lerp(t3, l1, l5);
 }
 
 
@@ -172,7 +173,7 @@ double sampleSimplex2D(const PerlinNoise *noise, double x, double y) {
 }
 
 
-void octaveInit(OctaveNoise *noise, uint64_t *seed, PerlinNoise *octaves,
+void octaveInit(OctaveNoise *noise, RNG& rng, PerlinNoise *octaves,
                 int oMin, int len) {
     int i;
     int end = oMin + len - 1;
@@ -185,19 +186,19 @@ void octaveInit(OctaveNoise *noise, uint64_t *seed, PerlinNoise *octaves,
     }
 
     if (end == 0) {
-        perlinInit(&octaves[0], seed);
+        perlinInit(&octaves[0], rng);
         octaves[0].amplitude = persist;
         octaves[0].lacunarity = lacuna;
         persist *= 2.0;
         lacuna *= 0.5;
         i = 1;
     } else {
-        skipNextN(seed, -end * 262);
+        rng.skipNextN(-end * 262);
         i = 0;
     }
 
     for (; i < len; i++) {
-        perlinInit(&octaves[i], seed);
+        perlinInit(&octaves[i], rng);
         octaves[i].amplitude = persist;
         octaves[i].lacunarity = lacuna;
         persist *= 2.0;
@@ -226,20 +227,20 @@ double sampleOctave(const Generator* g, const OctaveNoise *noise, double x, doub
 
 
 void initSurfaceNoise(SurfaceNoise *sn, DIMENSION dimension, uint64_t worldSeed) {
-    uint64_t s;
-    setSeed(&s, worldSeed);
-    octaveInit(&sn->octaveMin, &s, sn->oct + 0, -15, 16);
-    octaveInit(&sn->octaveMax, &s, sn->oct + 16, -15, 16);
-    octaveInit(&sn->octaveMain, &s, sn->oct + 32, -7, 8);
+    RNG rng;
+    rng.setSeed(worldSeed);
+    octaveInit(&sn->octaveMin, rng, sn->oct + 0, -15, 16);
+    octaveInit(&sn->octaveMax, rng, sn->oct + 16, -15, 16);
+    octaveInit(&sn->octaveMain, rng, sn->oct + 32, -7, 8);
     if (dimension == DIMENSION::END) {
         sn->xzScale = 2.0;
         sn->yScale = 1.0;
         sn->xzFactor = 80;
         sn->yFactor = 160;
     } else { // DIM_OVERWORLD
-        octaveInit(&sn->octaveSurf, &s, sn->oct + 40, -3, 4);
-        skipNextN(&s, 262 * 10);
-        octaveInit(&sn->octaveDepth, &s, sn->oct + 44, -15, 16);
+        octaveInit(&sn->octaveSurf, rng, sn->oct + 40, -3, 4);
+        rng.skipNextN(262 * 10);
+        octaveInit(&sn->octaveDepth, rng, sn->oct + 44, -15, 16);
         sn->xzScale = 0.9999999814507745;
         sn->yScale = 0.9999999814507745;
         sn->xzFactor = 80;

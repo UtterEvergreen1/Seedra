@@ -10,8 +10,8 @@ int WeightedRandom::getTotalWeight(const std::vector<EnchantmentData>& collectio
 }
 
 
-EnchantmentData WeightedRandom::getRandomItem(uint64_t *rng, const std::vector<EnchantmentData>& collection, int totalWeight) {
-    int weight = nextInt(rng, totalWeight);
+EnchantmentData WeightedRandom::getRandomItem(RNG& rng, const std::vector<EnchantmentData>& collection, int totalWeight) {
+    int weight = rng.nextInt(totalWeight);
     // printf("weight chosen: %d, totalWeight %d\n", weight, totalWeight);
     return getRandomItem(collection, weight);
 }
@@ -29,6 +29,6 @@ EnchantmentData WeightedRandom::getRandomItem(const std::vector<EnchantmentData>
 }
 
 
-EnchantmentData WeightedRandom::getRandomItem(uint64_t *rng, const std::vector<EnchantmentData>& collection) {
+EnchantmentData WeightedRandom::getRandomItem(RNG& rng, const std::vector<EnchantmentData>& collection) {
     return getRandomItem(rng, collection, getTotalWeight(collection));
 }

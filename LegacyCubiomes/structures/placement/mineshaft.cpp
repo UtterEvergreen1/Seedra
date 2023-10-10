@@ -1,28 +1,28 @@
 #include "mineshaft.hpp"
 
-#include "LegacyCubiomes/cubiomes/rng.hpp"
+#include "LegacyCubiomes/utils/rng.hpp"
 
 namespace Placement {
 
     std::vector<Pos2D> mineshaft::getPositions(int64_t worldSeed, int xLower, int zLower, int xUpper, int zUpper) {
-        uint64_t random;
+        RNG rng;
         Pos2DVec_t positions;
-        setSeed(&random, worldSeed);
-        uint64_t xModifier = nextLong(&random);
-        uint64_t zModifier = nextLong(&random);
+        rng.setSeed(worldSeed);
+        uint64_t xModifier = rng.nextLong();
+        uint64_t zModifier = rng.nextLong();
 
         for (int xPos = xLower; xPos <= xUpper; xPos++) {
             uint64_t aix = xPos * xModifier ^ worldSeed;
 
             for (int zPos = zLower; zPos <= zUpper; zPos++) {
-                setSeed(&random, aix ^ zPos * zModifier);
-                random = (random * 0x5deece66d + 0xb) & 0xFFFFFFFFFFFF; // advance rng
-                if EXPECT_FALSE(nextDouble(&random) < 0.004) {
+                rng.setSeed(aix ^ zPos * zModifier);
+                rng.advance();
+                if EXPECT_FALSE(rng.nextDouble() < 0.004) {
                     int distance = xPos;
                     if (-xPos > distance) distance = -xPos;
                     if (+zPos > distance) distance = +zPos;
                     if (-zPos > distance) distance = -zPos;
-                    if (distance >= 80 || nextInt(&random, 80) < distance) {
+                    if (distance >= 80 || rng.nextInt(80) < distance) {
                         positions.emplace_back(xPos, zPos);
                     }
                 }

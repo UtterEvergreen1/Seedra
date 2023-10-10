@@ -4,8 +4,8 @@
 
 namespace structure_rolls {
 
-    void Mineshaft::generateStructure(generation::Mineshaft* mineshaftGenerator, ChunkPrimer *chunk,
-                                      uint64_t *random, int chunkX, int chunkZ) {
+    void Mineshaft::generateStructure(generation::Mineshaft* mineshaftGenerator, ChunkPrimer *chunk, RNG& rng,
+                                      int chunkX, int chunkZ) {
         for (int pieceIndex = 0; pieceIndex < mineshaftGenerator->pieceArraySize; ++pieceIndex) {
             const Piece &piece = mineshaftGenerator->pieceArray[pieceIndex];
             if (piece.type != generation::Mineshaft::PieceType::NONE) {
@@ -24,9 +24,9 @@ namespace structure_rolls {
                                  piece.getXSize()) / 5;
                         int depth = sectionCount * 5;
 
-                        skipNextN(random, 3 * depth);
+                        rng.skipNextN(3 * depth);
                         if (piece.additionalData & 2)
-                            skipNextN(random, 6 * depth);
+                            rng.skipNextN(6 * depth);
 
 
                         for (int i = 0; i < sectionCount; ++i) {
@@ -45,38 +45,38 @@ namespace structure_rolls {
                                 }
                             }
                             if (shouldPlaceTorch) {
-                                if (nextInt(random, 4) != 0) {
-                                    *random = (*random * 205749139540585 + 277363943098) & 0xffffffffffff; // 2 rolls
+                                if (rng.nextInt(4) != 0) {
+                                    rng.advance2(); // 2 rolls
                                 }
                             }
 
                             // place cobwebs
                             if (chunk == nullptr) {
-                                *random = (*random * 128954768138017 + 137139456763464) & 0xffffffffffff; // 8 rolls
+                                rng.advance8(); // 8 rolls
                             } else {
-                                placeCobWeb(chunk, chunkBoundingBox, piece, random, 0, currentDepth - 1);
-                                placeCobWeb(chunk, chunkBoundingBox, piece, random, 2, currentDepth - 1);
-                                placeCobWeb(chunk, chunkBoundingBox, piece, random, 0, currentDepth + 1);
-                                placeCobWeb(chunk, chunkBoundingBox, piece, random, 2, currentDepth + 1);
-                                placeCobWeb(chunk, chunkBoundingBox, piece, random, 0, currentDepth - 2);
-                                placeCobWeb(chunk, chunkBoundingBox, piece, random, 2, currentDepth - 2);
-                                placeCobWeb(chunk, chunkBoundingBox, piece, random, 0, currentDepth + 2);
-                                placeCobWeb(chunk, chunkBoundingBox, piece, random, 2, currentDepth + 2);
+                                placeCobWeb(chunk, chunkBoundingBox, piece, rng, 0, currentDepth - 1);
+                                placeCobWeb(chunk, chunkBoundingBox, piece, rng, 2, currentDepth - 1);
+                                placeCobWeb(chunk, chunkBoundingBox, piece, rng, 0, currentDepth + 1);
+                                placeCobWeb(chunk, chunkBoundingBox, piece, rng, 2, currentDepth + 1);
+                                placeCobWeb(chunk, chunkBoundingBox, piece, rng, 0, currentDepth - 2);
+                                placeCobWeb(chunk, chunkBoundingBox, piece, rng, 2, currentDepth - 2);
+                                placeCobWeb(chunk, chunkBoundingBox, piece, rng, 0, currentDepth + 2);
+                                placeCobWeb(chunk, chunkBoundingBox, piece, rng, 2, currentDepth + 2);
                             }
                             if (chunkX == 1 && chunkZ == -18) {
-                                std::cout << nextLong(random) << std::endl;
+                                std::cout << rng.nextLong() << std::endl;
                             }
-                            if (nextInt(random, 100) == 0) {
-                                generateChest(chunk, chunkBoundingBox, piece, random, 2, 0, currentDepth - 1);
+                            if (rng.nextInt(100) == 0) {
+                                generateChest(chunk, chunkBoundingBox, piece, rng, 2, 0, currentDepth - 1);
                             }
 
-                            if (nextInt(random, 100) == 0) {
-                                generateChest(chunk, chunkBoundingBox, piece, random, 0, 0, currentDepth + 1);
+                            if (rng.nextInt(100) == 0) {
+                                generateChest(chunk, chunkBoundingBox, piece, rng, 0, 0, currentDepth + 1);
                             }
                             //if it has spawner
                             if (piece.additionalData & 2) {
                                 // advance rng for placement on the depth axis
-                                *random = (*random * 0x5deece66d + 0xb) & 0xFFFFFFFFFFFF;
+                                rng.advance();
                             }
 
                             // if it has rails
@@ -87,7 +87,7 @@ namespace structure_rolls {
                                     int zPos = piece.getWorldZ(1, railPos);
                                     if (intersectsWithBlock(chunkBoundingBox, xPos, yPos, zPos) &&
                                     (chunk == nullptr || chunk->getBlock(xPos & 15, yPos - 1, zPos & 15) != 0)) {
-                                        *random = (*random * 0x5deece66d + 0xb) & 0xFFFFFFFFFFFF; // advance rng for rail placement
+                                        rng.advance(); // advance rng for rail placement
                                     }
                                 }
                             }
@@ -103,22 +103,22 @@ namespace structure_rolls {
                                       bool generateFullChunk) {
         int xEnd = (mineshaftGenerator->startX >> 4) + 6;
         int zEnd = (mineshaftGenerator->startZ >> 4) + 6;
-        uint64_t random;
-        setSeed(&random, g.getWorldSeed());
-        uint64_t xModifier = nextLong(&random);
-        uint64_t zModifier = nextLong(&random);
+        RNG rng;
+        rng.setSeed(g.getWorldSeed());
+        uint64_t xModifier = rng.nextLong();
+        uint64_t zModifier = rng.nextLong();
         xModifier = (int64_t)(((xModifier / 2) * 2) + 1);
         zModifier = (int64_t)(((zModifier / 2) * 2) + 1);
         for (int xChunk = (mineshaftGenerator->startX >> 4) - 6; xChunk < xEnd; ++xChunk) {
             uint64_t aix = xChunk * xModifier;
             for (int zChunk = (mineshaftGenerator->startZ >> 4) - 6; zChunk < zEnd; ++zChunk) {
-                setSeed(&random, (aix + zChunk * zModifier) ^ g.getWorldSeed());
-                random = (random * 0x5deece66d + 0xb) & 0xFFFFFFFFFFFF; // advance rng
+                rng.setSeed((aix + zChunk * zModifier) ^ g.getWorldSeed());
+                rng.advance(); // advance rng
                 ChunkPrimer *chunk = nullptr;
                 if (generateFullChunk) {
                     chunk = Chunk::provideChunk<true, true, false>(g, xChunk, zChunk);
                 }
-                generateStructure(mineshaftGenerator, chunk, &random, xChunk, zChunk);
+                generateStructure(mineshaftGenerator, chunk, rng, xChunk, zChunk);
                 if (generateFullChunk) {
                     delete chunk;
                 }
@@ -129,25 +129,25 @@ namespace structure_rolls {
 
     // TODO: generate legacy chest where the loot is generated with the seed and doesn't use the loot table seed
     void Mineshaft::generateChest(ChunkPrimer* chunk, const BoundingBox &chunkBoundingBox, const Piece &piece,
-                                  uint64_t *random, int x, int y, int z) {
+                                  RNG& rng, int x, int y, int z) {
         int xPos = piece.getWorldX(x, z);
         int yPos = piece.getWorldY(y);
         int zPos = piece.getWorldZ(x, z);
         if (intersectsWithBlock(chunkBoundingBox, xPos, yPos, zPos) &&
         (chunk == nullptr || chunk->getBlock(xPos & 15, yPos - 1, zPos & 15) != 0)) {
-            *random = (*random * 0x5deece66d + 0xb) & 0xFFFFFFFFFFFF; // advance rng for next boolean roll for rail shape
-            mineshaftChests.emplace_back(Pos3D(xPos, yPos, zPos), nextLong(random));
+            rng.advance(); // advance rng for next boolean roll for rail shape
+            mineshaftChests.emplace_back(Pos3D(xPos, yPos, zPos), rng.nextLong());
         }
     }
 
 
     void Mineshaft::placeCobWeb(ChunkPrimer* chunk, const BoundingBox &chunkBoundingBox, const Piece &piece,
-                                uint64_t *random, int x, int z) {
+                                RNG& rng, int x, int z) {
         int xPos = piece.getWorldX(x, z);
         int yPos = piece.getWorldY(2);
         int zPos = piece.getWorldZ(x, z);
         if (intersectsWithBlock(chunkBoundingBox, xPos, yPos, zPos) && chunk->getSkyLight(xPos, yPos, zPos) < 8) {
-            *random = (*random * 0x5deece66d + 0xb) & 0xFFFFFFFFFFFF; // advance rng
+            rng.advance(); // advance rng
         }
     }
 

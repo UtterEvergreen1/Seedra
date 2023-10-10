@@ -6,7 +6,8 @@
 #include <vector>
 
 #include "LegacyCubiomes/cubiomes/generator.hpp"
-#include "LegacyCubiomes/cubiomes/rng.hpp"
+#include "LegacyCubiomes/utils/rng.hpp"
+#include "LegacyCubiomes/utils/MathHelper.hpp"
 
 static int64_t lfloor(double value) {
     auto i = (int64_t) value;
@@ -35,17 +36,17 @@ public:
     double F2 = 0.5 * (SQRT_3 - 1.0);
     double G2 = (3.0 - SQRT_3) / 6.0;
 
-    void setNoiseGeneratorSimplex(uint64_t *random) {
-        xo = nextDouble(random) * 256.0;
-        yo = nextDouble(random) * 256.0;
-        zo = nextDouble(random) * 256.0;
+    void setNoiseGeneratorSimplex(RNG& rng) {
+        xo = rng.nextDouble() * 256.0;
+        yo = rng.nextDouble() * 256.0;
+        zo = rng.nextDouble() * 256.0;
 
         for (int i = 0; i < 256; i++) {
             p[i] = i;
         }
 
         for (int l = 0; l < 256; ++l) {
-            int j = nextInt(random, 256 - l) + l;
+            int j = rng.nextInt(256 - l) + l;
             int k = p[l];
             p[l] = p[j];
             p[j] = k;
@@ -207,12 +208,12 @@ public:
     std::vector<NoiseGeneratorSimplex> noiseLevels;
     int levels;
 
-    void setNoiseGeneratorPerlin(uint64_t *p_i45470_1_, int p_i45470_2_) {
+    void setNoiseGeneratorPerlin(RNG& rng, int p_i45470_2_) {
         levels = p_i45470_2_;
         noiseLevels = std::vector<NoiseGeneratorSimplex>(p_i45470_2_);
 
         for (int i = 0; i < p_i45470_2_; ++i) {
-            noiseLevels[i].setNoiseGeneratorSimplex(p_i45470_1_);
+            noiseLevels[i].setNoiseGeneratorSimplex(rng);
         }
     }
 
@@ -280,10 +281,10 @@ public:
     double GRAD_2X[16] = {1.0, -1.0, 1.0, -1.0, 1.0, -1.0, 1.0, -1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, -1.0, 0.0};
     double GRAD_2Z[16] = {0.0, 0.0, 0.0, 0.0, 1.0, 1.0, -1.0, -1.0, 1.0, 1.0, -1.0, -1.0, 0.0, 1.0, 0.0, -1.0};
 
-    void setNoiseGeneratorImproved(uint64_t *rng) {
-        xCoord = nextDouble(rng) * 256.0;
-        yCoord = nextDouble(rng) * 256.0;
-        zCoord = nextDouble(rng) * 256.0;
+    void setNoiseGeneratorImproved(RNG& rng) {
+        xCoord = rng.nextDouble() * 256.0;
+        yCoord = rng.nextDouble() * 256.0;
+        zCoord = rng.nextDouble() * 256.0;
 
         // TODO: this could definitely be statically loaded with a memcpy()
         for (int i = 0; i < 256; i++) {
@@ -291,7 +292,7 @@ public:
         }
 
         for (int l = 0; l < 256; ++l) {
-            int j = nextInt(rng, 256 - l) + l;
+            int j = rng.nextInt(256 - l) + l;
             int k = permutations[l];
             permutations[l] = permutations[j];
             permutations[j] = k;
@@ -353,13 +354,13 @@ public:
                     j5 = permutations[i5] + l6;
                     j = permutations[k2 + 1] + 0;
                     k5 = permutations[j] + l6;
-                    d14 = lerp(d18,
+                    d14 = MathHelper::lerp(d18,
                                grad2(permutations[j5], d17, d19),
                                grad(permutations[k5], d17 - 1.0, 0.0, d19));
-                    d15 = lerp(d18,
+                    d15 = MathHelper::lerp(d18,
                                grad(permutations[j5 + 1], d17, 0.0, d19 - 1.0),
                                grad(permutations[k5 + 1], d17 - 1.0, 0.0, d19 - 1.0));
-                    double d21 = lerp(d20, d14, d15);
+                    double d21 = MathHelper::lerp(d20, d14, d15);
                     int i7 = l5++;
                     noiseArray[i7] += d21 * d16;
                 }
@@ -424,23 +425,23 @@ public:
                             k1 = permutations[j3 + 1] + l4;
                             l1 = permutations[k1] + i4;
                             i2 = permutations[k1 + 1] + i4;
-                            d1 = lerp(d6,
+                            d1 = MathHelper::lerp(d6,
                                       grad(permutations[i1], d5, d9, d7),
                                       grad(permutations[l1], d5 - 1.0, d9, d7));
-                            d2 = lerp(d6,
+                            d2 = MathHelper::lerp(d6,
                                       grad(permutations[j1], d5, d9 - 1.0, d7),
                                       grad(permutations[i2], d5 - 1.0, d9 - 1.0, d7));
-                            d3 = lerp(d6,
+                            d3 = MathHelper::lerp(d6,
                                       grad(permutations[i1 + 1], d5, d9, d7 - 1.0),
                                       grad(permutations[l1 + 1], d5 - 1.0, d9, d7 - 1.0));
-                            d4 = lerp(d6,
+                            d4 = MathHelper::lerp(d6,
                                       grad(permutations[j1 + 1], d5, d9 - 1.0, d7 - 1.0),
                                       grad(permutations[i2 + 1], d5 - 1.0, d9 - 1.0, d7 - 1.0));
                         }
 
-                        double d11 = lerp(d10, d1, d2);
-                        double d12 = lerp(d10, d3, d4);
-                        double d13 = lerp(d8, d11, d12);
+                        double d11 = MathHelper::lerp(d10, d1, d2);
+                        double d12 = MathHelper::lerp(d10, d3, d4);
+                        double d13 = MathHelper::lerp(d8, d11, d12);
                         int j7 = i++;
                         noiseArray[j7] += d13 * d0;
                     }
@@ -459,12 +460,12 @@ public:
     std::vector<NoiseGeneratorImproved> generatorCollection;
     int octaves;
 
-    void setNoiseGeneratorOctaves(uint64_t *seed, int octavesIn) {
+    void setNoiseGeneratorOctaves(RNG& rng, int octavesIn) {
         octaves = octavesIn;
         generatorCollection = std::vector<NoiseGeneratorImproved>(octavesIn);
 
         for (int i = 0; i < octavesIn; ++i) {
-            generatorCollection[i].setNoiseGeneratorImproved(seed);
+            generatorCollection[i].setNoiseGeneratorImproved(rng);
         }
     }
 

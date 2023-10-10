@@ -3,7 +3,8 @@
 #include <map>
 #include <string>
 
-#include "LegacyCubiomes/cubiomes/processor.hpp"
+#include "LegacyCubiomes/utils/rng.hpp"
+#include "LegacyCubiomes/utils/processor.hpp"
 #include "LegacyCubiomes/building_blocks/Piece.hpp"
 #include "LegacyCubiomes/building_blocks/PieceWeight.hpp"
 
@@ -141,18 +142,18 @@ namespace generation {
         void resetPieces();
 
         void onWeightedPiecePlaced(int piecePlaceCountIndex);
-        Piece createPiece(PieceType pieceType, uint64_t* rng, DIRECTION direction, int depth, BoundingBox boundingBox);
+        Piece createPiece(PieceType pieceType, RNG& rng, DIRECTION direction, int depth, BoundingBox boundingBox);
         void addPiece(Piece piece);
-        bool tryAddPieceFromType(PieceType pieceType, uint64_t* rng, Pos3D pos, DIRECTION direction, int depth);
-        void genAndAddPiece(uint64_t* rng, Pos3D pos, DIRECTION direction, int depth);
+        bool tryAddPieceFromType(PieceType pieceType, RNG& rng, Pos3D pos, DIRECTION direction, int depth);
+        void genAndAddPiece(RNG& rng, Pos3D pos, DIRECTION direction, int depth);
 
         /// piece gen
-        bool genPieceFromSmallDoor(uint64_t* rng, Pos3D pos, DIRECTION direction, int depth);
-        void genSmallDoorChildForward(Piece &piece, uint64_t* rng, int n, int n2);
-        void genSmallDoorChildLeft(Piece &piece, uint64_t* rng, int n, int n2);
-        void genSmallDoorChildRight(Piece &piece, uint64_t* rng, int n, int n2);
+        bool genPieceFromSmallDoor(RNG& rng, Pos3D pos, DIRECTION direction, int depth);
+        void genSmallDoorChildForward(Piece &piece, RNG& rng, int n, int n2);
+        void genSmallDoorChildLeft(Piece &piece, RNG& rng, int n, int n2);
+        void genSmallDoorChildRight(Piece &piece, RNG& rng, int n, int n2);
 
-        void addChildren(Piece &piece, uint64_t* rng);
+        void addChildren(Piece &piece, RNG& rng);
 
         Piece* findCollisionPiece(BoundingBox &boundingBox);
         bool collidesWithPiece(BoundingBox &boundingBox);

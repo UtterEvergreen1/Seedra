@@ -7,8 +7,8 @@
 #endif
 
 
-#include "LegacyCubiomes/cubiomes/processor.hpp"
-#include "pos2D.hpp"
+#include "processor.hpp"
+#include "Pos2D.hpp"
 
 class Pos3D {
 private:

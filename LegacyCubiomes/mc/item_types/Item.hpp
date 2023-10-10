@@ -8,7 +8,7 @@
 #endif
 
 #include "ItemData.hpp"
-#include "LegacyCubiomes/cubiomes/processor.hpp"
+#include "LegacyCubiomes/utils/processor.hpp"
 
 namespace Items {
     class Item {

@@ -4,8 +4,8 @@
 #include <climits>
 
 #include "LegacyCubiomes/utils/enums.hpp"
-#include "LegacyCubiomes/cubiomes/processor.hpp"
-#include "LegacyCubiomes/utils/pos3D.hpp"
+#include "LegacyCubiomes/utils/processor.hpp"
+#include "LegacyCubiomes/utils/Pos3D.hpp"
 
 struct BoundingBox {
     static const BoundingBox EMPTY;

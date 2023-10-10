@@ -23,15 +23,15 @@ namespace loot {
         std::vector<ItemStack> chestContents;
         int rollCount;
 
-        uint64_t lootTableSeed = getPopulationSeed(worldSeed, chunkX, chunkZ);
-        lootTableSeed = nextLong(&lootTableSeed);
-        setSeed(&lootTableSeed, lootTableSeed);
+        RNG lootTableSeed = RNG::getPopulationSeed(worldSeed, chunkX, chunkZ);
+        lootTableSeed = RNG(lootTableSeed.nextLong());
+        lootTableSeed.setSeed(lootTableSeed.getSeed());
 
         //generate loot
         for(const LootTable& table : lootTables){
-            rollCount = LootTable::getInt<false>(&lootTableSeed, table.getMin(), table.getMax());
+            rollCount = LootTable::getInt<false>(lootTableSeed, table.getMin(), table.getMax());
             for (int rollIndex = 0; rollIndex < rollCount; rollIndex++) {
-                ItemStack result = table.createLootRoll<false>(&lootTableSeed);
+                ItemStack result = table.createLootRoll<false>(lootTableSeed);
                 chestContents.push_back(result);
             }
         }
@@ -48,14 +48,14 @@ namespace loot {
         Container chestContents = Container(9);
         int rollCount;
 
-        uint64_t lootTableSeed = getPopulationSeed(worldSeed, chunkX, chunkZ);
+        RNG lootTableSeed = RNG::getPopulationSeed(worldSeed, chunkX, chunkZ);
 
         //generate loot
         for(const LootTable& table : lootTables){
-            rollCount = LootTable::getInt<true>(&lootTableSeed, table.getMin(), table.getMax());
+            rollCount = LootTable::getInt<true>(lootTableSeed, table.getMin(), table.getMax());
             for (int rollIndex = 0; rollIndex < rollCount; rollIndex++) {
-                ItemStack result = table.createLootRoll<true>(&lootTableSeed);
-                chestContents.setInventorySlotContents(nextInt(&lootTableSeed, 9), result);
+                ItemStack result = table.createLootRoll<true>(lootTableSeed);
+                chestContents.setInventorySlotContents(lootTableSeed.nextInt(9), result);
             }
         }
         return chestContents;

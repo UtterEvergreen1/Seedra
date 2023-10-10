@@ -1,6 +1,6 @@
 #pragma once
-#include "LegacyCubiomes/cubiomes/rng.hpp"
-#include "LegacyCubiomes/utils/pos2D.hpp"
+#include "LegacyCubiomes/utils/rng.hpp"
+#include "LegacyCubiomes/utils/Pos2D.hpp"
 
 namespace Placement {
     class NetherFortress {

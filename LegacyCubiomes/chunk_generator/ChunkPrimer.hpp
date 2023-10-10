@@ -7,8 +7,8 @@
 
 #include "LegacyCubiomes/chunk_generator/biome.hpp"
 #include "LegacyCubiomes/cubiomes/generator.hpp"
-#include "LegacyCubiomes/utils/pos2D.hpp"
-#include "LegacyCubiomes/utils/pos3D.hpp"
+#include "LegacyCubiomes/utils/Pos2D.hpp"
+#include "LegacyCubiomes/utils/Pos3D.hpp"
 
 class ChunkPrimer {
 public:

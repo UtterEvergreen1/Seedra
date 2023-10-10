@@ -84,7 +84,7 @@ public:
     MU EnchantmentData* getIndex(int indexIn);
 
     EnchantmentData* getLastEnchantmentAdded();
-    void addRandomItem(uint64_t *rng);
+    void addRandomItem(RNG& rng);
 
     /**
      * This should only be used by a setWorldSize function!

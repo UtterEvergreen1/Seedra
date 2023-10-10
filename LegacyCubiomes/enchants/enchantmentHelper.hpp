@@ -19,12 +19,9 @@ public:
         Enchantment::registerEnchantments();
         try {
             setConsoleAndVersion(console, version);
-            BOOK_LEVEL_TABLE.setup();
         }
         catch(std::exception& exception) {
-            #ifdef DEV_MODE
             std::cout << exception.what();
-            #endif
             exit(-1);
         }
     }
@@ -47,28 +44,28 @@ public:
 
 
     struct EnchantWithLevelsItem {
-        static void apply(uint64_t *rng, ItemStack *stack, int min, int max);
-        static void apply(uint64_t *rng, ItemStack *stack, int level);
-        static EnchDataVec_t buildEnchantmentList(uint64_t *rng, ItemStack *itemStackIn, int level);
+        static void apply(RNG& rng, ItemStack *stack, int min, int max);
+        static void apply(RNG& rng, ItemStack *stack, int level);
+        static EnchDataVec_t buildEnchantmentList(RNG& rng, ItemStack *itemStackIn, int level);
         static void removeIncompatible(EnchDataVec_t& enchDataList, EnchantmentData enchData);
-        static void addRandomEnchantment(uint64_t *rng, ItemStack *itemStackIn, int level);
+        static void addRandomEnchantment(RNG& rng, ItemStack *itemStackIn, int level);
         static EnchDataVec_t getEnchantmentDataList(int enchantmentLevelIn, ItemStack *ItemStackIn);
     };
 
 
     struct EnchantWithLevelsBook {
-        static void apply(uint64_t *rng, ItemStack *stack, int level);
-        static ELDataArray* buildEnchantmentList(uint64_t *rng, ItemStack *itemStackIn, int level);
+        static void apply(RNG& rng, ItemStack *stack, int level);
+        static ELDataArray* buildEnchantmentList(RNG& rng, ItemStack *itemStackIn, int level);
     };
 
 
     struct EnchantRandomlyItem {
-        static void apply(uint64_t *rng, ItemStack *stack);
+        static void apply(RNG& rng, ItemStack *stack);
     };
 
 
     struct EnchantRandomlyBook {
-        static void apply(uint64_t *rng, ItemStack *stack);
+        static void apply(RNG& rng, ItemStack *stack);
     };
 
 };

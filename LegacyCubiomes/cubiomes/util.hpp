@@ -1,10 +1,6 @@
 #pragma once
 #include "layers.hpp"
 
-/// convert between version enum and text
-const char* mc2str(int mc);
-int str2mc(const char *s);
-
 /// get the resource id name for a biome (for versions 1.13+)
 const char *biome2str(int id);
 
@@ -23,9 +19,6 @@ MU int parseBiomeColors(unsigned char biomeColors[256][3], const char *buf);
 
 MU int biomesToImage(unsigned char *pixels,
                   unsigned char biomeColors[256][3], const int *biomes,
-                  const unsigned int sx, const unsigned int sy,
-                  const unsigned int pixScale, const int flip);
-
-int savePPM(const char* path, const unsigned char *pixels,
-        const unsigned int sx, const unsigned int sy);
+                  unsigned int sx, unsigned int sy,
+                  unsigned int pixScale, int flip);
 

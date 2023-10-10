@@ -32,7 +32,7 @@ public:
             numSlots(size), inventorySlots(inventorySlots) {}
     Container(int size, std::vector<ItemStack>&& items) : numSlots(size), inventorySlots(items) {}
 
-    void shuffleIntoContainer(std::vector<ItemStack>& items, uint64_t rng);
+    void shuffleIntoContainer(std::vector<ItemStack>& items, RNG& rng);
 
     void printCombinedItems();
     friend std::ostream& operator<<(std::ostream& out, const Container &container);
@@ -48,12 +48,12 @@ public:
 private:
 
     template <typename T>
-    inline static void randomShuffle(std::vector<T> &items, uint64_t* rng) {
+    inline static void randomShuffle(std::vector<T>& items, RNG& rng) {
         int size = static_cast<int>(items.size());
         if (size <= 1) return;
 
         for (int rangeLimit = size - 1; rangeLimit > 0; --rangeLimit) {
-            int randomIndex = nextInt(rng, rangeLimit);
+            int randomIndex = rng.nextInt(rangeLimit);
             if (rangeLimit != randomIndex) {
                 std::swap(items[randomIndex], items[rangeLimit]);
             }

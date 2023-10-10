@@ -8,7 +8,7 @@ namespace loot {
     public:
         static void setup();
         template <bool shuffle>
-        static Container getLootFromLootTableSeed(uint64_t* lootTableSeed);
+        static Container getLootFromLootTableSeed(RNG& lootTableSeed);
     };
 
     void ShipwreckSupply::setup() {
@@ -35,12 +35,12 @@ namespace loot {
 
 
     template <bool shuffle>
-    Container ShipwreckSupply::getLootFromLootTableSeed(uint64_t* lootTableSeed) {
+    Container ShipwreckSupply::getLootFromLootTableSeed(RNG& lootTableSeed) {
         int rollCount;
         int rollIndex;
         std::vector<ItemStack> chestContents;
         chestContents.reserve(maxItemsPossible);
-        setSeed(lootTableSeed, *lootTableSeed);
+        lootTableSeed.setSeed(lootTableSeed.getSeed());
 
         for (const LootTable& table : lootTables) {
             rollCount = LootTable::getInt<false>(lootTableSeed, table.getMin(), table.getMax());
@@ -56,7 +56,7 @@ namespace loot {
         }
         if constexpr (shuffle) {
             Container container = Container(27);
-            container.shuffleIntoContainer(chestContents, *lootTableSeed);
+            container.shuffleIntoContainer(chestContents, lootTableSeed);
             return container;
         }
         else

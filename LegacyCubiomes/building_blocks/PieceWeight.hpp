@@ -1,6 +1,6 @@
 #pragma once
 
-#include "LegacyCubiomes/cubiomes/processor.hpp"
+#include "LegacyCubiomes/utils/processor.hpp"
 
 struct PieceWeight {
     int weight;

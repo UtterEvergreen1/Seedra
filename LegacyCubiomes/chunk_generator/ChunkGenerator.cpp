@@ -3,13 +3,13 @@
 
 
 ChunkGeneratorOverWorld::ChunkGeneratorOverWorld(const Generator &generator) : g(generator) {
-    setSeed(&rng, g.getWorldSeed());
-    minLimitPerlinNoise.setNoiseGeneratorOctaves(&rng, 16);
-    maxLimitPerlinNoise.setNoiseGeneratorOctaves(&rng, 16);
-    mainPerlinNoise.setNoiseGeneratorOctaves(&rng, 8);
-    surfaceNoise.setNoiseGeneratorPerlin(&rng, 4);
-    scaleNoise.setNoiseGeneratorOctaves(&rng, 10);
-    depthNoise.setNoiseGeneratorOctaves(&rng, 16);
+    rng.setSeed(g.getWorldSeed());
+    minLimitPerlinNoise.setNoiseGeneratorOctaves(rng, 16);
+    maxLimitPerlinNoise.setNoiseGeneratorOctaves(rng, 16);
+    mainPerlinNoise.setNoiseGeneratorOctaves(rng, 8);
+    surfaceNoise.setNoiseGeneratorPerlin(rng, 4);
+    scaleNoise.setNoiseGeneratorOctaves(rng, 10);
+    depthNoise.setNoiseGeneratorOctaves(rng, 16);
     // forestNoise.setNoiseGeneratorOctaves(&rng, 8);
     depthBuffer.resize(256);
     heightMap.resize(825);
@@ -114,14 +114,14 @@ void ChunkGeneratorOverWorld::replaceBiomeBlocks(int x, int z, ChunkPrimer *prim
     for (int i = 0; i < 16; ++i) {
         for (int j = 0; j < 16; ++j) {
             Biome *biome = Biome::getBiomeForId(biomesIn[j + i * 16]);
-            biome->genTerrainBlocks(g.getWorldSeed(), &rng, primer, x * 16 + i, z * 16 + j, depthBuffer[j + i * 16]);
+            biome->genTerrainBlocks(g.getWorldSeed(), rng, primer, x * 16 + i, z * 16 + j, depthBuffer[j + i * 16]);
         }
     }
 }
 
 
 ChunkPrimer *ChunkGeneratorOverWorld::provideChunk(int x, int z) {
-    setSeed(&rng, (int64_t) x * 341873128712LL + (int64_t) z * 132897987541LL);
+    rng.setSeed((int64_t) x * 341873128712LL + (int64_t) z * 132897987541LL);
     auto *chunkPrimer = new ChunkPrimer();
     setBlocksInChunk(x, z, chunkPrimer);
     setBiomesForGeneration(x * 16, z * 16, 16, 16, 1);
@@ -224,7 +224,7 @@ void ChunkGeneratorOverWorld::generateHeightmap(int x, int y, int z) {
                 double d3 = maxLimitRegion[i] / (double) 512.0; // upperLimitScale = 512.0
                 double d4 = (mainNoiseRegion[i] / 10.0 + 1.0) / 2.0;
                 // TODO: this could be the problem??? swap to d2, d3, d4
-                double d5 = clampedLerp(d4, d2, d3) - d1;
+                double d5 = MathHelper::clampedLerp(d4, d2, d3) - d1;
 
                 if (l1 > 29) {
                     auto d6 = (double) ((float) (l1 - 29) / 3.0F);

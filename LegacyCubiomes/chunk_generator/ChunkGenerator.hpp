@@ -10,7 +10,7 @@
 class ChunkGeneratorOverWorld {
 public:
     Generator g;
-    uint64_t rng{};
+    RNG rng{};
     NoiseGeneratorOctaves minLimitPerlinNoise;
     NoiseGeneratorOctaves maxLimitPerlinNoise;
     NoiseGeneratorOctaves mainPerlinNoise;

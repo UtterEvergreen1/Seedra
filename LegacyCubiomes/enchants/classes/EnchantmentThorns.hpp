@@ -13,11 +13,11 @@ public:
             Enchantment(std::move(name), rarity, &Type::ARMOR_CHEST, EnumName::THORNS, 3) {};
 
     int getMinCost(int enchantmentLevel) override {
-        return LEVELS_MIN[enchantmentLevel];
+        return LEVELS_MIN[enchantmentLevel - 1];
     }
 
     int getMaxCost(int enchantmentLevel) override {
-        return LEVELS_MAX[enchantmentLevel];
+        return LEVELS_MAX[enchantmentLevel - 1];
     }
 
     ND bool canApply(const Items::Item *item) const override {

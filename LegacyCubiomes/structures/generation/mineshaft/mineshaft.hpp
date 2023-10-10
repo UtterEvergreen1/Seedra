@@ -5,7 +5,7 @@
 #include <string>
 
 #include "LegacyCubiomes/building_blocks/Piece.hpp"
-#include "LegacyCubiomes/cubiomes/rng.hpp"
+#include "LegacyCubiomes/utils/rng.hpp"
 
 
 namespace generation {
@@ -57,7 +57,7 @@ namespace generation {
 
     private:
         Piece* findCollisionPiece(BoundingBox &boundingBox);
-        void genAndAddPiece(uint64_t* rng, Pos3D pos, DIRECTION direction, int depth);
-        void buildComponent(uint64_t* rng, int type, int depth, const BoundingBox& boundingBox, DIRECTION direction, int additionalData);
+        void genAndAddPiece(RNG& rng, Pos3D pos, DIRECTION direction, int depth);
+        void buildComponent(RNG& rng, int type, int depth, const BoundingBox& boundingBox, DIRECTION direction, int additionalData);
     };
 }

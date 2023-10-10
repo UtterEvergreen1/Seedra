@@ -1,7 +1,7 @@
 #pragma once
 
 #include "LegacyCubiomes/utils/enums.hpp"
-#include "processor.hpp"
+#include "LegacyCubiomes/utils/processor.hpp"
 
 class Generator;
 struct PerlinNoise;

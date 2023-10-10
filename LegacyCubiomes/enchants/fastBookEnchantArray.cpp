@@ -22,7 +22,7 @@ EnchantmentData* ELDataArray::getLastEnchantmentAdded() {
 }
 
 
-void ELDataArray::addRandomItem(uint64_t *rng) {
+void ELDataArray::addRandomItem(RNG& rng) {
 
     // get the total weight
     int theTotalWeight = this->totalWeight;
@@ -32,7 +32,7 @@ void ELDataArray::addRandomItem(uint64_t *rng) {
     }
 
     // get the rng weight
-    int weight = nextInt(rng, theTotalWeight);
+    int weight = rng.nextInt(theTotalWeight);
 
     // if it's the full enchantment list,
     // use a faster function
