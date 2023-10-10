@@ -362,7 +362,7 @@ Pos2D Generator::getSpawnBlock() const {
     Pos2D spawn = estimateSpawn(&rng);
 
     SurfaceNoise sn;
-    initSurfaceNoise(&sn, DIMENSION::OVERWORLD, \getWorldSeed());
+    initSurfaceNoise(&sn, DIMENSION::OVERWORLD, getWorldSeed());
 
     float y;
     int id = -1, grass = 0;

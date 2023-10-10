@@ -2,58 +2,41 @@
 #include <cmath>
 #include <algorithm>
 
-#include "StructureVillagePieces.hpp"
-
-namespace village_generator {
-
-    inline int getLength(BoundingBox bBox) {return std::max(bBox.maxX - bBox.minX + 1, bBox.maxZ - bBox.minZ + 1);}
-    inline int getLength(Piece piece) {return std::max(piece.maxX - piece.minX + 1, piece.maxZ - piece.minZ + 1);}
-
-
-    // TODO: this is probably differently already written rng functions???
-    uint64_t setMcSeed(uint64_t worldSeed, int64_t chunkX, int64_t chunkZ) {
-        uint64_t f;
-        setSeed(&f, worldSeed);
-        auto l2 = (int64_t) nextLong(&f);
-        auto l3 = (int64_t) nextLong(&f);
-        auto l4 = (int64_t) (((int64_t) chunkX * l2 ^ (int64_t) chunkZ * l3) ^ worldSeed);
-        setSeed(&f, l4);
-        next(&f, 32);
-        return f;
-    }
-
-
-    void VillageGenerator::genVillage(int64_t worldSeed, int chunkX, int chunkZ) {
-        chunkX >>= 4;
-        chunkZ >>= 4;
-        uint64_t rng = setMcSeed(worldSeed, chunkX, chunkZ);
+#include "village.hpp"
+#include "LegacyCubiomes/structures/placement/StaticStructures.hpp"
+namespace generation {
+    void Village::generate(Generator* generator, int chunkX, int chunkZ) {
+        uint64_t random = getLargeFeatureSeed(generator->getWorldSeed(), chunkX, chunkZ);
+        random = (random * 0x5deece66d + 0xb) & 0xFFFFFFFFFFFF; // advance rng
         startX = (chunkX << 4) + 2;
         startZ = (chunkZ << 4) + 2;
-        setupPieces(&rng);
-        nextInt(&rng, 4); // direction: this.setCoordBaseMode(EnumFacing.Plane.HORIZONTAL.random(rand));
-        isZombieInfested = nextInt(&rng, 50) == 0; // zombie infested
+        setupPieces(&random);
+        nextInt(&random, 4); // direction: this.setCoordBaseMode(EnumFacing.Plane.HORIZONTAL.random(rand));
+        isZombieInfested = nextInt(&random, 50) == 0; // zombie infested
         BoundingBox well = createPieceBoundingBox(PieceType::Start, {startX, 64, startZ}, DIRECTION::NORTH);
 
         // start piece
         Piece startPiece = Piece(PieceType::Start, 0, well, DIRECTION::NORTH, 0);
         pieces[piecesSize++] = startPiece;
 
-        buildComponentStart(startPiece, &rng);
+        buildComponentStart(startPiece, &random);
 
         while (pendingRoadsSize != 0) {
-            int i = nextInt(&rng, pendingRoadsSize);
+            int i = nextInt(&random, pendingRoadsSize);
             Piece &piece = pieces[pendingRoads[i]];
             pendingRoadsSize--;
             for (int j = i; j < pendingRoadsSize; j++) {
                 pendingRoads[j] = pendingRoads[j + 1];
             }
-            buildComponent(piece, &rng);
+            buildComponent(piece, &random);
 
-            if (blackSmithPiece != nullptr) return; // stop at blacksmith
+            if (blackSmithPiece != nullptr && this->generationStep == GenerationStep::BLACKSMITH) return; // stop at blacksmith
         }
 
-        /*
-         * int k = 0;
+        if(this->generationStep == GenerationStep::LAYOUT)
+            return;
+
+        int k = 0;
         for (int pieceIndex = 0; pieceIndex < this->piecesSize; pieceIndex++) {
             const Piece& structurecomponent = this->pieces[pieceIndex];
             if ((structurecomponent.type != PieceType::NONE && structurecomponent.type != PieceType::Road && structurecomponent.type != PieceType::Start)) {
@@ -61,15 +44,14 @@ namespace village_generator {
             }
         }
         this->hasMoreThanTwoComponents = k > 2;
-         */
     }
 
 
-    void VillageGenerator::setupPieces(uint64_t *rng) {
+    void Village::setupPieces(uint64_t *rng) {
 
         currentVillagePW.clear();
         for (auto pieceWeightAt: PIECE_WEIGHTS) {
-            finalPieceWeight fPiece = finalPieceWeight(pieceWeightAt.pieceType, pieceWeightAt.weight,
+            FinalPieceWeight fPiece = FinalPieceWeight(pieceWeightAt.pieceType, pieceWeightAt.weight,
                                                        nextInt(rng, pieceWeightAt.PlaceCountMin, pieceWeightAt.PlaceCountMax),
                                                        0); //random set max amount of houses for each house because it is not set
             if (fPiece.maxPlaceCount > 0) {
@@ -79,13 +61,13 @@ namespace village_generator {
 
         // hasMoreThanTwoComponents = false;
         previousPiece = PieceType::NONE;
-        if (blackSmithPiece) blackSmithPiece = nullptr;
+        blackSmithPiece = nullptr;
         piecesSize = 0;
         pendingRoadsSize = 0;
     }
 
 
-    BoundingBox VillageGenerator::createPieceBoundingBox(int pieceType, Pos3D pos, DIRECTION direction) {
+    BoundingBox Village::createPieceBoundingBox(int pieceType, Pos3D pos, DIRECTION direction) {
         switch (pieceType) {
             case PieceType::House4Garden:
                 return BoundingBox::orientBox(pos, 5, 6, 5, direction);
@@ -115,13 +97,13 @@ namespace village_generator {
     }
 
 
-    Piece VillageGenerator::generateAndAddRoadPiece(uint64_t *rand, Pos3D pos, DIRECTION facing) {
+    Piece Village::generateAndAddRoadPiece(uint64_t *rand, Pos3D pos, DIRECTION facing) {
         if (abs(startX - pos.getX()) <= 48 && abs(startZ - pos.getZ()) <= 48) return {};
 
-        BoundingBox boundingBox = Road(rand, pos, facing);
+        BoundingBox boundingBox = road(rand, pos, facing);
 
         if (boundingBox.maxY != 0) {
-            Piece piece = Piece(PieceType::Road, 0, boundingBox, facing, getLength(boundingBox));
+            Piece piece = Piece(PieceType::Road, 0, boundingBox, facing, boundingBox.getLength() + 1);
             addPiece(piece);
             return piece;
         }
@@ -130,10 +112,10 @@ namespace village_generator {
     }
 
 
-    int VillageGenerator::updatePieceWeight() {
+    int Village::updatePieceWeight() {
         bool flag = false;
         int i = 0;
-        for (const finalPieceWeight &pWeight: currentVillagePW) {
+        for (const FinalPieceWeight &pWeight: currentVillagePW) {
             if (pWeight.maxPlaceCount > 0 && pWeight.amountPlaced < pWeight.maxPlaceCount) {
                 flag = true;
             }
@@ -145,7 +127,7 @@ namespace village_generator {
     }
 
 
-    BoundingBox VillageGenerator::Road(uint64_t* rng, Pos3D pos, DIRECTION facing) {
+    BoundingBox Village::road(uint64_t* rng, Pos3D pos, DIRECTION facing) {
         for (int i = 7 * nextInt(rng, 3, 5); i >= 7; i -= 7) {
             // bool flag = true;
             BoundingBox structure = BoundingBox::orientBox(pos, 3, 3, i, facing);
@@ -156,7 +138,7 @@ namespace village_generator {
     }
 
 
-    void VillageGenerator::additionalRngRolls(uint64_t *rng, const Piece &p) {
+    void Village::additionalRngRolls(uint64_t *rng, const Piece &p) {
         switch (p.type) {
             case PieceType::WoodHut:
                 nextBoolean(rng); // isTallHouse
@@ -191,7 +173,7 @@ namespace village_generator {
     }
 
 
-    Piece VillageGenerator::generateComponent(uint64_t *rng, Pos3D pos, DIRECTION facing) {
+    Piece Village::generateComponent(uint64_t *rng, Pos3D pos, DIRECTION facing) {
         int i = updatePieceWeight();
         if (i <= 0) return {};
 
@@ -204,7 +186,7 @@ namespace village_generator {
 
             int pieceWeightsSize = (int) currentVillagePW.size();
             for (int pieceTypeNum = 0; pieceTypeNum < pieceWeightsSize; pieceTypeNum++) {
-                finalPieceWeight &pieceWeight = currentVillagePW[pieceTypeNum];
+                FinalPieceWeight &pieceWeight = currentVillagePW[pieceTypeNum];
                 k -= pieceWeight.weight;
 
                 if (k < 0) {
@@ -234,25 +216,28 @@ namespace village_generator {
     }
 
 
-    Piece VillageGenerator::generateAndAddComponent(uint64_t *rand, Pos3D pos, DIRECTION facing) {
+    Piece Village::generateAndAddComponent(uint64_t *rand, Pos3D pos, DIRECTION facing) {
         if (abs(startX - pos.getX()) <= 48 && abs(startZ - pos.getZ()) <= 48) {
             Piece structureComponent = generateComponent(rand, pos, facing);
             if (structureComponent.type != PieceType::NONE) {
-                //int xLength = structureComponent.boundingBox.maxX - structureComponent.boundingBox.minX;
-                //int zLength = structureComponent.boundingBox.maxZ - structureComponent.boundingBox.minZ;
-                //int radius = xLength > zLength ? xLength : zLength;
-                //if (areBiomesViable(g, (structureComponent.boundingBox.minX + structureComponent.boundingBox.maxX) / 2, 63, (structureComponent.boundingBox.minZ + structureComponent.boundingBox.maxZ) / 2, (radius / 2) + 4, validVillageBiomes(), 0)) {
-                additionalRngRolls(rand, structureComponent);
-                pieces[piecesSize++] = structureComponent;
-                return structureComponent;
-                // }
+                int radius = (structureComponent.getLength() / 2) + 4;
+
+                if (g->areBiomesViable(structureComponent.getCenterX(),
+                                       structureComponent.getCenterZ(),
+                                       radius,
+                                       Placement::Village<false>::VALID_BIOMES))
+                {
+                    additionalRngRolls(rand, structureComponent);
+                    pieces[piecesSize++] = structureComponent;
+                    return structureComponent;
+                }
             }
         }
         return {}; // ------------------------ returning null piece
     }
 
 
-    void VillageGenerator::buildComponentStart(Piece piece, uint64_t *rand) {
+    void Village::buildComponentStart(Piece piece, uint64_t *rand) {
         generateAndAddRoadPiece(rand, {piece.minX - 1, piece.maxY - 4, piece.minZ + 1}, DIRECTION::WEST);
         generateAndAddRoadPiece(rand, {piece.maxX + 1, piece.maxY - 4, piece.minZ + 1}, DIRECTION::EAST);
         generateAndAddRoadPiece(rand, {piece.minX + 1, piece.maxY - 4, piece.minZ - 1}, DIRECTION::NORTH);
@@ -260,7 +245,7 @@ namespace village_generator {
     }
 
 
-    void VillageGenerator::buildComponent(Piece piece, uint64_t *rand) {
+    void Village::buildComponent(Piece piece, uint64_t *rand) {
         bool flag = false;
 
         for (int i = nextInt(rand, 5); i < piece.additionalData - 8; i += 2 + nextInt(rand, 5)) {
@@ -278,7 +263,7 @@ namespace village_generator {
             }
 
             if (structureComponent.type != PieceType::NONE) {
-                i += getLength(structureComponent);
+                i += structureComponent.getLength() + 1;
                 flag = true;
             }
         }
@@ -298,7 +283,7 @@ namespace village_generator {
             }
 
             if (structureComponent1.type != PieceType::NONE) {
-                j += getLength(structureComponent1);
+                j += structureComponent1.getLength() + 1;
                 flag = true;
             }
         }
@@ -339,13 +324,13 @@ namespace village_generator {
     }
 
 
-    void VillageGenerator::addPiece(Piece &piece) {
+    void Village::addPiece(Piece &piece) {
         pendingRoads[pendingRoadsSize++] = piecesSize;
         pieces[piecesSize++] = piece;
     }
 
 
-    bool VillageGenerator::hasCollisionPiece(const BoundingBox &boundingBox) {
+    bool Village::hasCollisionPiece(const BoundingBox &boundingBox) {
         for (int i = 0; i < piecesSize; i++) {
             if (pieces[i].intersects(boundingBox)) {
                 return true;

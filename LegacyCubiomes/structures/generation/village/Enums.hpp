@@ -2,7 +2,7 @@
 
 #include "PieceWeight.hpp"
 
-namespace village_generator {
+namespace generation {
 
     enum PieceType {
         NONE,

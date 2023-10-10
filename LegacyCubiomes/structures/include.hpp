@@ -4,7 +4,7 @@
 #include "LegacyCubiomes/structures/generation/mineshaft/mineshaft.hpp"
 #include "LegacyCubiomes/structures/generation/netherfortress/netherfortress.hpp"
 #include "LegacyCubiomes/structures/generation/stronghold/stronghold.hpp"
-#include "LegacyCubiomes/structures/generation/village/StructureVillagePieces.hpp"
+#include "LegacyCubiomes/structures/generation/village/village.hpp"
 
 
 // placement

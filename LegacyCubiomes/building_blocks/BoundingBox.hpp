@@ -22,6 +22,9 @@ struct BoundingBox {
     MU ND inline int getXSize() const {return this->maxX - this->minX + 1;}
     MU ND inline int getYSize() const {return this->maxY - this->minY + 1;}
     MU ND inline int getZSize() const {return this->maxZ - this->minZ + 1;}
+    MU ND inline int getLength() const {return std::max(this->maxX - this->minX, this->maxZ - this->minZ);}
+    MU ND inline int getCenterX() const {return (this->minX + this->maxX) / 2;}
+    MU ND inline int getCenterZ() const {return (this->minZ + this->maxZ) / 2;}
 
     static BoundingBox orientBox(int x, int y, int z, int offsetWidth, int offsetHeight, int offsetDepth,
                                  int width, int height, int depth, DIRECTION direction);

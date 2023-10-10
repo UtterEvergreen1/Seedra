@@ -13,13 +13,22 @@
 #include "LegacyCubiomes/utils/pos2D.hpp"
 #include "LegacyCubiomes/utils/pos3D.hpp"
 
-namespace village_generator {
+namespace generation {
 
-    class VillageGenerator {
+    class Village {
     public:
+
+        enum class GenerationStep {
+            BLACKSMITH, // Generates the layout up to the blacksmith, hasMoreThanTwoComponents won't be calculated
+            LAYOUT, // Generates full layout, hasMoreThanTwoComponents won't be calculated
+            FULL,   // Generates full layout and calculates hasMoreThanTwoComponents
+        };
+
         bool isZombieInfested;
 
-        std::vector<finalPieceWeight> currentVillagePW;
+        std::vector<FinalPieceWeight> currentVillagePW;
+        Generator* g;
+        GenerationStep generationStep = GenerationStep::FULL;
 
         int previousPiece;
         Piece pieces[1024];
@@ -33,20 +42,21 @@ namespace village_generator {
         int startX;
         int startZ;
 
-        //bool hasMoreThanTwoComponents;
+        bool hasMoreThanTwoComponents;
         //void genVillage(Generator* generator, int64_t worldSeed, int chunkX, int chunkZ);
 
-        void genVillage(int64_t worldSeed, int chunkX, int chunkZ);
+        void generate(Generator* generator, int chunkX, int chunkZ);
 
-        void inline genVillageFromPos(int64_t worldSeed, Pos2D chunk) {genVillage(worldSeed, chunk.x, chunk.z);}
-
+        void inline generate(Generator* generator, Pos2D chunk) {
+            generate(generator, chunk.x, chunk.z);
+        }
 
         void setupPieces(uint64_t* rng);
         int updatePieceWeight();
         static BoundingBox createPieceBoundingBox(int pieceType, Pos3D pos, DIRECTION direction);
         void buildComponentStart(Piece piece, uint64_t* rng);
         void buildComponent(Piece piece, uint64_t* rand);
-        BoundingBox Road(uint64_t *rng, Pos3D pos, DIRECTION facing);
+        BoundingBox road(uint64_t *rng, Pos3D pos, DIRECTION facing);
         void additionalRngRolls(uint64_t* rng, const Piece& p);
         Piece generateComponent(uint64_t* rng, Pos3D pos, DIRECTION facing);
         Piece generateAndAddRoadPiece(uint64_t *rng, Pos3D pos, DIRECTION facing);
