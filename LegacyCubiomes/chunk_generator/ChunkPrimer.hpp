@@ -190,7 +190,7 @@ public:
     }
 
     bool canSnowAt(const Generator& g, Pos3D pos, bool checkLight){
-        Biome* biome = Biome::getBiomeForId(g.getBiomeAt(1, pos.x, pos.z));
+        Biome* biome = Biome::getBiomeForId(g.getBiomeAt(1, pos.getX(), pos.getZ()));
         float temp = biome->getFloatTemperature(pos);
         if (temp >= 0.15F)
             return false;

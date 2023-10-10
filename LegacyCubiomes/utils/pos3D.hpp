@@ -21,9 +21,9 @@ public:
     explicit Pos3D(Pos2D pos) : x(pos.x), y(0), z(pos.z) {}
     Pos3D(int xIn, int yIn, int zIn) : x(xIn), y(yIn), z(zIn) {}
 
-    inline int getX() {return x;}
-    inline int getY() {return y;}
-    inline int getZ() {return z;}
+    inline int getX() const {return x;}
+    inline int getY() const {return y;}
+    inline int getZ() const {return z;}
 
     bool  operator==(const Pos3D& other) const;
     Pos3D operator +(const Pos3D& other) const;

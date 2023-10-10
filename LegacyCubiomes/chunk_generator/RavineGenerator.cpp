@@ -1,5 +1,5 @@
 #include "RavineGenerator.hpp"
-
+#include "LegacyCubiomes/utils/MathHelper.hpp"
 
 unsigned char RavineGenerator::topBlock(int x, int z) {
     int biomeID = g.getBiomeAt(1, x, z);
@@ -83,15 +83,15 @@ void RavineGenerator::addTunnel(int64_t randomSeed, Pos2D chunk, ChunkPrimer *ch
 
     for (; tunnelStartSegment < tunnelEndSegment; tunnelStartSegment++) {
         double adjustedWidth =
-                1.5 + (double) (std::sin((float) tunnelStartSegment * PI_FLOAT / (float) tunnelEndSegment) * angle);
+                1.5 + (double) (MathHelper::sin((float) tunnelStartSegment * PI_FLOAT / (float) tunnelEndSegment) * angle);
         double adjustedHeight = adjustedWidth * widthMultiplier;
         adjustedWidth = adjustedWidth * ((double) nextFloat(&rng) * 0.25 + 0.75);
         adjustedHeight = adjustedHeight * ((double) nextFloat(&rng) * 0.25 + 0.75);
-        float cosCurvature = std::cos(curvature);
-        float sinCurvature = std::sin(curvature);
-        tunnel.x += (double) (std::cos(slope) * cosCurvature);
+        float cosCurvature = MathHelper::cos(curvature);
+        float sinCurvature = MathHelper::sin(curvature);
+        tunnel.x += (double) (MathHelper::cos(slope) * cosCurvature);
         tunnel.y += (double) sinCurvature;
-        tunnel.z += (double) (std::sin(slope) * cosCurvature);
+        tunnel.z += (double) (MathHelper::sin(slope) * cosCurvature);
         curvature = curvature * 0.7F;
         curvature = curvature + slopeChangeRate * 0.05F;
         slope += curvatureChangeRate * 0.05F;

@@ -4,12 +4,17 @@
 
 class MathHelper {
 public:
-    static float SIN_TABLE[65536];
-    static void setup() {
+    float SIN_TABLE[65536];
+    MathHelper() {
         for (int i = 0; i < 65536; ++i)
         {
             SIN_TABLE[i] = (float)sinf((float)i / 10430.378F);
         }
+    }
+
+    static MathHelper& Instance(){
+        static MathHelper instance;
+        return instance;
     }
 
     /**
@@ -17,7 +22,7 @@ public:
      */
     static float sin(float value)
     {
-        return SIN_TABLE[(int)(value * 10430.378F) & 65535];
+        return MathHelper::Instance().SIN_TABLE[(int)(value * 10430.378F) & 65535];
     }
 
     /**
@@ -25,9 +30,7 @@ public:
      */
     static float cos(float value)
     {
-        return SIN_TABLE[(int)(value * 10430.378F + 16384.0F) & 65535];
+        return MathHelper::Instance().SIN_TABLE[(int)(value * 10430.378F + 16384.0F) & 65535];
     }
 };
-
-float MathHelper::SIN_TABLE[65536];
 

@@ -3,7 +3,7 @@
 #include <utility>
 #include <vector>
 #include <fstream>
-#include "LegacyCubiomes/structures/structure_generation/stronghold_generator/GenStronghold.hpp"
+#include "LegacyCubiomes/structures/generation/stronghold/Stronghold.hpp"
 //#include "LegacyCubiomes/loot/base_classes/loot_classes.hpp"
 #include "LegacyCubiomes/enchants/enchantmentHelper.hpp"
 
@@ -18,16 +18,14 @@
 //#include "LegacyCubiomes/chunk_generator/ChunkGenerator.hpp"
 //#include "LegacyCubiomes/structures/structure_rolls/mineshaft_rolls.hpp"
 //#include "LegacyCubiomes/structures/structure_placement/MineshaftStructure.hpp"
-#include "LegacyCubiomes/structures/structure_placement/StrongholdStructure.hpp"
+#include "LegacyCubiomes/structures/placement/Stronghold.hpp"
 #include "LegacyCubiomes/loot/stronghold_corridor.hpp"
 #include "LegacyCubiomes/utils/MathHelper.hpp"
 #include "LegacyCubiomes/loot/buried_treasure.hpp"
-#include "LegacyCubiomes/structures/structure_generation/mineshaft_generator/GenMineshaft.hpp"
+#include "LegacyCubiomes/structures/generation/mineshaft/Mineshaft.hpp"
 //#include "LegacyCubiomes/chunk_generator/Chunk.hpp"
 
 
-
-using stronghold_generator::StrongholdGenerator;
 /*int findItemFromLootTableSeed(uint64_t* lootTableSeed, int itemID) {
     int rollCount;
     int rollIndex;
@@ -118,8 +116,8 @@ bool compareSeeds(const SeedData& seedData1, const SeedData& seedData2) {
     double altarToPortalDist2;
 
     // Sort by portalY in descending order
-    if (seedData1.portalRoomCoords.y != seedData2.portalRoomCoords.y) {
-        return seedData1.portalRoomCoords.y > seedData2.portalRoomCoords.y;
+    if (seedData1.portalRoomCoords.getY() != seedData2.portalRoomCoords.getY()) {
+        return seedData1.portalRoomCoords.getY() > seedData2.portalRoomCoords.getY();
     }
 
     // If portalY is the same, sort by portalToAltarDistance in ascending order
@@ -171,11 +169,11 @@ int main(int argc, char* argv[]) {
     // int64_t worldSeed = 48739; // 98238811 = gelly, 48739 = 12d
     Biome::registerBiomes();
     EnchantmentHelper::setup(CONSOLE::WIIU, LCEVERSION::AQUATIC);
-    Generator g(LCEVERSION::AQUATIC, CONSOLE::WIIU, BIOMESCALE::SMALL, WORLDSIZE::CLASSIC);
-    auto *gen = new mineshaft_generator::MineshaftGenerator();
+    Generator g(CONSOLE::WIIU, LCEVERSION::AQUATIC, WORLDSIZE::CLASSIC, BIOMESCALE::SMALL);
+    auto *gen = new generation::Mineshaft();
     g.applyWorldSeed(12498783792879328);
     gen->generate(g.getWorldSeed(), 0, 0);
-    std::cout << gen->piecesSize << std::endl;
+    std::cout << gen->pieceArraySize << std::endl;
     delete gen;
 
     /*Biome::registerBiomes();
