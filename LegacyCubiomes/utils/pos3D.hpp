@@ -56,6 +56,6 @@ public:
     }
 
 
-    MU ND Pos2D convert2D();
+    MU ND const Pos2D convert2D() const;
     MU ND bool insideBounds(int lower, int upper);
 };

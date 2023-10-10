@@ -1,5 +1,6 @@
 
 #include <iostream>
+#include <utility>
 #include <vector>
 #include <fstream>
 #include "LegacyCubiomes/structures/structure_generation/stronghold_generator/GenStronghold.hpp"
@@ -18,8 +19,10 @@
 //#include "LegacyCubiomes/structures/structure_rolls/mineshaft_rolls.hpp"
 //#include "LegacyCubiomes/structures/structure_placement/MineshaftStructure.hpp"
 #include "LegacyCubiomes/structures/structure_placement/StrongholdStructure.hpp"
-#include "LegacyCubiomes/loot/base_classes/loot.hpp"
 #include "LegacyCubiomes/loot/stronghold_corridor.hpp"
+#include "LegacyCubiomes/utils/MathHelper.hpp"
+#include "LegacyCubiomes/loot/buried_treasure.hpp"
+#include "LegacyCubiomes/structures/structure_generation/mineshaft_generator/GenMineshaft.hpp"
 //#include "LegacyCubiomes/chunk_generator/Chunk.hpp"
 
 
@@ -77,6 +80,62 @@ void findSeedWithItem(int itemID, int total, int count) {
         seed = start;
     }
 }*/
+#include <algorithm>
+struct SeedData {
+    int64_t worldSeed;
+    Pos3D portalRoomCoords;
+    Pos3D altarChestCoords;
+    Pos2D spawnCoords;
+    Container altarChestLoot;
+    SeedData(int64_t seed, int portalRoomX, int portalRoomY, int portalRoomZ,
+             int altarChestX, int altarChestY, int altarChestZ,
+             const Pos2D& spawn, Container loot)
+            : worldSeed(seed), portalRoomCoords(portalRoomX, portalRoomY, portalRoomZ),
+            altarChestCoords(altarChestX, altarChestY, altarChestZ),
+            spawnCoords(spawn), altarChestLoot(std::move(loot)) {}
+    /*SeedData(int64_t seed, Pos3D portalRoom, Pos3D altarChest, Pos2D spawn)
+    : worldSeed(seed), portalRoomCoords(portalRoom), altarChestCoords(altarChest), spawnCoords(spawn) {}*/
+};
+
+// Function to calculate the Euclidean distance between two coordinates
+double calculateDistance(const Pos2D& c1, const Pos2D& c2) {
+    double dx = c2.x - c1.x;
+    double dz = c2.z - c1.z;
+    return std::sqrt(dx * dx + dz * dz);
+}
+
+// Custom comparison function for sorting
+bool compareSeeds(const SeedData& seedData1, const SeedData& seedData2) {
+    if ((seedData1.worldSeed & 0xffffffffffff) == (seedData2.worldSeed & 0xffffffffffff)) {
+        // just compare spawn if sister seeds, because everything else will be the same
+        return std::min(calculateDistance(seedData1.portalRoomCoords.convert2D(), seedData1.spawnCoords),
+                        calculateDistance(seedData1.altarChestCoords.convert2D(), seedData1.spawnCoords)) <
+               std::min(calculateDistance(seedData2.portalRoomCoords.convert2D(), seedData2.spawnCoords),
+                        calculateDistance(seedData2.altarChestCoords.convert2D(), seedData2.spawnCoords));
+    }
+
+    double altarToPortalDist1;
+    double altarToPortalDist2;
+
+    // Sort by portalY in descending order
+    if (seedData1.portalRoomCoords.y != seedData2.portalRoomCoords.y) {
+        return seedData1.portalRoomCoords.y > seedData2.portalRoomCoords.y;
+    }
+
+    // If portalY is the same, sort by portalToAltarDistance in ascending order
+    if (altarToPortalDist1 = calculateDistance(seedData1.portalRoomCoords.convert2D(), seedData1.altarChestCoords.convert2D()),
+            altarToPortalDist2 = calculateDistance(seedData2.portalRoomCoords.convert2D(), seedData2.altarChestCoords.convert2D()),
+            altarToPortalDist1 != altarToPortalDist2) {
+        return altarToPortalDist1 < altarToPortalDist2;
+    }
+
+    // If portalY and portalToAltarDistance are the same, sort by the minimum distance
+    // between portalToSpawnDistance and portalToAltarDistance in ascending order
+    return std::min(calculateDistance(seedData1.portalRoomCoords.convert2D(), seedData1.spawnCoords),
+                    calculateDistance(seedData1.altarChestCoords.convert2D(), seedData1.spawnCoords)) <
+            std::min(calculateDistance(seedData2.portalRoomCoords.convert2D(), seedData2.spawnCoords),
+                     calculateDistance(seedData2.altarChestCoords.convert2D(), seedData2.spawnCoords));
+}
 
 int main(int argc, char* argv[]) {
     /*int64_t worldSeed = 1;
@@ -109,14 +168,49 @@ int main(int argc, char* argv[]) {
     delete mineshaftRolls;
     return 0;*/
 
+    // int64_t worldSeed = 48739; // 98238811 = gelly, 48739 = 12d
     Biome::registerBiomes();
     EnchantmentHelper::setup(CONSOLE::WIIU, LCEVERSION::AQUATIC);
-    //int64_t worldSeed = 48739;//98238811 = gelly, 48739 = 12d
     Generator g(LCEVERSION::AQUATIC, CONSOLE::WIIU, BIOMESCALE::SMALL, WORLDSIZE::CLASSIC);
+    auto *gen = new mineshaft_generator::MineshaftGenerator();
+    g.applyWorldSeed(12498783792879328);
+    gen->generate(g.getWorldSeed(), 0, 0);
+    std::cout << gen->piecesSize << std::endl;
+    delete gen;
+
+    /*Biome::registerBiomes();
+    MathHelper::setup();
+    EnchantmentHelper::setup(CONSOLE::WIIU, LCEVERSION::AQUATIC);
+    loot_tables::StrongholdCorridor<true>::setup();
+    int64_t worldSeed = 5575644074899107516;
+    Generator g(LCEVERSION::AQUATIC, CONSOLE::WIIU, BIOMESCALE::SMALL, WORLDSIZE::CLASSIC);
+    g.applyWorldSeed(worldSeed);
+    StrongholdGenerator stronghold_gen;
+    stronghold_gen.generate(worldSeed, Structure::StrongholdStructure::getWorldPosition(g) >> 4);
+    Container loot;
+    for(int i = 0; i < stronghold_gen.numAltarChests; ++i) {
+        Piece* altarChest = stronghold_gen.altarChests[i];
+        int xPos = altarChest->getWorldX(3, 3);
+        int yPos = altarChest->getWorldY(2);
+        int zPos = altarChest->getWorldZ(3, 3);
+        //if(xPos == -282 && yPos == 36 && zPos == 102) {
+            loot = loot_tables::StrongholdCorridor<true>::getAltarChestLoot<true, true>(g, *altarChest, &stronghold_gen);
+            std::cout << "(" << xPos << ", " << yPos << ", " << zPos << ") " << loot << std::endl;
+        //}
+    }
+    ChunkPrimer* chunkPrimer = Chunk::provideChunk<true, true, false>(g, -13, -3);
+    std::cout << *chunkPrimer << std::endl;
+    delete chunkPrimer;
+    return 0;*/
+    /*Biome::registerBiomes();
+    MathHelper::setup();
+    EnchantmentHelper::setup(CONSOLE::WIIU, LCEVERSION::AQUATIC);
+    //int64_t worldSeed = 48739;//98238811 = gelly, 48739 = 12d
+    Generator g(LCEVERSION::AQUATIC, CONSOLE::WIIU, BIOMESCALE::LARGE, WORLDSIZE::CLASSIC);
     loot_tables::StrongholdCorridor<true>::setup();
     StrongholdGenerator* stronghold_gen = new StrongholdGenerator();
     std::ifstream inputFile;
-    std::string inputFileString = "small_wiiu.txt";
+    std::string inputFileString = "large_wiiu.txt";
     inputFile.open(inputFileString);
     if(!inputFile.is_open()) {
         std::cout << "Could not open in file \"" << inputFileString << "\"" << std::endl;
@@ -124,7 +218,7 @@ int main(int argc, char* argv[]) {
     }
 
     std::ofstream outputFile;
-    std::string outputFileString = "small_wiiu_out.txt";
+    std::string outputFileString = "large_wiiu_out.txt";
     outputFile.open(outputFileString);
     if(!outputFile.is_open()) {
         std::cout << "Could not open out file \"" << outputFileString << "\"" << std::endl;
@@ -144,31 +238,48 @@ int main(int argc, char* argv[]) {
     int previousPortalBlockX = 0;
     int previousPortalBlockY = 0;
     int previousPortalBlockZ = 0;
-    bool sisterSeedHasValidAltarChest = false;
+    //bool sisterSeedHasValidAltarChest = false;
+    bool hasValidAltarChest;
     bool skipSisterSeeds = false;
     stronghold_generator::Piece *altarChest;
 
     bool isSisterSeed;
+
+    std::vector<SeedData> seedDataList;
+    BoundingBox boundingBoxChunkOfAltarChest;
+    //int altarChestChunkX;
+    //int altarChestChunkZ;
+
+    int altarChestBlockX;
+    int altarChestBlockY;
+    int altarChestBlockZ;
     while(inputFile >> worldSeed >> portalXChunk >> portalZChunk >> portalBlockX >> portalBlockY >> portalBlockZ) {
         isSisterSeed = portalBlockX == previousPortalBlockX && portalBlockY == previousPortalBlockY && portalBlockZ == previousPortalBlockZ;
         if(isSisterSeed && skipSisterSeeds) continue;
         g.applyWorldSeed(worldSeed);
         spawnBlock = g.getSpawnBlock();
+
+        hasValidAltarChest = false;
         if(abs(spawnBlock.x - portalBlockX) > 50 || abs(spawnBlock.z - portalBlockZ) > 50) continue;
         if(!isSisterSeed) {
-            sisterSeedHasValidAltarChest = false;
+            //sisterSeedHasValidAltarChest = false;
             skipSisterSeeds = false;
             previousPortalBlockX = portalBlockX;
             previousPortalBlockY = portalBlockY;
             previousPortalBlockZ = portalBlockZ;
             stronghold_gen->generate(worldSeed, Structure::StrongholdStructure::getWorldPosition(g) >> 4);
         }
-        for(int i = 0; i < stronghold_gen->numAltarChests && !sisterSeedHasValidAltarChest; ++i) {
+        for(int i = 0; i < stronghold_gen->numAltarChests && !hasValidAltarChest; ++i) {
             altarChest = stronghold_gen->altarChests[i];
-            if(abs(altarChest->getWorldX(3, 3) - portalBlockX) > 50 ||
-            altarChest->getWorldY(2) < portalBlockY - 3 ||
-            abs(altarChest->getWorldZ(3, 3) - portalBlockZ) > 50) continue;
-            loot = loot_tables::StrongholdCorridor<true>::getAltarChestLoot<true, false>(g, altarChest, stronghold_gen);
+            altarChestBlockX = altarChest->getWorldX(3, 3);
+            altarChestBlockY = altarChest->getWorldY(2);
+            altarChestBlockZ = altarChest->getWorldZ(3, 3);
+
+            if(abs(altarChestBlockX - portalBlockX) > 50 ||
+            altarChestBlockY < portalBlockY - 3 ||
+            abs(altarChestBlockZ - portalBlockZ) > 50) continue;
+
+            loot = loot_tables::StrongholdCorridor<true>::getAltarChestLoot<true, false>(g, *altarChest, stronghold_gen);
             hasPearl = false;
             hasSword = false;
             for(const ItemStack& item : loot.inventorySlots) {
@@ -181,10 +292,15 @@ int main(int argc, char* argv[]) {
                 }
             }
             if(!(hasPearl && hasSword)) continue;
-            sisterSeedHasValidAltarChest = true;
+            hasValidAltarChest = true;
         }
-        if(sisterSeedHasValidAltarChest) {
-            outputFile << std::endl << worldSeed << " -> (" <<
+        if(hasValidAltarChest) {
+            seedDataList.emplace_back(worldSeed,
+                                      portalBlockX, portalBlockY, portalBlockZ,
+                                      altarChestBlockX,
+                                      altarChestBlockY,
+                                      altarChestBlockZ, spawnBlock, loot);
+            /*outputFile << std::endl << worldSeed << " -> (" <<
                        portalBlockX << ", " <<
                        portalBlockY << ", " <<
                        portalBlockZ << ") (" <<
@@ -197,9 +313,19 @@ int main(int argc, char* argv[]) {
             skipSisterSeeds = true;
         }
     }
+    // sort the found seeds
+    std::cout << "Done! Sorting..." << std::endl;
+    std::sort(seedDataList.begin(), seedDataList.end(), compareSeeds);
+    std::cout << "Finished sorting! Saving data..." << std::endl;
+    for(const SeedData& data : seedDataList) {
+        outputFile << std::endl << data.worldSeed << " -> " <<
+        data.portalRoomCoords << " " << data.altarChestCoords << " "<<
+        data.spawnCoords << data.altarChestLoot << std::endl;
+    }
+    std::cout << "Done!" << std::endl;
     outputFile.close();
     delete stronghold_gen;
-    return 0;
+    return 0;*/
    /* stronghold_gen->generate(worldSeed, Structure::StrongholdStructure::getWorldPosition(g) >> 4);
     for(int i = 0; i < stronghold_gen->numAltarChests; ++i) {
         stronghold_generator::Piece *altarChest = stronghold_gen->altarChests[i];

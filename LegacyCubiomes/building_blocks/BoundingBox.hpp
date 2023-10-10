@@ -15,6 +15,7 @@ struct BoundingBox {
 
     BoundingBox();
     BoundingBox(int minX, int minY, int minZ, int maxX, int maxY, int maxZ);
+    bool operator==(const BoundingBox &other) const;
 
     ND bool intersects(const BoundingBox &other) const;
 

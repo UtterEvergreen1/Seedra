@@ -24,9 +24,12 @@ public:
      * @param lookupValues the look up values obtained from the enchantment order table
      */
     void orderValues(const std::vector<int>& lookupValues) {
-        sortedRegistry.resize(lookupValues.size());
-        for (int sortedIndex : lookupValues) {
-            sortedRegistry.at(sortedIndex) = allValues[lookupValues.at(sortedIndex)];
+        int sortedIndex;
+        int lookupSize = lookupValues.size();
+        sortedRegistry.resize(lookupSize);
+        for (int i = 0; i < lookupSize; ++i) {
+            sortedIndex = lookupValues[i];
+            sortedRegistry[i] = allValues[sortedIndex];
         }
     }
 

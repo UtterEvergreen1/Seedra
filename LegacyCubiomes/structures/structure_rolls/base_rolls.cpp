@@ -6,7 +6,7 @@
 
 namespace structure_rolls {
 
-    bool BaseRolls::isLiquidInStructureBoundingBox(const BoundingBox& chunkBoundingBoxIn, const BoundingBox& pieceBoundingBox, ChunkPrimer* chunk) {
+    bool BaseRolls::isLiquidInStructureBoundingBox(const BoundingBox& chunkBoundingBoxIn, const BoundingBox& pieceBoundingBox, const ChunkPrimer* chunk) {
         int minX = std::max(pieceBoundingBox.minX - 1, chunkBoundingBoxIn.minX) & 15;
         int minY = std::max(pieceBoundingBox.minY - 1, chunkBoundingBoxIn.minY);
         int minZ = std::max(pieceBoundingBox.minZ - 1, chunkBoundingBoxIn.minZ) & 15;
@@ -69,8 +69,8 @@ namespace structure_rolls {
         }
     }
 
-    void BaseRolls::fillWithRandomizedBlocks(const BoundingBox &chunkBoundingBox, const BasePiece &piece, int minX, int minY,
-                                             int minZ, int maxX, int maxY, int maxZ, uint64_t *random, ChunkPrimer *chunk) {
+    void BaseRolls::fillWithRandomizedBlocks(const BoundingBox &chunkBoundingBox, const BasePiece& piece, int minX, int minY,
+                                             int minZ, int maxX, int maxY, int maxZ, uint64_t *random, const ChunkPrimer* const chunk) {
         int worldX;
         int worldY;
         int worldZ;

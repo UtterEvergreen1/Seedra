@@ -92,15 +92,15 @@ public:
 
         for (; tunnelStartSegment < tunnelEndSegment; tunnelStartSegment++)
         {
-            double adjustedWidth = 1.5 + (double)(std::sin((float)tunnelStartSegment * PI_FLOAT / (float)tunnelEndSegment) * angle);
+            double adjustedWidth = 1.5 + (double)(MathHelper::sin((float)tunnelStartSegment * PI_FLOAT / (float)tunnelEndSegment) * angle);
             double adjustedHeight = adjustedWidth * widthMultiplier;
             adjustedWidth = adjustedWidth * ((double)nextFloat(&random) * 0.25 + 0.75);
             adjustedHeight = adjustedHeight * ((double)nextFloat(&random) * 0.25 + 0.75);
-            float cosCurvature = std::cos(curvature);
-            float sinCurvature = std::sin(curvature);
-            tunnelX += (double)(std::cos(slope) * cosCurvature);
+            float cosCurvature = MathHelper::cos(curvature);
+            float sinCurvature = MathHelper::sin(curvature);
+            tunnelX += (double)(MathHelper::cos(slope) * cosCurvature);
             tunnelY += (double)sinCurvature;
-            tunnelZ += (double)(std::sin(slope) * cosCurvature);
+            tunnelZ += (double)(MathHelper::sin(slope) * cosCurvature);
             curvature = curvature * 0.7F;
             curvature = curvature + slopeChangeRate * 0.05F;
             slope += curvatureChangeRate * 0.05F;

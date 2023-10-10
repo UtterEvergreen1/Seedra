@@ -12,6 +12,7 @@ public:
 
     BasePiece();
     BasePiece(BoundingBox boundingBox, DIRECTION orientation);
+    bool operator==(const BasePiece &other) const;
 
     ND Pos2D getBoundingBoxCenter() const;
     ND int getWorldX(int offsetWidth, int offsetDepth) const;

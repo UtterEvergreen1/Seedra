@@ -10,17 +10,22 @@ namespace structure_rolls {
     public:
         /** generate all stronghold rolls in the chunk */
         template<bool isStrongholdChest>
-        MU static void generateStructure(ChunkPrimer *chunk, StrongholdGenerator *strongholdGenerator, uint64_t *random, int chestX, int chestY, int chestZ);
+        MU static bool generateStructure(ChunkPrimer *chunk, StrongholdGenerator *strongholdGenerator, uint64_t *random, const BasePiece& pieceStop, int chestXChunk, int chestZChunk);
     };
 
     template<bool isStrongholdChest>
-    void StrongholdRolls::generateStructure(ChunkPrimer *chunk, StrongholdGenerator *strongholdGenerator, uint64_t *random, int chestX, int chestY, int chestZ) {
-        int chunkX = chestX >> 4;
-        int chunkZ = chestZ >> 4;
+    bool StrongholdRolls::generateStructure(ChunkPrimer *chunk, StrongholdGenerator *strongholdGenerator, uint64_t *random, const BasePiece& pieceStop, int chestXChunk, int chestZChunk) {
+        const BoundingBox chunkBoundingBox = BoundingBox((chestXChunk << 4), 0,
+                                                         (chestZChunk << 4),
+                                                         (chestXChunk << 4) + 15, 255,
+                                                         (chestZChunk << 4) + 15);
+        if constexpr (isStrongholdChest){
+            if(chunk && isLiquidInStructureBoundingBox(chunkBoundingBox, pieceStop.boundingBox, chunk))
+                return false;
+        }
         for (int pieceIndex = 0; pieceIndex < strongholdGenerator->piecesSize; ++pieceIndex) {
             const Piece &piece = strongholdGenerator->pieces[pieceIndex];
             if (piece.type != PieceType::NONE) {
-                const BoundingBox chunkBoundingBox = BoundingBox((chunkX << 4), 0, (chunkZ << 4), (chunkX << 4) + 15, 255, (chunkZ << 4) + 15);
                 const BoundingBox& pieceBoundingBox = piece.boundingBox;
                 if (pieceBoundingBox.intersects(chunkBoundingBox)) {
                     if(chunk && piece.type != PieceType::PORTAL_ROOM && isLiquidInStructureBoundingBox(chunkBoundingBox, pieceBoundingBox, chunk))
@@ -42,8 +47,8 @@ namespace structure_rolls {
                     case PieceType::ROOM_CROSSING:
                         fillWithRandomizedBlocks(chunkBoundingBox, piece, 0, 0, 0, 10, 6, 10, random, chunk);
                         if constexpr (isStrongholdChest){
-                            if (chestX == piece.getWorldX(3, 8) && chestY == piece.getWorldY(4) && chestZ == piece.getWorldZ(3, 8)) {
-                                return;
+                            if(piece == pieceStop) {
+                                return true;
                             }
                         }
                         if (piece.additionalData == 2) { //rolling for the chest seed if in chunk
@@ -63,8 +68,8 @@ namespace structure_rolls {
                     case PieceType::CHEST_CORRIDOR:
                         fillWithRandomizedBlocks(chunkBoundingBox, piece, 0, 0, 0, 4, 4, 6, random, chunk);
                         if constexpr (isStrongholdChest){
-                            if (chestX == piece.getWorldX(3, 3) && chestY == piece.getWorldY(2) && chestZ == piece.getWorldZ(3, 3)) {
-                                return;
+                            if(piece == pieceStop) {
+                                return true;
                             }
                         }
                         generateChest(chunkBoundingBox, piece, random, 3, 2, 3);
@@ -74,8 +79,8 @@ namespace structure_rolls {
                                                  piece.additionalData ? 10 : 5, 14, random, chunk);
                         *random = (*random * 0x53E5A095E721 + 0xCACA74409848) & 0xFFFFFFFFFFFF; // 520 rolls
                         if constexpr (isStrongholdChest){
-                            if (chestX == piece.getWorldX(3, 5) && chestY == piece.getWorldY(3) && chestZ == piece.getWorldZ(3, 5)) {
-                                return;
+                            if(piece == pieceStop) {
+                                return true;
                             }
                         }
                         generateChest(chunkBoundingBox, piece, random, 3, 3, 5);
@@ -94,5 +99,6 @@ namespace structure_rolls {
                 }
             }
         }
+        return false;
     }
 }

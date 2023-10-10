@@ -11,6 +11,15 @@ BoundingBox::BoundingBox(int minX, int minY, int minZ, int maxX, int maxY, int m
     
 }
 
+bool BoundingBox::operator==(const BoundingBox &other) const {
+    return minX == other.minX &&
+    maxX == other.maxX &&
+    minZ == other.minZ &&
+    maxZ == other.maxZ &&
+    minY == other.minY &&
+    maxY == other.maxY;
+}
+
 bool BoundingBox::intersects(const BoundingBox &other) const {
     return maxX >= other.minX && minX <= other.maxX && maxZ >= other.minZ && minZ <= other.maxZ && maxY >= other.minY && minY <= other.maxY;
 }

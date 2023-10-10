@@ -1,6 +1,6 @@
 #pragma once
 
-#include "base_classes/stronghold_loot.hpp"
+#include "classes/StrongholdLoot.hpp"
 
 #include "LegacyCubiomes/enchants/enchantmentHelper.hpp"
 
@@ -14,13 +14,15 @@ namespace loot_tables {
     public:
         static void setup();
         template <bool shuffle>
-        static Container getLootFromLootTableSeed(uint64_t* lootTableSeed);
+        ND static Container getLootFromLootTableSeedCorridor(uint64_t lootTableSeed);
+        template <bool shuffle>
+        ND static Container getLootFromSeed(uint64_t* seed);
 
         template<bool checkCaves, bool shuffle>
-        ND static Container getAltarChestLoot(const Generator& g, BasePiece* alterChestPiece, StrongholdGenerator* strongholdGenerator);
+        ND static Container getAltarChestLoot(const Generator& g, const BasePiece& alterChestPiece, StrongholdGenerator* strongholdGenerator);
 
         template<bool checkCaves, bool shuffle>
-        ND static std::vector<Container> getAllAltarChestLoot(const Generator& g, StrongholdGenerator* strongholdGenerator);
+        MU ND static std::vector<Container> getAllAltarChestLoot(const Generator& g, StrongholdGenerator* strongholdGenerator);
     };
 
     template<bool isAquatic>
@@ -55,23 +57,24 @@ namespace loot_tables {
         StrongholdCorridor<isAquatic>::maxItemsPossible = 3;
     }
 
+
     template<bool isAquatic>
     template <bool shuffle>
-    Container StrongholdCorridor<isAquatic>::getLootFromLootTableSeed(uint64_t* lootTableSeed) {
+    Container StrongholdCorridor<isAquatic>::getLootFromLootTableSeedCorridor(uint64_t lootTableSeed) {
         int rollCount;
         int rollIndex;
         std::vector<ItemStack> chestContents;
         chestContents.reserve(StrongholdCorridor<isAquatic>::maxItemsPossible);
-        setSeed(lootTableSeed, *lootTableSeed);
+        setSeed(&lootTableSeed, lootTableSeed);
 
         // generate loot
         for(const LootTable& table : StrongholdCorridor<isAquatic>::lootTables){
-            rollCount = LootTable::getInt<false>(lootTableSeed, table.min, table.max);
+            rollCount = LootTable::getInt<false>(&lootTableSeed, table.min, table.max);
             for (rollIndex = 0; rollIndex < rollCount; rollIndex++) {
-                ItemStack result = table.createLootRoll<false>(lootTableSeed);
+                ItemStack result = table.createLootRoll<false>(&lootTableSeed);
 
                 if EXPECT_FALSE(result.item->getID() == Items::ENCHANTED_BOOK_ID) {
-                    EnchantmentHelper::EnchantWithLevelsBook::apply(lootTableSeed, &result, 30);
+                    EnchantmentHelper::EnchantWithLevelsBook::apply(&lootTableSeed, &result, 30);
                 }
 
                 chestContents.push_back(result);
@@ -79,24 +82,32 @@ namespace loot_tables {
         }
         if constexpr (shuffle){
             Container container = Container();
-            container.shuffleIntoContainer(chestContents, *lootTableSeed);
+            container.shuffleIntoContainer(chestContents, lootTableSeed);
             return container;
         }
         else
             return  {std::move(chestContents)};
     }
 
+    template <bool isAquatic>
+    template <bool shuffle>
+    inline Container StrongholdCorridor<isAquatic>::getLootFromSeed(uint64_t* seed) {
+        return StrongholdCorridor<isAquatic>::getLootFromLootTableSeedCorridor<shuffle>(nextLong(seed));
+    }
+
     template<bool isAquatic>
     template<bool checkCaves, bool shuffle>
     Container StrongholdCorridor<isAquatic>::getAltarChestLoot(const Generator& g,
-               BasePiece* alterChestPiece,
+               const BasePiece& alterChestPiece,
                StrongholdGenerator* strongholdGenerator) {
         uint64_t lootSeed = StrongholdLoot<StrongholdCorridor<isAquatic>>::template getLootSeed<checkCaves>(g,
-                    alterChestPiece->getWorldX(3, 3),
-                    alterChestPiece->getWorldY(2),
-                    alterChestPiece->getWorldZ(3, 3),
-                    strongholdGenerator);
-        return Loot<StrongholdLoot<StrongholdCorridor<isAquatic>>>::template getLootFromSeed<shuffle>(&lootSeed);
+                strongholdGenerator,
+                alterChestPiece,
+                alterChestPiece.getWorldX(3, 3) >> 4,
+                alterChestPiece.getWorldZ(3, 3) >> 4);
+        if(lootSeed == -1) return {};
+
+        return StrongholdCorridor<isAquatic>::getLootFromSeed<shuffle>(&lootSeed);
     }
 
     template<bool isAquatic>
@@ -107,7 +118,7 @@ namespace loot_tables {
         for (int altarChestIndex = 0; altarChestIndex < strongholdGenerator->numAltarChests; altarChestIndex++)
             altarChests[altarChestIndex] = StrongholdCorridor<isAquatic>
                                            ::template getAltarChestLoot<checkCaves, shuffle>(g,
-                                                                                             strongholdGenerator->altarChests[altarChestIndex],
+                                                                                             *strongholdGenerator->altarChests[altarChestIndex],
                                                                                              strongholdGenerator);
 
         return altarChests;

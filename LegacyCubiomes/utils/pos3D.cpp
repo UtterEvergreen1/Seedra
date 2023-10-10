@@ -56,7 +56,7 @@ Pos3D Pos3D::operator<<(int shiftAmount) const {
 }
 
 
-Pos2D Pos3D::convert2D() {
+const Pos2D Pos3D::convert2D() const {
     return {x, z};
 }
 

@@ -8,6 +8,10 @@ BasePiece::BasePiece(BoundingBox boundingBox, DIRECTION orientation)
         : boundingBox(boundingBox), orientation(orientation) {
 }
 
+bool BasePiece::operator==(const BasePiece &other) const {
+    return boundingBox == other.boundingBox;
+}
+
 Pos2D BasePiece::getBoundingBoxCenter() const {
     Pos2D pos{};
     pos.x = this->boundingBox.minX + this->boundingBox.maxX / 2;

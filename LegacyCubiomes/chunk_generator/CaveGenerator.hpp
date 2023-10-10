@@ -2,6 +2,7 @@
 
 #include <cmath>
 #include "MapGenBase.hpp"
+#include "LegacyCubiomes/utils/MathHelper.hpp"
 
 class CaveGenerator : public MapGenBase
 {
@@ -81,13 +82,13 @@ public:
 
         for (bool isTunnelWide = nextInt(&random, 6) == 0; currentTunnelSegment < maxTunnelSegment; ++currentTunnelSegment)
         {
-            double tunnelWidthScaled = 1.5 + (double)(std::sin((float)currentTunnelSegment * (float)PI / (float)maxTunnelSegment) * tunnelWidth);
+            double tunnelWidthScaled = 1.5 + (double)(MathHelper::sin((float)currentTunnelSegment * PI_FLOAT / (float)maxTunnelSegment) * tunnelWidth);
             double tunnelHeight = tunnelWidthScaled * tunnelHeightMultiplier;
-            float directionCosine = std::cos(tunnelSlope);
-            float directionSine = std::sin(tunnelSlope);
-            startX += (double)(std::cos(tunnelDirection) * directionCosine);
+            float directionCosine = MathHelper::cos(tunnelSlope);
+            float directionSine = MathHelper::sin(tunnelSlope);
+            startX += (double)(MathHelper::cos(tunnelDirection) * directionCosine);
             startY += (double)directionSine;
-            startZ += (double)(std::sin(tunnelDirection) * directionCosine);
+            startZ += (double)(MathHelper::sin(tunnelDirection) * directionCosine);
 
             if (isTunnelWide)
             {
@@ -147,8 +148,13 @@ public:
                 double segmentsRemaining = maxTunnelSegment - currentTunnelSegment;
                 double maxDistance = tunnelWidth + 18.0F;
 
+                //double testValue = distanceX * distanceX + distanceZ * distanceZ - segmentsRemaining * segmentsRemaining;
+                //double maxDistSquared = maxDistance * maxDistance;
+                //std::cout << testValue << ", " << maxDistSquared << std::endl;
                 if (distanceX * distanceX + distanceZ * distanceZ - segmentsRemaining * segmentsRemaining > maxDistance * maxDistance)
                 {
+                    //double testValue = distanceX * distanceX + distanceZ * distanceZ - segmentsRemaining * segmentsRemaining;
+                    //std::cout << "Returned: " << testValue << " > " <<  (maxDistance * maxDistance) << std::endl;
                     return;
                 }
 
@@ -176,11 +182,13 @@ public:
                         {
                             for (int currentY = maxY + 1; !hasWater && currentY >= minY - 1; --currentY)
                             {
-                                if (currentY >= 0 && currentY < 128)
+                                if (currentY < 128)
                                 {
+
                                     uint16_t blockType = chunk->getBlock(currentX, currentY, currentZ);
                                     if (blockType == Items::STILL_WATER_ID || blockType == Items::FLOWING_WATER_ID)
                                     {
+                                        //std::cout << currentX << ", " << currentY << ", " << currentZ << std::endl;
                                         hasWater = true;
                                     }
 
@@ -193,7 +201,7 @@ public:
                         }
                     }
 
-                    if (!hasWater) //             ((dVar27 = (double)getDepth__5BiomeFv(uVar9), dVar27 < -0.9 && (iVar10 = isSnowCovered__5BiomeFv(uVar9), iVar10 != 0))
+                    if (!hasWater)
                     {
                         for (int currentX = minX; currentX < maxX; ++currentX)
                         {
@@ -209,7 +217,7 @@ public:
                                     //for (int currentY = maxY; currentY > minY; --currentY)
                                     for (int currentY = maxY - 1; currentY >= minY; --currentY)
                                     {
-                                        double scaleY = ((double)(currentY - 1) + 0.5 - startY) / tunnelHeight;
+                                        double scaleY = ((double)(currentY - ((this->g.getLCEVersion() == LCEVERSION::AQUATIC) ? 1 : 0)) + 0.5 - startY) / tunnelHeight;
 
                                         if (scaleY > -0.7 && scaleX * scaleX + scaleY * scaleY + scaleZ * scaleZ < 1.0)
                                         {
@@ -275,17 +283,17 @@ public:
 
             if (nextInt(&rng, 4) == 0)
             {
-                float tunnelWidth = 1.0F + nextFloat(&rng) * 6.0F;
-                this->addTunnel((int64_t)nextLong(&rng), targetX, targetZ, chunkPrimer, tunnelStartX, tunnelStartY, tunnelStartZ, tunnelWidth, 0.0F, 0.0F, -1, -1, 0.5);
-                segmentCount = nextInt(&rng, 4) + 1;
-
-                //addRoom((int64_t)nextLong(&rng), targetX, targetZ, chunkPrimer, tunnelStartX, tunnelStartY, tunnelStartZ, &rng);
+                //float tunnelWidth = 1.0F + nextFloat(&rng) * 6.0F;
+                //this->addTunnel((int64_t)nextLong(&rng), targetX, targetZ, chunkPrimer, tunnelStartX, tunnelStartY, tunnelStartZ, tunnelWidth, 0.0F, 0.0F, -1, -1, 0.5);
                 //segmentCount = nextInt(&rng, 4) + 1;
+
+                addRoom((int64_t)nextLong(&rng), targetX, targetZ, chunkPrimer, tunnelStartX, tunnelStartY, tunnelStartZ, &rng);
+                segmentCount = nextInt(&rng, 4) + 1;
             }
 
             for (int currentSegment = 0; currentSegment < segmentCount; ++currentSegment)
             {
-                float yaw = nextFloat(&rng) * ((float)PI * 2.0F);
+                float yaw = nextFloat(&rng) * (PI_FLOAT * 2.0F);
                 float pitch = (nextFloat(&rng) - 0.5F) * 2.0F / 8.0F;
 
                 float f1 = nextFloat(&rng);

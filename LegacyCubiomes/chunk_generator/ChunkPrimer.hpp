@@ -13,7 +13,7 @@
 class ChunkPrimer
 {
 public:
-    uint16_t blocks[65536]; // all the blocks along with data in the chunk
+    uint16_t blocks[65536] = {}; // all the blocks along with data in the chunk
     std::vector<uint8_t> skyLight;
     std::vector<int> precipitationHeightMap = std::vector<int>(256, -999);
     ChunkPrimer() {}
@@ -25,10 +25,10 @@ public:
     //ChunkPrimer(ChunkPrimer &&) = delete;
     //ChunkPrimer &operator=(ChunkPrimer &&) = delete;
 
-    inline uint16_t getBlockAtIndex(int64_t index) {
+    inline uint16_t getBlockAtIndex(int64_t index) const {
         return index >= 0 && index < 65536 ? blocks[index] : 0;
     }
-    uint16_t getBlock(int64_t x, int64_t y, int64_t z) {
+    uint16_t getBlock(int64_t x, int64_t y, int64_t z) const {
         return getBlockAtIndex(getStorageIndex(x, y, z)) >> 4;
     }
     void setBlock(int64_t x, int64_t y, int64_t z, uint16_t block)
@@ -36,7 +36,7 @@ public:
         this->blocks[getStorageIndex(x, y, z)] = block << 4;
     }
 
-    uint16_t getData(int64_t x, int64_t y, int64_t z)
+    uint16_t getData(int64_t x, int64_t y, int64_t z) const
     {
         return getBlockAtIndex(getStorageIndex(x, y, z)) & 15;
     }
@@ -45,7 +45,7 @@ public:
         this->blocks[getStorageIndex(x, y, z)] |= data;
     }
 
-    uint16_t getSkyLight(int64_t x, int64_t y, int64_t z) {
+    uint16_t getSkyLight(int64_t x, int64_t y, int64_t z) const {
         return getBlockAtIndex(getStorageIndex(x, y, z));
     }
     void setSkyLight(int64_t x, int64_t y, int64_t z, uint8_t lightValue)
@@ -64,9 +64,7 @@ public:
     }
 
     friend std::ostream &operator<<(std::ostream &out, const ChunkPrimer& chunkPrimer) {
-        int block;
-        for (int ii = 0; ii < 65536; ++ii) {
-            block = chunkPrimer.blocks[ii];
+        for (unsigned short block : chunkPrimer.blocks) {
             out << std::hex << std::setw(2) << std::setfill('0') << (block & 0xff);
             out << std::hex << std::setw(2) << std::setfill('0') << (block >> 8);
         }
@@ -74,7 +72,7 @@ public:
     }
 
     //in block cords not chunk cords
-    int getHighestYChunk() {
+    int getHighestYChunk() const {
         for (int y = 255; y >= 0; y--) {
             for (int x = 0; x < 16; x++) {
                 for (int z = 0; z < 16; z++) {
@@ -163,7 +161,7 @@ public:
         return precipitationHeightMap[k];
     }
 
-    bool canBlockFreeze(const Generator& g, Pos3D pos, bool noWaterAdj){
+    bool canBlockFreeze(const Generator& g, Pos3D pos, bool noWaterAdj) const {
         Biome* biome = Biome::getBiomeForId(g.getBiomeAt(1, pos.x, pos.z));
         float f = biome->getFloatTemperature(pos);
         if (f >= 0.15F)
@@ -197,7 +195,7 @@ public:
         }
     }
 
-    bool canSnowAt(const Generator& g, Pos3D pos, bool checkLight){
+    bool canSnowAt(const Generator& g, Pos3D pos, bool checkLight) const {
         Biome* biome = Biome::getBiomeForId(g.getBiomeAt(1, pos.x, pos.z));
         float temp = biome->getFloatTemperature(pos);
         if (temp >= 0.15F)
