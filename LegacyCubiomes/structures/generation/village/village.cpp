@@ -5,8 +5,12 @@
 #include "village.hpp"
 #include "LegacyCubiomes/structures/placement/StaticStructures.hpp"
 namespace generation {
-    void Village::generate(Generator* generator, int chunkX, int chunkZ) {
-        uint64_t random = getLargeFeatureSeed(generator->getWorldSeed(), chunkX, chunkZ);
+    Village::Village(const Generator* generator) {
+        g = generator;
+    }
+
+    void Village::generate(int chunkX, int chunkZ) {
+        uint64_t random = getLargeFeatureSeed(g->getWorldSeed(), chunkX, chunkZ);
         random = (random * 0x5deece66d + 0xb) & 0xFFFFFFFFFFFF; // advance rng
         startX = (chunkX << 4) + 2;
         startZ = (chunkZ << 4) + 2;

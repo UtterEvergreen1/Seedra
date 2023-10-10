@@ -96,5 +96,7 @@ namespace structure_rolls {
                 }
             }
         }
+        //it should never reach here
+        return false;
     }
 }
