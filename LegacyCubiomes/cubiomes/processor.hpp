@@ -24,14 +24,9 @@
 #define MU                      [[maybe_unused]]
 
 #define PREFETCH(PTR,RW,LOC)
-// #define (COND)                 (COND) [[unlikely]
-#define U(COND)                 (COND) [[likely]
+#define EXPECT_FALSE(COND)                 (__builtin_expect((COND),0))    // [[unlikely]
+#define EXPECT_TRUE(COND)                 (__builtin_expect((COND),1))    // [[likely]
 #define ATTR(...)
-static inline uint32_t BSWAP32(uint32_t x) {
-    x = ((x & 0x000000ff) << 24) | ((x & 0x0000ff00) <<  8) |
-        ((x & 0x00ff0000) >>  8) | ((x & 0xff000000) >> 24);
-    return x;
-}
 #endif
 
 /// imitate amd64/x64 rotate instructions
