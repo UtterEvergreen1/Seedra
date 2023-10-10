@@ -1,13 +1,16 @@
 #pragma once
 
-enum class DIMENSION {
+#include <cstdint>
+#include <string>
+
+enum class DIMENSION : int8_t {
     NETHER   = -1,
     HELL     = -1,
     OVERWORLD = 0,
     END       = 1
 };
 
-enum class CONSOLE {
+enum class CONSOLE : int8_t {
     XBOX = 0,
     PS3  = 1,
     WIIU = 2,
@@ -15,49 +18,79 @@ enum class CONSOLE {
     NONE = 4
 };
 
-enum class LCEVERSION
-{
+enum class LCEVERSION : int8_t {
     AQUATIC = 0,
     ELYTRA = 1,
     BOUNTIFUL = 2,
     HORSE = 3,
     POTIONS = 4,
     ADVENTURE = 5,
-    //PISTON,
-    //GENERATION, // not supported yet
+    // PISTON,
+    // GENERATION, // not supported yet
 
     PS4_VP = 6,
     NONE = 7
 };
 
 /// Minecraft Java versions
-enum MCVERSION
-{
-    MC_1_0, // <=1.0 Experimental!
-    MC_1_1,  MC_1_2,  MC_1_3,  MC_1_4,  MC_1_5,  MC_1_6,
-    MC_1_7,  MC_1_8,  MC_1_9,  MC_1_10, MC_1_11, MC_1_12,
-    MC_1_13, MC_1_14
+enum MCVERSION : int8_t {
+    MC_1_0 = 0, // <=1.0 Experimental!
+    MC_1_1 = 1,
+    MC_1_2 = 2,
+    MC_1_3 = 3,
+    MC_1_4 = 4,
+    MC_1_5 = 5,
+    MC_1_6 = 6,
+    MC_1_7 = 7,
+    MC_1_8 = 8,
+    MC_1_9 = 9,
+    MC_1_10 = 10,
+    MC_1_11 = 11,
+    MC_1_12 = 12,
+    MC_1_13 = 13,
+    MC_1_14 = 14
 };
 
-enum class DIRECTION {
+enum class DIRECTION : int8_t {
     NORTH = 0,
     SOUTH = 1,
     WEST  = 2,
     EAST  = 3,
 };
 
-enum class BIOMESCALE {
+enum class BIOMESCALE : int8_t {
     SMALL  = 0,
     MEDIUM = 1,
     LARGE  = 2
 };
 
-enum class WORLDSIZE {
+enum class WORLDSIZE : int8_t {
     CLASSIC = 0,
     SMALL   = 1,
     MEDIUM  = 2,
     LARGE   = 3
 };
+
+inline static std::string LceVersionToString(LCEVERSION version) {
+    switch(version) {
+        case LCEVERSION::PS4_VP:
+            return "PS4_VP";
+        case LCEVERSION::AQUATIC:
+            return "AQUATIC";
+        case LCEVERSION::ELYTRA:
+            return "ELYTRA";
+        case LCEVERSION::BOUNTIFUL:
+            return "BOUNTIFUL";
+        case LCEVERSION::HORSE:
+            return "HORSE";
+        case LCEVERSION::POTIONS:
+            return "POTIONS";
+        case LCEVERSION::ADVENTURE:
+            return "ADVENTURE";
+        default:
+            return "NONE";
+    }
+}
 
 inline static int getChunkWorldBounds(WORLDSIZE worldSize) {
     switch (worldSize) {
@@ -72,6 +105,35 @@ inline static int getChunkWorldBounds(WORLDSIZE worldSize) {
         return 160;
     }
 }
+
+inline static std::string worldSizeToString(WORLDSIZE worldSize) {
+    switch (worldSize) {
+        case WORLDSIZE::CLASSIC:
+        default:
+            return "CLASSIC";
+        case WORLDSIZE::SMALL:
+            return "SMALL";
+        case WORLDSIZE::MEDIUM:
+            return "MEDIUM";
+        case WORLDSIZE::LARGE:
+            return "LARGE";
+    }
+}
+
+
+inline static std::string biomeScaleToString(BIOMESCALE biomeScale) {
+    switch (biomeScale) {
+        case BIOMESCALE::SMALL:
+            return "SMALL";
+        case BIOMESCALE::MEDIUM:
+            return "MEDIUM";
+        case BIOMESCALE::LARGE:
+            return "LARGE";
+        default:
+            return "NONE";
+    }
+}
+
 
 inline static MCVERSION getMCVersion(LCEVERSION lceVersionIn) {
     switch (lceVersionIn) {

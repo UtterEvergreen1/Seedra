@@ -5,12 +5,12 @@
 
 class Rarity {
 private:
-    const int weight = 0;
+    const int8_t weight = 0;
 public:
     Rarity() = default;
 
-    Rarity(int weight) : weight(weight) {}
-    ND inline int getWeight() const {
+    explicit Rarity(int8_t weight) : weight(weight) {}
+    ND __forceinline int8_t getWeight() const {
         return weight;
     }
 };

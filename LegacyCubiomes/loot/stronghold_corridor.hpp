@@ -1,14 +1,12 @@
 #pragma once
 
-#include "classes/StrongholdLoot.hpp"
+#include "LegacyCubiomes/loot/classes/StrongholdLoot.hpp"
+#include "LegacyCubiomes/enchants/include.hpp"
 
-#include "LegacyCubiomes/enchants/enchantmentHelper.hpp"
 
 
-using namespace Items;
-using stronghold_generator::StrongholdGenerator;
 
-namespace loot_tables {
+namespace loot {
     template<bool isAquatic>
     class StrongholdCorridor : public StrongholdLoot<StrongholdCorridor<isAquatic>> {
     public:
@@ -19,10 +17,10 @@ namespace loot_tables {
         ND static Container getLootFromSeed(uint64_t* seed);
 
         template<bool checkCaves, bool shuffle>
-        ND static Container getAltarChestLoot(const Generator& g, const BasePiece& alterChestPiece, StrongholdGenerator* strongholdGenerator);
+        ND static Container getAltarChestLoot(const Generator& g, const Piece& altarChestPiece, generation::Stronghold* strongholdGenerator);
 
         template<bool checkCaves, bool shuffle>
-        MU ND static std::vector<Container> getAllAltarChestLoot(const Generator& g, StrongholdGenerator* strongholdGenerator);
+        ND static std::vector<Container> getAllAltarChestLoot(const Generator& g, generation::Stronghold* strongholdGenerator);
     };
 
     template<bool isAquatic>
@@ -69,7 +67,7 @@ namespace loot_tables {
 
         // generate loot
         for(const LootTable& table : StrongholdCorridor<isAquatic>::lootTables){
-            rollCount = LootTable::getInt<false>(&lootTableSeed, table.min, table.max);
+            rollCount = LootTable::getInt<false>(&lootTableSeed, table.getMin(), table.getMax());
             for (rollIndex = 0; rollIndex < rollCount; rollIndex++) {
                 ItemStack result = table.createLootRoll<false>(&lootTableSeed);
 
@@ -89,6 +87,7 @@ namespace loot_tables {
             return  {std::move(chestContents)};
     }
 
+
     template <bool isAquatic>
     template <bool shuffle>
     inline Container StrongholdCorridor<isAquatic>::getLootFromSeed(uint64_t* seed) {
@@ -98,27 +97,28 @@ namespace loot_tables {
     template<bool isAquatic>
     template<bool checkCaves, bool shuffle>
     Container StrongholdCorridor<isAquatic>::getAltarChestLoot(const Generator& g,
-               const BasePiece& alterChestPiece,
-               StrongholdGenerator* strongholdGenerator) {
+                                                               const Piece& altarChestPiece,
+                                                               generation::Stronghold* strongholdGenerator) {
         uint64_t lootSeed = StrongholdLoot<StrongholdCorridor<isAquatic>>::template getLootSeed<checkCaves>(g,
                 strongholdGenerator,
-                alterChestPiece,
-                alterChestPiece.getWorldX(3, 3) >> 4,
-                alterChestPiece.getWorldZ(3, 3) >> 4);
+                altarChestPiece,
+                altarChestPiece.getWorldX(3, 3) >> 4,
+                altarChestPiece.getWorldZ(3, 3) >> 4);
         if(lootSeed == -1) return {};
 
         return StrongholdCorridor<isAquatic>::getLootFromSeed<shuffle>(&lootSeed);
     }
 
+
     template<bool isAquatic>
     template<bool checkCaves, bool shuffle>
     std::vector<Container> StrongholdCorridor<isAquatic>::getAllAltarChestLoot(const Generator& g,
-                                   StrongholdGenerator* strongholdGenerator) {
-        std::vector<Container> altarChests(strongholdGenerator->numAltarChests);
-        for (int altarChestIndex = 0; altarChestIndex < strongholdGenerator->numAltarChests; altarChestIndex++)
+                                                                               generation::Stronghold* strongholdGenerator) {
+        std::vector<Container> altarChests(strongholdGenerator->altarChestArraySize);
+        for (int altarChestIndex = 0; altarChestIndex < strongholdGenerator->altarChestArraySize; altarChestIndex++)
             altarChests[altarChestIndex] = StrongholdCorridor<isAquatic>
                                            ::template getAltarChestLoot<checkCaves, shuffle>(g,
-                                                                                             *strongholdGenerator->altarChests[altarChestIndex],
+                                                                                             *strongholdGenerator->altarChestsArray[altarChestIndex],
                                                                                              strongholdGenerator);
 
         return altarChests;

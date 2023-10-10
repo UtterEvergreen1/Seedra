@@ -18,15 +18,6 @@ private:
     static bool isSetup;
 public:
     friend class EnchantmentHelper;
-    static RegistryNamespaced<Enchantment> REGISTRY;
-    static CONSOLE currentConsole;
-    static LCEVERSION currentVersion;
-
-    /// the order is: [console][version][pointer]
-    static const std::vector<std::vector<std::vector<int>>> tableOfOrders;
-
-    static constexpr int MAX_ENCHANTMENT_COUNT = 33;
-    static int count;
 
     class Type {
     public:
@@ -62,7 +53,7 @@ public:
         static std::vector<const Base*> ALL_ITERABLE;
     };
 
-    enum EnumName {
+    enum EnumName : int8_t {
         OXYGEN,
         PROTECTION,
         WATER_WORKER,
@@ -94,7 +85,7 @@ public:
         NONE
     };
 
-    enum EnchantmentOrder {
+    enum EnchantmentOrder : int8_t {
         protection = 0,
         fire_protection = 1,
         feather_falling = 2,
@@ -131,22 +122,29 @@ public:
     };
 
 
+    static RegistryNamespaced<Enchantment> REGISTRY;
+    static CONSOLE currentConsole;
+    static LCEVERSION currentVersion;
+    /// the order is: [console][version][pointer]
+    static const std::vector<std::vector<std::vector<int>>> tableOfOrders;
+    static constexpr int8_t MAX_ENCHANTMENT_COUNT = 33;
+    static int count;
+
     // attributes of each class
     const std::string name;
-    const Rarity* const rarity = &Rarities::NONE;
     const Type::Base* type = nullptr;
     EnumName enumID = EnumName::NONE;
     bool isTreasure = false;
-    const int minLevel = 1;
-    const int maxLevel = 1;
+    const int8_t maxLevel = 1;
+    const Rarity* rarity = &Rarities::NONE;
 
 
     Enchantment() = default;
 
-    Enchantment(std::string name, const Rarity *rarity, EnumName enchantName, int maxLevel, bool isTreasure = false) :
+    Enchantment(std::string name, const Rarity *rarity, EnumName enchantName, int8_t maxLevel, bool isTreasure = false) :
             name(std::move(name)), rarity(rarity), type(&Type::ALL), enumID(enchantName), maxLevel(maxLevel), isTreasure(isTreasure) {};
 
-    Enchantment(std::string name, const Rarity *rarity, const Type::Base* type, EnumName enchantName, int maxLevel, bool isTreasure = false) :
+    Enchantment(std::string name, const Rarity *rarity, const Type::Base* type, EnumName enchantName, int8_t maxLevel, bool isTreasure = false) :
             name(std::move(name)), rarity(rarity), type(type), enumID(enchantName), maxLevel(maxLevel), isTreasure(isTreasure) {};
 
     virtual int getMinCost(int enchantmentLevel);
@@ -156,9 +154,7 @@ public:
     ND virtual bool canApply(const Items::Item *item) const;
 
 
-    /**
-     * Registers all the enchantments
-     */
+    // registers all the enchantments
     static void registerEnchantments();
 
 private:

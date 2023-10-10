@@ -130,5 +130,5 @@ void EnchantedBookEnchantsLookupTable::deallocate() {
     areVectorsSetup = false;
 }
 
-int EnchantedBookEnchantsLookupTable::TOTAL_WEIGHT = 0;
-int EnchantedBookEnchantsLookupTable::CUMULATIVE_WEIGHT_ALL[Enchantment::MAX_ENCHANTMENT_COUNT] = {0};
+int8_t EnchantedBookEnchantsLookupTable::TOTAL_WEIGHT = 0;
+int8_t EnchantedBookEnchantsLookupTable::CUMULATIVE_WEIGHT_ALL[Enchantment::MAX_ENCHANTMENT_COUNT] = {0};

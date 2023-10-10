@@ -20,10 +20,11 @@ class Container {
 public:
     size_t numSlots{};
     std::vector<ItemStack> inventorySlots;
-    static const inline int CHEST_SIZE = 27;
+    static const inline int8_t CHEST_SIZE = 27;
 
     Container() : numSlots(CHEST_SIZE), inventorySlots(CHEST_SIZE) {}
 
+    // don't mark explicit
     Container(std::vector<ItemStack>&& items) : inventorySlots(std::move(items)) {}
     explicit Container(int slots) : numSlots(slots), inventorySlots(slots) {}
 
@@ -41,7 +42,7 @@ public:
 
     inline void setInventorySlotContents(int index, const ItemStack& stack){inventorySlots[index] = stack;}
     inline void setMoveInventorySlotContents(int index, ItemStack&& stack) {inventorySlots[index] = std::move(stack);}
-    inline void placeIntoContainer(std::vector<ItemStack>& items){inventorySlots = items;}
+    inline void placeIntoContainer(std::vector<ItemStack>& items) {inventorySlots = items;}
 
 
 private:

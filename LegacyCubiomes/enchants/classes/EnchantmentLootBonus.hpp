@@ -5,8 +5,8 @@
 
 class EnchantmentLootBonus : public Enchantment {
 private:
-    static constexpr inline int LEVELS_MIN[3] = {15, 24, 33};
-    static constexpr inline int LEVELS_MAX[3] = {61, 71, 81};
+    static constexpr inline int8_t LEVELS_MIN[3] = {15, 24, 33};
+    static constexpr inline int8_t LEVELS_MAX[3] = {61, 71, 81};
 public:
 
     EnchantmentLootBonus(const std::string& name, const Rarity *rarity, const Type::Base* type) :

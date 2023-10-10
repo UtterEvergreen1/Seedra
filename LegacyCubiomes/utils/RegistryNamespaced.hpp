@@ -5,10 +5,15 @@
 
 template<typename T>
 class RegistryNamespaced {
+private:
+    std::vector<T*> allValues;
+    std::vector<T*> sortedRegistry;
+
 public:
     RegistryNamespaced() = default;
+
     inline void registerValue(T* value) {
-        this->allValues.emplace_back(value);
+        allValues.emplace_back(value);
     }
 
     inline T* operator[](int index) const {
@@ -38,19 +43,16 @@ public:
      * @return size of current registry
      */
     ND inline int size() const {
-        return this->sortedRegistry.size();
+        return sortedRegistry.size();
     }
 
     /// Deallocates all the stored values
     inline void clear() {
-        for(const T* value : allValues){
+        for (const T* value : allValues){
             delete value;
         }
         allValues.clear();
         sortedRegistry.clear();
     }
-private:
-    std::vector<T*> allValues;
-    std::vector<T*> sortedRegistry;
 };
 

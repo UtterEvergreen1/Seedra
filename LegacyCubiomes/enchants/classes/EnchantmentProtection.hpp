@@ -7,17 +7,17 @@ public:
 
     struct ArmorType {
         const std::string typeName;
-        const int id{};
-        const int minEnchantability{};
-        const int levelCost{};
-        const int levelCostSpan{};
+        const int8_t id{};
+        const int8_t minEnchantability{};
+        const int8_t levelCost{};
+        const int8_t levelCostSpan{};
 
         ArmorType() = default;
-        ArmorType(std::string typeName, int id, int minEnchantability, int levelCost, int levelCostSpan) :
+        ArmorType(std::string typeName, int8_t id, int8_t minEnchantability, int8_t levelCost, int8_t levelCostSpan) :
         typeName(std::move(typeName)), id(id), minEnchantability(minEnchantability), levelCost(levelCost), levelCostSpan(levelCostSpan) {}
 
-        ND int getEnchantIncreasePerLevel() const {return this->levelCost;}
-        ND int getMinimalEnchantability() const {return this->minEnchantability;}
+        ND int8_t getEnchantIncreasePerLevel() const {return this->levelCost;}
+        ND int8_t getMinimalEnchantability() const {return this->minEnchantability;}
     };
 
     static const ArmorType ALL;

@@ -6,16 +6,17 @@
 #include "RavineGenerator.hpp"
 
 namespace Chunk {
+
     template<bool generateCaves, bool generateRavines, bool generateSkyLight>
     static ChunkPrimer* provideChunk(const Generator& g, int chunkX, int chunkZ) {
         ChunkGeneratorOverWorld chunk(g);
         ChunkPrimer* chunkPrimer = chunk.provideChunk(chunkX, chunkZ);
         if constexpr (generateCaves) {
-            CaveGenerator caveGenerator = CaveGenerator(g);
+            CaveGenerator caveGenerator(g);
             caveGenerator.generate(chunkX, chunkZ, chunkPrimer);
         }
         if constexpr (generateRavines) {
-            RavineGenerator ravineGenerator = RavineGenerator(g);
+            RavineGenerator ravineGenerator(g);
             ravineGenerator.generate(chunkX, chunkZ, chunkPrimer);
         }
         if constexpr (generateSkyLight) {
@@ -40,7 +41,7 @@ namespace Chunk {
                 Pos3D blockPos2 = Pos3D(x, precipitationHeight - 1, z);
 
                 if (chunkData->canBlockFreeze(g, blockPos2, false)) {
-                    chunkData->setBlock(chunkPosX, blockPos2.y, chunkPosZ, Items::ICE_ID);
+                    chunkData->setBlock(chunkPosX, blockPos2.getY(), chunkPosZ, Items::ICE_ID);
                 }
 
                 if (chunkData->canSnowAt(g, blockPos1, true)) {

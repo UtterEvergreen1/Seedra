@@ -6,12 +6,12 @@
 
 #include "LegacyCubiomes/loot/classes/Container.hpp"
 
-namespace loot_tables {
+namespace loot {
     template <typename T>
     class Loot {
     public:
         static std::vector<LootTable> lootTables;
-        static int maxItemsPossible;
+        static uint8_t maxItemsPossible;
 
         /// combine base loot seeding and generation to get the base loot
         template<bool shuffle, bool legacy>
@@ -46,7 +46,7 @@ namespace loot_tables {
     std::vector<LootTable> Loot<T>::lootTables;
 
     template<typename T>
-    int Loot<T>::maxItemsPossible;
+    uint8_t Loot<T>::maxItemsPossible;
 
     /* combine loot seeding and generation to get the base loot */
     template<typename T>

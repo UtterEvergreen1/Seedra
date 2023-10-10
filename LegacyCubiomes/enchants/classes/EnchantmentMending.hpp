@@ -5,7 +5,6 @@
 
 class EnchantmentMending : public Enchantment {
 public:
-
     EnchantmentMending(std::string name, const Rarity *rarity) :
         Enchantment(std::move(name), rarity, &Type::BREAKABLE, EnumName::MENDING, 1, true) {};
 

@@ -9,9 +9,9 @@
 
 class IndexArraySmall {
 private:
-    static constexpr int ITEM_COUNT = 12;
-    int indexes[ITEM_COUNT] = {0};
-    int currentIndex = 0;
+    static constexpr int8_t ITEM_COUNT = 12;
+    int8_t indexes[ITEM_COUNT] = {0};
+    int8_t currentIndex = 0;
 
 public:
     IndexArraySmall() = default;
@@ -24,7 +24,7 @@ public:
 
     ND inline int getIndex() const {return currentIndex;}
 
-    inline void addItem(int indexIn) {indexes[currentIndex++] = indexIn;}
+    inline void addItem(int indexIn) {indexes[currentIndex++] = (int8_t)indexIn;}
 
     MU inline int getEnchantmentIndex(int indexIn) {
         for (int i = 0; i < currentIndex; i++)
@@ -37,9 +37,9 @@ public:
 
 class IndexArrayLarge {
 private:
-    static constexpr int ITEM_COUNT = 16;
-    int indexes[ITEM_COUNT] = {0};
-    int currentIndex = 0;
+    static constexpr int8_t ITEM_COUNT = 16;
+    int8_t indexes[ITEM_COUNT] = {0};
+    int8_t currentIndex = 0;
 
 public:
     IndexArrayLarge() = default;
@@ -52,7 +52,7 @@ public:
 
     ND inline int getIndex() const {return currentIndex;}
 
-    inline void addItem(int indexIn) {indexes[currentIndex++] = indexIn;}
+    inline void addItem(int indexIn) {indexes[currentIndex++] = (int8_t)indexIn;}
 
     inline int getEnchantmentIndex(int indexIn) {
         for (int i = 0; i < currentIndex; i++)
@@ -66,8 +66,8 @@ public:
 
 class ELDataArray {
 public:
-    int totalWeight = 0;
-    int totalEnchants = 0;
+    int8_t totalWeight = 0;
+    int8_t totalEnchants = 0;
 
     IndexArrayLarge deletions = IndexArrayLarge();
     IndexArraySmall enchants = IndexArraySmall();
@@ -87,7 +87,7 @@ public:
     void addRandomItem(uint64_t *rng);
 
     /**
-     * This should only be used by a setup function!
+     * This should only be used by a setWorldSize function!
      * @param itemStackIn
      */
     void addEnchantments(ItemStack *itemStackIn);
@@ -99,13 +99,13 @@ public:
 
 class EnchantedBookEnchantsLookupTable {
 private:
-    static constexpr int VECTOR_COUNT = 48;
+    static constexpr int8_t VECTOR_COUNT = 48;
     ELDataArray* dataArrays[VECTOR_COUNT] = {nullptr};
     bool areVectorsSetup = false;
 
 public:
-    static int TOTAL_WEIGHT;
-    static int CUMULATIVE_WEIGHT_ALL[Enchantment::MAX_ENCHANTMENT_COUNT];
+    static int8_t TOTAL_WEIGHT;
+    static int8_t CUMULATIVE_WEIGHT_ALL[Enchantment::MAX_ENCHANTMENT_COUNT];
 
     EnchantedBookEnchantsLookupTable() = default;
     MU explicit EnchantedBookEnchantsLookupTable(bool allocate) {if (allocate) setup();}

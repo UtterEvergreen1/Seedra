@@ -2,7 +2,7 @@
 
 #include "LegacyCubiomes/loot/classes/Loot.hpp"
 
-namespace loot_tables {
+namespace loot {
     class ShipwreckTreasure : public Loot<ShipwreckTreasure> {
     public:
         static void setup();

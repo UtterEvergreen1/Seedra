@@ -1,12 +1,11 @@
 #pragma once
 
 #include "LegacyCubiomes/loot/classes/Loot.hpp"
+#include "LegacyCubiomes/enchants/include.hpp"
 
-#include "LegacyCubiomes/structures/structure_generation/mineshaft_generator/GenMineshaft.hpp"
+#include "LegacyCubiomes/structures/generation/mineshaft/mineshaft.hpp"
 
-using mineshaft_generator::MineshaftGenerator;
-
-namespace loot_tables {
+namespace loot {
     // TODO: make base mineshaft class that generates the rolls in the chunk like stronghold
     class AbandonedMineshaft : public Loot<AbandonedMineshaft> {
     public:
@@ -25,8 +24,7 @@ namespace loot_tables {
         items1.emplace_back(&Items::GOLDEN_APPLE,              20);
         items1.emplace_back(&Items::ENCHANTED_GOLDEN_APPLE,     1);
         items1.emplace_back(&Items::NAME_TAG,                  30);
-        items1.emplace_back(&Items::ENCHANTED_BOOK,            10);
-        // function=enchant_randomly
+        items1.emplace_back(&Items::ENCHANTED_BOOK,            10); // enchant_randomly
         items1.emplace_back(&Items::IRON_PICKAXE,               5);
         items1.emplace_back(&Items::AIR,                        5);
         lootTables.emplace_back(items1,                  1);
@@ -67,7 +65,8 @@ namespace loot_tables {
         int rollCount;
         int rollIndex;
         for(const LootTable& table : lootTables){
-            rollCount = LootTable::getInt<false>(lootTableSeed, table.min, table.max);
+            rollCount = LootTable::getInt<false>(lootTableSeed,
+                                                 table.getMin(), table.getMax());
             for (rollIndex = 0; rollIndex < rollCount; rollIndex++) {
                 ItemStack result = table.createLootRoll<false>(lootTableSeed);
 

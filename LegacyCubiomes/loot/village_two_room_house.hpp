@@ -5,7 +5,7 @@
 
 #include "LegacyCubiomes/loot/classes/Loot.hpp"
 
-namespace loot_tables {
+namespace loot {
     class VillageTwoRoomHouse : public Loot<VillageTwoRoomHouse> {
     public:
         static void setup();

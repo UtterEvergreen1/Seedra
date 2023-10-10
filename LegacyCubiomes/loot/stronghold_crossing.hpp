@@ -1,9 +1,9 @@
 #pragma once
 
 #include "LegacyCubiomes/loot/classes/StrongholdLoot.hpp"
-#include "LegacyCubiomes/enchants/enchantmentHelper.hpp"
+#include "LegacyCubiomes/enchants/include.hpp"
 
-namespace loot_tables {
+namespace loot {
     class StrongholdCrossing : public StrongholdLoot<StrongholdCrossing> {
     public:
         static void setup();
@@ -41,7 +41,7 @@ namespace loot_tables {
 
         // generate loot
         for(const LootTable& table : lootTables){
-            rollCount = LootTable::getInt<false>(lootTableSeed, table.min, table.max);
+            rollCount = LootTable::getInt<false>(lootTableSeed, table.getMin(), table.getMax());
             for (rollIndex = 0; rollIndex < rollCount; rollIndex++) {
                 ItemStack result = table.createLootRoll<false>(lootTableSeed);
 

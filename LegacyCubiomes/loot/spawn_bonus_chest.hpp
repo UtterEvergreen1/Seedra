@@ -2,7 +2,7 @@
 
 #include "LegacyCubiomes/loot/classes/Loot.hpp"
 
-namespace loot_tables {
+namespace loot {
     class SpawnBonusChest : public Loot<SpawnBonusChest> {
     private:
         static const Items::Item* LOG1_vec[4];
@@ -80,8 +80,8 @@ namespace loot_tables {
         setSeed(lootTableSeed, *lootTableSeed);
 
         // generate loot
-        for(const LootTable& table : loot_tables::SpawnBonusChest::lootTables){
-            rollCount = LootTable::getInt<false>(lootTableSeed, table.min, table.max);
+        for(const LootTable& table : loot::SpawnBonusChest::lootTables){
+            rollCount = LootTable::getInt<false>(lootTableSeed, table.getMin(), table.getMax());
             for (rollIndex = 0; rollIndex < rollCount; rollIndex++) {
                 ItemStack result = table.createLootRoll<false>(lootTableSeed);
 

@@ -5,8 +5,8 @@
 
 class EnchantmentDurability : public Enchantment {
 private:
-    static constexpr inline int LEVELS_MIN[3] = {};
-    static constexpr inline int LEVELS_MAX[3] = {};
+    static constexpr inline int8_t LEVELS_MIN[3] = {};
+    static constexpr inline int8_t LEVELS_MAX[3] = {};
 public:
 
     EnchantmentDurability(std::string name, const Rarity *rarity) :

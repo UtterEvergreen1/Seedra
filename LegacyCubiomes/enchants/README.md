@@ -1,31 +1,28 @@
+[[OUT_DATED]]
+
 To use this code,
 
 do
 
 ```c++
-#include "LegacyCubiomes/enchants/enchantmentHelper.hpp"
+#include "LegacyCubiomes/enchants/include.hpp"
 
 int main() {
-    Enchantment::registerEnchantments();
+    EnchantmentHelper::setup(CONSOLE::WIIU, LCEVERSION::AQUATIC);
     // ...
 }
 ```
-The code will not work if ``registerEnchantments`` is not called.
+Any code relating to loot gen that uses enchantments will 
+not work if ``EnchantmentHelper::setup`` is not called.
 
 these are the functions to use for enchanting:
 
 ```c++
 // EnchantmentHelper::EnchantWithLevels::
-static void apply(uint64_t *rng, ItemStack *stack, int min, int max, bool isBook, bool allowTreasure);
-static void apply(uint64_t *rng, ItemStack *stack, int level, bool isBook, bool allowTreasure);
+static void apply(uint64_t *rng, ItemStack *stack, int min, int max, bool isBook);
+static void apply(uint64_t *rng, ItemStack *stack, int level, bool isBook);
 // EnchantmentHelper::EnchantRandomly::
 static void apply(uint64_t *rng, ItemStack *stack);
 ```
-
-btw im not sure if ``EnchantRandomly`` passes a reference to rng or not.
-
-There are compiler flags for ``INCLUDE_JAVA``, and I know it works for Java completely.
-<br>
-This flag adds the ``SweepingEdge`` enchantment to the registry.
 
 rn it doesn't correctly shuffle Java loot, idk why

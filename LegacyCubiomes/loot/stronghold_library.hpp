@@ -1,10 +1,9 @@
 #pragma once
 
 #include "LegacyCubiomes/loot/classes/StrongholdLoot.hpp"
+#include "LegacyCubiomes/enchants/include.hpp"
 
-#include "LegacyCubiomes/enchants/enchantmentHelper.hpp"
-
-namespace loot_tables {
+namespace loot {
     class StrongholdLibrary : public StrongholdLoot<StrongholdLibrary> {
     public:
         static void setup();
@@ -38,8 +37,8 @@ namespace loot_tables {
         setSeed(lootTableSeed, *lootTableSeed);
 
         // generate loot
-        for(const LootTable& table : lootTables){
-            rollCount = LootTable::getInt<false>(lootTableSeed, table.min, table.max);
+        for (const LootTable& table : lootTables){
+            rollCount = LootTable::getInt<false>(lootTableSeed, table.getMin(), table.getMax());
             for (rollIndex = 0; rollIndex < rollCount; rollIndex++) {
                 ItemStack result = table.createLootRoll<false>(lootTableSeed);
 
