@@ -1,10 +1,11 @@
 #pragma once
 
-#include "rng.hpp"
 #include "LegacyCubiomes/utils/enums.hpp"
 
-struct PerlinNoise
-{
+class Generator;
+
+
+struct PerlinNoise {
     uint8_t d[512];
     double a;
     double b;
@@ -13,14 +14,14 @@ struct PerlinNoise
     double lacunarity;
 };
 
-struct OctaveNoise
-{
+
+struct OctaveNoise {
     int octcnt{};
-    PerlinNoise *octaves;
+    PerlinNoise *octaves = nullptr;
 };
 
-struct SurfaceNoise
-{
+
+struct SurfaceNoise {
     double xzScale{}, yScale{};
     double xzFactor{}, yFactor{};
     OctaveNoise octaveMin;
@@ -31,8 +32,8 @@ struct SurfaceNoise
     PerlinNoise oct[16+16+8+4+16]{};
 };
 
-struct DoublePerlinNoise
-{
+
+struct DoublePerlinNoise {
     double amplitude;
     OctaveNoise octA;
     OctaveNoise octB;
@@ -44,18 +45,17 @@ double maintainPrecision(double x);
 /// Perlin noise
 void perlinInit(PerlinNoise *noise, uint64_t *seed);
 
-double samplePerlin(const PerlinNoise *noise, double x, double y, double z,
-        double yamp, double ymin);
+double samplePerlin(const Generator* g, const PerlinNoise *noise, double x, double y, double z,
+                    double yAmp, double yMin);
 double sampleSimplex2D(const PerlinNoise *noise, double x, double y);
 
 /// Perlin Octaves
-void octaveInit(OctaveNoise *noise, uint64_t *seed, PerlinNoise *octaves,
-        int omin, int len);
+void octaveInit(OctaveNoise *noise, uint64_t *seed, PerlinNoise *octaves, int oMin, int len);
 
-MU double sampleOctave(const OctaveNoise *noise, double x, double y, double z);
+MU double sampleOctave(const Generator* g, const OctaveNoise *noise, double x, double y, double z);
 
-double sampleOctaveAmp(const OctaveNoise *noise, double x, double y, double z,
-                       double yamp, double ymin, int ydefault);
+double sampleOctaveAmp(const Generator* g, const OctaveNoise *noise, double x, double y, double z,
+                       double yAmp, double yMin, int yDefault);
 
 void initSurfaceNoise(SurfaceNoise *sn, DIMENSION dimension, uint64_t worldSeed);
 

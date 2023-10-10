@@ -1,5 +1,7 @@
 #include "mineshaft.hpp"
 
+#include "LegacyCubiomes/cubiomes/rng.hpp"
+
 namespace Placement {
 
     std::vector<Pos2D> mineshaft::getPositions(int64_t worldSeed, int xLower, int zLower, int xUpper, int zUpper) {

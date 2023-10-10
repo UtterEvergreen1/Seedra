@@ -18,25 +18,21 @@ int main(int argc, char* argv[]) {
 
     auto console = CONSOLE::PS3;
     auto version = LCEVERSION::AQUATIC;
-    auto size = WORLDSIZE::CLASSIC;
+    auto size = WORLDSIZE::LARGE;
     auto scale = BIOMESCALE::LARGE;
-    auto seed = 1185706985;
+    auto seed = 0;
 
     Biome::registerBiomes();
     EnchantmentHelper::setup(console, version);
     Generator g(console, version, size, scale);
     g.applyWorldSeed(seed);
 
+    std::cout << "writing to image" <<  std::endl;
     writeBiomesToImage(&g, dir);
 
-
-
-
     return 0;
+
 }
-
-
-
 
 /*
    uint64_t rng;

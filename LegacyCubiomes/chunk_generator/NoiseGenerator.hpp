@@ -6,6 +6,7 @@
 #include <vector>
 
 #include "LegacyCubiomes/cubiomes/generator.hpp"
+#include "LegacyCubiomes/cubiomes/rng.hpp"
 
 static int64_t lfloor(double value) {
     auto i = (int64_t) value;

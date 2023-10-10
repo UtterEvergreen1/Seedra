@@ -1,5 +1,6 @@
 #include "stronghold.hpp"
 #include "LegacyCubiomes/utils/constants.hpp"
+#include "LegacyCubiomes/cubiomes/rng.hpp"
 
 
 namespace Placement {

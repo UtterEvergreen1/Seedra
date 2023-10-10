@@ -1,5 +1,8 @@
 #include "generator.hpp"
 
+#include "rng.hpp"
+#include "noise.hpp"
+
 
 Generator::Generator(CONSOLE console, LCEVERSION version, WORLDSIZE size, BIOMESCALE scale)
         : worldSeed(0), version(version), console(console), biomeScale(scale),
@@ -289,7 +292,7 @@ int Generator::mapApproxHeight(float *y, int *ids, const SurfaceNoise *sn,
     for (j = 0; j < h; j++) {
         for (i = 0; i < w; i++) {
             int px = x + i, pz = z + j;
-            double off = sampleOctaveAmp(&sn->octaveDepth, px * 200, 10, pz * 200, 1, 0, 1);
+            double off = sampleOctaveAmp(this, &sn->octaveDepth, px * 200, 10, pz * 200, 1, 0, 1);
             off *= 65535. / 8000;
             if (off < 0) off = -0.3 * off;
             off = off * 3 - 2;
@@ -305,7 +308,7 @@ int Generator::mapApproxHeight(float *y, int *ids, const SurfaceNoise *sn,
                 int k;
                 for (k = 0; k < 2; k++) {
                     int py = ytest + k;
-                    double n0 = sampleSurfaceNoise(sn, px, py, pz);
+                    double n0 = sampleSurfaceNoise(this, sn, px, py, pz);
                     double fall = 1 - 2 * py / 32.0 + off - 0.46875;
                     fall = scale[j * w + i] * (fall + depth[j * w + i]);
                     n0 += (fall > 0 ? 4 * fall : fall);

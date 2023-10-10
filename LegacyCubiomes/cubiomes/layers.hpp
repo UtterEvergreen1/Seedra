@@ -1,12 +1,14 @@
 #pragma once
 
-#include "noise.hpp"
+#include "LegacyCubiomes/utils/enums.hpp"
+#include "processor.hpp"
 
+class Generator;
 struct PerlinNoise;
+struct SurfaceNoise;
 
 
-enum class StructureType
-{
+enum class StructureType {
     DesertPyramid,
     JungleTemple, JunglePyramid = JungleTemple,
     SwampHut,
@@ -25,8 +27,7 @@ enum class StructureType
     NONE
 };
 
-enum BiomeID
-{
+enum BiomeID {
     none = -1,
     // 0
     ocean = 0,
@@ -118,15 +119,13 @@ enum BiomeID
 };
 
 
-enum BiomeTempCategory
-{
+enum BiomeTempCategory {
     Oceanic, Warm, Lush, Cold, Freezing, Special
 };
 
 
 /* Enumeration of the layer indices in the layer stack. */
-enum LayerId
-{
+enum LayerId {
     L_CONTINENT_4096 = 0,
     L_ZOOM_2048,
     L_LAND_2048,
@@ -193,8 +192,7 @@ enum LayerId
 };
 
 
-struct Range
-{
+struct Range {
     // Cuboidal range, given by a position, size and scaling in the horizontal
     // axes, used to define a generation range. The parameters for the vertical
     // control can be left at zero when dealing with versions without 3D volume
@@ -252,7 +250,7 @@ struct Layer
     Layer *p, *p2;      // parent layers
 };
 
-// Overworld biome generator
+// Overworld biome const generator
 struct LayerStack
 {
     Layer layers[L_NUM];
@@ -264,7 +262,7 @@ struct LayerStack
     Layer *entry_256;   // [L_BIOME_256|L_BAMBOO_256]
 };
 
-// End biome generator 1.9+
+// End biome const generator 1.9+
 typedef PerlinNoise EndNoise;
 
 
@@ -284,7 +282,7 @@ void setLayerSeed(Layer *layer, uint64_t worldSeed);
 void initSurfaceNoiseOld(SurfaceNoise *rnd, uint64_t *seed,
                       double xzScale, double yScale, double xzFactor, double yFactor);
 void initSurfaceNoiseEnd(SurfaceNoise *rnd, uint64_t seed);
-double sampleSurfaceNoise(const SurfaceNoise *rnd, int x, int y, int z);
+double sampleSurfaceNoise(const Generator* g, const SurfaceNoise *rnd, int x, int y, int z);
 
 int getBiomeDepthAndScale(int id, double *depth, double *scale, int *grass);
 
@@ -292,7 +290,7 @@ int getBiomeDepthAndScale(int id, double *depth, double *scale, int *grass);
 // End (1.9+) Biome Noise Generation
 //==============================================================================
 void setEndSeed(EndNoise *en, uint64_t seed);
-MU int getSurfaceHeightEnd(int mc, uint64_t seed, int x, int z);
+MU int getSurfaceHeightEnd(const Generator* g, int mc, uint64_t seed, int x, int z);
 
 
 //==============================================================================
