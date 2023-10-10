@@ -24,8 +24,8 @@
 #define MU                      [[maybe_unused]]
 
 #define PREFETCH(PTR,RW,LOC)
-#define EXPECT_FALSE(COND)                 (__builtin_expect((COND),0))    // [[unlikely]
-#define EXPECT_TRUE(COND)                 (__builtin_expect((COND),1))    // [[likely]
+#define EXPECT_FALSE(COND)                (COND) [[unlikely]]
+#define EXPECT_TRUE(COND)                 (COND) [[likely]]
 #define ATTR(...)
 #endif
 
