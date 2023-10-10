@@ -50,22 +50,14 @@ namespace Items {
         ND inline EntityEquipSlot getArmorType() const { return armorType; }
         ND inline int8_t getCost() const { return enchantability; }
 
-
-
-
-
-
-
-
-
-        friend std::ostream &operator<<(std::ostream &out, MU const Item &item) {
+        friend std::ostream &operator<<(std::ostream &out, const Item &item) {
             out << item.getName();
             return out;
         }
 
         #ifdef INCLUDE_QT
-        friend QDebug operator<<(QDebug out, MU const Item &item) {
-                out.nospace() << item.getName();
+        friend QDebug operator<<(QDebug out, const Item &item) {
+                out.nospace() << QString::fromStdString(item.getName());
                 return out.nospace();
         }
         #endif

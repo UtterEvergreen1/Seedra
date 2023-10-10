@@ -102,7 +102,7 @@ namespace generation {
 
 
     Piece Village::generateAndAddRoadPiece(uint64_t *rand, Pos3D pos, DIRECTION facing) {
-        if (abs(startX - pos.getX()) <= 48 && abs(startZ - pos.getZ()) <= 48) return {};
+        if (abs(startX - pos.getX()) > 48 || abs(startZ - pos.getZ()) > 48) return {};
 
         BoundingBox boundingBox = road(rand, pos, facing);
 

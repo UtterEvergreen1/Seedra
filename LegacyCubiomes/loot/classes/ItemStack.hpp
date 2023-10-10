@@ -42,12 +42,12 @@ public:
     }
 
 #ifdef INCLUDE_QT
-    friend QDebug ItemStack::operator<<(QDebug out, const ItemStack &itemStack) {
+    friend QDebug operator<<(QDebug out, const ItemStack &itemStack) {
         if (itemStack.stackSize > 1) {
-            out.nospace() << *(itemStack.itemEntry) << " (" << itemStack.stackSize << ")";
+            out.nospace() << QString::fromStdString(itemStack.getItem()->getName()) << " (" << itemStack.stackSize << ")";
         }
         else {
-            out.nospace() << *(itemStack.itemEntry);
+            out.nospace() << QString::fromStdString(itemStack.getItem()->getName());
         }
         return out.nospace();
     }

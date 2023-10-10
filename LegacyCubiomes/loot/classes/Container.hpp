@@ -60,6 +60,33 @@ private:
         }
     }
 
+    friend std::ostream& operator<<(std::ostream& out, const Container &container) {
+        int contents = (int)container.inventorySlots.size();
+        out << "\n{\n";
+        for(int i = 0; i < contents; i++){
+            const ItemStack& itemStack = container.inventorySlots[i];
+            if (itemStack.stackSize > 0) {
+                out << i << ": " << itemStack << "\n";
+            }
+        }
+        out << "}";
+        return out;
+    }
+
+#ifdef INCLUDE_QT
+    friend QDebug operator<<(QDebug out, const Container &container) {
+        int contents = container.inventorySlots.size();
+        out.nospace() << "\n{\n";
+        for(int i = 0; i < contents; i++){
+            const ItemStack& itemStack = container.inventorySlots[i];
+            if (itemStack.stackSize > 0) {
+                out.nospace() << i << ": " << itemStack << "\n";
+            }
+        }
+        out.nospace() << "}";
+        return out.space();
+    }
+#endif
 
 };
 

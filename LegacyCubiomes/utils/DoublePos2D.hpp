@@ -39,7 +39,7 @@ public:
     }
 
 #ifdef INCLUDE_QT
-    friend QDebug operator<<(QDebug out, const Pos2D &pos) {
+    friend QDebug operator<<(QDebug out, const DoublePos2D &pos) {
         out.nospace() << "(" << pos.x << ", " << pos.z << ")";
         return out.space();
     }
