@@ -57,6 +57,7 @@ namespace generation {
         };
 
         static inline const PieceWeight PIECE_WEIGHTS[] = {
+                {  0, 0, 0 }, // none
                 { 40, 0, 0 },
                 {  5, 5, 0 },
                 { 20, 0, 0 },
