@@ -6,7 +6,6 @@
 #include "enchantment.hpp"
 #include "LegacyCubiomes/loot/classes/Loot.hpp"
 
-
 class IndexArraySmall {
 private:
     static constexpr int8_t ITEM_COUNT = 12;
@@ -33,7 +32,6 @@ public:
         return indexIn;
     }
 };
-
 
 class IndexArrayLarge {
 private:
@@ -62,8 +60,6 @@ public:
     }
 };
 
-
-
 class ELDataArray {
 public:
     int8_t totalWeight = 0;
@@ -90,12 +86,10 @@ public:
      * This should only be used by a setWorldSize function!
      * @param itemStackIn
      */
-    void addEnchantments(ItemStack *itemStackIn);
+    void addEnchantments(ItemStack& itemStackIn);
 
 
 };
-
-
 
 class EnchantedBookEnchantsLookupTable {
 private:
@@ -128,15 +122,4 @@ public:
     void deallocate();
 
 };
-
-
-
-
-
-
-
-
-
-
-
 

@@ -2,16 +2,13 @@
 
 #include "LegacyCubiomes/loot/classes/Loot.hpp"
 
-
 namespace loot {
     class BuriedTreasure : public Loot<BuriedTreasure> {
     public:
         static void setup();
 
         template <bool shuffle>
-        static Container getLoot(int64_t worldSeed, int chunkX, int chunkZ);
-
-        static int checkFor5Cakes(int seed);
+        MU static Container getLoot(int64_t worldSeed, int chunkX, int chunkZ);
     };
 
     void BuriedTreasure::setup() {
@@ -20,7 +17,7 @@ namespace loot {
 
         // table 1
         items1.emplace_back(&Items::HEART_OF_THE_SEA,           1);
-        lootTables.emplace_back(items1,                 1, 1);
+        lootTables.emplace_back(items1,                         1, 1);
 
         // table 2
         items2.emplace_back(&Items::PRISMARINE_CRYSTALS,        5, 1, 5);
@@ -41,53 +38,16 @@ namespace loot {
         items2.emplace_back(&Items::POTION_OF_WATER_BREATHING,  15);
         items2.emplace_back(&Items::POTION_OF_REGENERATION,     10);
         items2.emplace_back(&Items::CAKE,                       1);
-        lootTables.emplace_back(items2,                 5, 12);
+
+        lootTables.emplace_back(items2,                         5, 12);
 
         maxItemsPossible = 13;
-
     }
 
     template <bool shuffle>
     Container BuriedTreasure::getLoot(int64_t worldSeed, int chunkX, int chunkZ) {
-        int rollCount;
         RNG seed = RNG::getPopulationSeed(worldSeed, chunkX, chunkZ);
-        RNG lootTableSeed = RNG((int)seed.nextLong());
-        lootTableSeed.setSeed(lootTableSeed.getSeed());
-
-        std::vector<ItemStack> chestContents(maxItemsPossible);
-
-        //generate loot
-        int slotIndex = 0;
-        for(const LootTable& table : lootTables){
-            rollCount = LootTable::getInt<false>(lootTableSeed, table.getMin(), table.getMax());
-            for (int rollIndex = 0; rollIndex < rollCount; rollIndex++) {
-                ItemStack result = table.createLootRoll<false>(lootTableSeed);
-                chestContents[slotIndex++] = result;
-            }
-        }
-        if constexpr (shuffle){
-            chestContents.resize(slotIndex);
-            Container container = Container(27);
-            container.shuffleIntoContainer(chestContents, lootTableSeed);
-            return container;
-        }
-        else
-            return {27, chestContents};
-    }
-
-    int BuriedTreasure::checkFor5Cakes(int seed) {
-        RNG lootSeed = RNG(seed ^ 0x5deece66d);
-        lootSeed.nextInt(1);
-        int rollCount = LootTable::getInt<false>(lootSeed, 5, 12);
-        int cakeCount = 0;
-
-        for (int rollIndex = 0; rollIndex < rollCount; rollIndex++) {
-            ItemStack result = lootTables[1].createLootRoll<false>(lootSeed);
-            if (result.item->getID() == Items::ItemID::CAKE_ID) {
-                ++cakeCount;
-            }
-        }
-        return cakeCount;
+        return std::move(Loot::getLootFromLootTableSeed<shuffle>((int)seed.nextLong()));
     }
 }
 

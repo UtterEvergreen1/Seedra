@@ -1,10 +1,8 @@
 #pragma once
-
 #include "LegacyCubiomes/mc/items.hpp"
 #include "LegacyCubiomes/utils/rng.hpp"
 #include "LegacyCubiomes/enchants/enchantment.hpp"
 #include "LegacyCubiomes/enchants/enchantmentData.hpp"
-
 #include "LegacyCubiomes/loot/classes/ItemEntry.hpp"
 
 class ItemStack {

@@ -1,6 +1,5 @@
 #include "fastBookEnchantArray.hpp"
 
-
 //==============================================================================
 //                              ELDataArray
 //==============================================================================
@@ -71,9 +70,9 @@ void ELDataArray::addRandomItem(RNG& rng) {
 }
 
 
-void ELDataArray::addEnchantments(ItemStack *itemStackIn) {
+void ELDataArray::addEnchantments(ItemStack& itemStackIn) {
     for (int i = 0; i <= enchants.getIndex() - 1; i++) {
-        itemStackIn->addEnchantmentData(&data[enchants.getValueAt(i)]);
+        itemStackIn.addEnchantmentData(&data[enchants.getValueAt(i)]);
     }
 }
 
@@ -132,3 +131,4 @@ void EnchantedBookEnchantsLookupTable::deallocate() {
 
 int8_t EnchantedBookEnchantsLookupTable::TOTAL_WEIGHT = 0;
 int8_t EnchantedBookEnchantsLookupTable::CUMULATIVE_WEIGHT_ALL[Enchantment::MAX_ENCHANTMENT_COUNT] = {0};
+

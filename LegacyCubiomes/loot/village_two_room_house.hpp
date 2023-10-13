@@ -1,8 +1,5 @@
 #pragma once
 
-
-#pragma once
-
 #include "LegacyCubiomes/loot/classes/Loot.hpp"
 
 namespace loot {
@@ -20,9 +17,9 @@ namespace loot {
         items.emplace_back(&Items::WHEAT_SEEDS,         5, 2, 4);
         items.emplace_back(&Items::BEETROOT,            5, 5, 8);
         items.emplace_back(&Items::WOODEN_HOE,          1);
-        lootTables.emplace_back(items,                6, 8);
+        lootTables.emplace_back(items,                  6, 8);
 
-        maxItemsPossible = 6;
+        maxItemsPossible = 8;
     }
 }
 

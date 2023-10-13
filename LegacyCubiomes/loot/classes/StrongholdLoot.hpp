@@ -2,11 +2,8 @@
 
 #include "Loot.hpp"
 
-
 #include "LegacyCubiomes/structures/rolls/stronghold.hpp"
 #include "LegacyCubiomes/chunk_generator/Chunk.hpp"
-
-
 
 namespace loot {
     template <typename T>
@@ -41,5 +38,5 @@ namespace loot {
             return T::template getLootFromSeed<shuffle>(lootSeed);
         }
     };
-
 }
+

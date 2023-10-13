@@ -21,7 +21,7 @@ namespace loot {
         template<bool shuffle>
         static Container getLootFromSeed(RNG& seed);
         template<bool shuffle>
-        static Container getLootFromLootTableSeed(RNG& lootTableSeed);
+        static Container getLootFromLootTableSeed(uint64_t lootTableSeed);
 
         static Container getLootLegacyFromSeed(RNG& seed);
 
@@ -64,17 +64,18 @@ namespace loot {
     /// loot generation from seed
     template<typename T>
     template<bool shuffle>
-    Container Loot<T>::getLootFromLootTableSeed(RNG& lootTableSeed) {
+    Container Loot<T>::getLootFromLootTableSeed(uint64_t lootTableSeed) {
         std::vector<ItemStack> chestContents;
         chestContents.reserve(Loot<T>::maxItemsPossible);
-        lootTableSeed.setSeed(lootTableSeed.getSeed());
+        RNG random;
+        random.setSeed(lootTableSeed);
 
         // generate loot
         int rollCount, rollIndex;
         for (const LootTable &table: lootTables) {
-            rollCount = LootTable::getInt<false>(lootTableSeed, table.getMin(), table.getMax());
+            rollCount = random.nextInt(table.getMin(), table.getMax());
             for (rollIndex = 0; rollIndex < rollCount; rollIndex++) {
-                ItemStack result = table.createLootRoll<false>(lootTableSeed);
+                ItemStack result = table.createLootRoll<false>(random);
                 chestContents.push_back(result);
             }
         }
@@ -84,7 +85,7 @@ namespace loot {
         }
 
         Container container = Container(Container::CHEST_SIZE);
-        container.shuffleIntoContainer(chestContents, lootTableSeed);
+        container.shuffleIntoContainer(chestContents, random);
         return container;
 
     }
@@ -103,7 +104,7 @@ namespace loot {
 
         //generate loot
         for (const LootTable &table: lootTables) {
-            rollCount = LootTable::getInt<true>(seed, table.getMin(), table.getMax());
+            rollCount = seed.nextIntLegacy(table.getMin(), table.getMax());
             for (int rollIndex = 0; rollIndex < rollCount; rollIndex++) {
                 ItemStack result = table.createLootRoll<true>(seed);
                 chestContents.setMoveInventorySlotContents(

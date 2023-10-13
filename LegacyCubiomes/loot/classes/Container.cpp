@@ -44,13 +44,13 @@ void Container::shuffleIntoContainer(std::vector<ItemStack>& items, RNG& rng) {
 
     numSlots -= items.size();
     while(numSlots > 0 && !stackableItems.empty()) {
-        int itemIndex = LootTable::getInt<false>(rngState, 0, (int)stackableItems.size() - 1);
+        int itemIndex = rngState.nextInt(0, (int)stackableItems.size() - 1);
         auto iter = std::next(stackableItems.begin(), itemIndex);
         ItemStack originalStack = std::move(*iter);
 
         stackableItems.erase(iter);
 
-        int splitAmount = LootTable::getInt<false>(rngState, 1, originalStack.stackSize >> 1);
+        int splitAmount = rngState.nextInt(1, originalStack.stackSize >> 1);
         ItemStack splittedStack = originalStack.splitStack(splitAmount);
 
         if (originalStack.stackSize == 0 || rngState.next(1) == 0)

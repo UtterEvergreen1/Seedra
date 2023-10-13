@@ -3,7 +3,7 @@
 
 
 namespace structure_rolls {
-
+    ///TODO: MAKE SURE IT WORKS!!!
     void Mineshaft::generateStructure(generation::Mineshaft* mineshaftGenerator, ChunkPrimer *chunk, RNG& rng,
                                       int chunkX, int chunkZ) {
         for (int pieceIndex = 0; pieceIndex < mineshaftGenerator->pieceArraySize; ++pieceIndex) {
@@ -63,9 +63,9 @@ namespace structure_rolls {
                                 placeCobWeb(chunk, chunkBoundingBox, piece, rng, 0, currentDepth + 2);
                                 placeCobWeb(chunk, chunkBoundingBox, piece, rng, 2, currentDepth + 2);
                             }
-                            if (chunkX == 1 && chunkZ == -18) {
+                            /*if (chunkX == 1 && chunkZ == -18) {
                                 std::cout << rng.nextLong() << std::endl;
-                            }
+                            }*/
                             if (rng.nextInt(100) == 0) {
                                 generateChest(chunk, chunkBoundingBox, piece, rng, 2, 0, currentDepth - 1);
                             }

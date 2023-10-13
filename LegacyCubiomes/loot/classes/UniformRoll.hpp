@@ -1,6 +1,5 @@
 #pragma once
 
-
 class UniformRoll {
 private:
     /// holds both the min and max.
@@ -11,3 +10,4 @@ public:
     ND inline uint8_t getMin() const {return val >> 4;}
     ND inline uint8_t getMax() const {return val & 15;}
 };
+

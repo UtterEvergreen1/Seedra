@@ -12,17 +12,16 @@ namespace loot {
         std::vector<ItemEntry> items1;
         std::vector<ItemEntry> items2;
 
-        items1.emplace_back(&Items::NAUTILUS_CORE,  1); // TREASURE MAP in java?
-        lootTables.emplace_back(items1,     1);
+        items1.emplace_back(&Items::TREASURE_MAP,       1);
+        lootTables.emplace_back(items1,                 1);
 
-        items2.emplace_back(&Items::COMPASS,     1);
-        items2.emplace_back(&Items::MAP,         1);
-        items2.emplace_back(&Items::CLOCK,       1);
-        items2.emplace_back(&Items::PAPER,      20, 1, 10);
-        items2.emplace_back(&Items::FEATHER,    10, 1,  5);
-        items2.emplace_back(&Items::BOOK,        5, 1,  5);
-        lootTables.emplace_back(items2,   3);
-
-
+        items2.emplace_back(&Items::COMPASS,            1);
+        items2.emplace_back(&Items::MAP,                1);
+        items2.emplace_back(&Items::CLOCK,              1);
+        items2.emplace_back(&Items::PAPER,              20, 1, 10);
+        items2.emplace_back(&Items::FEATHER,            10, 1, 5);
+        items2.emplace_back(&Items::BOOK,               5, 1, 5);
+        lootTables.emplace_back(items2,                 3);
     }
 }
+

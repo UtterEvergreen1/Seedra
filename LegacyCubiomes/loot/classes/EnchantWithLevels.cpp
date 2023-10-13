@@ -1,0 +1,130 @@
+#include "EnchantWithLevels.hpp"
+
+/* Initializers */
+EnchantWithLevels::EnchantWithLevels(UniformRoll roll) : randomLevel(roll) {}
+
+EnchantWithLevelsBook::EnchantWithLevelsBook(UniformRoll levelRange) : EnchantWithLevels(levelRange) {}
+EnchantWithLevelsBook::EnchantWithLevelsBook(int level) : EnchantWithLevels(UniformRoll(level, level)) {}
+EnchantWithLevelsItem::EnchantWithLevelsItem(UniformRoll levelRange) : EnchantWithLevels(levelRange) {}
+EnchantWithLevelsItem::EnchantWithLevelsItem(int level) : EnchantWithLevels(UniformRoll(level, level)) {}
+
+/* apply functions */
+void EnchantWithLevelsBook::apply(ItemStack& itemStack, RNG& random) {
+    int level = random.nextInt(this->randomLevel.getMin(), this->randomLevel.getMax());
+    ELDataArray* enchantmentVector = buildEnchantmentList(itemStack, random, level);
+    enchantmentVector->addEnchantments(itemStack);
+}
+
+void EnchantWithLevelsItem::apply(ItemStack& itemStack, RNG& random) {
+    int level = random.nextInt(this->randomLevel.getMin(), this->randomLevel.getMax());
+    addRandomEnchantment(random, itemStack, level);
+}
+
+/* other functions */
+ELDataArray* EnchantWithLevelsBook::buildEnchantmentList(const ItemStack& itemStackIn, RNG& rng, int level) {
+
+    const Items::Item* item = itemStackIn.getItem();
+    int cost = (item->getCost() >> 2) + 1;
+
+    level += 1 + rng.nextInt(cost) + rng.nextInt(cost);
+    float f = (rng.nextFloat() + rng.nextFloat() - 1.0F) * 0.15F;
+    level = MathHelper::clamp((int)std::round((float)level + (float)level * f), 1, 0x7fffffff);
+
+    ELDataArray* enchants = EnchantmentHelper::BOOK_LEVEL_TABLE.get(level);
+    enchants->addRandomItem(rng);
+
+    while (rng.nextInt(50) <= level) {
+        EnchantmentData* back = enchants->getLastEnchantmentAdded();
+
+        for (int enchIndex = 0; enchIndex < enchants->totalEnchants; enchIndex++) {
+            if (!back->obj->canApplyTogether(enchants->data[enchIndex].obj)) {
+                // std::cout << enchants->data[enchIndex].obj->name << " removed" << std::endl;
+                for (int i = 0; i < enchants->deletions.getIndex(); i++)
+                    if (enchIndex == enchants->deletions.getValueAt(i))
+                        goto END;
+                enchants->deletions.addItem(enchIndex);
+            }
+            END:;
+        }
+
+        enchants->addRandomItem(rng);
+        level /= 2;
+    }
+    return enchants;
+}
+
+
+EnchDataVec_t EnchantWithLevelsItem::buildEnchantmentList(const ItemStack &itemStackIn, RNG &rng, int level) {
+    std::vector<EnchantmentData> list;
+    list.reserve(MAX_ENCHANT_LIST_SIZE);
+
+    const Items::Item* item = itemStackIn.getItem();
+    int i = static_cast<int>((unsigned char)item->getCost());
+
+    if (i == 0)
+        return list;
+
+    level = level + 1 + rng.nextInt(i / 4 + 1) + rng.nextInt(i / 4 + 1);
+    float f = (rng.nextFloat() + rng.nextFloat() - 1.0F) * 0.15F;
+    level = MathHelper::clamp((int)std::round((float)level + (float)level * f), 1, std::numeric_limits<int>::max()); // 0x7fffffff
+
+    std::cout << "Level: " << level << std::endl;
+
+    std::vector<EnchantmentData> list1 = getEnchantmentDataList(level, itemStackIn);
+
+    if (!list1.empty()) {
+        EnchantmentData data = WeightedRandom::getRandomItem(rng, list1);
+        list.push_back(data);
+        while (rng.nextInt(50) <= level) {
+            removeIncompatible(list1, list.back());
+            if (list1.empty())
+                break;
+            data = WeightedRandom::getRandomItem(rng, list1);
+            list.push_back(data);
+            level /= 2;
+        }
+    }
+    return list;
+}
+
+EnchDataVec_t EnchantWithLevelsItem::getEnchantmentDataList(int enchantmentLevelIn, const ItemStack& ItemStackIn) {
+    EnchDataVec_t list;
+    bool added;
+
+    for (Enchantment* pointer : Enchantment::REGISTRY.getRegistry()) {
+        added = false;
+
+        if (!pointer->type->canEnchantItem(ItemStackIn.getItem())) {
+            continue;
+        }
+
+        for (int8_t i = pointer->maxLevel; i > 0; --i) { // maxLevel to minLevel - 1 (always 0)
+
+            if (enchantmentLevelIn >= pointer->getMinCost(i) && enchantmentLevelIn <= pointer->getMaxCost(i)) {
+                list.emplace_back(pointer, i);
+                added = true;
+                break;
+            }
+        }
+
+        if (!added) {
+            std::cout << "failed to add " << pointer->name << std::endl;
+        }
+    }
+
+    return list;
+}
+
+void EnchantWithLevelsItem::removeIncompatible(EnchDataVec_t& enchDataList, EnchantmentData enchData) {
+    std::cout << "REMOVE_INCOMPATIBLE" << std::endl;
+
+    for (auto it = enchDataList.begin(); it != enchDataList.end(); ) {
+        if (!enchData.obj->canApplyTogether(it->obj)) {
+            std::cout << it->obj->name << " removed" << std::endl;
+            it = enchDataList.erase(it);
+        } else {
+            ++it;
+        }
+    }
+}
+

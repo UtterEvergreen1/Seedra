@@ -371,7 +371,7 @@ Pos2D Generator::getSpawnBlock() const {
     int id = -1, grass = 0;
     for (int i = 0; i < 1000; i++) {
         mapApproxHeight(&y, &id, &sn, spawn.x >> 2, spawn.z >> 2, 1, 1);
-        getBiomeDepthAndScale(id, 0, 0, &grass);
+        getBiomeDepthAndScale(id, nullptr, nullptr, &grass);
 
         if (grass > 0 && y >= (float)grass)
             break;

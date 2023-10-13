@@ -4,7 +4,7 @@
 #include <iostream>
 
 ///=============================================================================
-///                    C implementation of Java Random
+///                    C++ implementation of Java Random
 ///=============================================================================
 
 
@@ -15,6 +15,14 @@ private:
 public:
     RNG() : seed(0) {}
     explicit RNG(uint64_t seed) : seed(seed) {}
+
+    bool operator==(const RNG &other) const {
+        return seed == other.seed;
+    }
+
+    bool operator==(const int &rngValue) const {
+        return seed == rngValue;
+    }
 
     ND RNG copy() const {
         RNG rng = RNG(seed);
@@ -97,8 +105,11 @@ public:
     }
 
     inline int nextInt(int minimum, int maximum) {
-        int num = minimum >= maximum ? minimum : nextInt(maximum - minimum + 1) + minimum;
-        return num;
+        return minimum >= maximum ? minimum : nextInt(maximum - minimum + 1) + minimum;
+    }
+
+    inline int nextIntLegacy(int minimum, int maximum) {
+        return nextInt(maximum - minimum + 1) + minimum;
     }
 
     inline uint64_t nextLong() {
@@ -142,7 +153,5 @@ public:
         seed = seed * m + a;
         seed &= 0xFFFFFFFFFFFF;
     }
-
-
 };
 
