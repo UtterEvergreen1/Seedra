@@ -26,7 +26,7 @@ public:
 
     // don't mark explicit
     Container(std::vector<ItemStack>&& items) : inventorySlots(std::move(items)) {}
-    explicit Container(int slots) : numSlots(slots), inventorySlots(slots) {}
+    explicit Container(int numSlots) : numSlots(numSlots), inventorySlots(numSlots) {}
 
     Container(int size, const std::vector<ItemStack>& inventorySlots) :
             numSlots(size), inventorySlots(inventorySlots) {}
@@ -40,8 +40,7 @@ public:
     friend QDebug operator<<(QDebug out, const Container &container);
 #endif
 
-    inline void setInventorySlotContents(int index, const ItemStack& stack){inventorySlots[index] = stack;}
-    inline void setMoveInventorySlotContents(int index, ItemStack&& stack) {inventorySlots[index] = std::move(stack);}
+    inline void setInventorySlotContents(int index, ItemStack&& stack) { inventorySlots[index] = std::move(stack);}
     inline void placeIntoContainer(std::vector<ItemStack>& items) {inventorySlots = items;}
 
 

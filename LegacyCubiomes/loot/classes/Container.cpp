@@ -74,7 +74,7 @@ void Container::shuffleIntoContainer(std::vector<ItemStack>& items, RNG& rng) {
         if (itemStack.stackSize > 0) {
             int itemIndex = slotOrder.back();
             slotOrder.pop_back();
-            setMoveInventorySlotContents(itemIndex, std::move(itemStack));
+            setInventorySlotContents(itemIndex, std::move(itemStack));
         }
         else {
             slotOrder.pop_back();

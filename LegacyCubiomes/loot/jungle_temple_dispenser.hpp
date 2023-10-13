@@ -55,7 +55,7 @@ namespace loot {
             rollCount = lootTableSeed.nextIntLegacy(table.getMin(), table.getMax());
             for (int rollIndex = 0; rollIndex < rollCount; rollIndex++) {
                 ItemStack result = table.createLootRoll<true>(lootTableSeed);
-                chestContents.setInventorySlotContents(lootTableSeed.nextInt(9), result);
+                chestContents.setInventorySlotContents(lootTableSeed.nextInt(9), std::move(result));
             }
         }
         return chestContents;
