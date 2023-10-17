@@ -4,7 +4,7 @@
 
 namespace Placement {
 
-    std::vector<Pos2D> mineshaft::getPositions(int64_t worldSeed, int xLower, int zLower, int xUpper, int zUpper) {
+    std::vector<Pos2D> Mineshaft::getPositions(int64_t worldSeed, int xLower, int zLower, int xUpper, int zUpper) {
         RNG rng;
         Pos2DVec_t positions;
         rng.setSeed(worldSeed);

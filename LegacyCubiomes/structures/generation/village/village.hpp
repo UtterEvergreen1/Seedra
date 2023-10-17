@@ -1,6 +1,7 @@
 #pragma once
 
 #include <vector>
+#include <map>
 #include "LegacyCubiomes/building_blocks/Piece.hpp"
 #include "LegacyCubiomes/cubiomes/layers.hpp"
 #include "LegacyCubiomes/cubiomes/generator.hpp"
@@ -35,6 +36,23 @@ namespace generation {
             Road,
         };
 
+        std::map<int, std::string> pieceTypeNames = {
+            {NONE,          "NONE        "},
+            {House4Garden,  "House4Garden"},
+            {Church,        "Church      "},
+            {House1,        "House1      "},
+            {WoodHut,       "WoodHut     "},
+            {Hall,          "Hall        "},
+            {Field1,        "Field1      "},
+            {Field2,        "Field2      "},
+            {House2,        "House2      "},
+            {House3,        "House3      "},
+            {Torch,         "Torch       "},
+            {Start,         "Start       "},
+            {Road,          "Road        "},
+        };
+
+    private:
         struct PieceWeight {
             int pieceType;
             int weight;
@@ -64,18 +82,18 @@ namespace generation {
                     : pieceType(pieceType), weight(weight), maxPlaceCount(maxPlaceCount), amountPlaced(amountPlaced) {}
         };
 
-        bool isZombieInfested{};
-
         std::vector<FinalPieceWeight> currentVillagePW;
+        int previousPiece{};
+        int pendingRoadArray[1024]{};
+        int pendingRoadArraySize{};
         const Generator* g;
+
+    public:
+        bool isZombieInfested{};
         GenerationStep generationStep = GenerationStep::FULL;
 
-        int previousPiece{};
-        Piece pieces[1024];
-        int piecesSize{};
-
-        int pendingRoads[1024]{};
-        int pendingRoadsSize{};
+        Piece pieceArray[1024];
+        int pieceArraySize{};
 
         Piece* blackSmithPiece{};
 
@@ -84,7 +102,7 @@ namespace generation {
 
         bool hasMoreThanTwoComponents{};
 
-        Village(const Generator* generator);
+        explicit Village(const Generator* generator);
 
         void generate(int chunkX, int chunkZ);
 
@@ -92,6 +110,7 @@ namespace generation {
             generate(chunk.x, chunk.z);
         }
 
+    private:
         void setupPieces(RNG& rng);
         int updatePieceWeight();
         static BoundingBox createPieceBoundingBox(int pieceType, Pos3D pos, DIRECTION direction);
@@ -100,8 +119,8 @@ namespace generation {
         BoundingBox road(RNG& rng, Pos3D pos, DIRECTION facing);
         void additionalRngRolls(RNG& rng, const Piece& p);
         Piece generateComponent(RNG& rng, Pos3D pos, DIRECTION facing);
-        Piece generateAndAddRoadPiece(RNG& rng, Pos3D pos, DIRECTION facing);
-        Piece generateAndAddComponent(RNG& rng, Pos3D pos, DIRECTION facing);
+        Piece genAndAddRoadPiece(RNG& rng, Pos3D pos, DIRECTION facing);
+        Piece genAndAddComponent(RNG& rand, Pos3D pos, DIRECTION facing);
         void addPiece(Piece& piece);
         bool hasCollisionPiece(const BoundingBox& boundingBox);
     };

@@ -6,12 +6,14 @@
 #include "LegacyCubiomes/enchants/fastBookEnchantArray.hpp"
 #include "LegacyCubiomes/enchants/enchantmentHelper.hpp"
 
+
 class EnchantWithLevels : public LootFunction {
 protected:
     UniformRoll randomLevel;
 
     explicit EnchantWithLevels(UniformRoll roll);
 };
+
 
 class EnchantWithLevelsBook : public EnchantWithLevels {
 public:
@@ -20,9 +22,11 @@ public:
     explicit EnchantWithLevelsBook(int level);
 
     void apply(ItemStack& itemStack, RNG& random) final;
+
 private:
     static ELDataArray* buildEnchantmentList(const ItemStack& itemStackIn, RNG& rng, int level);
 };
+
 
 class EnchantWithLevelsItem : public EnchantWithLevels {
 public:
@@ -31,6 +35,7 @@ public:
     explicit EnchantWithLevelsItem(int level);
 
     void apply(ItemStack &itemStack, RNG &random) final;
+
 private:
     static inline void addRandomEnchantment(RNG &rng, ItemStack &itemStackIn, int level) {
         EnchDataVec_t enchantmentList = buildEnchantmentList(itemStackIn, rng, level);

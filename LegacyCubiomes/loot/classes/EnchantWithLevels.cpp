@@ -8,6 +8,7 @@ EnchantWithLevelsBook::EnchantWithLevelsBook(int level) : EnchantWithLevels(Unif
 EnchantWithLevelsItem::EnchantWithLevelsItem(UniformRoll levelRange) : EnchantWithLevels(levelRange) {}
 EnchantWithLevelsItem::EnchantWithLevelsItem(int level) : EnchantWithLevels(UniformRoll(level, level)) {}
 
+
 /* apply functions */
 void EnchantWithLevelsBook::apply(ItemStack& itemStack, RNG& random) {
     int level = random.nextInt(this->randomLevel.getMin(), this->randomLevel.getMax());
@@ -19,6 +20,7 @@ void EnchantWithLevelsItem::apply(ItemStack& itemStack, RNG& random) {
     int level = random.nextInt(this->randomLevel.getMin(), this->randomLevel.getMax());
     addRandomEnchantment(random, itemStack, level);
 }
+
 
 /* other functions */
 ELDataArray* EnchantWithLevelsBook::buildEnchantmentList(const ItemStack& itemStackIn, RNG& rng, int level) {
@@ -87,6 +89,7 @@ EnchDataVec_t EnchantWithLevelsItem::buildEnchantmentList(const ItemStack &itemS
     return list;
 }
 
+
 EnchDataVec_t EnchantWithLevelsItem::getEnchantmentDataList(int enchantmentLevelIn, const ItemStack& ItemStackIn) {
     EnchDataVec_t list;
     bool added;
@@ -108,19 +111,20 @@ EnchDataVec_t EnchantWithLevelsItem::getEnchantmentDataList(int enchantmentLevel
         }
 
         if (!added) {
-            std::cout << "failed to add " << pointer->name << std::endl;
+            // std::cout << "failed to add " << pointer->name << std::endl;
         }
     }
 
     return list;
 }
 
+
 void EnchantWithLevelsItem::removeIncompatible(EnchDataVec_t& enchDataList, EnchantmentData enchData) {
-    std::cout << "REMOVE_INCOMPATIBLE" << std::endl;
+    // std::cout << "REMOVE_INCOMPATIBLE" << std::endl;
 
     for (auto it = enchDataList.begin(); it != enchDataList.end(); ) {
         if (!enchData.obj->canApplyTogether(it->obj)) {
-            std::cout << it->obj->name << " removed" << std::endl;
+            // std::cout << it->obj->name << " removed" << std::endl;
             it = enchDataList.erase(it);
         } else {
             ++it;

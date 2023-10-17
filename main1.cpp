@@ -6,6 +6,7 @@
 #include "LegacyCubiomes/enchants/include.hpp"
 #include "LegacyCubiomes/loot/include.hpp"
 #include "LegacyCubiomes/utils/include.hpp"
+#include "LegacyCubiomes/cubiomes/include.hpp"
 
 #include "LegacyCubiomes/cubiomes/generator.hpp"
 #include "LegacyCubiomes/chunk_generator/biome.hpp"
@@ -23,16 +24,55 @@ int main(int argc, char* argv[]) {
     auto console = CONSOLE::WIIU;
     auto version = LCEVERSION::ELYTRA;
     EnchantmentHelper::setup(console, version);
-    Generator g(console, version, 117, WORLDSIZE::CLASSIC, BIOMESCALE::SMALL);
+    Generator g(console, version, 119, WORLDSIZE::CLASSIC, BIOMESCALE::SMALL);
 
-    loot::StrongholdLibrary::setup();
-    RNG state = RNG(216765366);
-    Container con = loot::StrongholdLibrary::getLootFromLootTableSeed<false>(state);
-    std::cout << con << std::endl;
+    std::string path = R"(C:\Users\jerrin\CLionProjects\LegacyCubiomes\)";
+    Picture pic = Picture(&g, path);
+    pic.drawBiomes();
 
-    g.applyWorldSeed(5887763652726489932);
-    auto pos = Placement::Stronghold::getWorldPosition(g);
-    std::cout << pos << std::endl;
+    // pic.drawBox(0, 0, 64, 64, 128, 255, 128);
+
+
+
+    std::cout << "Village Positions" << std::endl;
+    auto posVec = Placement::Village<false>::getAllPositions(&g);
+
+    for (auto pos : posVec) {
+
+        auto village = generation::Village(&g);
+        village.generate(pos.toChunkPos());
+
+        std::cout << "Village Pieces " << pos << std::endl;
+        for (int i = 0; i < village.pieceArraySize; i++) {
+            Piece* piece = &village.pieceArray[i];
+
+            std::cout << village.pieceTypeNames.at(piece->type) << " ";
+            std::cout << *piece << std::endl;
+        }
+
+        std::cout << std::endl;
+        std::cout << "Has Blacksmith: " << (village.blackSmithPiece != nullptr) << std::endl;
+
+        for (int i = 0; i < village.pieceArraySize; i++) {
+            Piece* piece = &village.pieceArray[i];
+            bool status =
+                    pic.drawBox(108 + piece->minX / 4, 108 + piece->minZ / 4,
+                                108 + piece->maxX / 4, 108 + piece->maxZ / 4,
+                                0, 0, 0);
+            if (!status)
+                std::cout << "Failed to draw" << *piece << std::endl;
+        }
+    }
+
+    pic.save();
+
+
+
+
+
+    // g.applyWorldSeed(5887763652726489932);
+    // auto pos = Placement::Stronghold::getWorldPosition(g);
+    // std::cout << pos << std::endl;
 }
 
 /*

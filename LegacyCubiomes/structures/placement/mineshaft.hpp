@@ -6,7 +6,7 @@
 
 namespace Placement {
 
-    class mineshaft {
+    class Mineshaft {
     public:
         /**
          * Gets all mineshafts within a range

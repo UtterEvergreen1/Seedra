@@ -14,7 +14,7 @@ namespace structure_rolls {
         static void fillWithRandomizedBlocks(const BoundingBox &chunkBoundingBox, const Piece &piece,
                                              int minX, int minY, int minZ, int maxX, int maxY, int maxZ,
                                              RNG& rng, ChunkPrimer *chunk);
-        static void generateChest(const BoundingBox &chunkBoundingBox, const Piece &piece, RNG& rng, int x, int y, int z);
+        static void generateChest(const BoundingBox &chunkBB, const Piece &piece, RNG& rng, int x, int y, int z);
     };
 
 }

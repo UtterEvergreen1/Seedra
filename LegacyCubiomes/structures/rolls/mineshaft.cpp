@@ -128,25 +128,25 @@ namespace structure_rolls {
 
 
     // TODO: generate legacy chest where the loot is generated with the seed and doesn't use the loot table seed
-    void Mineshaft::generateChest(ChunkPrimer* chunk, const BoundingBox &chunkBoundingBox, const Piece &piece,
+    void Mineshaft::generateChest(ChunkPrimer* chunk, const BoundingBox &chunkBB, const Piece &piece,
                                   RNG& rng, int x, int y, int z) {
         int xPos = piece.getWorldX(x, z);
         int yPos = piece.getWorldY(y);
         int zPos = piece.getWorldZ(x, z);
-        if (intersectsWithBlock(chunkBoundingBox, xPos, yPos, zPos) &&
-        (chunk == nullptr || chunk->getBlock(xPos & 15, yPos - 1, zPos & 15) != 0)) {
+        if (intersectsWithBlock(chunkBB, xPos, yPos, zPos) &&
+            (chunk == nullptr || chunk->getBlock(xPos & 15, yPos - 1, zPos & 15) != 0)) {
             rng.advance(); // advance rng for next boolean roll for rail shape
             mineshaftChests.emplace_back(Pos3D(xPos, yPos, zPos), rng.nextLong());
         }
     }
 
 
-    void Mineshaft::placeCobWeb(ChunkPrimer* chunk, const BoundingBox &chunkBoundingBox, const Piece &piece,
-                                RNG& rng, int x, int z) {
+    void Mineshaft::placeCobWeb(ChunkPrimer* chunk, const BoundingBox &chunkBB, const Piece &piece, RNG& rng,
+                                int x, int z) {
         int xPos = piece.getWorldX(x, z);
         int yPos = piece.getWorldY(2);
         int zPos = piece.getWorldZ(x, z);
-        if (intersectsWithBlock(chunkBoundingBox, xPos, yPos, zPos) && chunk->getSkyLight(xPos, yPos, zPos) < 8) {
+        if (intersectsWithBlock(chunkBB, xPos, yPos, zPos) && chunk->getSkyLight(xPos, yPos, zPos) < 8) {
             rng.advance(); // advance rng
         }
     }
