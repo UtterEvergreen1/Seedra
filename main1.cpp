@@ -27,8 +27,7 @@ int main(int argc, char* argv[]) {
     Generator g(console, version, 119, WORLDSIZE::CLASSIC, BIOMESCALE::SMALL);
 
     std::string path = R"(C:\Users\jerrin\CLionProjects\LegacyCubiomes\)";
-    Picture pic = Picture(&g, path);
-    pic.drawBiomes();
+    // pic.drawBiomes();
 
     // pic.drawBox(0, 0, 64, 64, 128, 255, 128);
 
@@ -36,36 +35,114 @@ int main(int argc, char* argv[]) {
 
     std::cout << "Village Positions" << std::endl;
     auto posVec = Placement::Village<false>::getAllPositions(&g);
+    Piece* piece;
 
+    int count = -1;
     for (auto pos : posVec) {
-
+        count++;
         auto village = generation::Village(&g);
         village.generate(pos.toChunkPos());
 
+        int minX = INT32_MAX;
+        int maxX = INT32_MIN;
+        int minZ = INT32_MAX;
+        int maxZ = INT32_MIN;
+
         std::cout << "Village Pieces " << pos << std::endl;
         for (int i = 0; i < village.pieceArraySize; i++) {
-            Piece* piece = &village.pieceArray[i];
-
-            std::cout << village.pieceTypeNames.at(piece->type) << " ";
-            std::cout << *piece << std::endl;
+            piece = &village.pieceArray[i];
+            if (piece->minX < minX) minX = piece->minX;
+            if (piece->minZ < minZ) minZ = piece->minZ;
+            if (piece->maxX > maxX) maxX = piece->maxX;
+            if (piece->maxZ > maxZ) maxZ = piece->maxZ;
+        }
+        piece = village.blackSmithPiece;
+        if (piece != nullptr) {
+            if (piece->minX < minX) minX = piece->minX;
+            if (piece->minZ < minZ) minZ = piece->minZ;
+            if (piece->maxX > maxX) maxX = piece->maxX;
+            if (piece->maxZ > maxZ) maxZ = piece->maxZ;
         }
 
-        std::cout << std::endl;
-        std::cout << "Has Blacksmith: " << (village.blackSmithPiece != nullptr) << std::endl;
 
+        int width = maxX - minX;
+        int height = maxZ - minZ;
+        int size = std::max(width, height);
+
+        Picture picture(size);
+        std::cout << "Size " << size << std::endl;
+
+        std::vector<unsigned char> rgb = {0, 0, 0};
         for (int i = 0; i < village.pieceArraySize; i++) {
-            Piece* piece = &village.pieceArray[i];
-            bool status =
-                    pic.drawBox(108 + piece->minX / 4, 108 + piece->minZ / 4,
-                                108 + piece->maxX / 4, 108 + piece->maxZ / 4,
-                                0, 0, 0);
+            piece = &village.pieceArray[i];
+            switch (piece->type) {
+                using namespace generation;
+                case Village::Church:
+                    rgb = {255, 0, 0};  // Bright Red
+                    break;
+                case Village::WoodHut:
+                    rgb = {205, 0, 0};  // Medium Red
+                    break;
+                case Village::Hall:
+                    rgb = {155, 0, 0};  // Dark Red
+                    break;
+                case Village::Field1:
+                    rgb = {0, 255, 0};  // Bright Green
+                    break;
+                case Village::Field2:
+                    rgb = {0, 205, 0};  // Medium Green
+                    break;
+                case Village::House1:
+                    rgb = {165, 42, 42};  // Brown
+                    break;
+                case Village::House2:
+                    rgb = {0, 0, 255};  // Blacksmith
+                    break;
+                case Village::House3:
+                    rgb = {210, 105, 30};  // Chocolate
+                    break;
+                case Village::House4Garden:
+                    rgb = {205, 133, 63};  // Peru
+                    break;
+                case Village::Torch:
+                    rgb = {255, 255, 0};  // Yellow
+                    break;
+                case Village::Start:
+                    rgb = {128, 0, 255};  // Bright Purple
+                    break;
+                case Village::Road:
+                    rgb = {105, 105, 105};  // Dim Gray
+                    break;
+            }
+
+            bool status = picture.drawBox(
+                piece->minX - minX,
+                piece->minZ - minZ,
+                piece->maxX - minX,
+                piece->maxZ - minZ,
+                rgb[0], rgb[1], rgb[2]
+            );
             if (!status)
-                std::cout << "Failed to draw" << *piece << std::endl;
+                std::cout << "failed to draw box" << std::endl;
         }
+
+        piece = village.blackSmithPiece;
+        if (piece != nullptr) {
+            bool status = picture.drawBox(
+                    piece->minX - minX,
+                    piece->minZ - minZ,
+                    piece->maxX - minX,
+                    piece->maxZ - minZ,
+                    0, 0, 255
+            );
+            if (!status)
+                std::cout << "failed to draw box" << std::endl;
+        }
+
+        picture.saveWithName("village" + std::to_string(count) + "_" +
+        std::to_string(pos.x) + "_" + std::to_string(pos.z) + ".png", path);
+
     }
-
-    pic.save();
-
 
 
 

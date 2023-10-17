@@ -25,52 +25,40 @@ std::string getBiomeImageFileNameFromGenerator(Generator* g, const std::string& 
  * @param g generator object
  * @param filename DIRECTORY to place the file in
  */
- int lol = 0;
+int lol = 0;
+
 
 
 class Picture {
-private:
+public:
     static constexpr int RGB_SIZE = 3;
     uint32_t width = 0;
     uint32_t height = 0;
-    std::string filename;
-    Generator *g;
-
-public:
     /**
      * goes left to right, top to bottom I think
      */
     uint8_t* data;
 
-    Picture(Generator *g, int width, int height, const std::string& directory)
-        : g(g), width(width), height(height) {
+    Picture(int width, int height) : width(width), height(height) {
         data = new uint8_t[width * height * RGB_SIZE];
-        filename = getBiomeImageFileNameFromGenerator(g, directory);
+        std::memset(data, 0, width * height * RGB_SIZE);
     }
 
-    explicit Picture(Generator *g, int size, const std::string& directory)
-        : Picture(g, size, size, directory) {}
+    explicit Picture(int size) : Picture(size, size) {}
 
-    Picture(Generator *g, const std::string& directory) : g(g) {
-        int size = g->getWorldCoordinateBounds() >> 1;
-        width = size;
-        height = size;
-        data = new uint8_t[width * height * RGB_SIZE];
-        filename = getBiomeImageFileNameFromGenerator(g, directory);
-    }
 
     ND uint32_t getWidth() const { return width; }
     ND uint32_t getHeight() const { return height; }
-    ND uint32_t getIndex(uint32_t x, uint32_t y) const { return x + y * height; }
+    ND uint32_t inline getIndex(uint32_t x, uint32_t y) const { return x + y * height; }
 
     MU void drawPixel(unsigned char* rgb, uint32_t x, uint32_t y) const {
         uint32_t index = getIndex(x, y);
         std::memcpy(&data[index * 3], rgb, 3);
     }
 
-    bool drawBox(uint32_t startX, uint32_t startY,
-                    uint32_t endX, uint32_t endY,
-                    uint8_t red, uint8_t green, uint8_t blue) const {
+    ND bool drawBox(uint32_t startX, uint32_t startY,
+                 uint32_t endX, uint32_t endY,
+                 uint8_t red, uint8_t green, uint8_t blue) const {
 
         if (startX > width || startY > height) return false;
         if (endX > width || endY > height) return false;
@@ -92,6 +80,56 @@ public:
         return true;
     }
 
+    void fillColor(uint8_t red, uint8_t green, uint8_t blue) const {
+        for (uint32_t x = 0; x < width; x++) {
+            uint32_t index = getIndex(x, 0) * RGB_SIZE;
+            data[index] = red;
+            data[index + 1] = green;
+            data[index + 2] = blue;
+        }
+
+        uint32_t rowSize = (width) * RGB_SIZE;
+        for (uint32_t y = 0; y < height; y++) {
+            uint32_t index = getIndex(0, y) * RGB_SIZE;
+            std::memcpy(&data[index], &data[0], rowSize);
+        }
+    }
+
+
+    void saveWithName(std::string filename, const std::string& directory) const {
+        filename = directory + filename;
+        stbi_write_png(filename.c_str(), (int)width,
+            (int)height, RGB_SIZE, data, (int)width * RGB_SIZE);
+    }
+
+    ~Picture() {
+        delete[] data;
+    }
+};
+
+
+
+
+class WorldPicture : public Picture {
+private:
+    Generator *g;
+
+public:
+    uint8_t* data{};
+
+    WorldPicture(Generator *g, int width, int height)
+            : Picture(width, height), g(g) {}
+
+    explicit WorldPicture(int size)
+            : WorldPicture(g, size, size) {}
+
+    explicit WorldPicture(Generator *g) :
+    Picture(g->getWorldCoordinateBounds() >> 1, g->getWorldCoordinateBounds() >> 1), g(g) {}
+
+    ~WorldPicture() {
+        free(data);
+    }
+
 
     MU void drawBiomes() {
         if (width == 0) return;
@@ -110,13 +148,11 @@ public:
         }
     }
 
-    void save() const {
+    void save(const std::string& directory) const {
+        std::string filename = getBiomeImageFileNameFromGenerator(g, directory);
         stbi_write_png(filename.c_str(), (int)width, (int)height,
                        RGB_SIZE, data, (int)width * RGB_SIZE);
     }
 
-    ~Picture() {
-        free(data);
-    }
 };
 
