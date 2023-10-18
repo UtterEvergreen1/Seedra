@@ -6,6 +6,22 @@
 #include "LegacyCubiomes/structures/placement/StaticStructures.hpp"
 
 namespace generation {
+    std::map<int, std::string> Village::pieceTypeNames = {
+            {NONE,          "NONE        "},
+            {House4Garden,  "House4Garden"},
+            {Church,        "Church      "},
+            {House1,        "House1      "},
+            {WoodHut,       "WoodHut     "},
+            {Hall,          "Hall        "},
+            {Field1,        "Field1      "},
+            {Field2,        "Field2      "},
+            {House2,        "House2      "},
+            {House3,        "House3      "},
+            {Torch,         "Torch       "},
+            {Start,         "Start       "},
+            {Road,          "Road        "},
+    };
+
     Village::Village(const Generator* generator) {
         g = generator;
     }
@@ -189,7 +205,7 @@ namespace generation {
             // bool flag = true; // assigned but never accessed
             ++j;
             int k = rng.nextInt(i);
-
+            //std::cout << "Total weight: " << i << " Selected weight: " << k << std::endl;
             int pieceWeightsSize = (int) currentVillagePW.size();
             for (int pieceTypeNum = 0; pieceTypeNum < pieceWeightsSize; pieceTypeNum++) {
                 FinalPieceWeight &pieceWeight = currentVillagePW[pieceTypeNum];
@@ -205,6 +221,7 @@ namespace generation {
                                                         createPieceBoundingBox(pieceWeight.pieceType, pos, facing),
                                                         facing, 0);
                     if (!hasCollisionPiece(structureVillagePiece)) {
+                        additionalRngRolls(rng, structureVillagePiece);
                         pieceWeight.amountPlaced++;
                         previousPiece = pieceWeight.pieceType;
                         if (pieceWeight.amountPlaced >= pieceWeight.maxPlaceCount) {
@@ -227,13 +244,11 @@ namespace generation {
             Piece structureComponent = generateComponent(rand, pos, facing);
             if (structureComponent.type != PieceType::NONE) {
                 int radius = (structureComponent.getLength() / 2) + 4;
-
                 if (g->areBiomesViable(structureComponent.getCenterX(),
                                        structureComponent.getCenterZ(),
                                        radius,
                                        Placement::Village<false>::VALID_BIOMES))
                 {
-                    additionalRngRolls(rand, structureComponent);
                     pieceArray[pieceArraySize++] = structureComponent;
                     return structureComponent;
                 }

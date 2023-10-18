@@ -36,21 +36,7 @@ namespace generation {
             Road,
         };
 
-        std::map<int, std::string> pieceTypeNames = {
-            {NONE,          "NONE        "},
-            {House4Garden,  "House4Garden"},
-            {Church,        "Church      "},
-            {House1,        "House1      "},
-            {WoodHut,       "WoodHut     "},
-            {Hall,          "Hall        "},
-            {Field1,        "Field1      "},
-            {Field2,        "Field2      "},
-            {House2,        "House2      "},
-            {House3,        "House3      "},
-            {Torch,         "Torch       "},
-            {Start,         "Start       "},
-            {Road,          "Road        "},
-        };
+        static std::map<int, std::string> pieceTypeNames;
 
     private:
         struct PieceWeight {
