@@ -36,9 +36,6 @@ namespace generation {
             Road,
         };
 
-        static std::map<int, std::string> pieceTypeNames;
-
-    private:
         struct PieceWeight {
             int pieceType;
             int weight;
@@ -46,19 +43,11 @@ namespace generation {
             int PlaceCountMax;
         };
 
-        const int VILLAGE_SIZE = 0;
-        const PieceWeight PIECE_WEIGHTS[9] = {
-                {PieceType::House4Garden,    4, 2 + VILLAGE_SIZE,   4 + VILLAGE_SIZE * 2},
-                {PieceType::Church,         20, 0 + VILLAGE_SIZE,   1 + VILLAGE_SIZE},
-                {PieceType::House1,         20, 0 + VILLAGE_SIZE,   2 + VILLAGE_SIZE},
-                {PieceType::WoodHut,         3, 2 + VILLAGE_SIZE,   5 + VILLAGE_SIZE * 3},
-                {PieceType::Hall,           15, 0 + VILLAGE_SIZE,   2 + VILLAGE_SIZE},
-                { PieceType::Field1,         3, 1 + VILLAGE_SIZE,   4 + VILLAGE_SIZE},
-                { PieceType::Field2,         3, 2 + VILLAGE_SIZE,   4 + VILLAGE_SIZE * 2},
-                { PieceType::House2,        15, 0,                  1 + VILLAGE_SIZE},
-                { PieceType::House3,         8, 0 + VILLAGE_SIZE,   3 + VILLAGE_SIZE * 2}
-        };
+        static std::map<int, std::string> pieceTypeNames;
+        static const int VILLAGE_SIZE;
+        static const PieceWeight PIECE_WEIGHTS[9];
 
+    private:
         struct FinalPieceWeight {
             int pieceType;
             int weight;
@@ -70,7 +59,7 @@ namespace generation {
 
         std::vector<FinalPieceWeight> currentVillagePW;
         int previousPiece{};
-        int pendingRoadArray[1024]{};
+        int pendingRoadArray[512]{};
         int pendingRoadArraySize{};
         const Generator* g;
 
@@ -78,7 +67,7 @@ namespace generation {
         bool isZombieInfested{};
         GenerationStep generationStep = GenerationStep::FULL;
 
-        Piece pieceArray[1024];
+        Piece pieceArray[512];
         int pieceArraySize{};
 
         Piece* blackSmithPiece{};
@@ -90,8 +79,19 @@ namespace generation {
 
         explicit Village(const Generator* generator);
 
+        /**
+        * \n
+        * Generates a mineshaft with the given chunk coordinates and stored generator.
+        * @param chunkX x coordinate of the chunk
+        * @param chunkZ z coordinate of the chunk
+        */
         void generate(int chunkX, int chunkZ);
 
+        /**
+        * \n
+        * Overload function. Generates a mineshaft with the given chunk coordinates and stored generator.
+        * @param chunk coordinates of the chunk
+        */
         void inline generate(Pos2D chunk) {
             generate(chunk.x, chunk.z);
         }
@@ -104,9 +104,9 @@ namespace generation {
         void buildComponent(Piece piece, RNG& rng);
         BoundingBox road(RNG& rng, Pos3D pos, DIRECTION facing);
         void additionalRngRolls(RNG& rng, const Piece& p);
-        Piece generateComponent(RNG& rng, Pos3D pos, DIRECTION facing);
+        Piece generateComponent(RNG& rng, Pos3D pos, DIRECTION facing, int depth);
         Piece genAndAddRoadPiece(RNG& rng, Pos3D pos, DIRECTION facing);
-        Piece genAndAddComponent(RNG& rand, Pos3D pos, DIRECTION facing);
+        Piece genAndAddComponent(RNG& rand, Pos3D pos, DIRECTION facing, int depth);
         void addPiece(Piece& piece);
         bool hasCollisionPiece(const BoundingBox& boundingBox);
     };

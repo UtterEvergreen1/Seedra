@@ -30,13 +30,7 @@ namespace generation {
             MESA
         };
 
-        const std::map<PieceType, std::string> PieceTypeName = {
-                { PieceType::ROOM, "ROOM" },
-                { PieceType::CORRIDOR, "CORRIDOR" },
-                { PieceType::CROSSING, "CROSSING" },
-                { PieceType::STAIRS, "STAIRS" },
-                { PieceType::NONE, "NONE -> something went wrong" }
-        };
+        static const std::map<PieceType, std::string> PieceTypeName;
 
         // #######################################################
         //       class attributes, variables, functions
@@ -51,13 +45,37 @@ namespace generation {
         MineshaftType mineShaftType = MineshaftType::NORMAL;
         BoundingBox structureBoundingBox;
 
+
+        /**
+        * \n
+        * Generates a mineshaft with the given seed and chunk coordinates.
+        * @param worldSeed the seed
+        * @param chunkX x coordinate of the chunk
+        * @param chunkZ z coordinate of the chunk
+        */
         void generate(int64_t worldSeed, int chunkX, int chunkZ);
+
+        /**
+        * \n
+        * Overload function. Generates a mineshaft with the given seed and chunk coordinates.
+        * @param worldSeed the seed
+        * @param chunkPos coordinates of the chunk
+        */
         inline void generate(int64_t worldSeed, Pos2D chunkPos) { return generate(worldSeed, chunkPos.x, chunkPos.z);}
         void reset();
 
     private:
         Piece* findCollisionPiece(BoundingBox &boundingBox);
         void genAndAddPiece(RNG& rng, Pos3D pos, DIRECTION direction, int depth);
+
+        /**
+        * Step 1:
+        * adds piece to pieceArray
+        * Step 2:
+        * Switch statement over the passed Piece->type.
+        * @param p the piece to build
+        * @param rng pointer to rng
+        */
         void buildComponent(RNG& rng, int type, int depth, const BoundingBox& boundingBox, DIRECTION direction, int additionalData);
     };
 }

@@ -3,18 +3,19 @@
 
 namespace generation {
 
+    const std::map<Mineshaft::PieceType, std::string> Mineshaft::PieceTypeName = {
+            { Mineshaft::PieceType::ROOM, "ROOM" },
+            { Mineshaft::PieceType::CORRIDOR, "CORRIDOR" },
+            { Mineshaft::PieceType::CROSSING, "CROSSING" },
+            { Mineshaft::PieceType::STAIRS, "STAIRS" },
+            { Mineshaft::PieceType::NONE, "NONE -> something went wrong" }
+    };
+
     void Mineshaft::reset() {
         pieceArraySize = 0;
         collisionChecks = 0;
     }
 
-    /**
-     * \n
-     * Generates a mineshaft with the given seed and chunk coordinate.
-     * @param worldSeed the seed
-     * @param chunkX x coord. of the chunk
-     * @param chunkZ z coord. of the chunk
-     */
     void Mineshaft::generate(int64_t worldSeed, int chunkX, int chunkZ) {
         RNG rng = RNG::getLargeFeatureSeed(worldSeed, chunkX, chunkZ);
         // 4 rolls (1 for skip, 3 for is feature chunk rolls (2 double, 1 int))
@@ -127,14 +128,7 @@ namespace generation {
 
     }
 
-    /**
-     * Step 1:
-     * adds piece to pieceArray
-     * Step 2:
-     * Switch statement over the passed Piece->type.
-     * @param p the piece to build
-     * @param rng pointer to rng
-     */
+
     void Mineshaft::buildComponent(RNG& rng, int type, int depth, const BoundingBox& boundingBox,
                                    DIRECTION direction, int additionalData) {
         Piece p = Piece(type, depth, boundingBox, direction, additionalData);

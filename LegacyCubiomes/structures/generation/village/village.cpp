@@ -4,8 +4,10 @@
 
 #include "village.hpp"
 #include "LegacyCubiomes/structures/placement/StaticStructures.hpp"
+#include "LegacyCubiomes/building_blocks/PieceWeight.hpp"
 
 namespace generation {
+
     std::map<int, std::string> Village::pieceTypeNames = {
             {NONE,          "NONE        "},
             {House4Garden,  "House4Garden"},
@@ -20,6 +22,19 @@ namespace generation {
             {Torch,         "Torch       "},
             {Start,         "Start       "},
             {Road,          "Road        "},
+    };
+
+    const int Village::VILLAGE_SIZE = 0;
+    const Village::PieceWeight Village::PIECE_WEIGHTS[9] = {
+            {Village::PieceType::House4Garden,    4, 2 + Village::VILLAGE_SIZE, 4 + Village::VILLAGE_SIZE * 2},
+            {Village::PieceType::Church,         20, 0 + Village::VILLAGE_SIZE, 1 + Village::VILLAGE_SIZE},
+            {Village::PieceType::House1,         20, 0 + Village::VILLAGE_SIZE, 2 + Village::VILLAGE_SIZE},
+            {Village::PieceType::WoodHut,         3, 2 + Village::VILLAGE_SIZE, 5 + Village::VILLAGE_SIZE * 3},
+            {Village::PieceType::Hall,           15, 0 + Village::VILLAGE_SIZE, 2 + Village::VILLAGE_SIZE},
+            { Village::PieceType::Field1,         3, 1 + Village::VILLAGE_SIZE, 4 + Village::VILLAGE_SIZE},
+            { Village::PieceType::Field2,         3, 2 + Village::VILLAGE_SIZE, 4 + Village::VILLAGE_SIZE * 2},
+            { Village::PieceType::House2,        15, 0,                         1 + Village::VILLAGE_SIZE},
+            { Village::PieceType::House3,         8, 0 + Village::VILLAGE_SIZE, 3 + Village::VILLAGE_SIZE * 2}
     };
 
     Village::Village(const Generator* generator) {
@@ -120,7 +135,7 @@ namespace generation {
 
 
     Piece Village::genAndAddRoadPiece(RNG& rng, Pos3D pos, DIRECTION facing) {
-        if (abs(startX - pos.getX()) > 48 || abs(startZ - pos.getZ()) > 48) return {};
+        if (abs(startX - pos.getX()) > 112 || abs(startZ - pos.getZ()) > 112) return {};
 
         BoundingBox boundingBox = road(rng, pos, facing);
 
@@ -195,29 +210,28 @@ namespace generation {
     }
 
 
-    Piece Village::generateComponent(RNG& rng, Pos3D pos, DIRECTION facing) {
+    Piece Village::generateComponent(RNG& rng, Pos3D pos, DIRECTION facing, int depth) {
         int i = updatePieceWeight();
         if (i <= 0) return {};
 
         int j = 0;
 
         while (j < 5) {
-            // bool flag = true; // assigned but never accessed
             ++j;
             int k = rng.nextInt(i);
-            //std::cout << "Total weight: " << i << " Selected weight: " << k << std::endl;
+
             int pieceWeightsSize = (int) currentVillagePW.size();
             for (int pieceTypeNum = 0; pieceTypeNum < pieceWeightsSize; pieceTypeNum++) {
                 FinalPieceWeight &pieceWeight = currentVillagePW[pieceTypeNum];
                 k -= pieceWeight.weight;
 
                 if (k < 0) {
-                    if ((pieceWeight.amountPlaced >= pieceWeight.maxPlaceCount) ||
-                        (pieceWeight.pieceType == previousPiece && currentVillagePW.size() > 1)) {
+                    if (pieceWeight.amountPlaced >= pieceWeight.maxPlaceCount ||
+                        pieceWeight.pieceType == previousPiece && currentVillagePW.size() > 1) {
                         break;
                     }
-                    // flag = true;
-                    Piece structureVillagePiece = Piece(pieceWeight.pieceType, 0,
+
+                    Piece structureVillagePiece = Piece(pieceWeight.pieceType, depth,
                                                         createPieceBoundingBox(pieceWeight.pieceType, pos, facing),
                                                         facing, 0);
                     if (!hasCollisionPiece(structureVillagePiece)) {
@@ -239,21 +253,22 @@ namespace generation {
     }
 
 
-    Piece Village::genAndAddComponent(RNG& rand, Pos3D pos, DIRECTION facing) {
-        if (abs(startX - pos.getX()) <= 48 && abs(startZ - pos.getZ()) <= 48) {
-            Piece structureComponent = generateComponent(rand, pos, facing);
-            if (structureComponent.type != PieceType::NONE) {
-                int radius = (structureComponent.getLength() / 2) + 4;
-                if (g->areBiomesViable(structureComponent.getCenterX(),
-                                       structureComponent.getCenterZ(),
-                                       radius,
-                                       Placement::Village<false>::VALID_BIOMES))
-                {
-                    pieceArray[pieceArraySize++] = structureComponent;
-                    return structureComponent;
-                }
-            }
+    Piece Village::genAndAddComponent(RNG& rand, Pos3D pos, DIRECTION facing, int depth) {
+        if (depth > 50) return {}; // don't do this for elytra???
+        if (abs(startX - pos.getX()) > 112 || abs(startZ - pos.getZ()) > 112) return {}; // 48 for elytra???
+
+        Piece structureComponent = generateComponent(rand, pos, facing, depth + 1);
+        if (structureComponent.type == PieceType::NONE) return {};
+
+        int radius = (structureComponent.getLength() / 2) + 4;
+        if (g->areBiomesViable(structureComponent.getCenterX(),
+                               structureComponent.getCenterZ(),
+                               radius,
+                               Placement::Village<false>::VALID_BIOMES)) {
+            pieceArray[pieceArraySize++] = structureComponent;
+            return structureComponent;
         }
+
         return {}; // ------------------------ returning null piece
     }
 
@@ -276,12 +291,12 @@ namespace generation {
                 case DIRECTION::SOUTH:
                 default:
                     structureComponent = genAndAddComponent(rng, {piece.minX - 1, piece.minY, piece.minZ + i},
-                                                            DIRECTION::WEST);
+                                                            DIRECTION::WEST, piece.depth);
                     break;
                 case DIRECTION::WEST:
                 case DIRECTION::EAST:
                     structureComponent = genAndAddComponent(rng, {piece.minX + i, piece.minY, piece.minZ - 1},
-                                                            DIRECTION::NORTH);
+                                                            DIRECTION::NORTH, piece.depth);
                     break;
             }
 
@@ -298,12 +313,12 @@ namespace generation {
                 case DIRECTION::SOUTH:
                 default:
                     structureComponent1 = genAndAddComponent(rng, {piece.maxX + 1, piece.minY, piece.minZ + j},
-                                                             DIRECTION::EAST);
+                                                             DIRECTION::EAST, piece.depth);
                     break;
                 case DIRECTION::EAST:
                 case DIRECTION::WEST:
                     structureComponent1 = genAndAddComponent(rng, {piece.minX + j, piece.minY, piece.maxZ + 1},
-                                                             DIRECTION::SOUTH);
+                                                             DIRECTION::SOUTH, piece.depth);
                     break;
             }
 

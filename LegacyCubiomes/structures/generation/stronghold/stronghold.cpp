@@ -11,6 +11,50 @@ static const DIRECTION HORIZONTAL[4] = {
 
 namespace generation {
 
+    const std::map<Stronghold::PieceType, std::string> Stronghold::PieceTypeName = {
+            { Stronghold::PieceType::NONE, "NONE -> something went wrong" },
+            { Stronghold::PieceType::STRAIGHT, "STRAIGHT" },
+            { Stronghold::PieceType::PRISON_HALL, "PRISON_HALL" },
+            { Stronghold::PieceType::LEFT_TURN, "LEFT_TURN" },
+            { Stronghold::PieceType::RIGHT_TURN, "RIGHT_TURN" },
+            { Stronghold::PieceType::ROOM_CROSSING, "ROOM_CROSSING" },
+            { Stronghold::PieceType::STRAIGHT_STAIRS_DOWN, "STRAIGHT_STAIRS_DOWN" },
+            { Stronghold::PieceType::STAIRS_DOWN, "STAIRS_DOWN" },
+            { Stronghold::PieceType::FIVE_CROSSING, "FIVE_CROSSING" },
+            { Stronghold::PieceType::CHEST_CORRIDOR, "CHEST_CORRIDOR" },
+            { Stronghold::PieceType::LIBRARY, "LIBRARY" },
+            { Stronghold::PieceType::PORTAL_ROOM, "PORTAL_ROOM" },
+            { Stronghold::PieceType::FILLER_CORRIDOR, "FILLER_CORRIDOR" }
+    };
+
+    const PieceWeight Stronghold::PIECE_WEIGHTS[12] = {
+            {  0, 0, 0 }, // none
+            { 40, 0, 0 },
+            {  5, 5, 0 },
+            { 20, 0, 0 },
+            { 20, 0, 0 },
+            { 10, 6, 0 },
+            {  5, 5, 0 },
+            {  5, 5, 0 },
+            {  5, 4, 0 },
+            {  5, 4, 0 },
+            { 10, 2, 5 },
+            { 20, 1, 6 }
+    };
+
+    const Stronghold::PiecePlaceCount Stronghold::PIECE_PLACE_COUNT_DEFAULT[11] = {
+            { Stronghold::PieceType::STRAIGHT            , 0},
+            { Stronghold::PieceType::PRISON_HALL         , 0},
+            { Stronghold::PieceType::LEFT_TURN           , 0},
+            { Stronghold::PieceType::RIGHT_TURN          , 0},
+            { Stronghold::PieceType::ROOM_CROSSING       , 0},
+            { Stronghold::PieceType::STRAIGHT_STAIRS_DOWN, 0},
+            { Stronghold::PieceType::STAIRS_DOWN         , 0},
+            { Stronghold::PieceType::FIVE_CROSSING       , 0},
+            { Stronghold::PieceType::CHEST_CORRIDOR      , 0},
+            { Stronghold::PieceType::LIBRARY             , 0},
+            { Stronghold::PieceType::PORTAL_ROOM         , 0}
+    };
 
     Stronghold::Stronghold() {
         resetPieces();

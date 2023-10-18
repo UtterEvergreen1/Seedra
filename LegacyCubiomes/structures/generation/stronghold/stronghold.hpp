@@ -12,7 +12,6 @@
 namespace generation {
     class Stronghold {
     public:
-
         // #######################################################
         //              sub-structs and sub-classes
         // #######################################################
@@ -39,38 +38,6 @@ namespace generation {
             FILLER_CORRIDOR,
         };
 
-
-        const std::map<PieceType, std::string> PieceTypeName = {
-                { PieceType::NONE, "NONE -> something went wrong" },
-                { PieceType::STRAIGHT, "STRAIGHT" },
-                { PieceType::PRISON_HALL, "PRISON_HALL" },
-                { PieceType::LEFT_TURN, "LEFT_TURN" },
-                { PieceType::RIGHT_TURN, "RIGHT_TURN" },
-                { PieceType::ROOM_CROSSING, "ROOM_CROSSING" },
-                { PieceType::STRAIGHT_STAIRS_DOWN, "STRAIGHT_STAIRS_DOWN" },
-                { PieceType::STAIRS_DOWN, "STAIRS_DOWN" },
-                { PieceType::FIVE_CROSSING, "FIVE_CROSSING" },
-                { PieceType::CHEST_CORRIDOR, "CHEST_CORRIDOR" },
-                { PieceType::LIBRARY, "LIBRARY" },
-                { PieceType::PORTAL_ROOM, "PORTAL_ROOM" },
-                { PieceType::FILLER_CORRIDOR, "FILLER_CORRIDOR" }
-        };
-
-        static inline const PieceWeight PIECE_WEIGHTS[] = {
-                {  0, 0, 0 }, // none
-                { 40, 0, 0 },
-                {  5, 5, 0 },
-                { 20, 0, 0 },
-                { 20, 0, 0 },
-                { 10, 6, 0 },
-                {  5, 5, 0 },
-                {  5, 5, 0 },
-                {  5, 4, 0 },
-                {  5, 4, 0 },
-                { 10, 2, 5 },
-                { 20, 1, 6 },
-        };
-
         struct PiecePlaceCount {
 
 
@@ -91,19 +58,9 @@ namespace generation {
             }
         };
 
-        static inline const PiecePlaceCount PIECE_PLACE_COUNT_DEFAULT[11] = {
-                { PieceType::STRAIGHT            , 0},
-                { PieceType::PRISON_HALL         , 0},
-                { PieceType::LEFT_TURN           , 0},
-                { PieceType::RIGHT_TURN          , 0},
-                { PieceType::ROOM_CROSSING       , 0},
-                { PieceType::STRAIGHT_STAIRS_DOWN, 0},
-                { PieceType::STAIRS_DOWN         , 0},
-                { PieceType::FIVE_CROSSING       , 0},
-                { PieceType::CHEST_CORRIDOR      , 0},
-                { PieceType::LIBRARY             , 0},
-                { PieceType::PORTAL_ROOM         , 0}
-        };
+        static const std::map<PieceType, std::string> PieceTypeName;
+        static const PieceWeight PIECE_WEIGHTS[12];
+        static const PiecePlaceCount PIECE_PLACE_COUNT_DEFAULT[11];
 
         // #######################################################
         //       class attributes, variables, functions
@@ -121,11 +78,11 @@ namespace generation {
         PieceType previousPiece = PieceType::NONE;
         Piece* portalRoomPiece = nullptr;
 
-        Piece pieceArray[1024]{};
+        Piece pieceArray[512]{};
         int pieceArraySize = 0;
 
         /// holds the pieceArraySize when set
-        int pendingPieceArray[1024]{};
+        int pendingPieceArray[512]{};
         int pendingPiecesArraySize = 0;
 
 
@@ -137,7 +94,21 @@ namespace generation {
 
         Stronghold();
 
+        /**
+        * \n
+        * Generates a stronghold with the given seed and chunk coordinates.
+        * @param worldSeed the seed
+        * @param chunkX x coordinate of the chunk
+        * @param chunkZ z coordinate of the chunk
+        */
         void generate(int64_t worldSeed, int chunkX, int chunkZ);
+
+        /**
+        * \n
+        * Overload function. Generates a stronghold with the given seed and chunk coordinates.
+        * @param worldSeed the seed
+        * @param chunkPos coordinates of the chunk
+        */
         inline void generate(int64_t worldSeed, Pos2D chunkPos) {return generate(worldSeed, chunkPos.x, chunkPos.z);}
 
         void resetPieces();
