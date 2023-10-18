@@ -14,14 +14,16 @@ namespace generation {
     class Village {
     public:
 
-        enum class GenerationStep {
+        enum class GenerationStep : int8_t {
             BLACKSMITH, // Generates the layout up to the blacksmith, hasMoreThanTwoComponents won't be calculated
             LAYOUT, // Generates full layout, hasMoreThanTwoComponents won't be calculated
             FULL,   // Generates full layout and calculates hasMoreThanTwoComponents
         };
 
-        enum PieceType {
+        enum PieceType : int8_t  {
             NONE,
+            Start,
+            Road,
             House4Garden,
             Church,
             House1,
@@ -32,12 +34,10 @@ namespace generation {
             House2,
             House3,
             Torch,
-            Start,
-            Road,
         };
 
         struct PieceWeight {
-            int pieceType;
+            int8_t pieceType;
             int weight;
             int PlaceCountMin;
             int PlaceCountMax;
@@ -49,19 +49,21 @@ namespace generation {
 
     private:
         struct FinalPieceWeight {
-            int pieceType;
+            int8_t pieceType;
             int weight;
             int maxPlaceCount;
             int amountPlaced;
-            FinalPieceWeight(int pieceType, int weight, int maxPlaceCount, int amountPlaced)
+            FinalPieceWeight(int8_t pieceType, int weight, int maxPlaceCount, int amountPlaced)
                     : pieceType(pieceType), weight(weight), maxPlaceCount(maxPlaceCount), amountPlaced(amountPlaced) {}
+
         };
 
         std::vector<FinalPieceWeight> currentVillagePW;
-        int previousPiece{};
+        int8_t previousPiece{};
         int pendingRoadArray[512]{};
         int pendingRoadArraySize{};
         const Generator* g;
+        RNG rng;
 
     public:
         bool isZombieInfested{};
@@ -97,16 +99,16 @@ namespace generation {
         }
 
     private:
-        void setupPieces(RNG& rng);
+        void setupPieces();
         int updatePieceWeight();
         static BoundingBox createPieceBoundingBox(int pieceType, Pos3D pos, DIRECTION direction);
-        void buildComponentStart(Piece piece, RNG& rng);
-        void buildComponent(Piece piece, RNG& rng);
-        BoundingBox road(RNG& rng, Pos3D pos, DIRECTION facing);
-        void additionalRngRolls(RNG& rng, const Piece& p);
-        Piece generateComponent(RNG& rng, Pos3D pos, DIRECTION facing, int depth);
-        Piece genAndAddRoadPiece(RNG& rng, Pos3D pos, DIRECTION facing);
-        Piece genAndAddComponent(RNG& rand, Pos3D pos, DIRECTION facing, int depth);
+        void buildComponentStart(Piece piece);
+        void buildComponent(Piece piece);
+        BoundingBox road(Pos3D pos, DIRECTION facing);
+        void additionalRngRolls(const Piece& p);
+        Piece generateComponent(Pos3D pos, DIRECTION facing, int8_t depth);
+        Piece genAndAddRoadPiece(Pos3D pos, DIRECTION facing);
+        Piece genAndAddComponent(Pos3D pos, DIRECTION facing, int8_t depth);
         void addPiece(Piece& piece);
         bool hasCollisionPiece(const BoundingBox& boundingBox);
     };

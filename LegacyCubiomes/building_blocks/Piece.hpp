@@ -4,12 +4,31 @@
 #include "LegacyCubiomes/building_blocks/BoundingBox.hpp"
 #include "LegacyCubiomes/utils/Pos2D.hpp"
 
+
 class Piece : public BoundingBox {
 public:
     DIRECTION orientation;
-    int type;
-    int depth;
-    int additionalData;
+    int8_t type;
+    int8_t depth;
+
+    union {
+        int32_t additionalData;
+
+        // TODO: figure out endianness so this doesn't randomly break
+        MU struct {
+            uint32_t bit0 : 1;
+            uint32_t bit1 : 1;
+            uint32_t bit2 : 1;
+            uint32_t bit3 : 1;
+            uint32_t remaining : 28;
+        } int1_data;
+        MU struct {
+            uint8_t byte0: 8;
+            uint8_t byte1: 8;
+            uint8_t byte2: 8;
+            uint8_t byte3: 8;
+        } int8_data;
+    };
 
     Piece() : BoundingBox(), type(0), depth(0), additionalData(0) {}
 
@@ -17,7 +36,7 @@ public:
 
     Piece(int minX, int minY, int minZ, int maxX, int maxY, int maxZ, DIRECTION orientation) : BoundingBox(minX, minY, minZ, maxX, maxY, maxZ), orientation(orientation), type(0), depth(0), additionalData(0) {}
 
-    Piece(int type, int depth, const BoundingBox& boundingBox, DIRECTION orientation, int additionalData)
+    Piece(int8_t type, int8_t depth, const BoundingBox& boundingBox, DIRECTION orientation, int additionalData)
             : BoundingBox(boundingBox), orientation(orientation), type(type), depth(depth), additionalData(additionalData) {}
 
     ND MU Pos2D getBoundingBoxCenter() const;

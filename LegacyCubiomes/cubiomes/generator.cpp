@@ -75,7 +75,6 @@ size_t Generator::getMinCacheSize(int scale, int sx, int sz) const {
 
 int *Generator::allocCache(const Range &range) const {
     size_t len = getMinCacheSize(range.scale, range.sx, range.sz);
-    std::cout << len << std::endl;
     return (int *) calloc(len, sizeof(int));
 }
 
