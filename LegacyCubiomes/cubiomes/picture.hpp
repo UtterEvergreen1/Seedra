@@ -10,7 +10,7 @@
 
 
 std::string getBiomeImageFileNameFromGenerator(Generator* g, const std::string& directory) {
-    std::string file = directory + std::to_string(abs(g->getWorldSeed())) + "_" + LceVersionToString(g->getLCEVersion()) +
+    std::string file = directory + std::to_string(g->getWorldSeed()) + "_" + LceVersionToString(g->getLCEVersion()) +
                        "_" + biomeScaleToString(g->getBiomeScale()) + "_" + worldSizeToString(g->getWorldSize()) + ".png";
     return file;
 }
