@@ -978,6 +978,7 @@ size_t getMinLayerCacheSize(const Layer *layer, int sizeX, int sizeZ) {
  * buffer size.
  */
 int genArea(const Layer* layer, int* out, int areaX, int areaZ, int areaWidth, int areaHeight) {
+    // TODO: this could be calloc because it's initializing to 0
     memset(out, 0, areaWidth * areaHeight * sizeof(*out));
     return layer->getMap(layer, out, areaX, areaZ, areaWidth, areaHeight);
 }

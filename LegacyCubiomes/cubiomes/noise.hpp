@@ -34,12 +34,6 @@ struct SurfaceNoise {
 };
 
 
-struct DoublePerlinNoise {
-    double amplitude;
-    OctaveNoise octA;
-    OctaveNoise octB;
-};
-
 /// Helper
 double maintainPrecision(double x);
 

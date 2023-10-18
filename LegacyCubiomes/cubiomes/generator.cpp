@@ -188,7 +188,7 @@ bool Generator::areBiomesViable(int x, int z, int rad,
             }
         }
     }
-    if (false) L_no: viable = 0;
+    if (false) L_no: viable = false;
     if (ids)
         free(ids);
     return viable;
