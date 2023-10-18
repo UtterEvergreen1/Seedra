@@ -109,6 +109,7 @@ void ChunkGeneratorOverWorld::setBlocksInChunk(int chunkX, int chunkZ, ChunkPrim
     }
 }
 
+
 void ChunkGeneratorOverWorld::replaceBiomeBlocks(int x, int z, ChunkPrimer *primer, int *biomesIn) {
     depthBuffer = surfaceNoise.getRegion(depthBuffer, (double) (x * 16), (double) (z * 16), 16, 16, 0.0625, 0.0625, 1.0);
     for (int i = 0; i < 16; ++i) {
@@ -120,7 +121,7 @@ void ChunkGeneratorOverWorld::replaceBiomeBlocks(int x, int z, ChunkPrimer *prim
 }
 
 
-ChunkPrimer *ChunkGeneratorOverWorld::provideChunk(int x, int z) {
+ChunkPrimer* ChunkGeneratorOverWorld::provideChunk(int x, int z) {
     rng.setSeed((int64_t) x * 341873128712LL + (int64_t) z * 132897987541LL);
     auto *chunkPrimer = new ChunkPrimer();
     setBlocksInChunk(x, z, chunkPrimer);

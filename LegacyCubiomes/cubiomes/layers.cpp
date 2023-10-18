@@ -977,7 +977,7 @@ size_t getMinLayerCacheSize(const Layer *layer, int sizeX, int sizeZ) {
  * It is recommended that 'out' is allocated using allocCache() for the correct
  * buffer size.
  */
-int genArea(const Layer *layer, int *out, int areaX, int areaZ, int areaWidth, int areaHeight) {
+int genArea(const Layer* layer, int* out, int areaX, int areaZ, int areaWidth, int areaHeight) {
     memset(out, 0, areaWidth * areaHeight * sizeof(*out));
     return layer->getMap(layer, out, areaX, areaZ, areaWidth, areaHeight);
 }

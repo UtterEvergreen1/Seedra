@@ -22,7 +22,7 @@ int main(int argc, char* argv[]) {
     Biome::registerBiomes();
 
     auto console = CONSOLE::WIIU;
-    auto version = LCEVERSION::ELYTRA;
+    auto version = LCEVERSION::AQUATIC;
     EnchantmentHelper::setup(console, version);
     Generator g(console, version, 119, WORLDSIZE::CLASSIC, BIOMESCALE::SMALL);
 
@@ -30,6 +30,14 @@ int main(int argc, char* argv[]) {
     // pic.drawBiomes();
 
     // pic.drawBox(0, 0, 64, 64, 128, 255, 128);
+
+    WorldPicture pic(&g);
+    pic.drawBiomesWithSize(7680, 7680);
+    pic.save(path);
+
+    std::cout << "DONE !!!" << std::endl;
+
+    int x; std::cin >> x;
 
 
 

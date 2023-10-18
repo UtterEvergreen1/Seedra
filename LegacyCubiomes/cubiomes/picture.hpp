@@ -39,13 +39,18 @@ public:
      */
     uint8_t* data;
 
-    Picture(int width, int height) : width(width), height(height) {
+    void allocate() {
+        delete[] data;
         data = new uint8_t[width * height * RGB_SIZE];
         std::memset(data, 0, width * height * RGB_SIZE);
     }
 
-    explicit Picture(int size) : Picture(size, size) {}
+    Picture(int width, int height) : width(width), height(height) {
+        data = nullptr;
+        allocate();
+    }
 
+    explicit Picture(int size) : Picture(size, size) {}
 
     ND uint32_t getWidth() const { return width; }
     ND uint32_t getHeight() const { return height; }
@@ -140,6 +145,35 @@ public:
                 drawPixel(&biomeColors[id][0], x, y);
             }
         }
+    }
+
+    MU void drawBiomesWithSize(int widthIn, int heightIn) {
+        if (widthIn == 0) return;
+        if (heightIn == 0) return;
+
+        width = widthIn;
+        height = heightIn;
+
+        allocate();
+
+        unsigned char biomeColors[256][3];
+        initBiomeColors(biomeColors);
+
+        int x = (int)width;
+        int y = (int)height;
+        int w = (int)width;
+        int h = (int)height;
+        int* ids = g->getBiomeRange(4, x, y, w, h);
+
+        for (int yi = 0; yi < getHeight(); ++yi) {
+            for (int xi = 0; xi < getWidth(); ++xi) {
+                int id = ids[getIndex(xi, yi)];
+                drawPixel(&biomeColors[id][0], xi, yi);
+            }
+        }
+
+
+
     }
 
     void save(const std::string& directory) const {
