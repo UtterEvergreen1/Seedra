@@ -10,7 +10,7 @@
 
 
 std::string getBiomeImageFileNameFromGenerator(Generator* g, const std::string& directory) {
-    std::string file = directory + std::to_string(g->getWorldSeed()) + "_" + LceVersionToString(g->getLCEVersion()) +
+    std::string file = directory + std::to_string(abs(g->getWorldSeed())) + "_" + LceVersionToString(g->getLCEVersion()) +
                        "_" + biomeScaleToString(g->getBiomeScale()) + "_" + worldSizeToString(g->getWorldSize()) + ".png";
     return file;
 }
@@ -115,19 +115,13 @@ private:
     Generator *g;
 
 public:
-    uint8_t* data{};
-
     WorldPicture(Generator *g, int width, int height)
             : Picture(width, height), g(g) {}
 
-    explicit WorldPicture(int size)
-            : WorldPicture(g, size, size) {}
-
-    explicit WorldPicture(Generator *g) :
-    Picture(g->getWorldCoordinateBounds() >> 1, g->getWorldCoordinateBounds() >> 1), g(g) {}
+    explicit WorldPicture(Generator *g) : Picture(g->getWorldCoordinateBounds() >> 1), g(g) {}
 
     ~WorldPicture() {
-        free(data);
+        delete[] data;
     }
 
 
@@ -150,8 +144,8 @@ public:
 
     void save(const std::string& directory) const {
         std::string filename = getBiomeImageFileNameFromGenerator(g, directory);
-        stbi_write_png(filename.c_str(), (int)width, (int)height,
-                       RGB_SIZE, data, (int)width * RGB_SIZE);
+        stbi_write_png(filename.c_str(), (int)width,
+           (int)height, RGB_SIZE, data, (int)width * RGB_SIZE);
     }
 
 };
