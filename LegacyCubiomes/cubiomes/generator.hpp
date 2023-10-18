@@ -211,17 +211,6 @@ public:
     }
 
     /**
-     * Checks corners in range 'r' for non-valid biomes for quick filter.
-     *
-     * @param x, z center coordinates
-     * @param r range to check the corners of
-     * @param validBiomes uint64_t value of the valid base biomes
-     * @param mutatedValidBiomes uint64_t value of the valid mutated biomes
-     * @return true if all the corners are valid
-     */
-    ND bool validCorners(int x, int z, const Range& r, uint64_t validBiomes, uint64_t mutatedValidBiomes = 0) const;
-
-    /**
      * Checks the surrounding 'rad' blocks from origin (x, z) for all valid biomes.
      *
      * @param x, z center coordinates to check valid biomes at

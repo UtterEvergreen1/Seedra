@@ -147,53 +147,46 @@ Layer *Generator::getLayerForScale(int scale) const {
 // Checking Biomes & Biome Helper Functions
 //==============================================================================
 
-
-bool Generator::validCorners(int x, int z, const Range &r, uint64_t validBiomes, uint64_t mutatedValidBiomes) const {
-    int xCorner = x - r.x;
-    int zCorner = (z - r.z) * r.sx; // top left
-    if (!id_matches(this->getBiomeAt(4, xCorner, zCorner), validBiomes, mutatedValidBiomes)) return false;
-    xCorner = x + r.x; // top right
-    if (!id_matches(this->getBiomeAt(4, xCorner, zCorner), validBiomes, mutatedValidBiomes)) return false;
-    zCorner = (z + r.z) * r.sx; // bottom right
-    if (!id_matches(this->getBiomeAt(4, xCorner, zCorner), validBiomes, mutatedValidBiomes)) return false;
-    xCorner = x - r.x; // bottom left
-    if (!id_matches(this->getBiomeAt(4, xCorner, zCorner), validBiomes, mutatedValidBiomes)) return false;
-
-    return true;
-}
-
-
 bool Generator::areBiomesViable(int x, int z, int rad, uint64_t validBiomes, uint64_t mutatedValidBiomes) const {
     if (x - rad < -this->worldCoordinateBounds || x + rad > this->worldCoordinateBounds ||
         z - rad < -this->worldCoordinateBounds || z + rad > this->worldCoordinateBounds) {
         return false;
     }
 
+    bool viable;
+    int i, id;
+    int *ids = nullptr;
     int x1 = (x - rad) >> 2, x2 = (x + rad) >> 2, sx = x2 - x1 + 1;
     int z1 = (z - rad) >> 2, z2 = (z + rad) >> 2, sz = z2 - z1 + 1;
 
-    Range r = {4, x1, z1, sx, sz};
-    int *ids = this->allocCache(r);
-    int i;
-    bool viable = true;
-
-    // check corners
-    if (rad >= 10) {
-        int centerX = x >> 2;
-        int centerZ = z >> 2;
-        if (!validCorners(centerX, centerZ, r, validBiomes, mutatedValidBiomes)) goto L_no;
-    }
-
-    if ((viable = !this->genBiomes(ids, r))) {
-        for (i = 0; i < sx * sz; i++) {
-            if (!id_matches(ids[i], validBiomes, mutatedValidBiomes))
+    if(rad > 5) {
+        // check corners
+        Pos2D corners[4] = {{x1, z1},
+                            {x2, z2},
+                            {x1, z2},
+                            {x2, z1}};
+        for (i = 0; i < 4; i++) {
+            id = getBiomeAt(4, corners[i].x, corners[i].z);
+            if (id < 0 || !id_matches(id, validBiomes, mutatedValidBiomes))
                 goto L_no;
         }
     }
-    if (false)
-        L_no:
-        viable = 0;
-    free(ids);
+
+    viable = true;
+    {
+        Range r = {4, x1, z1, sx, sz};
+        ids = this->allocCache(r);
+
+        if ((viable = !this->genBiomes(ids, r))) {
+            for (i = 0; i < sx * sz; i++) {
+                if (!id_matches(ids[i], validBiomes, mutatedValidBiomes))
+                    goto L_no;
+            }
+        }
+    }
+    if (false) L_no: viable = 0;
+    if (ids)
+        free(ids);
     return viable;
 }
 
