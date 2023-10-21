@@ -1,129 +1,49 @@
-#include <cstdio>
+
 #include <cstring>
-#include <cstdlib>
-#include <cctype>
 
 #include "util.hpp"
 #include "layers.hpp"
 
 
-
-const char *biome2str(int id)
-{
-    switch (id)
-    {
-    case ocean: return "ocean";
-    case plains: return "plains";
-    case desert: return "desert";
-    case mountains: return "mountains";
-    case forest: return "forest";
-    case taiga: return "taiga";
-    case swamp: return "swamp";
-    case river: return "river";
-    case nether_wastes: return "nether_wastes";
-    case the_end: return "the_end";
-    // 10
-    case frozen_ocean: return "frozen_ocean";
-    case frozen_river: return "frozen_river";
-    case snowy_tundra: return "snowy_tundra";
-    case snowy_mountains: return "snowy_mountains";
-    case mushroom_fields: return "mushroom_fields";
-    case mushroom_field_shore: return "mushroom_field_shore";
-    case beach: return "beach";
-    case desert_hills: return "desert_hills";
-    case wooded_hills: return "wooded_hills";
-    case taiga_hills: return "taiga_hills";
-    // 20
-    case mountain_edge: return "mountain_edge";
-    case jungle: return "jungle";
-    case jungle_hills: return "jungle_hills";
-    case jungle_edge: return "jungle_edge";
-    case deep_ocean: return "deep_ocean";
-    case stone_shore: return "stone_shore";
-    case snowy_beach: return "snowy_beach";
-    case birch_forest: return "birch_forest";
-    case birch_forest_hills: return "birch_forest_hills";
-    case dark_forest: return "dark_forest";
-    // 30
-    case snowy_taiga: return "snowy_taiga";
-    case snowy_taiga_hills: return "snowy_taiga_hills";
-    case giant_tree_taiga: return "giant_tree_taiga";
-    case giant_tree_taiga_hills: return "giant_tree_taiga_hills";
-    case wooded_mountains: return "wooded_mountains";
-    case savanna: return "savanna";
-    case savanna_plateau: return "savanna_plateau";
-    case badlands: return "badlands";
-    case wooded_badlands_plateau: return "wooded_badlands_plateau";
-    case badlands_plateau: return "badlands_plateau";
-    // 40  --  1.13
-    case small_end_islands: return "small_end_islands";
-    case end_midlands: return "end_midlands";
-    case end_highlands: return "end_highlands";
-    case end_barrens: return "end_barrens";
-    case warm_ocean: return "warm_ocean";
-    case lukewarm_ocean: return "lukewarm_ocean";
-    case cold_ocean: return "cold_ocean";
-    case deep_warm_ocean: return "deep_warm_ocean";
-    case deep_lukewarm_ocean: return "deep_lukewarm_ocean";
-    case deep_cold_ocean: return "deep_cold_ocean";
-    // 50
-    case deep_frozen_ocean: return "deep_frozen_ocean";
-
-    case the_void: return "the_void";
-
-    // mutated variants
-    case sunflower_plains: return "sunflower_plains";
-    case desert_lakes: return "desert_lakes";
-    case gravelly_mountains: return "gravelly_mountains";
-    case flower_forest: return "flower_forest";
-    case taiga_mountains: return "taiga_mountains";
-    case swamp_hills: return "swamp_hills";
-    case ice_spikes: return "ice_spikes";
-    case modified_jungle: return "modified_jungle";
-    case modified_jungle_edge: return "modified_jungle_edge";
-    case tall_birch_forest: return "tall_birch_forest";
-    case tall_birch_hills: return "tall_birch_hills";
-    case dark_forest_hills: return "dark_forest_hills";
-    case snowy_taiga_mountains: return "snowy_taiga_mountains";
-    case giant_spruce_taiga: return "giant_spruce_taiga";
-    case giant_spruce_taiga_hills: return "giant_spruce_taiga_hills";
-    case modified_gravelly_mountains: return "modified_gravelly_mountains";
-    case shattered_savanna: return "shattered_savanna";
-    case shattered_savanna_plateau: return "shattered_savanna_plateau";
-    case eroded_badlands: return "eroded_badlands";
-    case modified_wooded_badlands_plateau: return "modified_wooded_badlands_plateau";
-    case modified_badlands_plateau: return "modified_badlands_plateau";
-    // 1.14
-    case bamboo_jungle: return "bamboo_jungle";
-    case bamboo_jungle_hills: return "bamboo_jungle_hills";
-    default: return nullptr;
-    }
-    return nullptr;
-}
-
-const char* getStructureName(StructureType type) {
+const char *getStructureName(StructureType type) {
     switch (type) {
-    case StructureType::DesertPyramid: return "DesertPyramid";
-    case StructureType::JunglePyramid: return "JunglePyramid";
-    case StructureType::SwampHut: return "SwampHut";
-    case StructureType::Igloo: return "Igloo";
-    case StructureType::Village: return "Village";
-    case StructureType::OceanRuin: return "OceanRuin";
-    case StructureType::Mansion: return "Mansion";
-    case StructureType::Monument: return "Monument";
-    case StructureType::Treasure: return "Buried Treasure";
-    case StructureType::Shipwreck: return "Shipwreck";
-    case StructureType::Outpost: return "Outpost";
-    case StructureType::Mineshaft: return "Mineshaft";
-    case StructureType::Fortress: return "Fortress";
-    case StructureType::EndCity: return "EndCity";
-    case StructureType::EndGateway: return "EndGateway";
-    default: return "NONE";
+        case StructureType::DesertPyramid:
+            return "DesertPyramid";
+        case StructureType::JunglePyramid:
+            return "JunglePyramid";
+        case StructureType::SwampHut:
+            return "SwampHut";
+        case StructureType::Igloo:
+            return "Igloo";
+        case StructureType::Village:
+            return "Village";
+        case StructureType::OceanRuin:
+            return "OceanRuin";
+        case StructureType::Mansion:
+            return "Mansion";
+        case StructureType::Monument:
+            return "Monument";
+        case StructureType::Treasure:
+            return "Buried Treasure";
+        case StructureType::Shipwreck:
+            return "Shipwreck";
+        case StructureType::Outpost:
+            return "Outpost";
+        case StructureType::Mineshaft:
+            return "Mineshaft";
+        case StructureType::Fortress:
+            return "Fortress";
+        case StructureType::EndCity:
+            return "EndCity";
+        case StructureType::EndGateway:
+            return "EndGateway";
+        default:
+            return "NONE";
     }
 }
 
 void setBiomeColor(unsigned char biomeColor[256][3], int id,
-        unsigned char r, unsigned char g, unsigned char b) {
+                   unsigned char r, unsigned char g, unsigned char b) {
     biomeColor[id][0] = r;
     biomeColor[id][1] = g;
     biomeColor[id][2] = b;
@@ -136,12 +56,17 @@ void setMutationColor(unsigned char biomeColor[256][3], int mutated, int parent)
     biomeColor[mutated][2] = (c = biomeColor[parent][2] + 40) > 255 ? 255 : c;
 }
 
+/**
+ * This coloring scheme is largely inspired by the AMIDST program:
+ * \n
+ * https://github.com/toolbox4minecraft/amidst
+ * \n
+ * https://sourceforge.net/projects/amidst.mirror/
+ *
+ * @param biomeColors
+ */
 void initBiomeColors(unsigned char biomeColors[256][3]) {
-    // This coloring scheme is largely inspired by the AMIDST program:
-    // https://github.com/toolbox4minecraft/amidst
-    // https://sourceforge.net/projects/amidst.mirror/
-
-    memset(biomeColors, 0, 256*3);
+    memset(biomeColors, 0, 256 * 3);
 
     setBiomeColor(biomeColors, ocean, 0, 0, 112);
     setBiomeColor(biomeColors, plains, 141, 179, 96);
@@ -225,92 +150,12 @@ void initBiomeColors(unsigned char biomeColors[256][3]) {
     setBiomeColor(biomeColors, bamboo_jungle_hills, 92, 108, 4);//;59, 71, 10);
 }
 
+
 void initBiomeTypeColors(unsigned char biomeColors[256][3]) {
     memset(biomeColors, 0, 256 * 3);
-    setBiomeColor(biomeColors, Oceanic,  0x00, 0x00, 0xa0);
-    setBiomeColor(biomeColors, Warm,     0xff, 0xc0, 0x00);
-    setBiomeColor(biomeColors, Lush,     0x00, 0xa0, 0x00);
-    setBiomeColor(biomeColors, Cold,     0x60, 0x60, 0x60);
+    setBiomeColor(biomeColors, Oceanic, 0x00, 0x00, 0xa0);
+    setBiomeColor(biomeColors, Warm, 0xff, 0xc0, 0x00);
+    setBiomeColor(biomeColors, Lush, 0x00, 0xa0, 0x00);
+    setBiomeColor(biomeColors, Cold, 0x60, 0x60, 0x60);
     setBiomeColor(biomeColors, Freezing, 0xff, 0xff, 0xff);
-}
-
-
-// find the longest biome name contained in 's'
-static int _str2id(const char *s)
-{
-    if (*s == 0)
-        return -1;
-    const char *f = nullptr;
-    int ret = -1, id;
-    for (id = 0; id < 256; id++)
-    {
-        const char *p = biome2str(id);
-        if (p && (!f || strlen(f) < strlen(p)))
-            if (strstr(s, p)) {f = p; ret = id;}
-
-        const char *t = biome2str(id);
-        if (t && t != p && (!f || strlen(f) < strlen(p)))
-            if (strstr(s, t)) {f = t; ret = id;}
-    }
-    return ret;
-}
-
-int parseBiomeColors(unsigned char biomeColors[256][3], const char *buf)
-{
-    const char *p = buf;
-    char bstr[64];
-    int id, col[4], n, ib, ic;
-    n = 0;
-    while (*p)
-    {
-        for (ib = ic = 0; *p && *p != '\n'; p++)
-        {
-            if (isalpha(*p) && (size_t)ib+1 < sizeof(bstr))
-                bstr[ib++] = *p;
-            if (ic < 4 && (*p == '#' || (p[0] == '0' && p[1] == 'x')))
-                col[ic++] = strtol(p+1+(*p=='0'), (char**)&p, 16);
-            else if (ic < 4 && *p >= '0' && *p <= '9')
-                col[ic++] = strtol(p, (char**)&p, 10);
-            if (*p == '\n')
-                break;
-        }
-        while (*p == '\n') p++;
-
-        bstr[ib] = 0;
-        id = _str2id(bstr);
-        if (id >= 0 && id < 256)
-        {
-            if (ic == 3)
-            {
-                biomeColors[id][0] = col[0] & 0xff;
-                biomeColors[id][1] = col[1] & 0xff;
-                biomeColors[id][2] = col[2] & 0xff;
-                n++;
-            }
-            else if (ic == 1)
-            {
-                biomeColors[id][0] = (col[0] >> 16) & 0xff;
-                biomeColors[id][1] = (col[0] >>  8) & 0xff;
-                biomeColors[id][2] = (col[0] >>  0) & 0xff;
-                n++;
-            }
-        }
-        else if (ic == 4)
-        {
-            id = col[0] & 0xff;
-            biomeColors[id][0] = col[1] & 0xff;
-            biomeColors[id][1] = col[2] & 0xff;
-            biomeColors[id][2] = col[3] & 0xff;
-            n++;
-        }
-        else if (ic == 2)
-        {
-            id = col[0] & 0xff;
-            biomeColors[id][0] = (col[1] >> 16) & 0xff;
-            biomeColors[id][1] = (col[1] >>  8) & 0xff;
-            biomeColors[id][2] = (col[1] >>  0) & 0xff;
-            n++;
-        }
-    }
-    return n;
 }

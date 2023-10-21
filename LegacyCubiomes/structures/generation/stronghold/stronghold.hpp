@@ -16,13 +16,13 @@ namespace generation {
         //              sub-structs and sub-classes
         // #######################################################
 
-        enum class GenerationStep {
+        enum class GenerationStep : int8_t {
             PORTAL, // Generates the layout up to the portal room, Y level will be inaccurate
             LAYOUT, // Generates full layout, Y level will be inaccurate
             FULL,   // Generates full layout and calculates Y level for all pieces
         };
 
-        enum PieceType {
+        enum PieceType : int8_t {
             NONE,
             STRAIGHT,
             PRISON_HALL,
@@ -39,8 +39,6 @@ namespace generation {
         };
 
         struct PiecePlaceCount {
-
-
             PieceType pieceType;
             int placeCount;
 
@@ -65,32 +63,31 @@ namespace generation {
         // #######################################################
         //       class attributes, variables, functions
         // #######################################################
+    private:
+        RNG rng;
 
+    public:
+        Piece pieceArray[512]{};
+        int pendingPieceArray[512]{};
         PiecePlaceCount piecePlaceCounts[11]{};
-        GenerationStep generationStep = GenerationStep::FULL;
+        Piece* altarChestsArray[4]{};
+
         BoundingBox structureBoundingBox;
-        bool generationStopped = false;
+
+        Piece* portalRoomPiece = nullptr;
 
         int startX = 0;
         int startZ = 0;
-
-        PieceType forcedPiece = PieceType::NONE;
-        PieceType previousPiece = PieceType::NONE;
-        Piece* portalRoomPiece = nullptr;
-
-        Piece pieceArray[512]{};
         int pieceArraySize = 0;
-
-        /// holds the pieceArraySize when set
-        int pendingPieceArray[512]{};
         int pendingPiecesArraySize = 0;
-
-
-        Piece* altarChestsArray[4]{};
         int altarChestArraySize = 0;
-
         int totalWeight = 145;
         int piecePlaceCountsSize = 11;
+
+        GenerationStep generationStep = GenerationStep::FULL;
+        PieceType forcedPiece = PieceType::NONE;
+        PieceType previousPiece = PieceType::NONE;
+        bool generationStopped = false;
 
         Stronghold();
 
@@ -114,23 +111,23 @@ namespace generation {
         void resetPieces();
 
         void onWeightedPiecePlaced(int piecePlaceCountIndex);
-        Piece createPiece(PieceType pieceType, RNG& rng, DIRECTION direction, int depth, BoundingBox boundingBox);
-        void addPiece(Piece piece);
-        bool tryAddPieceFromType(PieceType pieceType, RNG& rng, Pos3D pos, DIRECTION direction, int depth);
-        void genAndAddPiece(RNG& rng, Pos3D pos, DIRECTION direction, int depth);
+        void createPiece(PieceType pieceType, DIRECTION direction, int8_t depth, BoundingBox boundingBox);
+
+        bool tryAddPieceFromType(PieceType pieceType, const Pos3D& pos, DIRECTION direction, int8_t depth);
+        void genAndAddPiece(const Pos3D& pos, DIRECTION direction, int8_t depth);
 
         /// piece gen
-        bool genPieceFromSmallDoor(RNG& rng, Pos3D pos, DIRECTION direction, int depth);
-        void genSmallDoorChildForward(Piece &piece, RNG& rng, int n, int n2);
-        void genSmallDoorChildLeft(Piece &piece, RNG& rng, int n, int n2);
-        void genSmallDoorChildRight(Piece &piece, RNG& rng, int n, int n2);
+        bool genPieceFromSmallDoor(const Pos3D& pos, DIRECTION direction, int8_t depth);
+        void genSmallDoorChildForward(Piece &piece, int n, int n2);
+        void genSmallDoorChildLeft(Piece &piece, int n, int n2);
+        void genSmallDoorChildRight(Piece &piece, int n, int n2);
 
-        void addChildren(Piece &piece, RNG& rng);
+        void addChildren(Piece &piece);
 
-        Piece* findCollisionPiece(BoundingBox &boundingBox);
-        bool collidesWithPiece(BoundingBox &boundingBox);
+        Piece* findCollisionPiece(const BoundingBox& boundingBox);
+        bool collidesWithPiece(const BoundingBox& boundingBox);
 
-        static BoundingBox createPieceBoundingBox(PieceType pieceType, Pos3D pos, DIRECTION dir);
+        static BoundingBox createPieceBoundingBox(PieceType pieceType, const Pos3D& pos, DIRECTION facing);
         static bool isOkBox(BoundingBox &boundingBox);
     };
 }

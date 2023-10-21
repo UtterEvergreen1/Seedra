@@ -4,7 +4,8 @@
 #include "noise.hpp"
 
 
-Generator::Generator(CONSOLE console, LCEVERSION version, WORLDSIZE size, BIOMESCALE scale)
+Generator::Generator(CONSOLE console, LCEVERSION version,
+                     WORLDSIZE size, BIOMESCALE scale)
         : worldSeed(0), version(version), console(console), biomeScale(scale),
           worldSize(size), worldCoordinateBounds(getChunkWorldBounds(size) << 4) {
     setupLayerStack(&this->layerStack, version, scale);
@@ -12,7 +13,8 @@ Generator::Generator(CONSOLE console, LCEVERSION version, WORLDSIZE size, BIOMES
 }
 
 
-Generator::Generator(CONSOLE console, LCEVERSION version, int64_t seed, WORLDSIZE size, BIOMESCALE scale)
+Generator::Generator(CONSOLE console, LCEVERSION version, int64_t seed,
+                     WORLDSIZE size, BIOMESCALE scale)
         : worldSeed(seed), version(version), console(console), biomeScale(scale),
           worldSize(size), worldCoordinateBounds(getChunkWorldBounds(size) << 4) {
     setupLayerStack(&this->layerStack, version, scale);
@@ -58,7 +60,7 @@ void Generator::changeWorldSize(WORLDSIZE size) {
 
 size_t Generator::getMinCacheSize(int scale, int sx, int sz) const {
     // recursively check the layer stack for the max buffer
-    const Layer *layerForScale = getLayerForScale(scale);
+    const Layer* layerForScale = getLayerForScale(scale);
     if (!layerForScale) {
         printf("getMinCacheSize(): failed to determine scaled layerForScale\n");
         exit(1);
@@ -74,12 +76,9 @@ int *Generator::allocCache(const Range &range) const {
 
 
 int Generator::genBiomes(int *cache, const Range &range) const {
-    int i;
-    int err = 1;
-
     const Layer *layerForScale = getLayerForScale(range.scale);
     if (!layerForScale) return -1;
-    err = genArea(layerForScale, cache, range.x, range.z, range.sx, range.sz);
+    int err = genArea(layerForScale, cache, range.x, range.z, range.sx, range.sz);
     if (err) return err;
 
     return 0;
@@ -88,10 +87,11 @@ int Generator::genBiomes(int *cache, const Range &range) const {
 
 int Generator::getBiomeAt(int scale, int x, int z) const {
     Range r = {scale, x, z, 1, 1};
-    int *ids = allocCache(r);
+    int* ids = allocCache(r);
     int id = genBiomes(ids, r);
-    if (id == 0)
-        id = ids[0];
+
+    if
+        (id == 0) id = ids[0];
     else
         id = BiomeID::none;
     free(ids);
@@ -141,7 +141,8 @@ Layer *Generator::getLayerForScale(int scale) const {
 // Checking Biomes & Biome Helper Functions
 //==============================================================================
 
-bool Generator::areBiomesViable(int x, int z, int rad, uint64_t validBiomes, uint64_t mutatedValidBiomes) const {
+bool Generator::areBiomesViable(int x, int z, int rad,
+                                uint64_t validBiomes, uint64_t mutatedValidBiomes) const {
     if (x - rad < -this->worldCoordinateBounds || x + rad >= this->worldCoordinateBounds ||
         z - rad < -this->worldCoordinateBounds || z + rad >= this->worldCoordinateBounds) {
         return false;
@@ -178,7 +179,7 @@ bool Generator::areBiomesViable(int x, int z, int rad, uint64_t validBiomes, uin
             }
         }
     }
-    if (false) L_no: viable = 0;
+    if (false) L_no: viable = false;
     if (ids)
         free(ids);
     return viable;
@@ -371,7 +372,7 @@ Pos2D Generator::getSpawnBlock() const {
 
         if (spawn.z > worldCoordinateBounds || spawn.z < -worldCoordinateBounds)
             spawn.z = 0;
-    };
+    }
 
     return spawn;
 }
