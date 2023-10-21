@@ -57,20 +57,16 @@ void Generator::changeWorldSize(WORLDSIZE size) {
 
 
 size_t Generator::getMinCacheSize(int scale, int sx, int sz) const {
-    size_t len = (size_t) sx * sz;
     // recursively check the layer stack for the max buffer
     const Layer *layerForScale = getLayerForScale(scale);
     if (!layerForScale) {
         printf("getMinCacheSize(): failed to determine scaled layerForScale\n");
         exit(1);
     }
-    size_t len2d = getMinLayerCacheSize(layerForScale, sx, sz);
-    len += len2d - sx * sz;
-
-    return len;
+    return getMinLayerCacheSize(layerForScale, sx, sz);
 }
 
-
+///TODO: make it int8_t array as biome ids don't go higher than 255; will need to refactor all uses of biomes
 int *Generator::allocCache(const Range &range) const {
     size_t len = getMinCacheSize(range.scale, range.sx, range.sz);
     return (int *) calloc(len, sizeof(int));
@@ -86,8 +82,6 @@ int Generator::genBiomes(int *cache, const Range &range) const {
     err = genArea(layerForScale, cache, range.x, range.z, range.sx, range.sz);
     if (err) return err;
 
-    for (i = 0; i < range.sx * range.sz; i++)
-        cache[range.sx * range.sz + i] = cache[i];
     return 0;
 }
 
@@ -148,8 +142,8 @@ Layer *Generator::getLayerForScale(int scale) const {
 //==============================================================================
 
 bool Generator::areBiomesViable(int x, int z, int rad, uint64_t validBiomes, uint64_t mutatedValidBiomes) const {
-    if (x - rad < -this->worldCoordinateBounds || x + rad > this->worldCoordinateBounds ||
-        z - rad < -this->worldCoordinateBounds || z + rad > this->worldCoordinateBounds) {
+    if (x - rad < -this->worldCoordinateBounds || x + rad >= this->worldCoordinateBounds ||
+        z - rad < -this->worldCoordinateBounds || z + rad >= this->worldCoordinateBounds) {
         return false;
     }
 
