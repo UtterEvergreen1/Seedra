@@ -5,6 +5,7 @@
 class MathHelper {
 private:
     static constexpr int TABLE_SIZE = 65536;
+    static constexpr int TABLE_WRAP = 65535;
     float SIN_TABLE[TABLE_SIZE]{};
     static constexpr float CONVERSION = 10430.378F;
 
@@ -25,7 +26,7 @@ public:
      * input value range for unique values: 0-2π
      */
     static float sin(float value) {
-        return MathHelper::Instance().SIN_TABLE[(int)(value * CONVERSION) & TABLE_SIZE];
+        return MathHelper::Instance().SIN_TABLE[(int)(value * CONVERSION) & TABLE_WRAP];
     }
 
     /**
@@ -34,7 +35,7 @@ public:
      * It is offset by +1/2π into the table.
      */
     static float cos(float value) {
-        return MathHelper::Instance().SIN_TABLE[(int)(value * CONVERSION + 16384.0F) & TABLE_SIZE];
+        return MathHelper::Instance().SIN_TABLE[(int)(value * CONVERSION + 16384.0F) & TABLE_WRAP];
     }
 
 
