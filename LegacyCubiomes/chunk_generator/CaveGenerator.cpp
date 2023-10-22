@@ -152,8 +152,8 @@ void CaveGenerator::addTunnel(int64_t seedModifier, Pos2D chunk, ChunkPrimer *ch
                 int maxX = (int) floor(start.x + tunnelWidthScaled) - chunk.x * 16 + 1;
                 int minY = (int) floor(start.y - tunnelHeight) - 1;
                 int maxY = (int) floor(start.y + tunnelHeight) + 1;
-                int minZ = (int) floor(start.z - tunnelWidthScaled) - chunk.x * 16 - 1;
-                int maxZ = (int) floor(start.z + tunnelWidthScaled) - chunk.x * 16 + 1;
+                int minZ = (int) floor(start.z - tunnelWidthScaled) - chunk.z * 16 - 1;
+                int maxZ = (int) floor(start.z + tunnelWidthScaled) - chunk.z * 16 + 1;
 
                 if (minX < 0) minX = 0;
                 if (maxX > 16) maxX = 16;
@@ -187,7 +187,7 @@ void CaveGenerator::addTunnel(int64_t seedModifier, Pos2D chunk, ChunkPrimer *ch
                         double scaleX = ((double) (currentX + chunk.x * 16) + 0.5 - start.x) / tunnelWidthScaled;
 
                         for (int currentZ = minZ; currentZ < maxZ; ++currentZ) {
-                            double scaleZ = ((double) (currentZ + chunk.x * 16) + 0.5 - start.z) / tunnelWidthScaled;
+                            double scaleZ = ((double) (currentZ + chunk.z * 16) + 0.5 - start.z) / tunnelWidthScaled;
                             bool isTopBlock = false;
 
                             if (scaleX * scaleX + scaleZ * scaleZ < 1.0) {
@@ -258,7 +258,7 @@ CaveGenerator::recursiveGenerate(int baseChunkX, int baseChunkZ, int targetX, in
         }
 
         for (int currentSegment = 0; currentSegment < segmentCount; ++currentSegment) {
-            float yaw = rng.nextFloat() * ((float) PI * 2.0F);
+            float yaw = rng.nextFloat() * (PI_FLOAT * 2.0F);
             float pitch = (rng.nextFloat() - 0.5F) * 2.0F / 8.0F;
 
             float f1 = rng.nextFloat();
