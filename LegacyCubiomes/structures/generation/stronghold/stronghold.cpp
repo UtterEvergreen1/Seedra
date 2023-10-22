@@ -68,7 +68,7 @@ namespace generation {
         startX = (chunkX << 4) + 2;
         startZ = (chunkZ << 4) + 2;
 
-        while (portalRoomPiece == nullptr) {
+        do {
             resetPieces();
 
             // creates starting staircase
@@ -131,14 +131,18 @@ namespace generation {
             for (int index = 0; index < pieceArraySize; index++) {
                 pieceArray[index].offsetY(k);
             }
-        }
+        } while (portalRoomPiece == nullptr);
     }
 
 
     void Stronghold::resetPieces() {
-        memcpy(&piecePlaceCounts[0],
-               &PIECE_PLACE_COUNT_DEFAULT[0],
-               11 * sizeof(PIECE_PLACE_COUNT_DEFAULT[0]));
+        /*memcpy(&piecePlaceCounts,
+               &PIECE_PLACE_COUNT_DEFAULT,
+               11 * sizeof(PIECE_PLACE_COUNT_DEFAULT));*/
+        for (int i = 0; i < 11; i++) {
+            piecePlaceCounts[i] = PIECE_PLACE_COUNT_DEFAULT[i];
+        }
+
         generationStopped = false;
         forcedPiece = PieceType::NONE;
         previousPiece = PieceType::NONE;

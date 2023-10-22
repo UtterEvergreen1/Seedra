@@ -78,15 +78,14 @@ void CaveGenerator::addTunnel(int64_t seedModifier, Pos2D chunk, ChunkPrimer *ch
 
     for (bool isTunnelWide = rng.nextInt(6) == 0; currentTunnelSegment < maxTunnelSegment; ++currentTunnelSegment) {
         double tunnelWidthScaled = 1.5 + (double) (
-                std::sin((float) currentTunnelSegment * (float) PI / (float) maxTunnelSegment) * tunnelWidth);
+                MathHelper::sin((float) currentTunnelSegment * PI_FLOAT / (float) maxTunnelSegment) * tunnelWidth);
         double tunnelHeight = tunnelWidthScaled * tunnelHeightMultiplier;
-        float directionCosine = std::cos(tunnelSlope);
-        float directionSine = std::sin(tunnelSlope);
-        start.x += (double) (std::cos(tunnelDirection) * directionCosine);
+        float directionCosine = MathHelper::cos(tunnelSlope);
+        float directionSine = MathHelper::sin(tunnelSlope);
+        start.x += (double) (MathHelper::cos(tunnelDirection) * directionCosine);
         start.y += (double) directionSine;
-        start.z += (double) (std::sin(tunnelDirection) * directionCosine);
+        start.z += (double) (MathHelper::sin(tunnelDirection) * directionCosine);
 
-        // -115 to -114.47070533037186 = double(std::cos(1.01213527) * 0.998572528)
         if (isTunnelWide) {
             tunnelSlope = tunnelSlope * 0.92F;
         } else {
@@ -254,14 +253,8 @@ CaveGenerator::recursiveGenerate(int baseChunkX, int baseChunkZ, int targetX, in
         int segmentCount = 1;
 
         if (rng.nextInt(4) == 0) {
-            float tunnelWidth = 1.0F + rng.nextFloat() * 6.0F;
-            addTunnel((int64_t) rng.nextLong(), {targetX, targetZ}, chunkPrimer,
-                      {tunnelStartX, tunnelStartY, tunnelStartZ},
-                       tunnelWidth, 0.0F, 0.0F, -1, -1, 0.5);
+            addRoom((int64_t)rng.nextLong(), {targetX, targetZ}, chunkPrimer, {tunnelStartX, tunnelStartY, tunnelStartZ}, rng);
             segmentCount = rng.nextInt(4) + 1;
-
-            //addRoom((int64_t)nextLong(&rng), targetX, targetZ, chunkPrimer, tunnelStartX, tunnelStartY, tunnelStartZ, &rng);
-            //segmentCount = nextInt(&rng, 4) + 1;
         }
 
         for (int currentSegment = 0; currentSegment < segmentCount; ++currentSegment) {
