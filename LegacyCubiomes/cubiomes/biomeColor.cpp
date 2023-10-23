@@ -1,46 +1,9 @@
 
 #include <cstring>
 
-#include "util.hpp"
-#include "layers.hpp"
+#include "biomeColor.hpp"
+#include "biomeID.hpp"
 
-
-const char *getStructureName(StructureType type) {
-    switch (type) {
-        case StructureType::DesertPyramid:
-            return "DesertPyramid";
-        case StructureType::JunglePyramid:
-            return "JunglePyramid";
-        case StructureType::SwampHut:
-            return "SwampHut";
-        case StructureType::Igloo:
-            return "Igloo";
-        case StructureType::Village:
-            return "Village";
-        case StructureType::OceanRuin:
-            return "OceanRuin";
-        case StructureType::Mansion:
-            return "Mansion";
-        case StructureType::Monument:
-            return "Monument";
-        case StructureType::Treasure:
-            return "Buried Treasure";
-        case StructureType::Shipwreck:
-            return "Shipwreck";
-        case StructureType::Outpost:
-            return "Outpost";
-        case StructureType::Mineshaft:
-            return "Mineshaft";
-        case StructureType::Fortress:
-            return "Fortress";
-        case StructureType::EndCity:
-            return "EndCity";
-        case StructureType::EndGateway:
-            return "EndGateway";
-        default:
-            return "NONE";
-    }
-}
 
 void setBiomeColor(unsigned char biomeColor[256][3], int id,
                    unsigned char r, unsigned char g, unsigned char b) {

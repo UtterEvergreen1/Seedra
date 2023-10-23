@@ -2,8 +2,8 @@
 
 #include <utility>
 
+#include "biomeColor.hpp"
 #include "generator.hpp"
-#include "util.hpp"
 
 #define STB_IMAGE_WRITE_IMPLEMENTATION
 #include "LegacyCubiomes/utils/stb_image_write.h"

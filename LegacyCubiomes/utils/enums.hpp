@@ -71,6 +71,28 @@ enum class WORLDSIZE : int8_t {
     LARGE = 3
 };
 
+
+enum class StructureType : uint8_t {
+    DesertPyramid,
+    JungleTemple, JunglePyramid = JungleTemple,
+    SwampHut,
+    Igloo,
+    Village,
+    OceanRuin,
+    Mansion,
+    Monument,
+    Treasure,
+    Shipwreck,
+    Outpost,
+    Mineshaft,
+    Fortress,
+    EndCity,
+    EndGateway,
+    NONE
+};
+
+
+
 inline static std::string LceVersionToString(LCEVERSION version) {
     switch (version) {
         case LCEVERSION::PS4_VP:
@@ -103,6 +125,45 @@ inline static int getChunkWorldBounds(WORLDSIZE worldSize) {
             return 96;
         case WORLDSIZE::LARGE:
             return 160;
+    }
+}
+
+
+
+inline static std::string getStructureName(StructureType type) {
+    switch (type) {
+        case StructureType::DesertPyramid:
+            return "DesertPyramid";
+        case StructureType::JunglePyramid:
+            return "JunglePyramid";
+        case StructureType::SwampHut:
+            return "SwampHut";
+        case StructureType::Igloo:
+            return "Igloo";
+        case StructureType::Village:
+            return "Village";
+        case StructureType::OceanRuin:
+            return "OceanRuin";
+        case StructureType::Mansion:
+            return "Mansion";
+        case StructureType::Monument:
+            return "Monument";
+        case StructureType::Treasure:
+            return "Buried Treasure";
+        case StructureType::Shipwreck:
+            return "Shipwreck";
+        case StructureType::Outpost:
+            return "Outpost";
+        case StructureType::Mineshaft:
+            return "Mineshaft";
+        case StructureType::Fortress:
+            return "Fortress";
+        case StructureType::EndCity:
+            return "EndCity";
+        case StructureType::EndGateway:
+            return "EndGateway";
+        default:
+            return "NONE";
     }
 }
 

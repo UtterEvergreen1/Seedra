@@ -62,6 +62,7 @@ public:
     MU inline void advance520() {seed = (seed * 0x53E5A095E721 + 0xCACA74409848) & 0xFFFFFFFFFFFF;}
     MU inline void advance760() {seed = (seed * 0xE5CFDCCC10E1 + 0x2FC9E05B45B8) & 0xFFFFFFFFFFFF;}
     MU inline void advance772() {seed = (seed * 0x129FF9FE0B11 + 0x80152440A804) & 0xFFFFFFFFFFFF;}
+    MU inline void advance17292() {seed = (seed * 257489430523441 + 184379205320524) & 0xFFFFFFFFFFFF;}
 
     ND MU inline uint64_t getSeed() const {
         return seed;

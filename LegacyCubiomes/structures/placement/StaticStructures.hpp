@@ -2,9 +2,9 @@
 
 #include <vector>
 
-#include "LegacyCubiomes/utils/Pos2D.hpp"
+#include "LegacyCubiomes/cubiomes/biomeColor.hpp"
 #include "LegacyCubiomes/cubiomes/generator.hpp"
-#include "LegacyCubiomes/cubiomes/util.hpp"
+#include "LegacyCubiomes/utils/Pos2D.hpp"
 
 namespace Placement {
     template<class Derived>

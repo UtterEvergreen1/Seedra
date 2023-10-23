@@ -8,6 +8,7 @@
 #include "generator.hpp"
 #include "LegacyCubiomes/utils/MathHelper.hpp"
 
+
 double maintainPrecision(double x) {
     return x - floor(x / 33554432.0 + 0.5) * 33554432.0;
 }
@@ -97,7 +98,7 @@ double samplePerlin(const Generator *g, const PerlinNoise *noise,
     double t2 = d2 * d2 * d2 * (d2 * (d2 * 6.0 - 15.0) + 10.0);
     double t3 = d3 * d3 * d3 * (d3 * (d3 * 6.0 - 15.0) + 10.0);
 
-    if (yAmp) {
+    if (yAmp != 0.0) {
         double yClamp = yMin < d2 ? yMin : d2;
         d2 -= floor(yClamp / yAmp) * yAmp;
     }
@@ -143,6 +144,15 @@ static double simplexGrad(int idx, double x, double y, double z, double d) {
 }
 
 
+static double simplexGrad_HARDCODED(int idx, double x, double y) {
+    double con = 0.5 - x * x - y * y;
+    if (con < 0)
+        return 0;
+    con *= con;
+    return con * con * indexedLerp(idx, x, y, 0);
+}
+
+
 double sampleSimplex2D(const PerlinNoise *noise, double x, double y) {
     const double SKEW = 0.5 * (sqrt(3) - 1.0);
     const double UNSKEW = (3.0 - sqrt(3)) / 6.0;
@@ -166,9 +176,9 @@ double sampleSimplex2D(const PerlinNoise *noise, double x, double y) {
     gi1 = noise->d[0xff & (gi1 + hx + offx)];
     gi2 = noise->d[0xff & (gi2 + hx + 1)];
     double t = 0;
-    t += simplexGrad(gi0 % 12, x0, y0, 0.0, 0.5);
-    t += simplexGrad(gi1 % 12, x1, y1, 0.0, 0.5);
-    t += simplexGrad(gi2 % 12, x2, y2, 0.0, 0.5);
+    t += simplexGrad_HARDCODED(gi0 % 12, x0, y0); // , 0.0, 0.5
+    t += simplexGrad_HARDCODED(gi1 % 12, x1, y1); // , 0.0, 0.5
+    t += simplexGrad_HARDCODED(gi2 % 12, x2, y2); // , 0.0, 0.5
     return 70.0 * t;
 }
 
