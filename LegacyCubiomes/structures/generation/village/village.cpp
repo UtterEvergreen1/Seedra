@@ -199,8 +199,6 @@ namespace generation {
                 rng.nextInt(10); // cropTypeD
                 return;
             case PieceType::House2:
-                blackSmithPiece = &pieceArray[pieceArraySize];
-                return;
             case PieceType::Church:
             case PieceType::House1:
             case PieceType::Hall:
@@ -269,6 +267,10 @@ namespace generation {
                                structureComponent.getCenterZ(),
                                radius,
                                Placement::Village<false>::VALID_BIOMES)) {
+
+            if(structureComponent.type == PieceType::House2)
+                blackSmithPiece = &pieceArray[pieceArraySize];
+
             pieceArray[pieceArraySize++] = structureComponent;
             return structureComponent;
         }
