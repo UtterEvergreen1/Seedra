@@ -381,7 +381,7 @@ void setLayerSeed(Layer* layer, uint64_t worldSeed) {
 ///=============================================================================
 
 /* Set up custom layers. */
-Layer* setupLayer(Layer* l, mapfunc_t* map, int theMc, int8_t zoom, int8_t edge, uint64_t saltBase, Layer* p,
+Layer* setupLayer(Layer* l, mapfunc_t* map, MCVERSION theMc, int8_t zoom, int8_t edge, uint64_t saltBase, Layer* p,
                   Layer* p2) {
     //Layer *l = g->layers + layerId;
     l->getMap = map;
@@ -418,7 +418,7 @@ void setupScale(Layer* l, int scale) {
 //TODO: BIOMES FOR EARLY VERSIONS (before elytra)
 void setupLayerStack(LayerStack* g, LCEVERSION lceVersion, BIOMESCALE biomeSize) {
 
-    int mc = getMCVersion(lceVersion);
+    MCVERSION mc = getMCVersion(lceVersion);
     memset(g, 0, sizeof(LayerStack));
     Layer *p, *l = g->layers;
     // L: layer

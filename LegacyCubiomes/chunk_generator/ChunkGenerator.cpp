@@ -1,5 +1,6 @@
-#include "biome.hpp"
 #include "ChunkGenerator.hpp"
+#include "LegacyCubiomes/utils/range.hpp"
+#include "biome.hpp"
 
 
 ChunkGeneratorOverWorld::ChunkGeneratorOverWorld(const Generator &generator) : g(generator) {

@@ -81,61 +81,16 @@ enum LayerId {
 };
 
 
-class Range {
-public:
-    // Cuboidal range, given by a position, size and scaling in the horizontal
-    // axes, used to define a generation range. The parameters for the vertical
-    // control can be left at zero when dealing with versions without 3D volume
-    // support. The vertical scaling is equal to 1:1 iff scale == 1, and 1:4
-    // (default biome scale) in all other cases!
-    //
-    // @scale:  Horizontal scale factor, should be one of 1, 4, 16, 64, or 256
-    //          additionally a value of zero bypasses scaling and expects a
-    //          manual generation entry layer.
-    // @x,z:    Horizontal position, i.e. coordinates of north-west corner.
-    // @sx,sz:  Horizontal size (width and height for 2D), should be positive.
-    //
-    // Volumes generated with a range are generally indexed as:
-    //  out [ i_z*sx + i_x ]
-    // where i_x, i_z are indecies in their respective directions.
-    //
-    // EXAMPLES
-    // Area at normal biome scale (1:4):
-    //  Range r_2d = {4, x,z, sx,sz};
-    // (C99 syntax allows commission of the trailing zero-initialization.)
-    //
-    // Area at block scale (1:1) at sea level:
-    //  Range r_surf = {1, x,z, sx,sz, 63};
-    // (Block level scale uses voronoi sampling with 1:1 vertical scaling.)
-    //
-    // Area at chunk scale (1:16) near sea level:
-    //  Range r_surf16 = {16, x,z, sx,sz, 15};
-    // (Note that the vertical scaling is always 1:4 for non-voronoi scales.)
-    //
-    // Volume at scale (1:4):
-    //  Range r_vol = {4, x,z, sx,sz, y,sy};
-
-    int scale;
-    int x, z, sx, sz;
-
-    friend std::ostream& operator<<(std::ostream& out, const Range& range) {
-        out << "Range{" << range.scale << ", " << range.x << ", " << range.z << ", " << range.sx << ", " << range.sz
-            << "}";
-        return out;
-    }
-};
-
-
 struct Layer;
 typedef int(mapfunc_t)(const struct Layer*, int*, int, int, int, int);
 
 struct Layer {
     mapfunc_t* getMap;
 
-    int8_t mc;   // minecraft version
-    int8_t zoom; // zoom factor of layer
-    int8_t edge; // maximum border required from parent layer
-    int scale;   // scale of this layer (cell = scale x scale blocks)
+    MCVERSION mc; // minecraft version
+    int8_t zoom;  // zoom factor of layer
+    int8_t edge;  // maximum border required from parent layer
+    int scale;    // scale of this layer (cell = scale x scale blocks)
 
     uint64_t layerSalt; // processed salt or initialization mode
     uint64_t startSalt; // (depends on world seed) used to step PRNG forward
@@ -143,6 +98,7 @@ struct Layer {
 
     Layer *p, *p2; // parent layers
 };
+
 
 // Overworld biome const generator
 struct LayerStack {
@@ -154,6 +110,7 @@ struct LayerStack {
     Layer* entry_64;  // [L_HILLS_64|L_SUNFLOWER_64]
     Layer* entry_256; // [L_BIOME_256|L_BAMBOO_256]
 };
+
 
 // End biome const generator 1.9+
 typedef PerlinNoise EndNoise;
@@ -182,18 +139,18 @@ int getBiomeDepthAndScale(int id, double* depth, double* scale, int* grass);
 // End (1.9+) Biome Noise Generation
 //==============================================================================
 void setEndSeed(EndNoise* en, uint64_t seed);
-MU int getSurfaceHeightEnd(const Generator* g, int mc, uint64_t seed, int x, int z);
+MU int getSurfaceHeightEnd(const Generator* g, MCVERSION mc, uint64_t seed, int x, int z);
 
 
 //==============================================================================
 // BiomeID Helpers
 //==============================================================================
 
-MU int biomeExists(int mc, int id);
-MU int isOverworld(int mc, int id);
-int getMutated(int mc, int id);
-int getCategory(int mc, int id);
-int areSimilar(int mc, int id1, int id2);
+MU int biomeExists(MCVERSION mc, int id);
+MU int isOverworld(MCVERSION mc, int id);
+int getMutated(MCVERSION mc, int id);
+int getCategory(MCVERSION mc, int id);
+int areSimilar(MCVERSION mc, int id1, int id2);
 int isMesa(int id);
 int isShallowOcean(int id);
 int isDeepOcean(int id);
@@ -231,7 +188,7 @@ mapfunc_t mapOceanTemp;
 mapfunc_t mapOceanMix;
 
 // stuff moved from generation
-Layer* setupLayer(Layer* l, mapfunc_t* map, int theMc, int8_t zoom, int8_t edge, uint64_t saltBase, Layer* p,
+Layer* setupLayer(Layer* l, mapfunc_t* map, MCVERSION theMc, int8_t zoom, int8_t edge, uint64_t saltBase, Layer* p,
                   Layer* p2);
 void setupScale(Layer* l, int scale);
 int genArea(const Layer* layer, int* out, int areaX, int areaZ, int areaWidth, int areaHeight);

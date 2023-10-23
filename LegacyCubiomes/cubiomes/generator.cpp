@@ -1,5 +1,6 @@
 #include "generator.hpp"
 
+#include "LegacyCubiomes/utils/range.hpp"
 #include "LegacyCubiomes/utils/rng.hpp"
 #include "noise.hpp"
 
