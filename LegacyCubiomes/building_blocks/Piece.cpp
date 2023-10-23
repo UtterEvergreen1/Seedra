@@ -1,7 +1,6 @@
 #include "Piece.hpp"
 
 
-
 Pos2D Piece::getBoundingBoxCenter() const {
     Pos2D pos{};
     pos.x = minX + maxX / 2;
@@ -43,9 +42,7 @@ Pos2D Piece::getWorldPos(int offsetWidth, int offsetDepth) const {
 }
 
 
-BoundingBox Piece::makeBoundingBox(int x, int y, int z,
-                                   DIRECTION direction,
-                                   int width, int height, int depth) {
+BoundingBox Piece::makeBoundingBox(int x, int y, int z, DIRECTION direction, int width, int height, int depth) {
     if (direction == DIRECTION::NORTH || direction == DIRECTION::SOUTH) {
         return {x, y, z, x + width - 1, y + height - 1, z + depth - 1};
     } else {

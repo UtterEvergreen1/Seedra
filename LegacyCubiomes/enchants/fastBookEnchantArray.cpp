@@ -5,9 +5,7 @@
 //==============================================================================
 
 
-void ELDataArray::addData(Enchantment* ench, int id) {
-    data[totalEnchants++] = EnchantmentData(ench, id);
-}
+void ELDataArray::addData(Enchantment* ench, int id) { data[totalEnchants++] = EnchantmentData(ench, id); }
 
 
 EnchantmentData* ELDataArray::getIndex(int indexIn) {
@@ -16,9 +14,7 @@ EnchantmentData* ELDataArray::getIndex(int indexIn) {
 }
 
 
-EnchantmentData* ELDataArray::getLastEnchantmentAdded() {
-    return &data[enchants.getLastValueIndex()];
-}
+EnchantmentData* ELDataArray::getLastEnchantmentAdded() { return &data[enchants.getLastValueIndex()]; }
 
 
 void ELDataArray::addRandomItem(RNG& rng) {
@@ -46,7 +42,7 @@ void ELDataArray::addRandomItem(RNG& rng) {
                 low = mid + 1;
             }
         }
-        enchants.addItem((int)low);
+        enchants.addItem((int) low);
         return;
     }
 
@@ -54,8 +50,7 @@ void ELDataArray::addRandomItem(RNG& rng) {
     for (int enchIndex = 0; enchIndex < totalEnchants; enchIndex++) {
 
         for (int i = 0; i < deletions.getIndex(); i++)
-            if (enchIndex == deletions.getValueAt(i))
-                goto END;
+            if (enchIndex == deletions.getValueAt(i)) goto END;
 
         weight -= data[enchIndex].obj->rarity->getWeight();
 
@@ -65,7 +60,7 @@ void ELDataArray::addRandomItem(RNG& rng) {
             return;
         }
 
-        END:;
+    END:;
     }
 }
 
@@ -105,8 +100,8 @@ void EnchantedBookEnchantsLookupTable::setup() {
         dataArrays[cost] = new ELDataArray();
         auto array = dataArrays[cost];
 
-        for (Enchantment* ench_pt : Enchantment::REGISTRY.getRegistry()) {
-            if(ench_pt == nullptr) throw std::runtime_error("Enchantment pointer is NULL; the table is incorrect!");
+        for (Enchantment* ench_pt: Enchantment::REGISTRY.getRegistry()) {
+            if (ench_pt == nullptr) throw std::runtime_error("Enchantment pointer is NULL; the table is incorrect!");
             for (int level = ench_pt->maxLevel; level > 0; --level) {
 
                 if (cost >= ench_pt->getMinCost(level) && cost <= ench_pt->getMaxCost(level)) {
@@ -122,7 +117,7 @@ void EnchantedBookEnchantsLookupTable::setup() {
 
 
 void EnchantedBookEnchantsLookupTable::deallocate() {
-    for (auto & vector : dataArrays) {
+    for (auto& vector: dataArrays) {
         delete vector;
         vector = nullptr;
     }
@@ -131,4 +126,3 @@ void EnchantedBookEnchantsLookupTable::deallocate() {
 
 int8_t EnchantedBookEnchantsLookupTable::TOTAL_WEIGHT = 0;
 int8_t EnchantedBookEnchantsLookupTable::CUMULATIVE_WEIGHT_ALL[Enchantment::MAX_ENCHANTMENT_COUNT] = {0};
-

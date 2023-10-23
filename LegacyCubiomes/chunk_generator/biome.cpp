@@ -2,7 +2,7 @@
 #include "biome.hpp"
 #include "ChunkPrimer.hpp"
 
-std::map<int, Biome *> Biome::registry;
+std::map<int, Biome*> Biome::registry;
 
 void Biome::registerBiomes() {
     // frozenOcean,
@@ -78,11 +78,9 @@ void Biome::registerBiomes() {
     registerBiome(165, new BiomeMesa(true, false, "Mesa_Bryce", 0.1F, 0.2F, false, 2.0F));
     registerBiome(166, new BiomeMesa(false, true, "Mesa_Plateau_F_M", 0.45F, 0.3F, false, 2.0F));
     registerBiome(167, new BiomeMesa(false, false, "Mesa_Plateau_M", 0.45F, 0.3F, false, 2.0F));
-
-
 }
 
-void Biome::generateBiomeTerrain(RNG& rng, ChunkPrimer *chunkPrimerIn, int x, int z, double noiseVal) {
+void Biome::generateBiomeTerrain(RNG& rng, ChunkPrimer* chunkPrimerIn, int x, int z, double noiseVal) {
     int seaLevel = 63; // sea level
     uint16_t iBlockState = this->topBlock.block;
     uint16_t iBlockState1 = this->fillerBlock.block;
@@ -93,11 +91,9 @@ void Biome::generateBiomeTerrain(RNG& rng, ChunkPrimer *chunkPrimerIn, int x, in
     Pos3D blockPos;
 
     for (int j1 = 255; j1 >= 0; --j1) {
-        if (j1 == 0)
-            break;
+        if (j1 == 0) break;
 
-        if (rng.nextInt(2) + 1 >= j1 - 1)
-            chunkPrimerIn->setBlock(i1, j1 - 1, l, Items::BEDROCK_ID);
+        if (rng.nextInt(2) + 1 >= j1 - 1) chunkPrimerIn->setBlock(i1, j1 - 1, l, Items::BEDROCK_ID);
         else {
             uint16_t iBlockState2 = chunkPrimerIn->getBlock(i1, j1, l);
 
@@ -115,16 +111,14 @@ void Biome::generateBiomeTerrain(RNG& rng, ChunkPrimer *chunkPrimerIn, int x, in
 
                     if (j1 < seaLevel && !iBlockState) {
                         blockPos.setPos(x, j1, z);
-                        if (this->getFloatTemperature(blockPos) < 0.15F)
-                            iBlockState = Items::ICE_ID;
+                        if (this->getFloatTemperature(blockPos) < 0.15F) iBlockState = Items::ICE_ID;
                         else
                             iBlockState = Items::STILL_WATER_ID;
                     }
 
                     j = k;
 
-                    if (j1 >= seaLevel - 1)
-                        chunkPrimerIn->setBlock(i1, j1, l, iBlockState);
+                    if (j1 >= seaLevel - 1) chunkPrimerIn->setBlock(i1, j1, l, iBlockState);
                     else if (j1 < seaLevel - 7 - k) {
                         iBlockState = Items::AIR_ID;
                         iBlockState1 = Items::STONE_ID;
@@ -137,7 +131,8 @@ void Biome::generateBiomeTerrain(RNG& rng, ChunkPrimer *chunkPrimerIn, int x, in
 
                     if (j == 0 && iBlockState1 == Items::SAND_ID && k > 1) {
                         j = rng.nextInt(4) + std::max(0, j1 - 63);
-                        iBlockState1 = Items::SANDSTONE_ID; // 179 for redsandstone //((iblockstate1) == "red_sand" ? "red_sandstone" : "sandstone");
+                        iBlockState1 = Items::
+                                SANDSTONE_ID; // 179 for redsandstone //((iblockstate1) == "red_sand" ? "red_sandstone" : "sandstone");
                     }
                 }
             }
@@ -145,12 +140,10 @@ void Biome::generateBiomeTerrain(RNG& rng, ChunkPrimer *chunkPrimerIn, int x, in
     }
 }
 
-void BiomeMesa::genTerrainBlocks(int64_t worldSeedIn, RNG& rng, ChunkPrimer *chunkPrimerIn, int x, int z,
+void BiomeMesa::genTerrainBlocks(int64_t worldSeedIn, RNG& rng, ChunkPrimer* chunkPrimerIn, int x, int z,
                                  double noiseVal) {
     this->worldSeed = worldSeedIn;
-    if (this->clayBands.empty()) {
-        this->generateClayBands(worldSeedIn);
-    }
+    if (this->clayBands.empty()) { this->generateClayBands(worldSeedIn); }
 
     if (this->pillarNoise.noiseLevels.empty() || this->pillarRoofNoise.noiseLevels.empty()) {
         RNG rng1;
@@ -170,8 +163,7 @@ void BiomeMesa::genTerrainBlocks(int64_t worldSeedIn, RNG& rng, ChunkPrimer *chu
             d4 = d0 * d0 * 2.5;
             double d3 = ceil(d2 * 50.0) + 14.0;
 
-            if (d4 > d3)
-                d4 = d3;
+            if (d4 > d3) d4 = d3;
 
             d4 = d4 + 64.0;
         }
@@ -191,16 +183,13 @@ void BiomeMesa::genTerrainBlocks(int64_t worldSeedIn, RNG& rng, ChunkPrimer *chu
         if (!chunkPrimerIn->getBlock(l1, j1, k1) && j1 < (int) d4) {
             chunkPrimerIn->setBlock(l1, j1, k1, Items::STONE_ID);
         }
-        if (j1 == 0)
-            break;
+        if (j1 == 0) break;
 
-        if (rng.nextInt(2) + 1 >= j1 - 1)
-            chunkPrimerIn->setBlock(l1, j1 - 1, k1, Items::BEDROCK_ID);
+        if (rng.nextInt(2) + 1 >= j1 - 1) chunkPrimerIn->setBlock(l1, j1 - 1, k1, Items::BEDROCK_ID);
         else if (i1 < 15 || this->brycePillars) {
             uint16_t iBlockState1 = chunkPrimerIn->getBlock(l1, j1, k1);
 
-            if (!iBlockState1)
-                l = -1;
+            if (!iBlockState1) l = -1;
             else if (iBlockState1 == Items::STONE_ID) {
                 if (l == -1) {
                     flag1 = false;
@@ -215,16 +204,14 @@ void BiomeMesa::genTerrainBlocks(int64_t worldSeedIn, RNG& rng, ChunkPrimer *chu
 
                     if (j1 >= seaLevel - 1) {
                         if (this->hasForest && j1 > 86 + k * 2) {
-                            if (flag)
-                                chunkPrimerIn->setBlockAndData(l1, j1, k1, Items::COARSE_DIRT);
+                            if (flag) chunkPrimerIn->setBlockAndData(l1, j1, k1, Items::COARSE_DIRT);
                             else
                                 chunkPrimerIn->setBlock(l1, j1, k1, Items::GRASS_ID);
                         } else if (j1 > seaLevel + 3 + k) {
                             uint16_t iBlockState2;
 
                             if (j1 >= 64 && j1 <= 127) {
-                                if (flag)
-                                    iBlockState2 = Items::HARDENED_CLAY_ID;
+                                if (flag) iBlockState2 = Items::HARDENED_CLAY_ID;
                                 else
                                     iBlockState2 = this->getClayBand(x, j1).block;
                             } else
@@ -244,8 +231,7 @@ void BiomeMesa::genTerrainBlocks(int64_t worldSeedIn, RNG& rng, ChunkPrimer *chu
                 } else if (l > 0) {
                     --l;
 
-                    if (flag1)
-                        chunkPrimerIn->setBlockAndData(l1, j1, k1, Items::ORANGE_HARDENED_CLAY);
+                    if (flag1) chunkPrimerIn->setBlockAndData(l1, j1, k1, Items::ORANGE_HARDENED_CLAY);
                     else
                         chunkPrimerIn->setBlock(l1, j1, k1, this->getClayBand(x, j1).block);
                 }

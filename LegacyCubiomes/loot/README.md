@@ -1,4 +1,4 @@
-### Loot Table Loot 
+### Loot Table Loot
 
 <br>🟢 = Items Correct, Enchantments Correct
 <br>🟡 = Items Correct, Enchantments WRONG
@@ -8,10 +8,11 @@
 # WIIU
 
 ### Bountiful Update
+
 1. 🔴Blacksmith (Legacy)
 
-
 ### Elytra Update
+
 1. 🔵End City Treasure [sometimes splits items when shouldn't?]
 2. 🟢Abandoned Mineshaft
 3. 🟢Blacksmith
@@ -28,6 +29,7 @@
 14. 🟢Stronghold Library
 
 ### Aquatic Update:
+
 1. 🟢Abandoned Mineshaft
 2. 🔴Blacksmith
 3. 🟢Woodland Mansion
@@ -46,11 +48,8 @@
 16. 🟢🔵Underwater Ruin Big
 17. 🟢🔵Underwater Ruin Small
 18. 🟢Shipwreck Treasure
-19. 🟢🔵Shipwreck Supply 
+19. 🟢🔵Shipwreck Supply
 20. 🟢🔵Shipwreck Map
-
-
-
 
 # PS3
 
@@ -71,6 +70,7 @@
 15. 🔴Stronghold Library
 
 ### Aquatic:
+
 1. 🔴Stronghold Corridor [Aquatic]
 2. 🔴Buried Treasure
 3. 🔴Underwater Ruin [Big]
@@ -78,14 +78,6 @@
 5. 🔴Shipwreck Treasure
 6. 🔴Shipwreck Supply
 7. 🔴Shipwreck Map
-
-
-
-
-
-
-
-
 
 enchantments for wiiu are mostly figured out.
 ps3: No

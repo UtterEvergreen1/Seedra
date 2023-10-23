@@ -16,13 +16,9 @@ public:
     RNG() : seed(0) {}
     explicit RNG(uint64_t seed) : seed(seed) {}
 
-    bool operator==(const RNG &other) const {
-        return seed == other.seed;
-    }
+    bool operator==(const RNG& other) const { return seed == other.seed; }
 
-    bool operator==(const int &rngValue) const {
-        return seed == rngValue;
-    }
+    bool operator==(const int& rngValue) const { return seed == rngValue; }
 
     ND RNG copy() const {
         RNG rng = RNG(seed);
@@ -43,8 +39,8 @@ public:
     static inline RNG getPopulationSeed(int64_t worldSeed, int chunkX, int chunkZ) {
         RNG rng;
         rng.setSeed(worldSeed);
-        auto a = (int64_t)rng.nextLong();
-        auto b = (int64_t)rng.nextLong();
+        auto a = (int64_t) rng.nextLong();
+        auto b = (int64_t) rng.nextLong();
         a = (int64_t) (((a / 2) * 2) + 1);
         b = (int64_t) (((b / 2) * 2) + 1);
         int64_t decoratorSeed = (chunkX * a + chunkZ * b) ^ worldSeed;
@@ -53,41 +49,31 @@ public:
     }
 
 
-    MU inline void advance() {seed = (seed * 0x5deece66d + 0xb) & 0xFFFFFFFFFFFF;}
-    MU inline void advance2() {seed = (seed * 0xBB20B4600A69 + 0x40942DE6BA) & 0xFFFFFFFFFFFF;}
-    MU inline void advance4() {seed = (seed * 0x32EB772C5F11 + 0x2D3873C4CD04) & 0xFFFFFFFFFFFF;}
-    MU inline void advance8() {seed = (seed * 128954768138017 + 137139456763464) & 0xFFFFFFFFFFFF;}
-    MU inline void advance12() {seed  = (seed * 0x199C3838D031 + 0xD4CF89E2CFCC) & 0xFFFFFFFFFFFF;}
-    MU inline void advance109() {seed = (seed * 0xE3DB7EC1825D + 0xF751DEF08DC7) & 0xFFFFFFFFFFFF;}
-    MU inline void advance520() {seed = (seed * 0x53E5A095E721 + 0xCACA74409848) & 0xFFFFFFFFFFFF;}
-    MU inline void advance760() {seed = (seed * 0xE5CFDCCC10E1 + 0x2FC9E05B45B8) & 0xFFFFFFFFFFFF;}
-    MU inline void advance772() {seed = (seed * 0x129FF9FE0B11 + 0x80152440A804) & 0xFFFFFFFFFFFF;}
-    MU inline void advance17292() {seed = (seed * 257489430523441 + 184379205320524) & 0xFFFFFFFFFFFF;}
+    MU inline void advance() { seed = (seed * 0x5deece66d + 0xb) & 0xFFFFFFFFFFFF; }
+    MU inline void advance2() { seed = (seed * 0xBB20B4600A69 + 0x40942DE6BA) & 0xFFFFFFFFFFFF; }
+    MU inline void advance4() { seed = (seed * 0x32EB772C5F11 + 0x2D3873C4CD04) & 0xFFFFFFFFFFFF; }
+    MU inline void advance8() { seed = (seed * 128954768138017 + 137139456763464) & 0xFFFFFFFFFFFF; }
+    MU inline void advance12() { seed = (seed * 0x199C3838D031 + 0xD4CF89E2CFCC) & 0xFFFFFFFFFFFF; }
+    MU inline void advance109() { seed = (seed * 0xE3DB7EC1825D + 0xF751DEF08DC7) & 0xFFFFFFFFFFFF; }
+    MU inline void advance520() { seed = (seed * 0x53E5A095E721 + 0xCACA74409848) & 0xFFFFFFFFFFFF; }
+    MU inline void advance760() { seed = (seed * 0xE5CFDCCC10E1 + 0x2FC9E05B45B8) & 0xFFFFFFFFFFFF; }
+    MU inline void advance772() { seed = (seed * 0x129FF9FE0B11 + 0x80152440A804) & 0xFFFFFFFFFFFF; }
+    MU inline void advance17292() { seed = (seed * 257489430523441 + 184379205320524) & 0xFFFFFFFFFFFF; }
 
-    ND MU inline uint64_t getSeed() const {
-        return seed;
-    }
+    ND MU inline uint64_t getSeed() const { return seed; }
 
-    MU inline void setValue(uint64_t value) {
-        seed = value;
-    }
+    MU inline void setValue(uint64_t value) { seed = value; }
 
-    inline void setSeed(uint64_t value) {
-        seed = (value ^ 0x5deece66d) & 0xFFFFFFFFFFFF;
-    }
+    inline void setSeed(uint64_t value) { seed = (value ^ 0x5deece66d) & 0xFFFFFFFFFFFF; }
 
     inline int next(const int bits) {
         advance();
         return (int) ((int64_t) seed >> (48 - bits));
     }
 
-    inline bool nextBoolean() {
-        return next(1) != 0;
-    }
+    inline bool nextBoolean() { return next(1) != 0; }
 
-    inline int nextInt() {
-        return next(32);
-    }
+    inline int nextInt() { return next(32); }
 
     inline int nextInt(const int n) {
         int bits, val;
@@ -109,17 +95,11 @@ public:
         return minimum >= maximum ? minimum : nextInt(maximum - minimum + 1) + minimum;
     }
 
-    inline int nextIntLegacy(int minimum, int maximum) {
-        return nextInt(maximum - minimum + 1) + minimum;
-    }
+    inline int nextIntLegacy(int minimum, int maximum) { return nextInt(maximum - minimum + 1) + minimum; }
 
-    inline uint64_t nextLong() {
-        return ((uint64_t) next(32) << 32) + next(32);
-    }
+    inline uint64_t nextLong() { return ((uint64_t) next(32) << 32) + next(32); }
 
-    inline float nextFloat() {
-        return (float) next(24) / (float) 0x1000000;
-    }
+    inline float nextFloat() { return (float) next(24) / (float) 0x1000000; }
 
     MU inline float nextFloat(float minimum, float maximum) {
         return minimum >= maximum ? minimum : nextFloat() * (maximum - minimum) + minimum;
@@ -155,4 +135,3 @@ public:
         seed &= 0xFFFFFFFFFFFF;
     }
 };
-

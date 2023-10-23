@@ -1,9 +1,9 @@
 #pragma once
 
-#include <vector>
 #include <cmath>
-#include <string>
 #include <iomanip>
+#include <string>
+#include <vector>
 
 #include "LegacyCubiomes/chunk_generator/biome.hpp"
 #include "LegacyCubiomes/cubiomes/generator.hpp"
@@ -20,37 +20,25 @@ public:
     ChunkPrimer() = default;
 
     /// do not allow copy
-    ChunkPrimer(const ChunkPrimer &) = delete;
+    ChunkPrimer(const ChunkPrimer&) = delete;
 
-    ChunkPrimer &operator=(const ChunkPrimer &) = delete;
+    ChunkPrimer& operator=(const ChunkPrimer&) = delete;
 
     ///do not allow move
     //ChunkPrimer(ChunkPrimer &&) = delete;
     //ChunkPrimer &operator=(ChunkPrimer &&) = delete;
 
-    inline uint16_t getBlockAtIndex(int64_t index) const {
-        return index >= 0 && index < 65536 ? blocks[index] : 0;
-    }
+    inline uint16_t getBlockAtIndex(int64_t index) const { return index >= 0 && index < 65536 ? blocks[index] : 0; }
 
-    uint16_t getBlock(int64_t x, int64_t y, int64_t z) const {
-        return getBlockAtIndex(getStorageIndex(x, y, z)) >> 4;
-    }
+    uint16_t getBlock(int64_t x, int64_t y, int64_t z) const { return getBlockAtIndex(getStorageIndex(x, y, z)) >> 4; }
 
-    void setBlock(int64_t x, int64_t y, int64_t z, uint16_t block) {
-        blocks[getStorageIndex(x, y, z)] = block << 4;
-    }
+    void setBlock(int64_t x, int64_t y, int64_t z, uint16_t block) { blocks[getStorageIndex(x, y, z)] = block << 4; }
 
-    uint16_t getData(int64_t x, int64_t y, int64_t z) const {
-        return getBlockAtIndex(getStorageIndex(x, y, z)) & 15;
-    }
+    uint16_t getData(int64_t x, int64_t y, int64_t z) const { return getBlockAtIndex(getStorageIndex(x, y, z)) & 15; }
 
-    void setData(int64_t x, int64_t y, int64_t z, uint8_t data) {
-        blocks[getStorageIndex(x, y, z)] |= data;
-    }
+    void setData(int64_t x, int64_t y, int64_t z, uint8_t data) { blocks[getStorageIndex(x, y, z)] |= data; }
 
-    uint16_t getSkyLight(int64_t x, int64_t y, int64_t z) const {
-        return getBlockAtIndex(getStorageIndex(x, y, z));
-    }
+    uint16_t getSkyLight(int64_t x, int64_t y, int64_t z) const { return getBlockAtIndex(getStorageIndex(x, y, z)); }
 
     void setSkyLight(int64_t x, int64_t y, int64_t z, uint8_t lightValue) {
         skyLight[getStorageIndex(x, y, z)] = lightValue;
@@ -60,12 +48,12 @@ public:
         blocks[getStorageIndex(x, y, z)] = ((block << 4) | data);
     }
 
-    void setBlockAndData(int64_t x, int64_t y, int64_t z, const Items::Item &item) {
+    void setBlockAndData(int64_t x, int64_t y, int64_t z, const Items::Item& item) {
         blocks[getStorageIndex(x, y, z)] = ((item.getID() << 4) | item.getDataTag());
     }
 
-    friend std::ostream &operator<<(std::ostream &out, const ChunkPrimer& chunkPrimer) {
-        for (unsigned short block : chunkPrimer.blocks) {
+    friend std::ostream& operator<<(std::ostream& out, const ChunkPrimer& chunkPrimer) {
+        for (unsigned short block: chunkPrimer.blocks) {
             out << std::hex << std::setw(2) << std::setfill('0') << (block & 0xff);
             out << std::hex << std::setw(2) << std::setfill('0') << (block >> 8);
         }
@@ -77,9 +65,7 @@ public:
         for (int y = 255; y >= 0; y--) {
             for (int x = 0; x < 16; x++) {
                 for (int z = 0; z < 16; z++) {
-                    if (getBlock(x, y, z)) {
-                        return y;
-                    }
+                    if (getBlock(x, y, z)) { return y; }
                 }
             }
         }
@@ -124,13 +110,11 @@ public:
 
                     lightValue -= blockOpacity;
 
-                    if (lightValue > 0)
-                        setSkyLight(x, topPos, z, lightValue);
+                    if (lightValue > 0) setSkyLight(x, topPos, z, lightValue);
 
                     topPos--;
 
-                    if (lightValue <= 0 || topPos <= 0)
-                        break;
+                    if (lightValue <= 0 || topPos <= 0) break;
                 }
             }
         }
@@ -146,8 +130,7 @@ public:
             int i1 = -1;
 
             while (highestY > 0 && i1 == -1) {
-                if (!getBlock(i, highestY, j))
-                    i1 = highestY + 1;
+                if (!getBlock(i, highestY, j)) i1 = highestY + 1;
                 else
                     highestY -= 1;
             }
@@ -160,8 +143,7 @@ public:
     bool canBlockFreeze(const Generator& g, Pos3D pos, bool noWaterAdj) const {
         Biome* biome = Biome::getBiomeForId(g.getBiomeAt(1, pos.getX(), pos.getZ()));
         float f = biome->getFloatTemperature(pos);
-        if (f >= 0.15F)
-            return false;
+        if (f >= 0.15F) return false;
         else {
             if (pos.getY() >= 0 && pos.getY() < 256) {
                 int x = pos.getX() & 15;
@@ -170,18 +152,15 @@ public:
                 uint16_t block = iBlockState;
 
                 if ((block == 8 || block == 9)) {
-                    if (!noWaterAdj)
-                        return true;
+                    if (!noWaterAdj) return true;
 
                     uint16_t flagBlockWest = getBlock(x - 1, pos.getY(), z);
                     uint16_t flagBlockEast = getBlock(x + 1, pos.getY(), z);
                     uint16_t flagBlockNorth = getBlock(x, pos.getY(), z - 1);
                     uint16_t flagBlockSouth = getBlock(x, pos.getY(), z + 1);
-                    bool flag = flagBlockWest == 9 && flagBlockEast == 9 &&
-                               flagBlockNorth == 9 && flagBlockSouth == 9;
+                    bool flag = flagBlockWest == 9 && flagBlockEast == 9 && flagBlockNorth == 9 && flagBlockSouth == 9;
 
-                    if (!flag)
-                        return true;
+                    if (!flag) return true;
                 }
             }
 
@@ -189,22 +168,19 @@ public:
         }
     }
 
-    bool canSnowAt(const Generator& g, Pos3D pos, bool checkLight){
+    bool canSnowAt(const Generator& g, Pos3D pos, bool checkLight) {
         Biome* biome = Biome::getBiomeForId(g.getBiomeAt(1, pos.getX(), pos.getZ()));
         float temp = biome->getFloatTemperature(pos);
-        if (temp >= 0.15F)
-            return false;
+        if (temp >= 0.15F) return false;
         else if (!checkLight)
             return true;
         else {
             // needs to check block light later on to replace a perfect chunk
             if (pos.getY() >= 0 && pos.getY() < 256 /* && getLightFor(EnumSkyBlock.BLOCK, pos) < 10*/) {
                 uint16_t iBlockState = getBlock(pos.getX(), pos.getY(), pos.getZ());
-                if (!iBlockState)
-                    return true;
+                if (!iBlockState) return true;
             }
             return false;
         }
     }
-
 };

@@ -3,10 +3,10 @@
 #include <map>
 #include <string>
 
-#include "LegacyCubiomes/utils/rng.hpp"
-#include "LegacyCubiomes/utils/processor.hpp"
 #include "LegacyCubiomes/building_blocks/Piece.hpp"
 #include "LegacyCubiomes/building_blocks/PieceWeight.hpp"
+#include "LegacyCubiomes/utils/processor.hpp"
+#include "LegacyCubiomes/utils/rng.hpp"
 
 
 namespace generation {
@@ -42,18 +42,14 @@ namespace generation {
             PieceType pieceType;
             int placeCount;
 
-            ND static const PieceWeight* get(PieceType pieceType) {
-                return &PIECE_WEIGHTS[pieceType];
-            }
+            ND static const PieceWeight* get(PieceType pieceType) { return &PIECE_WEIGHTS[pieceType]; }
 
             ND bool isValid() const {
                 int maxPlaceCount = PIECE_WEIGHTS[pieceType].maxPlaceCount;
                 return maxPlaceCount == 0 || placeCount < maxPlaceCount;
             }
 
-            ND bool canPlace(int depth) const {
-                return isValid() && depth >= PIECE_WEIGHTS[pieceType].minDepth;
-            }
+            ND bool canPlace(int depth) const { return isValid() && depth >= PIECE_WEIGHTS[pieceType].minDepth; }
         };
 
         static const std::map<PieceType, std::string> PieceTypeName;
@@ -106,7 +102,7 @@ namespace generation {
         * @param worldSeed the seed
         * @param chunkPos coordinates of the chunk
         */
-        inline void generate(int64_t worldSeed, Pos2D chunkPos) {return generate(worldSeed, chunkPos.x, chunkPos.z);}
+        inline void generate(int64_t worldSeed, Pos2D chunkPos) { return generate(worldSeed, chunkPos.x, chunkPos.z); }
 
         void resetPieces();
 
@@ -118,16 +114,16 @@ namespace generation {
 
         /// piece gen
         bool genPieceFromSmallDoor(const Pos3D& pos, DIRECTION direction, int8_t depth);
-        void genSmallDoorChildForward(Piece &piece, int n, int n2);
-        void genSmallDoorChildLeft(Piece &piece, int n, int n2);
-        void genSmallDoorChildRight(Piece &piece, int n, int n2);
+        void genSmallDoorChildForward(Piece& piece, int n, int n2);
+        void genSmallDoorChildLeft(Piece& piece, int n, int n2);
+        void genSmallDoorChildRight(Piece& piece, int n, int n2);
 
-        void addChildren(Piece &piece);
+        void addChildren(Piece& piece);
 
         Piece* findCollisionPiece(const BoundingBox& boundingBox);
         bool collidesWithPiece(const BoundingBox& boundingBox);
 
         static BoundingBox createPieceBoundingBox(PieceType pieceType, const Pos3D& pos, DIRECTION facing);
-        static bool isOkBox(BoundingBox &boundingBox);
+        static bool isOkBox(BoundingBox& boundingBox);
     };
-}
+} // namespace generation

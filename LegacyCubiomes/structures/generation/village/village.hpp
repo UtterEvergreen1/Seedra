@@ -1,26 +1,25 @@
 #pragma once
 
-#include <vector>
-#include <map>
 #include "LegacyCubiomes/building_blocks/Piece.hpp"
-#include "LegacyCubiomes/cubiomes/layers.hpp"
 #include "LegacyCubiomes/cubiomes/generator.hpp"
-#include "LegacyCubiomes/utils/rng.hpp"
+#include "LegacyCubiomes/cubiomes/layers.hpp"
 #include "LegacyCubiomes/utils/Pos2D.hpp"
 #include "LegacyCubiomes/utils/Pos3D.hpp"
+#include "LegacyCubiomes/utils/rng.hpp"
+#include <map>
+#include <vector>
 
 namespace generation {
 
     class Village {
     public:
-
         enum class GenerationStep : int8_t {
             BLACKSMITH, // Generates the layout up to the blacksmith, hasMoreThanTwoComponents won't be calculated
-            LAYOUT, // Generates full layout, hasMoreThanTwoComponents won't be calculated
-            FULL,   // Generates full layout and calculates hasMoreThanTwoComponents
+            LAYOUT,     // Generates full layout, hasMoreThanTwoComponents won't be calculated
+            FULL,       // Generates full layout and calculates hasMoreThanTwoComponents
         };
 
-        enum PieceType : int8_t  {
+        enum PieceType : int8_t {
             NONE,
             Start,
             Road,
@@ -54,8 +53,7 @@ namespace generation {
             int maxPlaceCount;
             int amountPlaced;
             FinalPieceWeight(int8_t pieceType, int weight, int maxPlaceCount, int amountPlaced)
-                    : pieceType(pieceType), weight(weight), maxPlaceCount(maxPlaceCount), amountPlaced(amountPlaced) {}
-
+                : pieceType(pieceType), weight(weight), maxPlaceCount(maxPlaceCount), amountPlaced(amountPlaced) {}
         };
 
         std::vector<FinalPieceWeight> currentVillagePW;
@@ -94,9 +92,7 @@ namespace generation {
         * Overload function. Generates a mineshaft with the given chunk coordinates and stored generator.
         * @param chunk coordinates of the chunk
         */
-        void inline generate(Pos2D chunk) {
-            generate(chunk.x, chunk.z);
-        }
+        void inline generate(Pos2D chunk) { generate(chunk.x, chunk.z); }
 
     private:
         void setupPieces();
@@ -112,4 +108,4 @@ namespace generation {
         void addPiece(Piece& piece);
         bool hasCollisionPiece(const BoundingBox& boundingBox);
     };
-}
+} // namespace generation

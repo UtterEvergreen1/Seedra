@@ -1,16 +1,15 @@
 #include "mineshaft.hpp"
 
 
-
 namespace structure_rolls {
     ///TODO: MAKE SURE IT WORKS!!!
-    void Mineshaft::generateStructure(generation::Mineshaft* mineshaftGenerator, ChunkPrimer *chunk, RNG& rng,
+    void Mineshaft::generateStructure(generation::Mineshaft* mineshaftGenerator, ChunkPrimer* chunk, RNG& rng,
                                       int chunkX, int chunkZ) {
         for (int pieceIndex = 0; pieceIndex < mineshaftGenerator->pieceArraySize; ++pieceIndex) {
-            const Piece &piece = mineshaftGenerator->pieceArray[pieceIndex];
+            const Piece& piece = mineshaftGenerator->pieceArray[pieceIndex];
             if (piece.type != generation::Mineshaft::PieceType::NONE) {
-                const BoundingBox chunkBoundingBox = BoundingBox((chunkX << 4), 0, (chunkZ << 4),
-                                                                 (chunkX << 4) + 15, 255, (chunkZ << 4) + 15);
+                const BoundingBox chunkBoundingBox =
+                        BoundingBox((chunkX << 4), 0, (chunkZ << 4), (chunkX << 4) + 15, 255, (chunkZ << 4) + 15);
                 const BoundingBox& pieceBoundingBox = piece;
                 if (pieceBoundingBox.intersects(chunkBoundingBox)) {
                     if (piece.type == generation::Mineshaft::PieceType::CORRIDOR) {
@@ -18,15 +17,14 @@ namespace structure_rolls {
                             continue;
 
                         int sectionCount =
-                                ((piece.orientation == DIRECTION::NORTH ||
-                                  piece.orientation == DIRECTION::SOUTH) ?
-                                 piece.getZSize() :
-                                 piece.getXSize()) / 5;
+                                ((piece.orientation == DIRECTION::NORTH || piece.orientation == DIRECTION::SOUTH)
+                                         ? piece.getZSize()
+                                         : piece.getXSize()) /
+                                5;
                         int depth = sectionCount * 5;
 
                         rng.skipNextN(3 * depth);
-                        if (piece.additionalData & 2)
-                            rng.skipNextN(6 * depth);
+                        if (piece.additionalData & 2) rng.skipNextN(6 * depth);
 
 
                         for (int i = 0; i < sectionCount; ++i) {
@@ -86,7 +84,7 @@ namespace structure_rolls {
                                     int yPos = piece.getWorldY(-1);
                                     int zPos = piece.getWorldZ(1, railPos);
                                     if (intersectsWithBlock(chunkBoundingBox, xPos, yPos, zPos) &&
-                                    (chunk == nullptr || chunk->getBlock(xPos & 15, yPos - 1, zPos & 15) != 0)) {
+                                        (chunk == nullptr || chunk->getBlock(xPos & 15, yPos - 1, zPos & 15) != 0)) {
                                         rng.advance(); // advance rng for rail placement
                                     }
                                 }
@@ -107,29 +105,25 @@ namespace structure_rolls {
         rng.setSeed(g.getWorldSeed());
         uint64_t xModifier = rng.nextLong();
         uint64_t zModifier = rng.nextLong();
-        xModifier = (int64_t)(((xModifier / 2) * 2) + 1);
-        zModifier = (int64_t)(((zModifier / 2) * 2) + 1);
+        xModifier = (int64_t) (((xModifier / 2) * 2) + 1);
+        zModifier = (int64_t) (((zModifier / 2) * 2) + 1);
         for (int xChunk = (mineshaftGenerator->startX >> 4) - 6; xChunk < xEnd; ++xChunk) {
             uint64_t aix = xChunk * xModifier;
             for (int zChunk = (mineshaftGenerator->startZ >> 4) - 6; zChunk < zEnd; ++zChunk) {
                 rng.setSeed((aix + zChunk * zModifier) ^ g.getWorldSeed());
                 rng.advance(); // advance rng
-                ChunkPrimer *chunk = nullptr;
-                if (generateFullChunk) {
-                    chunk = Chunk::provideChunk<true, true, false>(g, xChunk, zChunk);
-                }
+                ChunkPrimer* chunk = nullptr;
+                if (generateFullChunk) { chunk = Chunk::provideChunk<true, true, false>(g, xChunk, zChunk); }
                 generateStructure(mineshaftGenerator, chunk, rng, xChunk, zChunk);
-                if (generateFullChunk) {
-                    delete chunk;
-                }
+                if (generateFullChunk) { delete chunk; }
             }
         }
     }
 
 
     // TODO: generate legacy chest where the loot is generated with the seed and doesn't use the loot table seed
-    void Mineshaft::generateChest(ChunkPrimer* chunk, const BoundingBox &chunkBB, const Piece &piece,
-                                  RNG& rng, int x, int y, int z) {
+    void Mineshaft::generateChest(ChunkPrimer* chunk, const BoundingBox& chunkBB, const Piece& piece, RNG& rng, int x,
+                                  int y, int z) {
         int xPos = piece.getWorldX(x, z);
         int yPos = piece.getWorldY(y);
         int zPos = piece.getWorldZ(x, z);
@@ -141,8 +135,8 @@ namespace structure_rolls {
     }
 
 
-    void Mineshaft::placeCobWeb(ChunkPrimer* chunk, const BoundingBox &chunkBB, const Piece &piece, RNG& rng,
-                                int x, int z) {
+    void Mineshaft::placeCobWeb(ChunkPrimer* chunk, const BoundingBox& chunkBB, const Piece& piece, RNG& rng, int x,
+                                int z) {
         int xPos = piece.getWorldX(x, z);
         int yPos = piece.getWorldY(2);
         int zPos = piece.getWorldZ(x, z);
@@ -152,4 +146,4 @@ namespace structure_rolls {
     }
 
 
-}
+} // namespace structure_rolls

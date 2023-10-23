@@ -2,9 +2,9 @@
 
 #include <cmath>
 
+#include "LegacyCubiomes/loot/classes/Loot.hpp"
 #include "enchantment.hpp"
 #include "fastBookEnchantArray.hpp"
-#include "LegacyCubiomes/loot/classes/Loot.hpp"
 
 class EnchantmentHelper {
 public:
@@ -32,8 +32,3 @@ public:
      */
     static void deallocate();
 };
-
-
-
-
-

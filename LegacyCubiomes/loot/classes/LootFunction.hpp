@@ -7,6 +7,7 @@ class ItemStack;
 class LootFunction {
 protected:
     static constexpr int MAX_ENCHANT_LIST_SIZE = 29;
+
 public:
     virtual void apply(ItemStack& itemStack, RNG& random) = 0;
 };

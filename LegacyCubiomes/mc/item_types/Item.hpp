@@ -1,8 +1,8 @@
 #pragma once
 
 #include <string>
-#include <vector>
 #include <utility>
+#include <vector>
 #ifdef INCLUDE_QT
 #include <QDebug>
 #endif
@@ -25,20 +25,28 @@ namespace Items {
 
     public:
         Item() = default;
+        Item(uint16_t id, uint8_t dataTag, ItemType type, std::string itemName, std::string identifier, bool damageable,
+             EntityEquipSlot armorType, int8_t enchantability)
+            : id(id), dataTag(dataTag), type(type), name(std::move(itemName)), identifier(std::move(identifier)),
+              damageable(damageable), armorType(armorType), enchantability(enchantability) {}
         Item(uint16_t id, uint8_t dataTag, ItemType type, std::string itemName, std::string identifier,
-             bool damageable, EntityEquipSlot armorType, int8_t enchantability)
-                : id(id), dataTag(dataTag), type(type), name(std::move(itemName)), identifier(std::move(identifier)),
-                  damageable(damageable), armorType(armorType), enchantability(enchantability) {}
-        Item(uint16_t id, uint8_t dataTag, ItemType type, std::string itemName, std::string identifier, bool damageable = false)
-                : Item(id, dataTag, type, std::move(itemName), std::move(identifier), damageable, EntityEquipSlot::NONE, 1) {}
-        Item(uint16_t id, uint8_t dataTag, ItemType type, std::string itemName, std::string identifier, bool damageable, int8_t enchantability)
-                : Item(id, dataTag, type, std::move(itemName), std::move(identifier), damageable, EntityEquipSlot::NONE, enchantability) {}
-        Item(uint16_t id, uint8_t dataTag, ItemType type, std::string itemName, std::string identifier, int8_t enchantability)
-                : Item(id, dataTag, type, std::move(itemName), std::move(identifier), false, EntityEquipSlot::NONE, enchantability) {}
-        Item(uint16_t id, uint8_t dataTag, ItemType type, std::string itemName, std::string identifier, EntityEquipSlot armorType, int8_t enchantability)
-                : Item(id, dataTag, type, std::move(itemName), std::move(identifier), false, armorType, enchantability) {}
+             bool damageable = false)
+            : Item(id, dataTag, type, std::move(itemName), std::move(identifier), damageable, EntityEquipSlot::NONE,
+                   1) {}
+        Item(uint16_t id, uint8_t dataTag, ItemType type, std::string itemName, std::string identifier, bool damageable,
+             int8_t enchantability)
+            : Item(id, dataTag, type, std::move(itemName), std::move(identifier), damageable, EntityEquipSlot::NONE,
+                   enchantability) {}
+        Item(uint16_t id, uint8_t dataTag, ItemType type, std::string itemName, std::string identifier,
+             int8_t enchantability)
+            : Item(id, dataTag, type, std::move(itemName), std::move(identifier), false, EntityEquipSlot::NONE,
+                   enchantability) {}
+        Item(uint16_t id, uint8_t dataTag, ItemType type, std::string itemName, std::string identifier,
+             EntityEquipSlot armorType, int8_t enchantability)
+            : Item(id, dataTag, type, std::move(itemName), std::move(identifier), false, armorType, enchantability) {}
         Item(uint16_t id, uint8_t dataTag, std::string itemName, std::string identifier)
-                : Item(id, dataTag, ItemType::ItemBlock, std::move(itemName), std::move(identifier), false, EntityEquipSlot::NONE, 1) {}
+            : Item(id, dataTag, ItemType::ItemBlock, std::move(itemName), std::move(identifier), false,
+                   EntityEquipSlot::NONE, 1) {}
 
 
         ND inline uint16_t getID() const { return id; }
@@ -50,23 +58,17 @@ namespace Items {
         ND inline EntityEquipSlot getArmorType() const { return armorType; }
         ND inline int8_t getCost() const { return enchantability; }
 
-        friend std::ostream &operator<<(std::ostream &out, const Item &item) {
+        friend std::ostream& operator<<(std::ostream& out, const Item& item) {
             out << item.getName();
             return out;
         }
 
-        #ifdef INCLUDE_QT
-        friend QDebug operator<<(QDebug out, const Item &item) {
-                out.nospace() << QString::fromStdString(item.getName());
-                return out.nospace();
+#ifdef INCLUDE_QT
+        friend QDebug operator<<(QDebug out, const Item& item) {
+            out.nospace() << QString::fromStdString(item.getName());
+            return out.nospace();
         }
-        #endif
+#endif
     };
 
-}
-
-
-
-
-
-
+} // namespace Items

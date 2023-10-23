@@ -11,12 +11,10 @@ private:
 
 public:
     MathHelper() {
-        for (int i = 0; i < TABLE_SIZE; ++i) {
-            SIN_TABLE[i] = (float)sinf((float)i / CONVERSION);
-        }
+        for (int i = 0; i < TABLE_SIZE; ++i) { SIN_TABLE[i] = (float) sinf((float) i / CONVERSION); }
     }
 
-    static MathHelper& Instance(){
+    static MathHelper& Instance() {
         static MathHelper instance;
         return instance;
     }
@@ -25,9 +23,7 @@ public:
      * sin looked up in a prebuilt table.
      * input value range for unique values: 0-2π
      */
-    static float sin(float value) {
-        return MathHelper::Instance().SIN_TABLE[(int)(value * CONVERSION) & TABLE_WRAP];
-    }
+    static float sin(float value) { return MathHelper::Instance().SIN_TABLE[(int) (value * CONVERSION) & TABLE_WRAP]; }
 
     /**
      * cos looked up in a prebuilt table.
@@ -35,7 +31,7 @@ public:
      * It is offset by +1/2π into the table.
      */
     static float cos(float value) {
-        return MathHelper::Instance().SIN_TABLE[(int)(value * CONVERSION + 16384.0F) & TABLE_WRAP];
+        return MathHelper::Instance().SIN_TABLE[(int) (value * CONVERSION + 16384.0F) & TABLE_WRAP];
     }
 
 
@@ -53,20 +49,15 @@ public:
     }
 
     /// Linear Interpolation for two dimensions.
-    static inline double lerp2D(
-            double xRatio, double yRatio,
-            double topLeft, double topRight,
-            double bottomLeft, double bottomRight) {
+    static inline double lerp2D(double xRatio, double yRatio, double topLeft, double topRight, double bottomLeft,
+                                double bottomRight) {
         return lerp(yRatio, lerp(xRatio, topLeft, topRight), lerp(xRatio, bottomLeft, bottomRight));
     }
 
     /// Linear Interpolation for 3 dimensions.
-    static inline double lerp3D(
-            double xRatio, double yRatio, double zRatio,
-            double topFrontLeft, double topFrontRight,
-            double topBackLeft, double topBackRight,
-            double bottomFrontLeft, double bottomFrontRight,
-            double bottomBackLeft, double bottomBackRight) {
+    static inline double lerp3D(double xRatio, double yRatio, double zRatio, double topFrontLeft, double topFrontRight,
+                                double topBackLeft, double topBackRight, double bottomFrontLeft,
+                                double bottomFrontRight, double bottomBackLeft, double bottomBackRight) {
         topFrontLeft = lerp2D(xRatio, yRatio, topFrontLeft, topFrontRight, topBackLeft, topBackRight);
         bottomFrontLeft = lerp2D(xRatio, yRatio, bottomFrontLeft, bottomFrontRight, bottomBackLeft, bottomBackRight);
         return lerp(zRatio, topFrontLeft, bottomFrontLeft);
@@ -78,4 +69,3 @@ public:
         return lerp(ratio, startValue, endValue);
     }
 };
-

@@ -9,16 +9,10 @@ private:
     static constexpr inline int8_t LEVELS_MAX[2] = {37, 57};
 
 public:
+    EnchantmentArrowKnockback(std::string name, const Rarity* rarity)
+        : Enchantment(std::move(name), rarity, &Type::BOW, EnumName::ARROW_KNOCKBACK, 2){};
 
-    EnchantmentArrowKnockback(std::string name, const Rarity *rarity) :
-        Enchantment(std::move(name), rarity, &Type::BOW, EnumName::ARROW_KNOCKBACK, 2) {};
+    int getMinCost(int enchantmentLevel) override { return LEVELS_MIN[enchantmentLevel - 1]; }
 
-    int getMinCost(int enchantmentLevel) override {
-        return LEVELS_MIN[enchantmentLevel - 1];
-    }
-
-    int getMaxCost(int enchantmentLevel) override {
-        return LEVELS_MAX[enchantmentLevel - 1];
-    }
+    int getMaxCost(int enchantmentLevel) override { return LEVELS_MAX[enchantmentLevel - 1]; }
 };
-

@@ -7,13 +7,11 @@ void EnchantmentHelper::setConsoleAndVersion(CONSOLE console, LCEVERSION version
     int8_t lceVersion = static_cast<int8_t>(version);
 
     // error handling
-    if(consoleNum >= Enchantment::tableOfOrders.size())
-        throw std::range_error("Console not implemented.");
-    if(lceVersion >= Enchantment::tableOfOrders.at(consoleNum).size())
+    if (consoleNum >= Enchantment::tableOfOrders.size()) throw std::range_error("Console not implemented.");
+    if (lceVersion >= Enchantment::tableOfOrders.at(consoleNum).size())
         throw std::range_error("Version not implemented.");
 
-    if(Enchantment::currentConsole == console && Enchantment::currentVersion == version)
-        return;
+    if (Enchantment::currentConsole == console && Enchantment::currentVersion == version) return;
 
     Enchantment::currentConsole = console;
     Enchantment::currentVersion = version;
@@ -29,4 +27,3 @@ void EnchantmentHelper::deallocate() {
     Enchantment::count = 0;
     Enchantment::isSetup = false;
 }
-

@@ -7,8 +7,8 @@
 #endif
 
 
-#include "processor.hpp"
 #include "DoublePos2D.hpp"
+#include "processor.hpp"
 
 class DoublePos3D {
 public:
@@ -20,29 +20,29 @@ public:
     explicit DoublePos3D(DoublePos2D pos) : x(pos.x), y(0), z(pos.z) {}
     DoublePos3D(double xIn, double yIn, double zIn) : x(xIn), y(yIn), z(zIn) {}
 
-    bool  operator==(const DoublePos3D& other) const;
-    DoublePos3D operator +(const DoublePos3D& other) const;
-    DoublePos3D operator +(double other) const;
-    DoublePos3D operator -(const DoublePos3D& other) const;
-    DoublePos3D operator -(double other) const;
-    bool  operator >(double value) const;
-    bool  operator <(double value) const;
-    bool  operator>=(double value) const;
-    bool  operator<=(double value) const;
+    bool operator==(const DoublePos3D& other) const;
+    DoublePos3D operator+(const DoublePos3D& other) const;
+    DoublePos3D operator+(double other) const;
+    DoublePos3D operator-(const DoublePos3D& other) const;
+    DoublePos3D operator-(double other) const;
+    bool operator>(double value) const;
+    bool operator<(double value) const;
+    bool operator>=(double value) const;
+    bool operator<=(double value) const;
 
-    friend std::ostream& operator<<(std::ostream &out, const DoublePos3D &pos) {
-        out << "[" << pos.x << ", " << pos.y << ", " <<pos.z << "]";
+    friend std::ostream& operator<<(std::ostream& out, const DoublePos3D& pos) {
+        out << "[" << pos.x << ", " << pos.y << ", " << pos.z << "]";
         return out;
     }
 
 #ifdef INCLUDE_QT
-    friend QDebug operator<<(QDebug out, const DoublePos3D &pos) {
+    friend QDebug operator<<(QDebug out, const DoublePos3D& pos) {
         out.nospace() << "(" << pos.x << ", " << pos.y << ", " << pos.z << ")";
         return out.space();
     }
 #endif
 
-    void setPos(int xIn, int yIn, int zIn){
+    void setPos(int xIn, int yIn, int zIn) {
         this->x = xIn;
         this->y = yIn;
         this->z = zIn;

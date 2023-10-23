@@ -1,8 +1,8 @@
 #pragma once
 
+#include "LegacyCubiomes/cubiomes/generator.hpp"
 #include "LegacyCubiomes/cubiomes/layers.hpp"
 #include "LegacyCubiomes/utils/rng.hpp"
-#include "LegacyCubiomes/cubiomes/generator.hpp"
 
 #include "LegacyCubiomes/utils/Pos3D.hpp"
 
@@ -10,8 +10,7 @@ namespace Features {
     Pos3D waterLake(Generator* g, int chunkX, int chunkZ) {
         RNG rng = RNG::getPopulationSeed(g->getWorldSeed(), chunkX, chunkZ);
         int biomeAt = g->getBiomeAt(1, (chunkX << 4) + 16, (chunkZ << 4) + 16);
-        if (biomeAt == desert || biomeAt == desert_hills || rng.nextInt(4) != 0)
-            return {0, 0, 0};
+        if (biomeAt == desert || biomeAt == desert_hills || rng.nextInt(4) != 0) return {0, 0, 0};
 
         int xPos = (chunkX << 4) + rng.nextInt(16) + 8;
         int yPos = rng.nextInt(128);
@@ -19,7 +18,7 @@ namespace Features {
         return {xPos, yPos, zPos};
     }
 
-    Pos3D lavaLake(Generator* g, int chunkX, int chunkZ){
+    Pos3D lavaLake(Generator* g, int chunkX, int chunkZ) {
         RNG rng = RNG::getPopulationSeed(g->getWorldSeed(), chunkX, chunkZ);
         int biomeAt = g->getBiomeAt(1, (chunkX << 4) + 16, (chunkZ << 4) + 16);
         if ((biomeAt != desert && biomeAt != desert_hills) && rng.nextInt(4) == 0) // water lake in chunk
@@ -36,4 +35,4 @@ namespace Features {
 
         return {xPos, yPos, zPos};
     }
-}
+} // namespace Features

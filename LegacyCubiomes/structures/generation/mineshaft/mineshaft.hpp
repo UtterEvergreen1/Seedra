@@ -12,7 +12,6 @@ namespace generation {
 
     class Mineshaft {
     public:
-
         // #######################################################
         //              sub-structs and sub-classes
         // #######################################################
@@ -25,10 +24,7 @@ namespace generation {
             NONE,
         };
 
-        enum class MineshaftType {
-            NORMAL,
-            MESA
-        };
+        enum class MineshaftType { NORMAL, MESA };
 
         static const std::map<PieceType, std::string> PieceTypeName;
 
@@ -61,11 +57,11 @@ namespace generation {
         * @param worldSeed the seed
         * @param chunkPos coordinates of the chunk
         */
-        inline void generate(int64_t worldSeed, Pos2D chunkPos) { return generate(worldSeed, chunkPos.x, chunkPos.z);}
+        inline void generate(int64_t worldSeed, Pos2D chunkPos) { return generate(worldSeed, chunkPos.x, chunkPos.z); }
         void reset();
 
     private:
-        Piece* findCollisionPiece(BoundingBox &boundingBox);
+        Piece* findCollisionPiece(BoundingBox& boundingBox);
         void genAndAddPiece(RNG& rng, Pos3D pos, DIRECTION direction, int depth);
 
         /**
@@ -76,6 +72,7 @@ namespace generation {
         * @param p the piece to build
         * @param rng pointer to rng
         */
-        void buildComponent(RNG& rng, int type, int depth, const BoundingBox& boundingBox, DIRECTION direction, int additionalData);
+        void buildComponent(RNG& rng, int type, int depth, const BoundingBox& boundingBox, DIRECTION direction,
+                            int additionalData);
     };
-}
+} // namespace generation

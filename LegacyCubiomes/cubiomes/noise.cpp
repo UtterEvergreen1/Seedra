@@ -3,15 +3,13 @@
 #include <cstdio>
 #include <cstring>
 
-#include "LegacyCubiomes/utils/rng.hpp"
-#include "noise.hpp"
-#include "generator.hpp"
 #include "LegacyCubiomes/utils/MathHelper.hpp"
+#include "LegacyCubiomes/utils/rng.hpp"
+#include "generator.hpp"
+#include "noise.hpp"
 
 
-double maintainPrecision(double x) {
-    return x - floor(x / 33554432.0 + 0.5) * 33554432.0;
-}
+double maintainPrecision(double x) { return x - floor(x / 33554432.0 + 0.5) * 33554432.0; }
 
 ATTR(hot, const, always_inline, artificial)
 static inline double indexedLerp(int idx, double a, double b, double c) {
@@ -55,7 +53,7 @@ static inline double indexedLerp(int idx, double a, double b, double c) {
     return 0;
 }
 
-void perlinInit(PerlinNoise *noise, RNG& rng) {
+void perlinInit(PerlinNoise* noise, RNG& rng) {
     int i = 0;
     memset(noise, 0, sizeof(*noise));
     noise->a = rng.nextDouble() * 256.0;
@@ -64,9 +62,7 @@ void perlinInit(PerlinNoise *noise, RNG& rng) {
     noise->amplitude = 1.0;
     noise->lacunarity = 1.0;
 
-    for (i = 0; i < 256; i++) {
-        noise->d[i] = i;
-    }
+    for (i = 0; i < 256; i++) { noise->d[i] = i; }
     for (i = 0; i < 256; i++) {
         int j = rng.nextInt(256 - i) + i;
         uint8_t n = noise->d[i];
@@ -77,9 +73,8 @@ void perlinInit(PerlinNoise *noise, RNG& rng) {
 }
 
 
-double samplePerlin(const Generator *g, const PerlinNoise *noise,
-                    double d1, double d2, double d3,
-                    double yAmp, double yMin) {
+double samplePerlin(const Generator* g, const PerlinNoise* noise, double d1, double d2, double d3, double yAmp,
+                    double yMin) {
     d1 += noise->a;
     d2 += noise->b;
     d3 += noise->c;
@@ -137,8 +132,7 @@ double samplePerlin(const Generator *g, const PerlinNoise *noise,
 
 static double simplexGrad(int idx, double x, double y, double z, double d) {
     double con = d - x * x - y * y - z * z;
-    if (con < 0)
-        return 0;
+    if (con < 0) return 0;
     con *= con;
     return con * con * indexedLerp(idx, x, y, z);
 }
@@ -146,14 +140,13 @@ static double simplexGrad(int idx, double x, double y, double z, double d) {
 
 static double simplexGrad_HARDCODED(int idx, double x, double y) {
     double con = 0.5 - x * x - y * y;
-    if (con < 0)
-        return 0;
+    if (con < 0) return 0;
     con *= con;
     return con * con * indexedLerp(idx, x, y, 0);
 }
 
 
-double sampleSimplex2D(const PerlinNoise *noise, double x, double y) {
+double sampleSimplex2D(const PerlinNoise* noise, double x, double y) {
     const double SKEW = 0.5 * (sqrt(3) - 1.0);
     const double UNSKEW = (3.0 - sqrt(3)) / 6.0;
 
@@ -183,8 +176,7 @@ double sampleSimplex2D(const PerlinNoise *noise, double x, double y) {
 }
 
 
-void octaveInit(OctaveNoise *noise, RNG& rng, PerlinNoise *octaves,
-                int oMin, int len) {
+void octaveInit(OctaveNoise* noise, RNG& rng, PerlinNoise* octaves, int oMin, int len) {
     int i;
     int end = oMin + len - 1;
     double persist = 1.0 / ((1LL << len) - 1.0);
@@ -220,11 +212,11 @@ void octaveInit(OctaveNoise *noise, RNG& rng, PerlinNoise *octaves,
 }
 
 
-double sampleOctave(const Generator* g, const OctaveNoise *noise, double x, double y, double z) {
+double sampleOctave(const Generator* g, const OctaveNoise* noise, double x, double y, double z) {
     double v = 0;
     int i;
     for (i = 0; i < noise->octcnt; i++) {
-        PerlinNoise *p = noise->octaves + i;
+        PerlinNoise* p = noise->octaves + i;
         double lf = p->lacunarity;
         double ax = maintainPrecision(x * lf);
         double ay = maintainPrecision(y * lf);
@@ -236,7 +228,7 @@ double sampleOctave(const Generator* g, const OctaveNoise *noise, double x, doub
 }
 
 
-void initSurfaceNoise(SurfaceNoise *sn, DIMENSION dimension, uint64_t worldSeed) {
+void initSurfaceNoise(SurfaceNoise* sn, DIMENSION dimension, uint64_t worldSeed) {
     RNG rng;
     rng.setSeed(worldSeed);
     octaveInit(&sn->octaveMin, rng, sn->oct + 0, -15, 16);
@@ -259,13 +251,12 @@ void initSurfaceNoise(SurfaceNoise *sn, DIMENSION dimension, uint64_t worldSeed)
 }
 
 
-double sampleOctaveAmp(const Generator* g, const OctaveNoise *noise,
-                       double x, double y, double z,
-                       double yAmp, double yMin, int yDefault) {
+double sampleOctaveAmp(const Generator* g, const OctaveNoise* noise, double x, double y, double z, double yAmp,
+                       double yMin, int yDefault) {
     double v = 0;
     int i;
     for (i = 0; i < noise->octcnt; i++) {
-        PerlinNoise *p = noise->octaves + i;
+        PerlinNoise* p = noise->octaves + i;
         double lf = p->lacunarity;
         double ax = maintainPrecision(x * lf);
         double ay = yDefault ? -p->b : maintainPrecision(y * lf);
@@ -275,5 +266,3 @@ double sampleOctaveAmp(const Generator* g, const OctaveNoise *noise,
     }
     return v;
 }
-
-

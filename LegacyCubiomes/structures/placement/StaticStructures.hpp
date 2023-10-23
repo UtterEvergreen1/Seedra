@@ -55,7 +55,7 @@ namespace Placement {
         }
 
 #ifdef INCLUDE_QT
-        friend QDebug operator<<(QDebug out, const Pos2D &pos) {
+        friend QDebug operator<<(QDebug out, const Pos2D& pos) {
             out.nospace() << "(" << pos.x << ", " << pos.z << ")";
             return out.space();
         }
@@ -83,5 +83,4 @@ namespace Placement {
         static void setWorldSize(WORLDSIZE worldSize);
     };
 
-}
-
+} // namespace Placement

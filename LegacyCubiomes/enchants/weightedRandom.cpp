@@ -3,14 +3,13 @@
 
 int WeightedRandom::getTotalWeight(const std::vector<EnchantmentData>& collection) {
     int totalWeight = 0;
-    for (const auto& item : collection) {
-        totalWeight += item.obj->rarity->getWeight();
-    }
+    for (const auto& item: collection) { totalWeight += item.obj->rarity->getWeight(); }
     return totalWeight;
 }
 
 
-EnchantmentData WeightedRandom::getRandomItem(RNG& rng, const std::vector<EnchantmentData>& collection, int totalWeight) {
+EnchantmentData WeightedRandom::getRandomItem(RNG& rng, const std::vector<EnchantmentData>& collection,
+                                              int totalWeight) {
     int weight = rng.nextInt(totalWeight);
     // printf("weight chosen: %d, totalWeight %d\n", weight, totalWeight);
     return getRandomItem(collection, weight);
@@ -19,10 +18,9 @@ EnchantmentData WeightedRandom::getRandomItem(RNG& rng, const std::vector<Enchan
 
 EnchantmentData WeightedRandom::getRandomItem(const std::vector<EnchantmentData>& collection, int weightIn) {
     int count = 0;
-    for (auto it : collection) {
+    for (auto it: collection) {
         weightIn -= it.obj->rarity->getWeight();
-        if (weightIn < 0)
-            return it;
+        if (weightIn < 0) return it;
         count += 1;
     }
     return {};

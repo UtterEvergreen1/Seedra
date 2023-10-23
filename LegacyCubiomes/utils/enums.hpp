@@ -3,20 +3,9 @@
 #include <cstdint>
 #include <string>
 
-enum class DIMENSION : int8_t {
-    NETHER = -1,
-    HELL = -1,
-    OVERWORLD = 0,
-    END = 1
-};
+enum class DIMENSION : int8_t { NETHER = -1, HELL = -1, OVERWORLD = 0, END = 1 };
 
-enum class CONSOLE : int8_t {
-    XBOX = 0,
-    PS3 = 1,
-    WIIU = 2,
-    PS4 = 3,
-    NONE = 4
-};
+enum class CONSOLE : int8_t { XBOX = 0, PS3 = 1, WIIU = 2, PS4 = 3, NONE = 4 };
 
 enum class LCEVERSION : int8_t {
     AQUATIC = 0,
@@ -58,23 +47,15 @@ enum class DIRECTION : int8_t {
     EAST = 3,
 };
 
-enum class BIOMESCALE : int8_t {
-    SMALL = 0,
-    MEDIUM = 1,
-    LARGE = 2
-};
+enum class BIOMESCALE : int8_t { SMALL = 0, MEDIUM = 1, LARGE = 2 };
 
-enum class WORLDSIZE : int8_t {
-    CLASSIC = 0,
-    SMALL = 1,
-    MEDIUM = 2,
-    LARGE = 3
-};
+enum class WORLDSIZE : int8_t { CLASSIC = 0, SMALL = 1, MEDIUM = 2, LARGE = 3 };
 
 
 enum class StructureType : uint8_t {
     DesertPyramid,
-    JungleTemple, JunglePyramid = JungleTemple,
+    JungleTemple,
+    JunglePyramid = JungleTemple,
     SwampHut,
     Igloo,
     Village,
@@ -90,7 +71,6 @@ enum class StructureType : uint8_t {
     EndGateway,
     NONE
 };
-
 
 
 inline static std::string LceVersionToString(LCEVERSION version) {
@@ -127,7 +107,6 @@ inline static int getChunkWorldBounds(WORLDSIZE worldSize) {
             return 160;
     }
 }
-
 
 
 inline static std::string getStructureName(StructureType type) {
@@ -257,4 +236,3 @@ inline std::string mcVersionToString(MCVERSION version) {
             return "NONE";
     }
 }
-

@@ -4,7 +4,6 @@
 
 class EnchantmentProtection : public Enchantment {
 public:
-
     struct ArmorType {
         const std::string typeName;
         const int8_t id{};
@@ -13,11 +12,12 @@ public:
         const int8_t levelCostSpan{};
 
         ArmorType() = default;
-        ArmorType(std::string typeName, int8_t id, int8_t minEnchantability, int8_t levelCost, int8_t levelCostSpan) :
-        typeName(std::move(typeName)), id(id), minEnchantability(minEnchantability), levelCost(levelCost), levelCostSpan(levelCostSpan) {}
+        ArmorType(std::string typeName, int8_t id, int8_t minEnchantability, int8_t levelCost, int8_t levelCostSpan)
+            : typeName(std::move(typeName)), id(id), minEnchantability(minEnchantability), levelCost(levelCost),
+              levelCostSpan(levelCostSpan) {}
 
-        ND int8_t getEnchantIncreasePerLevel() const {return this->levelCost;}
-        ND int8_t getMinimalEnchantability() const {return this->minEnchantability;}
+        ND int8_t getEnchantIncreasePerLevel() const { return this->levelCost; }
+        ND int8_t getMinimalEnchantability() const { return this->minEnchantability; }
     };
 
     static const ArmorType ALL;
@@ -28,9 +28,9 @@ public:
 
     const EnchantmentProtection::ArmorType* protType = &ALL;
 
-    EnchantmentProtection(std::string name, const Rarity *rarity, int type) :
-            Enchantment(std::move(name), rarity, EnumName::PROTECTION, 4) {
-        switch(type) {
+    EnchantmentProtection(std::string name, const Rarity* rarity, int type)
+        : Enchantment(std::move(name), rarity, EnumName::PROTECTION, 4) {
+        switch (type) {
             case 0:
                 protType = &ALL;
                 break;
@@ -56,21 +56,17 @@ public:
         } else {
             this->type = &Type::ARMOR;
         }
-
-
     };
 
     int getMinCost(int enchantmentLevel) override {
-        return protType->getMinimalEnchantability() +
-               (enchantmentLevel - 1) * protType->getEnchantIncreasePerLevel();
+        return protType->getMinimalEnchantability() + (enchantmentLevel - 1) * protType->getEnchantIncreasePerLevel();
     }
 
     int getMaxCost(int enchantmentLevel) override {
-        return getMinCost(enchantmentLevel) +
-               protType->getEnchantIncreasePerLevel();
+        return getMinCost(enchantmentLevel) + protType->getEnchantIncreasePerLevel();
     }
 
-    ND bool canApplyTogether(const Enchantment *enchantment) const override {
+    ND bool canApplyTogether(const Enchantment* enchantment) const override {
         if (enchantment->enumID == EnumName::PROTECTION) {
             auto enchantmentIn = dynamic_cast<const EnchantmentProtection*>(enchantment);
 

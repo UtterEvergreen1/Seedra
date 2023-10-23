@@ -1,10 +1,10 @@
 #pragma once
 
-#include <vector>
 #include <stdexcept>
+#include <vector>
 
-#include "LegacyCubiomes/utils/rng.hpp"
 #include "LegacyCubiomes/enchants/enchantmentData.hpp"
+#include "LegacyCubiomes/utils/rng.hpp"
 
 class WeightedRandom {
 public:

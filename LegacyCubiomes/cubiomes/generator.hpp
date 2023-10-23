@@ -14,21 +14,21 @@ struct SurfaceNoise;
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
-#include <memory>
 #include <iostream>
+#include <memory>
 
 
 class Generator {
 private:
-    int64_t worldSeed;                   // world seed
-    LCEVERSION version;             // LCE version, used to generate biomes
-    CONSOLE console;                // LCE console, used to generate terrain and stronghold
-    BIOMESCALE biomeScale;           // biome size for biome generation
-    WORLDSIZE worldSize;            // world size for calculating world bounds
+    int64_t worldSeed;     // world seed
+    LCEVERSION version;    // LCE version, used to generate biomes
+    CONSOLE console;       // LCE console, used to generate terrain and stronghold
+    BIOMESCALE biomeScale; // biome size for biome generation
+    WORLDSIZE worldSize;   // world size for calculating world bounds
 
-    int worldCoordinateBounds;      // block positions of the world bounds
+    int worldCoordinateBounds; // block positions of the world bounds
 
-    LayerStack layerStack{};        // stack for entries
+    LayerStack layerStack{}; // stack for entries
 
 public:
     ///========================================================================
@@ -166,9 +166,7 @@ public:
      * @param pos coordinates to generate the biome at
      * @return biome id or -1 if failed
      */
-    MU ND inline int getBiomeAt(int scale, Pos2D pos) const {
-        return getBiomeAt(scale, pos.x, pos.z);
-    }
+    MU ND inline int getBiomeAt(int scale, Pos2D pos) const { return getBiomeAt(scale, pos.x, pos.z); }
 
     /**
      * Generates a biome range (x -> x + w, z -> z + h).
@@ -272,8 +270,7 @@ public:
      * @param[in] w, h width and height to generate
      * @return zero on success
      */
-    int mapApproxHeight(float* y, int* ids, const SurfaceNoise* sn,
-        int x, int z, int w, int h) const;
+    int mapApproxHeight(float* y, int* ids, const SurfaceNoise* sn, int x, int z, int w, int h) const;
 
     /// uint64_t value for the valid spawn biomes
     static const uint64_t spawn_biomes;
@@ -289,4 +286,3 @@ public:
     /// Finds the spawn block coordinates (not currently correct in wooded_badlands_plateau or mesa_plateau_stone).
     MU ND Pos2D getSpawnBlock() const;
 };
-

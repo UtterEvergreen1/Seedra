@@ -1,19 +1,13 @@
-
 # How to Use
+
 ...
 
 # Generation
+
 ...
 
-
-
-
-
-
-
-
-
 # Placement
+
 ```c++
 // all examples given below are called "Placement::..."
 using namespace Placement;
@@ -31,7 +25,9 @@ Treasure();
 Shipwreck();
 Outpost();
 ``` 
+
 ### Static Structures
+
 ```c++
 // features
 StructureType Feature::getFeatureType(Generator* g, (int, int | Pos2D));
@@ -41,18 +37,8 @@ std::vector<FeatureStructurePair> Feature::getAllFeaturePositions(Generator* g);
 static void setWorldSize(WORLDSIZE worldSize);
 ```
 
-
-
-
-
-
-
-
-
-
-
-
 # Rolls:
+
 ...
 
 

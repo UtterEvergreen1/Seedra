@@ -1,9 +1,9 @@
 #include "Container.hpp"
 
 void Container::printCombinedItems() {
-    std::map<const Items::Item *, int> itemCount;
+    std::map<const Items::Item*, int> itemCount;
 
-    for (const auto &itemStack: inventorySlots) {
+    for (const auto& itemStack: inventorySlots) {
         if (itemStack.stackSize > 0) {
             if (itemCount.find(itemStack.item) != itemCount.end()) {
                 itemCount[itemStack.item] += itemStack.stackSize;
@@ -13,14 +13,11 @@ void Container::printCombinedItems() {
         }
     }
 
-    for (const auto& pair : itemCount) {
+    for (const auto& pair: itemCount) {
         ItemStack itemStack = ItemStack(pair.first, pair.second);
         std::cout << itemStack << std::endl;
     }
 }
-
-
-
 
 
 void Container::shuffleIntoContainer(std::vector<ItemStack>& items, RNG& rng) {
@@ -40,11 +37,12 @@ void Container::shuffleIntoContainer(std::vector<ItemStack>& items, RNG& rng) {
                                        return true;
                                    }
                                    return false;
-                               }), items.end());
+                               }),
+                items.end());
 
     numSlots -= items.size();
-    while(numSlots > 0 && !stackableItems.empty()) {
-        int itemIndex = rngState.nextInt(0, (int)stackableItems.size() - 1);
+    while (numSlots > 0 && !stackableItems.empty()) {
+        int itemIndex = rngState.nextInt(0, (int) stackableItems.size() - 1);
         auto iter = std::next(stackableItems.begin(), itemIndex);
         ItemStack originalStack = std::move(*iter);
 
@@ -53,21 +51,20 @@ void Container::shuffleIntoContainer(std::vector<ItemStack>& items, RNG& rng) {
         int splitAmount = rngState.nextInt(1, originalStack.stackSize >> 1);
         ItemStack splittedStack = originalStack.splitStack(splitAmount);
 
-        if (originalStack.stackSize == 0 || rngState.next(1) == 0)
-            items.emplace_back(std::move(originalStack));
+        if (originalStack.stackSize == 0 || rngState.next(1) == 0) items.emplace_back(std::move(originalStack));
         else
             stackableItems.emplace_back(std::move(originalStack));
 
-        if (splittedStack.stackSize == 0 || rngState.next(1) == 0)
-            items.emplace_back(std::move(splittedStack));
+        if (splittedStack.stackSize == 0 || rngState.next(1) == 0) items.emplace_back(std::move(splittedStack));
         else
             stackableItems.emplace_back(std::move(splittedStack));
     }
 
-    items.insert(items.end(), std::make_move_iterator(stackableItems.begin()), std::make_move_iterator(stackableItems.end()));
+    items.insert(items.end(), std::make_move_iterator(stackableItems.begin()),
+                 std::make_move_iterator(stackableItems.end()));
 
     randomShuffle<ItemStack>(items, rngState);
-    for (ItemStack& itemStack : items) {
+    for (ItemStack& itemStack: items) {
         if (slotOrder.empty()) // Tried to over-fill a container
             return;
 
@@ -75,10 +72,8 @@ void Container::shuffleIntoContainer(std::vector<ItemStack>& items, RNG& rng) {
             int itemIndex = slotOrder.back();
             slotOrder.pop_back();
             setInventorySlotContents(itemIndex, std::move(itemStack));
-        }
-        else {
+        } else {
             slotOrder.pop_back();
         }
     }
 }
-

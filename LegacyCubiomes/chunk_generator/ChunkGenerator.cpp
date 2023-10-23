@@ -3,7 +3,7 @@
 #include "biome.hpp"
 
 
-ChunkGeneratorOverWorld::ChunkGeneratorOverWorld(const Generator &generator) : g(generator) {
+ChunkGeneratorOverWorld::ChunkGeneratorOverWorld(const Generator& generator) : g(generator) {
     rng.setSeed(g.getWorldSeed());
     minLimitPerlinNoise.setNoiseGeneratorOctaves(rng, 16);
     maxLimitPerlinNoise.setNoiseGeneratorOctaves(rng, 16);
@@ -27,8 +27,7 @@ ChunkGeneratorOverWorld::ChunkGeneratorOverWorld(const Generator &generator) : g
 
 
 ChunkGeneratorOverWorld::~ChunkGeneratorOverWorld() {
-    if (biomesForGeneration)
-        free(biomesForGeneration);
+    if (biomesForGeneration) free(biomesForGeneration);
 }
 
 
@@ -41,19 +40,18 @@ void ChunkGeneratorOverWorld::setBiomesForGeneration(int x, int z, int width, in
         r.scale = 1;
     }
     // Define the position and size for a horizontal area:
-    r.x = x, r.z = z;   // position (x,z)
+    r.x = x, r.z = z;            // position (x,z)
     r.sx = width, r.sz = height; // size (width,height)
     // Set the vertical range as a plane near sea level at scale 1:4.
     // r.y = 1, r.sy = 1;
-    int *biomeIds = g.allocCache(r);
+    int* biomeIds = g.allocCache(r);
     g.genBiomes(biomeIds, r);
-    if (biomesForGeneration)
-        free(biomesForGeneration);
+    if (biomesForGeneration) free(biomesForGeneration);
     biomesForGeneration = biomeIds;
 }
 
 
-void ChunkGeneratorOverWorld::setBlocksInChunk(int chunkX, int chunkZ, ChunkPrimer *primer) {
+void ChunkGeneratorOverWorld::setBlocksInChunk(int chunkX, int chunkZ, ChunkPrimer* primer) {
 
     setBiomesForGeneration(chunkX * 4 - 2, chunkZ * 4 - 2, 10, 10, 4);
     generateHeightmap(chunkX * 4, 0, chunkZ * 4);
@@ -111,11 +109,12 @@ void ChunkGeneratorOverWorld::setBlocksInChunk(int chunkX, int chunkZ, ChunkPrim
 }
 
 
-void ChunkGeneratorOverWorld::replaceBiomeBlocks(int x, int z, ChunkPrimer *primer, int *biomesIn) {
-    depthBuffer = surfaceNoise.getRegion(depthBuffer, (double) (x * 16), (double) (z * 16), 16, 16, 0.0625, 0.0625, 1.0);
+void ChunkGeneratorOverWorld::replaceBiomeBlocks(int x, int z, ChunkPrimer* primer, int* biomesIn) {
+    depthBuffer =
+            surfaceNoise.getRegion(depthBuffer, (double) (x * 16), (double) (z * 16), 16, 16, 0.0625, 0.0625, 1.0);
     for (int i = 0; i < 16; ++i) {
         for (int j = 0; j < 16; ++j) {
-            Biome *biome = Biome::getBiomeForId(biomesIn[j + i * 16]);
+            Biome* biome = Biome::getBiomeForId(biomesIn[j + i * 16]);
             biome->genTerrainBlocks(g.getWorldSeed(), rng, primer, x * 16 + i, z * 16 + j, depthBuffer[j + i * 16]);
         }
     }
@@ -124,7 +123,7 @@ void ChunkGeneratorOverWorld::replaceBiomeBlocks(int x, int z, ChunkPrimer *prim
 
 ChunkPrimer* ChunkGeneratorOverWorld::provideChunk(int x, int z) {
     rng.setSeed((int64_t) x * 341873128712LL + (int64_t) z * 132897987541LL);
-    auto *chunkPrimer = new ChunkPrimer();
+    auto* chunkPrimer = new ChunkPrimer();
     setBlocksInChunk(x, z, chunkPrimer);
     setBiomesForGeneration(x * 16, z * 16, 16, 16, 1);
     replaceBiomeBlocks(x, z, chunkPrimer, biomesForGeneration);
@@ -140,12 +139,9 @@ void ChunkGeneratorOverWorld::generateHeightmap(int x, int y, int z) {
     // double mainNoiseScaleY = 160.0;
     // double mainNoiseScaleZ = 80.0;
     depthRegion = depthNoise.genNoiseOctaves(depthRegion, x, z, 5, 5, 200.0, 200.0, 0.5);
-    mainNoiseRegion = mainPerlinNoise.genNoiseOctaves(mainNoiseRegion, x, y, z, 5, 33, 5,
-                                                      8.55515, 4.277575, 8.55515);
-    minLimitRegion = minLimitPerlinNoise.genNoiseOctaves(minLimitRegion, x, y, z, 5, 33, 5,
-                                                         684.412, 684.412, 684.412);
-    maxLimitRegion = maxLimitPerlinNoise.genNoiseOctaves(maxLimitRegion, x, y, z, 5, 33, 5,
-                                                         684.412, 684.412, 684.412);
+    mainNoiseRegion = mainPerlinNoise.genNoiseOctaves(mainNoiseRegion, x, y, z, 5, 33, 5, 8.55515, 4.277575, 8.55515);
+    minLimitRegion = minLimitPerlinNoise.genNoiseOctaves(minLimitRegion, x, y, z, 5, 33, 5, 684.412, 684.412, 684.412);
+    maxLimitRegion = maxLimitPerlinNoise.genNoiseOctaves(maxLimitRegion, x, y, z, 5, 33, 5, 684.412, 684.412, 684.412);
     int i = 0;
     int j = 0;
 
@@ -174,8 +170,7 @@ void ChunkGeneratorOverWorld::generateHeightmap(int x, int y, int z) {
                     double biome1BaseHeight;
                     getBiomeDepthAndScale(biome, &biomeBaseHeight, 0, 0);
                     getBiomeDepthAndScale(biome1, &biome1BaseHeight, 0, 0);
-                    if (biome1BaseHeight > biomeBaseHeight)
-                        f7 /= 2.0F;
+                    if (biome1BaseHeight > biomeBaseHeight) f7 /= 2.0F;
 
                     f2 += f6 * f7;
                     f3 += f5 * f7;
@@ -189,22 +184,19 @@ void ChunkGeneratorOverWorld::generateHeightmap(int x, int y, int z) {
             f3 = (f3 * 4.0F - 1.0F) / 8.0F;
             double d7 = depthRegion[j] / 8000.0;
 
-            if (d7 < 0.0)
-                d7 = -d7 * 0.3;
+            if (d7 < 0.0) d7 = -d7 * 0.3;
 
             d7 = d7 * 3.0 - 2.0;
 
             if (d7 < 0.0) {
                 d7 = d7 / 2.0;
 
-                if (d7 < -1.0)
-                    d7 = -1.0;
+                if (d7 < -1.0) d7 = -1.0;
 
                 d7 = d7 / 1.4;
                 d7 = d7 / 2.0;
             } else {
-                if (d7 > 1.0)
-                    d7 = 1.0;
+                if (d7 > 1.0) d7 = 1.0;
 
                 d7 = d7 / 8.0;
             }
@@ -219,8 +211,7 @@ void ChunkGeneratorOverWorld::generateHeightmap(int x, int y, int z) {
             for (int l1 = 0; l1 < 33; ++l1) {
                 double d1 = ((double) l1 - d0) * (double) 12.0 * 128.0 / 256.0 / d9;
 
-                if (d1 < 0.0)
-                    d1 *= 4.0;
+                if (d1 < 0.0) d1 *= 4.0;
 
                 double d2 = minLimitRegion[i] / (double) 512.0; // lowerLimitScale = 512.0
                 double d3 = maxLimitRegion[i] / (double) 512.0; // upperLimitScale = 512.0
@@ -233,7 +224,7 @@ void ChunkGeneratorOverWorld::generateHeightmap(int x, int y, int z) {
                     d5 = d5 * (1.0 - d6) + -10.0 * d6;
                 }
 
-               heightMap[i] = d5;
+                heightMap[i] = d5;
                 ++i;
             }
         }

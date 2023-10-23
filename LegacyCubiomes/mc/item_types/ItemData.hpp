@@ -42,4 +42,4 @@ namespace Items {
         TOOL_GOLD = 22,
     };
 
-}
+} // namespace Items

@@ -1,8 +1,8 @@
 #pragma once
 
-#include "ChunkPrimer.hpp"
-#include "ChunkGenerator.hpp"
 #include "CaveGenerator.hpp"
+#include "ChunkGenerator.hpp"
+#include "ChunkPrimer.hpp"
 #include "RavineGenerator.hpp"
 
 namespace Chunk {
@@ -19,13 +19,11 @@ namespace Chunk {
             RavineGenerator ravineGenerator(g);
             ravineGenerator.generate(chunkX, chunkZ, chunkPrimer);
         }
-        if constexpr (generateSkyLight) {
-            chunkPrimer->generateSkylightMap();
-        }
+        if constexpr (generateSkyLight) { chunkPrimer->generateSkylightMap(); }
         return chunkPrimer;
     }
 
-    MU static void populate(const Generator& g, int chunkX, int chunkZ, ChunkPrimer *chunkData) {
+    MU static void populate(const Generator& g, int chunkX, int chunkZ, ChunkPrimer* chunkData) {
         int xStart = chunkX * 16;
         int zStart = chunkZ * 16;
         for (int xPos = 0; xPos < 16; ++xPos) {
@@ -50,4 +48,4 @@ namespace Chunk {
             }
         }
     }
-}
+} // namespace Chunk

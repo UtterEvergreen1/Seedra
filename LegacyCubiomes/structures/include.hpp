@@ -9,16 +9,15 @@
 
 // placement
 #include "LegacyCubiomes/structures/placement/DynamicStructures.hpp"
+#include "LegacyCubiomes/structures/placement/StaticStructures.hpp"
 #include "LegacyCubiomes/structures/placement/mineshaft.hpp"
 #include "LegacyCubiomes/structures/placement/netherfortress.hpp"
-#include "LegacyCubiomes/structures/placement/StaticStructures.hpp"
 #include "LegacyCubiomes/structures/placement/stronghold.hpp"
 
 // rolls
 #include "LegacyCubiomes/structures/rolls/mineshaft.hpp"
 #include "LegacyCubiomes/structures/rolls/stronghold.hpp"
 #include "LegacyCubiomes/structures/rolls/village.hpp"
-
 
 
 // generation
@@ -34,6 +33,6 @@ namespace Placement {
         Shipwreck::setWorldSize(worldSize);
         Outpost::setWorldSize(worldSize);
     }
-}
+} // namespace Placement
 
 // rolls

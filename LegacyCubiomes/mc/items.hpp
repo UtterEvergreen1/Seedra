@@ -1,10 +1,10 @@
 #pragma once
 
-#include "LegacyCubiomes/mc/item_types/Item.hpp"
 #include "LegacyCubiomes/mc/item_types/Armor.hpp"
+#include "LegacyCubiomes/mc/item_types/Item.hpp"
+#include "LegacyCubiomes/mc/item_types/Skull.hpp"
 #include "LegacyCubiomes/mc/item_types/Sword.hpp"
 #include "LegacyCubiomes/mc/item_types/Tool.hpp"
-#include "LegacyCubiomes/mc/item_types/Skull.hpp"
 #include "LegacyCubiomes/mc/item_types/Trident.hpp"
 
 
@@ -314,8 +314,10 @@ namespace Items {
     MU const Item VERY_DAMAGED_ANVIL = Item(145, 2, "Very Damaged Anvil", "anvil");
 
     MU const Item TRAPPED_CHEST = Item(146, 0, "Trapped Chest", "trapped_chest");
-    MU const Item LIGHT_WEIGHTED_PRESSURE_PLATE = Item(147, 0, "Weighted Pressure Plate (light)", "light_weighted_pressure_plate");
-    MU const Item HEAVY_WEIGHTED_PRESSURE_PLATE = Item(148, 0, "Weighted Pressure Plate (heavy)", "heavy_weighted_pressure_plate");
+    MU const Item LIGHT_WEIGHTED_PRESSURE_PLATE =
+            Item(147, 0, "Weighted Pressure Plate (light)", "light_weighted_pressure_plate");
+    MU const Item HEAVY_WEIGHTED_PRESSURE_PLATE =
+            Item(148, 0, "Weighted Pressure Plate (heavy)", "heavy_weighted_pressure_plate");
     MU const Item INACTIVE_REDSTONE_COMPARATOR = Item(149, 0, "Redstone Comparator (inactive)", "unpowered_comparator");
     MU const Item ACTIVE_REDSTONE_COMPARATOR = Item(150, 0, "Redstone Comparator (active)", "powered_comparator");
     MU const Item DAYLIGHT_SENSOR = Item(151, 0, "Daylight Sensor", "daylight_detector");
@@ -425,7 +427,8 @@ namespace Items {
     MU const Item RED_SANDSTONE_STAIRS = Item(180, 0, "Red Sandstone Stairs", "red_sandstone_stairs");
 
     MU const Item DOUBLE_RED_SANDSTONE_SLAB = Item(181, 0, "Double Red Sandstone Slab", "double_stone_slab2");
-    MU const Item SMOOTH_DOUBLE_RED_SANDSTONE_SLAB = Item(181, 8, "Smooth Double Red Sandstone Slab", "double_stone_slab2");
+    MU const Item SMOOTH_DOUBLE_RED_SANDSTONE_SLAB =
+            Item(181, 8, "Smooth Double Red Sandstone Slab", "double_stone_slab2");
 
     MU const Item RED_SANDSTONE_SLAB = Item(182, 0, "Red Sandstone Slab", "stone_slab2");
     MU const Item UPPER_RED_SANDSTONE_SLAB = Item(182, 1, "Upper Red Sandstone Slab", "stone_slab2");
@@ -486,12 +489,14 @@ namespace Items {
     MU const Item WHITE_GLAZED_TERRACOTTA = Item(235, 0, "White Glazed Terracotta", "white_glazed_terracotta");
     MU const Item ORANGE_GLAZED_TERRACOTTA = Item(236, 0, "Orange Glazed Terracotta", "orange_glazed_terracotta");
     MU const Item MAGENTA_GLAZED_TERRACOTTA = Item(237, 0, "Magenta Glazed Terracotta", "magenta_glazed_terracotta");
-    MU const Item LIGHT_BLUE_GLAZED_TERRACOTTA = Item(238, 0, "Light Blue Glazed Terracotta", "light_blue_glazed_terracotta");
+    MU const Item LIGHT_BLUE_GLAZED_TERRACOTTA =
+            Item(238, 0, "Light Blue Glazed Terracotta", "light_blue_glazed_terracotta");
     MU const Item YELLOW_GLAZED_TERRACOTTA = Item(239, 0, "Yellow Glazed Terracotta", "yellow_glazed_terracotta");
     MU const Item LIME_GLAZED_TERRACOTTA = Item(240, 0, "Lime Glazed Terracotta", "lime_glazed_terracotta");
     MU const Item PINK_GLAZED_TERRACOTTA = Item(241, 0, "Pink Glazed Terracotta", "pink_glazed_terracotta");
     MU const Item GRAY_GLAZED_TERRACOTTA = Item(242, 0, "Gray Glazed Terracotta", "gray_glazed_terracotta");
-    MU const Item LIGHT_GRAY_GLAZED_TERRACOTTA = Item(243, 0, "Light Gray Glazed Terracotta", "light_gray_glazed_terracotta");
+    MU const Item LIGHT_GRAY_GLAZED_TERRACOTTA =
+            Item(243, 0, "Light Gray Glazed Terracotta", "light_gray_glazed_terracotta");
     MU const Item CYAN_GLAZED_TERRACOTTA = Item(244, 0, "Cyan Glazed Terracotta", "cyan_glazed_terracotta");
     MU const Item PURPLE_GLAZED_TERRACOTTA = Item(245, 0, "Purple Glazed Terracotta", "purple_glazed_terracotta");
     MU const Item BLUE_GLAZED_TERRACOTTA = Item(246, 0, "Blue Glazed Terracotta", "blue_glazed_terracotta");
@@ -537,8 +542,8 @@ namespace Items {
     MU const Item STRUCTURE_BLOCK = Item(255, 0, "Structure Block", "structure_block");
 
     MU const Item IRON_SHOVEL = Item(256, 0, ItemTool, "Iron Shovel", "iron_shovel", true);
-    MU const Item IRON_PICKAXE = Item(257, 0, ItemTool,"Iron Pickaxe", "iron_pickaxe", true);
-    MU const Item IRON_AXE = Item(258, 0, ItemTool,"Iron Axe", "iron_axe", true);
+    MU const Item IRON_PICKAXE = Item(257, 0, ItemTool, "Iron Pickaxe", "iron_pickaxe", true);
+    MU const Item IRON_AXE = Item(258, 0, ItemTool, "Iron Axe", "iron_axe", true);
     MU const Item FLINT_AND_STEEL = Item(259, 0, ItemTool, "Flint and Steel", "flint_and_steel", true);
     MU const Item APPLE = Item(260, 0, "Apple", "apple");
     MU const Item BOW = Item(261, 0, ItemBow, "Bow", "bow");
@@ -591,30 +596,50 @@ namespace Items {
     MU const Item WHEAT = Item(296, 0, "Wheat", "wheat");
     MU const Item BREAD = Item(297, 0, "Bread", "bread");
 
-    MU const Armor LEATHER_HELMET = Armor(298, "Leather Helmet", "leather_helmet", EntityEquipSlot::HEAD, ArmorMaterials::ARMOR_LEATHER);
-    MU const Armor LEATHER_TUNIC = Armor(299, "Leather Tunic", "leather_chestplate", EntityEquipSlot::CHEST, ArmorMaterials::ARMOR_LEATHER);
-    MU const Armor LEATHER_PANTS = Armor(300, "Leather Pants", "leather_leggings", EntityEquipSlot::LEGS, ArmorMaterials::ARMOR_LEATHER);
-    MU const Armor LEATHER_BOOTS = Armor(301, "Leather Boots", "leather_boots", EntityEquipSlot::FEET, ArmorMaterials::ARMOR_LEATHER);
+    MU const Armor LEATHER_HELMET =
+            Armor(298, "Leather Helmet", "leather_helmet", EntityEquipSlot::HEAD, ArmorMaterials::ARMOR_LEATHER);
+    MU const Armor LEATHER_TUNIC =
+            Armor(299, "Leather Tunic", "leather_chestplate", EntityEquipSlot::CHEST, ArmorMaterials::ARMOR_LEATHER);
+    MU const Armor LEATHER_PANTS =
+            Armor(300, "Leather Pants", "leather_leggings", EntityEquipSlot::LEGS, ArmorMaterials::ARMOR_LEATHER);
+    MU const Armor LEATHER_BOOTS =
+            Armor(301, "Leather Boots", "leather_boots", EntityEquipSlot::FEET, ArmorMaterials::ARMOR_LEATHER);
 
-    MU const Armor CHAINMAIL_HELMET = Armor(302, "Chainmail Helmet", "chainmail_helmet", EntityEquipSlot::HEAD, ArmorMaterials::ARMOR_CHAIN);
-    MU const Armor CHAINMAIL_CHESTPLATE = Armor(303, "Chainmail Chestplate", "chainmail_chestplate", EntityEquipSlot::CHEST, ArmorMaterials::ARMOR_CHAIN);
-    MU const Armor CHAINMAIL_LEGGINGS = Armor(304, "Chainmail Leggings", "chainmail_leggings", EntityEquipSlot::LEGS, ArmorMaterials::ARMOR_CHAIN);
-    MU const Armor CHAINMAIL_BOOTS = Armor(305, "Chainmail Boots", "chainmail_boots", EntityEquipSlot::FEET, ArmorMaterials::ARMOR_CHAIN);
+    MU const Armor CHAINMAIL_HELMET =
+            Armor(302, "Chainmail Helmet", "chainmail_helmet", EntityEquipSlot::HEAD, ArmorMaterials::ARMOR_CHAIN);
+    MU const Armor CHAINMAIL_CHESTPLATE = Armor(303, "Chainmail Chestplate", "chainmail_chestplate",
+                                                EntityEquipSlot::CHEST, ArmorMaterials::ARMOR_CHAIN);
+    MU const Armor CHAINMAIL_LEGGINGS =
+            Armor(304, "Chainmail Leggings", "chainmail_leggings", EntityEquipSlot::LEGS, ArmorMaterials::ARMOR_CHAIN);
+    MU const Armor CHAINMAIL_BOOTS =
+            Armor(305, "Chainmail Boots", "chainmail_boots", EntityEquipSlot::FEET, ArmorMaterials::ARMOR_CHAIN);
 
-    MU const Armor IRON_HELMET = Armor(306, "Iron Helmet", "iron_helmet", EntityEquipSlot::HEAD, ArmorMaterials::ARMOR_IRON);
-    MU const Armor IRON_CHESTPLATE = Armor(307, "Iron Chestplate", "iron_chestplate", EntityEquipSlot::CHEST, ArmorMaterials::ARMOR_IRON);
-    MU const Armor IRON_LEGGINGS = Armor(308, "Iron Leggings", "iron_leggings", EntityEquipSlot::LEGS, ArmorMaterials::ARMOR_IRON);
-    MU const Armor IRON_BOOTS = Armor(309, "Iron Boots", "iron_boots", EntityEquipSlot::FEET, ArmorMaterials::ARMOR_IRON);
+    MU const Armor IRON_HELMET =
+            Armor(306, "Iron Helmet", "iron_helmet", EntityEquipSlot::HEAD, ArmorMaterials::ARMOR_IRON);
+    MU const Armor IRON_CHESTPLATE =
+            Armor(307, "Iron Chestplate", "iron_chestplate", EntityEquipSlot::CHEST, ArmorMaterials::ARMOR_IRON);
+    MU const Armor IRON_LEGGINGS =
+            Armor(308, "Iron Leggings", "iron_leggings", EntityEquipSlot::LEGS, ArmorMaterials::ARMOR_IRON);
+    MU const Armor IRON_BOOTS =
+            Armor(309, "Iron Boots", "iron_boots", EntityEquipSlot::FEET, ArmorMaterials::ARMOR_IRON);
 
-    MU const Armor DIAMOND_HELMET = Armor(310, "Diamond Helmet", "diamond_helmet", EntityEquipSlot::HEAD, ArmorMaterials::ARMOR_DIAMOND);
-    MU const Armor DIAMOND_CHESTPLATE = Armor(311, "Diamond Chestplate", "diamond_chestplate", EntityEquipSlot::CHEST, ArmorMaterials::ARMOR_DIAMOND);
-    MU const Armor DIAMOND_LEGGINGS = Armor(312, "Diamond Leggings", "diamond_leggings", EntityEquipSlot::LEGS, ArmorMaterials::ARMOR_DIAMOND);
-    MU const Armor DIAMOND_BOOTS = Armor(313, "Diamond Boots", "diamond_boots", EntityEquipSlot::FEET, ArmorMaterials::ARMOR_DIAMOND);
+    MU const Armor DIAMOND_HELMET =
+            Armor(310, "Diamond Helmet", "diamond_helmet", EntityEquipSlot::HEAD, ArmorMaterials::ARMOR_DIAMOND);
+    MU const Armor DIAMOND_CHESTPLATE = Armor(311, "Diamond Chestplate", "diamond_chestplate", EntityEquipSlot::CHEST,
+                                              ArmorMaterials::ARMOR_DIAMOND);
+    MU const Armor DIAMOND_LEGGINGS =
+            Armor(312, "Diamond Leggings", "diamond_leggings", EntityEquipSlot::LEGS, ArmorMaterials::ARMOR_DIAMOND);
+    MU const Armor DIAMOND_BOOTS =
+            Armor(313, "Diamond Boots", "diamond_boots", EntityEquipSlot::FEET, ArmorMaterials::ARMOR_DIAMOND);
 
-    MU const Armor GOLDEN_HELMET = Armor(314, "Golden Helmet", "golden_helmet", EntityEquipSlot::HEAD, ArmorMaterials::ARMOR_GOLD);
-    MU const Armor GOLDEN_CHESTPLATE = Armor(315, "Golden Chestplate", "golden_chestplate", EntityEquipSlot::CHEST, ArmorMaterials::ARMOR_GOLD);
-    MU const Armor GOLDEN_LEGGINGS = Armor(316, "Golden Leggings", "golden_leggings", EntityEquipSlot::LEGS, ArmorMaterials::ARMOR_GOLD);
-    MU const Armor GOLDEN_BOOTS = Armor(317, "Golden Boots", "golden_boots", EntityEquipSlot::FEET, ArmorMaterials::ARMOR_GOLD);
+    MU const Armor GOLDEN_HELMET =
+            Armor(314, "Golden Helmet", "golden_helmet", EntityEquipSlot::HEAD, ArmorMaterials::ARMOR_GOLD);
+    MU const Armor GOLDEN_CHESTPLATE =
+            Armor(315, "Golden Chestplate", "golden_chestplate", EntityEquipSlot::CHEST, ArmorMaterials::ARMOR_GOLD);
+    MU const Armor GOLDEN_LEGGINGS =
+            Armor(316, "Golden Leggings", "golden_leggings", EntityEquipSlot::LEGS, ArmorMaterials::ARMOR_GOLD);
+    MU const Armor GOLDEN_BOOTS =
+            Armor(317, "Golden Boots", "golden_boots", EntityEquipSlot::FEET, ArmorMaterials::ARMOR_GOLD);
 
     MU const Item FLINT = Item(318, 0, "Flint", "flint");
     MU const Item RAW_PORKCHOP = Item(319, 0, "Raw Porkchop", "porkchop");
@@ -875,7 +900,6 @@ namespace Items {
     MU const Item NAUTILUS_CORE = HEART_OF_THE_SEA;
 
 
-
     MU const Item DISC_13 = Item(2256, 0, "13 Disc", "record_13");
     MU const Item DISC_CAT = Item(2257, 0, "Cat Disc", "record_cat");
     MU const Item DISC_BLOCKS = Item(2258, 0, "Blocks Disc", "record_blocks");
@@ -889,4 +913,4 @@ namespace Items {
     MU const Item DISC_11 = Item(2266, 0, "11 Disc", "record_11");
     MU const Item DISC_WAIT = Item(2267, 0, "Wait Disc", "record_wait");
 
-}
+} // namespace Items

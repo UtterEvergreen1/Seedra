@@ -17,19 +17,16 @@ namespace Placement {
             for (int zPos = zLower; zPos <= zUpper; zPos++) {
                 rng.setSeed(aix ^ zPos * zModifier);
                 rng.advance();
-                if EXPECT_FALSE(rng.nextDouble() < 0.004) {
+                if EXPECT_FALSE (rng.nextDouble() < 0.004) {
                     int distance = xPos;
                     if (-xPos > distance) distance = -xPos;
                     if (+zPos > distance) distance = +zPos;
                     if (-zPos > distance) distance = -zPos;
-                    if (distance >= 80 || rng.nextInt(80) < distance) {
-                        positions.emplace_back(xPos, zPos);
-                    }
+                    if (distance >= 80 || rng.nextInt(80) < distance) { positions.emplace_back(xPos, zPos); }
                 }
             }
         }
 
         return positions;
     }
-}
-
+} // namespace Placement

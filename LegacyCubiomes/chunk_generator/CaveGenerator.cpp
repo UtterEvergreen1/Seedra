@@ -45,16 +45,15 @@ bool CaveGenerator::canReplaceBlock(uint16_t blockAt, uint16_t blockAbove) {
             return true;
         case Items::SAND_ID:
         case Items::GRAVEL_ID:
-            return blockAbove != Items::AIR_ID &&
-                   blockAbove != Items::STILL_WATER_ID; // wii u?
+            return blockAbove != Items::AIR_ID && blockAbove != Items::STILL_WATER_ID; // wii u?
             // return blockAbove != Items::STILL_WATER_ID;
     }
 }
 
 
-void CaveGenerator::addTunnel(int64_t seedModifier, Pos2D chunk, ChunkPrimer *chunkPrimer,
-                              DoublePos3D start, float tunnelWidth, float tunnelDirection, float tunnelSlope,
-                              int currentTunnelSegment, int maxTunnelSegment, double tunnelHeightMultiplier) {
+void CaveGenerator::addTunnel(int64_t seedModifier, Pos2D chunk, ChunkPrimer* chunkPrimer, DoublePos3D start,
+                              float tunnelWidth, float tunnelDirection, float tunnelSlope, int currentTunnelSegment,
+                              int maxTunnelSegment, double tunnelHeightMultiplier) {
     double targetCenterX = chunk.x * 16 + 8;
     double targetCenterZ = chunk.z * 16 + 8;
     float directionModifier = 0.0F;
@@ -77,8 +76,9 @@ void CaveGenerator::addTunnel(int64_t seedModifier, Pos2D chunk, ChunkPrimer *ch
     int splitPoint = rng.nextInt(maxTunnelSegment / 2) + maxTunnelSegment / 4;
 
     for (bool isTunnelWide = rng.nextInt(6) == 0; currentTunnelSegment < maxTunnelSegment; ++currentTunnelSegment) {
-        double tunnelWidthScaled = 1.5 + (double) (
-                MathHelper::sin((float) currentTunnelSegment * PI_FLOAT / (float) maxTunnelSegment) * tunnelWidth);
+        double tunnelWidthScaled =
+                1.5 + (double) (MathHelper::sin((float) currentTunnelSegment * PI_FLOAT / (float) maxTunnelSegment) *
+                                tunnelWidth);
         double tunnelHeight = tunnelWidthScaled * tunnelHeightMultiplier;
         float directionCosine = MathHelper::cos(tunnelSlope);
         float directionSine = MathHelper::sin(tunnelSlope);
@@ -103,7 +103,7 @@ void CaveGenerator::addTunnel(int64_t seedModifier, Pos2D chunk, ChunkPrimer *ch
         float f1 = rng.nextFloat();
         float f2 = rng.nextFloat();
         float f3 = rng.nextFloat();
-        slopeModifier = slopeModifier + (f1_1 - f1_2) * f1_3 * 2.0F; // correct
+        slopeModifier = slopeModifier + (f1_1 - f1_2) * f1_3 * 2.0F;   // correct
         directionModifier = directionModifier + (f1 - f2) * f3 * 4.0F; // correct
 
         if (!isMainTunnel && currentTunnelSegment == splitPoint && tunnelWidth > 1.0F && maxTunnelSegment > 0) {
@@ -117,8 +117,8 @@ void CaveGenerator::addTunnel(int64_t seedModifier, Pos2D chunk, ChunkPrimer *ch
                 seed1 = (int64_t) rng.nextLong();
                 tunnelWidth1 = rng.nextFloat();
             }
-            addTunnel(seed1, chunk, chunkPrimer, start, tunnelWidth1 * 0.5F + 0.5F,
-                      tunnelDirection - HALF_PI, tunnelSlope / 3.0F, currentTunnelSegment, maxTunnelSegment, 1.0);
+            addTunnel(seed1, chunk, chunkPrimer, start, tunnelWidth1 * 0.5F + 0.5F, tunnelDirection - HALF_PI,
+                      tunnelSlope / 3.0F, currentTunnelSegment, maxTunnelSegment, 1.0);
             float tunnelWidth2;
             int64_t seed2;
             if (isXbox) {
@@ -128,8 +128,8 @@ void CaveGenerator::addTunnel(int64_t seedModifier, Pos2D chunk, ChunkPrimer *ch
                 seed2 = (int64_t) rng.nextLong();
                 tunnelWidth2 = rng.nextFloat();
             }
-            addTunnel(seed2, chunk, chunkPrimer, start, tunnelWidth2 * 0.5F + 0.5F,
-                      tunnelDirection + HALF_PI, tunnelSlope / 3.0F, currentTunnelSegment, maxTunnelSegment, 1.0);
+            addTunnel(seed2, chunk, chunkPrimer, start, tunnelWidth2 * 0.5F + 0.5F, tunnelDirection + HALF_PI,
+                      tunnelSlope / 3.0F, currentTunnelSegment, maxTunnelSegment, 1.0);
             return;
         }
 
@@ -195,8 +195,7 @@ void CaveGenerator::addTunnel(int64_t seedModifier, Pos2D chunk, ChunkPrimer *ch
                                 for (int currentY = maxY - 1; currentY >= minY; --currentY) {
                                     double scaleY = ((double) (currentY - 1) + 0.5 - start.y) / tunnelHeight;
 
-                                    if (scaleY > -0.7 &&
-                                        scaleX * scaleX + scaleY * scaleY + scaleZ * scaleZ < 1.0) {
+                                    if (scaleY > -0.7 && scaleX * scaleX + scaleY * scaleY + scaleZ * scaleZ < 1.0) {
                                         uint16_t currentBlock = chunkPrimer->getBlock(currentX, currentY, currentZ);
                                         uint16_t blockAbove = chunkPrimer->getBlock(currentX, currentY + 1, currentZ);
 
@@ -206,15 +205,15 @@ void CaveGenerator::addTunnel(int64_t seedModifier, Pos2D chunk, ChunkPrimer *ch
 
                                         if (canReplaceBlock(currentBlock, blockAbove)) {
                                             if (currentY < 11) {
-                                                chunkPrimer->setBlock(currentX, currentY, currentZ, Items::STILL_LAVA_ID);
+                                                chunkPrimer->setBlock(currentX, currentY, currentZ,
+                                                                      Items::STILL_LAVA_ID);
                                             } else {
                                                 chunkPrimer->setBlock(currentX, currentY, currentZ, Items::AIR_ID);
-                                                if (isTopBlock &&
-                                                        chunkPrimer->getBlock(currentX, currentY - 1, currentZ) ==
-                                                        Items::DIRT_ID) {
-                                                    chunkPrimer->setBlock(currentX, currentY - 1, currentZ,
-                                                                          topBlock(currentX + chunk.x * 16,
-                                                                                   currentZ + chunk.z * 16));
+                                                if (isTopBlock && chunkPrimer->getBlock(currentX, currentY - 1,
+                                                                                        currentZ) == Items::DIRT_ID) {
+                                                    chunkPrimer->setBlock(
+                                                            currentX, currentY - 1, currentZ,
+                                                            topBlock(currentX + chunk.x * 16, currentZ + chunk.z * 16));
                                                 }
                                             }
                                         }
@@ -224,27 +223,25 @@ void CaveGenerator::addTunnel(int64_t seedModifier, Pos2D chunk, ChunkPrimer *ch
                         }
                     }
 
-                    if (isMainTunnel) {
-                        break;
-                    }
+                    if (isMainTunnel) { break; }
                 }
             }
         }
     }
 }
 
-void CaveGenerator::addRoom(int64_t seedModifier, Pos2D target, ChunkPrimer *chunkPrimer, DoublePos3D roomStart, RNG& rng) {
-    return addTunnel(seedModifier, target, chunkPrimer, roomStart, 1.0F + rng.nextFloat() * 6.0F, 0.0F, 0.0F, -1, -1, 0.5);
+void CaveGenerator::addRoom(int64_t seedModifier, Pos2D target, ChunkPrimer* chunkPrimer, DoublePos3D roomStart,
+                            RNG& rng) {
+    return addTunnel(seedModifier, target, chunkPrimer, roomStart, 1.0F + rng.nextFloat() * 6.0F, 0.0F, 0.0F, -1, -1,
+                     0.5);
 }
 
 
-void
-CaveGenerator::recursiveGenerate(int baseChunkX, int baseChunkZ, int targetX, int targetZ, ChunkPrimer *chunkPrimer) {
+void CaveGenerator::recursiveGenerate(int baseChunkX, int baseChunkZ, int targetX, int targetZ,
+                                      ChunkPrimer* chunkPrimer) {
     int tunnelCount = rng.nextInt(rng.nextInt(rng.nextInt(40) + 1) + 1);
 
-    if EXPECT_TRUE(rng.nextInt(15) != 0) {
-        return;
-    }
+    if EXPECT_TRUE (rng.nextInt(15) != 0) { return; }
 
     for (int currentTunnel = 0; currentTunnel < tunnelCount; ++currentTunnel) {
         auto tunnelStartX = (double) (baseChunkX * 16 + rng.nextInt(16));
@@ -253,7 +250,8 @@ CaveGenerator::recursiveGenerate(int baseChunkX, int baseChunkZ, int targetX, in
         int segmentCount = 1;
 
         if (rng.nextInt(4) == 0) {
-            addRoom((int64_t)rng.nextLong(), {targetX, targetZ}, chunkPrimer, {tunnelStartX, tunnelStartY, tunnelStartZ}, rng);
+            addRoom((int64_t) rng.nextLong(), {targetX, targetZ}, chunkPrimer,
+                    {tunnelStartX, tunnelStartY, tunnelStartZ}, rng);
             segmentCount = rng.nextInt(4) + 1;
         }
 
@@ -265,31 +263,10 @@ CaveGenerator::recursiveGenerate(int baseChunkX, int baseChunkZ, int targetX, in
             float f2 = rng.nextFloat();
             float tunnelLength = f1 * 2.0F + f2;
 
-            if (rng.nextInt(10) == 0) {
-                tunnelLength *= rng.nextFloat() * rng.nextFloat() * 3.0F + 1.0F;
-            }
+            if (rng.nextInt(10) == 0) { tunnelLength *= rng.nextFloat() * rng.nextFloat() * 3.0F + 1.0F; }
 
             addTunnel((int64_t) rng.nextLong(), {targetX, targetZ}, chunkPrimer,
-                      {tunnelStartX, tunnelStartY, tunnelStartZ},
-                      tunnelLength, yaw, pitch, 0, 0, 1.0);
+                      {tunnelStartX, tunnelStartY, tunnelStartZ}, tunnelLength, yaw, pitch, 0, 0, 1.0);
         }
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

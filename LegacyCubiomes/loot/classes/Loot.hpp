@@ -7,7 +7,7 @@
 #include "LegacyCubiomes/loot/classes/Container.hpp"
 
 namespace loot {
-    template <typename T>
+    template<typename T>
     class Loot {
     public:
         static std::vector<LootTable> lootTables;
@@ -54,8 +54,7 @@ namespace loot {
     Container Loot<T>::getLootFromChunk(int64_t worldSeed, int chunkX, int chunkZ) {
         static_assert(!shuffle || !legacy, "Legacy loot does not shuffle: change shuffle to false");
         RNG seed = RNG::getPopulationSeed(worldSeed, chunkX, chunkZ);
-        if constexpr (legacy)
-            return getLootLegacyFromSeed(seed);
+        if constexpr (legacy) return getLootLegacyFromSeed(seed);
         else
             return getLootFromSeed<shuffle>(seed);
     }
@@ -72,7 +71,7 @@ namespace loot {
 
         // generate loot
         int rollCount, rollIndex;
-        for (const LootTable &table: lootTables) {
+        for (const LootTable& table: lootTables) {
             rollCount = random.nextInt(table.getMin(), table.getMax());
             for (rollIndex = 0; rollIndex < rollCount; rollIndex++) {
                 ItemStack result = table.createLootRoll<false>(random);
@@ -80,14 +79,11 @@ namespace loot {
             }
         }
 
-        if constexpr (!shuffle) {
-            return {std::move(chestContents)};
-        }
+        if constexpr (!shuffle) { return {std::move(chestContents)}; }
 
         Container container = Container(Container::CHEST_SIZE);
         container.shuffleIntoContainer(chestContents, random);
         return container;
-
     }
 
     /// loot generation from seed
@@ -103,12 +99,11 @@ namespace loot {
         int rollCount;
 
         //generate loot
-        for (const LootTable &table: lootTables) {
+        for (const LootTable& table: lootTables) {
             rollCount = seed.nextIntLegacy(table.getMin(), table.getMax());
             for (int rollIndex = 0; rollIndex < rollCount; rollIndex++) {
                 ItemStack result = table.createLootRoll<true>(seed);
-                chestContents.setInventorySlotContents(
-                        seed.nextInt(Container::CHEST_SIZE), std::move(result));
+                chestContents.setInventorySlotContents(seed.nextInt(Container::CHEST_SIZE), std::move(result));
             }
         }
         return chestContents;
@@ -148,13 +143,11 @@ namespace loot {
     std::vector<Container> Loot<T>::getLootChestsFromSeed(int numChests, RNG& seed) {
         std::vector<Container> chests(numChests);
         for (int chestIndex = 0; chestIndex < numChests; chestIndex++) {
-            if constexpr (legacy)
-                chests[chestIndex] = getLootLegacyFromSeed(seed);
+            if constexpr (legacy) chests[chestIndex] = getLootLegacyFromSeed(seed);
             else
                 chests[chestIndex] = getLootFromSeed<shuffle>(seed);
         }
         return chests;
     }
 
-}
-
+} // namespace loot

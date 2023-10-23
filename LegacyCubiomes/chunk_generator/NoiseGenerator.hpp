@@ -1,13 +1,13 @@
 #pragma once
 
-#include <string>
 #include <cmath>
+#include <string>
 #include <utility>
 #include <vector>
 
 #include "LegacyCubiomes/cubiomes/generator.hpp"
-#include "LegacyCubiomes/utils/rng.hpp"
 #include "LegacyCubiomes/utils/MathHelper.hpp"
+#include "LegacyCubiomes/utils/rng.hpp"
 
 static int64_t lfloor(double value) {
     auto i = (int64_t) value;
@@ -16,18 +16,8 @@ static int64_t lfloor(double value) {
 
 class NoiseGeneratorSimplex {
 public:
-    int grad3[12][3] = {{1,  1,  0},
-                        {-1, 1,  0},
-                        {1,  -1, 0},
-                        {-1, -1, 0},
-                        {1,  0,  1},
-                        {-1, 0,  1},
-                        {1,  0,  -1},
-                        {-1, 0,  -1},
-                        {0,  1,  1},
-                        {0,  -1, 1},
-                        {0,  1,  -1},
-                        {0,  -1, -1}};
+    int grad3[12][3] = {{1, 1, 0},  {-1, 1, 0},  {1, -1, 0}, {-1, -1, 0}, {1, 0, 1},  {-1, 0, 1},
+                        {1, 0, -1}, {-1, 0, -1}, {0, 1, 1},  {0, -1, 1},  {0, 1, -1}, {0, -1, -1}};
     double SQRT_3 = sqrt(3.0);
     int p[512]{};
     double xo{};
@@ -41,9 +31,7 @@ public:
         yo = rng.nextDouble() * 256.0;
         zo = rng.nextDouble() * 256.0;
 
-        for (int i = 0; i < 256; i++) {
-            p[i] = i;
-        }
+        for (int i = 0; i < 256; i++) { p[i] = i; }
 
         for (int l = 0; l < 256; ++l) {
             int j = rng.nextInt(256 - l) + l;
@@ -54,9 +42,7 @@ public:
         }
     }
 
-    static int fastFloor(double value) {
-        return value > 0.0 ? (int) value : (int) value - 1;
-    }
+    static int fastFloor(double value) { return value > 0.0 ? (int) value : (int) value - 1; }
 
     static double dot(const int p_151604_0_[], double p_151604_1_, double p_151604_3_) {
         return (double) p_151604_0_[0] * p_151604_1_ + (double) p_151604_0_[1] * p_151604_3_;
@@ -126,9 +112,8 @@ public:
         return 70.0 * (d0 + d1 + d2);
     }
 
-    std::vector<double> add(std::vector<double> p_151606_1_, double p_151606_2_,
-                            double p_151606_4_, int p_151606_6_, int p_151606_7_,
-                            double p_151606_8_, double p_151606_10_, double p_151606_12_) {
+    std::vector<double> add(std::vector<double> p_151606_1_, double p_151606_2_, double p_151606_4_, int p_151606_6_,
+                            int p_151606_7_, double p_151606_8_, double p_151606_10_, double p_151606_12_) {
         int i = 0;
 
         for (int j = 0; j < p_151606_7_; ++j) {
@@ -212,9 +197,7 @@ public:
         levels = p_i45470_2_;
         noiseLevels = std::vector<NoiseGeneratorSimplex>(p_i45470_2_);
 
-        for (int i = 0; i < p_i45470_2_; ++i) {
-            noiseLevels[i].setNoiseGeneratorSimplex(rng);
-        }
+        for (int i = 0; i < p_i45470_2_; ++i) { noiseLevels[i].setNoiseGeneratorSimplex(rng); }
     }
 
     double getValue(double p_151601_1_, double p_151601_3_) {
@@ -229,15 +212,13 @@ public:
         return d0;
     }
 
-    std::vector<double>
-    getRegion(std::vector<double> p_151600_1_, double p_151600_2_, double p_151600_4_, int p_151600_6_, int p_151600_7_,
-              double p_151600_8_, double p_151600_10_, double p_151600_12_, double p_151600_14_) {
+    std::vector<double> getRegion(std::vector<double> p_151600_1_, double p_151600_2_, double p_151600_4_,
+                                  int p_151600_6_, int p_151600_7_, double p_151600_8_, double p_151600_10_,
+                                  double p_151600_12_, double p_151600_14_) {
         //p_151600_8_ = p_151600_8_ / 1.5; // WiiU?
         //p_151600_10_ = p_151600_10_ / 1.5;
         if (!p_151600_1_.empty() && (int) p_151600_1_.size() >= p_151600_6_ * p_151600_7_) {
-            for (int i = 0; i < (int) p_151600_1_.size(); ++i) {
-                p_151600_1_[i] = 0.0;
-            }
+            for (int i = 0; i < (int) p_151600_1_.size(); ++i) { p_151600_1_[i] = 0.0; }
         } else {
             p_151600_1_ = std::vector<double>(p_151600_6_ * p_151600_7_);
         }
@@ -247,20 +228,19 @@ public:
 
         for (int j = 0; j < levels; ++j) {
             p_151600_1_ = noiseLevels[j].add(p_151600_1_, p_151600_2_, p_151600_4_, p_151600_6_, p_151600_7_,
-                                                   p_151600_8_ * d0, p_151600_10_ * d0, (double) 0.55 / d1);
+                                             p_151600_8_ * d0, p_151600_10_ * d0, (double) 0.55 / d1);
             d0 *= p_151600_12_;
             d1 *= p_151600_14_;
         }
         return p_151600_1_;
     }
 
-    std::vector<double>
-    getRegion(std::vector<double> p_151599_1_, double p_151599_2_, double p_151599_4_, int p_151599_6_, int p_151599_7_,
-              double p_151599_8_, double p_151599_10_, double p_151599_12_) {
+    std::vector<double> getRegion(std::vector<double> p_151599_1_, double p_151599_2_, double p_151599_4_,
+                                  int p_151599_6_, int p_151599_7_, double p_151599_8_, double p_151599_10_,
+                                  double p_151599_12_) {
         return getRegion(std::move(p_151599_1_), p_151599_2_, p_151599_4_, p_151599_6_, p_151599_7_, p_151599_8_,
-                               p_151599_10_, p_151599_12_, 0.5);
+                         p_151599_10_, p_151599_12_, 0.5);
     }
-
 };
 
 class NoiseGeneratorImproved {
@@ -287,9 +267,7 @@ public:
         zCoord = rng.nextDouble() * 256.0;
 
         // TODO: this could definitely be statically loaded with a memcpy()
-        for (int i = 0; i < 256; i++) {
-            permutations[i] = i;
-        }
+        for (int i = 0; i < 256; i++) { permutations[i] = i; }
 
         for (int l = 0; l < 256; ++l) {
             int j = rng.nextInt(256 - l) + l;
@@ -313,9 +291,9 @@ public:
     /**
      * noiseArray should be xSize*ySize*zSize in size
      */
-    std::vector<double>
-    populateNoiseArray(std::vector<double> noiseArray, double xOffset, double yOffset, double zOffset, int xSize,
-                       int ySize, int zSize, double xScale, double yScale, double zScale, double noiseScale) {
+    std::vector<double> populateNoiseArray(std::vector<double> noiseArray, double xOffset, double yOffset,
+                                           double zOffset, int xSize, int ySize, int zSize, double xScale,
+                                           double yScale, double zScale, double noiseScale) {
         if (ySize == 1) {
             int i5 = 0;
             int j5 = 0;
@@ -331,9 +309,7 @@ public:
                 // double d17 = xOffset + (double)j2 * xScale + xCoord; // 8942.070107
                 int i6 = (int) d17;
 
-                if (d17 < (double) i6) {
-                    --i6;
-                }
+                if (d17 < (double) i6) { --i6; }
 
                 int k2 = i6 & 255;
                 //d17 = d17 - (double)i6; // only on xbox (and java)
@@ -343,9 +319,7 @@ public:
                     double d19 = zOffset + (double) j6 * zScale + zCoord; // d17 should equal 12973.405044
                     int k6 = (int) d19;
 
-                    if (d19 < (double) k6) {
-                        --k6;
-                    }
+                    if (d19 < (double) k6) { --k6; }
 
                     int l6 = k6 & 255;
                     //d19 = d19 - (double)k6; // only on xbox (and java)
@@ -354,12 +328,10 @@ public:
                     j5 = permutations[i5] + l6;
                     j = permutations[k2 + 1] + 0;
                     k5 = permutations[j] + l6;
-                    d14 = MathHelper::lerp(d18,
-                               grad2(permutations[j5], d17, d19),
-                               grad(permutations[k5], d17 - 1.0, 0.0, d19));
-                    d15 = MathHelper::lerp(d18,
-                               grad(permutations[j5 + 1], d17, 0.0, d19 - 1.0),
-                               grad(permutations[k5 + 1], d17 - 1.0, 0.0, d19 - 1.0));
+                    d14 = MathHelper::lerp(d18, grad2(permutations[j5], d17, d19),
+                                           grad(permutations[k5], d17 - 1.0, 0.0, d19));
+                    d15 = MathHelper::lerp(d18, grad(permutations[j5 + 1], d17, 0.0, d19 - 1.0),
+                                           grad(permutations[k5 + 1], d17 - 1.0, 0.0, d19 - 1.0));
                     double d21 = MathHelper::lerp(d20, d14, d15);
                     int i7 = l5++;
                     noiseArray[i7] += d21 * d16;
@@ -385,9 +357,7 @@ public:
                 double d5 = xOffset + (double) l2 * xScale + xCoord;
                 int i3 = (int) d5;
 
-                if (d5 < (double) i3) {
-                    --i3;
-                }
+                if (d5 < (double) i3) { --i3; }
 
                 int j3 = i3 & 255;
                 d5 = d5 - (double) i3;
@@ -397,9 +367,7 @@ public:
                     double d7 = zOffset + (double) k3 * zScale + zCoord;
                     int l3 = (int) d7;
 
-                    if (d7 < (double) l3) {
-                        --l3;
-                    }
+                    if (d7 < (double) l3) { --l3; }
 
                     int i4 = l3 & 255;
                     d7 = d7 - (double) l3;
@@ -409,9 +377,7 @@ public:
                         double d9 = yOffset + (double) j4 * yScale + yCoord;
                         int k4 = (int) d9;
 
-                        if (d9 < (double) k4) {
-                            --k4;
-                        }
+                        if (d9 < (double) k4) { --k4; }
 
                         int l4 = k4 & 255;
                         d9 = d9 - (double) k4;
@@ -425,18 +391,14 @@ public:
                             k1 = permutations[j3 + 1] + l4;
                             l1 = permutations[k1] + i4;
                             i2 = permutations[k1 + 1] + i4;
-                            d1 = MathHelper::lerp(d6,
-                                      grad(permutations[i1], d5, d9, d7),
-                                      grad(permutations[l1], d5 - 1.0, d9, d7));
-                            d2 = MathHelper::lerp(d6,
-                                      grad(permutations[j1], d5, d9 - 1.0, d7),
-                                      grad(permutations[i2], d5 - 1.0, d9 - 1.0, d7));
-                            d3 = MathHelper::lerp(d6,
-                                      grad(permutations[i1 + 1], d5, d9, d7 - 1.0),
-                                      grad(permutations[l1 + 1], d5 - 1.0, d9, d7 - 1.0));
-                            d4 = MathHelper::lerp(d6,
-                                      grad(permutations[j1 + 1], d5, d9 - 1.0, d7 - 1.0),
-                                      grad(permutations[i2 + 1], d5 - 1.0, d9 - 1.0, d7 - 1.0));
+                            d1 = MathHelper::lerp(d6, grad(permutations[i1], d5, d9, d7),
+                                                  grad(permutations[l1], d5 - 1.0, d9, d7));
+                            d2 = MathHelper::lerp(d6, grad(permutations[j1], d5, d9 - 1.0, d7),
+                                                  grad(permutations[i2], d5 - 1.0, d9 - 1.0, d7));
+                            d3 = MathHelper::lerp(d6, grad(permutations[i1 + 1], d5, d9, d7 - 1.0),
+                                                  grad(permutations[l1 + 1], d5 - 1.0, d9, d7 - 1.0));
+                            d4 = MathHelper::lerp(d6, grad(permutations[j1 + 1], d5, d9 - 1.0, d7 - 1.0),
+                                                  grad(permutations[i2 + 1], d5 - 1.0, d9 - 1.0, d7 - 1.0));
                         }
 
                         double d11 = MathHelper::lerp(d10, d1, d2);
@@ -464,26 +426,19 @@ public:
         octaves = octavesIn;
         generatorCollection = std::vector<NoiseGeneratorImproved>(octavesIn);
 
-        for (int i = 0; i < octavesIn; ++i) {
-            generatorCollection[i].setNoiseGeneratorImproved(rng);
-        }
+        for (int i = 0; i < octavesIn; ++i) { generatorCollection[i].setNoiseGeneratorImproved(rng); }
     }
 
     /**
      * pars:(par2,3,4=noiseOffset ; so that adjacent noise segments connect) (pars5,6,7=x,y,zArraySize),(pars8,10,12 =
      * x,y,z noiseScale)
      */
-    std::vector<double>
-    genNoiseOctaves(std::vector<double> noiseArray,
-                    int xOffset, int yOffset, int zOffset,
-                    int xSize, int ySize, int zSize,
-                    double xScale, double yScale, double zScale) {
+    std::vector<double> genNoiseOctaves(std::vector<double> noiseArray, int xOffset, int yOffset, int zOffset,
+                                        int xSize, int ySize, int zSize, double xScale, double yScale, double zScale) {
         if (noiseArray.empty()) {
             noiseArray.resize(xSize * ySize * zSize);
         } else {
-            for (int i = 0; i < sizeof(noiseArray); ++i) {
-                noiseArray[i] = 0.0;
-            }
+            for (int i = 0; i < sizeof(noiseArray); ++i) { noiseArray[i] = 0.0; }
         }
 
         double d3 = 1.0;
@@ -500,11 +455,8 @@ public:
             l = l % 16777216LL;
             d0 = d0 + (double) k;
             d2 = d2 + (double) l;
-            noiseArray = generatorCollection[j].populateNoiseArray(noiseArray,
-                                                                   d0, d1, d2,
-                                                                   xSize, ySize, zSize,
-                                                                   xScale * d3, yScale * d3, zScale * d3,
-                                                                   d3);
+            noiseArray = generatorCollection[j].populateNoiseArray(noiseArray, d0, d1, d2, xSize, ySize, zSize,
+                                                                   xScale * d3, yScale * d3, zScale * d3, d3);
             d3 /= 2.0;
         }
         return noiseArray;
@@ -513,9 +465,8 @@ public:
     /**
      * Bouncer function to the main one with some default arguments.
      */
-    std::vector<double>
-    genNoiseOctaves(std::vector<double> noiseArray, int xOffset, int zOffset, int xSize, int zSize, double xScale,
-                    double zScale, double p_76305_10_) {
+    std::vector<double> genNoiseOctaves(std::vector<double> noiseArray, int xOffset, int zOffset, int xSize, int zSize,
+                                        double xScale, double zScale, double p_76305_10_) {
         return genNoiseOctaves(std::move(noiseArray), xOffset, 10, zOffset, xSize, 1, zSize, xScale, 1.0, zScale);
     }
 };

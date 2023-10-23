@@ -1,7 +1,3 @@
 #include "netherfortress.hpp"
 
-namespace generation {
-
-
-}
-
+namespace generation {}

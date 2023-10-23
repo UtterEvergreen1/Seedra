@@ -6,16 +6,11 @@
 #ifdef INCLUDE_JAVA
 class EnchantmentSweepingEdge : public Enchantment {
 public:
+    EnchantmentSweepingEdge(std::string name, const Rarity* rarity)
+        : Enchantment(std::move(name), rarity, &Type::WEAPON, EnumName::SWEEPING, 3){};
 
-    EnchantmentSweepingEdge(std::string name, const Rarity *rarity) :
-        Enchantment(std::move(name), rarity, &Type::WEAPON, EnumName::SWEEPING, 3) {};
+    int getMinEnchantability(int enchantmentLevel) override { return 5 + (enchantmentLevel - 1) * 9; }
 
-    int getMinEnchantability(int enchantmentLevel) override {
-        return 5 + (enchantmentLevel - 1) * 9;
-    }
-
-    int getMaxEnchantability(int enchantmentLevel) override {
-        return getMinEnchantability(enchantmentLevel) + 15;
-    }
+    int getMaxEnchantability(int enchantmentLevel) override { return getMinEnchantability(enchantmentLevel) + 15; }
 };
 #endif

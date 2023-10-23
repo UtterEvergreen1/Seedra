@@ -1,10 +1,10 @@
 #pragma once
 
-#include "LegacyCubiomes/mc/items.hpp"
-#include "LegacyCubiomes/utils/rng.hpp"
 #include "LegacyCubiomes/enchants/enchantment.hpp"
 #include "LegacyCubiomes/enchants/enchantmentData.hpp"
 #include "LegacyCubiomes/loot/classes/ItemStack.hpp"
+#include "LegacyCubiomes/mc/items.hpp"
+#include "LegacyCubiomes/utils/rng.hpp"
 
 class LootTable : public UniformRoll {
 public:
@@ -14,20 +14,19 @@ public:
 
     //LootTable() = default;
 
-    LootTable(const std::vector<ItemEntry> &items, int amount) :
-            UniformRoll(amount, amount), items(items), totalWeight(0) {
+    LootTable(const std::vector<ItemEntry>& items, int amount)
+        : UniformRoll(amount, amount), items(items), totalWeight(0) {
         computeCumulativeWeights();
     }
 
-    LootTable(const std::vector<ItemEntry> &items, int min, int max) :
-            UniformRoll(min, max), items(items), totalWeight(0) {
+    LootTable(const std::vector<ItemEntry>& items, int min, int max)
+        : UniformRoll(min, max), items(items), totalWeight(0) {
         computeCumulativeWeights();
     }
 
     template<bool legacy>
     static uint8_t getInt(RNG& rng, uint8_t minimum, uint8_t maximum) {
-        if constexpr (legacy)
-            return rng.nextIntLegacy(minimum, maximum);
+        if constexpr (legacy) return rng.nextIntLegacy(minimum, maximum);
         else
             return rng.nextInt(minimum, maximum);
     }
@@ -56,11 +55,12 @@ public:
             }
         }
 
-        const ItemEntry &selectedItem = items[low];
-        ItemStack itemStack = {selectedItem.item, LootTable::getInt<legacy>(rng, selectedItem.getMin(), selectedItem.getMax())};
-        int functionsSize = (int)selectedItem.functions.size();
-        if EXPECT_FALSE(functionsSize) {
-            for(int index = 0; index < functionsSize; index++) {
+        const ItemEntry& selectedItem = items[low];
+        ItemStack itemStack = {selectedItem.item,
+                               LootTable::getInt<legacy>(rng, selectedItem.getMin(), selectedItem.getMax())};
+        int functionsSize = (int) selectedItem.functions.size();
+        if EXPECT_FALSE (functionsSize) {
+            for (int index = 0; index < functionsSize; index++) {
                 selectedItem.functions[index]->apply(itemStack, rng);
             }
         }
@@ -68,4 +68,3 @@ public:
         return std::move(itemStack);
     }
 };
-

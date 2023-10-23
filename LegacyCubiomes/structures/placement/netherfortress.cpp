@@ -6,7 +6,6 @@ namespace Placement {
         rng.setSeed(worldSeed);
         rng.next(32);
         int pos = rng.nextInt(49);
-        return { pos % 7, pos / 7 };
+        return {pos % 7, pos / 7};
     }
-}
-
+} // namespace Placement

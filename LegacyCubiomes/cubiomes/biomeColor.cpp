@@ -5,8 +5,7 @@
 #include "biomeID.hpp"
 
 
-void setBiomeColor(unsigned char biomeColor[256][3], int id,
-                   unsigned char r, unsigned char g, unsigned char b) {
+void setBiomeColor(unsigned char biomeColor[256][3], int id, unsigned char r, unsigned char g, unsigned char b) {
     biomeColor[id][0] = r;
     biomeColor[id][1] = g;
     biomeColor[id][2] = b;
@@ -36,7 +35,7 @@ void initBiomeColors(unsigned char biomeColors[256][3]) {
     setBiomeColor(biomeColors, desert, 250, 148, 24);
     setBiomeColor(biomeColors, mountains, 96, 96, 96);
     setBiomeColor(biomeColors, forest, 5, 102, 33);
-    setBiomeColor(biomeColors, taiga, 11, 106, 95);//11, 102, 89);
+    setBiomeColor(biomeColors, taiga, 11, 106, 95); //11, 102, 89);
     setBiomeColor(biomeColors, swamp, 7, 249, 178);
     setBiomeColor(biomeColors, river, 0, 0, 255);
     setBiomeColor(biomeColors, nether_wastes, 87, 37, 38);
@@ -52,9 +51,9 @@ void initBiomeColors(unsigned char biomeColors[256][3]) {
     setBiomeColor(biomeColors, wooded_hills, 34, 85, 28);
     setBiomeColor(biomeColors, taiga_hills, 22, 57, 51);
     setBiomeColor(biomeColors, mountain_edge, 114, 120, 154);
-    setBiomeColor(biomeColors, jungle, 80, 123, 10);//83, 123, 9);
+    setBiomeColor(biomeColors, jungle, 80, 123, 10); //83, 123, 9);
     setBiomeColor(biomeColors, jungle_hills, 44, 66, 5);
-    setBiomeColor(biomeColors, jungle_edge, 96, 147, 15);//98, 139, 23);
+    setBiomeColor(biomeColors, jungle_edge, 96, 147, 15); //98, 139, 23);
     setBiomeColor(biomeColors, deep_ocean, 0, 0, 48);
     setBiomeColor(biomeColors, stone_shore, 162, 162, 132);
     setBiomeColor(biomeColors, snowy_beach, 250, 240, 192);
@@ -65,7 +64,7 @@ void initBiomeColors(unsigned char biomeColors[256][3]) {
     setBiomeColor(biomeColors, snowy_taiga_hills, 36, 63, 54);
     setBiomeColor(biomeColors, giant_tree_taiga, 89, 102, 81);
     setBiomeColor(biomeColors, giant_tree_taiga_hills, 69, 79, 62);
-    setBiomeColor(biomeColors, wooded_mountains, 91, 115, 82);//80, 112, 80);
+    setBiomeColor(biomeColors, wooded_mountains, 91, 115, 82); //80, 112, 80);
     setBiomeColor(biomeColors, savanna, 189, 178, 95);
     setBiomeColor(biomeColors, savanna_plateau, 167, 157, 100);
     setBiomeColor(biomeColors, badlands, 217, 69, 21);
@@ -109,8 +108,8 @@ void initBiomeColors(unsigned char biomeColors[256][3]) {
     setMutationColor(biomeColors, modified_wooded_badlands_plateau, wooded_badlands_plateau);
     setMutationColor(biomeColors, modified_badlands_plateau, badlands_plateau);
 
-    setBiomeColor(biomeColors, bamboo_jungle, 132, 149, 0);//118, 142, 20);
-    setBiomeColor(biomeColors, bamboo_jungle_hills, 92, 108, 4);//;59, 71, 10);
+    setBiomeColor(biomeColors, bamboo_jungle, 132, 149, 0);      //118, 142, 20);
+    setBiomeColor(biomeColors, bamboo_jungle_hills, 92, 108, 4); //;59, 71, 10);
 }
 
 

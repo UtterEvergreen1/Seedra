@@ -1,12 +1,12 @@
-
 # Legacy Cubiomes
 
-Modified Cubiomes library in C++ to generate chunks, check biomes, find structure positions, and find structure loot for Minecraft Legacy Console Edition.
-
+Modified Cubiomes library in C++ to generate chunks, check biomes, find structure positions, and find structure loot for
+Minecraft Legacy Console Edition.
 
 ## Usage/Examples
 
 Structure Positions:
+
 ```c++
 #include "LegacyCubiomes/cubiomes/generator.hpp"
 #include "LegacyCubiomes/structures/include.hpp"
@@ -31,6 +31,7 @@ int main(int argc, char* argv[]) {
 ```
 
 Structure loot:
+
 ```c++
 #include "LegacyCubiomes/loot/include.hpp"
 
@@ -44,15 +45,11 @@ int main(int argc, char* argv[]) {
 }
 ```
 
-
-
-
-
 ## Used By
 
 This project is used by the following personal apps:
-- Legacy FSG
 
+- Legacy FSG
 
 ## License
 

@@ -7,4 +7,3 @@ void LootTable::computeCumulativeWeights() {
         cumulativeWeights[i] = totalWeight;
     }
 }
-

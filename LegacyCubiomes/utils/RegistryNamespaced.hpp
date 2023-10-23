@@ -12,17 +12,11 @@ private:
 public:
     RegistryNamespaced() = default;
 
-    inline void registerValue(T* value) {
-        allValues.emplace_back(value);
-    }
+    inline void registerValue(T* value) { allValues.emplace_back(value); }
 
-    inline T* operator[](int index) const {
-        return sortedRegistry[index];
-    }
+    inline T* operator[](int index) const { return sortedRegistry[index]; }
 
-    inline const std::vector<T*>& getRegistry() const {
-        return sortedRegistry;
-    }
+    inline const std::vector<T*>& getRegistry() const { return sortedRegistry; }
 
     /**
      * Orders the values from allValues into sortedRegistry for accurate enchantment order for each console and version
@@ -42,17 +36,12 @@ public:
      * Returns the size of current registry
      * @return size of current registry
      */
-    ND inline int size() const {
-        return sortedRegistry.size();
-    }
+    ND inline int size() const { return sortedRegistry.size(); }
 
     /// Deallocates all the stored values
     inline void clear() {
-        for (const T* value : allValues){
-            delete value;
-        }
+        for (const T* value: allValues) { delete value; }
         allValues.clear();
         sortedRegistry.clear();
     }
 };
-

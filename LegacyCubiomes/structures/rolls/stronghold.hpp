@@ -1,37 +1,32 @@
 #pragma once
 
-#include "LegacyCubiomes/structures/rolls/rolls_base.hpp"
 #include "LegacyCubiomes/structures/generation/stronghold/stronghold.hpp"
+#include "LegacyCubiomes/structures/rolls/rolls_base.hpp"
 
 namespace structure_rolls {
     class Stronghold : RollsBase {
     public:
         /// generate all stronghold rolls in the chunk
         template<bool isStrongholdChest>
-        MU static bool generateStructure(ChunkPrimer *chunk, generation::Stronghold *strongholdGenerator, RNG& rng,
-                                         const Piece &pieceStop, int chestXChunk, int chestZChunk);
+        MU static bool generateStructure(ChunkPrimer* chunk, generation::Stronghold* strongholdGenerator, RNG& rng,
+                                         const Piece& pieceStop, int chestXChunk, int chestZChunk);
     };
 
     template<bool isStrongholdChest>
-    bool Stronghold::generateStructure(ChunkPrimer *chunk, generation::Stronghold *strongholdGenerator, RNG& rng,
-                                       const Piece &pieceStop, int chestXChunk, int chestZChunk) {
-        const BoundingBox chunkBoundingBox = BoundingBox((chestXChunk << 4), 0,
-                                                         (chestZChunk << 4),
-                                                         (chestXChunk << 4) + 15, 255,
-                                                         (chestZChunk << 4) + 15);
+    bool Stronghold::generateStructure(ChunkPrimer* chunk, generation::Stronghold* strongholdGenerator, RNG& rng,
+                                       const Piece& pieceStop, int chestXChunk, int chestZChunk) {
+        const BoundingBox chunkBoundingBox = BoundingBox((chestXChunk << 4), 0, (chestZChunk << 4),
+                                                         (chestXChunk << 4) + 15, 255, (chestZChunk << 4) + 15);
         if constexpr (isStrongholdChest) {
-            if (chunk && isLiquidInStructureBoundingBox(chunkBoundingBox, pieceStop, chunk))
-                return false;
+            if (chunk && isLiquidInStructureBoundingBox(chunkBoundingBox, pieceStop, chunk)) return false;
         }
 
         for (int pieceIndex = 0; pieceIndex < strongholdGenerator->pieceArraySize; ++pieceIndex) {
-            const Piece &piece = strongholdGenerator->pieceArray[pieceIndex];
+            const Piece& piece = strongholdGenerator->pieceArray[pieceIndex];
 
-            if (piece.type == generation::Stronghold::PieceType::NONE)
-                continue;
+            if (piece.type == generation::Stronghold::PieceType::NONE) continue;
 
-            if (!piece.intersects(chunkBoundingBox))
-                continue;
+            if (!piece.intersects(chunkBoundingBox)) continue;
 
             if (chunk && piece.type != generation::Stronghold::PieceType::PORTAL_ROOM &&
                 isLiquidInStructureBoundingBox(chunkBoundingBox, piece, chunk))
@@ -78,16 +73,14 @@ namespace structure_rolls {
                     generateChest(chunkBoundingBox, piece, rng, 3, 2, 3);
                     break;
                 case generation::Stronghold::PieceType::LIBRARY:
-                    fillWithRandomizedBlocks(chunkBoundingBox, piece, 0, 0, 0, 13,
-                                             piece.additionalData ? 10 : 5, 14, rng, chunk);
+                    fillWithRandomizedBlocks(chunkBoundingBox, piece, 0, 0, 0, 13, piece.additionalData ? 10 : 5, 14,
+                                             rng, chunk);
                     rng.advance520();
                     if constexpr (isStrongholdChest) {
                         if (piece == pieceStop) return true;
                     }
                     generateChest(chunkBoundingBox, piece, rng, 3, 3, 5);
-                    if (piece.additionalData == 1) {
-                        generateChest(chunkBoundingBox, piece, rng, 12, 8, 1);
-                    }
+                    if (piece.additionalData == 1) { generateChest(chunkBoundingBox, piece, rng, 12, 8, 1); }
                     break;
                 case generation::Stronghold::PieceType::PORTAL_ROOM:
                     rng.advance772(); // 760 rolls + 12 eye rolls = 772 rolls
@@ -101,4 +94,4 @@ namespace structure_rolls {
         // it should never reach here
         return false;
     }
-}
+} // namespace structure_rolls

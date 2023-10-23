@@ -1,25 +1,25 @@
 #pragma once
 
-#include <string>
 #include <map>
+#include <string>
 #include <utility>
 
-#include "block.hpp"
 #include "NoiseGenerator.hpp"
+#include "block.hpp"
 
 #include "LegacyCubiomes/utils/rng.hpp"
 
-#include "LegacyCubiomes/mc/items.hpp"
 #include "LegacyCubiomes/mc/itemID.hpp"
+#include "LegacyCubiomes/mc/items.hpp"
 
-#include "LegacyCubiomes/utils/constants.hpp"
 #include "LegacyCubiomes/utils/Pos3D.hpp"
+#include "LegacyCubiomes/utils/constants.hpp"
 
 class ChunkPrimer;
 
 class Biome {
 public:
-    static std::map<int, Biome *> registry;
+    static std::map<int, Biome*> registry;
     std::string biomeName;
     /// The base height of this biome. Default 0.1.
     float baseHeight;
@@ -37,31 +37,27 @@ public:
     Block fillerBlock = Block(Items::DIRT_ID, 0);
     NoiseGeneratorPerlin TEMPERATURE_NOISE;
 
-    static Biome *getBiomeForId(int id) {
-        return registry.at(id);
-    }
+    static Biome* getBiomeForId(int id) { return registry.at(id); }
 
-    static void registerBiome(int id, Biome *biome) {
-        registry.emplace(id, biome);
-    }
+    static void registerBiome(int id, Biome* biome) { registry.emplace(id, biome); }
 
     Biome(std::string biomeNameIn, float baseHeightIn, float heightVariationIn, bool enableSnowIn, float temperatureIn)
-            : biomeName(std::move(biomeNameIn)), baseHeight(baseHeightIn), heightVariation(heightVariationIn),
-              temperature(temperatureIn), enableSnow(enableSnowIn) {
+        : biomeName(std::move(biomeNameIn)), baseHeight(baseHeightIn), heightVariation(heightVariationIn),
+          temperature(temperatureIn), enableSnow(enableSnowIn) {
         setTemperatureNoise();
     }
 
     Biome(std::string biomeNameIn, float baseHeightIn, float heightVariationIn, bool enableSnowIn, float temperatureIn,
-          Block topBlockIn) : biomeName(std::move(biomeNameIn)), baseHeight(baseHeightIn), heightVariation(heightVariationIn),
-                              temperature(temperatureIn), enableSnow(enableSnowIn), topBlock(topBlockIn) {
+          Block topBlockIn)
+        : biomeName(std::move(biomeNameIn)), baseHeight(baseHeightIn), heightVariation(heightVariationIn),
+          temperature(temperatureIn), enableSnow(enableSnowIn), topBlock(topBlockIn) {
         setTemperatureNoise();
     }
 
     Biome(std::string biomeNameIn, float baseHeightIn, float heightVariationIn, bool enableSnowIn, float temperatureIn,
-          Block topBlockIn, Block fillerBlockIn) : biomeName(std::move(biomeNameIn)), baseHeight(baseHeightIn),
-                                                   heightVariation(heightVariationIn), temperature(temperatureIn),
-                                                   enableSnow(enableSnowIn), topBlock(topBlockIn),
-                                                   fillerBlock(fillerBlockIn) {
+          Block topBlockIn, Block fillerBlockIn)
+        : biomeName(std::move(biomeNameIn)), baseHeight(baseHeightIn), heightVariation(heightVariationIn),
+          temperature(temperatureIn), enableSnow(enableSnowIn), topBlock(topBlockIn), fillerBlock(fillerBlockIn) {
         setTemperatureNoise();
     }
 
@@ -76,16 +72,17 @@ public:
     float getFloatTemperature(Pos3D pos) {
         if (pos.getY() > 64) {
             auto f = (float) (TEMPERATURE_NOISE.getValue((double) ((float) pos.getX() / 8.0F),
-                                                         (double) ((float) pos.getZ() / 8.0F)) * 4.0);
+                                                         (double) ((float) pos.getZ() / 8.0F)) *
+                              4.0);
             return this->temperature - (f + (float) pos.getY() - 64.0F) * 0.05F / 30.0F;
         } else
             return this->temperature;
     }
 
-    void generateBiomeTerrain(RNG& rng, ChunkPrimer *chunkPrimerIn, int x, int z, double noiseVal);
+    void generateBiomeTerrain(RNG& rng, ChunkPrimer* chunkPrimerIn, int x, int z, double noiseVal);
 
-    virtual void
-    genTerrainBlocks(int64_t worldSeed, RNG& rng, ChunkPrimer *chunkPrimerIn, int x, int z, double noiseVal) {
+    virtual void genTerrainBlocks(int64_t worldSeed, RNG& rng, ChunkPrimer* chunkPrimerIn, int x, int z,
+                                  double noiseVal) {
         this->generateBiomeTerrain(rng, chunkPrimerIn, x, z, noiseVal);
     }
 
@@ -95,28 +92,28 @@ public:
 class BiomeOcean : public Biome {
 public:
     BiomeOcean(std::string biomeName, float baseHeight, float heightVariation, bool enableSnow, float temperature)
-            : Biome(std::move(biomeName), baseHeight, heightVariation, enableSnow, temperature) {}
+        : Biome(std::move(biomeName), baseHeight, heightVariation, enableSnow, temperature) {}
 };
 
 class BiomePlains : public Biome {
 public:
     BiomePlains(std::string biomeName, float baseHeight, float heightVariation, bool enableSnow, float temperature)
-            : Biome(std::move(biomeName), baseHeight, heightVariation, enableSnow, temperature) {}
+        : Biome(std::move(biomeName), baseHeight, heightVariation, enableSnow, temperature) {}
 };
 
 class BiomeDesert : public Biome {
 public:
     BiomeDesert(std::string biomeName, float baseHeight, float heightVariation, bool enableSnow, float temperature)
-            : Biome(std::move(biomeName), baseHeight, heightVariation, enableSnow, temperature, Block(Items::SAND_ID),
-                    Block(Items::SAND_ID)) {}
+        : Biome(std::move(biomeName), baseHeight, heightVariation, enableSnow, temperature, Block(Items::SAND_ID),
+                Block(Items::SAND_ID)) {}
 };
 
 class BiomeHills : public Biome {
 public:
     BiomeHills(std::string biomeName, float baseHeight, float heightVariation, bool enableSnow, float temperature)
-            : Biome(std::move(biomeName), baseHeight, heightVariation, enableSnow, temperature) {}
+        : Biome(std::move(biomeName), baseHeight, heightVariation, enableSnow, temperature) {}
 
-    void genTerrainBlocks(int64_t worldSeed, RNG& rng, ChunkPrimer *chunkPrimerIn, int x, int z,
+    void genTerrainBlocks(int64_t worldSeed, RNG& rng, ChunkPrimer* chunkPrimerIn, int x, int z,
                           double noiseVal) override {
         this->topBlock.block = Items::GRASS_ID;
         this->fillerBlock.block = Items::DIRT_ID;
@@ -139,14 +136,14 @@ public:
 class BiomeForest : public Biome {
 public:
     BiomeForest(std::string biomeName, float baseHeight, float heightVariation, bool enableSnow, float temperature)
-            : Biome(std::move(biomeName), baseHeight, heightVariation, enableSnow, temperature) {}
+        : Biome(std::move(biomeName), baseHeight, heightVariation, enableSnow, temperature) {}
 };
 
 class BiomeForestMutated : public BiomeForest {
 public:
     BiomeForestMutated(std::string biomeName, float baseHeight, float heightVariation, bool enableSnow,
                        float temperature)
-            : BiomeForest(std::move(biomeName), baseHeight, heightVariation, enableSnow, temperature) {}
+        : BiomeForest(std::move(biomeName), baseHeight, heightVariation, enableSnow, temperature) {}
 };
 
 class BiomeTaiga : public Biome {
@@ -155,9 +152,9 @@ public:
 
     BiomeTaiga(std::string biomeName, float baseHeight, float heightVariation, bool enableSnow, float temperature,
                int type)
-            : Biome(std::move(biomeName), baseHeight, heightVariation, enableSnow, temperature), type(type) {}
+        : Biome(std::move(biomeName), baseHeight, heightVariation, enableSnow, temperature), type(type) {}
 
-    void genTerrainBlocks(int64_t worldSeed, RNG& rng, ChunkPrimer *chunkPrimerIn, int x, int z,
+    void genTerrainBlocks(int64_t worldSeed, RNG& rng, ChunkPrimer* chunkPrimerIn, int x, int z,
                           double noiseVal) override {
         if (this->type == 1) {
             if (noiseVal > 1.75) {
@@ -173,13 +170,13 @@ public:
 class BiomeSwamp : public Biome {
 public:
     BiomeSwamp(std::string biomeName, float baseHeight, float heightVariation, bool enableSnow, float temperature)
-            : Biome(std::move(biomeName), baseHeight, heightVariation, enableSnow, temperature) {}
+        : Biome(std::move(biomeName), baseHeight, heightVariation, enableSnow, temperature) {}
 };
 
 class BiomeRiver : public Biome {
 public:
     BiomeRiver(std::string biomeName, float baseHeight, float heightVariation, bool enableSnow, float temperature)
-            : Biome(std::move(biomeName), baseHeight, heightVariation, enableSnow, temperature) {}
+        : Biome(std::move(biomeName), baseHeight, heightVariation, enableSnow, temperature) {}
 };
 
 class BiomeSnow : public Biome {
@@ -188,10 +185,9 @@ public:
 
     BiomeSnow(bool superIcy, std::string biomeName, float baseHeight, float heightVariation, bool enableSnow,
               float temperature)
-            : Biome(std::move(biomeName), baseHeight, heightVariation, enableSnow, temperature) {
+        : Biome(std::move(biomeName), baseHeight, heightVariation, enableSnow, temperature) {
         this->superIcy = superIcy;
-        if (superIcy)
-            this->topBlock = Block(Items::SNOW_BLOCK_ID);
+        if (superIcy) this->topBlock = Block(Items::SNOW_BLOCK_ID);
     }
 };
 
@@ -199,33 +195,34 @@ class BiomeMushroomIsland : public Biome {
 public:
     BiomeMushroomIsland(std::string biomeName, float baseHeight, float heightVariation, bool enableSnow,
                         float temperature)
-            : Biome(std::move(biomeName), baseHeight, heightVariation, enableSnow, temperature, Block(Items::MYCELIUM_ID)) {}
+        : Biome(std::move(biomeName), baseHeight, heightVariation, enableSnow, temperature, Block(Items::MYCELIUM_ID)) {
+    }
 };
 
 class BiomeBeach : public Biome {
 public:
     BiomeBeach(std::string biomeName, float baseHeight, float heightVariation, bool enableSnow, float temperature)
-            : Biome(std::move(biomeName), baseHeight, heightVariation, enableSnow, temperature, Block(Items::SAND_ID),
-                    Block(Items::SAND_ID)) {}
+        : Biome(std::move(biomeName), baseHeight, heightVariation, enableSnow, temperature, Block(Items::SAND_ID),
+                Block(Items::SAND_ID)) {}
 };
 
 class BiomeJungle : public Biome {
 public:
     BiomeJungle(std::string biomeName, float baseHeight, float heightVariation, bool enableSnow, float temperature)
-            : Biome(std::move(biomeName), baseHeight, heightVariation, enableSnow, temperature) {}
+        : Biome(std::move(biomeName), baseHeight, heightVariation, enableSnow, temperature) {}
 };
 
 class BiomeStoneBeach : public Biome {
 public:
     BiomeStoneBeach(std::string biomeName, float baseHeight, float heightVariation, bool enableSnow, float temperature)
-            : Biome(std::move(biomeName), baseHeight, heightVariation, enableSnow, temperature, Block(Items::STONE_ID),
-                    Block(Items::STONE_ID)) {}
+        : Biome(std::move(biomeName), baseHeight, heightVariation, enableSnow, temperature, Block(Items::STONE_ID),
+                Block(Items::STONE_ID)) {}
 };
 
 class BiomeSavanna : public Biome {
 public:
     BiomeSavanna(std::string biomeName, float baseHeight, float heightVariation, bool enableSnow, float temperature)
-            : Biome(biomeName, baseHeight, heightVariation, enableSnow, temperature) {}
+        : Biome(biomeName, baseHeight, heightVariation, enableSnow, temperature) {}
 };
 
 class BiomeMesa : public Biome {
@@ -240,10 +237,10 @@ public:
 
     BiomeMesa(bool hasBrycePillars, bool hasForest, std::string biomeName, float baseHeight, float heightVariation,
               bool enableSnow, float temperature)
-            : Biome(std::move(biomeName), baseHeight, heightVariation, enableSnow, temperature), worldSeed(0),
-              brycePillars(hasBrycePillars), hasForest(hasForest) {}
+        : Biome(std::move(biomeName), baseHeight, heightVariation, enableSnow, temperature), worldSeed(0),
+          brycePillars(hasBrycePillars), hasForest(hasForest) {}
 
-    void genTerrainBlocks(int64_t worldSeed, RNG& rng, ChunkPrimer *chunkPrimerIn, int x, int z,
+    void genTerrainBlocks(int64_t worldSeed, RNG& rng, ChunkPrimer* chunkPrimerIn, int x, int z,
                           double noiseVal) override;
 
     void generateClayBands(int64_t seed) {
@@ -255,8 +252,7 @@ public:
         for (int index = 0; index < 64; ++index) {
             index += rng.nextInt(5) + 1;
 
-            if (index < 64)
-                this->clayBands[index] = Block(Items::WHITE_HARDENED_CLAY);
+            if (index < 64) this->clayBands[index] = Block(Items::WHITE_HARDENED_CLAY);
         }
 
         int orangeBands = rng.nextInt(4) + 2;
@@ -312,16 +308,15 @@ public:
         int offset = (int) round(this->clayBandsOffsetNoise.getValue(noiseFactor, noiseFactor) * 2.0);
         return this->clayBands[(y + offset + 64) % 64];
     }
-
 };
 
 class BiomeSavannaMutated : public Biome {
 public:
     BiomeSavannaMutated(std::string biomeName, float baseHeight, float heightVariation, bool enableSnow,
                         float temperature)
-            : Biome(std::move(biomeName), baseHeight, heightVariation, enableSnow, temperature) {}
+        : Biome(std::move(biomeName), baseHeight, heightVariation, enableSnow, temperature) {}
 
-    void genTerrainBlocks(int64_t worldSeed, RNG& rng, ChunkPrimer *chunkPrimerIn, int x, int z,
+    void genTerrainBlocks(int64_t worldSeed, RNG& rng, ChunkPrimer* chunkPrimerIn, int x, int z,
                           double noiseVal) override {
         if (noiseVal > 1.75) {
             this->topBlock.block = Items::STONE_ID;

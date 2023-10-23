@@ -3,8 +3,9 @@
 #include <algorithm>
 #include <exception>
 
-#include "enchantment.hpp"
 #include "LegacyCubiomes/loot/classes/Loot.hpp"
+#include "enchantment.hpp"
+
 
 class IndexArraySmall {
 private:
@@ -14,21 +15,18 @@ private:
 
 public:
     IndexArraySmall() = default;
-    inline void clear() {
-        currentIndex = 0;
-    }
+    inline void clear() { currentIndex = 0; }
 
-    ND inline int getValueAt(int indexIn) const {return indexes[indexIn];}
-    ND inline int getLastValueIndex() const {return indexes[currentIndex - 1];}
+    ND inline int getValueAt(int indexIn) const { return indexes[indexIn]; }
+    ND inline int getLastValueIndex() const { return indexes[currentIndex - 1]; }
 
-    ND inline int getIndex() const {return currentIndex;}
+    ND inline int getIndex() const { return currentIndex; }
 
-    inline void addItem(int indexIn) {indexes[currentIndex++] = (int8_t)indexIn;}
+    inline void addItem(int indexIn) { indexes[currentIndex++] = (int8_t) indexIn; }
 
     MU inline int getEnchantmentIndex(int indexIn) {
         for (int i = 0; i < currentIndex; i++)
-            if (currentIndex > indexes[i])
-                indexIn--;
+            if (currentIndex > indexes[i]) indexIn--;
         return indexIn;
     }
 };
@@ -41,21 +39,18 @@ private:
 
 public:
     IndexArrayLarge() = default;
-    inline void clear() {
-        currentIndex = 0;
-    }
+    inline void clear() { currentIndex = 0; }
 
-    ND inline int getValueAt(int indexIn) const {return indexes[indexIn];}
-    ND MU inline int getLastValueIndex() const {return indexes[currentIndex - 1];}
+    ND inline int getValueAt(int indexIn) const { return indexes[indexIn]; }
+    ND MU inline int getLastValueIndex() const { return indexes[currentIndex - 1]; }
 
-    ND inline int getIndex() const {return currentIndex;}
+    ND inline int getIndex() const { return currentIndex; }
 
-    inline void addItem(int indexIn) {indexes[currentIndex++] = (int8_t)indexIn;}
+    inline void addItem(int indexIn) { indexes[currentIndex++] = (int8_t) indexIn; }
 
     inline int getEnchantmentIndex(int indexIn) {
         for (int i = 0; i < currentIndex; i++)
-            if (currentIndex > indexes[i])
-                indexIn--;
+            if (currentIndex > indexes[i]) indexIn--;
         return indexIn;
     }
 };
@@ -87,8 +82,6 @@ public:
      * @param itemStackIn
      */
     void addEnchantments(ItemStack& itemStackIn);
-
-
 };
 
 class EnchantedBookEnchantsLookupTable {
@@ -102,9 +95,11 @@ public:
     static int8_t CUMULATIVE_WEIGHT_ALL[Enchantment::MAX_ENCHANTMENT_COUNT];
 
     EnchantedBookEnchantsLookupTable() = default;
-    MU explicit EnchantedBookEnchantsLookupTable(bool allocate) {if (allocate) setup();}
-    ~EnchantedBookEnchantsLookupTable() {deallocate();}
-    ND MU bool isSetup() const {return areVectorsSetup;}
+    MU explicit EnchantedBookEnchantsLookupTable(bool allocate) {
+        if (allocate) setup();
+    }
+    ~EnchantedBookEnchantsLookupTable() { deallocate(); }
+    ND MU bool isSetup() const { return areVectorsSetup; }
 
     /**
      * level must be between 0 and 47 or bad things will happen.
@@ -120,6 +115,4 @@ public:
     void setup();
 
     void deallocate();
-
 };
-

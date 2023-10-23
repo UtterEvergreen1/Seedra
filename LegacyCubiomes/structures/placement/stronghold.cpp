@@ -5,7 +5,7 @@
 
 namespace Placement {
 
-    Pos2D Stronghold::getWorldPosition(const Generator& g){
+    Pos2D Stronghold::getWorldPosition(const Generator& g) {
         bool xboxStronghold = g.getConsole() == CONSOLE::XBOX;
         double dist, angle;
         int multiplier;
@@ -19,22 +19,18 @@ namespace Placement {
 
         for (int var7 = 0; var7 < 10; ++var7) {
 
-            if (xboxStronghold)
-                multiplier = rng.nextInt(4);
+            if (xboxStronghold) multiplier = rng.nextInt(4);
             dist = rng.nextDouble() + 1.25;
-            if (!xboxStronghold)
-                multiplier = rng.nextInt(4);
+            if (!xboxStronghold) multiplier = rng.nextInt(4);
 
-            dist = dist * ((double)(multiplier) + 3.0);
+            dist = dist * ((double) (multiplier) + 3.0);
 
-            p.x = ((int)round(cos(angle) * dist) << 4) + 8;
-            p.z = ((int)round(sin(angle) * dist) << 4) + 8;
+            p.x = ((int) round(cos(angle) * dist) << 4) + 8;
+            p.z = ((int) round(sin(angle) * dist) << 4) + 8;
 
             p = g.locateBiome(p.x, p.z, 112, stronghold_biomes, rng, &out);
 
-            if(out || (var7 == 9)) {
-                return p;
-            }
+            if (out || (var7 == 9)) { return p; }
 
             angle += 2 * PI;
         }
@@ -57,17 +53,14 @@ namespace Placement {
         double angle = 2.0 * PI * rng.nextDouble();
 
         int multiplier;
-        if (xboxStronghold)
-            multiplier = rng.nextInt(4);
+        if (xboxStronghold) multiplier = rng.nextInt(4);
 
         double dist = rng.nextDouble() + 1.25;
 
-        if (!xboxStronghold)
-            multiplier = rng.nextInt(4);
+        if (!xboxStronghold) multiplier = rng.nextInt(4);
 
-        dist *= ((double)(multiplier) + 3.0);
-        return {((int)round(cos(angle) * dist) << 4) + 8,
-                ((int)round(sin(angle) * dist) << 4) + 8};
+        dist *= ((double) (multiplier) + 3.0);
+        return {((int) round(cos(angle) * dist) << 4) + 8, ((int) round(sin(angle) * dist) << 4) + 8};
     }
 
-}
+} // namespace Placement

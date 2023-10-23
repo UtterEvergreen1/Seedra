@@ -16,11 +16,11 @@
 #include "woodland_mansion.hpp"
 
 #include "buried_treasure.hpp"
+#include "shipwreck_map.hpp"
+#include "shipwreck_supply.hpp"
+#include "shipwreck_treasure.hpp"
 #include "underwater_ruin_big.hpp"
 #include "underwater_ruin_small.hpp"
-#include "shipwreck_treasure.hpp"
-#include "shipwreck_supply.hpp"
-#include "shipwreck_map.hpp"
 
 namespace loot {
     template<bool isAquatic>
@@ -48,5 +48,4 @@ namespace loot {
             loot::ShipwreckMap::setup();
         }
     }
-}
-
+} // namespace loot

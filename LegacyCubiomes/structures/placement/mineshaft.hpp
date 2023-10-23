@@ -1,7 +1,7 @@
 #pragma once
 
-#include <vector>
 #include "LegacyCubiomes/cubiomes/generator.hpp"
+#include <vector>
 
 
 namespace Placement {
@@ -29,5 +29,4 @@ namespace Placement {
             return getPositions(worldSeed, x - radius, z - radius, x + radius, z + radius);
         }
     };
-}
-
+} // namespace Placement

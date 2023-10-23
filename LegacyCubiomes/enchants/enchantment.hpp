@@ -1,40 +1,83 @@
 #pragma once
 
+#include <iostream>
 #include <string>
 #include <utility>
-#include <iostream>
 #include <vector>
 
-#include "rarity.hpp"
-#include "LegacyCubiomes/mc/items.hpp"
-#include "LegacyCubiomes/mc/itemID.hpp"
-#include "LegacyCubiomes/utils/RegistryNamespaced.hpp"
 #include "LegacyCubiomes/cubiomes/generator.hpp"
+#include "LegacyCubiomes/mc/itemID.hpp"
+#include "LegacyCubiomes/mc/items.hpp"
+#include "LegacyCubiomes/utils/RegistryNamespaced.hpp"
+#include "rarity.hpp"
 
 class EnchantmentHelper;
 
 class Enchantment {
 private:
     static bool isSetup;
+
 public:
     friend class EnchantmentHelper;
 
     class Type {
     public:
-        class Base { public: virtual bool canEnchantItem(const Items::Item *itemIn) const;};
-        class All        : public Base {public: bool canEnchantItem(const Items::Item *itemIn) const override;};
-        class Armor      : public Base {public: bool canEnchantItem(const Items::Item *itemIn) const override;};
-        class ArmorFeet  : public Base {public: bool canEnchantItem(const Items::Item *itemIn) const override;};
-        class ArmorLegs  : public Base {public: bool canEnchantItem(const Items::Item *itemIn) const override;};
-        class ArmorChest : public Base {public: bool canEnchantItem(const Items::Item *itemIn) const override;};
-        class ArmorHead  : public Base {public: bool canEnchantItem(const Items::Item *itemIn) const override;};
-        class Weapon     : public Base {public: bool canEnchantItem(const Items::Item *itemIn) const override;};
-        class Digger     : public Base {public: bool canEnchantItem(const Items::Item *itemIn) const override;};
-        class FishingRod : public Base {public: bool canEnchantItem(const Items::Item *itemIn) const override;};
-        class Breakable  : public Base {public: bool canEnchantItem(const Items::Item *itemIn) const override;};
-        class Bow        : public Base {public: bool canEnchantItem(const Items::Item *itemIn) const override;};
-        class Wearable   : public Base {public: bool canEnchantItem(const Items::Item *itemIn) const override;};
-        class Trident    : public Base {public: bool canEnchantItem(const Items::Item *itemIn) const override;};
+        class Base {
+        public:
+            virtual bool canEnchantItem(const Items::Item* itemIn) const;
+        };
+        class All : public Base {
+        public:
+            bool canEnchantItem(const Items::Item* itemIn) const override;
+        };
+        class Armor : public Base {
+        public:
+            bool canEnchantItem(const Items::Item* itemIn) const override;
+        };
+        class ArmorFeet : public Base {
+        public:
+            bool canEnchantItem(const Items::Item* itemIn) const override;
+        };
+        class ArmorLegs : public Base {
+        public:
+            bool canEnchantItem(const Items::Item* itemIn) const override;
+        };
+        class ArmorChest : public Base {
+        public:
+            bool canEnchantItem(const Items::Item* itemIn) const override;
+        };
+        class ArmorHead : public Base {
+        public:
+            bool canEnchantItem(const Items::Item* itemIn) const override;
+        };
+        class Weapon : public Base {
+        public:
+            bool canEnchantItem(const Items::Item* itemIn) const override;
+        };
+        class Digger : public Base {
+        public:
+            bool canEnchantItem(const Items::Item* itemIn) const override;
+        };
+        class FishingRod : public Base {
+        public:
+            bool canEnchantItem(const Items::Item* itemIn) const override;
+        };
+        class Breakable : public Base {
+        public:
+            bool canEnchantItem(const Items::Item* itemIn) const override;
+        };
+        class Bow : public Base {
+        public:
+            bool canEnchantItem(const Items::Item* itemIn) const override;
+        };
+        class Wearable : public Base {
+        public:
+            bool canEnchantItem(const Items::Item* itemIn) const override;
+        };
+        class Trident : public Base {
+        public:
+            bool canEnchantItem(const Items::Item* itemIn) const override;
+        };
 
         static const All ALL;
         static const Armor ARMOR;
@@ -65,9 +108,9 @@ public:
         KNOCKBACK,
         FIRE_ASPECT,
         LOOT_BONUS,
-        #ifdef INCLUDE_JAVA
-            SWEEPING,
-        #endif
+#ifdef INCLUDE_JAVA
+        SWEEPING,
+#endif
         DIGGING,
         UNTOUCHING,
         DURABILITY,
@@ -141,32 +184,25 @@ public:
 
     Enchantment() = default;
 
-    Enchantment(std::string name, const Rarity *rarity, EnumName enchantName, int8_t maxLevel, bool isTreasure = false) :
-            name(std::move(name)), rarity(rarity), type(&Type::ALL), enumID(enchantName), maxLevel(maxLevel), isTreasure(isTreasure) {};
+    Enchantment(std::string name, const Rarity* rarity, EnumName enchantName, int8_t maxLevel, bool isTreasure = false)
+        : name(std::move(name)), rarity(rarity), type(&Type::ALL), enumID(enchantName), maxLevel(maxLevel),
+          isTreasure(isTreasure){};
 
-    Enchantment(std::string name, const Rarity *rarity, const Type::Base* type, EnumName enchantName, int8_t maxLevel, bool isTreasure = false) :
-            name(std::move(name)), rarity(rarity), type(type), enumID(enchantName), maxLevel(maxLevel), isTreasure(isTreasure) {};
+    Enchantment(std::string name, const Rarity* rarity, const Type::Base* type, EnumName enchantName, int8_t maxLevel,
+                bool isTreasure = false)
+        : name(std::move(name)), rarity(rarity), type(type), enumID(enchantName), maxLevel(maxLevel),
+          isTreasure(isTreasure){};
 
     virtual int getMinCost(int enchantmentLevel);
     virtual int getMaxCost(int enchantmentLevel);
 
-    ND virtual bool canApplyTogether(const Enchantment *enchantment) const;
-    ND virtual bool canApply(const Items::Item *item) const;
+    ND virtual bool canApplyTogether(const Enchantment* enchantment) const;
+    ND virtual bool canApply(const Items::Item* item) const;
 
 
     // registers all the enchantments
     static void registerEnchantments();
 
 private:
-    static void registerEnchantment(Enchantment *enchantment);
+    static void registerEnchantment(Enchantment* enchantment);
 };
-
-
-
-
-
-
-
-
-
-
