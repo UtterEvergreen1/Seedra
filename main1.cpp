@@ -24,7 +24,7 @@ int main(int argc, char* argv[]) {
     auto console = CONSOLE::WIIU;
     auto version = LCEVERSION::AQUATIC;
     EnchantmentHelper::setup(console, version);
-    Generator g(console, version, 119, WORLDSIZE::CLASSIC, BIOMESCALE::SMALL);
+    Generator g(console, version, 4732751128118720933, WORLDSIZE::CLASSIC, BIOMESCALE::SMALL);
 
     std::string path = R"(C:\Users\jerrin\CLionProjects\LegacyCubiomes\)";
 
@@ -33,19 +33,25 @@ int main(int argc, char* argv[]) {
     // pic.save(path);
 
     std::cout << "Stronghold Position" << std::endl;
-    auto pos = Placement::Stronghold::getWorldPosition(g);
 
+    g.getBiomeRange(1, -200, -200, 400, 400);
 
-
+    /*
     auto start = getMilliseconds();
-    int ROLLS = 10000;
+    int ROLLS = 3000;
     int total = 0;
     RNG rng(100);
-    auto stronghold = generation::Stronghold();
+    auto village = generation::Village(&g);
+    std::vector<Pos2D> poss;
     for (int i = 0; i < ROLLS; i++) {
-        stronghold.resetPieces();
-        stronghold.generate(rng.nextInt(), pos);
-        total += stronghold.pieceArraySize;
+        rng.advance();
+        g.applyWorldSeed(rng.nextLong());
+
+        poss = Placement::Village<false>::getAllPositions(&g);
+        if (poss.empty()) continue;
+
+        village.generate(poss[0].x, poss[0].z);
+        total += village.pieceArraySize;
     }
     auto diff = getMilliseconds() - start;
     std::cout << "rolls " << ROLLS << std::endl;
@@ -54,9 +60,10 @@ int main(int argc, char* argv[]) {
     std::cout << std::endl;
     std::cout << "should be 1279771" << std::endl;
      int x = 0; std::cin >> x;
-
-    rng = RNG(101);
-    stronghold = generation::Stronghold();
+    */
+    auto pos = Placement::Stronghold::getWorldPosition(g);
+    RNG rng = RNG(101);
+    auto stronghold = generation::Stronghold();
     stronghold.generate(rng.nextInt(), pos);
     Piece* piece;
     int minX = INT32_MAX;
@@ -148,11 +155,10 @@ int main(int argc, char* argv[]) {
 
 
 
-    /*
-    int x; std::cin >> x;
+
+    // int x; std::cin >> x;
     std::cout << "Village Positions" << std::endl;
     auto posVec = Placement::Village<false>::getAllPositions(&g);
-    Piece* piece;
 
     int count = -1;
     for (auto pos : posVec) {
@@ -213,7 +219,7 @@ int main(int argc, char* argv[]) {
                     rgb = {165, 42, 42};  // Brown
                     break;
                 case Village::House2:
-                    rgb = {0, 0, 255};  // Blacksmith
+                    rgb = {255, 255, 255};  // Blacksmith
                     break;
                 case Village::House3:
                     rgb = {210, 105, 30};  // Chocolate
@@ -261,7 +267,7 @@ int main(int argc, char* argv[]) {
         std::to_string(pos.x) + "_" + std::to_string(pos.z) + ".png", path);
 
     }
-    */
+
 
 
 
