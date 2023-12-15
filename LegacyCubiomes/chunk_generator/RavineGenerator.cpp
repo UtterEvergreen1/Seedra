@@ -196,16 +196,16 @@ void RavineGenerator::addTunnel(int64_t randomSeed, Pos2D chunk, ChunkPrimer* ch
 }
 
 
-void RavineGenerator::recursiveGenerate(int neighborChunkX, int neighborChunkZ, int currentChunkX, int currentChunkZ,
-                                        ChunkPrimer* chunkPrimerIn) {
+void RavineGenerator::addFeature(int baseChunkX, int baseChunkZ, int targetX, int targetZ,
+                                        ChunkPrimer* chunkPrimer) {
     if EXPECT_FALSE (rng.nextInt(50) == 0) {
-        auto tunnelStartX = (double) (neighborChunkX * 16 + rng.nextInt(16));
+        auto tunnelStartX = (double) (baseChunkX * 16 + rng.nextInt(16));
         auto tunnelStartY = (double) (rng.nextInt(rng.nextInt(40) + 8) + 20);
-        auto tunnelStartZ = (double) (neighborChunkZ * 16 + rng.nextInt(16));
+        auto tunnelStartZ = (double) (baseChunkZ * 16 + rng.nextInt(16));
         float tunnelDirection = rng.nextFloat() * (PI_FLOAT * 2.0F);
         float tunnelSlope = (rng.nextFloat() - 0.5F) * 2.0F / 8.0F;
         float tunnelLengthMultiplier = (rng.nextFloat() * 2.0F + rng.nextFloat()) * 2.0F;
-        addTunnel((int64_t) rng.nextLong(), {currentChunkX, currentChunkZ}, chunkPrimerIn,
+        addTunnel((int64_t) rng.nextLong(), {targetX, targetZ}, chunkPrimer,
                   {tunnelStartX, tunnelStartY, tunnelStartZ}, tunnelLengthMultiplier, tunnelDirection, tunnelSlope, 0,
                   0, 3.0);
     }

@@ -29,11 +29,11 @@ public:
                 auto adjustedZ = (int64_t) currentZ * seedMultiplierZ;
                 rng.setSeed(adjustedX ^ adjustedZ ^ g.getWorldSeed());
 
-                recursiveGenerate(currentX, currentZ, targetX, targetZ, primer);
+                addFeature(currentX, currentZ, targetX, targetZ, primer);
             }
         }
     }
 
-    virtual void recursiveGenerate(int baseChunkX, int baseChunkZ, int targetX, int targetZ,
+    virtual void addFeature(int baseChunkX, int baseChunkZ, int targetX, int targetZ,
                                    ChunkPrimer* chunkPrimer) = 0;
 };

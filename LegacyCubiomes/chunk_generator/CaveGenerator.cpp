@@ -237,7 +237,7 @@ void CaveGenerator::addRoom(int64_t seedModifier, Pos2D target, ChunkPrimer* chu
 }
 
 
-void CaveGenerator::recursiveGenerate(int baseChunkX, int baseChunkZ, int targetX, int targetZ,
+void CaveGenerator::addFeature(int baseChunkX, int baseChunkZ, int targetX, int targetZ,
                                       ChunkPrimer* chunkPrimer) {
     int tunnelCount = rng.nextInt(rng.nextInt(rng.nextInt(40) + 1) + 1);
 
