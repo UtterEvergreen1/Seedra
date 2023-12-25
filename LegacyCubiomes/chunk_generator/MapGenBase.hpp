@@ -18,22 +18,28 @@ public:
     MapGenBase(CONSOLE console, LCEVERSION version, int64_t seed, WORLDSIZE size, BIOMESCALE scale)
         : g(console, version, seed, size, scale), rng(0) {}
 
-    void generate(int targetX, int targetZ, ChunkPrimer* primer) {
+    void generate(int chunkX, int chunkZ, ChunkPrimer* primer) {
         rng.setSeed(g.getWorldSeed());
         auto seedMultiplierX = (int64_t) rng.nextLong();
         auto seedMultiplierZ = (int64_t) rng.nextLong();
 
-        for (int currentX = targetX - this->range; currentX <= targetX + this->range; ++currentX) {
-            for (int currentZ = targetZ - this->range; currentZ <= targetZ + this->range; ++currentZ) {
+        int lower_x = chunkX - this->range;
+        int upper_x = chunkX + this->range;
+        int lower_z = chunkZ - this->range;
+        int upper_z = chunkZ + this->range;
+
+        for (int currentX = lower_x; currentX <= upper_x; ++currentX) {
+            for (int currentZ = lower_z; currentZ <= upper_z; ++currentZ) {
                 auto adjustedX = (int64_t) currentX * seedMultiplierX;
                 auto adjustedZ = (int64_t) currentZ * seedMultiplierZ;
                 rng.setSeed(adjustedX ^ adjustedZ ^ g.getWorldSeed());
 
-                recursiveGenerate(currentX, currentZ, targetX, targetZ, primer);
+                recursiveGenerate(currentX, currentZ, chunkX, chunkZ, primer);
             }
         }
     }
 
-    virtual void recursiveGenerate(int baseChunkX, int baseChunkZ, int targetX, int targetZ,
+    virtual void recursiveGenerate(int baseChunkX, int baseChunkZ,
+                                   int targetX, int targetZ,
                                    ChunkPrimer* chunkPrimer) = 0;
 };
