@@ -8,7 +8,7 @@
 #endif
 
 #include "ItemData.hpp"
-#include "LegacyCubiomes/mc/mapcolors.h"
+#include "LegacyCubiomes/mc/mapcolors.hpp"
 #include "LegacyCubiomes/utils/processor.hpp"
 
 namespace Items {

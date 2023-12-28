@@ -56,15 +56,18 @@ enum MAP_RGB : uint8_t {
     TERRACOTTA_BROWN,
     TERRACOTTA_GREEN,
     TERRACOTTA_RED,
-    TERRACOTTA_BLACK,
+    TERRACOTTA_BLACK
 };
 
 
-class RGB {
+/*class RGB {
 public:
     uint8_t r;
     uint8_t g;
     uint8_t b;
+
+    RGB()
+        : r(0), g(0), b(0) {}
 
     RGB(uint8_t r, uint8_t g, uint8_t b)
         : r(r), g(g), b(b) {}
@@ -130,3 +133,4 @@ inline RGB getRGB(MAP_RGB mapRgb) {
     return mapColors[mapRgb];
 }
 
+*/
