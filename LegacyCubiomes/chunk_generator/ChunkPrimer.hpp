@@ -30,9 +30,9 @@ public:
 
     inline uint16_t getBlockAtIndex(int64_t index) const { return index >= 0 && index < 65536 ? blocks[index] : 0; }
 
-    uint16_t getBlock(int64_t x, int64_t y, int64_t z) const { return getBlockAtIndex(getStorageIndex(x, y, z)) >> 4; }
+    uint16_t getBlockId(int64_t x, int64_t y, int64_t z) const { return getBlockAtIndex(getStorageIndex(x, y, z)) >> 4; }
 
-    void setBlock(int64_t x, int64_t y, int64_t z, uint16_t block) { blocks[getStorageIndex(x, y, z)] = block << 4; }
+    void setBlockId(int64_t x, int64_t y, int64_t z, uint16_t block) { blocks[getStorageIndex(x, y, z)] = block << 4; }
 
     uint16_t getData(int64_t x, int64_t y, int64_t z) const { return getBlockAtIndex(getStorageIndex(x, y, z)) & 15; }
 
@@ -65,7 +65,7 @@ public:
         for (int y = 255; y >= 0; y--) {
             for (int x = 0; x < 16; x++) {
                 for (int z = 0; z < 16; z++) {
-                    if (getBlock(x, y, z)) { return y; }
+                    if (getBlockId(x, y, z)) { return y; }
                 }
             }
         }
@@ -105,7 +105,7 @@ public:
                 int lightValue = 15;
                 int topPos = topFilledSegment + 15;
                 while (true) {
-                    int blockOpacity = getBlockLightOpacity(getBlock(x, topPos, z));
+                    int blockOpacity = getBlockLightOpacity(getBlockId(x, topPos, z));
                     if (blockOpacity == 0 && lightValue != 15) blockOpacity = 1;
 
                     lightValue -= blockOpacity;
@@ -130,7 +130,7 @@ public:
             int i1 = -1;
 
             while (highestY > 0 && i1 == -1) {
-                if (!getBlock(i, highestY, j)) i1 = highestY + 1;
+                if (!getBlockId(i, highestY, j)) i1 = highestY + 1;
                 else
                     highestY -= 1;
             }
@@ -148,16 +148,16 @@ public:
             if (pos.getY() >= 0 && pos.getY() < 256) {
                 int x = pos.getX() & 15;
                 int z = pos.getZ() & 15;
-                uint16_t iBlockState = getBlock(x, pos.getY(), z);
+                uint16_t iBlockState = getBlockId(x, pos.getY(), z);
                 uint16_t block = iBlockState;
 
                 if ((block == 8 || block == 9)) {
                     if (!noWaterAdj) return true;
 
-                    uint16_t flagBlockWest = getBlock(x - 1, pos.getY(), z);
-                    uint16_t flagBlockEast = getBlock(x + 1, pos.getY(), z);
-                    uint16_t flagBlockNorth = getBlock(x, pos.getY(), z - 1);
-                    uint16_t flagBlockSouth = getBlock(x, pos.getY(), z + 1);
+                    uint16_t flagBlockWest = getBlockId(x - 1, pos.getY(), z);
+                    uint16_t flagBlockEast = getBlockId(x + 1, pos.getY(), z);
+                    uint16_t flagBlockNorth = getBlockId(x, pos.getY(), z - 1);
+                    uint16_t flagBlockSouth = getBlockId(x, pos.getY(), z + 1);
                     bool flag = flagBlockWest == 9 && flagBlockEast == 9 && flagBlockNorth == 9 && flagBlockSouth == 9;
 
                     if (!flag) return true;
@@ -177,7 +177,7 @@ public:
         else {
             // needs to check block light later on to replace a perfect chunk
             if (pos.getY() >= 0 && pos.getY() < 256 /* && getLightFor(EnumSkyBlock.BLOCK, pos) < 10*/) {
-                uint16_t iBlockState = getBlock(pos.getX(), pos.getY(), pos.getZ());
+                uint16_t iBlockState = getBlockId(pos.getX(), pos.getY(), pos.getZ());
                 if (!iBlockState) return true;
             }
             return false;

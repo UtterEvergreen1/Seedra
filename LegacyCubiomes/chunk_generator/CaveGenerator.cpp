@@ -168,7 +168,7 @@ void CaveGenerator::addTunnel(int64_t seedModifier, Pos2D chunk, ChunkPrimer* ch
                     for (int currentZ = minZ; !hasWater && currentZ < maxZ; ++currentZ) {
                         for (int currentY = maxY + 1; !hasWater && currentY >= minY - 1; --currentY) {
                             if (currentY >= 0 && currentY < 128) {
-                                uint16_t blockType = chunkPrimer->getBlock(currentX, currentY, currentZ);
+                                uint16_t blockType = chunkPrimer->getBlockId(currentX, currentY, currentZ);
                                 if (blockType == Items::STILL_WATER_ID || blockType == Items::FLOWING_WATER_ID) {
                                     hasWater = true;
                                 }
@@ -196,8 +196,8 @@ void CaveGenerator::addTunnel(int64_t seedModifier, Pos2D chunk, ChunkPrimer* ch
                                     double scaleY = ((double) (currentY - 1) + 0.5 - start.y) / tunnelHeight;
 
                                     if (scaleY > -0.7 && scaleX * scaleX + scaleY * scaleY + scaleZ * scaleZ < 1.0) {
-                                        uint16_t currentBlock = chunkPrimer->getBlock(currentX, currentY, currentZ);
-                                        uint16_t blockAbove = chunkPrimer->getBlock(currentX, currentY + 1, currentZ);
+                                        uint16_t currentBlock = chunkPrimer->getBlockId(currentX, currentY, currentZ);
+                                        uint16_t blockAbove = chunkPrimer->getBlockId(currentX, currentY + 1, currentZ);
 
                                         if (currentBlock == Items::GRASS_ID || currentBlock == Items::MYCELIUM_ID) {
                                             isTopBlock = true;
@@ -205,13 +205,13 @@ void CaveGenerator::addTunnel(int64_t seedModifier, Pos2D chunk, ChunkPrimer* ch
 
                                         if (canReplaceBlock(currentBlock, blockAbove)) {
                                             if (currentY < 11) {
-                                                chunkPrimer->setBlock(currentX, currentY, currentZ,
+                                                chunkPrimer->setBlockId(currentX, currentY, currentZ,
                                                                       Items::STILL_LAVA_ID);
                                             } else {
-                                                chunkPrimer->setBlock(currentX, currentY, currentZ, Items::AIR_ID);
-                                                if (isTopBlock && chunkPrimer->getBlock(currentX, currentY - 1,
+                                                chunkPrimer->setBlockId(currentX, currentY, currentZ, Items::AIR_ID);
+                                                if (isTopBlock && chunkPrimer->getBlockId(currentX, currentY - 1,
                                                                                         currentZ) == Items::DIRT_ID) {
-                                                    chunkPrimer->setBlock(
+                                                    chunkPrimer->setBlockId(
                                                             currentX, currentY - 1, currentZ,
                                                             topBlock(currentX + chunk.x * 16, currentZ + chunk.z * 16));
                                                 }
@@ -250,8 +250,7 @@ void CaveGenerator::addFeature(int baseChunkX, int baseChunkZ, int targetX, int 
         int segmentCount = 1;
 
         if (rng.nextInt(4) == 0) {
-            addRoom((int64_t) rng.nextLong(), {targetX, targetZ}, chunkPrimer,
-                    {tunnelStartX, tunnelStartY, tunnelStartZ}, rng);
+            addRoom((int64_t) rng.nextLong(), {targetX, targetZ}, chunkPrimer, {tunnelStartX, tunnelStartY, tunnelStartZ}, rng);
             segmentCount = rng.nextInt(4) + 1;
         }
 

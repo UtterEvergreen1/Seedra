@@ -88,9 +88,9 @@ void ChunkGeneratorOverWorld::setBlocksInChunk(int chunkX, int chunkZ, ChunkPrim
 
                         for (int l2 = 0; l2 < 4; ++l2) {
                             if ((lvt_45_1_ += d16) > 0.0) {
-                                primer->setBlock(i * 4 + k2, i2 * 8 + j2, l * 4 + l2, Items::STONE_ID);
+                                primer->setBlockId(i * 4 + k2, i2 * 8 + j2, l * 4 + l2, Items::STONE_ID);
                             } else if (i2 * 8 + j2 < 63) { // 63 is sea level
-                                primer->setBlock(i * 4 + k2, i2 * 8 + j2, l * 4 + l2, Items::STILL_WATER_ID);
+                                primer->setBlockId(i * 4 + k2, i2 * 8 + j2, l * 4 + l2, Items::STILL_WATER_ID);
                             }
                         }
 
