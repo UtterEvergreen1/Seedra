@@ -2,15 +2,6 @@
 
 #include "LegacyCubiomes/utils/rng.hpp"
 
-typedef int8_t i8;
-typedef int16_t i16;
-typedef int32_t i32;
-typedef int64_t i64;
-typedef uint8_t u8;
-typedef uint16_t u16;
-typedef uint32_t u32;
-typedef uint64_t u64;
-
 namespace Placement {
 
     // #######################################################
@@ -136,7 +127,7 @@ namespace Placement {
     template<>
     const int StaticStructure<Village<false>>::SALT = 10387312;
     template<>
-    const u64 StaticStructure<Village<false>>::VALID_BIOMES =
+    const uint64_t StaticStructure<Village<false>>::VALID_BIOMES =
             (1ULL << plains) | (1ULL << desert) | (1ULL << taiga) | (1ULL << ice_plains) | (1ULL << cold_taiga) |
             (1ULL << savanna);
 

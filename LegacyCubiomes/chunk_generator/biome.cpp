@@ -93,9 +93,9 @@ void Biome::generateBiomeTerrain(RNG& rng, ChunkPrimer* chunkPrimerIn, int x, in
     for (int j1 = 255; j1 >= 0; --j1) {
         if (j1 == 0) break;
 
-        if (rng.nextInt(2) + 1 >= j1 - 1) chunkPrimerIn->setBlock(i1, j1 - 1, l, Items::BEDROCK_ID);
+        if (rng.nextInt(2) + 1 >= j1 - 1) chunkPrimerIn->setBlockId(i1, j1 - 1, l, Items::BEDROCK_ID);
         else {
-            uint16_t iBlockState2 = chunkPrimerIn->getBlock(i1, j1, l);
+            uint16_t iBlockState2 = chunkPrimerIn->getBlockId(i1, j1, l);
 
             if (!iBlockState2) // if air
                 j = -1;
@@ -118,16 +118,16 @@ void Biome::generateBiomeTerrain(RNG& rng, ChunkPrimer* chunkPrimerIn, int x, in
 
                     j = k;
 
-                    if (j1 >= seaLevel - 1) chunkPrimerIn->setBlock(i1, j1, l, iBlockState);
+                    if (j1 >= seaLevel - 1) chunkPrimerIn->setBlockId(i1, j1, l, iBlockState);
                     else if (j1 < seaLevel - 7 - k) {
                         iBlockState = Items::AIR_ID;
                         iBlockState1 = Items::STONE_ID;
-                        chunkPrimerIn->setBlock(i1, j1, l, Items::GRAVEL_ID);
+                        chunkPrimerIn->setBlockId(i1, j1, l, Items::GRAVEL_ID);
                     } else
-                        chunkPrimerIn->setBlock(i1, j1, l, iBlockState1);
+                        chunkPrimerIn->setBlockId(i1, j1, l, iBlockState1);
                 } else if (j > 0) {
                     --j;
-                    chunkPrimerIn->setBlock(i1, j1, l, iBlockState1);
+                    chunkPrimerIn->setBlockId(i1, j1, l, iBlockState1);
 
                     if (j == 0 && iBlockState1 == Items::SAND_ID && k > 1) {
                         j = rng.nextInt(4) + std::max(0, j1 - 63);
@@ -180,14 +180,14 @@ void BiomeMesa::genTerrainBlocks(int64_t worldSeedIn, RNG& rng, ChunkPrimer* chu
     int i1 = 0;
 
     for (int j1 = 255; j1 >= 0; --j1) {
-        if (!chunkPrimerIn->getBlock(l1, j1, k1) && j1 < (int) d4) {
-            chunkPrimerIn->setBlock(l1, j1, k1, Items::STONE_ID);
+        if (!chunkPrimerIn->getBlockId(l1, j1, k1) && j1 < (int) d4) {
+            chunkPrimerIn->setBlockId(l1, j1, k1, Items::STONE_ID);
         }
         if (j1 == 0) break;
 
-        if (rng.nextInt(2) + 1 >= j1 - 1) chunkPrimerIn->setBlock(l1, j1 - 1, k1, Items::BEDROCK_ID);
+        if (rng.nextInt(2) + 1 >= j1 - 1) chunkPrimerIn->setBlockId(l1, j1 - 1, k1, Items::BEDROCK_ID);
         else if (i1 < 15 || this->brycePillars) {
-            uint16_t iBlockState1 = chunkPrimerIn->getBlock(l1, j1, k1);
+            uint16_t iBlockState1 = chunkPrimerIn->getBlockId(l1, j1, k1);
 
             if (!iBlockState1) l = -1;
             else if (iBlockState1 == Items::STONE_ID) {
@@ -206,7 +206,7 @@ void BiomeMesa::genTerrainBlocks(int64_t worldSeedIn, RNG& rng, ChunkPrimer* chu
                         if (this->hasForest && j1 > 86 + k * 2) {
                             if (flag) chunkPrimerIn->setBlockAndData(l1, j1, k1, Items::COARSE_DIRT);
                             else
-                                chunkPrimerIn->setBlock(l1, j1, k1, Items::GRASS_ID);
+                                chunkPrimerIn->setBlockId(l1, j1, k1, Items::GRASS_ID);
                         } else if (j1 > seaLevel + 3 + k) {
                             uint16_t iBlockState2;
 
@@ -217,13 +217,13 @@ void BiomeMesa::genTerrainBlocks(int64_t worldSeedIn, RNG& rng, ChunkPrimer* chu
                             } else
                                 iBlockState2 = Items::WHITE_HARDENED_CLAY_ID;
 
-                            chunkPrimerIn->setBlock(l1, j1, k1, iBlockState2);
+                            chunkPrimerIn->setBlockId(l1, j1, k1, iBlockState2);
                         } else {
-                            chunkPrimerIn->setBlock(l1, j1, k1, this->topBlock.block);
+                            chunkPrimerIn->setBlockId(l1, j1, k1, this->topBlock.block);
                             flag1 = true;
                         }
                     } else {
-                        chunkPrimerIn->setBlock(l1, j1, k1, fillerBlock);
+                        chunkPrimerIn->setBlockId(l1, j1, k1, fillerBlock);
 
                         if (fillerBlock == Items::WHITE_HARDENED_CLAY_ID)
                             chunkPrimerIn->setBlockAndData(l1, j1, k1, Items::ORANGE_HARDENED_CLAY);
@@ -233,7 +233,7 @@ void BiomeMesa::genTerrainBlocks(int64_t worldSeedIn, RNG& rng, ChunkPrimer* chu
 
                     if (flag1) chunkPrimerIn->setBlockAndData(l1, j1, k1, Items::ORANGE_HARDENED_CLAY);
                     else
-                        chunkPrimerIn->setBlock(l1, j1, k1, this->getClayBand(x, j1).block);
+                        chunkPrimerIn->setBlockId(l1, j1, k1, this->getClayBand(x, j1).block);
                 }
 
                 ++i1;

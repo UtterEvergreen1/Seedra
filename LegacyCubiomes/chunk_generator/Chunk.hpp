@@ -39,11 +39,11 @@ namespace Chunk {
                 Pos3D blockPos2 = Pos3D(x, precipitationHeight - 1, z);
 
                 if (chunkData->canBlockFreeze(g, blockPos2, false)) {
-                    chunkData->setBlock(chunkPosX, blockPos2.getY(), chunkPosZ, Items::ICE_ID);
+                    chunkData->setBlockId(chunkPosX, blockPos2.getY(), chunkPosZ, Items::ICE_ID);
                 }
 
                 if (chunkData->canSnowAt(g, blockPos1, true)) {
-                    chunkData->setBlock(chunkPosX, precipitationHeight, chunkPosZ, Items::SNOW_ID);
+                    chunkData->setBlockId(chunkPosX, precipitationHeight, chunkPosZ, Items::SNOW_ID);
                 }
             }
         }

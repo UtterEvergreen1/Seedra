@@ -37,7 +37,7 @@ namespace structure_rolls {
                                     int worldX = piece.getWorldX(x, currentDepth);
                                     int worldZ = piece.getWorldZ(x, currentDepth);
                                     if (!intersectsWithBlock(chunkBoundingBox, worldX, worldY, worldZ) ||
-                                        !chunk->getBlock(worldX & 15, worldY, worldZ & 15)) {
+                                        !chunk->getBlockId(worldX & 15, worldY, worldZ & 15)) {
                                         shouldPlaceTorch = false;
                                     }
                                 }
@@ -84,7 +84,7 @@ namespace structure_rolls {
                                     int yPos = piece.getWorldY(-1);
                                     int zPos = piece.getWorldZ(1, railPos);
                                     if (intersectsWithBlock(chunkBoundingBox, xPos, yPos, zPos) &&
-                                        (chunk == nullptr || chunk->getBlock(xPos & 15, yPos - 1, zPos & 15) != 0)) {
+                                        (chunk == nullptr || chunk->getBlockId(xPos & 15, yPos - 1, zPos & 15) != 0)) {
                                         rng.advance(); // advance rng for rail placement
                                     }
                                 }
@@ -128,7 +128,7 @@ namespace structure_rolls {
         int yPos = piece.getWorldY(y);
         int zPos = piece.getWorldZ(x, z);
         if (intersectsWithBlock(chunkBB, xPos, yPos, zPos) &&
-            (chunk == nullptr || chunk->getBlock(xPos & 15, yPos - 1, zPos & 15) != 0)) {
+            (chunk == nullptr || chunk->getBlockId(xPos & 15, yPos - 1, zPos & 15) != 0)) {
             rng.advance(); // advance rng for next boolean roll for rail shape
             mineshaftChests.emplace_back(Pos3D(xPos, yPos, zPos), rng.nextLong());
         }

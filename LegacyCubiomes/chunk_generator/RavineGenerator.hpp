@@ -20,6 +20,6 @@ public:
     void addTunnel(int64_t randomSeed, Pos2D chunk, ChunkPrimer* chunkPrimer, DoublePos3D tunnel, float angle,
                    float slope, float curvature, int tunnelStartSegment, int tunnelEndSegment, double widthMultiplier);
 
-    void recursiveGenerate(int currentX, int currentZ, int chunkX, int chunkZ,
+    void addFeature(int neighborChunkX, int neighborChunkZ, int currentChunkX, int currentChunkZ,
                            ChunkPrimer* chunkPrimerIn) override;
 };

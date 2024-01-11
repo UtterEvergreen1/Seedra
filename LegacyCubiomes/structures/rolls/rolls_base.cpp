@@ -17,11 +17,11 @@ namespace structure_rolls {
         int maxZ = std::min(pieceBoundingBox.maxZ + 1, (int) chunkBoundingBoxIn.maxZ) & 15;
         for (int x = minX; x <= maxX; ++x) {
             for (int z = minZ; z <= maxZ; ++z) {
-                uint16_t block = chunk->getBlock(x, minY, z);
+                uint16_t block = chunk->getBlockId(x, minY, z);
                 //if (block == Items::ItemID::FLOWING_WATER_ID || block == Items::ItemID::STILL_WATER_ID || block == Items::ItemID::FLOWING_LAVA_ID || block == Items::ItemID::STILL_LAVA_ID)
                 if (block >= Items::ItemID::FLOWING_WATER_ID && block <= Items::ItemID::STILL_LAVA_ID) return true;
 
-                uint16_t block1 = chunk->getBlock(x, maxY, z);
+                uint16_t block1 = chunk->getBlockId(x, maxY, z);
                 if (block1 >= Items::ItemID::FLOWING_WATER_ID && block <= Items::ItemID::STILL_LAVA_ID) return true;
             }
         }
@@ -29,10 +29,10 @@ namespace structure_rolls {
 
         for (int x = minX; x <= maxX; ++x) {
             for (int y = minY; y <= maxY; ++y) {
-                uint16_t block = chunk->getBlock(x, y, minZ);
+                uint16_t block = chunk->getBlockId(x, y, minZ);
                 if (block >= Items::ItemID::FLOWING_WATER_ID && block <= Items::ItemID::STILL_LAVA_ID) return true;
 
-                uint16_t block1 = chunk->getBlock(x, y, maxZ);
+                uint16_t block1 = chunk->getBlockId(x, y, maxZ);
                 if (block1 >= Items::ItemID::FLOWING_WATER_ID && block <= Items::ItemID::STILL_LAVA_ID) return true;
             }
         }
@@ -40,10 +40,10 @@ namespace structure_rolls {
 
         for (int z = minZ; z <= maxZ; ++z) {
             for (int y = minY; y <= maxY; ++y) {
-                uint16_t block = chunk->getBlock(minX, y, z);
+                uint16_t block = chunk->getBlockId(minX, y, z);
                 if (block >= Items::ItemID::FLOWING_WATER_ID && block <= Items::ItemID::STILL_LAVA_ID) return true;
 
-                uint16_t block1 = chunk->getBlock(maxX, y, z);
+                uint16_t block1 = chunk->getBlockId(maxX, y, z);
                 if (block1 >= Items::ItemID::FLOWING_WATER_ID && block <= Items::ItemID::STILL_LAVA_ID) return true;
             }
         }
@@ -81,7 +81,7 @@ namespace structure_rolls {
                         worldY = piece.getWorldY(y);
                         worldZ = piece.getWorldZ(x, z);
                         if (intersectsWithBlock(chunkBoundingBox, worldX, worldY, worldZ) &&
-                            (chunk == nullptr || chunk->getBlock(worldX & 15, worldY, worldZ & 15))) {
+                            (chunk == nullptr || chunk->getBlockId(worldX & 15, worldY, worldZ & 15))) {
                             rng.advance(); // advance rng
                         }
                     }
