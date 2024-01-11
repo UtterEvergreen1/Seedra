@@ -1,7 +1,5 @@
 
-#include <fstream>
-#include <iostream>
-
+/*
 #include "LegacyCubiomes/cubiomes/include.hpp"
 #include "LegacyCubiomes/enchants/include.hpp"
 #include "LegacyCubiomes/loot/include.hpp"
@@ -10,13 +8,17 @@
 
 #include "LegacyCubiomes/chunk_generator/biome.hpp"
 #include "LegacyCubiomes/cubiomes/generator.hpp"
+*/
 
+#include "LegacyCubiomes/utils/constants.hpp"
+#include "LegacyCubiomes/utils/processor.hpp"
 
 #include <cmath>
+#include <cstdint>
 #include <fstream>
 #include <iomanip>
 #include <iostream>
-
+#include <vector>
 
 
 struct M_Cache {
@@ -27,30 +29,41 @@ struct M_Cache {
 int getWorldRavineTotalCount(int64_t worldSeed) {
     int ravineCount = 0;
     int64_t currentX, currentZ;
-    M_Cache m_cache;
+    static M_Cache m_cache;
+    uint64_t seed, ret1;
+    static constexpr int RANGE = 27;
 
-    RNG rng1;
-    rng1.setSeed(worldSeed);
-    const int64_t seedMultiplierX = (int64_t) rng1.nextLong();
-    const int64_t seedMultiplierZ = (int64_t) rng1.nextLong();
+    worldSeed ^= 0x5deece66d;
+    seed = worldSeed & 0xFFFFFFFFFFFF;
 
+    // seedMultiplierX nextLong()
+    ret1 = ((seed * 0x5deece66d + 0xb) & 0xFFFFFFFF0000) << 16;
+    seed = seed * 0xBB20B4600A69 + 0x40942DE6BA;
+    const int64_t seedMultiplierX = (int64_t) (ret1 + (int) (seed >> 16));
+
+    // seedMultiplierZ nextLong()
+    ret1 = ((seed * 0x5deece66d + 0xb) & 0xFFFFFFFF0000) << 16;
+    seed = seed * 0xBB20B4600A69 + 0x40942DE6BA;
+    const int64_t seedMultiplierZ = (int64_t) (ret1 + (int) (seed >> 16));
+
+    // create multiplication cache
     #pragma unroll
-    for (int64_t index = -27; index < 1; ++index) {
-        m_cache.x[index + 27] = index * seedMultiplierX;
-        m_cache.z[index + 27] = index * seedMultiplierZ;
+    for (int64_t index = -RANGE; index < 1; ++index) {
+        m_cache.x[index + RANGE] = index * seedMultiplierX;
+        m_cache.z[index + RANGE] = index * seedMultiplierZ;
+    }
+    #pragma unroll
+    for (int64_t index = 1; index < RANGE; ++index) {
+        m_cache.x[RANGE + index] = -m_cache.x[RANGE - index];
+        m_cache.z[RANGE + index] = -m_cache.z[RANGE - index];
     }
 
-    #pragma unroll
-    for (int64_t index = 1; index < 27; ++index) {
-        m_cache.x[27 + index] = -m_cache.x[27 - index];
-        m_cache.z[27 + index] = -m_cache.z[27 - index];
-    }
-
-    for (currentX = 0; currentX < 54; ++currentX) {
-        #pragma unroll
-        for (currentZ = 0; currentZ < 54; ++currentZ) {
-            rng1.setSeed(m_cache.x[currentX] ^ m_cache.z[currentZ] ^ worldSeed);
-            if EXPECT_FALSE (rng1.nextInt(50) == 0) {
+    // check each chunk
+    for (currentX = 0; currentX < 2 * RANGE; ++currentX) {
+        for (currentZ = 0; currentZ < 2 * RANGE; ++currentZ) {
+            seed = ((m_cache.x[currentX] ^ m_cache.z[currentZ] ^ worldSeed)
+                            * 0x5deece66d + 0xb) & 0x0000FFFFFFFFFFFF;
+            if EXPECT_FALSE((int) (seed >> 17) % 50 == 0) {
                 ravineCount++;
             }
         }
@@ -58,29 +71,62 @@ int getWorldRavineTotalCount(int64_t worldSeed) {
     return ravineCount;
 }
 
+#include "LegacyCubiomes/utils/Pos2DTemplate.hpp"
+
 
 int main(int argc, char* argv[]) {
 
+    Pos2DTemplate<int> point(5, 4);
+    point = point + Pos2DTemplate<int>(4, 5);
+    std::cout << point << std::endl;
+
+
+    Pos2DTemplate<double> point2(1.0, 3.14);
+
+    std::cout << point2 << std::endl;
+
+
+    int xxx; std::cin >> xxx;
+
+
     int64_t ravine_seed;
-    int mostRavines = INT32_MIN;
+    int mostRavines = 110;
+    std::vector<int64_t> seeds;
 
     uint64_t start = getMilliseconds();
 
     int ravineCount;
-    for (int index = 0; index < 100000; index++) {
+    for (int64_t index = 100000000; index < 200000000; index++) {
         ravineCount = getWorldRavineTotalCount(index);
-        if EXPECT_FALSE (ravineCount <= mostRavines)
+        if EXPECT_FALSE (ravineCount < mostRavines)
             continue;
 
+        if EXPECT_FALSE(ravineCount == mostRavines) {
+            seeds.push_back(index);
+            continue;
+        }
+
+        seeds.clear();
+        seeds.push_back(index);
         ravine_seed = index;
         mostRavines = ravineCount;
-        printf("Seed: %llu | Ravines: %d\n", ravine_seed, mostRavines);
+        float percentage = float(mostRavines) / 29.16F;
+        printf("Seed: %llu | Ravines: %d (%.2f%%)\n", ravine_seed, mostRavines, percentage);
     }
     uint64_t end = getMilliseconds();
     float diff = (float)(end - start) / 1000;
     printf("\nTime: %.3f\n", diff);
 
+    printf("\n\nOther Seeds:\n");
+    for (int64_t index : seeds) {
+        printf("%llu\n", index);
+    }
+    printf("\n\nDone! Hit enter to exit.");
+    int x; std::cin >> x;
 }
+
+
+
 
 /*
 Biome::registerBiomes();

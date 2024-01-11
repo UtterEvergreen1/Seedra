@@ -4,7 +4,7 @@
 #include "LegacyCubiomes/cubiomes/layers.hpp"
 #include "LegacyCubiomes/utils/rng.hpp"
 
-#include "LegacyCubiomes/utils/Pos3D.hpp"
+#include "LegacyCubiomes/utils/Pos3DTemplate.hpp"
 
 namespace Features {
     Pos3D waterLake(Generator* g, int chunkX, int chunkZ) {

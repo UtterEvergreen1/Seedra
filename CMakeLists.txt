@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.24)
 project(LCE_Cubiomes)
 
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_FLAGS_RELEASE "-O3")
 
 
@@ -17,4 +17,4 @@ add_definitions(-DDEV_MODE)
 
 # recursively grabs all files inside the project folder
 file(GLOB_RECURSE LEGACY_CUBIOMES LegacyCubiomes/*)
-add_executable(LCE_Cubiomes "main1.cpp" ${LEGACY_CUBIOMES})
+add_executable(LCE_Cubiomes main1.cpp ${LEGACY_CUBIOMES})

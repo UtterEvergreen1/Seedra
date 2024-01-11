@@ -3,7 +3,7 @@
 #include <climits>
 #include <iostream>
 
-#include "LegacyCubiomes/utils/Pos3D.hpp"
+#include "LegacyCubiomes/utils/Pos3DTemplate.hpp"
 #include "LegacyCubiomes/utils/enums.hpp"
 #include "LegacyCubiomes/utils/processor.hpp"
 

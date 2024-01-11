@@ -6,7 +6,7 @@
 
 #include "LegacyCubiomes/cubiomes/generator.hpp"
 #include "LegacyCubiomes/cubiomes/layers.hpp"
-#include "LegacyCubiomes/utils/Pos2D.hpp"
+#include "LegacyCubiomes/utils/Pos2DTemplate.hpp"
 
 namespace Placement {
     static constexpr uint64_t DEFAULT_SECONDARY_VALID_BIOMES =

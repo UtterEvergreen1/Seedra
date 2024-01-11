@@ -1,7 +1,7 @@
 #pragma once
 
 #include "LegacyCubiomes/building_blocks/BoundingBox.hpp"
-#include "LegacyCubiomes/utils/Pos2D.hpp"
+#include "LegacyCubiomes/utils/Pos2DTemplate.hpp"
 #include "LegacyCubiomes/utils/processor.hpp"
 
 

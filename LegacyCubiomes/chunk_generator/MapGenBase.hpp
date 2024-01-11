@@ -2,10 +2,8 @@
 
 #include "ChunkPrimer.hpp"
 
-#include "LegacyCubiomes/utils/DoublePos2D.hpp"
-#include "LegacyCubiomes/utils/DoublePos3D.hpp"
-#include "LegacyCubiomes/utils/Pos2D.hpp"
-#include "LegacyCubiomes/utils/Pos3D.hpp"
+#include "LegacyCubiomes/utils/Pos2DTemplate.hpp"
+#include "LegacyCubiomes/utils/Pos3DTemplate.hpp"
 
 class MapGenBase {
 public:

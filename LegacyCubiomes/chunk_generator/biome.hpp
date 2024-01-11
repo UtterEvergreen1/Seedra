@@ -12,7 +12,7 @@
 #include "LegacyCubiomes/mc/itemID.hpp"
 #include "LegacyCubiomes/mc/items.hpp"
 
-#include "LegacyCubiomes/utils/Pos3D.hpp"
+#include "LegacyCubiomes/utils/Pos3DTemplate.hpp"
 #include "LegacyCubiomes/utils/constants.hpp"
 
 class ChunkPrimer;
