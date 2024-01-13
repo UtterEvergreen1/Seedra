@@ -1,5 +1,6 @@
 #pragma once
 
+
 #include <cmath>
 #include <iostream>
 #include <string>
@@ -24,6 +25,7 @@ public:
     bool operator==(const Pos2DTemplate& other) const;
     bool operator==(int other) const;
     bool operator!=(const Pos2DTemplate& other) const;
+    bool operator!=(int other) const;
     Pos2DTemplate operator+(const Pos2DTemplate& other) const;
     Pos2DTemplate operator+(int other) const;
     Pos2DTemplate operator-(const Pos2DTemplate& other) const;
@@ -33,28 +35,28 @@ public:
     bool operator>=(classType value) const;
     bool operator<=(classType value) const;
 
-    Pos2DTemplate operator>>(int shiftAmount) const requires (
-                !(std::is_same_v<classType, float> || std::is_same_v<classType, double>)) {
+    template <typename T = classType, typename = std::enable_if_t<std::is_integral_v<T>>>
+    Pos2DTemplate operator>>(int shiftAmount) const {
         return {x >> shiftAmount, z >> shiftAmount};
     }
 
-    Pos2DTemplate operator<<(int shiftAmount) const requires (
-                !(std::is_same_v<classType, float> || std::is_same_v<classType, double>)) {
+    template <typename T = classType, typename = std::enable_if_t<std::is_integral_v<T>>>
+    Pos2DTemplate operator<<(int shiftAmount) const {
         return {x << shiftAmount, z << shiftAmount};
     }
 
-    MU ND Pos2DTemplate toChunkPos() const requires (
-                !(std::is_same_v<classType, float> || std::is_same_v<classType, double>)) {
+    template <typename T = classType, typename = std::enable_if_t<std::is_integral_v<T>>>
+    MU ND Pos2DTemplate toChunkPos() const {
         return {x >> 4, z >> 4};
     }
 
-    MU ND Pos2DTemplate toBlockPos() const requires (
-                !(std::is_same_v<classType, float> || std::is_same_v<classType, double>)) {
+    template <typename T = classType, typename = std::enable_if_t<std::is_integral_v<T>>>
+    MU ND Pos2DTemplate toBlockPos() const {
         return {x << 4, z << 4};
     }
 
 #ifdef INCLUDE_QT
-    friend QDebug operator<<(QDebug out, const Pos2D& pos) {
+    friend QDebug operator<<(QDebug out, const Pos2DTemplate<classType>& pos) {
         out.nospace() << "(" << pos.x << ", " << pos.z << ")";
         return out.space();
     }
@@ -74,8 +76,8 @@ public:
     MU ND bool insideBounds(classType lower, classType upper);
 
     struct Hasher {
-        std::size_t operator()(const Pos2DTemplate& pos) const requires (
-                    !(std::is_same_v<classType, float> | std::is_same_v<classType, double>)) {
+        template <typename T = classType, typename = std::enable_if_t<std::is_integral_v<T>>>
+        std::size_t operator()(const Pos2DTemplate& pos) const {
             const int i = 1664525 * pos.x + 1013904223;
             const int j = 1664525 * (pos.z ^ -559038737) + 1013904223;
             return static_cast<size_t>(i) ^ j;

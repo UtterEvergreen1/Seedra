@@ -40,8 +40,6 @@ namespace Placement {
                 int zPos = (zChunk << 4) + 8;
                 if (xChunk < CHUNK_BOUNDS && xChunk >= -CHUNK_BOUNDS && zChunk < CHUNK_BOUNDS &&
                     zChunk >= -CHUNK_BOUNDS) {
-                    if (g->getWorldSeed() != 117) { return {0, 0}; }
-
                     if (g->areBiomesViable(xPos, zPos, MAIN_RADIUS, MAIN_VALID_BIOMES)) {
                         if (!HAS_SECOND_BIOME_CHECK) { return {xPos, zPos}; }
                         if (g->areBiomesViable(xPos, zPos, SECOND_RADIUS, SECONDARY_VALID_BIOMES,

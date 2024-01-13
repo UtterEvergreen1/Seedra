@@ -25,8 +25,8 @@ namespace Placement {
         RNG rng;
         rng.setSeed((int64_t) regionX * 341873128712ULL + (int64_t) regionZ * 132897987541ULL + worldSeed +
                     Derived::SALT);
-        return {regionX * Derived::REGION_SIZE + rng.nextInt(Derived::CHUNK_RANGE),
-                regionZ * Derived::REGION_SIZE + rng.nextInt(Derived::CHUNK_RANGE)};
+        return {regionX * REGION_SIZE + rng.nextInt(CHUNK_RANGE),
+                regionZ * REGION_SIZE + rng.nextInt(CHUNK_RANGE)};
     }
 
     template<typename Derived>

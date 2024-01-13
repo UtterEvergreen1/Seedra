@@ -70,10 +70,10 @@ private:
 #ifdef INCLUDE_QT
     friend QDebug operator<<(QDebug out, const Container& container) {
         int contents = container.inventorySlots.size();
-        out.nospace() << "\n{\n";
+        out.nospace() << "{ ";
         for (int i = 0; i < contents; i++) {
             const ItemStack& itemStack = container.inventorySlots[i];
-            if (itemStack.stackSize > 0) { out.nospace() << i << ": " << itemStack << "\n"; }
+            if (itemStack.stackSize > 0) { out.nospace() << i << ": " << itemStack << " "; }
         }
         out.nospace() << "}";
         return out.space();

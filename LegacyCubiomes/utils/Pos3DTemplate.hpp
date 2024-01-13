@@ -21,9 +21,9 @@ public:
     explicit Pos3DTemplate(Pos2DTemplate<classType> pos) : x(pos.x), y(0), z(pos.z) {}
     Pos3DTemplate(classType xIn, classType yIn, classType zIn) : x(xIn), y(yIn), z(zIn) {}
 
-    MU ND classType getX() const { return x; }
-    MU ND classType getY() const { return y; }
-    MU ND classType getZ() const { return z; }
+    MU ND inline classType getX() const { return x; }
+    MU ND inline classType getY() const { return y; }
+    MU ND inline classType getZ() const { return z; }
 
     bool operator==(const Pos3DTemplate& other) const;
     Pos3DTemplate operator+(const Pos3DTemplate& other) const;
@@ -35,18 +35,18 @@ public:
     bool operator>=(int value) const;
     bool operator<=(int value) const;
 
-    Pos3DTemplate operator>>(int shiftAmount) const requires (
-                !(std::is_same_v<classType, float> || std::is_same_v<classType, double>)) {
+    template <typename T = classType, typename = std::enable_if_t<std::is_integral_v<T>>>
+    Pos3DTemplate operator>>(int shiftAmount) const {
         return {x >> shiftAmount, y >> shiftAmount, z >> shiftAmount};
     }
 
-    Pos3DTemplate operator<<(int shiftAmount) const requires (
-                !(std::is_same_v<classType, float> || std::is_same_v<classType, double>)) {
+    template <typename T = classType, typename = std::enable_if_t<std::is_integral_v<T>>>
+    Pos3DTemplate operator<<(int shiftAmount) const {
         return {x << shiftAmount, y << shiftAmount, z << shiftAmount};
     }
 
 #ifdef INCLUDE_QT
-    friend QDebug operator<<(QDebug out, const Pos3D& pos) {
+    friend QDebug operator<<(QDebug out, const Pos3DTemplate<classType>& pos) {
         out.nospace() << "(" << pos.x << ", " << pos.y << ", " << pos.z << ")";
         return out.space();
     }

@@ -12,6 +12,9 @@ bool Pos2DTemplate<classType>::operator==(int other) const { return x == other &
 template<class classType>
 bool Pos2DTemplate<classType>::operator!=(const Pos2DTemplate& other) const { return *this != other; }
 
+template<class classType>
+bool Pos2DTemplate<classType>::operator!=(int other) const { return x != other && z != other; }
+
 
 template<class classType>
 Pos2DTemplate<classType> Pos2DTemplate<classType>::operator+(const Pos2DTemplate& other) const { return {x + other.x, z + other.z}; }
