@@ -1,18 +1,8 @@
 #pragma once
 
+#include "LegacyCubiomes/chunk_generator/MapGenBase.hpp"
 #include "LegacyCubiomes/utils/MathHelper.hpp"
-#include "MapGenBase.hpp"
-
-int64_t CONCAT44(int32_t high, int32_t low) {
-    // Shift the 'high' integer to the upper 32 bits and combine it with 'low'.
-    return ((int64_t) high << 32) | (uint32_t) low;
-}
-
-char* vectorMultiplyHighAndAddSignedHalfWordSaturate(char* a, char* b, char* c) {
-    static char var[16];
-    return var;
-}
-
+#include "a_working_on/UnderwaterLargeCaveGenerator.hpp"
 
 typedef long long undefined8;
 typedef int undefined4;
@@ -21,15 +11,24 @@ typedef unsigned long long ulonglong;
 typedef unsigned int uint;
 typedef int code;
 
+static void instructionSynchronize() {}
+
 
 class UnderwaterCanyonGenerator : public MapGenBase {
     explicit UnderwaterCanyonGenerator(const Generator& generator) : MapGenBase(generator) {}
 
-    void addFeature__23UnderwaterCanyonFeatureFP5LeveliN32P11ChunkPrimer(int param_1, undefined4 param_2, int param_3,
-                                                                         int param_4, undefined4 param_5,
-                                                                         undefined4 param_6, undefined4 param_7)
-
-    {
+    /**
+     * addFeature__23UnderwaterCanyonFeatureFP5LeveliN32P11ChunkPrimer
+     * @param _this unused, just a pointer to this
+     * @param level
+     * @param baseChunkX
+     * @param baseChunkZ
+     * @param targetX
+     * @param targetZ
+     * @param chunkPrimer
+     */
+    void addFeature(int _this, Level& level, int baseChunkX, int baseChunkZ, int targetX, int targetZ,
+                    ChunkPrimer* chunkPrimer) {
         int iVar1;
         uint uVar2;
         double dVar3;
@@ -48,7 +47,7 @@ class UnderwaterCanyonGenerator : public MapGenBase {
         undefined in_vs61[16];
         undefined in_vs62[16];
         undefined in_vs63[16];
-        undefined8 uVar11;
+        uint64_t uVar11;
 
         vectorMultiplyHighAndAddSignedHalfWordSaturate(in_vs57, in_vs57, in_vs50);
         vectorMultiplyHighAndAddSignedHalfWordSaturate(in_vs62, in_vs62, in_vs50);
@@ -57,46 +56,65 @@ class UnderwaterCanyonGenerator : public MapGenBase {
         vectorMultiplyHighAndAddSignedHalfWordSaturate(in_vs58, in_vs58, in_vs50);
         vectorMultiplyHighAndAddSignedHalfWordSaturate(in_vs59, in_vs59, in_vs50);
         vectorMultiplyHighAndAddSignedHalfWordSaturate(in_vs63, in_vs63, in_vs50);
-        iVar1 = nextInt__6RandomFi(param_1 + 8, 0x14);
+
+        iVar1 = rng.nextInt(0x14);
         if (iVar1 == 0) {
-            iVar1 = nextInt__6RandomFi(param_1 + 8, 0x10);
-            dVar9 = (double) CONCAT44(0x43300000, param_3 * 0x10 + iVar1 ^ 0x80000000) - 4503601774854144.0;
-            iVar1 = nextInt__6RandomFi(param_1 + 8, 0x28);
-            iVar1 = nextInt__6RandomFi(param_1 + 8, iVar1 + 8);
+            iVar1 = rng.nextInt(0x10);
+            dVar9 = (double) CONCAT44(0x43300000, baseChunkX * 0x10 + iVar1 ^ 0x80000000) - 4503601774854144.0;
+            iVar1 = rng.nextInt(0x28);
+            iVar1 = rng.nextInt(iVar1 + 8);
             dVar8 = (double) CONCAT44(0x43300000, iVar1 + 0x14U ^ 0x80000000) - 4503601774854144.0;
-            uVar2 = nextInt__6RandomFv(param_1 + 8);
+            uVar2 = rng.nextInt();
             if ((float) ((double) CONCAT44(0x43300000, uVar2 ^ 0x80000000) - 4503601774854144.0) <= 0.2) {
                 dVar8 = dVar8 + 15.0;
             }
-            iVar1 = nextInt__6RandomFi(param_1 + 8, 0x10);
-            dVar7 = (double) CONCAT44(0x43300000, param_4 * 0x10 + iVar1 ^ 0x80000000) - 4503601774854144.0;
-            dVar3 = (double) nextFloat__6RandomFv(param_1 + 8);
+            iVar1 = rng.nextInt(0x10);
+            dVar7 = (double) CONCAT44(0x43300000, baseChunkZ * 0x10 + iVar1 ^ 0x80000000) - 4503601774854144.0;
+            dVar3 = (double) rng.nextFloat();
             dVar5 = (double) ((float) (dVar3 * 3.141592741012573) + (float) (dVar3 * 3.141592741012573));
-            dVar3 = (double) nextFloat__6RandomFv(param_1 + 8);
+            dVar3 = (double) rng.nextFloat();
             dVar6 = (double) (((float) (dVar3 - 0.5) + (float) (dVar3 - 0.5)) * 0.125);
-            dVar3 = (double) nextFloat__6RandomFv(param_1 + 8);
+            dVar3 = (double) rng.nextFloat();
             dVar10 = 3.0;
             dVar4 = (double) (float) (dVar3 * 3.0);
-            dVar3 = (double) nextFloat__6RandomFv(param_1 + 8);
+            dVar3 = (double) rng.nextFloat();
             dVar4 = (double) (float) (dVar3 * dVar10 + dVar4);
-            dVar3 = (double) nextFloat__6RandomFv(param_1 + 8);
+            dVar3 = (double) rng.nextFloat();
             if (dVar3 < 0.05000000074505806) { dVar4 = (double) (float) (dVar4 + dVar4); }
-            uVar11 = nextLong__6RandomFv(param_1 + 8);
-            addTunnel__23UnderwaterCanyonFeatureFP5LevelLiT3P11ChunkPrimerdN26fN29N23T6(
-                    dVar9, dVar8, dVar7, dVar4, dVar5, dVar6, 0x4008000000000000, param_1, param_2,
-                    (int) ((ulonglong) uVar11 >> 0x20), (int) uVar11, param_5, param_6, param_7, 0, 0);
+            uVar11 = rng.nextLong();
+
+            uint64_t intValue = 0x4008000000000000;
+            double doubleValue = *(double*) intValue;
+
+            addTunnel(dVar9, dVar8, dVar7, dVar4, dVar5, dVar6, doubleValue, _this, level,
+                      (int) ((ulonglong) uVar11 >> 0x20), (int) uVar11, targetX, targetZ, chunkPrimer, 0, 0);
         }
         instructionSynchronize();
-        return;
     }
 
 
-    void addTunnel__23UnderwaterCanyonFeatureFP5LevelLiT3P11ChunkPrimerdN26fN29N23T6(
-            double param_1, double param_2, double param_3, double param_4, double param_5, double param_6,
-            double param_7, int param_8, int* param_9_00, undefined4 param_10, undefined4 param_11, int param_12,
-            int param_13, undefined4 param_14, uint param_15, uint param_9)
-
-    {
+    /**
+     * addTunnel__23UnderwaterCanyonFeatureFP5LevelLiT3P11ChunkPrimerdN26fN29N23T6
+     * @param param_1
+     * @param param_2
+     * @param param_3
+     * @param param_4
+     * @param param_5
+     * @param param_6
+     * @param param_7
+     * @param param_8
+     * @param level
+     * @param param_10
+     * @param param_11
+     * @param targetX
+     * @param targetZ
+     * @param chunkPrimer
+     * @param param_15
+     * @param param_9
+     */
+    void addTunnel(double param_1, double param_2, double param_3, double param_4, double param_5, double param_6,
+                   double param_7, int param_8, Level& level, undefined4 param_10, undefined4 param_11, int targetX,
+                   int targetZ, ChunkPrimer* chunkPrimer, uint param_15, uint param_9) {
         bool bVar1;
         bool bVar2;
         float fVar3;
@@ -185,16 +203,16 @@ class UnderwaterCanyonGenerator : public MapGenBase {
         vectorMultiplyHighAndAddSignedHalfWordSaturate(in_vs62, in_vs62, auVar36);
         vectorMultiplyHighAndAddSignedHalfWordSaturate(in_vs63, in_vs63, auVar36);
         local_228 = param_9;
-        MemSect__Fi(0x31);
-        __ct__6RandomFL(auStack_180, extraout_r4, param_10, param_11);
-        MemSect__Fi(0);
-        fVar3 = (float) ((double) CONCAT44(0x43300000, param_12 * 0x10 + 8U ^ 0x80000000) - 4503601774854144.0);
-        fVar4 = (float) ((double) CONCAT44(0x43300000, param_13 * 0x10 + 8U ^ 0x80000000) - 4503601774854144.0);
+        // MemSect__Fi(0x31);
+        // __ct__6RandomFL(auStack_180, extraout_r4, param_10, param_11);
+        // MemSect__Fi(0);
+        fVar3 = (float) ((double) CONCAT44(0x43300000, targetX * 0x10 + 8U ^ 0x80000000) - 4503601774854144.0);
+        fVar4 = (float) ((double) CONCAT44(0x43300000, targetZ * 0x10 + 8U ^ 0x80000000) - 4503601774854144.0);
         local_1a8 = 0.0;
         local_1a4 = 0.0;
         __ct__8BlockPosFdN21(param_1, param_2, param_3, auStack_190);
         if ((int) param_9 < 1) {
-            iVar7 = nextInt__6RandomFi(auStack_180, 0x1c);
+            iVar7 = rng.nextInt(0x1c);
             local_228 = 0x70 - iVar7;
         }
         bVar1 = param_15 == 0xffffffff;
@@ -204,8 +222,8 @@ class UnderwaterCanyonGenerator : public MapGenBase {
         iVar7 = 0;
         dVar35 = dVar34;
         do {
-            dVar21 = (double) nextFloat__6RandomFv(auStack_180);
-            dVar22 = (double) nextFloat__6RandomFv(auStack_180);
+            dVar21 = (double) rng.nextFloat();
+            dVar22 = (double) rng.nextFloat();
             fVar37 = (float) (dVar21 * dVar22 + dVar34);
             dVar21 = (double) (fVar37 * fVar37);
             do {
@@ -220,7 +238,7 @@ class UnderwaterCanyonGenerator : public MapGenBase {
                     dVar22 = 0.5;
                     goto LAB_02a5eeac;
                 }
-            } while ((iVar7 != 0) && (iVar18 = nextInt__6RandomFi(auStack_180, 3), iVar18 != 0));
+            } while ((iVar7 != 0) && (iVar18 = rng.nextInt(3), iVar18 != 0));
         } while (true);
     LAB_02a5eeac:
         do {
@@ -229,9 +247,9 @@ class UnderwaterCanyonGenerator : public MapGenBase {
                     (float) ((double) CONCAT44(0x43300000, local_228 ^ 0x80000000) - 4503601774854144.0));
             dVar29 = (double) (fVar37 * (float) param_4 + 1.5);
             dVar31 = (double) (float) (dVar29 * (double) (float) param_7);
-            dVar23 = (double) nextFloat__6RandomFv(auStack_180);
+            dVar23 = (double) rng.nextFloat();
             dVar30 = (double) (float) (dVar29 * (double) (float) (dVar23 * dVar21 + 0.75));
-            dVar23 = (double) nextFloat__6RandomFv(auStack_180);
+            dVar23 = (double) rng.nextFloat();
             dVar31 = (double) (float) (dVar31 * (double) (float) (dVar23 * dVar21 + 0.75));
             fVar37 = cosf((float) param_6);
             dVar23 = (double) fVar37;
@@ -244,13 +262,13 @@ class UnderwaterCanyonGenerator : public MapGenBase {
             param_5 = (double) (float) ((double) local_1a4 * 0.05000000074505806 + param_5);
             param_3 = param_3 + (double) (float) ((double) fVar37 * dVar23);
             param_6 = (double) (float) (param_6 * 0.699999988079071 + (double) (local_1a8 * 0.05));
-            dVar23 = (double) nextGaussianFloat__6RandomFv(auStack_180);
-            dVar29 = (double) nextFloat__6RandomFv(auStack_180);
+            dVar23 = (double) rng.nextGaussianFloat();
+            dVar29 = (double) rng.nextFloat();
             local_1a8 = local_1a8 * 0.8 + (float) (dVar23 * dVar29) + (float) (dVar23 * dVar29);
-            dVar23 = (double) nextGaussianFloat__6RandomFv(auStack_180);
-            dVar29 = (double) nextFloat__6RandomFv(auStack_180);
+            dVar23 = (double) rng.nextGaussianFloat();
+            dVar29 = (double) rng.nextFloat();
             local_1a4 = (float) ((double) local_1a4 * dVar22 + (double) ((float) (dVar23 * dVar29) * 4.0));
-            if ((bVar1) || (iVar7 = nextInt__6RandomFi(auStack_180, 4), iVar7 != 0)) {
+            if ((bVar1) || (iVar7 = rng.nextInt(4), iVar7 != 0)) {
                 fVar37 = (float) ((double) CONCAT44(0x43300000, local_228 - local_220 ^ 0x80000000) -
                                   4503601774854144.0);
                 if ((float) (dVar34 * dVar34) <
@@ -263,19 +281,21 @@ class UnderwaterCanyonGenerator : public MapGenBase {
                      (param_1 <= (double) (fVar3 + 16.0 + fVar37))) &&
                     (param_3 <= (double) (fVar4 + 16.0 + fVar37))) {
                     dVar23 = floor(param_1 - dVar30);
-                    iVar7 = (int) dVar23 + param_12 * -0x10 + -1;
+                    iVar7 = (int) dVar23 + targetX * -0x10 + -1;
                     dVar23 = floor(param_1 + dVar30);
-                    iVar18 = (int) dVar23 + param_12 * -0x10 + 1;
+                    iVar18 = (int) dVar23 + targetX * -0x10 + 1;
                     dVar23 = floor(param_2 - dVar31);
                     dVar29 = floor(param_2 + dVar31);
                     dVar24 = floor(param_3 - dVar30);
-                    local_200 = (int) dVar24 + param_13 * -0x10 + -1;
+                    local_200 = (int) dVar24 + targetZ * -0x10 + -1;
                     dVar24 = floor(param_3 + dVar30);
-                    local_204 = (int) dVar24 + param_13 * -0x10 + 1;
+                    local_204 = (int) dVar24 + targetZ * -0x10 + 1;
                     if (iVar7 < 0) { iVar7 = 0; }
                     if (0x10 < iVar18) { iVar18 = 0x10; }
-                    iVar8 = clamp__3MthSFiN21((int) dVar29 + 1, 1, 0x78);
-                    iVar9 = clamp__3MthSFiN21((int) dVar23 + -1, 1, iVar8);
+                    iVar8 = MathHelper::clamp((int) dVar29 + 1, 1, 0x78);
+                    iVar9 = MathHelper::clamp((int) dVar23 + -1, 1, iVar8);
+
+
                     iVar16 = _DAT_104c1c48;
                     if (local_200 < 0) { local_200 = 0; }
                     if (0x10 < local_204) { local_204 = 0x10; }
@@ -294,6 +314,8 @@ class UnderwaterCanyonGenerator : public MapGenBase {
                     iVar19 = *(int*) (_DAT_104c1914 + 0x8c);
                     uVar13 = defaultBlockState__5BlockFv(_DAT_104c1914);
                     uVar13 = (**(code**) (iVar19 + 0x54))(iVar16, uVar13);
+
+
                     local_1ec = iVar18 - iVar7;
                     bVar6 = false;
                     if (iVar7 < iVar18) {
@@ -303,7 +325,7 @@ class UnderwaterCanyonGenerator : public MapGenBase {
                         do {
                             fVar37 = (float) ((double) ((float) ((double) (float) ((double) CONCAT44(
                                                                                            0x43300000,
-                                                                                           iVar7 + param_12 * 0x10 ^
+                                                                                           iVar7 + targetX * 0x10 ^
                                                                                                    0x80000000) -
                                                                                    4503601774854144.0) +
                                                                  dVar22) -
@@ -319,7 +341,7 @@ class UnderwaterCanyonGenerator : public MapGenBase {
                                     dVar26 =
                                             (double) (float) ((double) ((float) ((double) (float) ((double) CONCAT44(
                                                                                                            0x43300000,
-                                                                                                           iVar18 + param_13 * 0x10 ^
+                                                                                                           iVar18 + targetZ * 0x10 ^
                                                                                                                    0x80000000) -
                                                                                                    4503601774854144.0) +
                                                                                  dVar22) -
@@ -349,67 +371,60 @@ class UnderwaterCanyonGenerator : public MapGenBase {
                                                 if (((double) (float) (dVar28 * (double) *pfVar17 +
                                                                        (double) ((fVar37 * fVar37) / 6.0)) < dVar23) &&
                                                     ((int) uVar20 < 0x3e)) {
-                                                    getBlockId__11ChunkPrimerFi(param_14, uVar14);
-                                                    iVar19 = isDiggable__26UnderwaterLargeCaveFeatureSFi();
+                                                    uVar14 = chunkPrimer.getBlockId(uVar14);
+                                                    iVar19 = UnderwaterLargeCaveGenerator::isDiggable();
                                                     if (iVar19 != 0) {
-                                                        if ((!bVar6) && (param_9_00 != (int*) 0x0)) {
-                                                            (**(code**) (*param_9_00 + 0xbc))(param_9_00, auStack_190);
+                                                        if ((!bVar6) && (&level != nullptr)) {
+                                                            (**(code**) (*level + 0xbc))(level, auStack_190);
                                                             iVar19 = getBiomeType__5BiomeCFv();
                                                             if (iVar19 != 10) goto LAB_02a5f83c;
                                                         }
                                                         bVar6 = true;
                                                         if ((int) uVar20 < 10) {
-                                                            dVar25 = (double) nextFloat__6RandomFv(auStack_180);
+                                                            dVar25 = (double) rng.nextFloat();
                                                             if (dVar29 <= dVar25) {
-                                                                setBlockAndData__11ChunkPrimerFiN21(param_14, uVar14,
-                                                                                                    0x31, uVar11);
+                                                                chunkPrimer->setBlockAndData(uVar14, 0x31, uVar11);
                                                             } else {
-                                                                setBlockAndData__11ChunkPrimerFiN21(param_14, uVar14,
-                                                                                                    0xd5, uVar10);
+                                                                chunkPrimer->setBlockAndData(uVar14, 0xd5, uVar10);
                                                             }
                                                         } else {
                                                             bVar2 = false;
                                                             if (iVar7 < 0xf) {
                                                                 uVar15 = local_224 + 0x800 | uVar5 | uVar20;
-                                                                iVar19 = getBlockId__11ChunkPrimerFi(param_14, uVar15);
+                                                                iVar19 = chunkPrimer->getBlockId(uVar15);
                                                                 bVar2 = iVar19 == 0;
                                                                 if (bVar2) {
-                                                                    setBlockAndData__11ChunkPrimerFiN21(
-                                                                            param_14, uVar15, 8, uVar12);
+                                                                    chunkPrimer->setBlockAndData(uVar15, 8, uVar12);
                                                                 }
                                                                 if (0 < iVar7) goto LAB_02a5f6c4;
                                                             } else {
                                                             LAB_02a5f6c4:
                                                                 uVar15 = local_224 - 0x800 | uVar5 | uVar20;
-                                                                iVar19 = getBlockId__11ChunkPrimerFi(param_14, uVar15);
+                                                                iVar19 = chunkPrimer->getBlockId(uVar15);
                                                                 if (iVar19 == 0) {
                                                                     bVar2 = true;
-                                                                    setBlockAndData__11ChunkPrimerFiN21(
-                                                                            param_14, uVar15, 8, uVar12);
+                                                                    chunkPrimer->setBlockAndData(uVar15, 8, uVar12);
                                                                 }
                                                             }
                                                             if (iVar18 < 0xf) {
                                                                 uVar15 = local_224 | uVar5 + 0x80 | uVar20;
-                                                                iVar19 = getBlockId__11ChunkPrimerFi(param_14, uVar15);
+                                                                iVar19 = chunkPrimer->getBlockId(uVar15);
                                                                 if (iVar19 == 0) {
                                                                     bVar2 = true;
-                                                                    setBlockAndData__11ChunkPrimerFiN21(
-                                                                            param_14, uVar15, 8, uVar12);
+                                                                    chunkPrimer->setBlockAndData(uVar15, 8, uVar12);
                                                                 }
                                                                 if (0 < iVar18) goto LAB_02a5f764;
                                                             } else {
                                                             LAB_02a5f764:
                                                                 uVar15 = local_224 | uVar5 - 0x80 | uVar20;
-                                                                iVar19 = getBlockId__11ChunkPrimerFi(param_14, uVar15);
+                                                                iVar19 = chunkPrimer->getBlockId(uVar15);
                                                                 if (iVar19 == 0) {
-                                                                    setBlockAndData__11ChunkPrimerFiN21(
-                                                                            param_14, uVar15, 8, uVar12);
+                                                                    chunkPrimer->setBlockAndData(uVar15, 8, uVar12);
                                                                     goto LAB_02a5f7d4;
                                                                 }
                                                             }
                                                             if (!bVar2) {
-                                                                setBlockAndData__11ChunkPrimerFiN21(param_14, uVar14, 9,
-                                                                                                    uVar13);
+                                                                chunkPrimer->setBlockAndData(uVar14, 9, uVar13);
                                                             }
                                                         }
                                                     }
@@ -441,22 +456,26 @@ class UnderwaterCanyonGenerator : public MapGenBase {
         } while (local_1f4 != 0);
     LAB_02a5f83c:
         instructionSynchronize();
-        return;
     }
 
 
-    void apply__23UnderwaterCanyonFeatureFP5LeveliT2P11ChunkPrimer(int param_1, undefined4 param_2, int param_3,
-                                                                   int param_4, undefined4 param_5)
-
-    {
+    /**
+     * apply__23UnderwaterCanyonFeatureFP5LeveliT2P11ChunkPrimer
+     * @param _this
+     * @param level not sure if its a pointer or reference
+     * @param targetX
+     * @param targetZ
+     * @param chunkPrimer
+     */
+    void apply(int _this, Level& level, int targetX, int targetZ, ChunkPrimer* chunkPrimer) {
         int iVar1;
         uint uVar2;
         int iVar3;
         int iVar4;
         int iVar5;
         uint uVar6;
-        int iVar7;
-        int iVar8;
+        int baseChunkX;
+        int baseChunkZ;
         uint uVar9;
         uint uVar10;
         uint uVar11;
@@ -468,83 +487,95 @@ class UnderwaterCanyonGenerator : public MapGenBase {
         undefined8 uVar17;
         int local_50;
 
-        uVar17 = getSeed__5LevelFv(param_2);
-        setSeed__6RandomFL(param_1 + 8, (int) uVar17, (int) ((ulonglong) uVar17 >> 0x20), (int) uVar17);
-        uVar2 = nextInt__6RandomFv(param_1 + 8);
+        uVar17 = level.getSeed();
+        rng.setSeed((int) uVar17, (int) ((ulonglong) uVar17 >> 0x20), (int) uVar17);
+        uVar2 = rng.nextInt();
         iVar16 = (((int) uVar2 >> 1) + (uint) ((int) uVar2 < 0 && (uVar2 & 1) != 0)) * 2 + 1;
-        uVar2 = nextInt__6RandomFv(param_1 + 8);
-        iVar7 = param_3 + -8;
+        uVar2 = rng.nextInt();
+        baseChunkX = targetX + -8;
         iVar5 = (((int) uVar2 >> 1) + (uint) ((int) uVar2 < 0 && (uVar2 & 1) != 0)) * 2 + 1;
-        if (iVar7 <= param_3 + 8) {
-            local_50 = iVar7 * iVar16;
-            iVar4 = param_4 + 8;
-            iVar3 = param_4 + -8;
+        if (baseChunkX <= targetX + 8) {
+            local_50 = baseChunkX * iVar16;
+            iVar4 = targetZ + 8;
+            iVar3 = targetZ + -8;
             do {
                 if (iVar3 <= iVar4) {
+                    // TODO what is the correct order?
                     uVar2 = (iVar4 - iVar3) + 1U >> 3;
-                    iVar8 = iVar3;
+                    baseChunkZ = iVar3;
                     if (uVar2 != 0) {
-                        uVar13 = local_50 + (param_4 + -6) * iVar5;
-                        uVar6 = local_50 + (param_4 + -1) * iVar5;
-                        uVar11 = local_50 + (param_4 + -4) * iVar5;
+                        uVar13 = local_50 + (targetZ + -6) * iVar5;
+                        uVar6 = local_50 + (targetZ + -1) * iVar5;
+                        uVar11 = local_50 + (targetZ + -4) * iVar5;
                         iVar1 = iVar5 * 8;
-                        uVar14 = local_50 + (param_4 + -7) * iVar5;
-                        uVar12 = local_50 + (param_4 + -5) * iVar5;
-                        uVar10 = local_50 + (param_4 + -3) * iVar5;
-                        uVar9 = local_50 + (param_4 + -2) * iVar5;
+                        uVar14 = local_50 + (targetZ + -7) * iVar5;
+                        uVar12 = local_50 + (targetZ + -5) * iVar5;
+                        uVar10 = local_50 + (targetZ + -3) * iVar5;
+                        uVar9 = local_50 + (targetZ + -2) * iVar5;
                         uVar15 = local_50 + iVar3 * iVar5;
                         do {
-                            uVar17 = getSeed__5LevelFv(param_2);
-                            setSeed__6RandomFL(param_1 + 8, (uint) uVar17, (int) uVar15 >> 0x1f ^ (uint) ((ulonglong) uVar17 >> 0x20), uVar15 ^ (uint) uVar17);
-                            (**(code**) (*(int*) (param_1 + 0x24) + 0x1c))(param_1, param_2, iVar7, iVar8, param_3, param_4, param_5);
-                            uVar17 = getSeed__5LevelFv(param_2);
-                            setSeed__6RandomFL(param_1 + 8, (uint) uVar17, (int) uVar14 >> 0x1f ^ (uint) ((ulonglong) uVar17 >> 0x20), uVar14 ^ (uint) uVar17);
-                            (**(code**) (*(int*) (param_1 + 0x24) + 0x1c))(param_1, param_2, iVar7, iVar8 + 1, param_3, param_4, param_5);
-                            uVar17 = getSeed__5LevelFv(param_2);
-                            setSeed__6RandomFL(param_1 + 8, (uint) uVar17, (int) uVar13 >> 0x1f ^ (uint) ((ulonglong) uVar17 >> 0x20), uVar13 ^ (uint) uVar17);
-                            (**(code**) (*(int*) (param_1 + 0x24) + 0x1c))(param_1, param_2, iVar7, iVar8 + 2, param_3, param_4, param_5);
-                            uVar17 = getSeed__5LevelFv(param_2);
-                            setSeed__6RandomFL(param_1 + 8, (uint) uVar17, (int) uVar12 >> 0x1f ^ (uint) ((ulonglong) uVar17 >> 0x20), uVar12 ^ (uint) uVar17);
-                            (**(code**) (*(int*) (param_1 + 0x24) + 0x1c))(param_1, param_2, iVar7, iVar8 + 3, param_3, param_4, param_5);
-                            uVar17 = getSeed__5LevelFv(param_2);
-                            setSeed__6RandomFL(param_1 + 8, (uint) uVar17, (int) uVar11 >> 0x1f ^ (uint) ((ulonglong) uVar17 >> 0x20), uVar11 ^ (uint) uVar17);
-                            (**(code**) (*(int*) (param_1 + 0x24) + 0x1c))(param_1, param_2, iVar7, iVar8 + 4, param_3, param_4, param_5);
-                            uVar17 = getSeed__5LevelFv(param_2);
-                            setSeed__6RandomFL(param_1 + 8, (uint) uVar17, (int) uVar10 >> 0x1f ^ (uint) ((ulonglong) uVar17 >> 0x20), uVar10 ^ (uint) uVar17);
-                            (**(code**) (*(int*) (param_1 + 0x24) + 0x1c))(param_1, param_2, iVar7, iVar8 + 5, param_3, param_4, param_5);
-                            uVar17 = getSeed__5LevelFv(param_2);
-                            setSeed__6RandomFL(param_1 + 8, (uint) uVar17, (int) uVar9 >> 0x1f ^ (uint) ((ulonglong) uVar17 >> 0x20), uVar9 ^ (uint) uVar17);
-                            (**(code**) (*(int*) (param_1 + 0x24) + 0x1c))(param_1, param_2, iVar7, iVar8 + 6, param_3, param_4, param_5);
-                            uVar17 = getSeed__5LevelFv(param_2);
-                            setSeed__6RandomFL(param_1 + 8, (uint) uVar17, (int) uVar6 >> 0x1f ^ (uint) ((ulonglong) uVar17 >> 0x20), uVar6 ^ (uint) uVar17);
-                            (**(code**) (*(int*) (param_1 + 0x24) + 0x1c))(param_1, param_2, iVar7, iVar8 + 7, param_3,param_4, param_5);
+                            uVar17 = level.getSeed();
+                            rng.setSeed((uint) uVar17, (int) uVar15 >> 0x1f ^ (uint) ((ulonglong) uVar17 >> 0x20),
+                                        uVar15 ^ (uint) uVar17);
+                            addFeature(_this, level, baseChunkX, baseChunkZ, targetX, targetZ, chunkPrimer);
+                            uVar17 = level.getSeed();
+                            rng.setSeed((uint) uVar17, (int) uVar14 >> 0x1f ^ (uint) ((ulonglong) uVar17 >> 0x20),
+                                        uVar14 ^ (uint) uVar17);
+                            addFeature(_this, level, baseChunkX, baseChunkZ + 1, targetX, targetZ, chunkPrimer);
+                            uVar17 = level.getSeed();
+                            rng.setSeed((uint) uVar17, (int) uVar13 >> 0x1f ^ (uint) ((ulonglong) uVar17 >> 0x20),
+                                        uVar13 ^ (uint) uVar17);
+                            addFeature(_this, level, baseChunkX, baseChunkZ + 2, targetX, targetZ, chunkPrimer);
+                            uVar17 = level.getSeed();
+                            rng.setSeed((uint) uVar17, (int) uVar12 >> 0x1f ^ (uint) ((ulonglong) uVar17 >> 0x20),
+                                        uVar12 ^ (uint) uVar17);
+                            addFeature(_this, level, baseChunkX, baseChunkZ + 3, targetX, targetZ, chunkPrimer);
+                            uVar17 = level.getSeed();
+                            rng.setSeed((uint) uVar17, (int) uVar11 >> 0x1f ^ (uint) ((ulonglong) uVar17 >> 0x20),
+                                        uVar11 ^ (uint) uVar17);
+                            addFeature(_this, level, baseChunkX, baseChunkZ + 4, targetX, targetZ, chunkPrimer);
+                            uVar17 = level.getSeed();
+                            rng.setSeed((uint) uVar17, (int) uVar10 >> 0x1f ^ (uint) ((ulonglong) uVar17 >> 0x20),
+                                        uVar10 ^ (uint) uVar17);
+                            addFeature(_this, level, baseChunkX, baseChunkZ + 5, targetX, targetZ, chunkPrimer);
+                            uVar17 = level.getSeed();
+                            rng.setSeed((uint) uVar17, (int) uVar9 >> 0x1f ^ (uint) ((ulonglong) uVar17 >> 0x20),
+                                        uVar9 ^ (uint) uVar17);
+                            addFeature(_this, level, baseChunkX, baseChunkZ + 6, targetX, targetZ, chunkPrimer);
+                            uVar17 = level.getSeed();
+                            rng.setSeed((uint) uVar17, (int) uVar6 >> 0x1f ^ (uint) ((ulonglong) uVar17 >> 0x20),
+                                        uVar6 ^ (uint) uVar17);
+                            addFeature(_this, level, baseChunkX, baseChunkZ + 7, targetX, targetZ, chunkPrimer);
                             uVar11 = uVar11 + iVar1;
                             uVar12 = uVar12 + iVar1;
                             uVar13 = uVar13 + iVar1;
                             uVar14 = uVar14 + iVar1;
                             uVar15 = uVar15 + iVar1;
-                            iVar8 = iVar8 + 8;
+                            baseChunkZ = baseChunkZ + 8;
                             uVar10 = uVar10 + iVar1;
                             uVar2 = uVar2 - 1;
                             uVar6 = uVar6 + iVar1;
                             uVar9 = uVar9 + iVar1;
                         } while (uVar2 != 0);
-                        if (iVar4 < iVar8) goto LAB_02a5ea2c;
+                        if (iVar4 < baseChunkZ) goto LAB_02a5ea2c;
                     }
-                    uVar2 = local_50 + iVar8 * iVar5;
+                    uVar2 = local_50 + baseChunkZ * iVar5;
                     do {
-                        uVar17 = getSeed__5LevelFv(param_2);
-                        setSeed__6RandomFL(param_1 + 8, (uint) uVar17, (int) uVar2 >> 0x1f ^ (uint) ((ulonglong) uVar17 >> 0x20), uVar2 ^ (uint) uVar17);
-                        (**(code**) (*(int*) (param_1 + 0x24) + 0x1c))(param_1, param_2, iVar7, iVar8, param_3, param_4, param_5);
-                        iVar8 = iVar8 + 1;
+                        uVar17 = level.getSeed();
+                        rng.setSeed((uint) uVar17, (int) uVar2 >> 0x1f ^ (uint) ((ulonglong) uVar17 >> 0x20),
+                                    uVar2 ^ (uint) uVar17);
+
+                        addFeature(_this, level, baseChunkX, baseChunkZ, targetX, targetZ, chunkPrimer);
+
+                        baseChunkZ = baseChunkZ + 1;
                         uVar2 = uVar2 + iVar5;
-                    } while (iVar8 <= iVar4);
+                    } while (baseChunkZ <= iVar4);
                 }
             LAB_02a5ea2c:
-                iVar7 = iVar7 + 1;
+                baseChunkX = baseChunkX + 1;
                 local_50 = local_50 + iVar16;
-            } while (iVar7 <= param_3 + 8);
+            } while (baseChunkX <= targetX + 8);
         }
-        return;
+
     }
 };

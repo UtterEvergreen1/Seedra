@@ -1,12 +1,10 @@
 #pragma once
 
+#include "LegacyCubiomes/chunk_generator/MapGenBase.hpp"
 #include "LegacyCubiomes/utils/MathHelper.hpp"
-#include "MapGenBase.hpp"
 #include <cmath>
 
 #include "LegacyCubiomes/mc/blocks.hpp"
-
-// UnderwaterLargeCaveFeature
 
 
 typedef long long undefined8;
@@ -30,10 +28,8 @@ char* vectorMultiplyHighAndAddSignedHalfWordSaturate(char* a, char* b, char* c) 
 
 struct Level {
     int64_t seed;
-    int64_t getSeed() { return seed; }
+    [[nodiscard]] int64_t getSeed() const { return seed; }
 };
-int64_t getSeed__5LevelFv(Level* level) { return level->getSeed(); }
-
 
 struct BlockPos {
 
@@ -67,12 +63,12 @@ public:
      * \param param_2
      * \param param_3
      * \param param_4
-     * \param param_5
-     * \param param_6
+     * \param param_5 a class of some type?
+     * \param param_6 a class of some type?
      * \param param_7
      */
-    void addFeature(int param_1, Level* param_2, int param_3, int param_4, undefined4 param_5, undefined4 param_6,
-                    ChunkPrimer* param_7) {
+    void addFeature(int param_1, Level& param_2, int param_3, int param_4, undefined4 param_5, undefined4 param_6,
+                    ChunkPrimer& param_7) {
         int iVar1;
         int iVar2;
         uint uVar3;
@@ -406,29 +402,43 @@ public:
      */
 
 
-    void addRoom(double param_1, double param_2, double param_3, int param_4, Level* param_5, undefined4 param_6,
-                 undefined4 param_7, undefined4 param_8, undefined4 param_9, ChunkPrimer* param_10) {
+    /**
+     *
+     * @param param_1
+     * @param param_2
+     * @param param_3
+     * @param param_4 unused, is this the this pointer?
+     * @param level
+     * @param param_6
+     * @param param_7
+     * @param param_8
+     * @param param_9
+     * @param chunkPrimer
+     */
+    void addRoom(double param_1, double param_2, double param_3, int param_4, Level& level, undefined4 param_6,
+                 undefined4 param_7, undefined4 param_8, undefined4 param_9, ChunkPrimer& chunkPrimer) {
         double dVar1;
         double uVar2;
 
+        /*
         undefined in_vs50[16];
         undefined in_vs60[16];
         undefined in_vs61[16];
         undefined in_vs62[16];
         undefined in_vs63[16];
-
         vectorMultiplyHighAndAddSignedHalfWordSaturate(in_vs62, in_vs62, in_vs50);
         vectorMultiplyHighAndAddSignedHalfWordSaturate(in_vs60, in_vs60, in_vs50);
         vectorMultiplyHighAndAddSignedHalfWordSaturate(in_vs61, in_vs61, in_vs50);
         vectorMultiplyHighAndAddSignedHalfWordSaturate(in_vs63, in_vs63, in_vs50);
+        */
 
         dVar1 = rng.nextFloat();
         uVar2 = 0;
         uint64_t intValue = 0x3fe0000000000000;
         double dVar3 = *(double*) &intValue;
 
-        addTunnel(param_1, param_2, param_3, (double) (float) (dVar1 * 6.0 + 1.0), uVar2, uVar2, dVar3, param_4,
-                  param_5, param_6, param_7, param_8, param_9, param_10, 0xffffffff, 0xffffffff);
+        addTunnel(param_1, param_2, param_3, (double) (float) (dVar1 * 6.0 + 1.0), uVar2, uVar2, dVar3, param_4, level,
+                  param_6, param_7, param_8, param_9, chunkPrimer, 0xffffffff, 0xffffffff);
     }
     /*
     void addRoom__26UnderwaterLargeCaveFeatureFP5LevelLiT3P11ChunkPrimerdN26
@@ -466,26 +476,26 @@ public:
     */
     /**
      * \brief
-     * \param param_1
-     * \param param_2
-     * \param param_3
-     * \param param_4
-     * \param param_5
-     * \param param_6
-     * \param param_7
-     * \param param_8
-     * \param param_9_00
+     * \param param_1 double
+     * \param param_2 double
+     * \param param_3 double
+     * \param param_4 double
+     * \param param_5 double
+     * \param param_6 double
+     * \param param_7 double
+     * \param param_8 unused, is this the this pointer?
+     * \param level
      * \param param_10
      * \param param_11
-     * \param param_12
-     * \param param_13
-     * \param param_14 undefined4 -> ChunkPrimer*
-     * \param param_15
-     * \param param_9
+     * \param param_12 x value of some sort
+     * \param param_13 z value of some sort
+     * \param chunkPrimer undefined4 -> ChunkPrimer*
+     * \param param_15 >> addRoom() passes 0xffffffff
+     * \param param_9  >> addRoom() passes 0xffffffff
      */
     void addTunnel(double param_1, double param_2, double param_3, double param_4, double param_5, double param_6,
-                   double param_7, undefined4 param_8, Level* param_9_00, undefined4 param_10, undefined4 param_11,
-                   int param_12, int param_13, ChunkPrimer* param_14, unsigned int param_15, unsigned int param_9) {
+                   double param_7, undefined4 param_8, Level& level, undefined4 param_10, undefined4 param_11,
+                   int param_12, int param_13, ChunkPrimer& chunkPrimer, unsigned int param_15, unsigned int param_9) {
         bool bVar1;
         float fVar2;
         float fVar3;
@@ -497,11 +507,11 @@ public:
         int iVar9;
         int iVar10;
         int iVar11;
-        undefined4 uVar12;
-        undefined4 uVar13;
-        undefined4 uVar14;
-        undefined4 uVar15;
-        undefined4 uVar16;
+        undefined4 uVar12_magma;
+        undefined4 uVar13_obsidian;
+        undefined4 uVar14_flowing_water;
+        undefined4 uVar15_water;
+        undefined4 uVar16_lava;
         undefined4 extraout_r4;
         uint uVar17;
         uint uVar18;
@@ -557,8 +567,10 @@ public:
         uint local_1bc;
         float local_1ac;
         float local_1a8;
+
+        // TODO is it actually defining the rng here???
         BlockPos auStack_190; // undefined auStack_190[16];
-        RNG auStack_180; // undefined auStack_180 [24];
+        RNG rng; // undefined auStack_180 [24];
 
         vectorMultiplyHighAndAddSignedHalfWordSaturate(in_vs46, in_vs46, in_vs50);
         vectorMultiplyHighAndAddSignedHalfWordSaturate(in_vs47, in_vs47, in_vs50);
@@ -591,22 +603,22 @@ public:
         // __ct__6RandomFL(auStack_180,extraout_r4,param_10,param_11);
         // MemSect__Fi(0);
         if ((int) param_9 < 1) {
-            iVar9 = auStack_180.nextInt(0x1c);
+            iVar9 = rng.nextInt(0x1c);
             local_1f4 = 0x70 - iVar9;
         }
         bVar8 = false;
         if (param_15 == 0xffffffff) {
             local_1f0 = ((int) local_1f4 >> 1) + (uint) ((int) local_1f4 < 0 && (local_1f4 & 1) != 0);
             bVar8 = true;
-            iVar9 = auStack_180.nextInt();
+            iVar9 = rng.nextInt();
             local_1bc = iVar9 + ((int) local_1f4 >> 2) + (uint) ((int) local_1f4 < 0 && (local_1f4 & 3) != 0);
-            iVar9 = auStack_180.nextInt(6);
+            iVar9 = rng.nextInt(6);
             local_1ec = -local_1f0;
             if ((int) local_1f4 <= (int) local_1f0) goto LAB_02a61184;
         } else {
-            iVar9 = auStack_180.nextInt(((int) local_1f4 >> 1) + (uint) ((int) local_1f4 < 0 && (local_1f4 & 1) != 0));
+            iVar9 = rng.nextInt(((int) local_1f4 >> 1) + (uint) ((int) local_1f4 < 0 && (local_1f4 & 1) != 0));
             local_1bc = iVar9 + ((int) local_1f4 >> 2) + (uint) ((int) local_1f4 < 0 && (local_1f4 & 3) != 0);
-            iVar9 = auStack_180.nextInt(6);
+            iVar9 = rng.nextInt(6);
             local_1ec = -param_15;
             local_1f0 = param_15;
             if ((int) local_1f4 <= (int) param_15) goto LAB_02a61184;
@@ -633,45 +645,49 @@ public:
                 local_1e8 = local_1a8 * 0.1 + local_1e8;
                 dVar34 = 0.75;
                 param_6 = (double) (local_1ac * 0.1 + (float) (param_6 * 0.9200000166893005));
-                dVar24 = (double) auStack_180.nextGaussianFloat();
-                dVar25 = (double) auStack_180.nextFloat();
+                dVar24 = (double) rng.nextGaussianFloat();
+                dVar25 = (double) rng.nextFloat();
                 local_1ac = (float) ((double) local_1ac * dVar36 +
                                      (double) ((float) (dVar24 * dVar25) + (float) (dVar24 * dVar25)));
-                dVar24 = (double) auStack_180.nextGaussianFloat();
-                dVar25 = (double) auStack_180.nextFloat();
+                dVar24 = (double) rng.nextGaussianFloat();
+                dVar25 = (double) rng.nextFloat();
                 local_1a8 = (float) ((double) local_1a8 * dVar34 + (double) ((float) (dVar24 * dVar25) * 4.0));
                 if (bVar8) goto LAB_02a60984;
             LAB_02a60774:
                 if ((local_1f0 == local_1bc) && (1.0 < fVar6)) {
-                    uVar40 = auStack_180.nextLong();
-                    dVar24 = (double) auStack_180.nextFloat();
+                    uVar40 = rng.nextLong();
+                    dVar24 = (double) rng.nextFloat();
                     dVar25 = (double) (float) (param_6 / 3.0);
+
+                    const uint64_t intValue = 0x3ff0000000000000;
+                    const double doubleValue = *(double*) &intValue;
+
                     addTunnel(param_1, param_2, param_3, (double) (float) (dVar24 * dVar38 + dVar38),
-                              (double) (local_1e8 - 1.570796), dVar25, 0x3ff0000000000000, param_8, param_9_00,
-                              (int) ((ulonglong) uVar40 >> 0x20), (int) uVar40, param_12, param_13, param_14, local_1f0,
+                              (double) (local_1e8 - 1.570796), dVar25, doubleValue, param_8, level,
+                              (int) ((ulonglong) uVar40 >> 0x20), (int) uVar40, param_12, param_13, chunkPrimer, local_1f0,
                               local_1f4);
-                    uVar40 = auStack_180.nextLong();
-                    dVar24 = (double) auStack_180.nextFloat();
+                    uVar40 = rng.nextLong();
+                    dVar24 = (double) rng.nextFloat();
+
                     addTunnel(param_1, param_2, param_3, (double) (float) (dVar24 * dVar38 + dVar38),
-                              (double) (local_1e8 + 1.570796), dVar25, 0x3ff0000000000000, param_8, param_9_00,
-                              (int) ((ulonglong) uVar40 >> 0x20), (int) uVar40, param_12, param_13, param_14, local_1f0,
+                              (double) (local_1e8 + 1.570796), dVar25, doubleValue, param_8, level,
+                              (int) ((ulonglong) uVar40 >> 0x20), (int) uVar40, param_12, param_13, chunkPrimer, local_1f0,
                               local_1f4);
-                    // instructionSynchronize();
                     return;
                 }
-                iVar22 = auStack_180.nextInt(4);
+                iVar22 = rng.nextInt(4);
                 if (iVar22 != 0) goto LAB_02a60984;
             } else {
                 dVar36 = 0.8999999761581421;
                 local_1e8 = local_1a8 * 0.1 + local_1e8;
                 dVar34 = 0.75;
                 param_6 = (double) (local_1ac * 0.1 + (float) (param_6 * 0.699999988079071));
-                dVar24 = (double) auStack_180.nextGaussianFloat();
-                dVar25 = (double) auStack_180.nextFloat();
+                dVar24 = (double) rng.nextGaussianFloat();
+                dVar25 = (double) rng.nextFloat();
                 local_1ac = (float) ((double) local_1ac * dVar36 +
                                      (double) ((float) (dVar24 * dVar25) + (float) (dVar24 * dVar25)));
-                dVar24 = (double) auStack_180.nextGaussianFloat();
-                dVar25 = (double) auStack_180.nextFloat();
+                dVar24 = (double) rng.nextGaussianFloat();
+                dVar25 = (double) rng.nextFloat();
                 local_1a8 = (float) ((double) local_1a8 * dVar34 + (double) ((float) (dVar24 * dVar25) * 4.0));
                 if (!bVar8) goto LAB_02a60774;
             LAB_02a60984:
@@ -724,30 +740,38 @@ public:
                     if (local_208 < 0) { local_208 = 0; }
                     if (0x10 < local_20c) { local_20c = 0x10; }
 
+                    /*
                     iVar19_temp = _DAT_104c1c48;
                     iVar21_temp = *(int*) (_DAT_104c1c48 + 0x8c);
-                    uVar12 = BlockFv(_DAT_104c1c48);
-                    uVar12 = (**(code**) (iVar21_temp + 0x54))(iVar19_temp, uVar12);
+                    uVar12_magma = BlockFv(_DAT_104c1c48);
+                    uVar12_magma = (**(code**) (iVar21_temp + 0x54))(iVar19_temp, uVar12_magma);
 
                     iVar19_temp = _DAT_104c19bc;
                     iVar21_temp = *(int*) (_DAT_104c19bc + 0x8c);
-                    uVar13 = BlockFv::defaultBlockState(_DAT_104c19bc);
-                    uVar13 = (**(code**) (iVar21_temp + 0x54))(iVar19_temp, uVar13);
+                    uVar13_obsidian = BlockFv::defaultBlockState(_DAT_104c19bc);
+                    uVar13_obsidian = (**(code**) (iVar21_temp + 0x54))(iVar19_temp, uVar13_obsidian);
 
                     iVar19_temp = _DAT_104c1910;
                     iVar21_temp = *(int*) (_DAT_104c1910 + 0x8c);
-                    uVar14 = BlockFv::defaultBlockState(_DAT_104c1910);
-                    uVar14 = (**(code**) (iVar21_temp + 0x54))(iVar19_temp, uVar14);
+                    uVar14_flowing_water = BlockFv::defaultBlockState(_DAT_104c1910);
+                    uVar14_flowing_water = (**(code**) (iVar21_temp + 0x54))(iVar19_temp, uVar14_flowing_water);
 
                     iVar19_temp = _DAT_104c1914;
                     iVar21_temp = *(int*) (_DAT_104c1914 + 0x8c);
-                    uVar15 = BlockFv::defaultBlockState(_DAT_104c1914);
-                    uVar15 = (**(code**) (iVar21_temp + 0x54))(iVar19_temp, uVar15);
+                    uVar15_water = BlockFv::defaultBlockState(_DAT_104c1914);
+                    uVar15_water = (**(code**) (iVar21_temp + 0x54))(iVar19_temp, uVar15_water);
 
                     iVar19_temp = _DAT_104c191c;
                     iVar21_temp = *(int*) (_DAT_104c191c + 0x8c);
-                    uVar16 = BlockFv::defaultBlockState(_DAT_104c191c);
-                    uVar16 = (**(code**) (iVar21_temp + 0x54))(iVar19_temp, uVar16);
+                    uVar16_lava = BlockFv::defaultBlockState(_DAT_104c191c);
+                    uVar16_lava = (**(code**) (iVar21_temp + 0x54))(iVar19_temp, uVar16_lava);
+                     */
+
+                    uVar12_magma = 0; // = 213;
+                    uVar13_obsidian = 0; // = 49;
+                    uVar14_flowing_water = 0; // = 8;
+                    uVar15_water = 0; // 9;
+                    uVar16_lava = 0; // 11;
 
                     bVar7 = false;
                     local_1e0 = iVar20 - iVar22;
@@ -792,65 +816,75 @@ public:
                                                                                                             dVar26)) +
                                                                         dVar27) < dVar24)) &&
                                                     ((int) uVar23 < 0x3e)) {
-                                                    uint16_t blockId = param_14->getBlockId(uVar5, uVar4, uVar23);
+                                                    uint16_t blockId = chunkPrimer.getBlockId(uVar5, uVar4, uVar23);
                                                     iVar21_temp = isDiggable(blockId);
                                                     if (iVar21_temp != 0) {
-                                                        if ((!bVar7) && (param_9_00 != nullptr)) {
+                                                        if ((!bVar7) && (&level != nullptr)) {
+
                                                             // TODO: what function in level is this?
                                                             // Level->UNKNOWN(BlockPos pos)
                                                             // it looks like, it is getting the biome in this chunk
-                                                            (**(code**) (*param_9_00 + 0xbc))(param_9_00, auStack_190);
-                                                            iVar21_temp = getBiomeType__5BiomeCFv();
+                                                            // (**(code**) (*param_9_00 + 0xbc))(param_9_00, auStack_190);
+                                                            // iVar21_temp = getBiomeType__5BiomeCFv();
+                                                            int radius = 0;
+                                                            static const uint64_t UNDERWATER_LARGECAVE_VALID_BIOMES = 0;
+                                                            iVar21_temp = g.areBiomesViable(0, 0, radius,
+                                                                                   UNDERWATER_LARGECAVE_VALID_BIOMES);
+
                                                             if (iVar21_temp != 10) goto LAB_02a61184;
                                                         }
                                                         bVar7 = true;
                                                         if ((int) uVar23 < 9) {
-                                                            param_14->setBlockAndData(uVar5, uVar4, uVar23, STILL_LAVA_ID, uVar16);
+                                                            chunkPrimer.setBlockAndData(uVar5, uVar4, uVar23, STILL_LAVA_ID, uVar16_lava);
                                                         } else if ((int) uVar23 < 10) {
-                                                            dVar26 = (double) auStack_180.nextFloat();
+                                                            dVar26 = (double) rng.nextFloat();
                                                             if (dVar25 <= dVar26) {
-                                                                param_14->setBlockAndData(uVar5, uVar4, uVar23, OBSIDIAN_ID, uVar13);
+                                                                chunkPrimer.setBlockAndData(uVar5, uVar4, uVar23, OBSIDIAN_ID, uVar13_obsidian);
                                                             } else {
-                                                                param_14->setBlockAndData(uVar5, uVar4, uVar23, MAGMA_BLOCK_ID, uVar12);
+                                                                chunkPrimer.setBlockAndData(uVar5, uVar4, uVar23, MAGMA_BLOCK_ID, uVar12_magma);
                                                             }
                                                         } else {
                                                             bVar1 = false;
                                                             if (iVar22 < 0xf) {
                                                                 // uVar18 = uVar5 + 0x800 | uVar4 | uVar23;
-                                                                iVar21_temp = param_14->getBlockId(uVar5 + 0x800, uVar4, uVar23);
+                                                                iVar21_temp = chunkPrimer.getBlockId(uVar5 + 0x800, uVar4, uVar23);
                                                                 bVar1 = iVar21_temp == 0;
                                                                 if (bVar1) {
-                                                                    param_14->setBlockAndData(uVar5 + 0x800, uVar4, uVar23, FLOWING_WATER_ID, uVar14);
+                                                                    chunkPrimer.setBlockAndData(uVar5 + 0x800, uVar4, uVar23, FLOWING_WATER_ID,
+                                                                                              uVar14_flowing_water);
                                                                 }
                                                                 if (0 < iVar22) goto LAB_02a61018;
                                                             } else {
                                                             LAB_02a61018:
                                                                 // uVar18 = uVar5 - 0x800 | uVar4 | uVar23;
-                                                                iVar21_temp = param_14->getBlockId(uVar5 - 0x800, uVar4, uVar23);
+                                                                iVar21_temp = chunkPrimer.getBlockId(uVar5 - 0x800, uVar4, uVar23);
                                                                 if (iVar21_temp == 0) {
                                                                     bVar1 = true;
-                                                                    param_14->setBlockAndData(uVar5 - 0x800, uVar4, uVar23, FLOWING_WATER_ID, uVar14);
+                                                                    chunkPrimer.setBlockAndData(uVar5 - 0x800, uVar4, uVar23, FLOWING_WATER_ID,
+                                                                                              uVar14_flowing_water);
                                                                 }
                                                             }
                                                             if (iVar20 < 0xf) {
                                                                 // uVar18 = uVar5 | uVar4 + 0x80 | uVar23;
-                                                                iVar21_temp = param_14->getBlockId(uVar5, uVar4 + 0x80, uVar23);
+                                                                iVar21_temp = chunkPrimer.getBlockId(uVar5, uVar4 + 0x80, uVar23);
                                                                 if (iVar21_temp == 0) {
                                                                     bVar1 = true;
-                                                                    param_14->setBlockAndData(uVar5, uVar4 + 0x80, uVar23, FLOWING_WATER_ID, uVar14);
+                                                                    chunkPrimer.setBlockAndData(uVar5, uVar4 + 0x80, uVar23, FLOWING_WATER_ID,
+                                                                                              uVar14_flowing_water);
                                                                 }
                                                                 if (0 < iVar20) goto LAB_02a610b8;
                                                             } else {
                                                             LAB_02a610b8:
                                                                 // uVar18 = uVar5 | uVar4 - 0x80 | uVar23;
-                                                                iVar21_temp = param_14->getBlockId(uVar5, uVar4 - 0x80, uVar23);
+                                                                iVar21_temp = chunkPrimer.getBlockId(uVar5, uVar4 - 0x80, uVar23);
                                                                 if (iVar21_temp == 0) {
-                                                                    param_14->setBlockAndData(uVar5, uVar4 - 0x80, uVar23, FLOWING_WATER_ID, uVar14);
+                                                                    chunkPrimer.setBlockAndData(uVar5, uVar4 - 0x80, uVar23, FLOWING_WATER_ID,
+                                                                                              uVar14_flowing_water);
                                                                     goto LAB_02a61128;
                                                                 }
                                                             }
                                                             if (!bVar1) {
-                                                                param_14->setBlockAndData(uVar5, uVar4, uVar23, STILL_WATER_ID, uVar15);
+                                                                chunkPrimer.setBlockAndData(uVar5, uVar4, uVar23, STILL_WATER_ID, uVar15_water);
                                                             }
                                                         }
                                                     }
@@ -882,7 +916,6 @@ public:
             local_1f0 = local_1f0 + 1;
         } while (local_1ec != 0);
     LAB_02a61184:;
-        // instructionSynchronize();
     }
     /*
     void addTunnel__26UnderwaterLargeCaveFeatureFP5LevelLiT3P11ChunkPrimerdN26fN29N23T6
@@ -1270,22 +1303,22 @@ public:
 
 
     /**
-     * \brief
-     * \param param_1 pointer to this? rng is at 8 bytes after
-     * \param param_2
-     * \param param_3
-     * \param param_4
-     * \param param_5
+     *
+     * \param param_1
+     * \param level
+     * \param targetX
+     * \param targetZ
+     * \param chunkPrimer
      */
-    void apply(int param_1, Level* param_2, int param_3, int param_4, ChunkPrimer* param_5) {
+    void apply(int param_1, Level& level, int targetX, int targetZ, ChunkPrimer& chunkPrimer) {
         int iVar1;
         uint uVar2;
         int iVar3;
         int iVar4;
         int iVar5;
         uint uVar6;
-        int iVar7;
-        int iVar8;
+        int baseChunkX;
+        int baseChunkZ;
         uint uVar9;
         uint uVar10;
         uint uVar11;
@@ -1294,142 +1327,109 @@ public:
         uint uVar14;
         uint uVar15;
         int iVar16;
-        undefined8 uVar17;
+        uint64_t uVar17;
         int local_50;
 
-        uVar17 = getSeed__5LevelFv(param_2);
+        uVar17 = level.getSeed();
         rng.setSeed(uVar17);
         uVar2 = rng.nextInt();
         iVar16 = (((int) uVar2 >> 1) + (uint) ((int) uVar2 < 0 && (uVar2 & 1) != 0)) * 2 + 1;
         uVar2 = rng.nextInt();
-        iVar7 = param_3 + -8;
+        baseChunkX = targetX + -8;
         iVar5 = (((int) uVar2 >> 1) + (uint) ((int) uVar2 < 0 && (uVar2 & 1) != 0)) * 2 + 1;
-        if (iVar7 <= param_3 + 8) {
-            local_50 = iVar7 * iVar16;
-            iVar4 = param_4 + 8;
-            iVar3 = param_4 + -8;
+        if (baseChunkX <= targetX + 8) {
+            local_50 = baseChunkX * iVar16;
+            iVar4 = targetZ + 8;
+            iVar3 = targetZ + -8;
             do {
                 if (iVar3 <= iVar4) {
                     uVar2 = (iVar4 - iVar3) + 1U >> 3;
-                    iVar8 = iVar3;
+                    baseChunkZ = iVar3;
                     if (uVar2 != 0) {
-                        uVar13 = local_50 + (param_4 + -6) * iVar5;
-                        uVar6 = local_50 + (param_4 + -1) * iVar5;
-                        uVar11 = local_50 + (param_4 + -4) * iVar5;
+                        uVar13 = local_50 + (targetZ + -6) * iVar5;
+                        uVar6 = local_50 + (targetZ + -1) * iVar5;
+                        uVar11 = local_50 + (targetZ + -4) * iVar5;
                         iVar1 = iVar5 * 8;
-                        uVar14 = local_50 + (param_4 + -7) * iVar5;
-                        uVar12 = local_50 + (param_4 + -5) * iVar5;
-                        uVar10 = local_50 + (param_4 + -3) * iVar5;
-                        uVar9 = local_50 + (param_4 + -2) * iVar5;
+                        uVar14 = local_50 + (targetZ + -7) * iVar5;
+                        uVar12 = local_50 + (targetZ + -5) * iVar5;
+                        uVar10 = local_50 + (targetZ + -3) * iVar5;
+                        uVar9 = local_50 + (targetZ + -2) * iVar5;
                         uVar15 = local_50 + iVar3 * iVar5;
                         do {
                             uint64_t seed;
 
-                            uVar17 = getSeed__5LevelFv(param_2);
+                            // TODO just an unrolled loop, it should loop over x=0; x<8; x++ adding to baseChunkX
+
+                            uVar17 = level.getSeed();
                             seed = ((uint64_t)((int)uVar15 >> 0x1f) ^ ((uint64_t)uVar17 >> 0x20)) | (uVar15 ^ (uint)uVar17) << 32;
                             rng.setSeed(seed);
+                            addFeature(param_1, level, baseChunkX, baseChunkZ, targetX, targetZ, chunkPrimer);
 
-                            // rng.setSeed((uint) uVar17,
-                            //     (int) uVar15 >> 0x1f ^ (uint) ((ulonglong) uVar17 >> 0x20),
-                            //     uVar15 ^ (uint) uVar17);
-                            addFeature(param_1, param_2, iVar7, iVar8, param_3, param_4, param_5);
-                            // (**(code**) (*(int*) (param_1 + 0x24) + 0x1c))(param_1, param_2, iVar7, iVar8, param_3, param_4, param_5);
-
-                            uVar17 = getSeed__5LevelFv(param_2);
+                            uVar17 = level.getSeed();
                             seed = ((uint64_t)((int)uVar14 >> 0x1f) ^ ((uint64_t)uVar17 >> 0x20)) | (uVar14 ^ (uint)uVar17) << 32;
                             rng.setSeed(seed);
-                            // rng.setSeed((uint) uVar17,
-                            //     (int) uVar14 >> 0x1f ^ (uint) ((ulonglong) uVar17 >> 0x20),
-                            //     uVar14 ^ (uint) uVar17);
-                            addFeature(param_1, param_2, iVar7, iVar8 + 1, param_3, param_4, param_5);
-                            // (**(code**) (*(int*) (param_1 + 0x24) + 0x1c))(param_1, param_2, iVar7, iVar8 + 1, param_3, param_4, param_5);
+                            addFeature(param_1, level, baseChunkX, baseChunkZ + 1, targetX, targetZ, chunkPrimer);
 
-                            uVar17 = getSeed__5LevelFv(param_2);
+                            uVar17 = level.getSeed();
                             seed = ((uint64_t)((int)uVar13 >> 0x1f) ^ ((uint64_t)uVar17 >> 0x20)) | (uVar13 ^ (uint)uVar17) << 32;
                             rng.setSeed(seed);
-                            // rng.setSeed((uint) uVar17,
-                            //     (int) uVar13 >> 0x1f ^ (uint) ((ulonglong) uVar17 >> 0x20),
-                            //     uVar13 ^ (uint) uVar17);
-                            addFeature(param_1, param_2, iVar7, iVar8 + 2, param_3, param_4, param_5);
-                            // (**(code**) (*(int*) (param_1 + 0x24) + 0x1c))(param_1, param_2, iVar7, iVar8 + 2, param_3, param_4, param_5);
+                            addFeature(param_1, level, baseChunkX, baseChunkZ + 2, targetX, targetZ, chunkPrimer);
 
-                            uVar17 = getSeed__5LevelFv(param_2);
+                            uVar17 = level.getSeed();
                             seed = ((uint64_t)((int)uVar12 >> 0x1f) ^ ((uint64_t)uVar17 >> 0x20)) | (uVar12 ^ (uint)uVar17) << 32;
                             rng.setSeed(seed);
-                            // rng.setSeed((uint) uVar17,
-                            //     (int) uVar12 >> 0x1f ^ (uint) ((ulonglong) uVar17 >> 0x20),
-                            //     uVar12 ^ (uint) uVar17);
-                            addFeature(param_1, param_2, iVar7, iVar8 + 3, param_3, param_4, param_5);
-                            // (**(code**) (*(int*) (param_1 + 0x24) + 0x1c))(param_1, param_2, iVar7, iVar8 + 3, param_3, param_4, param_5);
+                            addFeature(param_1, level, baseChunkX, baseChunkZ + 3, targetX, targetZ, chunkPrimer);
 
-                            uVar17 = getSeed__5LevelFv(param_2);
+                            uVar17 = level.getSeed();
                             seed = ((uint64_t)((int)uVar11 >> 0x1f) ^ ((uint64_t)uVar17 >> 0x20)) | (uVar11 ^ (uint)uVar17) << 32;
                             rng.setSeed(seed);
-                            // rng.setSeed((uint) uVar17,
-                            //     (int) uVar11 >> 0x1f ^ (uint) ((ulonglong) uVar17 >> 0x20),
-                            //     uVar11 ^ (uint) uVar17);
-                            addFeature(param_1, param_2, iVar7, iVar8 + 4, param_3, param_4, param_5);
-                            // (**(code**) (*(int*) (param_1 + 0x24) + 0x1c))(param_1, param_2, iVar7, iVar8 + 4, param_3, param_4, param_5);
+                            addFeature(param_1, level, baseChunkX, baseChunkZ + 4, targetX, targetZ, chunkPrimer);
 
-                            uVar17 = getSeed__5LevelFv(param_2);
+                            uVar17 = level.getSeed();
                             seed = ((uint64_t)((int)uVar10 >> 0x1f) ^ ((uint64_t)uVar17 >> 0x20)) | (uVar10 ^ (uint)uVar17) << 32;
                             rng.setSeed(seed);
-                            // rng.setSeed((uint) uVar17,
-                            //     (int) uVar10 >> 0x1f ^ (uint) ((ulonglong) uVar17 >> 0x20),
-                            //     uVar10 ^ (uint) uVar17);
-                            addFeature(param_1, param_2, iVar7, iVar8 + 5, param_3, param_4, param_5);
-                            // (**(code**) (*(int*) (param_1 + 0x24) + 0x1c))(param_1, param_2, iVar7, iVar8 + 5, param_3, param_4, param_5);
+                            addFeature(param_1, level, baseChunkX, baseChunkZ + 5, targetX, targetZ, chunkPrimer);
 
-                            uVar17 = getSeed__5LevelFv(param_2);
+                            uVar17 = level.getSeed();
                             seed = ((uint64_t)((int)uVar9 >> 0x1f) ^ ((uint64_t)uVar17 >> 0x20)) | (uVar9 ^ (uint)uVar17) << 32;
                             rng.setSeed(seed);
-                            // rng.setSeed((uint) uVar17,
-                            //     (int) uVar9 >> 0x1f ^ (uint) ((ulonglong) uVar17 >> 0x20),
-                            //     uVar9 ^ (uint) uVar17);
-                            addFeature(param_1, param_2, iVar7, iVar8 + 6, param_3, param_4, param_5);
-                            // (**(code**) (*(int*) (param_1 + 0x24) + 0x1c))(param_1, param_2, iVar7, iVar8 + 6, param_3, param_4, param_5);
+                            addFeature(param_1, level, baseChunkX, baseChunkZ + 6, targetX, targetZ, chunkPrimer);
 
-                            uVar17 = getSeed__5LevelFv(param_2);
+                            uVar17 = level.getSeed();
                             seed = ((uint64_t)((int)uVar6 >> 0x1f) ^ ((uint64_t)uVar17 >> 0x20)) | (uVar6 ^ (uint)uVar17) << 32;
                             rng.setSeed(seed);
-                            // rng.setSeed((uint) uVar17,
-                            //     (int) uVar6 >> 0x1f ^ (uint) ((ulonglong) uVar17 >> 0x20),
-                            //     uVar6 ^ (uint) uVar17);
-                            addFeature(param_1, param_2, iVar7, iVar8 + 7, param_3, param_4, param_5);
-                            // (**(code**) (*(int*) (param_1 + 0x24) + 0x1c))(param_1, param_2, iVar7, iVar8 + 7, param_3, param_4, param_5);
+                            addFeature(param_1, level, baseChunkX, baseChunkZ + 7, targetX, targetZ, chunkPrimer);
 
                             uVar11 = uVar11 + iVar1;
                             uVar12 = uVar12 + iVar1;
                             uVar13 = uVar13 + iVar1;
                             uVar14 = uVar14 + iVar1;
                             uVar15 = uVar15 + iVar1;
-                            iVar8 = iVar8 + 8;
+                            baseChunkZ = baseChunkZ + 8;
                             uVar10 = uVar10 + iVar1;
                             uVar2 = uVar2 - 1;
                             uVar6 = uVar6 + iVar1;
                             uVar9 = uVar9 + iVar1;
                         } while (uVar2 != 0);
-                        if (iVar4 < iVar8) goto LAB_02a60134;
+                        if (iVar4 < baseChunkZ) goto LAB_02a60134;
                     }
-                    uVar2 = local_50 + iVar8 * iVar5;
+                    uVar2 = local_50 + baseChunkZ * iVar5;
                     do {
                         uint64_t seed;
 
-                        uVar17 = getSeed__5LevelFv(param_2);
+                        uVar17 = level.getSeed();
                         seed = ((uint64_t)((int)uVar2 >> 0x1f) ^ ((uint64_t)uVar17 >> 0x20)) | (uVar2 ^ (uint)uVar17) << 32;
                         rng.setSeed(seed);
-                        // rng.setSeed((uint) uVar17,
-                        //     (int) uVar2 >> 0x1f ^ (uint) ((ulonglong) uVar17 >> 0x20), uVar2 ^ (uint) uVar17);
-                        addFeature(param_1, param_2, iVar7, iVar8, param_3, param_4, param_5);
-                        // (**(code**) (*(int*) (param_1 + 0x24) + 0x1c))(param_1, param_2, iVar7, iVar8, param_3, param_4, param_5);
-                        iVar8 = iVar8 + 1;
+                        addFeature(param_1, level, baseChunkX, baseChunkZ, targetX, targetZ, chunkPrimer);
+
+                        baseChunkZ = baseChunkZ + 1;
                         uVar2 = uVar2 + iVar5;
-                    } while (iVar8 <= iVar4);
+                    } while (baseChunkZ <= iVar4);
                 }
             LAB_02a60134:
-                iVar7 = iVar7 + 1;
+                baseChunkX = baseChunkX + 1;
                 local_50 = local_50 + iVar16;
-            } while (iVar7 <= param_3 + 8);
+            } while (baseChunkX <= targetX + 8);
         }
     }
     /*
@@ -1536,7 +1536,9 @@ public:
      */
 
 
-    // What is this? is it static? calls to it don't pass a value
+    /**
+     * What is this? is it static? calls to it don't pass a value
+     */
     MU ND static bool isDiggable(const uint32_t param_1) {
         if (param_1 < 0x6e) {
             if (param_1 < 4) return true;

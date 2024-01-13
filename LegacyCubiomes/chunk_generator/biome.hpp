@@ -222,7 +222,7 @@ public:
 class BiomeSavanna : public Biome {
 public:
     BiomeSavanna(std::string biomeName, float baseHeight, float heightVariation, bool enableSnow, float temperature)
-        : Biome(biomeName, baseHeight, heightVariation, enableSnow, temperature) {}
+        : Biome(std::move(biomeName), baseHeight, heightVariation, enableSnow, temperature) {}
 };
 
 class BiomeMesa : public Biome {

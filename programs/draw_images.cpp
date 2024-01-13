@@ -23,13 +23,13 @@ int main(int argc, char* argv[]) {
     auto console = CONSOLE::WIIU;
     auto version = LCEVERSION::AQUATIC;
     EnchantmentHelper::setup(console, version);
-    Generator g(console, version, 119, WORLDSIZE::CLASSIC, BIOMESCALE::SMALL);
+    Generator g(console, version, 7, WORLDSIZE::CLASSIC, BIOMESCALE::SMALL);
 
     std::string path = R"(C:\Users\jerrin\CLionProjects\LegacyCubiomes\)";
 
-    // WorldPicture pic(&g);
-    // pic.drawBiomesWithSize(7680, 7680);
-    // pic.save(path);
+    WorldPicture pic(&g);
+    pic.drawBiomesWithSize(2000, 2000);
+    pic.save(path);
 
     std::cout << "Stronghold Position" << std::endl;
     auto pos = Placement::Stronghold::getWorldPosition(g);
