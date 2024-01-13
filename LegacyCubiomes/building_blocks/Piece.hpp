@@ -11,35 +11,19 @@ public:
     int8_t type;
     int8_t depth;
 
-    //union {
     int32_t additionalData;
 
-    // TODO: figure out endianness so this doesn't randomly break
-    /*struct {
-            uint32_t bit0 : 1;
-            uint32_t bit1 : 1;
-            uint32_t bit2 : 1;
-            uint32_t bit3 : 1;
-            uint32_t remaining : 28;
-        } int1_data;
-        struct {
-            uint8_t byte0: 8;
-            uint8_t byte1: 8;
-            uint8_t byte2: 8;
-            uint8_t byte3: 8;
-        } int8_data;*/
-    //};
+    Piece() : orientation(), type(0), depth(0), additionalData(0) {}
 
-    Piece() : BoundingBox(), type(0), depth(0), additionalData(0) {}
-
-    Piece(BoundingBox boundingBox, DIRECTION orientation)
+    Piece(const BoundingBox boundingBox, const DIRECTION orientation)
         : BoundingBox(boundingBox), orientation(orientation), type(0), depth(0), additionalData(0) {}
 
-    Piece(int minX, int minY, int minZ, int maxX, int maxY, int maxZ, DIRECTION orientation)
+    Piece(const int minX, const int minY, const int minZ, const int maxX, const int maxY, const int maxZ, const DIRECTION orientation)
         : BoundingBox(minX, minY, minZ, maxX, maxY, maxZ), orientation(orientation), type(0), depth(0),
           additionalData(0) {}
 
-    Piece(int8_t type, int8_t depth, const BoundingBox& boundingBox, DIRECTION orientation, int additionalData)
+    Piece(const int8_t type, const int8_t depth, const BoundingBox& boundingBox,
+          const DIRECTION orientation, const int additionalData)
         : BoundingBox(boundingBox), orientation(orientation), type(type), depth(depth), additionalData(additionalData) {
     }
 

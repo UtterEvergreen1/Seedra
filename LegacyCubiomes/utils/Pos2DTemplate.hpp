@@ -34,22 +34,22 @@ public:
     bool operator<=(classType value) const;
 
     Pos2DTemplate operator>>(int shiftAmount) const requires (
-                !(std::is_same_v<classType, float> | std::is_same_v<classType, double>)) {
+                !(std::is_same_v<classType, float> || std::is_same_v<classType, double>)) {
         return {x >> shiftAmount, z >> shiftAmount};
     }
 
     Pos2DTemplate operator<<(int shiftAmount) const requires (
-                !(std::is_same_v<classType, float> | std::is_same_v<classType, double>)) {
+                !(std::is_same_v<classType, float> || std::is_same_v<classType, double>)) {
         return {x << shiftAmount, z << shiftAmount};
     }
 
     MU ND Pos2DTemplate toChunkPos() const requires (
-                !(std::is_same_v<classType, float> | std::is_same_v<classType, double>)) {
+                !(std::is_same_v<classType, float> || std::is_same_v<classType, double>)) {
         return {x >> 4, z >> 4};
     }
 
     MU ND Pos2DTemplate toBlockPos() const requires (
-                !(std::is_same_v<classType, float> | std::is_same_v<classType, double>)) {
+                !(std::is_same_v<classType, float> || std::is_same_v<classType, double>)) {
         return {x << 4, z << 4};
     }
 

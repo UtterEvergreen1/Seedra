@@ -8,7 +8,7 @@ const BoundingBox BoundingBox::EMPTY = BoundingBox(SHRT_MAX, SHRT_MAX, SHRT_MAX,
 BoundingBox::BoundingBox() = default;
 
 
-BoundingBox::BoundingBox(int minX, int minY, int minZ, int maxX, int maxY, int maxZ)
+BoundingBox::BoundingBox(const int minX, const int minY, const int minZ, const int maxX, const int maxY, const int maxZ)
     : minX(minX), minY(minY), minZ(minZ), maxX(maxX), maxY(maxY), maxZ(maxZ) {}
 
 
@@ -39,7 +39,7 @@ void BoundingBox::encompass(const BoundingBox& other) {
 }
 
 
-void BoundingBox::offset(int x, int y, int z) {
+void BoundingBox::offset(const int x, const int y, const int z) {
     minX += x;
     minY += y;
     minZ += z;
@@ -49,13 +49,15 @@ void BoundingBox::offset(int x, int y, int z) {
 }
 
 
-void BoundingBox::offsetY(int y) {
+void BoundingBox::offsetY(const int y) {
     minY += y;
     maxY += y;
 }
 
 
-BoundingBox BoundingBox::orientBox(int x, int y, int z, int width, int height, int depth, DIRECTION direction) {
+BoundingBox BoundingBox::orientBox(int x, int y, int z,
+                                   const int width, const int height,
+                                   const int depth, const DIRECTION direction) {
     switch (direction) {
         case DIRECTION::NORTH:
             return {x, y, z - depth + 1, x + width - 1, y + height - 1, z};
@@ -70,7 +72,8 @@ BoundingBox BoundingBox::orientBox(int x, int y, int z, int width, int height, i
 }
 
 
-BoundingBox BoundingBox::orientBox(const Pos3D& xyz, int width, int height, int depth, DIRECTION direction) {
+BoundingBox BoundingBox::orientBox(const Pos3D& xyz, const int width, const int height,
+                                   const int depth, const DIRECTION direction) {
     switch (direction) {
         case DIRECTION::NORTH:
             return {xyz.getX(), xyz.getY(), xyz.getZ() - depth + 1, xyz.getX() + width - 1, xyz.getY() + height - 1,
@@ -97,8 +100,9 @@ BoundingBox BoundingBox::orientBox(const Pos3D& xyz, int width, int height, int 
 }
 
 
-BoundingBox BoundingBox::orientBox(int x, int y, int z, int offsetWidth, int offsetHeight, int offsetDepth, int width,
-                                   int height, int depth, DIRECTION direction) {
+BoundingBox BoundingBox::orientBox(const int x, const int y, const int z, const int offsetWidth, const int offsetHeight,
+                                   const int offsetDepth, const int width,
+                                   const int height, const int depth, const DIRECTION direction) {
     switch (direction) {
         case DIRECTION::NORTH:
             return {x + offsetWidth,
@@ -130,13 +134,13 @@ BoundingBox BoundingBox::orientBox(int x, int y, int z, int offsetWidth, int off
 
 
 BoundingBox BoundingBox::orientBox(const Pos3D& posXYZ, const Pos3D& posOffset, const Pos3D& size,
-                                   DIRECTION direction) {
+                                   const DIRECTION direction) {
     return orientBox(posXYZ.getX(), posXYZ.getY(), posXYZ.getZ(), posOffset.getX(), posOffset.getY(), posOffset.getZ(),
                      size.getX(), size.getY(), size.getZ(), direction);
 }
 
-BoundingBox BoundingBox::orientBox(const Pos3D& posXYZ, int offsetWidth, int offsetHeight, int offsetDepth, int width,
-                                   int height, int depth, DIRECTION direction) {
+BoundingBox BoundingBox::orientBox(const Pos3D& posXYZ, const int offsetWidth, const int offsetHeight,
+    const int offsetDepth, const int width, const int height, const int depth, const DIRECTION direction) {
     return orientBox(posXYZ.getX(), posXYZ.getY(), posXYZ.getZ(), offsetWidth, offsetHeight, offsetDepth, width, height,
                      depth, direction);
 }

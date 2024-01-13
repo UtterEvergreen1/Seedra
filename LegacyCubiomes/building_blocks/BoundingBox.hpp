@@ -23,12 +23,12 @@ struct BoundingBox {
     MU void offset(int x, int y, int z);
     MU void offsetY(int y);
 
-    MU ND inline int getXSize() const { return maxX - minX + 1; }
-    MU ND inline int getYSize() const { return maxY - minY + 1; }
-    MU ND inline int getZSize() const { return maxZ - minZ + 1; }
-    MU ND inline int getLength() const { return std::max(maxX - minX, maxZ - minZ); }
-    MU ND inline int getCenterX() const { return (minX + maxX) / 2; }
-    MU ND inline int getCenterZ() const { return (minZ + maxZ) / 2; }
+    MU ND int getXSize() const { return maxX - minX + 1; }
+    MU ND int getYSize() const { return maxY - minY + 1; }
+    MU ND int getZSize() const { return maxZ - minZ + 1; }
+    MU ND int getLength() const { return std::max(maxX - minX, maxZ - minZ); }
+    MU ND int getCenterX() const { return (minX + maxX) / 2; }
+    MU ND int getCenterZ() const { return (minZ + maxZ) / 2; }
 
     static BoundingBox orientBox(int x, int y, int z, int offsetWidth, int offsetHeight, int offsetDepth, int width,
                                  int height, int depth, DIRECTION direction);

@@ -36,12 +36,12 @@ public:
     bool operator<=(int value) const;
 
     Pos3DTemplate operator>>(int shiftAmount) const requires (
-                !(std::is_same_v<classType, float> | std::is_same_v<classType, double>)) {
+                !(std::is_same_v<classType, float> || std::is_same_v<classType, double>)) {
         return {x >> shiftAmount, y >> shiftAmount, z >> shiftAmount};
     }
 
     Pos3DTemplate operator<<(int shiftAmount) const requires (
-                !(std::is_same_v<classType, float> | std::is_same_v<classType, double>)) {
+                !(std::is_same_v<classType, float> || std::is_same_v<classType, double>)) {
         return {x << shiftAmount, y << shiftAmount, z << shiftAmount};
     }
 
