@@ -75,7 +75,7 @@ public:
 
     struct Hasher {
         std::size_t operator()(const Pos2DTemplate& pos) const requires (
-                    !(std::is_same_v<classType, float> | std::is_same_v<classType, double>)) {
+                    !(std::is_same_v<classType, float> || std::is_same_v<classType, double>)) {
             const int i = 1664525 * pos.x + 1013904223;
             const int j = 1664525 * (pos.z ^ -559038737) + 1013904223;
             return static_cast<size_t>(i) ^ j;

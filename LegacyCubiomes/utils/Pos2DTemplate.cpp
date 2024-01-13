@@ -10,7 +10,7 @@ bool Pos2DTemplate<classType>::operator==(int other) const { return x == other &
 
 
 template<class classType>
-bool Pos2DTemplate<classType>::operator!=(const Pos2DTemplate& other) const { return *this != other; }
+bool Pos2DTemplate<classType>::operator!=(const Pos2DTemplate& other) const { return x != other || z != other; }
 
 
 template<class classType>

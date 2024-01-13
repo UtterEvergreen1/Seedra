@@ -11,7 +11,7 @@ public:
     RavineGenerator(CONSOLE console, LCEVERSION version, int64_t seed, WORLDSIZE size, BIOMESCALE scale)
         : MapGenBase(console, version, seed, size, scale) {}
 
-    std::vector<float> rs = std::vector<float>(128, 0.0F);
+    std::vector<float> rs = std::vector(128, 0.0F);
 
     unsigned char topBlock(int x, int z);
 

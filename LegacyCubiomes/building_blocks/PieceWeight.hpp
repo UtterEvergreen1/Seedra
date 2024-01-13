@@ -7,9 +7,9 @@ struct PieceWeight {
     int maxPlaceCount;
     int minDepth;
 
-    ND inline int getWeight() const { return weight; }
+    ND int getWeight() const { return weight; }
 
-    ND inline int getMaxCount() const { return maxPlaceCount; }
+    ND int getMaxCount() const { return maxPlaceCount; }
 
     ND int getMinDepth() const { return minDepth; }
 };

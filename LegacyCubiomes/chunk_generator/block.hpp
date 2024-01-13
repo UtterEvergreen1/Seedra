@@ -1,8 +1,5 @@
 #pragma once
 
-#include <cmath>
-#include <string>
-
 #include "LegacyCubiomes/mc/items.hpp"
 
 class Block {
@@ -10,9 +7,9 @@ public:
     uint16_t block;
     uint8_t data;
 
-    Block(uint16_t blockIn, uint8_t dataIn) : block(blockIn), data(dataIn) {}
+    Block(const uint16_t blockIn, const uint8_t dataIn) : block(blockIn), data(dataIn) {}
 
-    explicit Block(uint16_t blockIn) : Block(blockIn, 0) {}
+    explicit Block(const uint16_t blockIn) : Block(blockIn, 0) {}
 
     Block() : Block(0, 0) {}
 

@@ -3,7 +3,6 @@
 #include <cmath>
 
 class MathHelper {
-private:
     static constexpr int TABLE_SIZE = 65536;
     static constexpr int TABLE_WRAP = 65535;
     float SIN_TABLE[TABLE_SIZE]{};

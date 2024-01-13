@@ -18,7 +18,8 @@ public:
     Piece(const BoundingBox boundingBox, const DIRECTION orientation)
         : BoundingBox(boundingBox), orientation(orientation), type(0), depth(0), additionalData(0) {}
 
-    Piece(const int minX, const int minY, const int minZ, const int maxX, const int maxY, const int maxZ, const DIRECTION orientation)
+    Piece(const int minX, const int minY, const int minZ, const int maxX, const int maxY, const int maxZ,
+          const DIRECTION orientation)
         : BoundingBox(minX, minY, minZ, maxX, maxY, maxZ), orientation(orientation), type(0), depth(0),
           additionalData(0) {}
 
@@ -29,7 +30,7 @@ public:
 
     ND MU Pos2D getBoundingBoxCenter() const;
     ND int getWorldX(int offsetWidth, int offsetDepth) const;
-    ND inline int getWorldY(int offsetHeight) const { return minY + offsetHeight; }
+    ND int getWorldY(const int offsetHeight) const { return minY + offsetHeight; }
     ND int getWorldZ(int offsetWidth, int offsetDepth) const;
     ND MU Pos2D getWorldPos(int offsetWidth, int offsetDepth) const;
     MU static BoundingBox makeBoundingBox(int x, int y, int z, DIRECTION direction, int width, int height, int depth);
