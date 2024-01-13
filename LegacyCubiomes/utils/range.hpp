@@ -39,8 +39,7 @@
  * Volume at scale (1:4):
  * Range r_vol = {4, x, z, sx, sz, y, sy};
  */
-class Range {
-public:
+struct Range {
     int scale;
     int x, z, sx, sz;
 

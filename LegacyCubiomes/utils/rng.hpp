@@ -9,41 +9,40 @@
 
 
 class RNG {
-private:
     uint64_t seed = 0;
 
 public:
-    RNG() : seed(0) {}
-    explicit RNG(uint64_t seed) : seed(seed) {}
+    RNG() = default;
+    explicit RNG(const uint64_t seed) : seed(seed) {}
 
     bool operator==(const RNG& other) const { return seed == other.seed; }
 
     bool operator==(const int& rngValue) const { return seed == rngValue; }
 
     ND RNG copy() const {
-        RNG rng = RNG(seed);
+        const auto rng = RNG(seed);
         return rng;
     }
 
-    static inline RNG getLargeFeatureSeed(int64_t worldSeed, int chunkX, int chunkZ) {
+    static inline RNG getLargeFeatureSeed(const int64_t worldSeed, const int chunkX, const int chunkZ) {
         RNG rng{};
         rng.setSeed(worldSeed);
-        auto l2 = (int64_t) rng.nextLong();
-        auto l3 = (int64_t) rng.nextLong();
-        int64_t l4 = (int64_t) chunkX * l2 ^ (int64_t) chunkZ * l3 ^ worldSeed;
+        const auto l2 = (int64_t) rng.nextLong();
+        const auto l3 = (int64_t) rng.nextLong();
+        const int64_t l4 = (int64_t) chunkX * l2 ^ (int64_t) chunkZ * l3 ^ worldSeed;
         rng.setSeed(l4);
         return rng;
     }
 
 
-    static inline RNG getPopulationSeed(int64_t worldSeed, int chunkX, int chunkZ) {
+    static inline RNG getPopulationSeed(const int64_t worldSeed, const int chunkX, const int chunkZ) {
         RNG rng;
         rng.setSeed(worldSeed);
         auto a = (int64_t) rng.nextLong();
         auto b = (int64_t) rng.nextLong();
         a = (int64_t) (((a / 2) * 2) + 1);
         b = (int64_t) (((b / 2) * 2) + 1);
-        int64_t decoratorSeed = (chunkX * a + chunkZ * b) ^ worldSeed;
+        const int64_t decoratorSeed = (chunkX * a + chunkZ * b) ^ worldSeed;
         rng.setSeed(decoratorSeed);
         return rng;
     }
@@ -62,9 +61,9 @@ public:
 
     ND MU uint64_t getSeed() const { return seed; }
 
-    MU void setValue(uint64_t value) { seed = value; }
+    MU void setValue(const uint64_t value) { seed = value; }
 
-    void setSeed(uint64_t value) { seed = (value ^ 0x5deece66d) & 0xFFFFFFFFFFFF; }
+    void setSeed(const uint64_t value) { seed = (value ^ 0x5deece66d) & 0xFFFFFFFFFFFF; }
 
     int next(const int bits) {
         advance();
@@ -91,11 +90,11 @@ public:
         return val;
     }
 
-    int nextInt(int minimum, int maximum) {
+    int nextInt(const int minimum, const int maximum) {
         return minimum >= maximum ? minimum : nextInt(maximum - minimum + 1) + minimum;
     }
 
-    int nextIntLegacy(int minimum, int maximum) { return nextInt(maximum - minimum + 1) + minimum; }
+    int nextIntLegacy(const int minimum, const int maximum) { return nextInt(maximum - minimum + 1) + minimum; }
 
     uint64_t nextLong() { return ((uint64_t) next(32) << 32) + next(32); }
 
@@ -112,12 +111,12 @@ public:
         return (int64_t) x / (double) 0x20000000000000;
     }
 
-    MU double nextDouble(double minimum, double maximum) {
+    MU double nextDouble(const double minimum, const double maximum) {
         return minimum >= maximum ? minimum : nextDouble() * (maximum - minimum) + minimum;
     }
 
     /// Jumps forwards in the random number sequence by simulating 'n' calls to next.
-    MU inline void skipNextN(uint64_t n) {
+    MU void skipNextN(const uint64_t n) {
         uint64_t m = 1;
         uint64_t a = 0;
         uint64_t im = 0x5deece66d;
@@ -142,18 +141,6 @@ public:
           double __x;
           double dVar3;
           double dVar4;
-          undefined in_vs50 [16];
-          undefined in_vs59 [16];
-          undefined in_vs60 [16];
-          undefined in_vs61 [16];
-          undefined in_vs62 [16];
-          undefined in_vs63 [16];
-
-          vectorMultiplyHighAndAddSignedHalfWordSaturate(in_vs60,in_vs60,in_vs50);
-          vectorMultiplyHighAndAddSignedHalfWordSaturate(in_vs63,in_vs63,in_vs50);
-          vectorMultiplyHighAndAddSignedHalfWordSaturate(in_vs62,in_vs62,in_vs50);
-          vectorMultiplyHighAndAddSignedHalfWordSaturate(in_vs59,in_vs59,in_vs50);
-          vectorMultiplyHighAndAddSignedHalfWordSaturate(in_vs61,in_vs61,in_vs50);
           if (*(char *)(param_1 + 8) != '\0') {
             *(undefined *)(param_1 + 8) = 0;
             instructionSynchronize();
@@ -182,7 +169,7 @@ public:
 
 
     // nextGaussianFloat__6RandomFv
-    MU inline double nextGaussianFloat() {
+    MU double nextGaussianFloat() {
         const double dVar1 = nextFloat();
         const double dVar2 = nextFloat(); // passes this to function?
         return static_cast<float>(dVar1 - dVar2);
@@ -190,7 +177,7 @@ public:
 
 
     // nextGaussianInt__6RandomFi
-    MU inline int nextGaussianInt(int param2) {
+    MU int nextGaussianInt(const int param2) {
         const int iVar1 = nextInt();
         const int iVar2 = nextInt(param2);
         return iVar1 - iVar2;

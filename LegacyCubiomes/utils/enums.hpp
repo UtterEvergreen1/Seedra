@@ -73,7 +73,7 @@ enum class StructureType : uint8_t {
 };
 
 
-inline static std::string LceVersionToString(LCEVERSION version) {
+static std::string LceVersionToString(const LCEVERSION version) {
     switch (version) {
         case LCEVERSION::PS4_VP:
             return "PS4_VP";
@@ -94,7 +94,7 @@ inline static std::string LceVersionToString(LCEVERSION version) {
     }
 }
 
-inline static int getChunkWorldBounds(WORLDSIZE worldSize) {
+static int getChunkWorldBounds(const WORLDSIZE worldSize) {
     switch (worldSize) {
         case WORLDSIZE::CLASSIC:
         default:
@@ -109,7 +109,7 @@ inline static int getChunkWorldBounds(WORLDSIZE worldSize) {
 }
 
 
-inline static std::string getStructureName(StructureType type) {
+static std::string getStructureName(const StructureType type) {
     switch (type) {
         case StructureType::DesertPyramid:
             return "DesertPyramid";
@@ -146,7 +146,7 @@ inline static std::string getStructureName(StructureType type) {
     }
 }
 
-inline static std::string worldSizeToString(WORLDSIZE worldSize) {
+static std::string worldSizeToString(const WORLDSIZE worldSize) {
     switch (worldSize) {
         case WORLDSIZE::CLASSIC:
         default:
@@ -161,7 +161,7 @@ inline static std::string worldSizeToString(WORLDSIZE worldSize) {
 }
 
 
-inline static std::string biomeScaleToString(BIOMESCALE biomeScale) {
+static std::string biomeScaleToString(const BIOMESCALE biomeScale) {
     switch (biomeScale) {
         case BIOMESCALE::SMALL:
             return "SMALL";
@@ -175,7 +175,7 @@ inline static std::string biomeScaleToString(BIOMESCALE biomeScale) {
 }
 
 
-inline static MCVERSION getMCVersion(LCEVERSION lceVersionIn) {
+static MCVERSION getMCVersion(const LCEVERSION lceVersionIn) {
     switch (lceVersionIn) {
         case LCEVERSION::AQUATIC:
         default:
@@ -200,7 +200,7 @@ inline static MCVERSION getMCVersion(LCEVERSION lceVersionIn) {
 }
 
 
-inline std::string mcVersionToString(MCVERSION version) {
+inline std::string mcVersionToString(const MCVERSION version) {
     switch (version) {
         case MC_1_0:
             return "1.0";

@@ -10,15 +10,15 @@
 #define power2_48 281474976710656LL
 #define power2_63 9223090561878065151LL
 
-static inline uint64_t getNanoSeconds() {
+static uint64_t getNanoSeconds() {
     return std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now().time_since_epoch())
             .count();
 }
-static inline uint64_t getMilliseconds() {
+static uint64_t getMilliseconds() {
     return std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch())
             .count();
 }
-static inline uint64_t getSeconds() {
+static uint64_t getSeconds() {
     return std::chrono::duration_cast<std::chrono::seconds>(std::chrono::system_clock::now().time_since_epoch())
             .count();
 }

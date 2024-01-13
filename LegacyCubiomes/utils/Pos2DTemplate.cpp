@@ -2,7 +2,7 @@
 
 
 template<class classType>
-bool Pos2DTemplate<classType>::operator==(const Pos2DTemplate<classType>& other) const { return x == other.x && z == other.z; }
+bool Pos2DTemplate<classType>::operator==(const Pos2DTemplate& other) const { return x == other.x && z == other.z; }
 
 
 template<class classType>
@@ -10,11 +10,11 @@ bool Pos2DTemplate<classType>::operator==(int other) const { return x == other &
 
 
 template<class classType>
-bool Pos2DTemplate<classType>::operator!=(const Pos2DTemplate<classType>& other) const { return *this != other; }
+bool Pos2DTemplate<classType>::operator!=(const Pos2DTemplate& other) const { return *this != other; }
 
 
 template<class classType>
-Pos2DTemplate<classType> Pos2DTemplate<classType>::operator+(const Pos2DTemplate<classType>& other) const { return {x + other.x, z + other.z}; }
+Pos2DTemplate<classType> Pos2DTemplate<classType>::operator+(const Pos2DTemplate& other) const { return {x + other.x, z + other.z}; }
 
 
 template<class classType>
@@ -22,7 +22,7 @@ Pos2DTemplate<classType> Pos2DTemplate<classType>::operator+(const int other) co
 
 
 template<class classType>
-Pos2DTemplate<classType> Pos2DTemplate<classType>::operator-(const Pos2DTemplate<classType>& other) const { return {x - other.x, z - other.z}; }
+Pos2DTemplate<classType> Pos2DTemplate<classType>::operator-(const Pos2DTemplate& other) const { return {x - other.x, z - other.z}; }
 
 
 template<class classType>
@@ -58,7 +58,6 @@ void Pos2DTemplate<classType>::setPos(classType xIn, classType zIn) {
     this->x = xIn;
     this->z = zIn;
 }
-
 
 template class Pos2DTemplate<int>;
 template class Pos2DTemplate<double>;

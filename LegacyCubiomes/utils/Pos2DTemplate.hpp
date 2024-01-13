@@ -1,6 +1,5 @@
 #pragma once
 
-
 #include <cmath>
 #include <iostream>
 #include <string>
@@ -22,34 +21,34 @@ public:
 
     Pos2DTemplate(classType xIn, classType zIn) : x(xIn), z(zIn) {}
 
-    bool operator==(const Pos2DTemplate<classType>& other) const;
+    bool operator==(const Pos2DTemplate& other) const;
     bool operator==(int other) const;
-    bool operator!=(const Pos2DTemplate<classType>& other) const;
-    Pos2DTemplate<classType> operator+(const Pos2DTemplate<classType>& other) const;
-    Pos2DTemplate<classType> operator+(int other) const;
-    Pos2DTemplate<classType> operator-(const Pos2DTemplate<classType>& other) const;
-    Pos2DTemplate<classType> operator-(int other) const;
+    bool operator!=(const Pos2DTemplate& other) const;
+    Pos2DTemplate operator+(const Pos2DTemplate& other) const;
+    Pos2DTemplate operator+(int other) const;
+    Pos2DTemplate operator-(const Pos2DTemplate& other) const;
+    Pos2DTemplate operator-(int other) const;
     bool operator>(classType value) const;
     bool operator<(classType value) const;
     bool operator>=(classType value) const;
     bool operator<=(classType value) const;
 
-    Pos2DTemplate<classType> operator>>(int shiftAmount) const requires (
+    Pos2DTemplate operator>>(int shiftAmount) const requires (
                 !(std::is_same_v<classType, float> | std::is_same_v<classType, double>)) {
         return {x >> shiftAmount, z >> shiftAmount};
     }
 
-    Pos2DTemplate<classType> operator<<(int shiftAmount) const requires (
+    Pos2DTemplate operator<<(int shiftAmount) const requires (
                 !(std::is_same_v<classType, float> | std::is_same_v<classType, double>)) {
         return {x << shiftAmount, z << shiftAmount};
     }
 
-    MU ND Pos2DTemplate<classType> toChunkPos() const requires (
+    MU ND Pos2DTemplate toChunkPos() const requires (
                 !(std::is_same_v<classType, float> | std::is_same_v<classType, double>)) {
         return {x >> 4, z >> 4};
     }
 
-    MU ND Pos2DTemplate<classType> toBlockPos() const requires (
+    MU ND Pos2DTemplate toBlockPos() const requires (
                 !(std::is_same_v<classType, float> | std::is_same_v<classType, double>)) {
         return {x << 4, z << 4};
     }
@@ -61,12 +60,12 @@ public:
     }
 #endif
 
-    friend std::ostream& operator<<(std::ostream& out, const Pos2DTemplate<classType>& pos) {
+    friend std::ostream& operator<<(std::ostream& out, const Pos2DTemplate& pos) {
         out << "(" << pos.x << ", " << pos.z << ")";
         return out;
     }
 
-    MU friend Pos2DTemplate<classType> abs(const Pos2DTemplate<classType>& pos) {
+    MU friend Pos2DTemplate abs(const Pos2DTemplate& pos) {
         return {std::abs(pos.x), std::abs(pos.z)};
     }
 
@@ -75,11 +74,11 @@ public:
     MU ND bool insideBounds(classType lower, classType upper);
 
     struct Hasher {
-        std::size_t operator()(const Pos2DTemplate<classType>& pos) const requires (
+        std::size_t operator()(const Pos2DTemplate& pos) const requires (
                     !(std::is_same_v<classType, float> | std::is_same_v<classType, double>)) {
-            int i = 1664525 * pos.x + 1013904223;
-            int j = 1664525 * (pos.z ^ -559038737) + 1013904223;
-            return (size_t) i ^ j;
+            const int i = 1664525 * pos.x + 1013904223;
+            const int j = 1664525 * (pos.z ^ -559038737) + 1013904223;
+            return static_cast<size_t>(i) ^ j;
         }
     };
 };

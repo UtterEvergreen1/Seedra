@@ -21,26 +21,26 @@ public:
     explicit Pos3DTemplate(Pos2DTemplate<classType> pos) : x(pos.x), y(0), z(pos.z) {}
     Pos3DTemplate(classType xIn, classType yIn, classType zIn) : x(xIn), y(yIn), z(zIn) {}
 
-    MU ND inline classType getX() const { return x; }
-    MU ND inline classType getY() const { return y; }
-    MU ND inline classType getZ() const { return z; }
+    MU ND classType getX() const { return x; }
+    MU ND classType getY() const { return y; }
+    MU ND classType getZ() const { return z; }
 
-    bool operator==(const Pos3DTemplate<classType>& other) const;
-    Pos3DTemplate<classType> operator+(const Pos3DTemplate<classType>& other) const;
-    Pos3DTemplate<classType> operator+(classType other) const;
-    Pos3DTemplate<classType> operator-(const Pos3DTemplate<classType>& other) const;
-    Pos3DTemplate<classType> operator-(classType other) const;
+    bool operator==(const Pos3DTemplate& other) const;
+    Pos3DTemplate operator+(const Pos3DTemplate& other) const;
+    Pos3DTemplate operator+(classType other) const;
+    Pos3DTemplate operator-(const Pos3DTemplate& other) const;
+    Pos3DTemplate operator-(classType other) const;
     bool operator>(int value) const;
     bool operator<(int value) const;
     bool operator>=(int value) const;
     bool operator<=(int value) const;
 
-    Pos3DTemplate<classType> operator>>(int shiftAmount) const requires (
+    Pos3DTemplate operator>>(int shiftAmount) const requires (
                 !(std::is_same_v<classType, float> | std::is_same_v<classType, double>)) {
         return {x >> shiftAmount, y >> shiftAmount, z >> shiftAmount};
     }
 
-    Pos3DTemplate<classType> operator<<(int shiftAmount) const requires (
+    Pos3DTemplate operator<<(int shiftAmount) const requires (
                 !(std::is_same_v<classType, float> | std::is_same_v<classType, double>)) {
         return {x << shiftAmount, y << shiftAmount, z << shiftAmount};
     }
@@ -52,12 +52,12 @@ public:
     }
 #endif
 
-    friend std::ostream& operator<<(std::ostream& out, const Pos3DTemplate<classType>& pos) {
+    friend std::ostream& operator<<(std::ostream& out, const Pos3DTemplate& pos) {
         out << "[" << pos.x << ", " << pos.y << ", " << pos.z << "]";
         return out;
     }
 
-    friend Pos3DTemplate<classType> abs(const Pos3DTemplate<classType>& pos) {
+    friend Pos3DTemplate abs(const Pos3DTemplate& pos) {
         return {std::abs(pos.x), std::abs(pos.y), std::abs(pos.z)};
     }
 
