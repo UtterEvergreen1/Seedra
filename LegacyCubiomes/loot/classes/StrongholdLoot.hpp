@@ -16,7 +16,7 @@ namespace loot {
             RNG rng = RNG::getPopulationSeed(g.getWorldSeed(), chestChunkX, chestChunkZ);
 
             if constexpr (checkCaves) {
-                ChunkPrimer* chunk = Chunk::provideChunk<true, true, false>(g, chestChunkX, chestChunkZ);
+                ChunkPrimer* chunk = Chunk::provideChunk(g, chestChunkX, chestChunkZ);
                 // we roll rng equal to the stone bricks in the chunk that generated before the chest corridor
                 if (!structure_rolls::Stronghold::generateStructure<true>(chunk, strongholdGenerator, rng, piece,
                                                                           chestChunkX, chestChunkZ)) {

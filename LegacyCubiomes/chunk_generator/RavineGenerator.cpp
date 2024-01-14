@@ -50,6 +50,10 @@ bool RavineGenerator::canReplaceBlock(uint16_t blockAt, uint16_t blockAbove) {
 void RavineGenerator::addTunnel(int64_t randomSeed, Pos2D chunk, ChunkPrimer* chunkPrimer, DoublePos3D tunnel,
                                 float angle, float slope, float curvature, int tunnelStartSegment, int tunnelEndSegment,
                                 double widthMultiplier) {
+
+    if(g.getLCEVersion() == LCEVERSION::AQUATIC && isOceanic(g.getBiomeAt(1, (int)tunnel.x, (int)tunnel.z)))
+        return;
+
     RNG rng;
     rng.setSeed(randomSeed);
     auto offsetX = (double) (chunk.x * 16 + 8);
@@ -58,8 +62,9 @@ void RavineGenerator::addTunnel(int64_t randomSeed, Pos2D chunk, ChunkPrimer* ch
     float slopeChangeRate = 0.0F;
 
     if (tunnelEndSegment < 1) {
-        int maxSegment = (int) range * 16 - 16;
-        tunnelEndSegment = maxSegment - rng.nextInt(maxSegment >> 2);
+        constexpr int rangeBoundary = MapGenBase::range * 16 - 16;
+        constexpr int randomRange = rangeBoundary / 4;
+        tunnelEndSegment = rangeBoundary - rng.nextInt(randomRange);
     }
 
     bool isSegmentAtCenter = false;
@@ -101,7 +106,7 @@ void RavineGenerator::addTunnel(int64_t randomSeed, Pos2D chunk, ChunkPrimer* ch
             double distanceX = tunnel.x - offsetX;
             double distanceZ = tunnel.z - offsetZ;
             auto remainingSegments = (double) (tunnelEndSegment - tunnelStartSegment);
-            auto maxDistance = (double) (angle + 2.0F + 16.0F);
+            auto maxDistance = (double) (angle + 18.0F);
 
             //std::cout << distanceX << " " <<  distanceZ << " " << remainingSegments << " " << maxDistance << std::endl;
 
@@ -187,9 +192,9 @@ void RavineGenerator::addTunnel(int64_t randomSeed, Pos2D chunk, ChunkPrimer* ch
                             }
                         }
                     }
-
-                    if (isSegmentAtCenter) { break; }
                 }
+                if (isSegmentAtCenter) { break; }
+
             }
         }
     }

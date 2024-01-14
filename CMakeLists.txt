@@ -17,6 +17,4 @@ add_definitions(-DDEV_MODE)
 
 # recursively grabs all files inside the project folder
 file(GLOB_RECURSE LEGACY_CUBIOMES LegacyCubiomes/*)
-add_executable(LCE_Cubiomes "programs/draw_images.cpp" ${LEGACY_CUBIOMES}
-        _working_on/UnderwaterLargeCaveGenerator.hpp
-        _working_on/UnderwaterCanyonGenerator.hpp)
+add_executable(LCE_Cubiomes "programs/draw_images.cpp" ${LEGACY_CUBIOMES})

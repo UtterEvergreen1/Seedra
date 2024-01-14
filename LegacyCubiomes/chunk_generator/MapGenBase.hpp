@@ -7,7 +7,7 @@
 
 class MapGenBase {
 public:
-    const int range = 8;
+    static constexpr int range = 8;
     Generator g;
     RNG rng;
 
@@ -21,8 +21,8 @@ public:
         auto seedMultiplierX = (int64_t) rng.nextLong();
         auto seedMultiplierZ = (int64_t) rng.nextLong();
 
-        for (int currentX = targetX - this->range; currentX <= targetX + this->range; ++currentX) {
-            for (int currentZ = targetZ - this->range; currentZ <= targetZ + this->range; ++currentZ) {
+        for (int currentX = targetX - MapGenBase::range; currentX <= targetX + MapGenBase::range; ++currentX) {
+            for (int currentZ = targetZ - MapGenBase::range; currentZ <= targetZ + MapGenBase::range; ++currentZ) {
                 auto adjustedX = (int64_t) currentX * seedMultiplierX;
                 auto adjustedZ = (int64_t) currentZ * seedMultiplierZ;
                 rng.setSeed(adjustedX ^ adjustedZ ^ g.getWorldSeed());

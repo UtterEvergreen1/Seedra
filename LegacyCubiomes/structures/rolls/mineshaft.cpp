@@ -113,7 +113,7 @@ namespace structure_rolls {
                 rng.setSeed((aix + zChunk * zModifier) ^ g.getWorldSeed());
                 rng.advance(); // advance rng
                 ChunkPrimer* chunk = nullptr;
-                if (generateFullChunk) { chunk = Chunk::provideChunk<true, true, false>(g, xChunk, zChunk); }
+                if (generateFullChunk) { chunk = Chunk::provideChunk(g, xChunk, zChunk); }
                 generateStructure(mineshaftGenerator, chunk, rng, xChunk, zChunk);
                 if (generateFullChunk) { delete chunk; }
             }

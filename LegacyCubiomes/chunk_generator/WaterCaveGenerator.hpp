@@ -1,20 +1,19 @@
 #pragma once
 
+#include "LegacyCubiomes/chunk_generator/MapGenBase.hpp"
+#include "LegacyCubiomes/mc/blocks.hpp"
 #include "LegacyCubiomes/utils/MathHelper.hpp"
-#include "MapGenBase.hpp"
+#include "WaterCaveGeneratorBase.hpp"
 #include <cmath>
 
-class CaveGenerator : public MapGenBase {
+class WaterCaveGenerator : public WaterCaveGeneratorBase {
 public:
-    explicit CaveGenerator(const Generator& generator) : MapGenBase(generator) {}
+    explicit WaterCaveGenerator(const Generator& generator) : WaterCaveGeneratorBase(generator) {}
 
-    CaveGenerator(CONSOLE console, LCEVERSION version, int64_t seed, WORLDSIZE size, BIOMESCALE scale)
-        : MapGenBase(console, version, seed, size, scale) {}
+    WaterCaveGenerator(CONSOLE console, LCEVERSION version, int64_t seed, WORLDSIZE size, BIOMESCALE scale)
+        : WaterCaveGeneratorBase(console, version, seed, size, scale) {}
 
-
-    unsigned char topBlock(int x, int z);
-
-    static bool canReplaceBlock(uint16_t blockAt, uint16_t blockAbove);
+    static bool canReplaceBlock(uint16_t blockAt);
 
     void addTunnel(int64_t seedModifier, Pos2D chunk, ChunkPrimer* chunkPrimer, DoublePos3D start, float tunnelWidth,
                    float tunnelDirection, float tunnelSlope, int currentTunnelSegment, int maxTunnelSegment,

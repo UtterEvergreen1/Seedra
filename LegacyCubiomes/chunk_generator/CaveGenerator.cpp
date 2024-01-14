@@ -54,6 +54,9 @@ bool CaveGenerator::canReplaceBlock(uint16_t blockAt, uint16_t blockAbove) {
 void CaveGenerator::addTunnel(int64_t seedModifier, Pos2D chunk, ChunkPrimer* chunkPrimer, DoublePos3D start,
                               float tunnelWidth, float tunnelDirection, float tunnelSlope, int currentTunnelSegment,
                               int maxTunnelSegment, double tunnelHeightMultiplier) {
+
+    Pos2D startPos((int)start.x, (int)start.z);
+
     double targetCenterX = chunk.x * 16 + 8;
     double targetCenterZ = chunk.z * 16 + 8;
     float directionModifier = 0.0F;
@@ -62,8 +65,9 @@ void CaveGenerator::addTunnel(int64_t seedModifier, Pos2D chunk, ChunkPrimer* ch
     rng.setSeed(seedModifier);
 
     if (maxTunnelSegment <= 0) {
-        int rangeBoundary = (int) range * 16 - 16;
-        maxTunnelSegment = rangeBoundary - rng.nextInt(rangeBoundary / 4);
+        constexpr int rangeBoundary = MapGenBase::range * 16 - 16;
+        constexpr int randomRange = rangeBoundary / 4;
+        maxTunnelSegment = rangeBoundary - rng.nextInt(randomRange);
     }
 
     bool isMainTunnel = false;
@@ -133,6 +137,10 @@ void CaveGenerator::addTunnel(int64_t seedModifier, Pos2D chunk, ChunkPrimer* ch
             return;
         }
 
+        if (g.getLCEVersion() == LCEVERSION::AQUATIC && isOceanic(g.getBiomeAt(1, startPos)))
+            return;
+
+
         if (isMainTunnel || rng.nextInt(4) != 0) {
             double distanceX = start.x - targetCenterX;
             double distanceZ = start.z - targetCenterZ;
@@ -182,7 +190,8 @@ void CaveGenerator::addTunnel(int64_t seedModifier, Pos2D chunk, ChunkPrimer* ch
                     }
                 }
 
-                if (!hasWater) { //             ((dVar27 = (double)getDepth__5BiomeFv(uVar9), dVar27 < -0.9 && (iVar10 = isSnowCovered__5BiomeFv(uVar9), iVar10 != 0))
+                //((dVar27 = (double)getDepth__5BiomeFv(uVar9), dVar27 < -0.9 && (iVar10 = isSnowCovered__5BiomeFv(uVar9), iVar10 != 0))
+                if (!hasWater) {
                     for (int currentX = minX; currentX < maxX; ++currentX) {
                         double scaleX = ((double) (currentX + chunk.x * 16) + 0.5 - start.x) / tunnelWidthScaled;
 
@@ -191,7 +200,7 @@ void CaveGenerator::addTunnel(int64_t seedModifier, Pos2D chunk, ChunkPrimer* ch
                             bool isTopBlock = false;
 
                             if (scaleX * scaleX + scaleZ * scaleZ < 1.0) {
-                                //for (int currentY = maxY; currentY > minY; --currentY)
+                                //for (int currentY = maxY; currentY > minY; --currentY) {
                                 for (int currentY = maxY - 1; currentY >= minY; --currentY) {
                                     double scaleY = ((double) (currentY - 1) + 0.5 - start.y) / tunnelHeight;
 
@@ -222,9 +231,9 @@ void CaveGenerator::addTunnel(int64_t seedModifier, Pos2D chunk, ChunkPrimer* ch
                             }
                         }
                     }
-
-                    if (isMainTunnel) { break; }
                 }
+
+                if (isMainTunnel) { break; }
             }
         }
     }
@@ -232,7 +241,7 @@ void CaveGenerator::addTunnel(int64_t seedModifier, Pos2D chunk, ChunkPrimer* ch
 
 void CaveGenerator::addRoom(int64_t seedModifier, Pos2D target, ChunkPrimer* chunkPrimer, DoublePos3D roomStart,
                             RNG& rng) {
-    return addTunnel(seedModifier, target, chunkPrimer, roomStart, 1.0F + rng.nextFloat() * 6.0F, 0.0F, 0.0F, -1, -1,
+    addTunnel(seedModifier, target, chunkPrimer, roomStart, 1.0F + rng.nextFloat() * 6.0F, 0.0F, 0.0F, -1, -1,
                      0.5);
 }
 
@@ -257,10 +266,7 @@ void CaveGenerator::addFeature(int baseChunkX, int baseChunkZ, int targetX, int 
         for (int currentSegment = 0; currentSegment < segmentCount; ++currentSegment) {
             float yaw = rng.nextFloat() * (PI_FLOAT * 2.0F);
             float pitch = (rng.nextFloat() - 0.5F) * 2.0F / 8.0F;
-
-            float f1 = rng.nextFloat();
-            float f2 = rng.nextFloat();
-            float tunnelLength = f1 * 2.0F + f2;
+            float tunnelLength = rng.nextFloat() * 2.0F + rng.nextFloat();
 
             if (rng.nextInt(10) == 0) { tunnelLength *= rng.nextFloat() * rng.nextFloat() * 3.0F + 1.0F; }
 

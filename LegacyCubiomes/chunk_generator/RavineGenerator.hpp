@@ -21,5 +21,5 @@ public:
                    float slope, float curvature, int tunnelStartSegment, int tunnelEndSegment, double widthMultiplier);
 
     void addFeature(int neighborChunkX, int neighborChunkZ, int currentChunkX, int currentChunkZ,
-                           ChunkPrimer* chunkPrimerIn) override;
+                           ChunkPrimer* chunkPrimerIn) final;
 };

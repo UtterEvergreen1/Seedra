@@ -4,13 +4,28 @@
 #include "ChunkGenerator.hpp"
 #include "ChunkPrimer.hpp"
 #include "RavineGenerator.hpp"
+#include "WaterCaveGenerator.hpp"
+#include "WaterRavineGenerator.hpp"
 
 namespace Chunk {
 
-    template<bool generateCaves, bool generateRavines, bool generateSkyLight>
+    template<bool generateCaves = true, bool generateRavines = true, bool generateSkyLight = false>
     static ChunkPrimer* provideChunk(const Generator& g, int chunkX, int chunkZ) {
         ChunkGeneratorOverWorld chunk(g);
         ChunkPrimer* chunkPrimer = chunk.provideChunk(chunkX, chunkZ);
+        if constexpr (generateCaves) {
+            if (g.getLCEVersion() == LCEVERSION::AQUATIC) {
+                WaterCaveGenerator waterCaveGenerator(g);
+                waterCaveGenerator.generateUnderwater(chunkX, chunkZ, chunkPrimer);
+            }
+        }
+        if constexpr (generateRavines) {
+            if (g.getLCEVersion() == LCEVERSION::AQUATIC) {
+                WaterRavineGenerator waterRavineGenerator(g);
+                waterRavineGenerator.generateUnderwater(chunkX, chunkZ, chunkPrimer);
+            }
+        }
+
         if constexpr (generateCaves) {
             CaveGenerator caveGenerator(g);
             caveGenerator.generate(chunkX, chunkZ, chunkPrimer);
@@ -19,6 +34,16 @@ namespace Chunk {
             RavineGenerator ravineGenerator(g);
             ravineGenerator.generate(chunkX, chunkZ, chunkPrimer);
         }
+        //structure order after caves:
+        //mineshaft
+        //village
+        //stronghold
+        //scattered_feature
+        //ocean ruin
+        //ocean monument
+        //woodland mansion
+        //shipwreck
+        //buried treasure
         if constexpr (generateSkyLight) { chunkPrimer->generateSkylightMap(); }
         return chunkPrimer;
     }
