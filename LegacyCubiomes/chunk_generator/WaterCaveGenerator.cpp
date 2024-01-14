@@ -238,9 +238,9 @@ void WaterCaveGenerator::addFeature(int baseChunkX, int baseChunkZ, int targetX,
     if EXPECT_TRUE (rng.nextInt(15) != 0) { return; }
 
     for (int currentTunnel = 0; currentTunnel < tunnelCount; ++currentTunnel) {
-        auto tunnelStartX = (double) (baseChunkX * 16 + rng.nextInt(16));
-        auto tunnelStartY = (double) rng.nextInt(rng.nextInt(120) + 8);
         auto tunnelStartZ = (double) (baseChunkZ * 16 + rng.nextInt(16));
+        auto tunnelStartY = (double) rng.nextInt(rng.nextInt(120) + 8);
+        auto tunnelStartX = (double) (baseChunkX * 16 + rng.nextInt(16));
         int segmentCount = 1;
 
         if (rng.nextInt(4) == 0) {

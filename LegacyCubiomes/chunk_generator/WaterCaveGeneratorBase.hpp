@@ -11,10 +11,14 @@ public:
         rng.setSeed(g.getWorldSeed());
         int seedMultiplierX = (rng.nextInt() / 2) * 2 + 1;
         int seedMultiplierZ = (rng.nextInt() / 2) * 2 + 1;
+        //int seedMultiplierX = rng.nextInt() | 1;
+        //int seedMultiplierZ = rng.nextInt() | 1;
 
         for (int currentX = targetX - MapGenBase::range; currentX <= targetX + MapGenBase::range; ++currentX) {
             for (int currentZ = targetZ - MapGenBase::range; currentZ <= targetZ + MapGenBase::range; ++currentZ) {
-                rng.setSeed((uint64_t)((int)currentX * seedMultiplierX + (int)currentZ * seedMultiplierZ) ^ g.getWorldSeed());
+                int adjustedSeedX = currentX * seedMultiplierX;
+                int adjustedSeedZ = currentZ * seedMultiplierZ;
+                rng.setSeed((adjustedSeedX + adjustedSeedZ) ^ g.getWorldSeed());
 
                 addFeature(currentX, currentZ, targetX, targetZ, primer);
             }
