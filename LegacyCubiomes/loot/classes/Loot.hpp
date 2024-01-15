@@ -68,7 +68,7 @@ namespace loot {
         chestContents.reserve(Loot<T>::maxItemsPossible);
         RNG random;
         random.setSeed(lootTableSeed);
-        qDebug() << (int64_t)lootTableSeed;
+        //qDebug() << (int64_t)lootTableSeed;
 
         // generate loot
         int rollCount, rollIndex;

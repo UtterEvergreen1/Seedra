@@ -63,7 +63,7 @@ private:
             const ItemStack& itemStack = container.inventorySlots[i];
             if (itemStack.stackSize > 0) { out << i << ": " << itemStack << "\n"; }
         }
-        out << "}";
+        out << "}\n";
         return out;
     }
 

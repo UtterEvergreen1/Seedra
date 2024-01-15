@@ -154,9 +154,7 @@ void WaterRavineGenerator::addFeature(int baseChunkX, int baseChunkZ, int target
     if EXPECT_FALSE (rng.nextInt(20) == 0) {
         auto tunnelStartX = (double) (baseChunkX * 16 + rng.nextInt(16));
         auto tunnelStartY = (double) (rng.nextInt(rng.nextInt(40) + 8) + 20);
-        //if(rng.nextFloat() <= 0.2F)
-            //tunnelStartY += 15.0;
-        if((float)((double)((0x43300000LL << 32) | (rng.nextInt() ^ 0x80000000)) - 4503601774854144.0) <= 0.2F) {
+        if(rng.nextInt() < 0) {
             tunnelStartY += 15.0;
         }
         auto tunnelStartZ = (double) (baseChunkZ * 16 + rng.nextInt(16));
