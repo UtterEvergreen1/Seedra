@@ -1,5 +1,6 @@
 #include "StaticStructures.hpp"
 
+#include "LegacyCubiomes/cubiomes/biomeID.hpp"
 #include "LegacyCubiomes/utils/rng.hpp"
 
 namespace Placement {

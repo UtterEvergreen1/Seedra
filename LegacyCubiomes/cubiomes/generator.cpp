@@ -2,6 +2,7 @@
 
 #include "LegacyCubiomes/utils/range.hpp"
 #include "LegacyCubiomes/utils/rng.hpp"
+#include "biomeID.hpp"
 #include "noise.hpp"
 
 

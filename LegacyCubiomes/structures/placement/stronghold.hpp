@@ -1,11 +1,12 @@
 #pragma once
 
+#include "LegacyCubiomes/cubiomes/biomeID.hpp"
 #include "LegacyCubiomes/cubiomes/generator.hpp"
 
 namespace Placement {
     class Stronghold {
     public:
-        static const uint64_t stronghold_biomes =
+        static constexpr uint64_t stronghold_biomes =
                 (1ULL << plains) | (1ULL << desert) | (1ULL << extreme_hills) | (1ULL << forest) | (1ULL << taiga) |
                 (1ULL << hell) | (1ULL << the_end) | (1ULL << ice_plains) | (1ULL << ice_mountains) |
                 (1ULL << mushroom_island) | (1ULL << desert_hills) | (1ULL << forest_hills) | (1ULL << taiga_hills) |

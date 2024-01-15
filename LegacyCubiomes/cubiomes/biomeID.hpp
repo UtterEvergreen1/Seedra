@@ -1,7 +1,11 @@
 #pragma once
 
+#include <cstdint>
 
-enum BiomeTempCategory : uint8_t { Oceanic, Warm, Lush, Cold, Freezing, Special };
+
+enum BiomeTempCategory : uint8_t {
+    Oceanic, Warm, Lush, Cold, Freezing, Special
+};
 
 
 enum BiomeID {

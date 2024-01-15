@@ -1,5 +1,8 @@
 #pragma once
 
+#include "LegacyCubiomes/cubiomes/biomeID.hpp"
+
+
 #include <iterator>
 #include <unordered_set>
 #include <vector>
