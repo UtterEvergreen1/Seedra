@@ -12,14 +12,11 @@ struct Range;
 struct SurfaceNoise;
 
 #include <cstdio>
-#include <cstdlib>
 #include <cstring>
-#include <iostream>
 #include <memory>
 
 
 class Generator {
-private:
     int64_t worldSeed;     // world seed
     LCEVERSION version;    // LCE version, used to generate biomes
     CONSOLE console;       // LCE console, used to generate terrain and stronghold
@@ -68,33 +65,33 @@ public:
 
 
     /// Fast way to increment the seed for for-loops.
-    inline void incrementSeed() { applyWorldSeed(getWorldSeed() + 1); }
+    void incrementSeed() { applyWorldSeed(getWorldSeed() + 1); }
 
     /// Fast way to decrement the seed for for-loops.
-    inline void decrementSeed() { applyWorldSeed(getWorldSeed() - 1); }
+    void decrementSeed() { applyWorldSeed(getWorldSeed() - 1); }
 
     /// returns the stored LCE version
-    MU ND inline LCEVERSION getLCEVersion() const { return this->version; }
+    MU ND LCEVERSION getLCEVersion() const { return this->version; }
 
     /**
      * Change the version of LCE.
      *
-     * @param version new LCE version to apply
+     * @param versionIn new LCE version to apply
      */
-    MU void changeLCEVersion(LCEVERSION version);
+    MU void changeLCEVersion(LCEVERSION versionIn);
 
     /// returns the stored LCE console
-    ND inline CONSOLE getConsole() const { return this->console; }
+    ND CONSOLE getConsole() const { return this->console; }
 
     /**
      * Change the LCE console.
      *
-     * @param console new console to apply
+     * @param consoleIn new console to apply
      */
-    MU inline void changeConsole(CONSOLE consoleIn) { this->console = consoleIn; }
+    MU void changeConsole(const CONSOLE consoleIn) { this->console = consoleIn; }
 
     /// returns the stored biome size
-    MU ND inline BIOMESCALE getBiomeScale() const { return this->biomeScale; }
+    MU ND BIOMESCALE getBiomeScale() const { return this->biomeScale; }
 
     /**
      * Change the biome size.
@@ -104,7 +101,7 @@ public:
     MU void changeBiomeSize(BIOMESCALE size);
 
     /// returns the stored world size
-    MU ND inline WORLDSIZE getWorldSize() const { return this->worldSize; }
+    MU ND WORLDSIZE getWorldSize() const { return this->worldSize; }
 
     /**
      * Change the world size.
@@ -114,7 +111,7 @@ public:
     MU void changeWorldSize(WORLDSIZE size);
 
     /// returns the stored world size
-    MU ND inline int getWorldCoordinateBounds() const { return this->worldCoordinateBounds; }
+    MU ND int getWorldCoordinateBounds() const { return this->worldCoordinateBounds; }
 
     /**
      * Calculates the buffer size (number of ints) required to generate a 2D plane
@@ -166,7 +163,7 @@ public:
      * @param pos coordinates to generate the biome at
      * @return biome id or -1 if failed
      */
-    MU ND inline int getBiomeAt(int scale, Pos2D pos) const { return getBiomeAt(scale, pos.x, pos.z); }
+    MU ND int getBiomeAt(const int scale, const Pos2D pos) const { return getBiomeAt(scale, pos.x, pos.z); }
 
     /**
      * Generates a biome range (x -> x + w, z -> z + h).
@@ -204,7 +201,7 @@ public:
      * @param mutatedValidBiomes uint64_t value of the valid mutated biomes
      * @return true if the biome id exists in the valid biomes
      */
-    static inline bool id_matches(int id, uint64_t validBiomes, uint64_t mutatedValidBiomes = 0) {
+    static bool id_matches(const int id, const uint64_t validBiomes, const uint64_t mutatedValidBiomes = 0) {
         return id < 128 ? (validBiomes & (1ULL << id)) != 0 : (mutatedValidBiomes & (1ULL << (id - 128))) != 0;
     }
 
@@ -229,14 +226,16 @@ public:
      * @param mutatedValidBiomes uint64_t value of the valid mutated biomes
      * @return true if all the biomes are valid within the radius
      */
-    MU ND inline bool areBiomesViable(Pos2D pos, int rad, uint64_t validBiomes, uint64_t mutatedValidBiomes = 0) const {
+    MU ND bool areBiomesViable(const Pos2D pos, const int rad, const uint64_t validBiomes,
+                               const uint64_t mutatedValidBiomes = 0) const {
         return areBiomesViable(pos.x, pos.z, rad, validBiomes, mutatedValidBiomes);
     }
 
     /**
      * Finds a valid biome within 'rad' blocks from origin (x, z) with the rng state 'rng'.
      *
-     * @param[in] pos center coordinates to check valid biomes at
+     * @param[in] x center coordinates to check valid biomes at
+     * @param[in] z center coordinates to check valid biomes at
      * @param[in] radius block radius to find valid biomes
      * @param[in] validBiomes uint64_t value of the valid base biomes
      * @param[in] rng pointer to the rng state
@@ -256,7 +255,7 @@ public:
      * @param[out] passes returns the total amount of positions picked
      * @return the found position, not found if passes = 0
      */
-    MU inline Pos2D locateBiome(Pos2D pos, int radius, uint64_t validBiomes, RNG& rng, int* passes) const {
+    MU Pos2D locateBiome(const Pos2D pos, const int radius, const uint64_t validBiomes, RNG& rng, int* passes) const {
         return locateBiome(pos.x, pos.z, radius, validBiomes, rng, passes);
     }
 

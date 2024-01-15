@@ -9,10 +9,10 @@
 #include "noise.hpp"
 
 
-double maintainPrecision(double x) { return x - floor(x / 33554432.0 + 0.5) * 33554432.0; }
+double maintainPrecision(const double x) { return x - floor(x / 33554432.0 + 0.5) * 33554432.0; }
 
 ATTR(hot, const, always_inline, artificial)
-static inline double indexedLerp(int idx, double a, double b, double c) {
+static inline double indexedLerp(const int idx, const double a, const double b, const double c) {
     switch (idx & 0xf) {
         case 0:
             return a + b;
@@ -46,6 +46,8 @@ static inline double indexedLerp(int idx, double a, double b, double c) {
             return -a + b;
         case 15:
             return -b - c;
+        default:
+            return 0;
     }
 #if __GNUC__
     __builtin_unreachable();
@@ -54,7 +56,6 @@ static inline double indexedLerp(int idx, double a, double b, double c) {
 }
 
 void perlinInit(PerlinNoise* noise, RNG& rng) {
-    int i = 0;
     memset(noise, 0, sizeof(*noise));
     noise->a = rng.nextDouble() * 256.0;
     noise->b = rng.nextDouble() * 256.0;
@@ -62,10 +63,11 @@ void perlinInit(PerlinNoise* noise, RNG& rng) {
     noise->amplitude = 1.0;
     noise->lacunarity = 1.0;
 
+    int i;
     for (i = 0; i < 256; i++) { noise->d[i] = i; }
     for (i = 0; i < 256; i++) {
-        int j = rng.nextInt(256 - i) + i;
-        uint8_t n = noise->d[i];
+        const int j = rng.nextInt(256 - i) + i;
+        const uint8_t n = noise->d[i];
         noise->d[i] = noise->d[j];
         noise->d[j] = n;
         noise->d[i + 256] = noise->d[i];
@@ -73,50 +75,50 @@ void perlinInit(PerlinNoise* noise, RNG& rng) {
 }
 
 
-double samplePerlin(const Generator* g, const PerlinNoise* noise, double d1, double d2, double d3, double yAmp,
-                    double yMin) {
-    d1 += noise->a;
-    d2 += noise->b;
-    d3 += noise->c;
+double samplePerlin(const Generator* g, const PerlinNoise* noise, double x, double y, double z, const double yAmp,
+                    const double yMin) {
+    x += noise->a;
+    y += noise->b;
+    z += noise->c;
 
-    int i1 = (int) d1 - (int) (d1 < 0);
-    int i2 = (int) d2 - (int) (d2 < 0);
-    int i3 = (int) d3 - (int) (d3 < 0);
+    int i1 = static_cast<int>(x) - static_cast<int>(x < 0);
+    int i2 = static_cast<int>(y) - static_cast<int>(y < 0);
+    int i3 = static_cast<int>(z) - static_cast<int>(z < 0);
 
     if (g->getConsole() != CONSOLE::WIIU) {
-        d1 -= i1;
-        d2 -= i2;
-        d3 -= i3;
+        x -= i1;
+        y -= i2;
+        z -= i3;
     }
 
-    double t1 = d1 * d1 * d1 * (d1 * (d1 * 6.0 - 15.0) + 10.0);
-    double t2 = d2 * d2 * d2 * (d2 * (d2 * 6.0 - 15.0) + 10.0);
-    double t3 = d3 * d3 * d3 * (d3 * (d3 * 6.0 - 15.0) + 10.0);
+    const double t1 = x * x * x * (x * (x * 6.0 - 15.0) + 10.0);
+    const double t2 = y * y * y * (y * (y * 6.0 - 15.0) + 10.0);
+    const double t3 = z * z * z * (z * (z * 6.0 - 15.0) + 10.0);
 
     if (yAmp != 0.0) {
-        double yClamp = yMin < d2 ? yMin : d2;
-        d2 -= floor(yClamp / yAmp) * yAmp;
+        const double yClamp = yMin < y ? yMin : y;
+        y -= floor(yClamp / yAmp) * yAmp;
     }
 
     i1 &= 0xff;
     i2 &= 0xff;
     i3 &= 0xff;
 
-    int a1 = noise->d[i1] + i2;
-    int a2 = noise->d[a1] + i3;
-    int a3 = noise->d[a1 + 1] + i3;
-    int b1 = noise->d[i1 + 1] + i2;
-    int b2 = noise->d[b1] + i3;
-    int b3 = noise->d[b1 + 1] + i3;
+    const int a1 = noise->d[i1] + i2;
+    const int a2 = noise->d[a1] + i3;
+    const int a3 = noise->d[a1 + 1] + i3;
+    const int b1 = noise->d[i1 + 1] + i2;
+    const int b2 = noise->d[b1] + i3;
+    const int b3 = noise->d[b1 + 1] + i3;
 
-    double l1 = indexedLerp(noise->d[a2], d1, d2, d3);
-    double l2 = indexedLerp(noise->d[b2], d1 - 1, d2, d3);
-    double l3 = indexedLerp(noise->d[a3], d1, d2 - 1, d3);
-    double l4 = indexedLerp(noise->d[b3], d1 - 1, d2 - 1, d3);
-    double l5 = indexedLerp(noise->d[a2 + 1], d1, d2, d3 - 1);
-    double l6 = indexedLerp(noise->d[b2 + 1], d1 - 1, d2, d3 - 1);
-    double l7 = indexedLerp(noise->d[a3 + 1], d1, d2 - 1, d3 - 1);
-    double l8 = indexedLerp(noise->d[b3 + 1], d1 - 1, d2 - 1, d3 - 1);
+    double l1 = indexedLerp(noise->d[a2], x, y, z);
+    const double l2 = indexedLerp(noise->d[b2], x - 1, y, z);
+    double l3 = indexedLerp(noise->d[a3], x, y - 1, z);
+    const double l4 = indexedLerp(noise->d[b3], x - 1, y - 1, z);
+    double l5 = indexedLerp(noise->d[a2 + 1], x, y, z - 1);
+    const double l6 = indexedLerp(noise->d[b2 + 1], x - 1, y, z - 1);
+    double l7 = indexedLerp(noise->d[a3 + 1], x, y - 1, z - 1);
+    const double l8 = indexedLerp(noise->d[b3 + 1], x - 1, y - 1, z - 1);
 
     l1 = MathHelper::lerp(t1, l1, l2);
     l3 = MathHelper::lerp(t1, l3, l4);
@@ -130,7 +132,7 @@ double samplePerlin(const Generator* g, const PerlinNoise* noise, double d1, dou
 }
 
 
-static double simplexGrad(int idx, double x, double y, double z, double d) {
+static double simplexGrad(const int idx, const double x, const double y, const double z, const double d) {
     double con = d - x * x - y * y - z * z;
     if (con < 0) return 0;
     con *= con;
@@ -138,7 +140,7 @@ static double simplexGrad(int idx, double x, double y, double z, double d) {
 }
 
 
-static double simplexGrad_HARDCODED(int idx, double x, double y) {
+static double simplexGrad_HARDCODED(const int idx, const double x, const double y) {
     double con = 0.5 - x * x - y * y;
     if (con < 0) return 0;
     con *= con;
@@ -146,22 +148,22 @@ static double simplexGrad_HARDCODED(int idx, double x, double y) {
 }
 
 
-double sampleSimplex2D(const PerlinNoise* noise, double x, double y) {
+double sampleSimplex2D(const PerlinNoise* noise, const double x, const double y) {
     const double SKEW = 0.5 * (sqrt(3) - 1.0);
     const double UNSKEW = (3.0 - sqrt(3)) / 6.0;
 
-    double hf = (x + y) * SKEW;
-    int hx = (int) floor(x + hf);
-    int hz = (int) floor(y + hf);
-    double mhxz = (hx + hz) * UNSKEW;
-    double x0 = x - (hx - mhxz);
-    double y0 = y - (hz - mhxz);
-    int offx = (x0 > y0);
-    int offz = !offx;
-    double x1 = x0 - offx + UNSKEW;
-    double y1 = y0 - offz + UNSKEW;
-    double x2 = x0 - 1.0 + 2.0 * UNSKEW;
-    double y2 = y0 - 1.0 + 2.0 * UNSKEW;
+    const double hf = (x + y) * SKEW;
+    const int hx = static_cast<int>(floor(x + hf));
+    const int hz = static_cast<int>(floor(y + hf));
+    const double mhxz = (hx + hz) * UNSKEW;
+    const double x0 = x - (hx - mhxz);
+    const double y0 = y - (hz - mhxz);
+    const int offx = (x0 > y0);
+    const int offz = !offx;
+    const double x1 = x0 - offx + UNSKEW;
+    const double y1 = y0 - offz + UNSKEW;
+    const double x2 = x0 - 1.0 + 2.0 * UNSKEW;
+    const double y2 = y0 - 1.0 + 2.0 * UNSKEW;
     int gi0 = noise->d[0xff & (hz)];
     int gi1 = noise->d[0xff & (hz + offz)];
     int gi2 = noise->d[0xff & (hz + 1)];
@@ -176,9 +178,9 @@ double sampleSimplex2D(const PerlinNoise* noise, double x, double y) {
 }
 
 
-void octaveInit(OctaveNoise* noise, RNG& rng, PerlinNoise* octaves, int oMin, int len) {
+void octaveInit(OctaveNoise* noise, RNG& rng, PerlinNoise* octaves, const int oMin, const int len) {
     int i;
-    int end = oMin + len - 1;
+    const int end = oMin + len - 1;
     double persist = 1.0 / ((1LL << len) - 1.0);
     double lacuna = pow(2.0, end);
 
@@ -212,23 +214,22 @@ void octaveInit(OctaveNoise* noise, RNG& rng, PerlinNoise* octaves, int oMin, in
 }
 
 
-double sampleOctave(const Generator* g, const OctaveNoise* noise, double x, double y, double z) {
+double sampleOctave(const Generator* g, const OctaveNoise* noise, const double x, const double y, const double z) {
     double v = 0;
-    int i;
-    for (i = 0; i < noise->octcnt; i++) {
-        PerlinNoise* p = noise->octaves + i;
-        double lf = p->lacunarity;
-        double ax = maintainPrecision(x * lf);
-        double ay = maintainPrecision(y * lf);
-        double az = maintainPrecision(z * lf);
-        double pv = samplePerlin(g, p, ax, ay, az, 0, 0);
+    for (int i = 0; i < noise->octcnt; i++) {
+        const PerlinNoise* p = noise->octaves + i;
+        const double lf = p->lacunarity;
+        const double ax = maintainPrecision(x * lf);
+        const double ay = maintainPrecision(y * lf);
+        const double az = maintainPrecision(z * lf);
+        const double pv = samplePerlin(g, p, ax, ay, az, 0, 0);
         v += p->amplitude * pv;
     }
     return v;
 }
 
 
-void initSurfaceNoise(SurfaceNoise* sn, DIMENSION dimension, uint64_t worldSeed) {
+void initSurfaceNoise(SurfaceNoise* sn, const DIMENSION dimension, const uint64_t worldSeed) {
     RNG rng;
     rng.setSeed(worldSeed);
     octaveInit(&sn->octaveMin, rng, sn->oct + 0, -15, 16);
@@ -251,17 +252,16 @@ void initSurfaceNoise(SurfaceNoise* sn, DIMENSION dimension, uint64_t worldSeed)
 }
 
 
-double sampleOctaveAmp(const Generator* g, const OctaveNoise* noise, double x, double y, double z, double yAmp,
-                       double yMin, int yDefault) {
+double sampleOctaveAmp(const Generator* g, const OctaveNoise* noise, const double x, const double y, const double z, const double yAmp,
+                       const double yMin, const int yDefault) {
     double v = 0;
-    int i;
-    for (i = 0; i < noise->octcnt; i++) {
-        PerlinNoise* p = noise->octaves + i;
-        double lf = p->lacunarity;
-        double ax = maintainPrecision(x * lf);
-        double ay = yDefault ? -p->b : maintainPrecision(y * lf);
-        double az = maintainPrecision(z * lf);
-        double pv = samplePerlin(g, p, ax, ay, az, yAmp * lf, yMin * lf);
+    for (int i = 0; i < noise->octcnt; i++) {
+        const PerlinNoise* p = noise->octaves + i;
+        const double lf = p->lacunarity;
+        const double ax = maintainPrecision(x * lf);
+        const double ay = yDefault ? -p->b : maintainPrecision(y * lf);
+        const double az = maintainPrecision(z * lf);
+        const double pv = samplePerlin(g, p, ax, ay, az, yAmp * lf, yMin * lf);
         v += p->amplitude * pv;
     }
     return v;

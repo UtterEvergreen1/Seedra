@@ -5,13 +5,14 @@
 #include "biomeID.hpp"
 
 
-void setBiomeColor(unsigned char biomeColor[256][3], int id, unsigned char r, unsigned char g, unsigned char b) {
+void setBiomeColor(unsigned char biomeColor[256][3], const int id, const unsigned char r, const unsigned char g,
+                   const unsigned char b) {
     biomeColor[id][0] = r;
     biomeColor[id][1] = g;
     biomeColor[id][2] = b;
 }
 
-void setMutationColor(unsigned char biomeColor[256][3], int mutated, int parent) {
+void setMutationColor(unsigned char biomeColor[256][3], const int mutated, const int parent) {
     unsigned int c;
     biomeColor[mutated][0] = (c = biomeColor[parent][0] + 40) > 255 ? 255 : c;
     biomeColor[mutated][1] = (c = biomeColor[parent][1] + 40) > 255 ? 255 : c;

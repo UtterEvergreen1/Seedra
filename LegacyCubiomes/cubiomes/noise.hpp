@@ -38,7 +38,7 @@ struct SurfaceNoise {
 double maintainPrecision(double x);
 
 /// Perlin noise
-void perlinInit(PerlinNoise* noise, RNG& seed);
+void perlinInit(PerlinNoise* noise, RNG& rng);
 
 double samplePerlin(const Generator* g, const PerlinNoise* noise, double x, double y, double z, double yAmp,
                     double yMin);

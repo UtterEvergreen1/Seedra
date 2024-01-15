@@ -3,11 +3,6 @@
 #include "LegacyCubiomes/utils/enums.hpp"
 #include "LegacyCubiomes/utils/processor.hpp"
 
-#include "biomeID.hpp"
-
-#include <ostream>
-#include <string>
-
 class Generator;
 struct PerlinNoise;
 struct SurfaceNoise;
