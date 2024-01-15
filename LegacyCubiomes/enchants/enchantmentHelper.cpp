@@ -1,13 +1,16 @@
 #include "enchantmentHelper.hpp"
-#include "LegacyCubiomes/utils/MathHelper.hpp"
+
+
 EnchantedBookEnchantsLookupTable EnchantmentHelper::BOOK_LEVEL_TABLE;
 
+
 void EnchantmentHelper::setConsoleAndVersion(CONSOLE console, LCEVERSION version) {
-    int8_t consoleNum = static_cast<int8_t>(console);
-    int8_t lceVersion = static_cast<int8_t>(version);
+    const auto consoleNum = static_cast<int8_t>(console);
+    const auto lceVersion = static_cast<int8_t>(version);
 
     // error handling
-    if (consoleNum >= Enchantment::tableOfOrders.size()) throw std::range_error("Console not implemented.");
+    if (consoleNum >= Enchantment::tableOfOrders.size())
+        throw std::range_error("Console not implemented.");
     if (lceVersion >= Enchantment::tableOfOrders.at(consoleNum).size())
         throw std::range_error("Version not implemented.");
 
@@ -20,6 +23,7 @@ void EnchantmentHelper::setConsoleAndVersion(CONSOLE console, LCEVERSION version
     BOOK_LEVEL_TABLE.deallocate();
     BOOK_LEVEL_TABLE.setup();
 }
+
 
 void EnchantmentHelper::deallocate() {
     BOOK_LEVEL_TABLE.deallocate();

@@ -1,5 +1,6 @@
 #include "RavineGenerator.hpp"
 #include "LegacyCubiomes/utils/MathHelper.hpp"
+#include "LegacyCubiomes/cubiomes/biomeID.hpp"
 
 unsigned char RavineGenerator::topBlock(const int x, const int z) const {
     switch (g.getBiomeAt(1, x, z)) {

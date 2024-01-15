@@ -22,7 +22,7 @@ void ELDataArray::addRandomItem(RNG& rng) {
     // get the total weight
     int theTotalWeight = this->totalWeight;
     for (int i = 0; i < deletions.getIndex(); i++) {
-        int enchIndex = deletions.getValueAt(i);
+        const int enchIndex = deletions.getValueAt(i);
         theTotalWeight -= data[enchIndex].getRarityWeight();
     }
 
@@ -35,14 +35,14 @@ void ELDataArray::addRandomItem(RNG& rng) {
         size_t low = 0;
         size_t high = Enchantment::count;
         while (low < high) {
-            size_t mid = (low + high) >> 1;
-            if (EnchantedBookEnchantsLookupTable::CUMULATIVE_WEIGHT_ALL[mid] > weight) {
+            if (const size_t mid = low + high >> 1;
+                EnchantedBookEnchantsLookupTable::CUMULATIVE_WEIGHT_ALL[mid] > weight) {
                 high = mid;
             } else {
                 low = mid + 1;
             }
         }
-        enchants.addItem((int) low);
+        enchants.addItem(static_cast<int>(low));
         return;
     }
 
@@ -77,7 +77,7 @@ void ELDataArray::addEnchantments(ItemStack& itemStackIn) {
 //==============================================================================
 
 
-ELDataArray* EnchantedBookEnchantsLookupTable::get(int cost) {
+ELDataArray* EnchantedBookEnchantsLookupTable::get(const int cost) const {
     ELDataArray* array = dataArrays[cost];
     array->clear();
     return array;
@@ -89,16 +89,16 @@ void EnchantedBookEnchantsLookupTable::setup() {
     // sets up base cumulative weights
     int sum = 0;
     for (int i = 0; i < Enchantment::REGISTRY.size(); ++i) {
-        Enchantment* ench = Enchantment::REGISTRY[i];
+        const Enchantment* ench = Enchantment::REGISTRY[i];
         sum += ench->rarity->getWeight();
-        CUMULATIVE_WEIGHT_ALL[i] = sum;
+        CUMULATIVE_WEIGHT_ALL[i] = static_cast<int8_t>(sum);
     }
-    TOTAL_WEIGHT = sum;
+    TOTAL_WEIGHT = static_cast<int8_t>(sum);
 
     // sets up the dataArrays
     for (int cost = 0; cost < VECTOR_COUNT; cost++) {
         dataArrays[cost] = new ELDataArray();
-        auto array = dataArrays[cost];
+        const auto array = dataArrays[cost];
 
         for (Enchantment* ench_pt: Enchantment::REGISTRY.getRegistry()) {
             if (ench_pt == nullptr) throw std::runtime_error("Enchantment pointer is NULL; the table is incorrect!");

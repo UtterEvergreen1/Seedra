@@ -2,6 +2,7 @@
 
 #include "enchantment.hpp"
 
+
 class EnchantmentData {
 public:
     Enchantment* obj = nullptr;
@@ -10,7 +11,7 @@ public:
     static inline const std::string LEVEL_ROMAN[6] = {"", "I", "II", "III", "IV", "V"};
 
     EnchantmentData() = default;
-    EnchantmentData(Enchantment* enchantmentObj, int enchLevel) : obj(enchantmentObj), level(enchLevel) {}
+    EnchantmentData(Enchantment* enchantmentObj, const int enchLevel) : obj(enchantmentObj), level(enchLevel) {}
 
     ND std::string toString() const {
         if (obj == nullptr) return "NULLPTR";

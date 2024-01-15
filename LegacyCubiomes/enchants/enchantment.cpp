@@ -1,6 +1,3 @@
-#include <utility>
-
-
 #include "enchantment.hpp"
 
 #include "LegacyCubiomes/enchants/classes/EnchantmentArrowDamage.hpp"
@@ -19,7 +16,9 @@
 #include "LegacyCubiomes/enchants/classes/EnchantmentMending.hpp"
 #include "LegacyCubiomes/enchants/classes/EnchantmentOxygen.hpp"
 #include "LegacyCubiomes/enchants/classes/EnchantmentProtection.hpp"
+#ifdef INCLUDE_JAVA
 #include "LegacyCubiomes/enchants/classes/EnchantmentSweepingEdge.hpp"
+#endif
 #include "LegacyCubiomes/enchants/classes/EnchantmentThorns.hpp"
 #include "LegacyCubiomes/enchants/classes/EnchantmentUntouching.hpp"
 #include "LegacyCubiomes/enchants/classes/EnchantmentVanishingCurse.hpp"
@@ -157,12 +156,12 @@ CONSOLE Enchantment::currentConsole = CONSOLE::NONE;
 LCEVERSION Enchantment::currentVersion = LCEVERSION::NONE;
 
 
-int Enchantment::getMinCost(int enchantmentLevel) {
+int Enchantment::getMinCost(const int enchantmentLevel) {
     return 1 + enchantmentLevel * 10;
 }
 
 
-int Enchantment::getMaxCost(int enchantmentLevel) {
+int Enchantment::getMaxCost(const int enchantmentLevel) {
     return 6 + enchantmentLevel * 10;
 }
 
@@ -226,5 +225,5 @@ void Enchantment::registerEnchantments() {
     registerEnchantment(new EnchantmentTridentRiptide("Riptide", &Rarities::RARE));
     registerEnchantment(new EnchantmentTridentLoyalty("Loyalty", &Rarities::COMMON));
     registerEnchantment(new EnchantmentTridentChanneling("Channeling", &Rarities::EPIC));
-    count = (int)REGISTRY.size();
+    count = REGISTRY.size();
 }

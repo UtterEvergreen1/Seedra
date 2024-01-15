@@ -1,4 +1,6 @@
 #include "WaterCaveGenerator.hpp"
+
+
 bool WaterCaveGenerator::canReplaceBlock(uint16_t blockAt) {
     switch (blockAt) {
         case Items::AIR_ID:

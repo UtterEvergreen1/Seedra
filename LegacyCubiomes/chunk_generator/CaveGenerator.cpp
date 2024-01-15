@@ -1,5 +1,6 @@
 #include "CaveGenerator.hpp"
 
+#include "LegacyCubiomes/cubiomes/biomeID.hpp"
 #include "LegacyCubiomes/cubiomes/layers.hpp"
 #include "LegacyCubiomes/utils/MathHelper.hpp"
 
