@@ -9,17 +9,17 @@
 
 namespace Chunk {
 
-    template<bool generateCaves = true, bool generateRavines = true, bool generateSkyLight = false>
+    template<bool checkWaterCaves = false, bool generateCaves = true, bool generateRavines = true, bool generateSkyLight = false>
     static ChunkPrimer* provideChunk(const Generator& g, int chunkX, int chunkZ) {
         ChunkGeneratorOverWorld chunk(g);
         ChunkPrimer* chunkPrimer = chunk.provideChunk(chunkX, chunkZ);
-        if constexpr (generateCaves) {
+        if constexpr (generateCaves && checkWaterCaves) {
             if (g.getLCEVersion() == LCEVERSION::AQUATIC) {
                 WaterCaveGenerator waterCaveGenerator(g);
                 waterCaveGenerator.generateUnderwater(chunkX, chunkZ, chunkPrimer);
             }
         }
-        if constexpr (generateRavines) {
+        if constexpr (generateRavines && checkWaterCaves) {
             if (g.getLCEVersion() == LCEVERSION::AQUATIC) {
                 WaterRavineGenerator waterRavineGenerator(g);
                 waterRavineGenerator.generateUnderwater(chunkX, chunkZ, chunkPrimer);

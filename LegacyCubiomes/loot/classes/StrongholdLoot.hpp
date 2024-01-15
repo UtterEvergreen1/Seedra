@@ -10,13 +10,13 @@ namespace loot {
     class StrongholdLoot : public Loot<StrongholdLoot<T>> {
     public:
         /// loot seeding with stronghold stone rolls
-        template<bool checkCaves>
+        template<bool checkCaves, bool checkWaterCaves = false>
         static RNG getLootSeed(const Generator& g, generation::Stronghold* strongholdGenerator, const Piece& piece,
                                int chestChunkX, int chestChunkZ) {
             RNG rng = RNG::getPopulationSeed(g.getWorldSeed(), chestChunkX, chestChunkZ);
 
             if constexpr (checkCaves) {
-                ChunkPrimer* chunk = Chunk::provideChunk(g, chestChunkX, chestChunkZ);
+                ChunkPrimer* chunk = Chunk::provideChunk<checkWaterCaves>(g, chestChunkX, chestChunkZ);
                 // we roll rng equal to the stone bricks in the chunk that generated before the chest corridor
                 if (!structure_rolls::Stronghold::generateStructure<true>(chunk, strongholdGenerator, rng, piece,
                                                                           chestChunkX, chestChunkZ)) {

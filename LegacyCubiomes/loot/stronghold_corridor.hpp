@@ -8,11 +8,11 @@ namespace loot {
     public:
         static void setup();
 
-        template<bool checkCaves, bool shuffle>
+        template<bool checkCaves, bool shuffle, bool checkWaterCaves = false>
         ND static Container getAltarChestLoot(const Generator& g, const Piece& altarChestPiece,
                                               generation::Stronghold* strongholdGenerator);
 
-        template<bool checkCaves, bool shuffle>
+        template<bool checkCaves, bool shuffle, bool checkWaterCaves = false>
         ND static std::vector<Container> getAllAltarChestLoot(const Generator& g,
                                                               generation::Stronghold* strongholdGenerator);
     };
@@ -51,10 +51,10 @@ namespace loot {
     }
 
     template<bool isAquatic>
-    template<bool checkCaves, bool shuffle>
+    template<bool checkCaves, bool shuffle, bool checkWaterCaves>
     Container StrongholdCorridor<isAquatic>::getAltarChestLoot(const Generator& g, const Piece& altarChestPiece,
                                                                generation::Stronghold* strongholdGenerator) {
-        RNG lootSeed = StrongholdLoot<StrongholdCorridor<isAquatic>>::template getLootSeed<checkCaves>(
+        RNG lootSeed = StrongholdLoot<StrongholdCorridor<isAquatic>>::template getLootSeed<checkCaves, checkWaterCaves>(
                 g, strongholdGenerator, altarChestPiece, altarChestPiece.getWorldX(3, 3) >> 4,
                 altarChestPiece.getWorldZ(3, 3) >> 4);
         if (lootSeed == -1) return {};
@@ -63,14 +63,14 @@ namespace loot {
     }
 
     template<bool isAquatic>
-    template<bool checkCaves, bool shuffle>
+    template<bool checkCaves, bool shuffle, bool checkWaterCaves>
     std::vector<Container>
     StrongholdCorridor<isAquatic>::getAllAltarChestLoot(const Generator& g,
                                                         generation::Stronghold* strongholdGenerator) {
         std::vector<Container> altarChests(strongholdGenerator->altarChestArraySize);
         for (int altarChestIndex = 0; altarChestIndex < strongholdGenerator->altarChestArraySize; altarChestIndex++)
             altarChests[altarChestIndex] =
-                    StrongholdCorridor<isAquatic>::template getAltarChestLoot<checkCaves, shuffle>(
+                    StrongholdCorridor<isAquatic>::template getAltarChestLoot<checkCaves, shuffle, checkWaterCaves>(
                             g, *strongholdGenerator->altarChestsArray[altarChestIndex], strongholdGenerator);
 
         return altarChests;
