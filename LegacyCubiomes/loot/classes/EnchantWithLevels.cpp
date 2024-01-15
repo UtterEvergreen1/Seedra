@@ -1,23 +1,27 @@
 #include "EnchantWithLevels.hpp"
 
-/* Initializers */
-EnchantWithLevels::EnchantWithLevels(UniformRoll roll) : randomLevel(roll) {}
 
-EnchantWithLevelsBook::EnchantWithLevelsBook(UniformRoll levelRange) : EnchantWithLevels(levelRange) {}
-EnchantWithLevelsBook::EnchantWithLevelsBook(int level) : EnchantWithLevels(UniformRoll(level, level)) {}
-EnchantWithLevelsItem::EnchantWithLevelsItem(UniformRoll levelRange) : EnchantWithLevels(levelRange) {}
-EnchantWithLevelsItem::EnchantWithLevelsItem(int level) : EnchantWithLevels(UniformRoll(level, level)) {}
+#include "LegacyCubiomes/enchants/enchantmentHelper.hpp"
+#include "LegacyCubiomes/utils/MathHelper.hpp"
+
+/* Initializers */
+EnchantWithLevels::EnchantWithLevels(const UniformRoll roll) : randomLevel(roll) {}
+
+EnchantWithLevelsBook::EnchantWithLevelsBook(const UniformRoll levelRange) : EnchantWithLevels(levelRange) {}
+EnchantWithLevelsBook::EnchantWithLevelsBook(const int level) : EnchantWithLevels(UniformRoll(level, level)) {}
+EnchantWithLevelsItem::EnchantWithLevelsItem(const UniformRoll levelRange) : EnchantWithLevels(levelRange) {}
+EnchantWithLevelsItem::EnchantWithLevelsItem(const int level) : EnchantWithLevels(UniformRoll(level, level)) {}
 
 
 /* apply functions */
 void EnchantWithLevelsBook::apply(ItemStack& itemStack, RNG& random) {
-    int level = random.nextInt(this->randomLevel.getMin(), this->randomLevel.getMax());
+    const int level = random.nextInt(this->randomLevel.getMin(), this->randomLevel.getMax());
     ELDataArray* enchantmentVector = buildEnchantmentList(itemStack, random, level);
     enchantmentVector->addEnchantments(itemStack);
 }
 
 void EnchantWithLevelsItem::apply(ItemStack& itemStack, RNG& random) {
-    int level = random.nextInt(this->randomLevel.getMin(), this->randomLevel.getMax());
+    const int level = random.nextInt(this->randomLevel.getMin(), this->randomLevel.getMax());
     addRandomEnchantment(random, itemStack, level);
 }
 
@@ -26,17 +30,17 @@ void EnchantWithLevelsItem::apply(ItemStack& itemStack, RNG& random) {
 ELDataArray* EnchantWithLevelsBook::buildEnchantmentList(const ItemStack& itemStackIn, RNG& rng, int level) {
 
     const Items::Item* item = itemStackIn.getItem();
-    int cost = (item->getCost() >> 2) + 1;
+    const int cost = (item->getCost() >> 2) + 1;
 
     level += 1 + rng.nextInt(cost) + rng.nextInt(cost);
-    float f = (rng.nextFloat() + rng.nextFloat() - 1.0F) * 0.15F;
+    const float f = (rng.nextFloat() + rng.nextFloat() - 1.0F) * 0.15F;
     level = MathHelper::clamp((int) std::round((float) level + (float) level * f), 1, 0x7fffffff);
 
     ELDataArray* enchants = EnchantmentHelper::BOOK_LEVEL_TABLE.get(level);
     enchants->addRandomItem(rng);
 
     while (rng.nextInt(50) <= level) {
-        EnchantmentData* back = enchants->getLastEnchantmentAdded();
+        const EnchantmentData* back = enchants->getLastEnchantmentAdded();
 
         for (int enchIndex = 0; enchIndex < enchants->totalEnchants; enchIndex++) {
             if (!back->obj->canApplyTogether(enchants->data[enchIndex].obj)) {
@@ -60,7 +64,7 @@ EnchDataVec_t EnchantWithLevelsItem::buildEnchantmentList(const ItemStack& itemS
     list.reserve(MAX_ENCHANT_LIST_SIZE);
 
     const Items::Item* item = itemStackIn.getItem();
-    int i = static_cast<int>((unsigned char) item->getCost());
+    const int i = static_cast<unsigned char>(item->getCost());
 
     if (i == 0) return list;
 
@@ -88,12 +92,11 @@ EnchDataVec_t EnchantWithLevelsItem::buildEnchantmentList(const ItemStack& itemS
 }
 
 
-EnchDataVec_t EnchantWithLevelsItem::getEnchantmentDataList(int enchantmentLevelIn, const ItemStack& ItemStackIn) {
+EnchDataVec_t EnchantWithLevelsItem::getEnchantmentDataList(const int enchantmentLevelIn, const ItemStack& ItemStackIn) {
     EnchDataVec_t list;
-    bool added;
 
     for (Enchantment* pointer: Enchantment::REGISTRY.getRegistry()) {
-        added = false;
+        bool added = false;
 
         if (!pointer->type->canEnchantItem(ItemStackIn.getItem())) { continue; }
 
@@ -115,7 +118,7 @@ EnchDataVec_t EnchantWithLevelsItem::getEnchantmentDataList(int enchantmentLevel
 }
 
 
-void EnchantWithLevelsItem::removeIncompatible(EnchDataVec_t& enchDataList, EnchantmentData enchData) {
+void EnchantWithLevelsItem::removeIncompatible(EnchDataVec_t& enchDataList, const EnchantmentData enchData) {
     // std::cout << "REMOVE_INCOMPATIBLE" << std::endl;
 
     for (auto it = enchDataList.begin(); it != enchDataList.end();) {

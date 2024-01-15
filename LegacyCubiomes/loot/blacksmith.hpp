@@ -2,13 +2,14 @@
 
 #include "LegacyCubiomes/loot/classes/Loot.hpp"
 
+
 namespace loot {
     class Blacksmith : public Loot<Blacksmith> {
     public:
         static void setup();
     };
 
-    void Blacksmith::setup() {
+    inline void Blacksmith::setup() {
         std::vector<ItemEntry> items;
 
         items.emplace_back(&Items::DIAMOND, 3, 1, 3);
@@ -32,4 +33,4 @@ namespace loot {
 
         maxItemsPossible = 8;
     }
-} // namespace loot
+}

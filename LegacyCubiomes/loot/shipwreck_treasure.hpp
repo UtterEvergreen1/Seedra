@@ -2,13 +2,14 @@
 
 #include "LegacyCubiomes/loot/classes/Loot.hpp"
 
+
 namespace loot {
     class ShipwreckTreasure : public Loot<ShipwreckTreasure> {
     public:
         static void setup();
     };
 
-    void ShipwreckTreasure::setup() {
+    inline void ShipwreckTreasure::setup() {
         std::vector<ItemEntry> items1;
         std::vector<ItemEntry> items2;
 
@@ -26,4 +27,4 @@ namespace loot {
 
         maxItemsPossible = 11;
     }
-} // namespace loot
+}

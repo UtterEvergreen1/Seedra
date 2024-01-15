@@ -12,7 +12,7 @@ namespace loot {
         /// loot seeding with stronghold stone rolls
         template<bool checkCaves, bool checkWaterCaves = false>
         static RNG getLootSeed(const Generator& g, generation::Stronghold* strongholdGenerator, const Piece& piece,
-                               int chestChunkX, int chestChunkZ) {
+                               const int chestChunkX, const int chestChunkZ) {
             RNG rng = RNG::getPopulationSeed(g.getWorldSeed(), chestChunkX, chestChunkZ);
 
             if constexpr (checkCaves) {
@@ -34,7 +34,7 @@ namespace loot {
         /// combine loot seeding and generation to get the stronghold loot
         template<bool checkCaves, bool shuffle>
         ND static Container getLoot(const Generator& g, generation::Stronghold* strongholdGenerator, const Piece& piece,
-                                    int chestChunkX, int chestChunkZ) {
+                                    const int chestChunkX, const int chestChunkZ) {
             uint64_t lootSeed = getLootSeed<checkCaves>(g, strongholdGenerator, piece, chestChunkX, chestChunkZ);
             if (lootSeed == -1) return {};
             return T::template getLootFromSeed<shuffle>(lootSeed);

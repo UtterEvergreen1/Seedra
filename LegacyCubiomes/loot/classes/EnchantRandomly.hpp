@@ -3,12 +3,13 @@
 #include "LootFunction.hpp"
 
 
-class EnchantRandomlyBook : public LootFunction {
+class EnchantRandomlyBook final : public LootFunction {
 public:
-    void apply(ItemStack& itemStack, RNG& random) final;
+    void apply(ItemStack& itemStack, RNG& random) override;
 };
 
-class EnchantRandomlyItem : public LootFunction {
+
+class EnchantRandomlyItem final : public LootFunction {
 public:
-    void apply(ItemStack& itemStack, RNG& random) final;
+    void apply(ItemStack& itemStack, RNG& random) override;
 };

@@ -1,8 +1,7 @@
 #pragma once
-#include "LegacyCubiomes/enchants/enchantmentHelper.hpp"
+
 #include "LegacyCubiomes/enchants/fastBookEnchantArray.hpp"
 #include "LegacyCubiomes/enchants/weightedRandom.hpp"
-#include "LegacyCubiomes/utils/MathHelper.hpp"
 #include "LootFunction.hpp"
 #include "UniformRoll.hpp"
 
@@ -15,39 +14,31 @@ protected:
 };
 
 
-class EnchantWithLevelsBook : public EnchantWithLevels {
+class EnchantWithLevelsBook final : public EnchantWithLevels {
 public:
     explicit EnchantWithLevelsBook(UniformRoll levelRange);
-
     explicit EnchantWithLevelsBook(int level);
-
-    void apply(ItemStack& itemStack, RNG& random) final;
+    void apply(ItemStack& itemStack, RNG& random) override;
 
 private:
     static ELDataArray* buildEnchantmentList(const ItemStack& itemStackIn, RNG& rng, int level);
 };
 
 
-class EnchantWithLevelsItem : public EnchantWithLevels {
+class EnchantWithLevelsItem final : public EnchantWithLevels {
 public:
     explicit EnchantWithLevelsItem(UniformRoll levelRange);
-
     explicit EnchantWithLevelsItem(int level);
-
-    void apply(ItemStack& itemStack, RNG& random) final;
+    void apply(ItemStack& itemStack, RNG& random) override;
 
 private:
-    static inline void addRandomEnchantment(RNG& rng, ItemStack& itemStackIn, int level) {
-        EnchDataVec_t enchantmentList = buildEnchantmentList(itemStackIn, rng, level);
-
-        for (const auto& enchantmentData: enchantmentList) {
+    static void addRandomEnchantment(RNG& rng, ItemStack& itemStackIn, const int level) {
+        for (const auto& enchantmentData: buildEnchantmentList(itemStackIn, rng, level)) {
             itemStackIn.addEnchantment(enchantmentData.obj, enchantmentData.level);
         }
     }
 
     static EnchDataVec_t buildEnchantmentList(const ItemStack& itemStackIn, RNG& rng, int level);
-
     static EnchDataVec_t getEnchantmentDataList(int enchantmentLevelIn, const ItemStack& ItemStackIn);
-
     static void removeIncompatible(EnchDataVec_t& enchDataList, EnchantmentData enchData);
 };

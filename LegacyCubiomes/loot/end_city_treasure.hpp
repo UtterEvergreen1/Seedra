@@ -9,7 +9,7 @@ namespace loot {
         static void setup();
     };
 
-    void EndCityTreasure::setup() {
+    inline void EndCityTreasure::setup() {
         std::vector<ItemEntry> items;
 
         items.emplace_back(&Items::DIAMOND, 5, 2, 7);

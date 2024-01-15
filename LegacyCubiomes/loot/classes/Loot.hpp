@@ -2,9 +2,9 @@
 
 #include <vector>
 
+#include "LegacyCubiomes/loot/classes/Container.hpp"
 #include "LegacyCubiomes/utils/Pos2DTemplate.hpp"
 
-#include "LegacyCubiomes/loot/classes/Container.hpp"
 
 namespace loot {
     template<typename T>
@@ -51,7 +51,7 @@ namespace loot {
     /// combine loot seeding and generation to get the base loot
     template<typename T>
     template<bool shuffle, bool legacy>
-    Container Loot<T>::getLootFromChunk(int64_t worldSeed, int chunkX, int chunkZ) {
+    Container Loot<T>::getLootFromChunk(const int64_t worldSeed, const int chunkX, const int chunkZ) {
         static_assert(!shuffle || !legacy, "Legacy loot does not shuffle: change shuffle to false");
         RNG seed = RNG::getPopulationSeed(worldSeed, chunkX, chunkZ);
         if constexpr (legacy) return getLootLegacyFromSeed(seed);
@@ -63,18 +63,16 @@ namespace loot {
     /// loot generation from seed
     template<typename T>
     template<bool shuffle>
-    Container Loot<T>::getLootFromLootTableSeed(uint64_t lootTableSeed) {
+    Container Loot<T>::getLootFromLootTableSeed(const uint64_t lootTableSeed) {
         std::vector<ItemStack> chestContents;
-        chestContents.reserve(Loot<T>::maxItemsPossible);
+        chestContents.reserve(maxItemsPossible);
         RNG random;
         random.setSeed(lootTableSeed);
-        //qDebug() << (int64_t)lootTableSeed;
 
         // generate loot
-        int rollCount, rollIndex;
         for (const LootTable& table: lootTables) {
-            rollCount = random.nextInt(table.getMin(), table.getMax());
-            for (rollIndex = 0; rollIndex < rollCount; rollIndex++) {
+            const int rollCount = random.nextInt(table.getMin(), table.getMax());
+            for (int rollIndex = 0; rollIndex < rollCount; rollIndex++) {
                 ItemStack result = table.createLootRoll<false>(random);
                 chestContents.push_back(result);
             }
@@ -82,7 +80,7 @@ namespace loot {
 
         if constexpr (!shuffle) { return {std::move(chestContents)}; }
 
-        Container container = Container(Container::CHEST_SIZE);
+        auto container = Container(Container::CHEST_SIZE);
         container.shuffleIntoContainer(chestContents, random);
         return container;
     }
@@ -90,18 +88,17 @@ namespace loot {
     /// loot generation from seed
     template<typename T>
     template<bool shuffle>
-    inline Container Loot<T>::getLootFromSeed(RNG& seed) {
+    Container Loot<T>::getLootFromSeed(RNG& seed) {
         return getLootFromLootTableSeed<shuffle>(seed.nextLong());
     }
 
     template<typename T>
     Container Loot<T>::getLootLegacyFromSeed(RNG& seed) {
-        Container chestContents = Container();
-        int rollCount;
+        auto chestContents = Container();
 
         //generate loot
         for (const LootTable& table: lootTables) {
-            rollCount = seed.nextIntLegacy(table.getMin(), table.getMax());
+            const int rollCount = seed.nextIntLegacy(table.getMin(), table.getMax());
             for (int rollIndex = 0; rollIndex < rollCount; rollIndex++) {
                 ItemStack result = table.createLootRoll<true>(seed);
                 chestContents.setInventorySlotContents(seed.nextInt(Container::CHEST_SIZE), std::move(result));
@@ -114,19 +111,19 @@ namespace loot {
     /// other parameter options for loot finding
     template<typename T>
     template<bool shuffle, bool legacy>
-    inline Container Loot<T>::getLootFromChunk(int64_t worldSeed, Pos2D chunkPos) {
+    Container Loot<T>::getLootFromChunk(const int64_t worldSeed, const Pos2D chunkPos) {
         return getLootFromChunk<shuffle, legacy>(worldSeed, chunkPos.x, chunkPos.z);
     }
 
     template<typename T>
     template<bool shuffle, bool legacy>
-    inline Container Loot<T>::getLootFromBlock(int64_t worldSeed, int blockX, int blockZ) {
+    Container Loot<T>::getLootFromBlock(const int64_t worldSeed, const int blockX, const int blockZ) {
         return getLootFromChunk<shuffle, legacy>(worldSeed, blockX >> 4, blockZ >> 4);
     }
 
     template<typename T>
     template<bool shuffle, bool legacy>
-    inline Container Loot<T>::getLootFromBlock(int64_t worldSeed, Pos2D blockPos) {
+    Container Loot<T>::getLootFromBlock(const int64_t worldSeed, const Pos2D blockPos) {
         return getLootFromChunk<shuffle, legacy>(worldSeed, blockPos.x >> 4, blockPos.z >> 4);
     }
 
@@ -134,14 +131,15 @@ namespace loot {
     /// generate loot chests in a row eg. needed to get all desert temple chests
     template<typename T>
     template<bool shuffle, bool legacy>
-    std::vector<Container> Loot<T>::getLootChests(int numChests, int64_t worldSeed, int chunkX, int chunkZ) {
+    std::vector<Container> Loot<T>::getLootChests(const int numChests, const int64_t worldSeed, const int chunkX,
+                                                  const int chunkZ) {
         RNG seed = RNG::getPopulationSeed(worldSeed, chunkX, chunkZ);
         return getLootChestsFromSeed<shuffle, legacy>(numChests, seed);
     }
 
     template<typename T>
     template<bool shuffle, bool legacy>
-    std::vector<Container> Loot<T>::getLootChestsFromSeed(int numChests, RNG& seed) {
+    std::vector<Container> Loot<T>::getLootChestsFromSeed(const int numChests, RNG& seed) {
         std::vector<Container> chests(numChests);
         for (int chestIndex = 0; chestIndex < numChests; chestIndex++) {
             if constexpr (legacy) chests[chestIndex] = getLootLegacyFromSeed(seed);
@@ -151,4 +149,4 @@ namespace loot {
         return chests;
     }
 
-} // namespace loot
+}

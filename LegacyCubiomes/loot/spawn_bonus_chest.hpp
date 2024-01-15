@@ -9,7 +9,7 @@ namespace loot {
         static void setup();
     };
 
-    void SpawnBonusChest::setup() {
+    inline void SpawnBonusChest::setup() {
         std::vector<ItemEntry> items1;
         std::vector<ItemEntry> items2;
         std::vector<ItemEntry> items3;
@@ -18,9 +18,8 @@ namespace loot {
         std::vector<ItemEntry> items6;
         std::vector<ItemEntry> items7;
         std::vector<ItemEntry> items8;
-        const std::vector<const Items::Item*> LOG1_vec = {&Items::OAK_WOOD, &Items::SPRUCE_WOOD, &Items::BIRCH_WOOD,
-                                                          &Items::JUNGLE_WOOD};
-        const std::vector<const Items::Item*> LOG2_vec = {&Items::ACACIA_WOOD, &Items::DARK_OAK_WOOD};
+        const std::vector LOG1_vec = {&Items::OAK_WOOD, &Items::SPRUCE_WOOD, &Items::BIRCH_WOOD, &Items::JUNGLE_WOOD};
+        const std::vector LOG2_vec = {&Items::ACACIA_WOOD, &Items::DARK_OAK_WOOD};
 
         // table 1
         items1.emplace_back(&Items::JUNGLE_SAPLING, 1, 1, 5);
@@ -63,4 +62,4 @@ namespace loot {
 
         maxItemsPossible = 9;
     }
-} // namespace loot
+}

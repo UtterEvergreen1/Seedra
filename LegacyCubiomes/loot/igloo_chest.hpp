@@ -8,7 +8,7 @@ namespace loot {
         static void setup();
     };
 
-    void Igloo::setup() {
+    inline void Igloo::setup() {
         std::vector<ItemEntry> items1;
         std::vector<ItemEntry> items2;
 

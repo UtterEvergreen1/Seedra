@@ -2,9 +2,10 @@
 
 #include <cstdint>
 
+
 namespace Items {
 
-    enum ItemType : int8_t {
+    enum class ItemType : int8_t {
         ItemArmor,
         ItemBlock,
         ItemBow,
@@ -42,4 +43,4 @@ namespace Items {
         TOOL_GOLD = 22,
     };
 
-} // namespace Items
+}

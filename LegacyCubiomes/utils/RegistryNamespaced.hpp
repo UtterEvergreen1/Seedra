@@ -34,7 +34,7 @@ public:
      * Returns the size of current registry
      * @return size of current registry
      */
-    ND int size() const { return sortedRegistry.size(); }
+    [[nodiscard]] int size() const { return sortedRegistry.size(); }
 
     /// Deallocates all the stored values
     void clear() {

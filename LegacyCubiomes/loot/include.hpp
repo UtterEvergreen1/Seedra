@@ -22,30 +22,31 @@
 #include "underwater_ruin_big.hpp"
 #include "underwater_ruin_small.hpp"
 
+
 namespace loot {
     template<bool isAquatic>
     void setup() {
-        loot::AbandonedMineshaft::setup();
-        loot::Blacksmith::setup();
-        loot::DesertTemple::setup();
-        loot::EndCityTreasure::setup();
-        loot::Igloo::setup();
-        loot::JungleTemple::setup();
-        loot::JungleTempleDispenser::setup();
-        loot::NetherBridge::setup();
-        loot::SimpleDungeon::setup();
-        loot::Mansion::setup();
-        loot::SpawnBonusChest::setup();
-        loot::StrongholdLibrary::setup();
-        loot::StrongholdCorridor<isAquatic>::setup();
+        AbandonedMineshaft::setup();
+        Blacksmith::setup();
+        DesertTemple::setup();
+        EndCityTreasure::setup();
+        Igloo::setup();
+        JungleTemple::setup();
+        JungleTempleDispenser::setup();
+        NetherBridge::setup();
+        SimpleDungeon::setup();
+        Mansion::setup();
+        SpawnBonusChest::setup();
+        StrongholdLibrary::setup();
+        StrongholdCorridor<isAquatic>::setup();
 
         if constexpr (isAquatic) {
-            loot::BuriedTreasure::setup();
-            loot::UnderwaterRuinBig::setup();
-            loot::UnderwaterRuinSmall::setup();
-            loot::ShipwreckTreasure::setup();
-            loot::ShipwreckSupply::setup();
-            loot::ShipwreckMap::setup();
+            BuriedTreasure::setup();
+            UnderwaterRuinBig::setup();
+            UnderwaterRuinSmall::setup();
+            ShipwreckTreasure::setup();
+            ShipwreckSupply::setup();
+            ShipwreckMap::setup();
         }
     }
-} // namespace loot
+}

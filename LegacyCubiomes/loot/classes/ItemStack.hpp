@@ -1,9 +1,9 @@
 #pragma once
+
 #include "LegacyCubiomes/enchants/enchantment.hpp"
 #include "LegacyCubiomes/enchants/enchantmentData.hpp"
-#include "LegacyCubiomes/loot/classes/ItemEntry.hpp"
 #include "LegacyCubiomes/mc/items.hpp"
-#include "LegacyCubiomes/utils/rng.hpp"
+
 
 class ItemStack {
 public:
@@ -11,9 +11,9 @@ public:
     uint8_t stackSize{};
     std::vector<EnchantmentData> enchantments;
 
-    ItemStack() : item(nullptr), stackSize(0) {}
-    explicit ItemStack(const Items::Item* item) : item(item), stackSize(0) {}
-    ItemStack(const Items::Item* item, int stackSize) : item(item), stackSize(stackSize) {}
+    ItemStack() : item(nullptr) {}
+    explicit ItemStack(const Items::Item* item) : item(item) {}
+    ItemStack(const Items::Item* item, const int stackSize) : item(item), stackSize(stackSize) {}
 
     ItemStack splitStack(int amount);
     ND const Items::Item* getItem() const;
@@ -23,7 +23,7 @@ public:
 
     friend std::ostream& operator<<(std::ostream& out, const ItemStack& itemStack) {
         if (itemStack.stackSize > 1) {
-            out << itemStack.item->getName() << " (" << (int) itemStack.stackSize << ")";
+            out << itemStack.item->getName() << " (" << static_cast<int>(itemStack.stackSize) << ")";
         } else {
             out << itemStack.item->getName();
         }

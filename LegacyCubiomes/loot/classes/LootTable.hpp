@@ -5,6 +5,8 @@
 #include "LegacyCubiomes/loot/classes/ItemStack.hpp"
 #include "LegacyCubiomes/mc/items.hpp"
 #include "LegacyCubiomes/utils/rng.hpp"
+#include "UniformRoll.hpp"
+#include "ItemEntry.hpp"
 
 class LootTable : public UniformRoll {
 public:
@@ -12,20 +14,18 @@ public:
     std::vector<uint16_t> cumulativeWeights;
     int totalWeight;
 
-    //LootTable() = default;
-
-    LootTable(const std::vector<ItemEntry>& items, int amount)
+    LootTable(const std::vector<ItemEntry>& items, const int amount)
         : UniformRoll(amount, amount), items(items), totalWeight(0) {
         computeCumulativeWeights();
     }
 
-    LootTable(const std::vector<ItemEntry>& items, int min, int max)
+    LootTable(const std::vector<ItemEntry>& items, const int min, const int max)
         : UniformRoll(min, max), items(items), totalWeight(0) {
         computeCumulativeWeights();
     }
 
     template<bool legacy>
-    static uint8_t getInt(RNG& rng, uint8_t minimum, uint8_t maximum) {
+    static uint8_t getInt(RNG& rng, const uint8_t minimum, const uint8_t maximum) {
         if constexpr (legacy) return rng.nextIntLegacy(minimum, maximum);
         else
             return rng.nextInt(minimum, maximum);
@@ -41,13 +41,13 @@ public:
      */
     template<bool legacy>
     ND ItemStack createLootRoll(RNG& rng) const {
-        int randomWeight = rng.nextInt(totalWeight);
+        const int randomWeight = rng.nextInt(totalWeight);
         // std::cout << randomWeight << " " << totalWeight << std::endl;
 
         size_t high = cumulativeWeights.size();
         size_t low = 0;
         while (low < high) {
-            size_t mid = (low + high) >> 1;
+            size_t mid = low + high >> 1;
             if (cumulativeWeights[mid] > randomWeight) {
                 high = mid;
             } else {

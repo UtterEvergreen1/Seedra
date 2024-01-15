@@ -11,7 +11,7 @@ namespace loot {
         MU static Container getLoot(int64_t worldSeed, int chunkX, int chunkZ);
     };
 
-    void BuriedTreasure::setup() {
+    inline void BuriedTreasure::setup() {
         std::vector<ItemEntry> items1;
         std::vector<ItemEntry> items2;
 
@@ -45,8 +45,8 @@ namespace loot {
     }
 
     template<bool shuffle>
-    Container BuriedTreasure::getLoot(int64_t worldSeed, int chunkX, int chunkZ) {
+    Container BuriedTreasure::getLoot(const int64_t worldSeed, const int chunkX, const int chunkZ) {
         RNG seed = RNG::getPopulationSeed(worldSeed, chunkX, chunkZ);
-        return std::move(Loot::getLootFromLootTableSeed<shuffle>((int) seed.nextLong()));
+        return std::move(Loot::getLootFromLootTableSeed<shuffle>(static_cast<int>(seed.nextLong())));
     }
 } // namespace loot

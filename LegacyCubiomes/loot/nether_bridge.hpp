@@ -1,13 +1,14 @@
 #pragma once
 #include "LegacyCubiomes/loot/classes/Loot.hpp"
 
+
 namespace loot {
     class NetherBridge : public Loot<NetherBridge> {
     public:
         static void setup();
     };
 
-    void NetherBridge::setup() {
+    inline void NetherBridge::setup() {
         std::vector<ItemEntry> items;
 
         items.emplace_back(&Items::DIAMOND, 5, 1, 3);
@@ -26,4 +27,4 @@ namespace loot {
 
         maxItemsPossible = 4;
     }
-} // namespace loot
+}

@@ -2,13 +2,14 @@
 
 #include "LegacyCubiomes/loot/classes/Loot.hpp"
 
+
 namespace loot {
     class VillageTwoRoomHouse : public Loot<VillageTwoRoomHouse> {
     public:
         static void setup();
     };
 
-    void VillageTwoRoomHouse::setup() {
+    inline void VillageTwoRoomHouse::setup() {
         std::vector<ItemEntry> items;
 
         items.emplace_back(&Items::POTATO, 10, 5, 8);
@@ -21,4 +22,4 @@ namespace loot {
 
         maxItemsPossible = 8;
     }
-} // namespace loot
+}

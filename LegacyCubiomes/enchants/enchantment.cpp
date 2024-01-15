@@ -114,8 +114,8 @@ bool    Enchantment::Type::Trident::canEnchantItem(const Items::Item *itemIn) co
 
 bool Enchantment::Type::Wearable::canEnchantItem(const Items::Item *itemIn) const {
     return itemIn->getArmorType() != Items::EntityEquipSlot::NONE
-           || itemIn->getItemType() == Items::ItemSkull
-           || itemIn->getItemType() == Items::ItemElytra;
+           || itemIn->getItemType() == Items::ItemType::ItemSkull
+           || itemIn->getItemType() == Items::ItemType::ItemElytra;
 }
 
 
