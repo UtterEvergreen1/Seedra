@@ -1,8 +1,9 @@
-
 #include "biome.hpp"
 #include "ChunkPrimer.hpp"
 
+
 std::map<int, Biome*> Biome::registry;
+
 
 void Biome::registerBiomes() {
     // frozenOcean,
@@ -55,8 +56,7 @@ void Biome::registerBiomes() {
     registerBiome(45, new BiomeOcean("Deep_Cold_Ocean", -1.8F, 0.1F, false, 0.5F));
     registerBiome(46, new BiomeOcean("Frozen_Ocean", -1.0F, 0.1F, false, 0.5F));
     registerBiome(47, new BiomeOcean("Deep_Frozen_Ocean", -1.8F, 0.1F, false, 0.5F));
-
-    //mutated
+    // mutated
     registerBiome(129, new BiomePlains("Sunflower_Plains", 0.125F, 0.05F, false, 0.8F));
     registerBiome(130, new BiomeDesert("Desert_M", 0.225F, 0.25F, false, 2.0F));
     registerBiome(131, new BiomeHills("Extreme_Hills_M", 1.0F, 0.5F, false, 0.2F));
@@ -80,14 +80,15 @@ void Biome::registerBiomes() {
     registerBiome(167, new BiomeMesa(false, false, "Mesa_Plateau_M", 0.45F, 0.3F, false, 2.0F));
 }
 
+
 void Biome::generateBiomeTerrain(RNG& rng, ChunkPrimer* chunkPrimerIn, int x, int z, double noiseVal) {
-    int seaLevel = 63; // sea level
+    constexpr int seaLevel = 63; // sea level
     uint16_t iBlockState = this->topBlock.block;
     uint16_t iBlockState1 = this->fillerBlock.block;
     int j = -1;
-    int k = (int) (((double) noiseVal / 3.0) + 3.0 + rng.nextDouble() * 0.25);
-    int l = x & 15;
-    int i1 = z & 15;
+    const int k = (int) (((double) noiseVal / 3.0) + 3.0 + rng.nextDouble() * 0.25);
+    const int l = x & 15;
+    const int i1 = z & 15;
     Pos3D blockPos;
 
     for (int j1 = 255; j1 >= 0; --j1) {
@@ -140,8 +141,8 @@ void Biome::generateBiomeTerrain(RNG& rng, ChunkPrimer* chunkPrimerIn, int x, in
     }
 }
 
-void BiomeMesa::genTerrainBlocks(int64_t worldSeedIn, RNG& rng, ChunkPrimer* chunkPrimerIn, int x, int z,
-                                 double noiseVal) {
+void BiomeMesa::genTerrainBlocks(const int64_t worldSeedIn, RNG& rng, ChunkPrimer* chunkPrimerIn, const int x,
+                                 const int z, const double noiseVal) {
     this->worldSeed = worldSeedIn;
     if (this->clayBands.empty()) { this->generateClayBands(worldSeedIn); }
 
@@ -154,14 +155,14 @@ void BiomeMesa::genTerrainBlocks(int64_t worldSeedIn, RNG& rng, ChunkPrimer* chu
     double d4 = 0.0;
 
     if (this->brycePillars) {
-        int i = (x & -16) + (z & 15);
-        int j = (z & -16) + (x & 15);
-        double d0 = std::min(std::abs(noiseVal), this->pillarNoise.getValue((double) i * 0.25, (double) j * 0.25));
+        const int i = (x & -16) + (z & 15);
+        const int j = (z & -16) + (x & 15);
+        const double d0 = std::min(std::abs(noiseVal), this->pillarNoise.getValue((double) i * 0.25, (double) j * 0.25));
 
         if (d0 > 0.0) {
             double d2 = std::abs(this->pillarRoofNoise.getValue((double) i * 0.001953125, (double) j * 0.001953125));
             d4 = d0 * d0 * 2.5;
-            double d3 = ceil(d2 * 50.0) + 14.0;
+            const double d3 = ceil(d2 * 50.0) + 14.0;
 
             if (d4 > d3) d4 = d3;
 
@@ -169,12 +170,12 @@ void BiomeMesa::genTerrainBlocks(int64_t worldSeedIn, RNG& rng, ChunkPrimer* chu
         }
     }
 
-    int k1 = x & 15;
-    int l1 = z & 15;
-    int seaLevel = 63; // sea level
+    const int k1 = x & 15;
+    const int l1 = z & 15;
+    constexpr int seaLevel = 63; // sea level
     uint16_t fillerBlock = this->fillerBlock.block;
-    int k = (int) (noiseVal / 3.0 + 3.0 + rng.nextDouble() * 0.25);
-    bool flag = cos(noiseVal / 3.0 * PI) > 0.0;
+    const int k = (int) (noiseVal / 3.0 + 3.0 + rng.nextDouble() * 0.25);
+    const bool flag = cos(noiseVal / 3.0 * PI) > 0.0;
     int l = -1;
     bool flag1 = false;
     int i1 = 0;
@@ -187,7 +188,7 @@ void BiomeMesa::genTerrainBlocks(int64_t worldSeedIn, RNG& rng, ChunkPrimer* chu
 
         if (rng.nextInt(2) + 1 >= j1 - 1) chunkPrimerIn->setBlockId(l1, j1 - 1, k1, Items::BEDROCK_ID);
         else if (i1 < 15 || this->brycePillars) {
-            uint16_t iBlockState1 = chunkPrimerIn->getBlockId(l1, j1, k1);
+            const uint16_t iBlockState1 = chunkPrimerIn->getBlockId(l1, j1, k1);
 
             if (!iBlockState1) l = -1;
             else if (iBlockState1 == Items::STONE_ID) {

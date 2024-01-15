@@ -1,13 +1,11 @@
 #include "CaveGenerator.hpp"
 
 #include "LegacyCubiomes/cubiomes/layers.hpp"
-
 #include "LegacyCubiomes/utils/MathHelper.hpp"
 
 
-unsigned char CaveGenerator::topBlock(int x, int z) {
-    int biomeID = g.getBiomeAt(1, x, z);
-    switch (biomeID) {
+unsigned char CaveGenerator::topBlock(const int x, const int z) const {
+    switch (g.getBiomeAt(1, x, z)) {
         case beach:
         case desert:
         case mesa:
@@ -29,7 +27,7 @@ unsigned char CaveGenerator::topBlock(int x, int z) {
 }
 
 
-bool CaveGenerator::canReplaceBlock(uint16_t blockAt, uint16_t blockAbove) {
+bool CaveGenerator::canReplaceBlock(const uint16_t blockAt, const uint16_t blockAbove) {
     switch (blockAt) {
         default:
             return false;
@@ -55,7 +53,7 @@ void CaveGenerator::addTunnel(int64_t seedModifier, Pos2D chunk, ChunkPrimer* ch
                               float tunnelWidth, float tunnelDirection, float tunnelSlope, int currentTunnelSegment,
                               int maxTunnelSegment, double tunnelHeightMultiplier) {
 
-    Pos2D startPos((int)start.x, (int)start.z);
+    Pos2D startPos(static_cast<int>(start.x), static_cast<int>(start.z));
 
     double targetCenterX = chunk.x * 16 + 8;
     double targetCenterZ = chunk.z * 16 + 8;
@@ -65,7 +63,7 @@ void CaveGenerator::addTunnel(int64_t seedModifier, Pos2D chunk, ChunkPrimer* ch
     rng.setSeed(seedModifier);
 
     if (maxTunnelSegment <= 0) {
-        constexpr int rangeBoundary = MapGenBase::range * 16 - 16;
+        constexpr int rangeBoundary = range * 16 - 16;
         constexpr int randomRange = rangeBoundary / 4;
         maxTunnelSegment = rangeBoundary - rng.nextInt(randomRange);
     }
@@ -116,9 +114,9 @@ void CaveGenerator::addTunnel(int64_t seedModifier, Pos2D chunk, ChunkPrimer* ch
             int64_t seed1;
             if (isXbox) {
                 tunnelWidth1 = rng.nextFloat();
-                seed1 = (int64_t) rng.nextLong();
+                seed1 = rng.nextLongI();
             } else {
-                seed1 = (int64_t) rng.nextLong();
+                seed1 = rng.nextLongI();
                 tunnelWidth1 = rng.nextFloat();
             }
             addTunnel(seed1, chunk, chunkPrimer, start, tunnelWidth1 * 0.5F + 0.5F, tunnelDirection - HALF_PI,
@@ -127,9 +125,9 @@ void CaveGenerator::addTunnel(int64_t seedModifier, Pos2D chunk, ChunkPrimer* ch
             int64_t seed2;
             if (isXbox) {
                 tunnelWidth2 = rng.nextFloat();
-                seed2 = (int64_t) rng.nextLong();
+                seed2 = rng.nextLongI();
             } else {
-                seed2 = (int64_t) rng.nextLong();
+                seed2 = rng.nextLongI();
                 tunnelWidth2 = rng.nextFloat();
             }
             addTunnel(seed2, chunk, chunkPrimer, start, tunnelWidth2 * 0.5F + 0.5F, tunnelDirection + HALF_PI,
@@ -137,8 +135,7 @@ void CaveGenerator::addTunnel(int64_t seedModifier, Pos2D chunk, ChunkPrimer* ch
             return;
         }
 
-        if (g.getLCEVersion() == LCEVERSION::AQUATIC && isOceanic(g.getBiomeAt(1, startPos)))
-            return;
+        if (g.getLCEVersion() == LCEVERSION::AQUATIC && isOceanic(g.getBiomeAt(1, startPos))) return;
 
 
         if (isMainTunnel || rng.nextInt(4) != 0) {
@@ -156,12 +153,12 @@ void CaveGenerator::addTunnel(int64_t seedModifier, Pos2D chunk, ChunkPrimer* ch
                 start.z >= targetCenterZ - 16.0 - tunnelWidthScaled * 2.0 &&
                 start.x <= targetCenterX + 16.0 + tunnelWidthScaled * 2.0 &&
                 start.z <= targetCenterZ + 16.0 + tunnelWidthScaled * 2.0) {
-                int minX = (int) floor(start.x - tunnelWidthScaled) - chunk.x * 16 - 1;
-                int maxX = (int) floor(start.x + tunnelWidthScaled) - chunk.x * 16 + 1;
-                int minY = (int) floor(start.y - tunnelHeight) - 1;
-                int maxY = (int) floor(start.y + tunnelHeight) + 1;
-                int minZ = (int) floor(start.z - tunnelWidthScaled) - chunk.z * 16 - 1;
-                int maxZ = (int) floor(start.z + tunnelWidthScaled) - chunk.z * 16 + 1;
+                int minX = static_cast<int>(floor(start.x - tunnelWidthScaled)) - chunk.x * 16 - 1;
+                int maxX = static_cast<int>(floor(start.x + tunnelWidthScaled)) - chunk.x * 16 + 1;
+                int minY = static_cast<int>(floor(start.y - tunnelHeight)) - 1;
+                int maxY = static_cast<int>(floor(start.y + tunnelHeight)) + 1;
+                int minZ = static_cast<int>(floor(start.z - tunnelWidthScaled)) - chunk.z * 16 - 1;
+                int maxZ = static_cast<int>(floor(start.z + tunnelWidthScaled)) - chunk.z * 16 + 1;
 
                 if (minX < 0) minX = 0;
                 if (maxX > 16) maxX = 16;
@@ -190,7 +187,7 @@ void CaveGenerator::addTunnel(int64_t seedModifier, Pos2D chunk, ChunkPrimer* ch
                     }
                 }
 
-                //((dVar27 = (double)getDepth__5BiomeFv(uVar9), dVar27 < -0.9 && (iVar10 = isSnowCovered__5BiomeFv(uVar9), iVar10 != 0))
+                // ((dVar27 = (double)getDepth__5BiomeFv(uVar9), dVar27 < -0.9 && (iVar10 = isSnowCovered__5BiomeFv(uVar9), iVar10 != 0))
                 if (!hasWater) {
                     for (int currentX = minX; currentX < maxX; ++currentX) {
                         double scaleX = ((double) (currentX + chunk.x * 16) + 0.5 - start.x) / tunnelWidthScaled;
@@ -215,11 +212,11 @@ void CaveGenerator::addTunnel(int64_t seedModifier, Pos2D chunk, ChunkPrimer* ch
                                         if (canReplaceBlock(currentBlock, blockAbove)) {
                                             if (currentY < 11) {
                                                 chunkPrimer->setBlockId(currentX, currentY, currentZ,
-                                                                      Items::STILL_LAVA_ID);
+                                                                        Items::STILL_LAVA_ID);
                                             } else {
                                                 chunkPrimer->setBlockId(currentX, currentY, currentZ, Items::AIR_ID);
                                                 if (isTopBlock && chunkPrimer->getBlockId(currentX, currentY - 1,
-                                                                                        currentZ) == Items::DIRT_ID) {
+                                                                                          currentZ) == Items::DIRT_ID) {
                                                     chunkPrimer->setBlockId(
                                                             currentX, currentY - 1, currentZ,
                                                             topBlock(currentX + chunk.x * 16, currentZ + chunk.z * 16));
@@ -239,38 +236,38 @@ void CaveGenerator::addTunnel(int64_t seedModifier, Pos2D chunk, ChunkPrimer* ch
     }
 }
 
-void CaveGenerator::addRoom(int64_t seedModifier, Pos2D target, ChunkPrimer* chunkPrimer, DoublePos3D roomStart,
-                            RNG& rng) {
-    addTunnel(seedModifier, target, chunkPrimer, roomStart, 1.0F + rng.nextFloat() * 6.0F, 0.0F, 0.0F, -1, -1,
-                     0.5);
+void CaveGenerator::addRoom(const int64_t seedModifier, const Pos2D target, ChunkPrimer* chunkPrimer,
+                            const DoublePos3D& roomStart, RNG& rng) {
+    addTunnel(seedModifier, target, chunkPrimer, roomStart, 1.0F + rng.nextFloat() * 6.0F, 0.0F, 0.0F, -1, -1, 0.5);
 }
 
 
-void CaveGenerator::addFeature(int baseChunkX, int baseChunkZ, int targetX, int targetZ,
-                                      ChunkPrimer* chunkPrimer) {
-    int tunnelCount = rng.nextInt(rng.nextInt(rng.nextInt(40) + 1) + 1);
+void CaveGenerator::addFeature(const int baseChunkX, const int baseChunkZ, int currentChunkX, int currentChunkZ,
+                               ChunkPrimer* chunkPrimer) {
+    const int tunnelCount = rng.nextInt(rng.nextInt(rng.nextInt(40) + 1) + 1);
 
     if EXPECT_TRUE (rng.nextInt(15) != 0) { return; }
 
     for (int currentTunnel = 0; currentTunnel < tunnelCount; ++currentTunnel) {
-        auto tunnelStartX = (double) (baseChunkX * 16 + rng.nextInt(16));
-        auto tunnelStartY = (double) rng.nextInt(rng.nextInt(120) + 8);
-        auto tunnelStartZ = (double) (baseChunkZ * 16 + rng.nextInt(16));
+        auto tunnelStartX = static_cast<double>(baseChunkX * 16 + rng.nextInt(16));
+        auto tunnelStartY = static_cast<double>(rng.nextInt(rng.nextInt(120) + 8));
+        auto tunnelStartZ = static_cast<double>(baseChunkZ * 16 + rng.nextInt(16));
         int segmentCount = 1;
 
         if (rng.nextInt(4) == 0) {
-            addRoom((int64_t) rng.nextLong(), {targetX, targetZ}, chunkPrimer, {tunnelStartX, tunnelStartY, tunnelStartZ}, rng);
+            addRoom(rng.nextLongI(), {currentChunkX, currentChunkZ}, chunkPrimer,
+                    {tunnelStartX, tunnelStartY, tunnelStartZ}, rng);
             segmentCount = rng.nextInt(4) + 1;
         }
 
         for (int currentSegment = 0; currentSegment < segmentCount; ++currentSegment) {
-            float yaw = rng.nextFloat() * (PI_FLOAT * 2.0F);
-            float pitch = (rng.nextFloat() - 0.5F) * 2.0F / 8.0F;
+            const float yaw = rng.nextFloat() * (PI_FLOAT * 2.0F);
+            const float pitch = (rng.nextFloat() - 0.5F) * 2.0F / 8.0F;
             float tunnelLength = rng.nextFloat() * 2.0F + rng.nextFloat();
 
             if (rng.nextInt(10) == 0) { tunnelLength *= rng.nextFloat() * rng.nextFloat() * 3.0F + 1.0F; }
 
-            addTunnel((int64_t) rng.nextLong(), {targetX, targetZ}, chunkPrimer,
+            addTunnel(rng.nextLongI(), {currentChunkX, currentChunkZ}, chunkPrimer,
                       {tunnelStartX, tunnelStartY, tunnelStartZ}, tunnelLength, yaw, pitch, 0, 0, 1.0);
         }
     }

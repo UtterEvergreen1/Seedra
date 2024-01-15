@@ -79,8 +79,8 @@ int main(int argc, char* argv[]) {
     std::vector<unsigned char> rgb = {0, 0, 0};
 
     // sort the pieces according to max y value?
-    std::vector<Piece> pieceVector(stronghold.pieceArray, stronghold.pieceArray + stronghold.pieceArraySize);
-    std::sort(pieceVector.begin(), pieceVector.end(), [](const Piece& a, const Piece& b) { return a.maxY < b.maxY; });
+    std::vector pieceVector(stronghold.pieceArray, stronghold.pieceArray + stronghold.pieceArraySize);
+    std::ranges::sort(pieceVector, [](const Piece& a, const Piece& b) { return a.maxY < b.maxY; });
 
     for (auto sortedPiece: pieceVector) {
         switch (sortedPiece.type) {

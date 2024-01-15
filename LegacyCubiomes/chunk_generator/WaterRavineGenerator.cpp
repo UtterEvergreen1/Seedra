@@ -1,21 +1,21 @@
 #include "WaterRavineGenerator.hpp"
 #include "WaterCaveGenerator.hpp"
-void WaterRavineGenerator::addTunnel(int64_t randomSeed, Pos2D chunk, ChunkPrimer* chunkPrimer, DoublePos3D tunnel,
-               float angle, float slope, float curvature, int tunnelStartSegment, int tunnelEndSegment,
-               double widthMultiplier) {
 
-    if (!isOceanic(g.getBiomeAt(1, (int)tunnel.x, (int)tunnel.z)))
-        return;
+void WaterRavineGenerator::addTunnel(const int64_t randomSeed, const Pos2D chunk, ChunkPrimer* chunkPrimer,
+                                     DoublePos3D tunnel, const float angle, float slope, float curvature,
+                                     int tunnelStartSegment, int tunnelEndSegment, const double widthMultiplier) {
+
+    if (!isOceanic(g.getBiomeAt(1, (int) tunnel.x, (int) tunnel.z))) return;
 
     RNG rng;
     rng.setSeed(randomSeed);
-    auto offsetX = (double) (chunk.x * 16 + 8);
-    auto offsetZ = (double) (chunk.z * 16 + 8);
+    const auto offsetX = (double) (chunk.x * 16 + 8);
+    const auto offsetZ = (double) (chunk.z * 16 + 8);
     float curvatureChangeRate = 0.0F;
     float slopeChangeRate = 0.0F;
 
     if (tunnelEndSegment < 1) {
-        constexpr int rangeBoundary = MapGenBase::range * 16 - 16;
+        constexpr int rangeBoundary = range * 16 - 16;
         constexpr int randomRange = rangeBoundary / 4;
         tunnelEndSegment = rangeBoundary - rng.nextInt(randomRange);
     }
@@ -37,13 +37,12 @@ void WaterRavineGenerator::addTunnel(int64_t randomSeed, Pos2D chunk, ChunkPrime
 
     for (; tunnelStartSegment < tunnelEndSegment; tunnelStartSegment++) {
         double adjustedWidth =
-                1.5 +
-                (double) (sinf((float) tunnelStartSegment * PI_FLOAT / (float) tunnelEndSegment) * angle);
+                1.5 + (double) (sinf((float) tunnelStartSegment * PI_FLOAT / (float) tunnelEndSegment) * angle);
         double adjustedHeight = adjustedWidth * widthMultiplier;
         adjustedWidth = adjustedWidth * ((double) rng.nextFloat() * 0.25 + 0.75);
         adjustedHeight = adjustedHeight * ((double) rng.nextFloat() * 0.25 + 0.75);
-        float cosCurvature = cosf(curvature);
-        float sinCurvature = sinf(curvature);
+        const float cosCurvature = cosf(curvature);
+        const float sinCurvature = sinf(curvature);
         tunnel.x += (double) (cosf(slope) * cosCurvature);
         tunnel.y += (double) sinCurvature;
         tunnel.z += (double) (sinf(slope) * cosCurvature);
@@ -57,10 +56,10 @@ void WaterRavineGenerator::addTunnel(int64_t randomSeed, Pos2D chunk, ChunkPrime
 
         //good up to here
         if (isSegmentAtCenter || rng.nextInt(4) != 0) {
-            double distanceX = tunnel.x - offsetX;
-            double distanceZ = tunnel.z - offsetZ;
-            auto remainingSegments = (double) (tunnelEndSegment - tunnelStartSegment);
-            auto maxDistance = (double) (angle + 18.0F);
+            const double distanceX = tunnel.x - offsetX;
+            const double distanceZ = tunnel.z - offsetZ;
+            const auto remainingSegments = (double) (tunnelEndSegment - tunnelStartSegment);
+            const auto maxDistance = (double) (angle + 18.0F);
 
             if (distanceX * distanceX + distanceZ * distanceZ - remainingSegments * remainingSegments >
                 maxDistance * maxDistance) {
@@ -84,13 +83,13 @@ void WaterRavineGenerator::addTunnel(int64_t randomSeed, Pos2D chunk, ChunkPrime
                 if (endZ > 16) endZ = 16;
 
                 for (int x = startX; x < endX; ++x) {
-                    double dX = ((double) (x + chunk.x * 16) + 0.5 - tunnel.x) / adjustedWidth;
+                    const double dX = ((double) (x + chunk.x * 16) + 0.5 - tunnel.x) / adjustedWidth;
 
                     for (int z = startZ; z < endZ; ++z) {
-                        double dZ = ((double) (z + chunk.z * 16) + 0.5 - tunnel.z) / adjustedWidth;
+                        const double dZ = ((double) (z + chunk.z * 16) + 0.5 - tunnel.z) / adjustedWidth;
                         bool replaceableBlockDetected = false;
 
-                        double dxdxdzdz = dX * dX + dZ * dZ;
+                        const double dxdxdzdz = dX * dX + dZ * dZ;
                         if (dxdxdzdz < 1.0) {
                             for (int y = endY - 1; y >= startY; --y) {
                                 double dY = ((double) y + 0.5 - tunnel.y) / adjustedHeight;
@@ -150,21 +149,18 @@ void WaterRavineGenerator::addTunnel(int64_t randomSeed, Pos2D chunk, ChunkPrime
     }
 }
 
-void WaterRavineGenerator::addFeature(int baseChunkX, int baseChunkZ, int targetX, int targetZ, ChunkPrimer* chunkPrimer) {
+void WaterRavineGenerator::addFeature(const int baseChunkX, const int baseChunkZ, int targetX, int targetZ,
+                                      ChunkPrimer* chunkPrimer) {
     if EXPECT_FALSE (rng.nextInt(20) == 0) {
         auto tunnelStartX = (double) (baseChunkX * 16 + rng.nextInt(16));
         auto tunnelStartY = (double) (rng.nextInt(rng.nextInt(40) + 8) + 20);
-        if(rng.nextInt() < 0) {
-            tunnelStartY += 15.0;
-        }
+        if (rng.nextInt() < 0) { tunnelStartY += 15.0; }
         auto tunnelStartZ = (double) (baseChunkZ * 16 + rng.nextInt(16));
-        float tunnelDirection = rng.nextFloat() * (PI_FLOAT * 2.0F);
-        float tunnelSlope = (rng.nextFloat() - 0.5F) * 2.0F / 8.0F;
+        const float tunnelDirection = rng.nextFloat() * (PI_FLOAT * 2.0F);
+        const float tunnelSlope = (rng.nextFloat() - 0.5F) * 2.0F / 8.0F;
         float tunnelLengthMultiplier = (rng.nextFloat() * 3.0F) + (rng.nextFloat() * 3.0F);
-        if(rng.nextFloat() < 0.05)
-            tunnelLengthMultiplier *= 2;
-        addTunnel((int64_t) rng.nextLong(), {targetX, targetZ}, chunkPrimer,
-                  {tunnelStartX, tunnelStartY, tunnelStartZ},
+        if (rng.nextFloat() < 0.05) tunnelLengthMultiplier *= 2;
+        addTunnel(rng.nextLongI(), {targetX, targetZ}, chunkPrimer, {tunnelStartX, tunnelStartY, tunnelStartZ},
                   tunnelLengthMultiplier, tunnelDirection, tunnelSlope, 0, 0, 3.0);
     }
 }
