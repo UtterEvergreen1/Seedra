@@ -96,7 +96,7 @@ void Biome::generateBiomeTerrain(RNG& rng, ChunkPrimer* chunkPrimerIn, int x, in
 
         if (rng.nextInt(2) + 1 >= j1 - 1) chunkPrimerIn->setBlockId(i1, j1 - 1, l, Items::BEDROCK_ID);
         else {
-            uint16_t iBlockState2 = chunkPrimerIn->getBlockId(i1, j1, l);
+            const uint16_t iBlockState2 = chunkPrimerIn->getBlockId(i1, j1, l);
 
             if (!iBlockState2) // if air
                 j = -1;
