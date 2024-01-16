@@ -3,6 +3,7 @@
 #include "LegacyCubiomes/cubiomes/biomeID.hpp"
 #include "LegacyCubiomes/utils/rng.hpp"
 
+
 namespace Placement {
 
     // #######################################################
@@ -22,35 +23,37 @@ namespace Placement {
     bool StaticStructure<Derived>::REDUCED_SPACING = true;
 
     template<typename Derived>
-    Pos2D StaticStructure<Derived>::getRegionChunkPosition(int64_t worldSeed, int regionX, int regionZ) {
+    Pos2D StaticStructure<Derived>::getRegionChunkPosition(const int64_t worldSeed, const int regionX,
+                                                           const int regionZ) {
         RNG rng;
         rng.setSeed((int64_t) regionX * 341873128712ULL + (int64_t) regionZ * 132897987541ULL + worldSeed +
                     Derived::SALT);
-        return {regionX * REGION_SIZE + rng.nextInt(CHUNK_RANGE),
-                regionZ * REGION_SIZE + rng.nextInt(CHUNK_RANGE)};
+        return {regionX * REGION_SIZE + rng.nextInt(CHUNK_RANGE), regionZ * REGION_SIZE + rng.nextInt(CHUNK_RANGE)};
     }
 
     template<typename Derived>
-    inline Pos2D StaticStructure<Derived>::getRegionBlockPosition(int64_t worldSeed, int regionX, int regionZ) {
+    Pos2D StaticStructure<Derived>::getRegionBlockPosition(const int64_t worldSeed, const int regionX,
+                                                           const int regionZ) {
         return (getRegionChunkPosition(worldSeed, regionX, regionZ) << 4) + 8;
     }
 
     template<typename Derived>
-    std::vector<Pos2D> StaticStructure<Derived>::getAllPositions(Generator* g) {
-        Pos2D structPos;
+    std::vector<Pos2D> StaticStructure<Derived>::getAllPositions(const Generator* g) {
         std::vector<Pos2D> positions;
-        int numRegions = CHUNK_BOUNDS / REGION_SIZE;
+        const int numRegions = CHUNK_BOUNDS / REGION_SIZE;
         for (int regionX = -numRegions - 1; regionX <= numRegions; ++regionX) {
             for (int regionZ = -numRegions - 1; regionZ <= numRegions; ++regionZ) {
-                structPos = getRegionChunkPosition(g->getWorldSeed(), regionX, regionZ);
-                if (verifyChunkPosition(g, structPos)) { positions.emplace_back((structPos << 4) + 8); }
+                if (const Pos2D structPos = getRegionChunkPosition(g->getWorldSeed(), regionX, regionZ);
+                    verifyChunkPosition(g, structPos)) {
+                    positions.emplace_back((structPos << 4) + 8);
+                }
             }
         }
         return positions;
     }
 
     template<typename Derived>
-    bool StaticStructure<Derived>::verifyChunkPosition(Generator* g, int chunkX, int chunkZ) {
+    bool StaticStructure<Derived>::verifyChunkPosition(const Generator* g, const int chunkX, const int chunkZ) {
         if (chunkX < -CHUNK_BOUNDS || chunkX > CHUNK_BOUNDS || chunkZ < -CHUNK_BOUNDS || chunkZ > CHUNK_BOUNDS)
             return false;
 
@@ -66,16 +69,16 @@ namespace Placement {
     template<>
     const int StaticStructure<Feature>::SALT = 14357617;
 
-    void Feature::setWorldSize(WORLDSIZE worldSize) {
+    void Feature::setWorldSize(const WORLDSIZE worldSize) {
         CHUNK_BOUNDS = getChunkWorldBounds(worldSize);
         // prevent from setting the same values
-        bool reducedSpacing = worldSize < WORLDSIZE::MEDIUM;
+        const bool reducedSpacing = worldSize < WORLDSIZE::MEDIUM;
         if (REDUCED_SPACING == reducedSpacing) return;
         REGION_SIZE = reducedSpacing ? 16 : 32;
         CHUNK_RANGE = REGION_SIZE - 8;
     }
 
-    StructureType Feature::getFeatureType(Generator* g, int blockX, int blockZ) {
+    StructureType Feature::getFeatureType(const Generator* g, const int blockX, const int blockZ) {
         if (blockX < -g->getWorldCoordinateBounds() || blockX > g->getWorldCoordinateBounds() ||
             blockZ < -g->getWorldCoordinateBounds() || blockZ > g->getWorldCoordinateBounds()) {
             return StructureType::NONE;
@@ -106,15 +109,14 @@ namespace Placement {
      * @param g the generator
      * @return a vector of position + type.
      */
-    std::vector<FeatureStructurePair> Feature::getAllFeaturePositions(Generator* g) {
-        Pos2D structPos;
+    std::vector<FeatureStructurePair> Feature::getAllFeaturePositions(const Generator* g) {
         std::vector<FeatureStructurePair> features;
-        int numRegions = CHUNK_BOUNDS / REGION_SIZE;
+        const int numRegions = CHUNK_BOUNDS / REGION_SIZE;
         for (int regionX = -numRegions - 1; regionX <= numRegions; ++regionX) {
             for (int regionZ = -numRegions - 1; regionZ <= numRegions; ++regionZ) {
-                structPos = getRegionBlockPosition(g->getWorldSeed(), regionX, regionZ);
-                StructureType structureType = getFeatureType(g, structPos);
-                if (structureType != StructureType::NONE) features.emplace_back(structPos, structureType);
+                Pos2D structPos = getRegionBlockPosition(g->getWorldSeed(), regionX, regionZ);
+                if (StructureType structureType = getFeatureType(g, structPos); structureType != StructureType::NONE)
+                    features.emplace_back(structPos, structureType);
             }
         }
         return features;
@@ -129,8 +131,7 @@ namespace Placement {
     const int StaticStructure<Village<false>>::SALT = 10387312;
     template<>
     const uint64_t StaticStructure<Village<false>>::VALID_BIOMES =
-            (1ULL << plains) | (1ULL << desert) | (1ULL << taiga) | (1ULL << ice_plains) | (1ULL << cold_taiga) |
-            (1ULL << savanna);
+            1ULL << plains | 1ULL << desert | 1ULL << taiga | 1ULL << ice_plains | 1ULL << cold_taiga | 1ULL << savanna;
 
     template<>
     const int StaticStructure<Village<true>>::SALT = 10387312;
@@ -138,17 +139,16 @@ namespace Placement {
     int StaticStructure<Village<true>>::CHUNK_RANGE = 7;
     template<>
     const uint64_t StaticStructure<Village<true>>::VALID_BIOMES =
-            (1ULL << plains) | (1ULL << desert) | (1ULL << taiga) | (1ULL << ice_plains) | (1ULL << cold_taiga) |
-            (1ULL << savanna);
+            1ULL << plains | 1ULL << desert | 1ULL << taiga | 1ULL << ice_plains | 1ULL << cold_taiga | 1ULL << savanna;
 
     template<bool PS4Village>
-    void Village<PS4Village>::setWorldSize(WORLDSIZE worldSize) {
-        Village<PS4Village>::CHUNK_BOUNDS = getChunkWorldBounds(worldSize);
+    void Village<PS4Village>::setWorldSize(const WORLDSIZE worldSize) {
+        Village::CHUNK_BOUNDS = getChunkWorldBounds(worldSize);
         // prevent from setting the same values
         bool reducedSpacing = worldSize < WORLDSIZE::MEDIUM;
-        if (Village<PS4Village>::REDUCED_SPACING == reducedSpacing) return;
-        Village<PS4Village>::REGION_SIZE = reducedSpacing ? 16 : 32;
-        Village<PS4Village>::CHUNK_RANGE = Village<PS4Village>::REGION_SIZE - 8;
+        if (Village::REDUCED_SPACING == reducedSpacing) return;
+        Village::REGION_SIZE = reducedSpacing ? 16 : 32;
+        Village::CHUNK_RANGE = Village::REGION_SIZE - 8;
     }
 
     // #######################################################
@@ -163,10 +163,10 @@ namespace Placement {
     int StaticStructure<OceanRuin>::CHUNK_RANGE = 6;
     template<>
     const uint64_t StaticStructure<OceanRuin>::VALID_BIOMES =
-            (1ULL << ocean) | (1ULL << deep_ocean) | (1ULL << warm_ocean) | (1ULL << deep_warm_ocean) |
-            (1ULL << lukewarm_ocean) | (1ULL << deep_lukewarm_ocean) | (1ULL << cold_ocean) |
-            (1ULL << deep_cold_ocean) | (1ULL << frozen_ocean) | (1ULL << deep_frozen_ocean);
-    void OceanRuin::setWorldSize(WORLDSIZE worldSize) { CHUNK_BOUNDS = getChunkWorldBounds(worldSize); }
+            1ULL << ocean | 1ULL << deep_ocean | 1ULL << warm_ocean | 1ULL << deep_warm_ocean |
+            1ULL << lukewarm_ocean | 1ULL << deep_lukewarm_ocean | 1ULL << cold_ocean |
+            1ULL << deep_cold_ocean | 1ULL << frozen_ocean | 1ULL << deep_frozen_ocean;
+    void OceanRuin::setWorldSize(const WORLDSIZE worldSize) { CHUNK_BOUNDS = getChunkWorldBounds(worldSize); }
 
 
 } // namespace Placement

@@ -4,7 +4,7 @@
 #include "stronghold.hpp"
 
 
-static const DIRECTION HORIZONTAL[4] = {DIRECTION::NORTH, DIRECTION::EAST, DIRECTION::SOUTH, DIRECTION::WEST};
+static constexpr DIRECTION HORIZONTAL[4] = {DIRECTION::NORTH, DIRECTION::EAST, DIRECTION::SOUTH, DIRECTION::WEST};
 
 
 namespace generation {
@@ -40,7 +40,7 @@ namespace generation {
     Stronghold::Stronghold() { resetPieces(); }
 
 
-    void Stronghold::generate(int64_t worldSeed, int chunkX, int chunkZ) {
+    void Stronghold::generate(const int64_t worldSeed, const int chunkX, const int chunkZ) {
         rng = RNG::getLargeFeatureSeed(worldSeed, chunkX, chunkZ);
         rng.advance();
         startX = (chunkX << 4) + 2;
@@ -52,19 +52,19 @@ namespace generation {
             // creates starting staircase
             DIRECTION direction = HORIZONTAL[rng.nextInt(4)];
             BoundingBox stairsBoundingBox = Piece::makeBoundingBox(startX, 64, startZ, direction, 5, 11, 5);
-            Piece startPiece = Piece(PieceType::STAIRS_DOWN, 0, stairsBoundingBox, direction, 1);
 
-            pieceArray[pieceArraySize++] = {PieceType::STAIRS_DOWN, 0, stairsBoundingBox, direction, 1};
+            pieceArray[pieceArraySize++] = {static_cast<int8_t>(PieceType::STAIRS_DOWN), 0, stairsBoundingBox,
+                                            direction, 1};
 
             // this only adds the 5-crossing room
             addChildren(pieceArray[0]);
 
             while (pendingPiecesArraySize != 0) {
-                int i = rng.nextInt(pendingPiecesArraySize);
+                const int i = rng.nextInt(pendingPiecesArraySize);
                 Piece& piece = pieceArray[pendingPieceArray[i]];
                 pendingPiecesArraySize--;
 
-                size_t bytesToShift = (pendingPiecesArraySize - i) * sizeof(pendingPieceArray[0]);
+                const size_t bytesToShift = (pendingPiecesArraySize - i) * sizeof(pendingPieceArray[0]);
                 memmove(&pendingPieceArray[i], &pendingPieceArray[i + 1], bytesToShift);
                 // for (int j = i; j < pendingPiecesArraySize; j++) {
                 //     pendingPieceArray[j] = pendingPieceArray[j + 1];
@@ -92,11 +92,11 @@ namespace generation {
             structureBoundingBox = BoundingBox::EMPTY;
             for (int index = 0; index < pieceArraySize; index++) { structureBoundingBox.encompass(pieceArray[index]); }
 
-            const int i = 53; // 63 - 10
+            constexpr int i = 63 - 10;
             int j = structureBoundingBox.getYSize() + 1;
             if (j < i) { j += rng.nextInt(i - j); }
 
-            int k = j - structureBoundingBox.maxY;
+            const int k = j - structureBoundingBox.maxY;
             structureBoundingBox.offsetY(k);
             for (int index = 0; index < pieceArraySize; index++) { pieceArray[index].offsetY(k); }
         } while (portalRoomPiece == nullptr);
@@ -129,7 +129,7 @@ namespace generation {
      */
 
 
-    void Stronghold::onWeightedPiecePlaced(int piecePlaceCountIndex) {
+    void Stronghold::onWeightedPiecePlaced(const int piecePlaceCountIndex) {
         PiecePlaceCount& piecePlaceCount = piecePlaceCounts[piecePlaceCountIndex];
         piecePlaceCount.placeCount++;
 
@@ -146,17 +146,19 @@ namespace generation {
 
         // function originally called "updatePieceWeight"
         for (int index = 0; index < piecePlaceCountsSize; index++) {
-            PiecePlaceCount ppc = piecePlaceCounts[index];
-            PieceWeight pieceWeight = PIECE_WEIGHTS[ppc.pieceType];
+            const auto [pieceType, placeCount] = piecePlaceCounts[index];
 
-            if (pieceWeight.maxPlaceCount > 0 && ppc.placeCount < pieceWeight.maxPlaceCount) return;
+            if (const auto [weight, maxPlaceCount, minDepth] = PIECE_WEIGHTS[static_cast<int8_t>(pieceType)];
+                maxPlaceCount > 0 && placeCount < maxPlaceCount)
+                return;
         }
 
         generationStopped = true;
     }
 
 
-    BoundingBox Stronghold::createPieceBoundingBox(PieceType pieceType, const Pos3D& pos, DIRECTION facing) {
+    BoundingBox Stronghold::createPieceBoundingBox(const PieceType pieceType, const Pos3D& pos,
+                                                   const DIRECTION facing) {
         switch (pieceType) {
             case PieceType::STRAIGHT:
                 return BoundingBox::orientBox(pos, -1, -1, 0, 5, 5, 7, facing);
@@ -191,7 +193,8 @@ namespace generation {
         switch (pieceType) {
             case PieceType::RIGHT_TURN:
                 rng.nextInt(5);
-                pieceArray[pieceArraySize++] = {PieceType::LEFT_TURN, depth, boundingBox, direction, additionalData};
+                pieceArray[pieceArraySize++] = {static_cast<int8_t>(PieceType::LEFT_TURN), depth, boundingBox,
+                                                direction, additionalData};
                 return;
             case PieceType::STRAIGHT:
                 // rng.nextInt(5); // this is java
@@ -238,11 +241,12 @@ namespace generation {
                 break;
         }
 
-        pieceArray[pieceArraySize++] = {pieceType, depth, boundingBox, direction, additionalData};
+        pieceArray[pieceArraySize++] = {static_cast<int8_t>(pieceType), depth, boundingBox, direction, additionalData};
     }
 
 
-    bool Stronghold::tryAddPieceFromType(PieceType pieceType, const Pos3D& pos, DIRECTION direction, int8_t depth) {
+    bool Stronghold::tryAddPieceFromType(const PieceType pieceType, const Pos3D& pos, const DIRECTION direction,
+                                         const int8_t depth) {
         BoundingBox bBox = createPieceBoundingBox(pieceType, pos, direction);
         if (!isOkBox(bBox) || collidesWithPiece(bBox)) {
             if (pieceType == PieceType::LIBRARY) {
@@ -266,12 +270,12 @@ namespace generation {
         if EXPECT_FALSE (generationStopped) return false;
 
         if EXPECT_FALSE (forcedPiece != PieceType::NONE) {
-            bool canAdd = tryAddPieceFromType(forcedPiece, pos, direction, depth);
+            const bool canAdd = tryAddPieceFromType(forcedPiece, pos, direction, depth);
             forcedPiece = PieceType::NONE;
             if (canAdd) return true;
         }
 
-        int maxWeight = totalWeight;
+        const int maxWeight = totalWeight;
 
         // TODO: can be rewritten to use a cumulative table, but would require
         // TODO: recalculating the table everytime an entry is removed.
@@ -281,8 +285,8 @@ namespace generation {
             // printf("Selected weight %i %i", totalWeight, selectedWeight);
             for (int index = 0; index < piecePlaceCountsSize; index++) {
                 PiecePlaceCount& piecePlaceCount = piecePlaceCounts[index];
-                PieceType pieceType = piecePlaceCount.pieceType;
-                int weight = PiecePlaceCount::get(pieceType)->getWeight();
+                const PieceType pieceType = piecePlaceCount.pieceType;
+                const int weight = PiecePlaceCount::get(pieceType)->getWeight();
 
                 selectedWeight -= weight;
                 if (selectedWeight >= 0) continue;
@@ -298,14 +302,13 @@ namespace generation {
         }
 
         BoundingBox boundingBox = BoundingBox::orientBox(pos, -1, -1, 0, 5, 5, 4, direction);
-        Piece* collidingPiece = findCollisionPiece(boundingBox);
+        const Piece* collidingPiece = findCollisionPiece(boundingBox);
         if (collidingPiece == nullptr) return false;
 
         // if (collidingPiece->minY != boundingBox.minY) return false;
         // doing it this way gets rid of an if statement
-        int i = 3 * (collidingPiece->minY == boundingBox.minY);
 
-        for (; i >= 1; --i) {
+        for (int i = 3 * (collidingPiece->minY == boundingBox.minY); i >= 1; --i) {
             boundingBox = BoundingBox::orientBox(pos, -1, -1, 0, 5, 5, i - 1, direction);
             if (collidingPiece->intersects(boundingBox)) continue;
 
@@ -313,7 +316,8 @@ namespace generation {
             if (boundingBox.minY <= 1) return false;
 
             pendingPieceArray[pendingPiecesArraySize++] = pieceArraySize;
-            pieceArray[pieceArraySize++] = {PieceType::FILLER_CORRIDOR, depth, boundingBox, direction, 0};
+            pieceArray[pieceArraySize++] = {static_cast<int8_t>(PieceType::FILLER_CORRIDOR), depth, boundingBox,
+                                            direction, 0};
 
             return true;
         }
@@ -321,19 +325,20 @@ namespace generation {
         return false;
     }
 
-    void Stronghold::genAndAddPiece(const Pos3D& pos, DIRECTION direction, int8_t depth) {
+    void Stronghold::genAndAddPiece(const Pos3D& pos, const DIRECTION direction, const int8_t depth) {
         if (depth > 50) return;
 
         if (abs(pos.getX() - startX) <= 48 && abs(pos.getZ() - startZ) <= 48) {
-            genPieceFromSmallDoor(pos, direction, int8_t(depth + 1));
+            genPieceFromSmallDoor(pos, direction, static_cast<int8_t>(depth + 1));
             return;
         }
 
         for (int index = 0; index < piecePlaceCountsSize; index++) {
-            PiecePlaceCount& piecePlaceCount = piecePlaceCounts[index];
-            if (piecePlaceCount.pieceType == PieceType::PORTAL_ROOM) {
-                BoundingBox bBox = BoundingBox::orientBox(pos, -4, -1, 0, 11, 8, 16, direction);
-                if (isOkBox(bBox) && findCollisionPiece(bBox) == nullptr) { onWeightedPiecePlaced(index); }
+            if (const auto& [pieceType, placeCount] = piecePlaceCounts[index]; pieceType == PieceType::PORTAL_ROOM) {
+                if (const BoundingBox bBox = BoundingBox::orientBox(pos, -4, -1, 0, 11, 8, 16, direction);
+                    isOkBox(bBox) && findCollisionPiece(bBox) == nullptr) {
+                    onWeightedPiecePlaced(index);
+                }
                 break;
             }
         }
@@ -353,12 +358,11 @@ namespace generation {
     }
 
 
-    bool inline Stronghold::isOkBox(BoundingBox& boundingBox) { return boundingBox.minY > 10; }
+    bool inline Stronghold::isOkBox(const BoundingBox& boundingBox) { return boundingBox.minY > 10; }
 
 
-    void Stronghold::genSmallDoorChildForward(Piece& piece, int n, int n2) {
-        DIRECTION direction = piece.orientation;
-        switch (direction) {
+    void Stronghold::genSmallDoorChildForward(const Piece& piece, const int n, const int n2) {
+        switch (const DIRECTION direction = piece.orientation) {
             case DIRECTION::NORTH:
                 return genAndAddPiece({piece.minX + n, piece.minY + n2, piece.minZ - 1}, direction, piece.depth);
             case DIRECTION::SOUTH:
@@ -371,7 +375,7 @@ namespace generation {
     }
 
 
-    void Stronghold::genSmallDoorChildLeft(Piece& piece, int n, int n2) {
+    void Stronghold::genSmallDoorChildLeft(const Piece& piece, const int n, const int n2) {
         switch (piece.orientation) {
             case DIRECTION::SOUTH:
             case DIRECTION::NORTH:
@@ -384,7 +388,7 @@ namespace generation {
         }
     }
 
-    void Stronghold::genSmallDoorChildRight(Piece& piece, int n, int n2) {
+    void Stronghold::genSmallDoorChildRight(const Piece& piece, const int n, const int n2) {
         switch (piece.orientation) {
             case DIRECTION::SOUTH:
             case DIRECTION::NORTH:
@@ -398,52 +402,52 @@ namespace generation {
     }
 
 
-    void Stronghold::addChildren(Piece& piece) {
-        switch (piece.type) {
-            case PieceType::STRAIGHT:
+    void Stronghold::addChildren(const Piece& piece) {
+        switch (static_cast<int8_t>(piece.type)) {
+            case static_cast<int8_t>(PieceType::STRAIGHT):
                 genSmallDoorChildForward(piece, 1, 1);
                 if ((piece.additionalData & 1) != 0) genSmallDoorChildLeft(piece, 1, 2);
                 if ((piece.additionalData & 2) != 0) genSmallDoorChildRight(piece, 1, 2);
                 break;
-            case PieceType::PRISON_HALL:
+            case static_cast<int8_t>(PieceType::PRISON_HALL):
                 genSmallDoorChildForward(piece, 1, 1);
                 break;
-            case PieceType::LEFT_TURN: {
-                DIRECTION direction = piece.orientation;
-                if (direction == DIRECTION::NORTH || direction == DIRECTION::EAST) {
+            case static_cast<int8_t>(PieceType::LEFT_TURN): {
+                if (const DIRECTION direction = piece.orientation;
+                    direction == DIRECTION::NORTH || direction == DIRECTION::EAST) {
                     genSmallDoorChildLeft(piece, 1, 1);
                 } else {
                     genSmallDoorChildRight(piece, 1, 1);
                 }
                 break;
             }
-            case PieceType::RIGHT_TURN: {
-                DIRECTION direction = piece.orientation;
-                if (direction == DIRECTION::NORTH || direction == DIRECTION::EAST) {
+            case static_cast<int8_t>(PieceType::RIGHT_TURN): {
+                if (const DIRECTION direction = piece.orientation;
+                    direction == DIRECTION::NORTH || direction == DIRECTION::EAST) {
                     genSmallDoorChildRight(piece, 1, 1);
                 } else {
                     genSmallDoorChildLeft(piece, 1, 1);
                 }
                 break;
             }
-            case PieceType::ROOM_CROSSING:
+            case static_cast<int8_t>(PieceType::ROOM_CROSSING):
                 genSmallDoorChildForward(piece, 4, 1);
                 genSmallDoorChildLeft(piece, 1, 4);
                 genSmallDoorChildRight(piece, 1, 4);
                 break;
-            case PieceType::STRAIGHT_STAIRS_DOWN:
+            case static_cast<int8_t>(PieceType::STRAIGHT_STAIRS_DOWN):
                 genSmallDoorChildForward(piece, 1, 1);
                 break;
-            case PieceType::STAIRS_DOWN: {
+            case static_cast<int8_t>(PieceType::STAIRS_DOWN): {
                 if (piece.additionalData != 0) forcedPiece = PieceType::FIVE_CROSSING;
                 genSmallDoorChildForward(piece, 1, 1);
                 break;
             }
-            case PieceType::FIVE_CROSSING: {
-                DIRECTION o = piece.orientation;
+            case static_cast<int8_t>(PieceType::FIVE_CROSSING): {
+                const DIRECTION o = piece.orientation;
                 // 3 and 5 or 5 and 3
-                int n = 5 - 2 * (o == DIRECTION::EAST || o == DIRECTION::SOUTH);
-                int n2 = 8 - n;
+                const int n = 5 - 2 * (o == DIRECTION::EAST || o == DIRECTION::SOUTH);
+                const int n2 = 8 - n;
                 genSmallDoorChildForward(piece, 5, 1);
                 if ((piece.additionalData & 1) != 0) genSmallDoorChildLeft(piece, n, 1);
                 if ((piece.additionalData & 2) != 0) genSmallDoorChildLeft(piece, n2, 7);
@@ -451,13 +455,13 @@ namespace generation {
                 if ((piece.additionalData & 8) != 0) genSmallDoorChildRight(piece, n2, 7);
                 break;
             }
-            case PieceType::CHEST_CORRIDOR:
+            case static_cast<int8_t>(PieceType::CHEST_CORRIDOR):
                 genSmallDoorChildForward(piece, 1, 1);
                 break;
-            case PieceType::FILLER_CORRIDOR:
-            case PieceType::PORTAL_ROOM:
-            case PieceType::LIBRARY:
-            case PieceType::NONE:
+            case static_cast<int8_t>(PieceType::FILLER_CORRIDOR):
+            case static_cast<int8_t>(PieceType::PORTAL_ROOM):
+            case static_cast<int8_t>(PieceType::LIBRARY):
+            case static_cast<int8_t>(PieceType::NONE):
                 break;
         }
     }

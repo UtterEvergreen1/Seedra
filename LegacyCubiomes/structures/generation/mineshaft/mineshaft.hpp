@@ -16,7 +16,7 @@ namespace generation {
         //              sub-structs and sub-classes
         // #######################################################
 
-        enum PieceType {
+        enum class PieceType {
             ROOM = 0,
             CORRIDOR = 1,
             CROSSING = 2,
@@ -57,22 +57,18 @@ namespace generation {
         * @param worldSeed the seed
         * @param chunkPos coordinates of the chunk
         */
-        inline void generate(int64_t worldSeed, Pos2D chunkPos) { return generate(worldSeed, chunkPos.x, chunkPos.z); }
+        void generate(const int64_t worldSeed, const Pos2D chunkPos) {
+            return generate(worldSeed, chunkPos.x, chunkPos.z);
+        }
         void reset();
 
     private:
-        Piece* findCollisionPiece(BoundingBox& boundingBox);
+        Piece* findCollisionPiece(const BoundingBox& boundingBox);
         void genAndAddPiece(RNG& rng, Pos3D pos, DIRECTION direction, int depth);
 
         /**
-        * Step 1:
-        * adds piece to pieceArray
-        * Step 2:
-        * Switch statement over the passed Piece->type.
-        * @param p the piece to build
-        * @param rng pointer to rng
         */
-        void buildComponent(RNG& rng, int type, int depth, const BoundingBox& boundingBox, DIRECTION direction,
+        void buildComponent(RNG& rng, PieceType type, int depth, const BoundingBox& boundingBox, DIRECTION direction,
                             int additionalData);
     };
 } // namespace generation

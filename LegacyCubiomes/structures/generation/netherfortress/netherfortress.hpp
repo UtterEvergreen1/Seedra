@@ -1,8 +1,8 @@
 #pragma once
 
-
 #include "LegacyCubiomes/building_blocks/PieceWeight.hpp"
 #include "LegacyCubiomes/utils/processor.hpp"
+
 
 namespace generation {
 
@@ -31,7 +31,7 @@ namespace generation {
             NONE
         };
 
-        constexpr static const PieceWeight PIECE_WEIGHTS[16] = {
+        constexpr static PieceWeight PIECE_WEIGHTS[16] = {
                 {0, 0, 0}, {0, 0, 0}, {0, 0, 0}, {0, 0, 0}, {0, 0, 0}, {0, 0, 0}, {0, 0, 0}, {0, 0, 0},
                 {0, 0, 0}, {0, 0, 0}, {0, 0, 0}, {0, 0, 0}, {0, 0, 0}, {0, 0, 0}, {0, 0, 0}, {0, 0, 0},
         };
@@ -42,14 +42,14 @@ namespace generation {
             PieceType pieceType;
             int placeCount;
 
-            ND static const PieceWeight* get(PieceType pieceType) { return &PIECE_WEIGHTS[pieceType]; }
+            ND static const PieceWeight* get(const PieceType pieceType) { return &PIECE_WEIGHTS[pieceType]; }
 
             ND bool isValid() const {
-                int maxPlaceCount = PIECE_WEIGHTS[pieceType].maxPlaceCount;
+                const int maxPlaceCount = PIECE_WEIGHTS[pieceType].maxPlaceCount;
                 return maxPlaceCount == 0 || placeCount < maxPlaceCount;
             }
 
-            ND bool canPlace(int depth) const { return isValid() && depth >= PIECE_WEIGHTS[pieceType].minDepth; }
+            ND bool canPlace(const int depth) const { return isValid() && depth >= PIECE_WEIGHTS[pieceType].minDepth; }
         };
 
 

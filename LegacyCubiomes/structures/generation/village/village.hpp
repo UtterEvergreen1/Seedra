@@ -1,13 +1,13 @@
 #pragma once
 
 #include "LegacyCubiomes/building_blocks/Piece.hpp"
-#include "LegacyCubiomes/cubiomes/generator.hpp"
 #include "LegacyCubiomes/cubiomes/layers.hpp"
 #include "LegacyCubiomes/utils/Pos2DTemplate.hpp"
 #include "LegacyCubiomes/utils/Pos3DTemplate.hpp"
 #include "LegacyCubiomes/utils/rng.hpp"
 #include <map>
 #include <vector>
+
 
 namespace generation {
 
@@ -19,7 +19,7 @@ namespace generation {
             FULL,       // Generates full layout and calculates hasMoreThanTwoComponents
         };
 
-        enum PieceType : int8_t {
+        enum class PieceType : int8_t {
             NONE,
             Start,
             Road,
@@ -36,28 +36,29 @@ namespace generation {
         };
 
         struct PieceWeight {
-            int8_t pieceType;
+            PieceType pieceType;
             int weight;
             int PlaceCountMin;
             int PlaceCountMax;
         };
 
-        static std::map<int, std::string> pieceTypeNames;
+        static std::map<PieceType, std::string> pieceTypeNames;
         static const int VILLAGE_SIZE;
         static const PieceWeight PIECE_WEIGHTS[9];
 
     private:
         struct FinalPieceWeight {
-            int8_t pieceType;
+            PieceType pieceType;
             int weight;
             int maxPlaceCount;
             int amountPlaced;
-            FinalPieceWeight(int8_t pieceType, int weight, int maxPlaceCount, int amountPlaced)
+            FinalPieceWeight(const PieceType pieceType, const int weight, const int maxPlaceCount,
+                             const int amountPlaced)
                 : pieceType(pieceType), weight(weight), maxPlaceCount(maxPlaceCount), amountPlaced(amountPlaced) {}
         };
 
         std::vector<FinalPieceWeight> currentVillagePW;
-        int8_t previousPiece{};
+        PieceType previousPiece{};
         int pendingRoadArray[512]{};
         int pendingRoadArraySize{};
         const Generator* g;
@@ -92,20 +93,20 @@ namespace generation {
         * Overload function. Generates a mineshaft with the given chunk coordinates and stored generator.
         * @param chunk coordinates of the chunk
         */
-        void inline generate(Pos2D chunk) { generate(chunk.x, chunk.z); }
+        void generate(const Pos2D chunk) { generate(chunk.x, chunk.z); }
 
     private:
         void setupPieces();
-        int updatePieceWeight();
-        static BoundingBox createPieceBoundingBox(int pieceType, Pos3D pos, DIRECTION direction);
-        void buildComponentStart(Piece piece);
+        ND int updatePieceWeight() const;
+        static BoundingBox createPieceBoundingBox(PieceType pieceType, Pos3D pos, DIRECTION direction);
+        void buildComponentStart(const Piece& piece);
         void buildComponent(Piece piece);
         BoundingBox road(Pos3D pos, DIRECTION facing);
         void additionalRngRolls(const Piece& p);
         Piece generateComponent(Pos3D pos, DIRECTION facing, int8_t depth);
         Piece genAndAddRoadPiece(Pos3D pos, DIRECTION facing);
         Piece genAndAddComponent(Pos3D pos, DIRECTION facing, int8_t depth);
-        void addPiece(Piece& piece);
-        bool hasCollisionPiece(const BoundingBox& boundingBox);
+        void addPiece(const Piece& piece);
+        ND bool hasCollisionPiece(const BoundingBox& boundingBox) const;
     };
 } // namespace generation
