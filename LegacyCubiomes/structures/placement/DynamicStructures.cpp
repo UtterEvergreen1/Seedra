@@ -2,6 +2,9 @@
 
 #include "LegacyCubiomes/utils/rng.hpp"
 
+
+#include <unordered_set>
+
 namespace Placement {
 
     // defaults
@@ -21,17 +24,16 @@ namespace Placement {
     bool DynamicStructure<Derived>::REDUCED_SPACING = true;
 
     template<typename Derived>
-    Pos2D DynamicStructure<Derived>::getPosition(Generator* g, int regionX, int regionZ) {
+    Pos2D DynamicStructure<Derived>::getPosition(const Generator* g, const int regionX, const int regionZ) {
         RNG rnds;
-        int64_t featureSeed = ((int64_t) regionX * REGION_SIZE) * 341873128712ULL +
-                              ((int64_t) regionZ * REGION_SIZE) * 132897987541ULL + g->getWorldSeed() + SALT;
+        const int64_t featureSeed = static_cast<int64_t>(regionX * REGION_SIZE) * 341873128712ULL +
+                                    static_cast<int64_t>(regionZ * REGION_SIZE) * 132897987541ULL + g->getWorldSeed() +
+                                    SALT;
         rnds.setSeed(featureSeed);
         std::unordered_set<Pos2D, Pos2D::Hasher> attempted;
-        int xChunk;
-        int zChunk;
         for (int attempts = 0; attempts < ATTEMPTS; attempts++) {
-            xChunk = rnds.nextInt(CHUNK_RANGE);
-            zChunk = rnds.nextInt(CHUNK_RANGE);
+            int xChunk = rnds.nextInt(CHUNK_RANGE);
+            int zChunk = rnds.nextInt(CHUNK_RANGE);
             if (attempted.emplace(xChunk, zChunk).second) { // successfully placed
                 xChunk = regionX * REGION_SIZE + xChunk;
                 zChunk = regionZ * REGION_SIZE + zChunk;
@@ -56,32 +58,28 @@ namespace Placement {
     }
 
     template<typename Derived>
-    std::vector<Pos2D> DynamicStructure<Derived>::getAllPositions(Generator* g) {
-        Pos2D structPos;
+    std::vector<Pos2D> DynamicStructure<Derived>::getAllPositions(const Generator* g) {
         std::vector<Pos2D> positions;
-        int numRegions = CHUNK_BOUNDS / REGION_SIZE;
+        const int numRegions = CHUNK_BOUNDS / REGION_SIZE;
         for (int regionX = -numRegions - 1; regionX <= numRegions; ++regionX) {
             for (int regionZ = -numRegions - 1; regionZ <= numRegions; ++regionZ) {
-                structPos = getPosition(g, regionX, regionZ);
-                if (structPos != 0) positions.push_back(structPos);
+                if (Pos2D structPos = getPosition(g, regionX, regionZ); structPos != 0) positions.push_back(structPos);
             }
         }
         return positions;
     }
 
     template<typename Derived>
-    bool DynamicStructure<Derived>::canSpawnAtChunk(int64_t worldSeed, int chunkX, int chunkZ, int regionX,
-                                                    int regionZ) {
+    bool DynamicStructure<Derived>::canSpawnAtChunk(const int64_t worldSeed, const int chunkX, int const chunkZ,
+                                                    const int regionX, const int regionZ) {
         RNG rnds;
-        int64_t featureSeed = ((int64_t) regionX * REGION_SIZE) * 341873128712ULL +
-                              ((int64_t) regionZ * REGION_SIZE) * 132897987541ULL + worldSeed + SALT;
+        const int64_t featureSeed = static_cast<int64_t>(regionX * REGION_SIZE) * 341873128712ULL +
+                                    static_cast<int64_t>(regionZ * REGION_SIZE) * 132897987541ULL + worldSeed + SALT;
         rnds.setSeed(featureSeed);
         std::unordered_set<Pos2D, Pos2D::Hasher> attempted;
-        int xChunk;
-        int zChunk;
         for (int attempts = 0; attempts < ATTEMPTS; attempts++) {
-            xChunk = rnds.nextInt(CHUNK_RANGE);
-            zChunk = rnds.nextInt(CHUNK_RANGE);
+            int xChunk = rnds.nextInt(CHUNK_RANGE);
+            int zChunk = rnds.nextInt(CHUNK_RANGE);
             if (attempted.emplace(xChunk, zChunk).second) { // successfully placed
                 xChunk = regionX * REGION_SIZE + xChunk;
                 zChunk = regionZ * REGION_SIZE + zChunk;
@@ -110,10 +108,10 @@ namespace Placement {
     const uint64_t DynamicStructure<Mansion>::SECONDARY_VALID_BIOMES = DEFAULT_SECONDARY_VALID_BIOMES;
     template<>
     const uint64_t DynamicStructure<Mansion>::SECONDARY_VALID_BIOMES_MUTATED = DEFAULT_SECONDARY_VALID_BIOMES_MUTATED;
-    void Mansion::setWorldSize(WORLDSIZE worldSize) {
+    void Mansion::setWorldSize(const WORLDSIZE worldSize) {
         CHUNK_BOUNDS = getChunkWorldBounds(worldSize) - 3;
         // prevent from setting the same values
-        bool reducedSpacing = worldSize < WORLDSIZE::MEDIUM;
+        const bool reducedSpacing = worldSize < WORLDSIZE::MEDIUM;
         if (REDUCED_SPACING == reducedSpacing) return;
         REGION_SIZE = reducedSpacing ? 32 : 80;
         CHUNK_RANGE = REGION_SIZE - 6;
@@ -133,17 +131,17 @@ namespace Placement {
     const bool DynamicStructure<Monument>::HAS_SECOND_BIOME_CHECK = true;
     template<>
     const uint64_t DynamicStructure<Monument>::MAIN_VALID_BIOMES =
-            (1ULL << ocean) | (1ULL << river) | (1ULL << frozen_river) | (1ULL << deep_ocean) | (1ULL << warm_ocean) |
-            (1ULL << deep_warm_ocean) | (1ULL << lukewarm_ocean) | (1ULL << deep_lukewarm_ocean) |
-            (1ULL << cold_ocean) | (1ULL << deep_cold_ocean) | (1ULL << frozen_ocean) | (1ULL << deep_frozen_ocean);
+            1ULL << ocean | 1ULL << river | 1ULL << frozen_river | 1ULL << deep_ocean | 1ULL << warm_ocean |
+            1ULL << deep_warm_ocean | 1ULL << lukewarm_ocean | 1ULL << deep_lukewarm_ocean | 1ULL << cold_ocean |
+            1ULL << deep_cold_ocean | 1ULL << frozen_ocean | 1ULL << deep_frozen_ocean;
     template<>
     const uint64_t DynamicStructure<Monument>::SECONDARY_VALID_BIOMES =
-            (1ULL << deep_ocean) | (1ULL << deep_warm_ocean) | (1ULL << deep_lukewarm_ocean) |
-            (1ULL << deep_cold_ocean) | (1ULL << deep_frozen_ocean);
-    void Monument::setWorldSize(WORLDSIZE worldSize) {
+            1ULL << deep_ocean | 1ULL << deep_warm_ocean | 1ULL << deep_lukewarm_ocean | 1ULL << deep_cold_ocean |
+            1ULL << deep_frozen_ocean;
+    void Monument::setWorldSize(const WORLDSIZE worldSize) {
         CHUNK_BOUNDS = getChunkWorldBounds(worldSize) - 3;
         // prevent from setting the same values
-        bool reducedSpacing = worldSize < WORLDSIZE::MEDIUM;
+        const bool reducedSpacing = worldSize < WORLDSIZE::MEDIUM;
         if (REDUCED_SPACING == reducedSpacing) return;
         REGION_SIZE = reducedSpacing ? 32 : 80;
         CHUNK_RANGE = REGION_SIZE - 5;
@@ -163,16 +161,16 @@ namespace Placement {
     const bool DynamicStructure<BuriedTreasure>::HAS_SECOND_BIOME_CHECK = false;
     template<>
     const uint64_t DynamicStructure<BuriedTreasure>::MAIN_VALID_BIOMES =
-            (1ULL << mushroom_island_shore) | (1ULL << beach) | (1ULL << stone_beach) | (1ULL << cold_beach);
+            1ULL << mushroom_island_shore | 1ULL << beach | 1ULL << stone_beach | 1ULL << cold_beach;
     template<>
     const uint64_t DynamicStructure<BuriedTreasure>::SECONDARY_VALID_BIOMES = DEFAULT_SECONDARY_VALID_BIOMES;
     template<>
     const uint64_t DynamicStructure<BuriedTreasure>::SECONDARY_VALID_BIOMES_MUTATED =
             DEFAULT_SECONDARY_VALID_BIOMES_MUTATED;
-    void BuriedTreasure::setWorldSize(WORLDSIZE worldSize) {
+    void BuriedTreasure::setWorldSize(const WORLDSIZE worldSize) {
         CHUNK_BOUNDS = getChunkWorldBounds(worldSize) - 3;
         // prevent from setting the same values
-        bool reducedSpacing = worldSize < WORLDSIZE::MEDIUM;
+        const bool reducedSpacing = worldSize < WORLDSIZE::MEDIUM;
         if (REDUCED_SPACING == reducedSpacing) return;
         REGION_SIZE = reducedSpacing ? 32 : 4;
         CHUNK_RANGE = REGION_SIZE - 2;
@@ -192,13 +190,13 @@ namespace Placement {
     const bool DynamicStructure<Shipwreck>::HAS_SECOND_BIOME_CHECK = false;
     template<>
     const uint64_t DynamicStructure<Shipwreck>::MAIN_VALID_BIOMES =
-            (1ULL << ocean) | (1ULL << mushroom_island_shore) | (1ULL << beach) | (1ULL << snowy_beach) |
-            (1ULL << deep_ocean) | (1ULL << warm_ocean) | (1ULL << lukewarm_ocean) | (1ULL << deep_lukewarm_ocean) |
-            (1ULL << cold_ocean) | (1ULL << deep_cold_ocean) | (1ULL << frozen_ocean) | (1ULL << deep_frozen_ocean);
-    void Shipwreck::setWorldSize(WORLDSIZE worldSize) {
+            1ULL << ocean | 1ULL << mushroom_island_shore | 1ULL << beach | 1ULL << snowy_beach | 1ULL << deep_ocean |
+            1ULL << warm_ocean | 1ULL << lukewarm_ocean | 1ULL << deep_lukewarm_ocean | 1ULL << cold_ocean |
+            1ULL << deep_cold_ocean | 1ULL << frozen_ocean | 1ULL << deep_frozen_ocean;
+    void Shipwreck::setWorldSize(const WORLDSIZE worldSize) {
         CHUNK_BOUNDS = getChunkWorldBounds(worldSize) - 3;
         // prevent from setting the same values
-        bool reducedSpacing = worldSize < WORLDSIZE::MEDIUM;
+        const bool reducedSpacing = worldSize < WORLDSIZE::MEDIUM;
         if (REDUCED_SPACING == reducedSpacing) return;
         REGION_SIZE = reducedSpacing ? 32 : 10;
         CHUNK_RANGE = REGION_SIZE - 5;
@@ -218,16 +216,15 @@ namespace Placement {
     const bool DynamicStructure<Outpost>::HAS_SECOND_BIOME_CHECK = false;
     template<>
     const uint64_t DynamicStructure<Outpost>::MAIN_VALID_BIOMES =
-            (1ULL << plains) | (1ULL << desert) | (1ULL << taiga) | (1ULL << ice_plains) | (1ULL << cold_taiga) |
-            (1ULL << savanna);
+            1ULL << plains | 1ULL << desert | 1ULL << taiga | 1ULL << ice_plains | 1ULL << cold_taiga | 1ULL << savanna;
     template<>
     const uint64_t DynamicStructure<Outpost>::SECONDARY_VALID_BIOMES = DEFAULT_SECONDARY_VALID_BIOMES;
     template<>
     const uint64_t DynamicStructure<Outpost>::SECONDARY_VALID_BIOMES_MUTATED = DEFAULT_SECONDARY_VALID_BIOMES_MUTATED;
-    void Outpost::setWorldSize(WORLDSIZE worldSize) {
+    void Outpost::setWorldSize(const WORLDSIZE worldSize) {
         CHUNK_BOUNDS = getChunkWorldBounds(worldSize) - 3;
         // prevent from setting the same values
-        bool reducedSpacing = worldSize < WORLDSIZE::MEDIUM;
+        const bool reducedSpacing = worldSize < WORLDSIZE::MEDIUM;
         if (REDUCED_SPACING == reducedSpacing) return;
         REGION_SIZE = reducedSpacing ? 32 : 80;
         CHUNK_RANGE = REGION_SIZE - 6;

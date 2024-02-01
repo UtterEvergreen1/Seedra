@@ -3,13 +3,14 @@
 #include "LegacyCubiomes/loot/classes/EnchantRandomly.hpp"
 #include "LegacyCubiomes/loot/classes/Loot.hpp"
 
+
 namespace loot {
     class AbandonedMineshaft : public Loot<AbandonedMineshaft> {
     public:
         static void setup();
     };
 
-    void AbandonedMineshaft::setup() {
+    inline void AbandonedMineshaft::setup() {
         std::vector<ItemEntry> items1;
         std::vector<ItemEntry> items2;
         std::vector<ItemEntry> items3;

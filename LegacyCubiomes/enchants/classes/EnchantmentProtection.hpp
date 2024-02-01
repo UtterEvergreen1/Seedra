@@ -2,7 +2,7 @@
 
 #include "LegacyCubiomes/enchants/enchantment.hpp"
 
-class EnchantmentProtection : public Enchantment {
+class EnchantmentProtection final : public Enchantment {
 public:
     struct ArmorType {
         const std::string typeName;
@@ -12,7 +12,8 @@ public:
         const int8_t levelCostSpan{};
 
         ArmorType() = default;
-        ArmorType(std::string typeName, int8_t id, int8_t minEnchantability, int8_t levelCost, int8_t levelCostSpan)
+        ArmorType(std::string typeName, const int8_t id, const int8_t minEnchantability, const int8_t levelCost,
+                  const int8_t levelCostSpan)
             : typeName(std::move(typeName)), id(id), minEnchantability(minEnchantability), levelCost(levelCost),
               levelCostSpan(levelCostSpan) {}
 
@@ -26,9 +27,9 @@ public:
     static const ArmorType EXPLOSION;
     static const ArmorType PROJECTILE;
 
-    const EnchantmentProtection::ArmorType* protType = &ALL;
+    const ArmorType* protType = &ALL;
 
-    EnchantmentProtection(std::string name, const Rarity* rarity, int type)
+    EnchantmentProtection(std::string name, const Rarity* rarity, const int type)
         : Enchantment(std::move(name), rarity, EnumName::PROTECTION, 4) {
         switch (type) {
             case 0:
@@ -58,26 +59,21 @@ public:
         }
     };
 
-    int getMinCost(int enchantmentLevel) override {
+    int getMinCost(const int enchantmentLevel) override {
         return protType->getMinimalEnchantability() + (enchantmentLevel - 1) * protType->getEnchantIncreasePerLevel();
     }
 
-    int getMaxCost(int enchantmentLevel) override {
+    int getMaxCost(const int enchantmentLevel) override {
         return getMinCost(enchantmentLevel) + protType->getEnchantIncreasePerLevel();
     }
 
     ND bool canApplyTogether(const Enchantment* enchantment) const override {
         if (enchantment->enumID == EnumName::PROTECTION) {
-            auto enchantmentIn = dynamic_cast<const EnchantmentProtection*>(enchantment);
+            const auto enchantmentIn = dynamic_cast<const EnchantmentProtection*>(enchantment);
 
-            if (protType == enchantmentIn->protType) {
-                return false;
-            } else {
-                return protType == &EnchantmentProtection::FALL ||
-                       enchantmentIn->protType == &EnchantmentProtection::FALL;
-            }
-        } else {
-            return Enchantment::canApplyTogether(enchantment);
+            if (protType == enchantmentIn->protType) { return false; }
+            return protType == &EnchantmentProtection::FALL || enchantmentIn->protType == &EnchantmentProtection::FALL;
         }
+        return Enchantment::canApplyTogether(enchantment);
     }
 };

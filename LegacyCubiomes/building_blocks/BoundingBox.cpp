@@ -1,4 +1,3 @@
-
 #include "BoundingBox.hpp"
 
 

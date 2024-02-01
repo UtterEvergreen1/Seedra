@@ -2,13 +2,14 @@
 
 #include "LegacyCubiomes/loot/classes/Loot.hpp"
 
+
 namespace loot {
     class ShipwreckMap : public Loot<ShipwreckMap> {
     public:
         static void setup();
     };
 
-    void ShipwreckMap::setup() {
+    inline void ShipwreckMap::setup() {
         std::vector<ItemEntry> items1;
         std::vector<ItemEntry> items2;
 
@@ -23,4 +24,4 @@ namespace loot {
         items2.emplace_back(&Items::BOOK, 5, 1, 5);
         lootTables.emplace_back(items2, 3);
     }
-} // namespace loot
+}

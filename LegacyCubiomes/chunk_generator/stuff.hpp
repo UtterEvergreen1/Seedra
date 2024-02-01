@@ -6,7 +6,8 @@
 #include "LegacyCubiomes/cubiomes/generator.hpp"
 #include "LegacyCubiomes/utils/constants.hpp"
 
-int getBiomeGroup(int biomeID) {
+
+inline int getBiomeGroup(const int biomeID) {
     switch (biomeID) {
         case 12:
         case 13:
@@ -89,13 +90,12 @@ int getBiomeGroup(int biomeID) {
     }
 }
 
-std::vector<float> getFracs(int* biomes) {
-    int biomeGroup;
-    int biomesSize = 40000; // size of biomes
-    std::vector<float> fracs(8, 0.0F);
+inline std::vector<float> getFracs(const int* biomes) {
+    constexpr int biomesSize = 40000; // size of biomes
+    std::vector fracs(8, 0.0F);
     int index = 0;
     while (index < biomesSize) {
-        biomeGroup = getBiomeGroup(
+        const int biomeGroup = getBiomeGroup(
                 biomes[index]); // getting the biome group it is in (take the biomeID and assign it a catagory)
         fracs[biomeGroup]++;
         index++;
@@ -104,8 +104,8 @@ std::vector<float> getFracs(int* biomes) {
     return fracs;
 }
 
-bool getIsMatch(int* biomes) {
-    std::vector<float> floatFrac = getFracs(biomes);
+inline bool getIsMatch(const int* biomes) {
+    const std::vector<float> floatFrac = getFracs(biomes);
     if (floatFrac[7] < 0.001F) { return false; }
     for (int i = 0; i < 5; i++) {
         if (floatFrac[i] < 0.01F) { return false; }
@@ -115,14 +115,14 @@ bool getIsMatch(int* biomes) {
     return true;
 }
 
-int64_t findBalancedSeed(Generator* g, RNG rng) {
-    uint64_t timeStart = getSeconds();
+inline int64_t findBalancedSeed(const Generator* g, RNG rng) {
+    const uint64_t timeStart = getSeconds();
     while (true) {
-        int64_t seed = rng.nextLong();
+        const int64_t seed = rng.nextLongI();
         int* biomes = g->getBiomeRange(4, -100, -100, 200, 200);
-        bool isMatch = getIsMatch(biomes);
+        const bool isMatch = getIsMatch(biomes);
         free(biomes);
         if (isMatch) return seed;
-        if (10 < (getSeconds() - timeStart)) return -1;
+        if (10 < getSeconds() - timeStart) return -1;
     }
 }

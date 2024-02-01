@@ -79,47 +79,47 @@ int main(int argc, char* argv[]) {
     std::vector<unsigned char> rgb = {0, 0, 0};
 
     // sort the pieces according to max y value?
-    std::vector<Piece> pieceVector(stronghold.pieceArray, stronghold.pieceArray + stronghold.pieceArraySize);
-    std::sort(pieceVector.begin(), pieceVector.end(), [](const Piece& a, const Piece& b) { return a.maxY < b.maxY; });
+    std::vector pieceVector(stronghold.pieceArray, stronghold.pieceArray + stronghold.pieceArraySize);
+    std::ranges::sort(pieceVector, [](const Piece& a, const Piece& b) { return a.maxY < b.maxY; });
 
     for (auto sortedPiece: pieceVector) {
         switch (sortedPiece.type) {
             using namespace generation;
-            case Stronghold::NONE:
+            case static_cast<int8_t>(Stronghold::PieceType::NONE):
                 rgb = {127, 127, 127}; // Gray (for undefined/none)
                 break;
-            case Stronghold::STRAIGHT:
+            case static_cast<int8_t>(Stronghold::PieceType::STRAIGHT):
                 rgb = {255, 255, 255}; // White (for a generic corridor)
                 break;
-            case Stronghold::PRISON_HALL:
+            case static_cast<int8_t>(Stronghold::PieceType::PRISON_HALL):
                 rgb = {64, 64, 255}; // Blue (prisons usually have iron bars)
                 break;
-            case Stronghold::LEFT_TURN:
+            case static_cast<int8_t>(Stronghold::PieceType::LEFT_TURN):
                 rgb = {255, 215, 0}; // Gold for left turn
                 break;
-            case Stronghold::RIGHT_TURN:
+            case static_cast<int8_t>(Stronghold::PieceType::RIGHT_TURN):
                 rgb = {218, 165, 32}; // Goldenrod for right turn
                 break;
-            case Stronghold::ROOM_CROSSING:
+            case static_cast<int8_t>(Stronghold::PieceType::ROOM_CROSSING):
                 rgb = {205, 133, 63}; // Peru (a shade of brown, indicating a room crossing)
                 break;
-            case Stronghold::STRAIGHT_STAIRS_DOWN:
-            case Stronghold::STAIRS_DOWN:
+            case static_cast<int8_t>(Stronghold::PieceType::STRAIGHT_STAIRS_DOWN):
+            case static_cast<int8_t>(Stronghold::PieceType::STAIRS_DOWN):
                 rgb = {255, 140, 0}; // Dark Orange for stairs going down
                 break;
-            case Stronghold::FIVE_CROSSING:
+            case static_cast<int8_t>(Stronghold::PieceType::FIVE_CROSSING):
                 rgb = {85, 107, 47}; // Olive Green for a more complex crossing
                 break;
-            case Stronghold::CHEST_CORRIDOR:
+            case static_cast<int8_t>(Stronghold::PieceType::CHEST_CORRIDOR):
                 rgb = {255, 165, 0}; // Orange (indicating treasure or something valuable)
                 break;
-            case Stronghold::LIBRARY:
+            case static_cast<int8_t>(Stronghold::PieceType::LIBRARY):
                 rgb = {139, 69, 19}; // Dark Brown (as you suggested)
                 break;
-            case Stronghold::PORTAL_ROOM:
+            case static_cast<int8_t>(Stronghold::PieceType::PORTAL_ROOM):
                 rgb = {0, 128, 0}; // Green (as you suggested, represents the end portal)
                 break;
-            case Stronghold::FILLER_CORRIDOR:
+            case static_cast<int8_t>(Stronghold::PieceType::FILLER_CORRIDOR):
                 rgb = {147, 112, 219}; // Medium Purple for filler corridors
                 break;
         }

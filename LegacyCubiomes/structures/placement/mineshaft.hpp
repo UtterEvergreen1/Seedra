@@ -25,7 +25,7 @@ namespace Placement {
          * @param radius the number of chunks to check around the target position
          * @return a vector of chunk positions for all the mineshafts within the radius
          */
-        ND MU inline static Pos2DVec_t getPositions(int64_t worldSeed, int x, int z, int radius) {
+        ND MU static Pos2DVec_t getPositions(const int64_t worldSeed, const int x, const int z, const int radius) {
             return getPositions(worldSeed, x - radius, z - radius, x + radius, z + radius);
         }
     };

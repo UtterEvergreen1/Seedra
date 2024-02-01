@@ -1,10 +1,9 @@
 #pragma once
 
 #include <vector>
-
-#include "LegacyCubiomes/cubiomes/biomeColor.hpp"
 #include "LegacyCubiomes/cubiomes/generator.hpp"
 #include "LegacyCubiomes/utils/Pos2DTemplate.hpp"
+
 
 namespace Placement {
     template<class Derived>
@@ -20,20 +19,20 @@ namespace Placement {
         static Pos2D getRegionChunkPosition(int64_t worldSeed, int regionX, int regionZ);
         static Pos2D getRegionBlockPosition(int64_t worldSeed, int regionX, int regionZ);
 
-        static std::vector<Pos2D> getAllPositions(Generator* g);
+        static std::vector<Pos2D> getAllPositions(const Generator* g);
 
         /// do not use for feature, use getFeatureType instead
-        static bool verifyChunkPosition(Generator* g, int chunkX, int chunkZ);
+        static bool verifyChunkPosition(const Generator* g, int chunkX, int chunkZ);
 
-        inline static bool verifyChunkPosition(Generator* g, Pos2D chunkPos) {
+        static bool verifyChunkPosition(const Generator* g, const Pos2D chunkPos) {
             return verifyChunkPosition(g, chunkPos.x, chunkPos.z);
         }
 
-        inline static bool verifyBlockPosition(Generator* g, int blockX, int blockZ) {
+        static bool verifyBlockPosition(const Generator* g, const int blockX, const int blockZ) {
             return verifyChunkPosition(g, blockX >> 4, blockZ >> 4);
         }
 
-        inline static bool verifyBlockPosition(Generator* g, Pos2D blockPos) {
+        static bool verifyBlockPosition(const Generator* g, const Pos2D blockPos) {
             return verifyChunkPosition(g, blockPos.x >> 4, blockPos.z >> 4);
         }
     };
@@ -47,7 +46,7 @@ namespace Placement {
         Pos2D pos;
         StructureType type;
 
-        FeatureStructurePair(const Pos2D& pos, StructureType type) : pos(pos), type(type) {}
+        FeatureStructurePair(const Pos2D& pos, const StructureType type) : pos(pos), type(type) {}
 
         friend std::ostream& operator<<(std::ostream& out, const FeatureStructurePair& feature) {
             out << "Feature: " << feature.pos << " Type: " << getStructureName(feature.type);
@@ -65,11 +64,11 @@ namespace Placement {
     class Feature : public StaticStructure<Feature> {
     public:
         static void setWorldSize(WORLDSIZE worldSize);
-        static StructureType getFeatureType(Generator* g, int blockX, int blockZ);
-        inline static StructureType getFeatureType(Generator* g, const Pos2D& block) {
+        static StructureType getFeatureType(const Generator* g, int blockX, int blockZ);
+        static StructureType getFeatureType(const Generator* g, const Pos2D& block) {
             return getFeatureType(g, block.x, block.z);
         }
-        static std::vector<FeatureStructurePair> getAllFeaturePositions(Generator* g);
+        static std::vector<FeatureStructurePair> getAllFeaturePositions(const Generator* g);
     };
 
     template<bool isPS4Village>

@@ -3,13 +3,14 @@
 #include "LegacyCubiomes/loot/classes/EnchantRandomly.hpp"
 #include "LegacyCubiomes/loot/classes/Loot.hpp"
 
+
 namespace loot {
     class UnderwaterRuinSmall : public Loot<UnderwaterRuinSmall> {
     public:
         static void setup();
     };
 
-    void UnderwaterRuinSmall::setup() {
+    inline void UnderwaterRuinSmall::setup() {
         std::vector<ItemEntry> items1;
         std::vector<ItemEntry> items2;
 
@@ -29,4 +30,4 @@ namespace loot {
 
         maxItemsPossible = 9;
     }
-} // namespace loot
+}

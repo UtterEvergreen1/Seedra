@@ -6,7 +6,6 @@
 #include <vector>
 
 #include "LegacyCubiomes/cubiomes/generator.hpp"
-#include "LegacyCubiomes/mc/itemID.hpp"
 #include "LegacyCubiomes/mc/items.hpp"
 #include "LegacyCubiomes/utils/RegistryNamespaced.hpp"
 #include "rarity.hpp"
@@ -14,7 +13,6 @@
 class EnchantmentHelper;
 
 class Enchantment {
-private:
     static bool isSetup;
 
 public:
@@ -24,57 +22,58 @@ public:
     public:
         class Base {
         public:
+            virtual ~Base() = default;
             virtual bool canEnchantItem(const Items::Item* itemIn) const;
         };
-        class All : public Base {
+        class All final : public Base {
         public:
             bool canEnchantItem(const Items::Item* itemIn) const override;
         };
-        class Armor : public Base {
+        class Armor final : public Base {
         public:
             bool canEnchantItem(const Items::Item* itemIn) const override;
         };
-        class ArmorFeet : public Base {
+        class ArmorFeet final : public Base {
         public:
             bool canEnchantItem(const Items::Item* itemIn) const override;
         };
-        class ArmorLegs : public Base {
+        class ArmorLegs final : public Base {
         public:
             bool canEnchantItem(const Items::Item* itemIn) const override;
         };
-        class ArmorChest : public Base {
+        class ArmorChest final : public Base {
         public:
             bool canEnchantItem(const Items::Item* itemIn) const override;
         };
-        class ArmorHead : public Base {
+        class ArmorHead final : public Base {
         public:
             bool canEnchantItem(const Items::Item* itemIn) const override;
         };
-        class Weapon : public Base {
+        class Weapon final : public Base {
         public:
             bool canEnchantItem(const Items::Item* itemIn) const override;
         };
-        class Digger : public Base {
+        class Digger final : public Base {
         public:
             bool canEnchantItem(const Items::Item* itemIn) const override;
         };
-        class FishingRod : public Base {
+        class FishingRod final : public Base {
         public:
             bool canEnchantItem(const Items::Item* itemIn) const override;
         };
-        class Breakable : public Base {
+        class Breakable final : public Base {
         public:
             bool canEnchantItem(const Items::Item* itemIn) const override;
         };
-        class Bow : public Base {
+        class Bow final : public Base {
         public:
             bool canEnchantItem(const Items::Item* itemIn) const override;
         };
-        class Wearable : public Base {
+        class Wearable final : public Base {
         public:
             bool canEnchantItem(const Items::Item* itemIn) const override;
         };
-        class Trident : public Base {
+        class Trident final : public Base {
         public:
             bool canEnchantItem(const Items::Item* itemIn) const override;
         };
@@ -96,7 +95,7 @@ public:
         static std::vector<const Base*> ALL_ITERABLE;
     };
 
-    enum EnumName : int8_t {
+    enum class EnumName : int8_t {
         OXYGEN,
         PROTECTION,
         WATER_WORKER,
@@ -164,13 +163,15 @@ public:
         channeling = 32
     };
 
+    static constexpr int8_t MAX_ENCHANTMENT_COUNT = 33;
 
     static RegistryNamespaced<Enchantment> REGISTRY;
     static CONSOLE currentConsole;
     static LCEVERSION currentVersion;
+
     /// the order is: [console][version][pointer]
     static const std::vector<std::vector<std::vector<int>>> tableOfOrders;
-    static constexpr int8_t MAX_ENCHANTMENT_COUNT = 33;
+
     static int count;
 
     // attributes of each class
@@ -184,14 +185,17 @@ public:
 
     Enchantment() = default;
 
-    Enchantment(std::string name, const Rarity* rarity, EnumName enchantName, int8_t maxLevel, bool isTreasure = false)
-        : name(std::move(name)), rarity(rarity), type(&Type::ALL), enumID(enchantName), maxLevel(maxLevel),
-          isTreasure(isTreasure){};
+    Enchantment(std::string name, const Rarity* rarity, const EnumName enchantName, const int8_t maxLevel,
+                const bool isTreasure = false)
+        : name(std::move(name)), type(&Type::ALL), enumID(enchantName), isTreasure(isTreasure), maxLevel(maxLevel),
+          rarity(rarity){}
 
-    Enchantment(std::string name, const Rarity* rarity, const Type::Base* type, EnumName enchantName, int8_t maxLevel,
-                bool isTreasure = false)
-        : name(std::move(name)), rarity(rarity), type(type), enumID(enchantName), maxLevel(maxLevel),
-          isTreasure(isTreasure){};
+    Enchantment(std::string name, const Rarity* rarity, const Type::Base* type, const EnumName enchantName,
+                const int8_t maxLevel, const bool isTreasure = false)
+        : name(std::move(name)), type(type), enumID(enchantName), isTreasure(isTreasure), maxLevel(maxLevel),
+          rarity(rarity){}
+
+    virtual ~Enchantment() = default;
 
     virtual int getMinCost(int enchantmentLevel);
     virtual int getMaxCost(int enchantmentLevel);
@@ -200,7 +204,7 @@ public:
     ND virtual bool canApply(const Items::Item* item) const;
 
 
-    // registers all the enchantments
+    /// registers all the enchantments
     static void registerEnchantments();
 
 private:

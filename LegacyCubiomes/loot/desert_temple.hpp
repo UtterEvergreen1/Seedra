@@ -9,7 +9,7 @@ namespace loot {
         static void setup();
     };
 
-    void DesertTemple::setup() {
+    inline void DesertTemple::setup() {
         std::vector<ItemEntry> items1;
         std::vector<ItemEntry> items2;
 

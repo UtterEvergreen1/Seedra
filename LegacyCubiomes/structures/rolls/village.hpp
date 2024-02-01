@@ -6,7 +6,6 @@
 namespace structure_rolls {
 
     class Village : public RollsBase {
-    public:
     };
 
 } // namespace structure_rolls

@@ -3,7 +3,7 @@
 #include "LegacyCubiomes/enchants/enchantment.hpp"
 
 
-class EnchantmentWaterWorker : public Enchantment {
+class EnchantmentWaterWorker final : public Enchantment {
 public:
     EnchantmentWaterWorker(const std::string& name, const Rarity* rarity)
         : Enchantment(name, rarity, &Type::ARMOR_HEAD, EnumName::WATER_WORKER, 1){};

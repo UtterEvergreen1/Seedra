@@ -18,13 +18,14 @@ public:
     NoiseGeneratorPerlin surfaceNoise;
     NoiseGeneratorOctaves scaleNoise; // unused
     NoiseGeneratorOctaves depthNoise;
-    //NoiseGeneratorOctaves forestNoise; // unused
+    // NoiseGeneratorOctaves forestNoise; // unused
+
     int* biomesForGeneration;
+
     std::vector<double> depthRegion;
     std::vector<double> depthBuffer;
     std::vector<double> heightMap;
     std::vector<float> biomeWeights;
-
     std::vector<double> mainNoiseRegion;
     std::vector<double> minLimitRegion;
     std::vector<double> maxLimitRegion;
@@ -34,8 +35,8 @@ public:
 
     void setBiomesForGeneration(int x, int z, int width, int height, int scale);
     void setBlocksInChunk(int chunkX, int chunkZ, ChunkPrimer* primer);
-    void replaceBiomeBlocks(int x, int z, ChunkPrimer* primer, int* biomesIn);
+    void replaceBiomeBlocks(int x, int z, ChunkPrimer* primer, const int* biomesIn);
     ChunkPrimer* provideChunk(int x, int z);
-    inline ChunkPrimer* provideChunk(Pos2D chunkPos) { return provideChunk(chunkPos.x, chunkPos.z); };
+    ChunkPrimer* provideChunk(const Pos2D chunkPos) { return provideChunk(chunkPos.x, chunkPos.z); };
     void generateHeightmap(int x, int y, int z);
 };

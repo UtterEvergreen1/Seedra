@@ -3,13 +3,14 @@
 #include "LegacyCubiomes/loot/classes/EnchantWithLevels.hpp"
 #include "LegacyCubiomes/loot/classes/StrongholdLoot.hpp"
 
+
 namespace loot {
     class StrongholdCrossing : public StrongholdLoot<StrongholdCrossing> {
     public:
         static void setup();
     };
 
-    void StrongholdCrossing::setup() {
+    inline void StrongholdCrossing::setup() {
         std::vector<ItemEntry> items;
 
         items.emplace_back(&Items::IRON_INGOT, 50, 1, 5);
@@ -26,4 +27,4 @@ namespace loot {
 
         maxItemsPossible = 4;
     }
-} // namespace loot
+}

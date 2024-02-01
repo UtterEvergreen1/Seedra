@@ -3,7 +3,7 @@
 #include "LegacyCubiomes/enchants/enchantment.hpp"
 
 
-class EnchantmentArrowFire : public Enchantment {
+class EnchantmentArrowFire final : public Enchantment {
 public:
     EnchantmentArrowFire(std::string name, const Rarity* rarity)
         : Enchantment(std::move(name), rarity, &Type::BOW, EnumName::ARROW_FIRE, 1){};

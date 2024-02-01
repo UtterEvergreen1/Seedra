@@ -2,7 +2,8 @@
 
 #include "LegacyCubiomes/enchants/enchantment.hpp"
 
-class EnchantmentBindingCurse : public Enchantment {
+
+class EnchantmentBindingCurse final : public Enchantment {
 public:
     EnchantmentBindingCurse(const std::string& name, const Rarity* rarity)
         : Enchantment(name, rarity, &Type::WEARABLE, EnumName::BINDING_CURSE, 1, true){};

@@ -6,8 +6,8 @@
 namespace Items {
     class Sword : public Item {
     public:
-        Sword(int id, std::string itemName, std::string ident, ToolMaterials materialEnchantability)
-            : Item(id, 0, ItemSword, std::move(itemName), std::move(ident), true, materialEnchantability) {}
+        Sword(const int id, std::string itemName, std::string ident, const ToolMaterials materialEnchantability)
+            : Item(id, 0, ItemType::ItemSword, std::move(itemName), std::move(ident), true, materialEnchantability) {}
     };
 
-} // namespace Items
+}

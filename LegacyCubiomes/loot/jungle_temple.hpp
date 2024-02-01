@@ -3,13 +3,14 @@
 #include "LegacyCubiomes/loot/classes/EnchantWithLevels.hpp"
 #include "LegacyCubiomes/loot/classes/Loot.hpp"
 
+
 namespace loot {
     class JungleTemple : public Loot<JungleTemple> {
     public:
         static void setup();
     };
 
-    void JungleTemple::setup() {
+    inline void JungleTemple::setup() {
         std::vector<ItemEntry> items;
 
         items.emplace_back(&Items::EMERALD, 15, 1, 3);
@@ -28,4 +29,4 @@ namespace loot {
 
         maxItemsPossible = 6;
     }
-} // namespace loot
+}

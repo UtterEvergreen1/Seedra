@@ -6,24 +6,23 @@
 namespace Placement {
 
     Pos2D Stronghold::getWorldPosition(const Generator& g) {
-        bool xboxStronghold = g.getConsole() == CONSOLE::XBOX;
-        double dist, angle;
-        int multiplier;
+        const bool xboxStronghold = g.getConsole() == CONSOLE::XBOX;
+        int multiplier = 0;
         RNG rng;
         Pos2D p{};
         int out;
 
         rng.setSeed(g.getWorldSeed());
 
-        angle = 2.0 * PI * rng.nextDouble();
+        double angle = 2.0 * PI * rng.nextDouble();
 
         for (int var7 = 0; var7 < 10; ++var7) {
 
             if (xboxStronghold) multiplier = rng.nextInt(4);
-            dist = rng.nextDouble() + 1.25;
+            double dist = rng.nextDouble() + 1.25;
             if (!xboxStronghold) multiplier = rng.nextInt(4);
 
-            dist = dist * ((double) (multiplier) + 3.0);
+            dist = dist * ((double) multiplier + 3.0);
 
             p.x = ((int) round(cos(angle) * dist) << 4) + 8;
             p.z = ((int) round(sin(angle) * dist) << 4) + 8;
@@ -50,7 +49,7 @@ namespace Placement {
     Pos2D Stronghold::getRawWorldPosition(int64_t worldSeed, bool xboxStronghold) {
         RNG rng;
         rng.setSeed(worldSeed);
-        double angle = 2.0 * PI * rng.nextDouble();
+        const double angle = 2.0 * PI * rng.nextDouble();
 
         int multiplier;
         if (xboxStronghold) multiplier = rng.nextInt(4);
@@ -59,7 +58,7 @@ namespace Placement {
 
         if (!xboxStronghold) multiplier = rng.nextInt(4);
 
-        dist *= ((double) (multiplier) + 3.0);
+        dist *= (double) multiplier + 3.0;
         return {((int) round(cos(angle) * dist) << 4) + 8, ((int) round(sin(angle) * dist) << 4) + 8};
     }
 

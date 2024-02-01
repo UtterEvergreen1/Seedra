@@ -3,8 +3,7 @@
 #include "LegacyCubiomes/enchants/enchantment.hpp"
 
 
-class EnchantmentArrowKnockback : public Enchantment {
-private:
+class EnchantmentArrowKnockback final : public Enchantment {
     static constexpr inline int8_t LEVELS_MIN[2] = {12, 32};
     static constexpr inline int8_t LEVELS_MAX[2] = {37, 57};
 
@@ -12,7 +11,7 @@ public:
     EnchantmentArrowKnockback(std::string name, const Rarity* rarity)
         : Enchantment(std::move(name), rarity, &Type::BOW, EnumName::ARROW_KNOCKBACK, 2){};
 
-    int getMinCost(int enchantmentLevel) override { return LEVELS_MIN[enchantmentLevel - 1]; }
+    int getMinCost(const int enchantmentLevel) override { return LEVELS_MIN[enchantmentLevel - 1]; }
 
-    int getMaxCost(int enchantmentLevel) override { return LEVELS_MAX[enchantmentLevel - 1]; }
+    int getMaxCost(const int enchantmentLevel) override { return LEVELS_MAX[enchantmentLevel - 1]; }
 };

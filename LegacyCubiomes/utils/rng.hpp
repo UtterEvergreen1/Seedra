@@ -98,6 +98,8 @@ public:
 
     uint64_t nextLong() { return ((uint64_t) next(32) << 32) + next(32); }
 
+    int64_t nextLongI() { return static_cast<int64_t>((static_cast<uint64_t>(next(32)) << 32) + next(32)); }
+
     float nextFloat() { return (float) next(24) / (float) 0x1000000; }
 
     MU float nextFloat(float minimum, float maximum) {

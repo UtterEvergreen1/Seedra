@@ -1,10 +1,8 @@
 #pragma once
 
-#include <cmath>
-
-#include "LegacyCubiomes/loot/classes/Loot.hpp"
 #include "enchantment.hpp"
 #include "fastBookEnchantArray.hpp"
+
 
 class EnchantmentHelper {
 public:
@@ -15,7 +13,7 @@ public:
      * @param console the LCE console type
      * @param version the LCE version
      */
-    static void setup(CONSOLE console, LCEVERSION version) {
+    static void setup(const CONSOLE console, const LCEVERSION version) {
         Enchantment::registerEnchantments();
         setConsoleAndVersion(console, version);
     }

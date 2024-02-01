@@ -1,9 +1,9 @@
 #include "RavineGenerator.hpp"
 #include "LegacyCubiomes/utils/MathHelper.hpp"
+#include "LegacyCubiomes/cubiomes/biomeID.hpp"
 
-unsigned char RavineGenerator::topBlock(int x, int z) {
-    int biomeID = g.getBiomeAt(1, x, z);
-    switch (biomeID) {
+unsigned char RavineGenerator::topBlock(const int x, const int z) const {
+    switch (g.getBiomeAt(1, x, z)) {
         case beach:
         case desert:
         case mesa:
@@ -25,7 +25,7 @@ unsigned char RavineGenerator::topBlock(int x, int z) {
 }
 
 
-bool RavineGenerator::canReplaceBlock(uint16_t blockAt, uint16_t blockAbove) {
+bool RavineGenerator::canReplaceBlock(const uint16_t blockAt, const uint16_t blockAbove) {
     switch (blockAt) {
         case Items::STONE_ID:
         case Items::GRASS_ID:
@@ -47,22 +47,21 @@ bool RavineGenerator::canReplaceBlock(uint16_t blockAt, uint16_t blockAbove) {
 }
 
 
-void RavineGenerator::addTunnel(int64_t randomSeed, Pos2D chunk, ChunkPrimer* chunkPrimer, DoublePos3D tunnel,
-                                float angle, float slope, float curvature, int tunnelStartSegment, int tunnelEndSegment,
-                                double widthMultiplier) {
+void RavineGenerator::addTunnel(const int64_t randomSeed, const Pos2D chunk, ChunkPrimer* chunkPrimer,
+                                DoublePos3D tunnel, const float angle, float slope, float curvature,
+                                int tunnelStartSegment, int tunnelEndSegment, const double widthMultiplier) {
 
-    if(g.getLCEVersion() == LCEVERSION::AQUATIC && isOceanic(g.getBiomeAt(1, (int)tunnel.x, (int)tunnel.z)))
-        return;
+    if (g.getLCEVersion() == LCEVERSION::AQUATIC && isOceanic(g.getBiomeAt(1, (int) tunnel.x, (int) tunnel.z))) return;
 
     RNG rng;
     rng.setSeed(randomSeed);
-    auto offsetX = (double) (chunk.x * 16 + 8);
-    auto offsetZ = (double) (chunk.z * 16 + 8);
+    const auto offsetX = (double) (chunk.x * 16 + 8);
+    const auto offsetZ = (double) (chunk.z * 16 + 8);
     float curvatureChangeRate = 0.0F;
     float slopeChangeRate = 0.0F;
 
     if (tunnelEndSegment < 1) {
-        constexpr int rangeBoundary = MapGenBase::range * 16 - 16;
+        constexpr int rangeBoundary = range * 16 - 16;
         constexpr int randomRange = rangeBoundary / 4;
         tunnelEndSegment = rangeBoundary - rng.nextInt(randomRange);
     }
@@ -89,8 +88,8 @@ void RavineGenerator::addTunnel(int64_t randomSeed, Pos2D chunk, ChunkPrimer* ch
         double adjustedHeight = adjustedWidth * widthMultiplier;
         adjustedWidth = adjustedWidth * ((double) rng.nextFloat() * 0.25 + 0.75);
         adjustedHeight = adjustedHeight * ((double) rng.nextFloat() * 0.25 + 0.75);
-        float cosCurvature = MathHelper::cos(curvature);
-        float sinCurvature = MathHelper::sin(curvature);
+        const float cosCurvature = MathHelper::cos(curvature);
+        const float sinCurvature = MathHelper::sin(curvature);
         tunnel.x += (double) (MathHelper::cos(slope) * cosCurvature);
         tunnel.y += (double) sinCurvature;
         tunnel.z += (double) (MathHelper::sin(slope) * cosCurvature);
@@ -103,10 +102,10 @@ void RavineGenerator::addTunnel(int64_t randomSeed, Pos2D chunk, ChunkPrimer* ch
         curvatureChangeRate = curvatureChangeRate + (rng.nextFloat() - rng.nextFloat()) * rng.nextFloat() * 4.0F;
 
         if (isSegmentAtCenter || rng.nextInt(4) != 0) {
-            double distanceX = tunnel.x - offsetX;
-            double distanceZ = tunnel.z - offsetZ;
-            auto remainingSegments = (double) (tunnelEndSegment - tunnelStartSegment);
-            auto maxDistance = (double) (angle + 18.0F);
+            const double distanceX = tunnel.x - offsetX;
+            const double distanceZ = tunnel.z - offsetZ;
+            const auto remainingSegments = (double) (tunnelEndSegment - tunnelStartSegment);
+            const auto maxDistance = (double) (angle + 18.0F);
 
             //std::cout << distanceX << " " <<  distanceZ << " " << remainingSegments << " " << maxDistance << std::endl;
 
@@ -138,7 +137,7 @@ void RavineGenerator::addTunnel(int64_t randomSeed, Pos2D chunk, ChunkPrimer* ch
                     for (int z = startZ; !waterOrLavaDetected && z < endZ; ++z) {
                         for (int y = endY + 1; !waterOrLavaDetected && y >= startY - 1; --y) {
                             if (y >= 0 && y < 128) {
-                                uint16_t blockId = chunkPrimer->getBlockId(x, y, z);
+                                const uint16_t blockId = chunkPrimer->getBlockId(x, y, z);
                                 if (blockId == Items::FLOWING_WATER_ID || blockId == Items::STILL_WATER_ID) {
                                     waterOrLavaDetected = true;
                                 }
@@ -153,10 +152,10 @@ void RavineGenerator::addTunnel(int64_t randomSeed, Pos2D chunk, ChunkPrimer* ch
 
                 if (!waterOrLavaDetected) {
                     for (int x = startX; x < endX; ++x) {
-                        double dX = ((double) (x + chunk.x * 16) + 0.5 - tunnel.x) / adjustedWidth;
+                        const double dX = ((double) (x + chunk.x * 16) + 0.5 - tunnel.x) / adjustedWidth;
 
                         for (int z = startZ; z < endZ; ++z) {
-                            double dZ = ((double) (z + chunk.z * 16) + 0.5 - tunnel.z) / adjustedWidth;
+                            const double dZ = ((double) (z + chunk.z * 16) + 0.5 - tunnel.z) / adjustedWidth;
                             bool replaceableBlockDetected = false;
 
                             if (dX * dX + dZ * dZ < 1.0) {
@@ -166,8 +165,8 @@ void RavineGenerator::addTunnel(int64_t randomSeed, Pos2D chunk, ChunkPrimer* ch
                                     double dY = ((double) y + 0.5 - tunnel.y) / adjustedHeight;
 
                                     if ((dX * dX + dZ * dZ) * (double) rs[y] + dY * dY / 6.0 < 1.0) {
-                                        uint16_t currentBlock = chunkPrimer->getBlockId(x, y, z);
-                                        uint16_t blockAbove = chunkPrimer->getBlockId(x, y + 1, z);
+                                        const uint16_t currentBlock = chunkPrimer->getBlockId(x, y, z);
+                                        const uint16_t blockAbove = chunkPrimer->getBlockId(x, y + 1, z);
 
                                         if (currentBlock == Items::GRASS_ID) { replaceableBlockDetected = true; }
 
@@ -182,8 +181,8 @@ void RavineGenerator::addTunnel(int64_t randomSeed, Pos2D chunk, ChunkPrimer* ch
 
                                                 if (replaceableBlockDetected &&
                                                     chunkPrimer->getBlockId(x, y - 1, z) == Items::DIRT_ID) {
-                                                    chunkPrimer->setBlockId(x, y - 1, z,
-                                                                          topBlock(x + chunk.x * 16, z + chunk.z * 16));
+                                                    chunkPrimer->setBlockId(
+                                                            x, y - 1, z, topBlock(x + chunk.x * 16, z + chunk.z * 16));
                                                 }
                                             }
                                         }
@@ -194,23 +193,23 @@ void RavineGenerator::addTunnel(int64_t randomSeed, Pos2D chunk, ChunkPrimer* ch
                     }
                 }
                 if (isSegmentAtCenter) { break; }
-
             }
         }
     }
 }
 
 
-void RavineGenerator::addFeature(int baseChunkX, int baseChunkZ, int targetX, int targetZ, ChunkPrimer* chunkPrimer) {
+void RavineGenerator::addFeature(const int baseChunkX, const int baseChunkZ, const int currentChunkX,
+                                 const int currentChunkZ, ChunkPrimer* chunkPrimer) {
     if EXPECT_FALSE (rng.nextInt(50) == 0) {
         auto tunnelStartX = (double) (baseChunkX * 16 + rng.nextInt(16));
         auto tunnelStartY = (double) (rng.nextInt(rng.nextInt(40) + 8) + 20);
         auto tunnelStartZ = (double) (baseChunkZ * 16 + rng.nextInt(16));
-        float tunnelDirection = rng.nextFloat() * (PI_FLOAT * 2.0F);
-        float tunnelSlope = (rng.nextFloat() - 0.5F) * 2.0F / 8.0F;
-        float tunnelLengthMultiplier = (rng.nextFloat() * 2.0F + rng.nextFloat()) * 2.0F;
-        addTunnel((int64_t) rng.nextLong(), {targetX, targetZ}, chunkPrimer,
-                  {tunnelStartX, tunnelStartY, tunnelStartZ},
-                  tunnelLengthMultiplier, tunnelDirection, tunnelSlope, 0, 0, 3.0);
+        const float tunnelDirection = rng.nextFloat() * (PI_FLOAT * 2.0F);
+        const float tunnelSlope = (rng.nextFloat() - 0.5F) * 2.0F / 8.0F;
+        const float tunnelLengthMultiplier = (rng.nextFloat() * 2.0F + rng.nextFloat()) * 2.0F;
+        addTunnel(rng.nextLongI(), {currentChunkX, currentChunkZ}, chunkPrimer,
+                  {tunnelStartX, tunnelStartY, tunnelStartZ}, tunnelLengthMultiplier, tunnelDirection, tunnelSlope, 0,
+                  0, 3.0);
     }
 }

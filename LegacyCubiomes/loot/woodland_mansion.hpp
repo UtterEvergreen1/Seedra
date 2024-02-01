@@ -3,13 +3,14 @@
 #include "LegacyCubiomes/loot/classes/EnchantRandomly.hpp"
 #include "LegacyCubiomes/loot/classes/Loot.hpp"
 
+
 namespace loot {
     class Mansion : public Loot<Mansion> {
     public:
         static void setup();
     };
 
-    void Mansion::setup() {
+    inline void Mansion::setup() {
         std::vector<ItemEntry> items1;
         std::vector<ItemEntry> items2;
         std::vector<ItemEntry> items3;
@@ -49,4 +50,4 @@ namespace loot {
 
         maxItemsPossible = 10;
     }
-} // namespace loot
+}

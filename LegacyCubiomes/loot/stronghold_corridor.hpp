@@ -2,6 +2,7 @@
 #include "LegacyCubiomes/loot/classes/EnchantWithLevels.hpp"
 #include "LegacyCubiomes/loot/classes/StrongholdLoot.hpp"
 
+
 namespace loot {
     template<bool isAquatic>
     class StrongholdCorridor : public StrongholdLoot<StrongholdCorridor<isAquatic>> {
@@ -45,21 +46,21 @@ namespace loot {
         items.emplace_back(&Items::DIAMOND_HORSE_ARMOR, 5);
         items.emplace_back(&Items::ENCHANTED_BOOK, new EnchantWithLevelsBook(30), 6);
 
-        StrongholdCorridor<isAquatic>::lootTables.emplace_back(items, 2, 3);
+        StrongholdCorridor::lootTables.emplace_back(items, 2, 3);
 
-        StrongholdCorridor<isAquatic>::maxItemsPossible = 3;
+        StrongholdCorridor::maxItemsPossible = 3;
     }
 
     template<bool isAquatic>
     template<bool checkCaves, bool shuffle, bool checkWaterCaves>
     Container StrongholdCorridor<isAquatic>::getAltarChestLoot(const Generator& g, const Piece& altarChestPiece,
                                                                generation::Stronghold* strongholdGenerator) {
-        RNG lootSeed = StrongholdLoot<StrongholdCorridor<isAquatic>>::template getLootSeed<checkCaves, checkWaterCaves>(
+        RNG lootSeed = StrongholdLoot<StrongholdCorridor>::template getLootSeed<checkCaves, checkWaterCaves>(
                 g, strongholdGenerator, altarChestPiece, altarChestPiece.getWorldX(3, 3) >> 4,
                 altarChestPiece.getWorldZ(3, 3) >> 4);
         if (lootSeed == -1) return {};
 
-        return Loot<StrongholdLoot<StrongholdCorridor<isAquatic>>>::template getLootFromSeed<shuffle>(lootSeed);
+        return Loot<StrongholdLoot<StrongholdCorridor>>::template getLootFromSeed<shuffle>(lootSeed);
     }
 
     template<bool isAquatic>
@@ -70,9 +71,9 @@ namespace loot {
         std::vector<Container> altarChests(strongholdGenerator->altarChestArraySize);
         for (int altarChestIndex = 0; altarChestIndex < strongholdGenerator->altarChestArraySize; altarChestIndex++)
             altarChests[altarChestIndex] =
-                    StrongholdCorridor<isAquatic>::template getAltarChestLoot<checkCaves, shuffle, checkWaterCaves>(
+                    StrongholdCorridor::getAltarChestLoot<checkCaves, shuffle, checkWaterCaves>(
                             g, *strongholdGenerator->altarChestsArray[altarChestIndex], strongholdGenerator);
 
         return altarChests;
     }
-} // namespace loot
+}

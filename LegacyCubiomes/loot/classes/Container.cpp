@@ -1,11 +1,15 @@
 #include "Container.hpp"
 
-void Container::printCombinedItems() {
+#include <map>
+#include <numeric>
+
+
+void Container::printCombinedItems() const {
     std::map<const Items::Item*, int> itemCount;
 
     for (const auto& itemStack: inventorySlots) {
         if (itemStack.stackSize > 0) {
-            if (itemCount.find(itemStack.item) != itemCount.end()) {
+            if (itemCount.contains(itemStack.item)) {
                 itemCount[itemStack.item] += itemStack.stackSize;
             } else {
                 itemCount[itemStack.item] = itemStack.stackSize;
@@ -13,14 +17,14 @@ void Container::printCombinedItems() {
         }
     }
 
-    for (const auto& pair: itemCount) {
-        ItemStack itemStack = ItemStack(pair.first, pair.second);
+    for (const auto& [fst, snd]: itemCount) {
+        const auto itemStack = ItemStack(fst, snd);
         std::cout << itemStack << std::endl;
     }
 }
 
 
-void Container::shuffleIntoContainer(std::vector<ItemStack>& items, RNG& rng) {
+void Container::shuffleIntoContainer(std::vector<ItemStack>& items, MU const RNG& rng) {
     RNG rngState = rng;
     std::vector<int> slotOrder(numSlots);
     std::iota(slotOrder.begin(), slotOrder.end(), 0);
@@ -42,13 +46,13 @@ void Container::shuffleIntoContainer(std::vector<ItemStack>& items, RNG& rng) {
 
     numSlots -= items.size();
     while (numSlots > 0 && !stackableItems.empty()) {
-        int itemIndex = rngState.nextInt(0, (int) stackableItems.size() - 1);
+        const int itemIndex = rngState.nextInt(0, static_cast<int>(stackableItems.size()) - 1);
         auto iter = std::next(stackableItems.begin(), itemIndex);
         ItemStack originalStack = std::move(*iter);
 
         stackableItems.erase(iter);
 
-        int splitAmount = rngState.nextInt(1, originalStack.stackSize >> 1);
+        const int splitAmount = rngState.nextInt(1, originalStack.stackSize >> 1);
         ItemStack splittedStack = originalStack.splitStack(splitAmount);
 
         if (originalStack.stackSize == 0 || rngState.next(1) == 0) items.emplace_back(std::move(originalStack));
@@ -69,7 +73,7 @@ void Container::shuffleIntoContainer(std::vector<ItemStack>& items, RNG& rng) {
             return;
 
         if (itemStack.stackSize > 0) {
-            int itemIndex = slotOrder.back();
+            const int itemIndex = slotOrder.back();
             slotOrder.pop_back();
             setInventorySlotContents(itemIndex, std::move(itemStack));
         } else {

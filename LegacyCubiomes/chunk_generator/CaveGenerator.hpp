@@ -1,18 +1,20 @@
 #pragma once
 
-#include "LegacyCubiomes/utils/MathHelper.hpp"
 #include "MapGenBase.hpp"
-#include <cmath>
 
-class CaveGenerator : public MapGenBase {
+
+class CaveGenerator final : public MapGenBase {
+
 public:
     explicit CaveGenerator(const Generator& generator) : MapGenBase(generator) {}
 
-    CaveGenerator(CONSOLE console, LCEVERSION version, int64_t seed, WORLDSIZE size, BIOMESCALE scale)
+    CaveGenerator(const CONSOLE console, const LCEVERSION version,
+                  const int64_t seed, const WORLDSIZE size, const BIOMESCALE scale)
         : MapGenBase(console, version, seed, size, scale) {}
 
+    ~CaveGenerator() override = default;
 
-    unsigned char topBlock(int x, int z);
+    ND unsigned char topBlock(int x, int z) const;
 
     static bool canReplaceBlock(uint16_t blockAt, uint16_t blockAbove);
 
@@ -20,7 +22,8 @@ public:
                    float tunnelDirection, float tunnelSlope, int currentTunnelSegment, int maxTunnelSegment,
                    double tunnelHeightMultiplier);
 
-    void addRoom(int64_t seedModifier, Pos2D target, ChunkPrimer* chunkPrimer, DoublePos3D roomStart, RNG& rng);
+    void addRoom(int64_t seedModifier, Pos2D target, ChunkPrimer* chunkPrimer, const DoublePos3D& roomStart, RNG& rng);
 
-    void addFeature(int baseChunkX, int baseChunkZ, int targetX, int targetZ, ChunkPrimer* chunkPrimer) final;
+    void addFeature(int baseChunkX, int baseChunkZ, int currentChunkX, int currentChunkZ,
+                    ChunkPrimer* chunkPrimer) override;
 };

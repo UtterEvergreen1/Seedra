@@ -3,13 +3,14 @@
 #include "LegacyCubiomes/loot/classes/EnchantRandomly.hpp"
 #include "LegacyCubiomes/loot/classes/Loot.hpp"
 
+
 namespace loot {
     class UnderwaterRuinBig : public Loot<UnderwaterRuinBig> {
     public:
         static void setup();
     };
 
-    void UnderwaterRuinBig::setup() {
+    inline void UnderwaterRuinBig::setup() {
         std::vector<ItemEntry> items1;
         std::vector<ItemEntry> items2;
 
@@ -25,10 +26,10 @@ namespace loot {
         items2.emplace_back(&Items::GOLDEN_HELMET, 1);
         items2.emplace_back(&Items::FISHING_ROD, new EnchantRandomlyItem(), 5);
         items2.emplace_back(&Items::TREASURE_MAP, 10);
-        //items2.emplace_back(&Items::POISONOUS_POTATO,                         10); // zoom=1
+        //items2.emplace_back(&Items::POISONOUS_POTATO, 10); // zoom=1
 
         lootTables.emplace_back(items2, 1);
 
         maxItemsPossible = 9;
     }
-} // namespace loot
+}

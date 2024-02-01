@@ -3,7 +3,7 @@
 #include "LegacyCubiomes/enchants/enchantment.hpp"
 
 
-class EnchantmentUntouching : public Enchantment {
+class EnchantmentUntouching final : public Enchantment {
 public:
     EnchantmentUntouching(std::string name, const Rarity* rarity)
         : Enchantment(std::move(name), rarity, &Type::DIGGER, EnumName::UNTOUCHING, 1){};

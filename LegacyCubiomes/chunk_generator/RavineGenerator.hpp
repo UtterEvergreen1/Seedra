@@ -1,25 +1,28 @@
 #pragma once
 
 #include "MapGenBase.hpp"
-#include <cmath>
 
 
-class RavineGenerator : public MapGenBase {
+class RavineGenerator final : public MapGenBase {
+
 public:
     explicit RavineGenerator(const Generator& generator) : MapGenBase(generator) {}
 
-    RavineGenerator(CONSOLE console, LCEVERSION version, int64_t seed, WORLDSIZE size, BIOMESCALE scale)
+    RavineGenerator(const CONSOLE console, const LCEVERSION version,
+                    const int64_t seed, const WORLDSIZE size, const BIOMESCALE scale)
         : MapGenBase(console, version, seed, size, scale) {}
+
+    ~RavineGenerator() override = default;
 
     std::vector<float> rs = std::vector(128, 0.0F);
 
-    unsigned char topBlock(int x, int z);
+    ND unsigned char topBlock(int x, int z) const;
 
     static bool canReplaceBlock(uint16_t blockAt, uint16_t blockAbove);
 
     void addTunnel(int64_t randomSeed, Pos2D chunk, ChunkPrimer* chunkPrimer, DoublePos3D tunnel, float angle,
                    float slope, float curvature, int tunnelStartSegment, int tunnelEndSegment, double widthMultiplier);
 
-    void addFeature(int neighborChunkX, int neighborChunkZ, int currentChunkX, int currentChunkZ,
-                           ChunkPrimer* chunkPrimerIn) final;
+    void addFeature(int baseChunkX, int baseChunkZ, int currentChunkX, int currentChunkZ,
+                           ChunkPrimer* chunkPrimer) override;
 };

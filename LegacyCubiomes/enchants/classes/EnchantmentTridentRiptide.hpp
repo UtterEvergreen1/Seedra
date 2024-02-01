@@ -3,8 +3,7 @@
 #include "LegacyCubiomes/enchants/enchantment.hpp"
 
 
-class EnchantmentTridentRiptide : public Enchantment {
-private:
+class EnchantmentTridentRiptide final : public Enchantment {
     static constexpr inline int8_t LEVELS_MIN[3] = {17, 24, 31};
 
 public:
@@ -12,7 +11,7 @@ public:
             Enchantment(std::move(name), rarity, &Type::TRIDENT,
                         EnumName::TRIDENT_RIPTIDE, 3) {};
 
-    int getMinCost(int enchantmentLevel) override {
+    int getMinCost(const int enchantmentLevel) override {
         return LEVELS_MIN[enchantmentLevel];
     }
 

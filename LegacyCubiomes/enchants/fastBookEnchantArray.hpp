@@ -7,53 +7,33 @@
 #include "enchantment.hpp"
 
 
-class IndexArraySmall {
-private:
-    static constexpr int8_t ITEM_COUNT = 12;
+template<int items>
+class IndexArrayTemplate {
+    static constexpr int8_t ITEM_COUNT = items;
     int8_t indexes[ITEM_COUNT] = {0};
     int8_t currentIndex = 0;
 
 public:
-    IndexArraySmall() = default;
-    inline void clear() { currentIndex = 0; }
+    IndexArrayTemplate() = default;
+    void clear() { currentIndex = 0; }
 
-    ND inline int getValueAt(int indexIn) const { return indexes[indexIn]; }
-    ND inline int getLastValueIndex() const { return indexes[currentIndex - 1]; }
+    ND int getValueAt(int indexIn) const { return indexes[indexIn]; }
+    ND int getLastValueIndex() const { return indexes[currentIndex - 1]; }
 
-    ND inline int getIndex() const { return currentIndex; }
+    ND int getIndex() const { return currentIndex; }
 
-    inline void addItem(int indexIn) { indexes[currentIndex++] = (int8_t) indexIn; }
+    void addItem(const int indexIn) { indexes[currentIndex++] = static_cast<int8_t>(indexIn); }
 
-    MU inline int getEnchantmentIndex(int indexIn) {
+    MU int getEnchantmentIndex(int indexIn) {
         for (int i = 0; i < currentIndex; i++)
             if (currentIndex > indexes[i]) indexIn--;
         return indexIn;
     }
 };
 
-class IndexArrayLarge {
-private:
-    static constexpr int8_t ITEM_COUNT = 16;
-    int8_t indexes[ITEM_COUNT] = {0};
-    int8_t currentIndex = 0;
+typedef IndexArrayTemplate<12> IndexArraySmall;
+typedef IndexArrayTemplate<16> IndexArrayLarge;
 
-public:
-    IndexArrayLarge() = default;
-    inline void clear() { currentIndex = 0; }
-
-    ND inline int getValueAt(int indexIn) const { return indexes[indexIn]; }
-    ND MU inline int getLastValueIndex() const { return indexes[currentIndex - 1]; }
-
-    ND inline int getIndex() const { return currentIndex; }
-
-    inline void addItem(int indexIn) { indexes[currentIndex++] = (int8_t) indexIn; }
-
-    inline int getEnchantmentIndex(int indexIn) {
-        for (int i = 0; i < currentIndex; i++)
-            if (currentIndex > indexes[i]) indexIn--;
-        return indexIn;
-    }
-};
 
 class ELDataArray {
 public:
@@ -67,7 +47,7 @@ public:
 
     void addData(Enchantment* ench, int id);
 
-    inline void clear() {
+    void clear() {
         deletions.clear();
         enchants.clear();
     }
@@ -85,7 +65,6 @@ public:
 };
 
 class EnchantedBookEnchantsLookupTable {
-private:
     static constexpr int8_t VECTOR_COUNT = 48;
     ELDataArray* dataArrays[VECTOR_COUNT] = {nullptr};
     bool areVectorsSetup = false;
@@ -95,7 +74,7 @@ public:
     static int8_t CUMULATIVE_WEIGHT_ALL[Enchantment::MAX_ENCHANTMENT_COUNT];
 
     EnchantedBookEnchantsLookupTable() = default;
-    MU explicit EnchantedBookEnchantsLookupTable(bool allocate) {
+    MU explicit EnchantedBookEnchantsLookupTable(const bool allocate) {
         if (allocate) setup();
     }
     ~EnchantedBookEnchantsLookupTable() { deallocate(); }
@@ -106,7 +85,7 @@ public:
      * @param cost the enchantment level
      * @return
      */
-    ELDataArray* get(int cost);
+    ND ELDataArray* get(int cost) const;
 
     /**
      * This assumes the item is an enchanted book!

@@ -541,12 +541,12 @@ namespace Items {
 
     MU const Item STRUCTURE_BLOCK = Item(255, 0, "Structure Block", "structure_block");
 
-    MU const Item IRON_SHOVEL = Item(256, 0, ItemTool, "Iron Shovel", "iron_shovel", true);
-    MU const Item IRON_PICKAXE = Item(257, 0, ItemTool, "Iron Pickaxe", "iron_pickaxe", true);
-    MU const Item IRON_AXE = Item(258, 0, ItemTool, "Iron Axe", "iron_axe", true);
-    MU const Item FLINT_AND_STEEL = Item(259, 0, ItemTool, "Flint and Steel", "flint_and_steel", true);
+    MU const Item IRON_SHOVEL = Item(256, 0, Items::ItemType::ItemTool, "Iron Shovel", "iron_shovel", true);
+    MU const Item IRON_PICKAXE = Item(257, 0, Items::ItemType::ItemTool, "Iron Pickaxe", "iron_pickaxe", true);
+    MU const Item IRON_AXE = Item(258, 0, Items::ItemType::ItemTool, "Iron Axe", "iron_axe", true);
+    MU const Item FLINT_AND_STEEL = Item(259, 0, Items::ItemType::ItemTool, "Flint and Steel", "flint_and_steel", true);
     MU const Item APPLE = Item(260, 0, "Apple", "apple");
-    MU const Item BOW = Item(261, 0, ItemBow, "Bow", "bow");
+    MU const Item BOW = Item(261, 0, Items::ItemType::ItemBow, "Bow", "bow");
     MU const Item ARROW = Item(262, 0, "Arrow", "arrow");
 
     MU const Item COAL = Item(263, 0, "Coal", "coal");
@@ -556,7 +556,7 @@ namespace Items {
     MU const Item IRON_INGOT = Item(265, 0, "Iron Ingot", "iron_ingot");
     MU const Item GOLD_INGOT = Item(266, 0, "Gold Ingot", "gold_ingot");
 
-    MU const Item IRON_SWORD = Item(267, 0, ItemSword, "Iron Sword", "iron_sword", true);
+    MU const Item IRON_SWORD = Item(267, 0, Items::ItemType::ItemSword, "Iron Sword", "iron_sword", true);
 
     MU const Sword WOODEN_SWORD = Sword(268, "Wooden Sword", "wooden_sword", ToolMaterials::TOOL_WOOD);
     MU const Tool WOODEN_SHOVEL = Tool(269, "Wooden Shovel", "wooden_shovel", ToolMaterials::TOOL_WOOD);
@@ -672,7 +672,7 @@ namespace Items {
     MU const Item MINECART_WITH_FURNACE = Item(343, 0, "Minecart with Furnace", "furnace_minecart");
     MU const Item EGG = Item(344, 0, "Egg", "egg");
     MU const Item COMPASS = Item(345, 0, "Compass", "compass");
-    MU const Item FISHING_ROD = Item(346, 0, ItemFishingRod, "Fishing Rod", "fishing_rod", true);
+    MU const Item FISHING_ROD = Item(346, 0, Items::ItemType::ItemFishingRod, "Fishing Rod", "fishing_rod", true);
     MU const Item CLOCK = Item(347, 0, "Clock", "clock");
     MU const Item GLOWSTONE_DUST = Item(348, 0, "Glowstone Dust", "glowstone_dust");
 
@@ -733,7 +733,7 @@ namespace Items {
     MU const Item LOCKED_MAP = Item(358, 6, "Locked Map", "filled_map");
 
 
-    MU const Item SHEARS = Item(359, 0, ItemTool, "Shears", "shears", true);
+    MU const Item SHEARS = Item(359, 0, Items::ItemType::ItemTool, "Shears", "shears", true);
     MU const Item MELON = Item(360, 0, "Melon", "melon");
     MU const Item PUMPKIN_SEEDS = Item(361, 0, "Pumpkin Seeds", "pumpkin_seeds");
     MU const Item MELON_SEEDS = Item(362, 0, "Melon Seeds", "melon_seeds");
@@ -883,7 +883,7 @@ namespace Items {
     MU const Item TIPPED_ARROW = Item(440, 0, "Tipped Arrow", "tipped_arrow");
     MU const Item LINGERING_POTION = Item(441, 0, "Lingering Potion", "lingering_potion");
     MU const Item SHIELD = Item(442, 0, "Shield", "shield");
-    MU const Item ELYTRA = Item(443, 0, ItemElytra, "Elytra", "elytra");
+    MU const Item ELYTRA = Item(443, 0, Items::ItemType::ItemElytra, "Elytra", "elytra");
     MU const Item SPRUCE_BOAT = Item(444, 0, "Spruce Boat", "spruce_boat");
     MU const Item BIRCH_BOAT = Item(445, 0, "Birch Boat", "birch_boat");
     MU const Item JUNGLE_BOAT = Item(446, 0, "Jungle Boat", "jungle_boat");

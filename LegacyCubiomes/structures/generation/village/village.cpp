@@ -7,30 +7,32 @@
 
 namespace generation {
 
-    std::map<int, std::string> Village::pieceTypeNames = {
-            {NONE, "NONE        "},         {Start, "Start       "},  {Road, "Road        "},
-            {House4Garden, "House4Garden"}, {Church, "Church      "}, {House1, "House1      "},
-            {WoodHut, "WoodHut     "},      {Hall, "Hall        "},   {Field1, "Field1      "},
-            {Field2, "Field2      "},       {House2, "House2      "}, {House3, "House3      "},
-            {Torch, "Torch       "},
+    std::map<Village::PieceType, std::string> Village::pieceTypeNames = {
+            {PieceType::NONE, "NONE        "},    {PieceType::Start, "Start       "},
+            {PieceType::Road, "Road        "},    {PieceType::House4Garden, "House4Garden"},
+            {PieceType::Church, "Church      "},  {PieceType::House1, "House1      "},
+            {PieceType::WoodHut, "WoodHut     "}, {PieceType::Hall, "Hall        "},
+            {PieceType::Field1, "Field1      "},  {PieceType::Field2, "Field2      "},
+            {PieceType::House2, "House2      "},  {PieceType::House3, "House3      "},
+            {PieceType::Torch, "Torch       "},
     };
 
 
     const int Village::VILLAGE_SIZE = 0;
     const Village::PieceWeight Village::PIECE_WEIGHTS[9] = {
-            {Village::PieceType::House4Garden, 4, 2 + Village::VILLAGE_SIZE, 4 + Village::VILLAGE_SIZE * 2},
-            {Village::PieceType::Church, 20, 0 + Village::VILLAGE_SIZE, 1 + Village::VILLAGE_SIZE},
-            {Village::PieceType::House1, 20, 0 + Village::VILLAGE_SIZE, 2 + Village::VILLAGE_SIZE},
-            {Village::PieceType::WoodHut, 3, 2 + Village::VILLAGE_SIZE, 5 + Village::VILLAGE_SIZE * 3},
-            {Village::PieceType::Hall, 15, 0 + Village::VILLAGE_SIZE, 2 + Village::VILLAGE_SIZE},
-            {Village::PieceType::Field1, 3, 1 + Village::VILLAGE_SIZE, 4 + Village::VILLAGE_SIZE},
-            {Village::PieceType::Field2, 3, 2 + Village::VILLAGE_SIZE, 4 + Village::VILLAGE_SIZE * 2},
-            {Village::PieceType::House2, 15, 0, 1 + Village::VILLAGE_SIZE},
-            {Village::PieceType::House3, 8, 0 + Village::VILLAGE_SIZE, 3 + Village::VILLAGE_SIZE * 2}};
+            {PieceType::House4Garden, 4, 2 + Village::VILLAGE_SIZE, 4 + Village::VILLAGE_SIZE * 2},
+            {PieceType::Church, 20, 0 + Village::VILLAGE_SIZE, 1 + Village::VILLAGE_SIZE},
+            {PieceType::House1, 20, 0 + Village::VILLAGE_SIZE, 2 + Village::VILLAGE_SIZE},
+            {PieceType::WoodHut, 3, 2 + Village::VILLAGE_SIZE, 5 + Village::VILLAGE_SIZE * 3},
+            {PieceType::Hall, 15, 0 + Village::VILLAGE_SIZE, 2 + Village::VILLAGE_SIZE},
+            {PieceType::Field1, 3, 1 + Village::VILLAGE_SIZE, 4 + Village::VILLAGE_SIZE},
+            {PieceType::Field2, 3, 2 + Village::VILLAGE_SIZE, 4 + Village::VILLAGE_SIZE * 2},
+            {PieceType::House2, 15, 0, 1 + Village::VILLAGE_SIZE},
+            {PieceType::House3, 8, 0 + Village::VILLAGE_SIZE, 3 + Village::VILLAGE_SIZE * 2}};
 
     Village::Village(const Generator* generator) { g = generator; }
 
-    void Village::generate(int chunkX, int chunkZ) {
+    void Village::generate(const int chunkX, const int chunkZ) {
         rng = RNG::getLargeFeatureSeed(g->getWorldSeed(), chunkX, chunkZ);
         rng.advance();
         startX = (chunkX << 4) + 2;
@@ -38,17 +40,17 @@ namespace generation {
         setupPieces();
         rng.nextInt(4); // direction: this.setCoordBaseMode(EnumFacing.Plane.HORIZONTAL.random(rand));
         isZombieInfested = rng.nextInt(50) == 0; // zombie infested
-        BoundingBox well = createPieceBoundingBox(PieceType::Start, {startX, 64, startZ}, DIRECTION::NORTH);
+        const BoundingBox well = createPieceBoundingBox(PieceType::Start, {startX, 64, startZ}, DIRECTION::NORTH);
 
         // start piece
-        Piece startPiece = Piece(PieceType::Start, 0, well, DIRECTION::NORTH, 0);
+        const auto startPiece = Piece(static_cast<int8_t>(PieceType::Start), 0, well, DIRECTION::NORTH, 0);
         pieceArray[pieceArraySize++] = startPiece;
 
         buildComponentStart(startPiece);
 
         while (pendingRoadArraySize != 0) {
-            int i = rng.nextInt(pendingRoadArraySize);
-            Piece& piece = pieceArray[pendingRoadArray[i]];
+            const int i = rng.nextInt(pendingRoadArraySize);
+            const Piece& piece = pieceArray[pendingRoadArray[i]];
 
             pendingRoadArraySize--;
 
@@ -68,8 +70,9 @@ namespace generation {
 
         int k = 0;
         for (int index = 0; index < pieceArraySize; index++) {
-            const Piece& structureComponent = pieceArray[index];
-            if ((structureComponent.type > PieceType::Road)) k++;
+            if (const Piece& structureComponent = pieceArray[index];
+                (structureComponent.type > static_cast<int8_t>(PieceType::Road)))
+                k++;
         }
 
         hasMoreThanTwoComponents = k > 2;
@@ -79,12 +82,11 @@ namespace generation {
     void Village::setupPieces() {
 
         currentVillagePW.clear();
-        for (auto pieceWeightAt: PIECE_WEIGHTS) {
-            FinalPieceWeight fPiece =
-                    FinalPieceWeight(pieceWeightAt.pieceType, pieceWeightAt.weight,
-                                     rng.nextInt(pieceWeightAt.PlaceCountMin, pieceWeightAt.PlaceCountMax),
-                                     0); //random set max amount of houses for each house because it is not set
-            if (fPiece.maxPlaceCount > 0) { currentVillagePW.push_back(fPiece); }
+        for (const auto [pieceType, weight, PlaceCountMin, PlaceCountMax]: PIECE_WEIGHTS) {
+            if (auto fPiece = FinalPieceWeight(pieceType, weight, rng.nextInt(PlaceCountMin, PlaceCountMax), 0);
+                fPiece.maxPlaceCount > 0) {
+                currentVillagePW.push_back(fPiece);
+            }
         }
 
         // hasMoreThanTwoComponents = false;
@@ -95,7 +97,7 @@ namespace generation {
     }
 
 
-    BoundingBox Village::createPieceBoundingBox(int pieceType, Pos3D pos, DIRECTION direction) {
+    BoundingBox Village::createPieceBoundingBox(const PieceType pieceType, const Pos3D pos, const DIRECTION direction) {
         switch (pieceType) {
             case PieceType::House4Garden:
                 return BoundingBox::orientBox(pos, 5, 6, 5, direction);
@@ -125,13 +127,12 @@ namespace generation {
     }
 
 
-    Piece Village::genAndAddRoadPiece(Pos3D pos, DIRECTION facing) {
+    Piece Village::genAndAddRoadPiece(const Pos3D pos, const DIRECTION facing) {
         if (abs(startX - pos.getX()) > 112 || abs(startZ - pos.getZ()) > 112) return {};
 
-        BoundingBox boundingBox = road(pos, facing);
-
-        if (boundingBox.maxY != 0) {
-            Piece piece = Piece(PieceType::Road, 0, boundingBox, facing, boundingBox.getLength() + 1);
+        if (const BoundingBox boundingBox = road(pos, facing); boundingBox.maxY != 0) {
+            const auto piece =
+                    Piece(static_cast<int8_t>(PieceType::Road), 0, boundingBox, facing, boundingBox.getLength() + 1);
             addPiece(piece);
             return piece;
         }
@@ -140,7 +141,7 @@ namespace generation {
     }
 
 
-    int Village::updatePieceWeight() {
+    int Village::updatePieceWeight() const {
         bool flag = false;
         int i = 0;
         for (const FinalPieceWeight& pWeight: currentVillagePW) {
@@ -151,51 +152,50 @@ namespace generation {
     }
 
 
-    BoundingBox Village::road(Pos3D pos, DIRECTION facing) {
+    BoundingBox Village::road(const Pos3D pos, const DIRECTION facing) {
         for (int i = 7 * rng.nextInt(3, 5); i >= 7; i -= 7) {
-            // bool flag = true;
-            BoundingBox structure = BoundingBox::orientBox(pos, 3, 3, i, facing);
-            if (!hasCollisionPiece(structure)) return structure;
+            if (BoundingBox structure = BoundingBox::orientBox(pos, 3, 3, i, facing); !hasCollisionPiece(structure))
+                return structure;
         }
         return {};
     }
 
 
     void Village::additionalRngRolls(const Piece& p) {
-        switch (p.type) {
-            case PieceType::WoodHut:
+        switch (static_cast<int8_t>(p.type)) {
+            case static_cast<int8_t>(PieceType::WoodHut):
                 rng.nextBoolean(); // isTallHouse
                 rng.nextInt(3);    // tablePosition
                 return;
-            case PieceType::House4Garden:
+            case static_cast<int8_t>(PieceType::House4Garden):
                 rng.nextBoolean(); // isRoofAccessible
                 return;
-            case PieceType::Field2:
+            case static_cast<int8_t>(PieceType::Field2):
                 rng.nextInt(10); // cropTypeA
                 rng.nextInt(10); // cropTypeB
                 return;
-            case PieceType::Field1:
+            case static_cast<int8_t>(PieceType::Field1):
                 rng.nextInt(10); // cropTypeA
                 rng.nextInt(10); // cropTypeB
                 rng.nextInt(10); // cropTypeC
                 rng.nextInt(10); // cropTypeD
                 return;
-            case PieceType::House2:
-            case PieceType::Church:
-            case PieceType::House1:
-            case PieceType::Hall:
-            case PieceType::House3:
-            case PieceType::Torch:
-            case PieceType::Start:
-            case PieceType::Road:
-            case PieceType::NONE:
-                return;
+            case static_cast<int8_t>(PieceType::House2):
+            case static_cast<int8_t>(PieceType::Church):
+            case static_cast<int8_t>(PieceType::House1):
+            case static_cast<int8_t>(PieceType::Hall):
+            case static_cast<int8_t>(PieceType::House3):
+            case static_cast<int8_t>(PieceType::Torch):
+            case static_cast<int8_t>(PieceType::Start):
+            case static_cast<int8_t>(PieceType::Road):
+            case static_cast<int8_t>(PieceType::NONE):
+            default:;
         }
     }
 
 
-    Piece Village::generateComponent(Pos3D pos, DIRECTION facing, int8_t depth) {
-        int i = updatePieceWeight();
+    Piece Village::generateComponent(const Pos3D pos, const DIRECTION facing, const int8_t depth) {
+        const int i = updatePieceWeight();
         if (i <= 0) return {};
 
         int j = 0;
@@ -204,7 +204,7 @@ namespace generation {
             ++j;
             int k = rng.nextInt(i);
 
-            int pieceWeightsSize = (int) currentVillagePW.size();
+            const int pieceWeightsSize = static_cast<int>(currentVillagePW.size());
             for (int pieceTypeNum = 0; pieceTypeNum < pieceWeightsSize; pieceTypeNum++) {
                 FinalPieceWeight& pieceWeight = currentVillagePW[pieceTypeNum];
                 k -= pieceWeight.weight;
@@ -215,10 +215,10 @@ namespace generation {
                         break;
                     }
 
-                    Piece structureVillagePiece =
-                            Piece(pieceWeight.pieceType, depth,
-                                  createPieceBoundingBox(pieceWeight.pieceType, pos, facing), facing, 0);
-                    if (!hasCollisionPiece(structureVillagePiece)) {
+                    if (auto structureVillagePiece =
+                                Piece(static_cast<int8_t>(pieceWeight.pieceType), depth,
+                                      createPieceBoundingBox(pieceWeight.pieceType, pos, facing), facing, 0);
+                        !hasCollisionPiece(structureVillagePiece)) {
                         additionalRngRolls(structureVillagePiece);
                         pieceWeight.amountPlaced++;
                         previousPiece = pieceWeight.pieceType;
@@ -230,25 +230,26 @@ namespace generation {
                 }
             }
         }
-        Piece torch = Piece(PieceType::Torch, 0, BoundingBox(createPieceBoundingBox(PieceType::Torch, pos, facing)),
-                            facing, 0);
+        const auto torch = Piece(static_cast<int8_t>(PieceType::Torch), 0,
+                                 BoundingBox(createPieceBoundingBox(PieceType::Torch, pos, facing)), facing, 0);
         if (hasCollisionPiece(torch)) return {};
         return torch;
     }
 
 
-    Piece Village::genAndAddComponent(Pos3D pos, DIRECTION facing, int8_t depth) {
+    Piece Village::genAndAddComponent(const Pos3D pos, const DIRECTION facing, const int8_t depth) {
         if (depth > 50) return {};                                                       // don't do this for elytra???
         if (abs(startX - pos.getX()) > 112 || abs(startZ - pos.getZ()) > 112) return {}; // 48 for elytra???
 
-        Piece structureComponent = generateComponent(pos, facing, (int8_t) (depth + 1));
-        if (structureComponent.type == PieceType::NONE) return {};
+        const Piece structureComponent = generateComponent(pos, facing, static_cast<int8_t>(depth + 1));
+        if (structureComponent.type == static_cast<int8_t>(PieceType::NONE)) return {};
 
-        int radius = (structureComponent.getLength() / 2) + 4;
-        if (g->areBiomesViable(structureComponent.getCenterX(), structureComponent.getCenterZ(), radius,
+        if (const int radius = structureComponent.getLength() / 2 + 4;
+            g->areBiomesViable(structureComponent.getCenterX(), structureComponent.getCenterZ(), radius,
                                Placement::Village<false>::VALID_BIOMES)) {
 
-            if (structureComponent.type == PieceType::House2) blackSmithPiece = &pieceArray[pieceArraySize];
+            if (structureComponent.type == static_cast<int8_t>(PieceType::House2))
+                blackSmithPiece = &pieceArray[pieceArraySize];
 
             pieceArray[pieceArraySize++] = structureComponent;
             return structureComponent;
@@ -258,7 +259,7 @@ namespace generation {
     }
 
 
-    void Village::buildComponentStart(Piece piece) {
+    void Village::buildComponentStart(const Piece& piece) {
         genAndAddRoadPiece({piece.minX - 1, piece.maxY - 4, piece.minZ + 1}, DIRECTION::WEST);
         genAndAddRoadPiece({piece.maxX + 1, piece.maxY - 4, piece.minZ + 1}, DIRECTION::EAST);
         genAndAddRoadPiece({piece.minX + 1, piece.maxY - 4, piece.minZ - 1}, DIRECTION::NORTH);
@@ -285,7 +286,7 @@ namespace generation {
                     break;
             }
 
-            if (structureComponent.type != PieceType::NONE) {
+            if (structureComponent.type != static_cast<int8_t>(PieceType::NONE)) {
                 i += structureComponent.getLength() + 1;
                 flag = true;
             }
@@ -307,7 +308,7 @@ namespace generation {
                     break;
             }
 
-            if (structureComponent1.type != PieceType::NONE) {
+            if (structureComponent1.type != static_cast<int8_t>(PieceType::NONE)) {
                 j += structureComponent1.getLength() + 1;
                 flag = true;
             }
@@ -349,13 +350,13 @@ namespace generation {
     }
 
 
-    void Village::addPiece(Piece& piece) {
+    void Village::addPiece(const Piece& piece) {
         pendingRoadArray[pendingRoadArraySize++] = pieceArraySize;
         pieceArray[pieceArraySize++] = piece;
     }
 
 
-    bool Village::hasCollisionPiece(const BoundingBox& boundingBox) {
+    bool Village::hasCollisionPiece(const BoundingBox& boundingBox) const {
         for (int i = 0; i < pieceArraySize; i++) {
             if (pieceArray[i].intersects(boundingBox)) { return true; }
         }

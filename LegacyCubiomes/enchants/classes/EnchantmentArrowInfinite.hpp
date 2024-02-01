@@ -2,7 +2,8 @@
 
 #include "LegacyCubiomes/enchants/enchantment.hpp"
 
-class EnchantmentArrowInfinite : public Enchantment {
+
+class EnchantmentArrowInfinite final : public Enchantment {
 public:
     EnchantmentArrowInfinite(std::string name, const Rarity* rarity)
         : Enchantment(std::move(name), rarity, &Type::BOW, EnumName::ARROW_INFINITE, 1){};

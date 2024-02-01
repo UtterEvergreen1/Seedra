@@ -4,7 +4,7 @@
 #include <vector>
 
 
-enum MAP_RGB : uint8_t {
+enum class MAP_RGB : uint8_t {
     NONE,
     GRASS,
     SAND,

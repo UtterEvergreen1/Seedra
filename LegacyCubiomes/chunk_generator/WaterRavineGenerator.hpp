@@ -1,10 +1,10 @@
 #pragma once
 
-#include "LegacyCubiomes/chunk_generator/MapGenBase.hpp"
-#include "LegacyCubiomes/utils/MathHelper.hpp"
 #include "WaterCaveGeneratorBase.hpp"
 
-class WaterRavineGenerator : public WaterCaveGeneratorBase {
+
+class WaterRavineGenerator final : public WaterCaveGeneratorBase {
+
 public:
     explicit WaterRavineGenerator(const Generator& generator) : WaterCaveGeneratorBase(generator) {}
 
@@ -14,7 +14,7 @@ public:
                    float angle, float slope, float curvature, int tunnelStartSegment, int tunnelEndSegment,
                    double widthMultiplier);
 
-    void addFeature(int baseChunkX, int baseChunkZ, int targetX, int targetZ, ChunkPrimer* chunkPrimer) final;
+    void addFeature(int baseChunkX, int baseChunkZ, int targetX, int targetZ, ChunkPrimer* chunkPrimer) override;
 };
 
 

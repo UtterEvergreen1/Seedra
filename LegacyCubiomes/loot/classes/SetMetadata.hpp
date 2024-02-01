@@ -1,13 +1,13 @@
 #pragma once
+
 #include "LootFunction.hpp"
 #include "UniformRoll.hpp"
 
-class SetMetadata : public LootFunction {
-private:
+class SetMetadata final : public LootFunction {
     UniformRoll metaRange;
     const std::vector<const Items::Item*> dataItems;
 
 public:
     SetMetadata(UniformRoll range, const std::vector<const Items::Item*>& dataItemsIn);
-    void apply(ItemStack& itemStack, RNG& random) final;
+    void apply(ItemStack& itemStack, RNG& random) override;
 };
