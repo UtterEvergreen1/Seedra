@@ -49,7 +49,7 @@ enum class DIRECTION : int8_t {
 
 enum class BIOMESCALE : int8_t { SMALL = 0, MEDIUM = 1, LARGE = 2 };
 
-enum class WORLDSIZE : int8_t { CLASSIC = 0, SMALL = 1, MEDIUM = 2, LARGE = 3 };
+enum class WORLDSIZE : int8_t { CLASSIC = 0, SMALL = 1, MEDIUM = 2, LARGE = 3, INF = 4 };
 
 
 enum class StructureType : uint8_t {

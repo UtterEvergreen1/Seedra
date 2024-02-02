@@ -35,6 +35,8 @@ void Generator::changeLCEVersion(const LCEVERSION versionIn) {
 
     this->version = versionIn;
     setupLayerStack(&this->layerStack, versionIn, this->biomeScale);
+    //reapply the layers' seed
+    setLayerSeed(this->layerStack.entry_1, this->worldSeed);
 }
 
 
@@ -44,6 +46,8 @@ void Generator::changeBiomeSize(const BIOMESCALE size) {
 
     this->biomeScale = size;
     setupLayerStack(&this->layerStack, this->version, size);
+    //reapply the layers' seed
+    setLayerSeed(this->layerStack.entry_1, this->worldSeed);
 }
 
 
