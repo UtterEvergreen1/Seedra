@@ -49,9 +49,11 @@ bool RavineGenerator::canReplaceBlock(const uint16_t blockAt, const uint16_t blo
 
 void RavineGenerator::addTunnel(const int64_t randomSeed, const Pos2D chunk, ChunkPrimer* chunkPrimer,
                                 DoublePos3D tunnel, const float angle, float slope, float curvature,
-                                int tunnelStartSegment, int tunnelEndSegment, const double widthMultiplier) {
+                                int tunnelStartSegment, int tunnelEndSegment, const double widthMultiplier, bool accurate) {
 
-    if (g.getLCEVersion() == LCEVERSION::AQUATIC && isOceanic(g.getBiomeAt(1, (int) tunnel.x, (int) tunnel.z))) return;
+    if (accurate &&
+        g.getLCEVersion() == LCEVERSION::AQUATIC &&
+        isOceanic(g.getBiomeAt(1, (int) tunnel.x, (int) tunnel.z))) { return; }
 
     RNG rng;
     rng.setSeed(randomSeed);
@@ -200,7 +202,7 @@ void RavineGenerator::addTunnel(const int64_t randomSeed, const Pos2D chunk, Chu
 
 
 void RavineGenerator::addFeature(const int baseChunkX, const int baseChunkZ, const int currentChunkX,
-                                 const int currentChunkZ, ChunkPrimer* chunkPrimer) {
+                                 const int currentChunkZ, ChunkPrimer* chunkPrimer, bool accurate) {
     if EXPECT_FALSE (rng.nextInt(50) == 0) {
         auto tunnelStartX = (double) (baseChunkX * 16 + rng.nextInt(16));
         auto tunnelStartY = (double) (rng.nextInt(rng.nextInt(40) + 8) + 20);
@@ -210,6 +212,6 @@ void RavineGenerator::addFeature(const int baseChunkX, const int baseChunkZ, con
         const float tunnelLengthMultiplier = (rng.nextFloat() * 2.0F + rng.nextFloat()) * 2.0F;
         addTunnel(rng.nextLongI(), {currentChunkX, currentChunkZ}, chunkPrimer,
                   {tunnelStartX, tunnelStartY, tunnelStartZ}, tunnelLengthMultiplier, tunnelDirection, tunnelSlope, 0,
-                  0, 3.0);
+                  0, 3.0, accurate);
     }
 }

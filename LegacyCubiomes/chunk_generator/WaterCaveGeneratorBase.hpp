@@ -13,7 +13,7 @@ public:
 
     ~WaterCaveGeneratorBase() override = default;
 
-    void generateUnderwater(const int targetX, int const targetZ, ChunkPrimer* primer) {
+    void generateUnderwater(const int targetX, int const targetZ, ChunkPrimer* primer, bool accurate = true) {
         rng.setSeed(g.getWorldSeed());
         const int seedMultiplierX = rng.nextInt() / 2 * 2 + 1;
         const int seedMultiplierZ = rng.nextInt() / 2 * 2 + 1;
@@ -24,7 +24,7 @@ public:
                 const int adjustedSeedZ = currentZ * seedMultiplierZ;
                 rng.setSeed(adjustedSeedX + adjustedSeedZ ^ g.getWorldSeed());
 
-                addFeature(currentX, currentZ, targetX, targetZ, primer);
+                addFeature(currentX, currentZ, targetX, targetZ, primer, accurate);
             }
         }
     }

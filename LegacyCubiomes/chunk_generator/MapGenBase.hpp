@@ -17,7 +17,7 @@ public:
 
     virtual ~MapGenBase() = default;
 
-    void generate(const int targetX, const int targetZ, ChunkPrimer* primer) {
+    void generate(const int targetX, const int targetZ, ChunkPrimer* primer, bool accurate = true) {
         rng.setSeed(g.getWorldSeed());
         const auto seedMultiplierX = rng.nextLongI();
         const auto seedMultiplierZ = rng.nextLongI();
@@ -28,10 +28,10 @@ public:
                 const auto adjustedZ = (int64_t) currentZ * seedMultiplierZ;
                 rng.setSeed(adjustedX ^ adjustedZ ^ g.getWorldSeed());
 
-                addFeature(currentX, currentZ, targetX, targetZ, primer);
+                addFeature(currentX, currentZ, targetX, targetZ, primer, accurate);
             }
         }
     }
 
-    virtual void addFeature(int baseChunkX, int baseChunkZ, int targetX, int targetZ, ChunkPrimer* chunkPrimer) = 0;
+    virtual void addFeature(int baseChunkX, int baseChunkZ, int targetX, int targetZ, ChunkPrimer* chunkPrimer, bool accurate) = 0;
 };

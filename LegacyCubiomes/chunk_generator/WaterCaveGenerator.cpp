@@ -227,12 +227,14 @@ void WaterCaveGenerator::addTunnel(const int64_t seedModifier, const Pos2D chunk
 
 void WaterCaveGenerator::addRoom(const int64_t seedModifier, const Pos2D target, ChunkPrimer* chunkPrimer,
                                  const DoublePos3D& roomStart, RNG& rng) {
-    addTunnel(seedModifier, target, chunkPrimer, roomStart, 1.0F + rng.nextFloat() * 6.0F, 0.0F, 0.0F, -1, -1, 0.5);
+    addTunnel(seedModifier, target, chunkPrimer, roomStart, 1.0F + rng.nextFloat() * 6.0F,
+              0.0F, 0.0F,
+              -1, -1, 0.5);
 }
 
 
 void WaterCaveGenerator::addFeature(const int baseChunkX, const int baseChunkZ, int targetX, int targetZ,
-                                    ChunkPrimer* chunkPrimer) {
+                                    ChunkPrimer* chunkPrimer, bool accurate) {
     const int tunnelCount = rng.nextInt(rng.nextInt(rng.nextInt(40) + 1) + 1);
 
     if EXPECT_TRUE (rng.nextInt(15) != 0) { return; }
@@ -255,7 +257,9 @@ void WaterCaveGenerator::addFeature(const int baseChunkX, const int baseChunkZ, 
             const float tunnelLength = rng.nextFloat() * 2.0F + rng.nextFloat();
 
             addTunnel(rng.nextLongI(), {targetX, targetZ}, chunkPrimer,
-                      {tunnelStartX, tunnelStartY, tunnelStartZ}, tunnelLength, yaw, pitch, 0, 0, 1.0);
+                      {tunnelStartX, tunnelStartY, tunnelStartZ},
+                      tunnelLength, yaw, pitch,
+                      0, 0, 1.0);
         }
     }
 }

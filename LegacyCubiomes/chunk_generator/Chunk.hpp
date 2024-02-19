@@ -11,29 +11,29 @@ namespace Chunk {
 
     template<bool checkWaterCaves = false, bool generateCaves = true, bool generateRavines = true,
              bool generateSkyLight = false>
-    static ChunkPrimer* provideChunk(const Generator& g, const int chunkX, const int chunkZ) {
+    static ChunkPrimer* provideChunk(const Generator& g, const int chunkX, const int chunkZ, bool accurate = true) {
         ChunkGeneratorOverWorld chunk(g);
         ChunkPrimer* chunkPrimer = chunk.provideChunk(chunkX, chunkZ);
         if constexpr (generateCaves && checkWaterCaves) {
             if (g.getLCEVersion() == LCEVERSION::AQUATIC) {
                 WaterCaveGenerator waterCaveGenerator(g);
-                waterCaveGenerator.generateUnderwater(chunkX, chunkZ, chunkPrimer);
+                waterCaveGenerator.generateUnderwater(chunkX, chunkZ, chunkPrimer, accurate);
             }
         }
         if constexpr (generateRavines && checkWaterCaves) {
             if (g.getLCEVersion() == LCEVERSION::AQUATIC) {
                 WaterRavineGenerator waterRavineGenerator(g);
-                waterRavineGenerator.generateUnderwater(chunkX, chunkZ, chunkPrimer);
+                waterRavineGenerator.generateUnderwater(chunkX, chunkZ, chunkPrimer, accurate);
             }
         }
 
         if constexpr (generateCaves) {
             CaveGenerator caveGenerator(g);
-            caveGenerator.generate(chunkX, chunkZ, chunkPrimer);
+            caveGenerator.generate(chunkX, chunkZ, chunkPrimer, accurate);
         }
         if constexpr (generateRavines) {
             RavineGenerator ravineGenerator(g);
-            ravineGenerator.generate(chunkX, chunkZ, chunkPrimer);
+            ravineGenerator.generate(chunkX, chunkZ, chunkPrimer, accurate);
         }
 
         /*

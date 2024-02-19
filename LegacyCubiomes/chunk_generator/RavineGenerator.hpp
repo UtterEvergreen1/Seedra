@@ -21,8 +21,8 @@ public:
     static bool canReplaceBlock(uint16_t blockAt, uint16_t blockAbove);
 
     void addTunnel(int64_t randomSeed, Pos2D chunk, ChunkPrimer* chunkPrimer, DoublePos3D tunnel, float angle,
-                   float slope, float curvature, int tunnelStartSegment, int tunnelEndSegment, double widthMultiplier);
+                   float slope, float curvature, int tunnelStartSegment, int tunnelEndSegment, double widthMultiplier, bool accurate);
 
     void addFeature(int baseChunkX, int baseChunkZ, int currentChunkX, int currentChunkZ,
-                           ChunkPrimer* chunkPrimer) override;
+                           ChunkPrimer* chunkPrimer, bool accurate) override;
 };

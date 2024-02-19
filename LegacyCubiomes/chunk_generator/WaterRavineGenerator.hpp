@@ -14,7 +14,7 @@ public:
                    float angle, float slope, float curvature, int tunnelStartSegment, int tunnelEndSegment,
                    double widthMultiplier);
 
-    void addFeature(int baseChunkX, int baseChunkZ, int targetX, int targetZ, ChunkPrimer* chunkPrimer) override;
+    void addFeature(int baseChunkX, int baseChunkZ, int targetX, int targetZ, ChunkPrimer* chunkPrimer, bool accurate) override;
 };
 
 

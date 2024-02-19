@@ -20,10 +20,10 @@ public:
 
     void addTunnel(int64_t seedModifier, Pos2D chunk, ChunkPrimer* chunkPrimer, DoublePos3D start, float tunnelWidth,
                    float tunnelDirection, float tunnelSlope, int currentTunnelSegment, int maxTunnelSegment,
-                   double tunnelHeightMultiplier);
+                   double tunnelHeightMultiplier, bool accurate);
 
-    void addRoom(int64_t seedModifier, Pos2D target, ChunkPrimer* chunkPrimer, const DoublePos3D& roomStart, RNG& rng);
+    void addRoom(int64_t seedModifier, Pos2D target, ChunkPrimer* chunkPrimer, const DoublePos3D& roomStart, RNG& rng, bool accurate);
 
     void addFeature(int baseChunkX, int baseChunkZ, int currentChunkX, int currentChunkZ,
-                    ChunkPrimer* chunkPrimer) override;
+                    ChunkPrimer* chunkPrimer, bool accurate) override;
 };
