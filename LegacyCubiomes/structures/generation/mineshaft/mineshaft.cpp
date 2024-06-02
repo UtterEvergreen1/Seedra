@@ -90,7 +90,7 @@ namespace generation {
             buildComponent(rng, PieceType::STAIRS, depth + 1, boundingBox, direction, 0);
 
         } else {
-            volatile int i; // CASE CORRIDOR
+            int i; // CASE CORRIDOR
             for (i = rng.nextInt(3) + 2; i > 0; --i) {
                 const int j = i * 5;
                 boundingBox = BoundingBox::orientBox(pos, 0, 0, 0, 3, 3, j, direction);

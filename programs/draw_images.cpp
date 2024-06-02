@@ -20,10 +20,10 @@
 int main(int argc, char* argv[]) {
     Biome::registerBiomes();
 
-    auto console = CONSOLE::WIIU;
+    auto console = lce::CONSOLE::WIIU;
     auto version = LCEVERSION::AQUATIC;
     EnchantmentHelper::setup(console, version);
-    Generator g(console, version, 7, WORLDSIZE::CLASSIC, BIOMESCALE::SMALL);
+    Generator g(console, version, 7, lce::WORLDSIZE::CLASSIC, lce::BIOMESCALE::SMALL);
 
     std::string path = R"(C:\Users\jerrin\CLionProjects\LegacyCubiomes\)";
 

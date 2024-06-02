@@ -9,7 +9,7 @@
 #include <QDebug>
 #endif
 
-#include "processor.hpp"
+#include "lce/processor.hpp"
 
 
 template<class classType>

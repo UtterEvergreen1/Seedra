@@ -1,7 +1,7 @@
 #pragma once
 
 #include "LegacyCubiomes/building_blocks/PieceWeight.hpp"
-#include "LegacyCubiomes/utils/processor.hpp"
+#include "lce/processor.hpp"
 
 
 namespace generation {

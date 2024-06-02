@@ -5,8 +5,8 @@
 
 #include "LegacyCubiomes/building_blocks/Piece.hpp"
 #include "LegacyCubiomes/building_blocks/PieceWeight.hpp"
-#include "LegacyCubiomes/utils/processor.hpp"
 #include "LegacyCubiomes/utils/rng.hpp"
+#include "lce/processor.hpp"
 
 
 namespace generation {

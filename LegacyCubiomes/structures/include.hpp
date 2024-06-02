@@ -26,7 +26,7 @@
 // placement
 
 namespace Placement {
-    static void setWorldSize(WORLDSIZE worldSize) {
+    static void setWorldSize(lce::WORLDSIZE worldSize) {
         Mansion::setWorldSize(worldSize);
         Monument::setWorldSize(worldSize);
         BuriedTreasure::setWorldSize(worldSize);

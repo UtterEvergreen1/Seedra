@@ -3,5 +3,5 @@
 #include "MathHelper.hpp"
 #include "constants.hpp"
 #include "enums.hpp"
-#include "processor.hpp"
+#include "lce/processor.hpp"
 #include "rng.hpp"

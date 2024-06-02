@@ -7,8 +7,8 @@ class WaterCaveGeneratorBase : public MapGenBase {
 public:
     explicit WaterCaveGeneratorBase(const Generator& generator) : MapGenBase(generator) {}
 
-    WaterCaveGeneratorBase(const CONSOLE console, const LCEVERSION version,
-        const int64_t seed, const WORLDSIZE size, const BIOMESCALE scale)
+    WaterCaveGeneratorBase(const lce::CONSOLE console, const LCEVERSION version,
+        const int64_t seed, const lce::WORLDSIZE size, const lce::BIOMESCALE scale)
         : MapGenBase(console, version, seed, size, scale) {}
 
     ~WaterCaveGeneratorBase() override = default;

@@ -6,7 +6,7 @@
 #include "generator.hpp"
 
 #define STB_IMAGE_WRITE_IMPLEMENTATION
-#include "LegacyCubiomes/utils/stb_image_write.h"
+#include "include/stb_image_write.h"
 
 
 inline std::string getBiomeImageFileNameFromGenerator(const Generator* g, const std::string& directory) {

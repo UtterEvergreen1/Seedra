@@ -418,7 +418,7 @@ void setupScale(Layer* l, int scale) {
 }
 
 //TODO: BIOMES FOR EARLY VERSIONS (before elytra)
-void setupLayerStack(LayerStack* g, const LCEVERSION lceVersion, const BIOMESCALE biomeSize) {
+void setupLayerStack(LayerStack* g, const LCEVERSION lceVersion, const lce::BIOMESCALE biomeSize) {
 
     MCVERSION mc = getMCVersion(lceVersion);
     memset(g, 0, sizeof(LayerStack));
@@ -451,13 +451,13 @@ void setupLayerStack(LayerStack* g, const LCEVERSION lceVersion, const BIOMESCAL
     p = setupLayer(l + L_ZOOM_512, mapZoom, mc, 2, 3, 2002, p, nullptr);
     p = setupLayer(l + L_ZOOM_256, mapZoom, mc, 2, 3, 2003, p, nullptr);
     p = setupLayer(l + L_LAND_256, mapLand, mc, 1, 2, 4, p, nullptr);
-    if (biomeSize != BIOMESCALE::SMALL) p = setupLayer(l + L_MUSHROOM_256, mapMushroom, mc, 1, 2, 5, p, nullptr);
+    if (biomeSize != lce::BIOMESCALE::SMALL) p = setupLayer(l + L_MUSHROOM_256, mapMushroom, mc, 1, 2, 5, p, nullptr);
     p = setupLayer(l + L_DEEP_OCEAN_256, mapDeepOcean, mc, 1, 2, 4, p, nullptr);
     p = setupLayer(l + L_BIOME_256, mapBiome, mc, 1, 0, 200, p, nullptr);
     if (mc >= MC_1_14) p = setupLayer(l + L_BAMBOO_256, mapBamboo, mc, 1, 0, 1001, p, nullptr);
 
-    if (biomeSize >= BIOMESCALE::MEDIUM) p = setupLayer(l + L_ZOOM_128, mapZoom, mc, 2, 3, 1000, p, nullptr);
-    if (biomeSize >= BIOMESCALE::LARGE) p = setupLayer(l + L_ZOOM_64, mapZoom, mc, 2, 3, 1001, p, nullptr);
+    if (biomeSize >= lce::BIOMESCALE::MEDIUM) p = setupLayer(l + L_ZOOM_128, mapZoom, mc, 2, 3, 1000, p, nullptr);
+    if (biomeSize >= lce::BIOMESCALE::LARGE) p = setupLayer(l + L_ZOOM_64, mapZoom, mc, 2, 3, 1001, p, nullptr);
 
     p = setupLayer(l + L_BIOME_EDGE_64, mapBiomeEdge, mc, 1, 2, 1000, p, nullptr);
     // river noise layer chain, also used to determine where hills const generate
@@ -485,11 +485,11 @@ void setupLayerStack(LayerStack* g, const LCEVERSION lceVersion, const BIOMESCAL
     // iteration 0
     p = setupLayer(l + L_ZOOM_32, mapZoom, mc, 2, 3, 1000, p, nullptr);
     p = setupLayer(l + L_LAND_32, mapLand, mc, 1, 2, 3, p, nullptr);
-    if (biomeSize == BIOMESCALE::SMALL) p = setupLayer(l + L_A_MUSHROOM_32, mapMushroom, mc, 1, 2, 5, p, nullptr);
+    if (biomeSize == lce::BIOMESCALE::SMALL) p = setupLayer(l + L_A_MUSHROOM_32, mapMushroom, mc, 1, 2, 5, p, nullptr);
 
     // iteration 1
     p = setupLayer(l + L_ZOOM_16, mapZoom, mc, 2, 3, 1001, p, nullptr);
-    if (biomeSize == BIOMESCALE::SMALL) p = setupLayer(l + L_G_MUSHROOM_16, mapGMushroom, mc, 1, 2, 5, p, nullptr);
+    if (biomeSize == lce::BIOMESCALE::SMALL) p = setupLayer(l + L_G_MUSHROOM_16, mapGMushroom, mc, 1, 2, 5, p, nullptr);
     p = setupLayer(l + L_SHORE_16, mapShore, mc, 1, 2, 1000, p, nullptr);
 
     // iteration 2

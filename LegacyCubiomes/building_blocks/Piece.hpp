@@ -1,8 +1,8 @@
 #pragma once
 
 #include "LegacyCubiomes/building_blocks/BoundingBox.hpp"
-#include "LegacyCubiomes/utils/processor.hpp"
 #include "LegacyCubiomes/utils/Pos2DTemplate.hpp"
+#include "lce/processor.hpp"
 
 
 class Piece : public BoundingBox {

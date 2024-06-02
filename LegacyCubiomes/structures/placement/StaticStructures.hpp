@@ -63,7 +63,7 @@ namespace Placement {
 
     class Feature : public StaticStructure<Feature> {
     public:
-        static void setWorldSize(WORLDSIZE worldSize);
+        static void setWorldSize(lce::WORLDSIZE worldSize);
         static StructureType getFeatureType(const Generator* g, int blockX, int blockZ);
         static StructureType getFeatureType(const Generator* g, const Pos2D& block) {
             return getFeatureType(g, block.x, block.z);
@@ -74,12 +74,12 @@ namespace Placement {
     template<bool isPS4Village>
     class Village : public StaticStructure<Village<isPS4Village>> {
     public:
-        static void setWorldSize(WORLDSIZE worldSize);
+        static void setWorldSize(lce::WORLDSIZE worldSize);
     };
 
     class OceanRuin : public StaticStructure<OceanRuin> {
     public:
-        static void setWorldSize(WORLDSIZE worldSize);
+        static void setWorldSize(lce::WORLDSIZE worldSize);
     };
 
 } // namespace Placement

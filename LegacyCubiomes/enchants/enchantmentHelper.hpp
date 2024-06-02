@@ -13,7 +13,7 @@ public:
      * @param console the LCE console type
      * @param version the LCE version
      */
-    static void setup(const CONSOLE console, const LCEVERSION version) {
+    static void setup(const lce::CONSOLE console, const LCEVERSION version) {
         Enchantment::registerEnchantments();
         setConsoleAndVersion(console, version);
     }
@@ -23,7 +23,7 @@ public:
      * @param console the LCE console type
      * @param version the LCE version
      */
-    static void setConsoleAndVersion(CONSOLE console, LCEVERSION version);
+    static void setConsoleAndVersion(lce::CONSOLE console, LCEVERSION version);
 
     /**
      * Deallocates the book level table and registry

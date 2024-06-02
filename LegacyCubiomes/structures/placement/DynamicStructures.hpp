@@ -50,26 +50,26 @@ namespace Placement {
 
     class Mansion : public DynamicStructure<Mansion> {
     public:
-        static void setWorldSize(WORLDSIZE worldSize);
+        static void setWorldSize(lce::WORLDSIZE worldSize);
     };
 
     class Monument : public DynamicStructure<Monument> {
     public:
-        static void setWorldSize(WORLDSIZE worldSize);
+        static void setWorldSize(lce::WORLDSIZE worldSize);
     };
 
     class BuriedTreasure : public DynamicStructure<BuriedTreasure> {
     public:
-        static void setWorldSize(WORLDSIZE worldSize);
+        static void setWorldSize(lce::WORLDSIZE worldSize);
     };
 
     class Shipwreck : public DynamicStructure<Shipwreck> {
     public:
-        static void setWorldSize(WORLDSIZE worldSize);
+        static void setWorldSize(lce::WORLDSIZE worldSize);
     };
 
     class Outpost : public DynamicStructure<Outpost> {
     public:
-        static void setWorldSize(WORLDSIZE worldSize);
+        static void setWorldSize(lce::WORLDSIZE worldSize);
     };
 } // namespace Placement

@@ -6,8 +6,9 @@
 namespace Placement {
 
     Pos2D Stronghold::getWorldPosition(const Generator& g) {
-        const bool xboxStronghold = g.getConsole() == CONSOLE::XBOX;
-        int multiplier = 0;
+        const bool xboxStronghold = g.getConsole() == lce::CONSOLE::XBOX360 ||
+                                    g.getConsole() == lce::CONSOLE::XBOX1;
+        int multiplier;
         RNG rng;
         Pos2D p{};
         int out;

@@ -108,10 +108,10 @@ namespace Placement {
     const uint64_t DynamicStructure<Mansion>::SECONDARY_VALID_BIOMES = DEFAULT_SECONDARY_VALID_BIOMES;
     template<>
     const uint64_t DynamicStructure<Mansion>::SECONDARY_VALID_BIOMES_MUTATED = DEFAULT_SECONDARY_VALID_BIOMES_MUTATED;
-    void Mansion::setWorldSize(const WORLDSIZE worldSize) {
+    void Mansion::setWorldSize(const lce::WORLDSIZE worldSize) {
         CHUNK_BOUNDS = getChunkWorldBounds(worldSize) - 3;
         // prevent from setting the same values
-        const bool reducedSpacing = worldSize < WORLDSIZE::MEDIUM;
+        const bool reducedSpacing = worldSize < lce::WORLDSIZE::MEDIUM;
         if (REDUCED_SPACING == reducedSpacing) return;
         REGION_SIZE = reducedSpacing ? 32 : 80;
         CHUNK_RANGE = REGION_SIZE - 6;
@@ -138,10 +138,10 @@ namespace Placement {
     const uint64_t DynamicStructure<Monument>::SECONDARY_VALID_BIOMES =
             1ULL << deep_ocean | 1ULL << deep_warm_ocean | 1ULL << deep_lukewarm_ocean | 1ULL << deep_cold_ocean |
             1ULL << deep_frozen_ocean;
-    void Monument::setWorldSize(const WORLDSIZE worldSize) {
+    void Monument::setWorldSize(const lce::WORLDSIZE worldSize) {
         CHUNK_BOUNDS = getChunkWorldBounds(worldSize) - 3;
         // prevent from setting the same values
-        const bool reducedSpacing = worldSize < WORLDSIZE::MEDIUM;
+        const bool reducedSpacing = worldSize < lce::WORLDSIZE::MEDIUM;
         if (REDUCED_SPACING == reducedSpacing) return;
         REGION_SIZE = reducedSpacing ? 32 : 80;
         CHUNK_RANGE = REGION_SIZE - 5;
@@ -167,10 +167,10 @@ namespace Placement {
     template<>
     const uint64_t DynamicStructure<BuriedTreasure>::SECONDARY_VALID_BIOMES_MUTATED =
             DEFAULT_SECONDARY_VALID_BIOMES_MUTATED;
-    void BuriedTreasure::setWorldSize(const WORLDSIZE worldSize) {
+    void BuriedTreasure::setWorldSize(const lce::WORLDSIZE worldSize) {
         CHUNK_BOUNDS = getChunkWorldBounds(worldSize) - 3;
         // prevent from setting the same values
-        const bool reducedSpacing = worldSize < WORLDSIZE::MEDIUM;
+        const bool reducedSpacing = worldSize < lce::WORLDSIZE::MEDIUM;
         if (REDUCED_SPACING == reducedSpacing) return;
         REGION_SIZE = reducedSpacing ? 32 : 4;
         CHUNK_RANGE = REGION_SIZE - 2;
@@ -193,10 +193,10 @@ namespace Placement {
             1ULL << ocean | 1ULL << mushroom_island_shore | 1ULL << beach | 1ULL << snowy_beach | 1ULL << deep_ocean |
             1ULL << warm_ocean | 1ULL << lukewarm_ocean | 1ULL << deep_lukewarm_ocean | 1ULL << cold_ocean |
             1ULL << deep_cold_ocean | 1ULL << frozen_ocean | 1ULL << deep_frozen_ocean;
-    void Shipwreck::setWorldSize(const WORLDSIZE worldSize) {
+    void Shipwreck::setWorldSize(const lce::WORLDSIZE worldSize) {
         CHUNK_BOUNDS = getChunkWorldBounds(worldSize) - 3;
         // prevent from setting the same values
-        const bool reducedSpacing = worldSize < WORLDSIZE::MEDIUM;
+        const bool reducedSpacing = worldSize < lce::WORLDSIZE::MEDIUM;
         if (REDUCED_SPACING == reducedSpacing) return;
         REGION_SIZE = reducedSpacing ? 32 : 10;
         CHUNK_RANGE = REGION_SIZE - 5;
@@ -221,10 +221,10 @@ namespace Placement {
     const uint64_t DynamicStructure<Outpost>::SECONDARY_VALID_BIOMES = DEFAULT_SECONDARY_VALID_BIOMES;
     template<>
     const uint64_t DynamicStructure<Outpost>::SECONDARY_VALID_BIOMES_MUTATED = DEFAULT_SECONDARY_VALID_BIOMES_MUTATED;
-    void Outpost::setWorldSize(const WORLDSIZE worldSize) {
+    void Outpost::setWorldSize(const lce::WORLDSIZE worldSize) {
         CHUNK_BOUNDS = getChunkWorldBounds(worldSize) - 3;
         // prevent from setting the same values
-        const bool reducedSpacing = worldSize < WORLDSIZE::MEDIUM;
+        const bool reducedSpacing = worldSize < lce::WORLDSIZE::MEDIUM;
         if (REDUCED_SPACING == reducedSpacing) return;
         REGION_SIZE = reducedSpacing ? 32 : 80;
         CHUNK_RANGE = REGION_SIZE - 6;

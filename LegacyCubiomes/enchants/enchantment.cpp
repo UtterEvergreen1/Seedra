@@ -152,7 +152,7 @@ std::vector<const Enchantment::Type::Base*> Enchantment::Type::ALL_ITERABLE = {
 
 
 RegistryNamespaced<Enchantment> Enchantment::REGISTRY;
-CONSOLE Enchantment::currentConsole = CONSOLE::NONE;
+lce::CONSOLE Enchantment::currentConsole = lce::CONSOLE::NONE;
 LCEVERSION Enchantment::currentVersion = LCEVERSION::NONE;
 
 

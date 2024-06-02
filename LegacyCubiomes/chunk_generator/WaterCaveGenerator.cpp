@@ -86,7 +86,8 @@ void WaterCaveGenerator::addTunnel(const int64_t seedModifier, const Pos2D chunk
         directionModifier = directionModifier + (f1 - f2) * f3 * 4.0F; // correct
 
         if (!isMainTunnel && currentTunnelSegment == splitPoint && tunnelWidth > 1.0F && maxTunnelSegment > 0) {
-            const bool isXbox = g.getConsole() == CONSOLE::XBOX;
+            const bool isXbox = g.getConsole() == lce::CONSOLE::XBOX360 ||
+                                g.getConsole() == lce::CONSOLE::XBOX1;
             float tunnelWidth1;
             int64_t seed1;
             if (isXbox) {

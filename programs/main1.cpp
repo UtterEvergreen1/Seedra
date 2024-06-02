@@ -11,7 +11,7 @@
 */
 
 #include "LegacyCubiomes/utils/constants.hpp"
-#include "LegacyCubiomes/utils/processor.hpp"
+#include "lce/processor.hpp"
 
 #include <cmath>
 #include <cstdint>

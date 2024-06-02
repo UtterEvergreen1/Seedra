@@ -300,7 +300,7 @@ namespace lce::blocks::ids {
         JUNGLE_BUTTON = 309,
         SPRUCE_BUTTON = 310,
         DOUBLE_PRISMARINE_SLAB = 311, // data=1: brick, data=2:dark, else: regular
-        PRISMARINE_SLAB = 312,        // top = data & 8, data&7=1:brick, data&7=2:dark, data&7else:reg
+        PRISMARINE_SLAB = 312, // top = data & 8, data&7=1:brick, data&7=2:dark, data&7else:reg
         SPRUCE_WOOD = 313,
         BIRCH_WOOD = 314,
         JUNGLE_WOOD = 315,

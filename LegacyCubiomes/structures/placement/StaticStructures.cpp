@@ -69,10 +69,10 @@ namespace Placement {
     template<>
     const int StaticStructure<Feature>::SALT = 14357617;
 
-    void Feature::setWorldSize(const WORLDSIZE worldSize) {
+    void Feature::setWorldSize(const lce::WORLDSIZE worldSize) {
         CHUNK_BOUNDS = getChunkWorldBounds(worldSize);
         // prevent from setting the same values
-        const bool reducedSpacing = worldSize < WORLDSIZE::MEDIUM;
+        const bool reducedSpacing = worldSize < lce::WORLDSIZE::MEDIUM;
         if (REDUCED_SPACING == reducedSpacing) return;
         REGION_SIZE = reducedSpacing ? 16 : 32;
         CHUNK_RANGE = REGION_SIZE - 8;
@@ -142,10 +142,10 @@ namespace Placement {
             1ULL << plains | 1ULL << desert | 1ULL << taiga | 1ULL << ice_plains | 1ULL << cold_taiga | 1ULL << savanna;
 
     template<bool PS4Village>
-    void Village<PS4Village>::setWorldSize(const WORLDSIZE worldSize) {
+    void Village<PS4Village>::setWorldSize(const lce::WORLDSIZE worldSize) {
         Village::CHUNK_BOUNDS = getChunkWorldBounds(worldSize);
         // prevent from setting the same values
-        bool reducedSpacing = worldSize < WORLDSIZE::MEDIUM;
+        bool reducedSpacing = worldSize < lce::WORLDSIZE::MEDIUM;
         if (Village::REDUCED_SPACING == reducedSpacing) return;
         Village::REGION_SIZE = reducedSpacing ? 16 : 32;
         Village::CHUNK_RANGE = Village::REGION_SIZE - 8;
@@ -166,7 +166,7 @@ namespace Placement {
             1ULL << ocean | 1ULL << deep_ocean | 1ULL << warm_ocean | 1ULL << deep_warm_ocean |
             1ULL << lukewarm_ocean | 1ULL << deep_lukewarm_ocean | 1ULL << cold_ocean |
             1ULL << deep_cold_ocean | 1ULL << frozen_ocean | 1ULL << deep_frozen_ocean;
-    void OceanRuin::setWorldSize(const WORLDSIZE worldSize) { CHUNK_BOUNDS = getChunkWorldBounds(worldSize); }
+    void OceanRuin::setWorldSize(const lce::WORLDSIZE worldSize) { CHUNK_BOUNDS = getChunkWorldBounds(worldSize); }
 
 
 } // namespace Placement

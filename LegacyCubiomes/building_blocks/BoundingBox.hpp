@@ -3,9 +3,9 @@
 #include <climits>
 #include <iostream>
 
-#include "LegacyCubiomes/utils/enums.hpp"
-#include "LegacyCubiomes/utils/processor.hpp"
 #include "LegacyCubiomes/utils/Pos3DTemplate.hpp"
+#include "LegacyCubiomes/utils/enums.hpp"
+#include "lce/processor.hpp"
 
 
 struct BoundingBox {

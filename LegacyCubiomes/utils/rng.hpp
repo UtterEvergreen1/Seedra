@@ -1,6 +1,6 @@
 #pragma once
 
-#include "processor.hpp"
+#include "lce/processor.hpp"
 #include <iostream>
 
 ///=============================================================================

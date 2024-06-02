@@ -1,6 +1,9 @@
 #pragma once
 
+#include "lce/processor.hpp"
+
 #include "types.hpp"
+
 
 namespace lce::items {
 

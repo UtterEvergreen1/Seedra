@@ -8,7 +8,7 @@
 
 
 #include "Pos2DTemplate.hpp"
-#include "processor.hpp"
+#include "lce/processor.hpp"
 
 template<class classType>
 class Pos3DTemplate {
@@ -66,7 +66,6 @@ public:
         this->y = yIn;
         this->z = zIn;
     }
-
 
     MU ND Pos2DTemplate<classType> convert2D() const;
     MU ND bool insideBounds(classType lower, classType upper);

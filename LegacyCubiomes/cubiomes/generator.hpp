@@ -1,7 +1,8 @@
 #pragma once
 
-#include "LegacyCubiomes/utils/Pos2DTemplate.hpp"
+#include "lce/enums.hpp"
 #include "LegacyCubiomes/utils/enums.hpp"
+#include "LegacyCubiomes/utils/Pos2DTemplate.hpp"
 
 #include "LegacyCubiomes/utils/rng.hpp"
 #include "layers.hpp"
@@ -19,9 +20,9 @@ struct SurfaceNoise;
 class Generator {
     int64_t worldSeed;     // world seed
     LCEVERSION version;    // LCE version, used to generate biomes
-    CONSOLE console;       // LCE console, used to generate terrain and stronghold
-    BIOMESCALE biomeScale; // biome size for biome generation
-    WORLDSIZE worldSize;   // world size for calculating world bounds
+    lce::CONSOLE console;       // LCE console, used to generate terrain and stronghold
+    lce::BIOMESCALE biomeScale; // biome size for biome generation
+    lce::WORLDSIZE worldSize;   // world size for calculating world bounds
 
     int worldCoordinateBounds; // block positions of the world bounds
 
@@ -40,7 +41,7 @@ public:
      * @param size the world size for calculating world bounds
      * @param scale the biome size for generating biomes
      */
-    Generator(CONSOLE console, LCEVERSION version, WORLDSIZE size, BIOMESCALE scale);
+    Generator(lce::CONSOLE console, LCEVERSION version, lce::WORLDSIZE size, lce::BIOMESCALE scale);
 
     /**
      * Sets up a biome generator for a given LCE version.
@@ -51,7 +52,7 @@ public:
      * @param size the world size for calculating world bounds
      * @param seed the world seed to apply
      */
-    Generator(CONSOLE console, LCEVERSION version, int64_t seed, WORLDSIZE size, BIOMESCALE scale);
+    Generator(lce::CONSOLE console, LCEVERSION version, int64_t seed, lce::WORLDSIZE size, lce::BIOMESCALE scale);
 
     /// returns the stored world seed
     ND inline int64_t getWorldSeed() const { return this->worldSeed; }
@@ -81,34 +82,34 @@ public:
     MU void changeLCEVersion(LCEVERSION versionIn);
 
     /// returns the stored LCE console
-    ND CONSOLE getConsole() const { return this->console; }
+    ND lce::CONSOLE getConsole() const { return this->console; }
 
     /**
      * Change the LCE console.
      *
      * @param consoleIn new console to apply
      */
-    MU void changeConsole(const CONSOLE consoleIn) { this->console = consoleIn; }
+    MU void changeConsole(const lce::CONSOLE consoleIn) { this->console = consoleIn; }
 
     /// returns the stored biome size
-    MU ND BIOMESCALE getBiomeScale() const { return this->biomeScale; }
+    MU ND lce::BIOMESCALE getBiomeScale() const { return this->biomeScale; }
 
     /**
      * Change the biome size.
      *
      * @param size new biome size to apply
      */
-    MU void changeBiomeSize(BIOMESCALE size);
+    MU void changeBiomeSize(lce::BIOMESCALE size);
 
     /// returns the stored world size
-    MU ND WORLDSIZE getWorldSize() const { return this->worldSize; }
+    MU ND lce::WORLDSIZE getWorldSize() const { return this->worldSize; }
 
     /**
      * Change the world size.
      *
      * @param size new world size to apply
      */
-    MU void changeWorldSize(WORLDSIZE size);
+    MU void changeWorldSize(lce::WORLDSIZE size);
 
     /// returns the stored world size
     MU ND int getWorldCoordinateBounds() const { return this->worldCoordinateBounds; }

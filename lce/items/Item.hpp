@@ -7,7 +7,6 @@
 #include <QDebug>
 #endif
 
-#include "LegacyCubiomes/utils/processor.hpp"
 #include "enums.hpp"
 #include "mapcolors.hpp"
 #include "types.hpp"

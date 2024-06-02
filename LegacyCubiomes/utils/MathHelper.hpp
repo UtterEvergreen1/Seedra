@@ -10,7 +10,9 @@ class MathHelper {
 
 public:
     MathHelper() {
-        for (int i = 0; i < TABLE_SIZE; ++i) { SIN_TABLE[i] = sinf(static_cast<float>(i) / CONVERSION); }
+        for (int i = 0; i < TABLE_SIZE; ++i) {
+            SIN_TABLE[i] = sinf(static_cast<float>(i) / CONVERSION);
+        }
     }
 
     static MathHelper& Instance() {

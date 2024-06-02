@@ -6,7 +6,7 @@
 #include "noise.hpp"
 
 
-Generator::Generator(const CONSOLE console, const LCEVERSION version, const WORLDSIZE size, const BIOMESCALE scale)
+Generator::Generator(const lce::CONSOLE console, const LCEVERSION version, const lce::WORLDSIZE size, const lce::BIOMESCALE scale)
     : worldSeed(0), version(version), console(console), biomeScale(scale), worldSize(size),
       worldCoordinateBounds(getChunkWorldBounds(size) << 4) {
     setupLayerStack(&this->layerStack, version, scale);
@@ -14,8 +14,8 @@ Generator::Generator(const CONSOLE console, const LCEVERSION version, const WORL
 }
 
 
-Generator::Generator(const CONSOLE console, const LCEVERSION version, const int64_t seed, const WORLDSIZE size,
-                     const BIOMESCALE scale)
+Generator::Generator(const lce::CONSOLE console, const LCEVERSION version, const int64_t seed, const lce::WORLDSIZE size,
+                     const lce::BIOMESCALE scale)
     : worldSeed(seed), version(version), console(console), biomeScale(scale), worldSize(size),
       worldCoordinateBounds(getChunkWorldBounds(size) << 4) {
     setupLayerStack(&this->layerStack, version, scale);
@@ -40,7 +40,7 @@ void Generator::changeLCEVersion(const LCEVERSION versionIn) {
 }
 
 
-void Generator::changeBiomeSize(const BIOMESCALE size) {
+void Generator::changeBiomeSize(const lce::BIOMESCALE size) {
     // avoid setting up again when it's the same
     if (this->biomeScale == size) return;
 
@@ -51,7 +51,7 @@ void Generator::changeBiomeSize(const BIOMESCALE size) {
 }
 
 
-void Generator::changeWorldSize(const WORLDSIZE size) {
+void Generator::changeWorldSize(const lce::WORLDSIZE size) {
     // avoid recalculating when it's the same
     if (this->worldSize == size) return;
 
@@ -338,7 +338,7 @@ Pos2D Generator::getSpawnBlock() const {
     Pos2D spawn = estimateSpawn(rng);
 
     SurfaceNoise sn;
-    initSurfaceNoise(&sn, DIMENSION::OVERWORLD, getWorldSeed());
+    initSurfaceNoise(&sn, lce::DIMENSION::OVERWORLD, getWorldSeed());
 
     float y;
     int id = -1, grass = 0;

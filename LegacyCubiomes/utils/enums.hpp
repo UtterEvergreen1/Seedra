@@ -3,10 +3,9 @@
 #include <cstdint>
 #include <string>
 
-enum class DIMENSION : int8_t { NETHER = -1, HELL = -1, OVERWORLD = 0, END = 1 };
 
-enum class CONSOLE : int8_t { XBOX = 0, PS3 = 1, WIIU = 2, PS4 = 3, NONE = 4 };
-
+/// Minecraft console versions
+// TODO: this code sucks make it better
 enum class LCEVERSION : int8_t {
     AQUATIC = 0,
     ELYTRA = 1,
@@ -40,16 +39,13 @@ enum MCVERSION : int8_t {
     MC_1_14 = 14
 };
 
+
 enum class DIRECTION : int8_t {
     NORTH = 0,
     SOUTH = 1,
     WEST = 2,
     EAST = 3,
 };
-
-enum class BIOMESCALE : int8_t { SMALL = 0, MEDIUM = 1, LARGE = 2 };
-
-enum class WORLDSIZE : int8_t { CLASSIC = 0, SMALL = 1, MEDIUM = 2, LARGE = 3, INF = 4 };
 
 
 enum class StructureType : uint8_t {
@@ -94,20 +90,6 @@ static std::string LceVersionToString(const LCEVERSION version) {
     }
 }
 
-static int getChunkWorldBounds(const WORLDSIZE worldSize) {
-    switch (worldSize) {
-        case WORLDSIZE::CLASSIC:
-        default:
-            return 27;
-        case WORLDSIZE::SMALL:
-            return 32;
-        case WORLDSIZE::MEDIUM:
-            return 96;
-        case WORLDSIZE::LARGE:
-            return 160;
-    }
-}
-
 
 static std::string getStructureName(const StructureType type) {
     switch (type) {
@@ -141,34 +123,6 @@ static std::string getStructureName(const StructureType type) {
             return "EndCity";
         case StructureType::EndGateway:
             return "EndGateway";
-        default:
-            return "NONE";
-    }
-}
-
-static std::string worldSizeToString(const WORLDSIZE worldSize) {
-    switch (worldSize) {
-        case WORLDSIZE::CLASSIC:
-        default:
-            return "CLASSIC";
-        case WORLDSIZE::SMALL:
-            return "SMALL";
-        case WORLDSIZE::MEDIUM:
-            return "MEDIUM";
-        case WORLDSIZE::LARGE:
-            return "LARGE";
-    }
-}
-
-
-static std::string biomeScaleToString(const BIOMESCALE biomeScale) {
-    switch (biomeScale) {
-        case BIOMESCALE::SMALL:
-            return "SMALL";
-        case BIOMESCALE::MEDIUM:
-            return "MEDIUM";
-        case BIOMESCALE::LARGE:
-            return "LARGE";
         default:
             return "NONE";
     }

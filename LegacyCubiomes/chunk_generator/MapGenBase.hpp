@@ -11,8 +11,8 @@ public:
 
     explicit MapGenBase(const Generator& generator) : g(generator), rng(0) {}
 
-    MapGenBase(const CONSOLE console, const LCEVERSION version,
-        const int64_t seed, const WORLDSIZE size, const BIOMESCALE scale)
+    MapGenBase(const lce::CONSOLE console, const LCEVERSION version,
+        const int64_t seed, const lce::WORLDSIZE size, const lce::BIOMESCALE scale)
         : g(console, version, seed, size, scale), rng(0) {}
 
     virtual ~MapGenBase() = default;

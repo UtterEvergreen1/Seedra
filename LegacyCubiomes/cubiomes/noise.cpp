@@ -85,7 +85,7 @@ double samplePerlin(const Generator* g, const PerlinNoise* noise, double x, doub
     int i2 = static_cast<int>(y) - static_cast<int>(y < 0);
     int i3 = static_cast<int>(z) - static_cast<int>(z < 0);
 
-    if (g->getConsole() != CONSOLE::WIIU) {
+    if (g->getConsole() != lce::CONSOLE::WIIU) {
         x -= i1;
         y -= i2;
         z -= i3;
@@ -229,13 +229,13 @@ double sampleOctave(const Generator* g, const OctaveNoise* noise, const double x
 }
 
 
-void initSurfaceNoise(SurfaceNoise* sn, const DIMENSION dimension, const uint64_t worldSeed) {
+void initSurfaceNoise(SurfaceNoise* sn, const lce::DIMENSION dimension, const uint64_t worldSeed) {
     RNG rng;
     rng.setSeed(worldSeed);
     octaveInit(&sn->octaveMin, rng, sn->oct + 0, -15, 16);
     octaveInit(&sn->octaveMax, rng, sn->oct + 16, -15, 16);
     octaveInit(&sn->octaveMain, rng, sn->oct + 32, -7, 8);
-    if (dimension == DIMENSION::END) {
+    if (dimension == lce::DIMENSION::END) {
         sn->xzScale = 2.0;
         sn->yScale = 1.0;
         sn->xzFactor = 80;

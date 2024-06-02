@@ -8,8 +8,8 @@ class CaveGenerator final : public MapGenBase {
 public:
     explicit CaveGenerator(const Generator& generator) : MapGenBase(generator) {}
 
-    CaveGenerator(const CONSOLE console, const LCEVERSION version,
-                  const int64_t seed, const WORLDSIZE size, const BIOMESCALE scale)
+    CaveGenerator(const lce::CONSOLE console, const LCEVERSION version,
+                  const int64_t seed, const lce::WORLDSIZE size, const lce::BIOMESCALE scale)
         : MapGenBase(console, version, seed, size, scale) {}
 
     ~CaveGenerator() override = default;

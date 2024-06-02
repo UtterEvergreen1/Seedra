@@ -8,8 +8,8 @@ class WaterCaveGenerator final : public WaterCaveGeneratorBase {
 public:
     explicit WaterCaveGenerator(const Generator& generator) : WaterCaveGeneratorBase(generator) {}
 
-    WaterCaveGenerator(const CONSOLE console, const LCEVERSION version,
-        const int64_t seed, const WORLDSIZE size, const BIOMESCALE scale)
+    WaterCaveGenerator(const lce::CONSOLE console, const LCEVERSION version,
+        const int64_t seed, const lce::WORLDSIZE size, const lce::BIOMESCALE scale)
         : WaterCaveGeneratorBase(console, version, seed, size, scale) {}
 
     static bool canReplaceBlock(uint16_t blockAt);

@@ -1,7 +1,8 @@
 #pragma once
 
 #include "LegacyCubiomes/utils/enums.hpp"
-#include "LegacyCubiomes/utils/processor.hpp"
+#include "lce/enums.hpp"
+#include "lce/processor.hpp"
 
 class Generator;
 struct PerlinNoise;
@@ -187,7 +188,7 @@ Layer* setupLayer(Layer* l, mapfunc_t* map, MCVERSION theMc, int8_t zoom, int8_t
                   Layer* p2);
 void setupScale(Layer* l, int scale);
 int genArea(const Layer* layer, int* out, int areaX, int areaZ, int areaWidth, int areaHeight);
-void setupLayerStack(LayerStack* layerStack, LCEVERSION lceVersion, BIOMESCALE biomeSize);
+void setupLayerStack(LayerStack* layerStack, LCEVERSION lceVersion, lce::BIOMESCALE biomeSize);
 void getMaxArea(const Layer* layer, int areaX, int areaZ, int* maxX, int* maxZ, size_t* siz);
 size_t getMinLayerCacheSize(const Layer* layer, int sizeX, int sizeZ);
 

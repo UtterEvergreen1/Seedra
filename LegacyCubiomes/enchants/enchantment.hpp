@@ -166,7 +166,7 @@ public:
     static constexpr int8_t MAX_ENCHANTMENT_COUNT = 33;
 
     static RegistryNamespaced<Enchantment> REGISTRY;
-    static CONSOLE currentConsole;
+    static lce::CONSOLE currentConsole;
     static LCEVERSION currentVersion;
 
     /// the order is: [console][version][pointer]

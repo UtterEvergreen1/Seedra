@@ -8,8 +8,8 @@ class RavineGenerator final : public MapGenBase {
 public:
     explicit RavineGenerator(const Generator& generator) : MapGenBase(generator) {}
 
-    RavineGenerator(const CONSOLE console, const LCEVERSION version,
-                    const int64_t seed, const WORLDSIZE size, const BIOMESCALE scale)
+    RavineGenerator(const lce::CONSOLE console, const LCEVERSION version,
+                    const int64_t seed, const lce::WORLDSIZE size, const lce::BIOMESCALE scale)
         : MapGenBase(console, version, seed, size, scale) {}
 
     ~RavineGenerator() override = default;

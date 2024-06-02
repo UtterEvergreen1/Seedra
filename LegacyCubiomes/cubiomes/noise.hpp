@@ -1,6 +1,6 @@
 #pragma once
 
-#include "LegacyCubiomes/utils/enums.hpp"
+#include "lce/enums.hpp"
 #include "LegacyCubiomes/utils/rng.hpp"
 
 class Generator;
@@ -52,4 +52,4 @@ MU double sampleOctave(const Generator* g, const OctaveNoise* noise, double x, d
 double sampleOctaveAmp(const Generator* g, const OctaveNoise* noise, double x, double y, double z, double yAmp,
                        double yMin, int yDefault);
 
-void initSurfaceNoise(SurfaceNoise* sn, DIMENSION dimension, uint64_t worldSeed);
+void initSurfaceNoise(SurfaceNoise* sn, lce::DIMENSION dimension, uint64_t worldSeed);
