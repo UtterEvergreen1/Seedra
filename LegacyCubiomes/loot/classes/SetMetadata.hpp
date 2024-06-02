@@ -5,9 +5,9 @@
 
 class SetMetadata final : public LootFunction {
     UniformRoll metaRange;
-    const std::vector<const Items::Item*> dataItems;
+    const std::vector<const lce::items::Item*> dataItems;
 
 public:
-    SetMetadata(UniformRoll range, const std::vector<const Items::Item*>& dataItemsIn);
+    SetMetadata(UniformRoll range, const std::vector<const lce::items::Item*>& dataItemsIn);
     void apply(ItemStack& itemStack, RNG& random) override;
 };

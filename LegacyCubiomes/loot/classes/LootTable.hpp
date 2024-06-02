@@ -1,12 +1,14 @@
 #pragma once
 
+#include "lce/items/items.hpp"
+
+#include "ItemEntry.hpp"
 #include "LegacyCubiomes/enchants/enchantment.hpp"
 #include "LegacyCubiomes/enchants/enchantmentData.hpp"
 #include "LegacyCubiomes/loot/classes/ItemStack.hpp"
-#include "LegacyCubiomes/mc/items.hpp"
 #include "LegacyCubiomes/utils/rng.hpp"
 #include "UniformRoll.hpp"
-#include "ItemEntry.hpp"
+
 
 class LootTable : public UniformRoll {
 public:

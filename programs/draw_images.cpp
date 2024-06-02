@@ -4,7 +4,7 @@
 
 #include "LegacyCubiomes/cubiomes/include.hpp"
 #include "LegacyCubiomes/enchants/include.hpp"
-#include "LegacyCubiomes/loot/include.hpp"
+#include "LegacyCubiomes/loot/tables/include.hpp"
 #include "LegacyCubiomes/structures/include.hpp"
 #include "LegacyCubiomes/utils/include.hpp"
 
@@ -33,7 +33,6 @@ int main(int argc, char* argv[]) {
 
     std::cout << "Stronghold Position" << std::endl;
     auto pos = Placement::Stronghold::getWorldPosition(g);
-
 
     auto start = getMilliseconds();
     int ROLLS = 10000;

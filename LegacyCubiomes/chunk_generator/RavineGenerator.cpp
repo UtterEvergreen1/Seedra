@@ -7,40 +7,41 @@ unsigned char RavineGenerator::topBlock(const int x, const int z) const {
         case beach:
         case desert:
         case mesa:
-            return Items::SAND_ID;
+            return lce::items::ids::SAND_ID;
         case mushroom_field_shore:
         case mushroom_fields:
-            return Items::MYCELIUM_ID;
+            return lce::items::ids::MYCELIUM_ID;
         case snowy_beach:
         case snowy_mountains:
         case snowy_taiga:
         case snowy_taiga_hills:
         case snowy_tundra:
-            return Items::SNOW_ID;
+            return lce::items::ids::SNOW_ID;
         case stone_beach:
-            return Items::STONE_ID;
+            return lce::items::ids::STONE_ID;
         default:
-            return Items::GRASS_ID;
+            return lce::items::ids::GRASS_ID;
     }
 }
 
 
 bool RavineGenerator::canReplaceBlock(const uint16_t blockAt, const uint16_t blockAbove) {
     switch (blockAt) {
-        case Items::STONE_ID:
-        case Items::GRASS_ID:
-        case Items::DIRT_ID:
-        case Items::SANDSTONE_ID:
-        case Items::SNOW_ID:
-        case Items::MYCELIUM_ID:
-        case Items::WHITE_HARDENED_CLAY_ID:
-        case Items::HARDENED_CLAY_ID:
-        case Items::RED_SANDSTONE_ID:
+        case lce::items::ids::STONE_ID:
+        case lce::items::ids::GRASS_ID:
+        case lce::items::ids::DIRT_ID:
+        case lce::items::ids::SANDSTONE_ID:
+        case lce::items::ids::SNOW_ID:
+        case lce::items::ids::MYCELIUM_ID:
+        case lce::items::ids::WHITE_HARDENED_CLAY_ID:
+        case lce::items::ids::HARDENED_CLAY_ID:
+        case lce::items::ids::RED_SANDSTONE_ID:
             return true;
-        case Items::SAND_ID:
-        case Items::GRAVEL_ID:
-            return blockAbove != Items::AIR_ID && blockAbove != Items::STILL_WATER_ID; // wii u?
-            //return blockAbove != Items::STILL_WATER_ID;
+        case lce::items::ids::SAND_ID:
+        case lce::items::ids::GRAVEL_ID:
+            return blockAbove != lce::items::ids::AIR_ID
+                   && blockAbove != lce::items::ids::STILL_WATER_ID; // wii u?
+            //return blockAbove != lce::items::STILL_WATER_ID;
         default:
             return false;
     }
@@ -49,7 +50,8 @@ bool RavineGenerator::canReplaceBlock(const uint16_t blockAt, const uint16_t blo
 
 void RavineGenerator::addTunnel(const int64_t randomSeed, const Pos2D chunk, ChunkPrimer* chunkPrimer,
                                 DoublePos3D tunnel, const float angle, float slope, float curvature,
-                                int tunnelStartSegment, int tunnelEndSegment, const double widthMultiplier, bool accurate) {
+                                int tunnelStartSegment, int tunnelEndSegment,
+                                const double widthMultiplier, bool accurate) {
 
     if (accurate &&
         g.getLCEVersion() == LCEVERSION::AQUATIC &&
@@ -109,7 +111,7 @@ void RavineGenerator::addTunnel(const int64_t randomSeed, const Pos2D chunk, Chu
             const auto remainingSegments = (double) (tunnelEndSegment - tunnelStartSegment);
             const auto maxDistance = (double) (angle + 18.0F);
 
-            //std::cout << distanceX << " " <<  distanceZ << " " << remainingSegments << " " << maxDistance << std::endl;
+            //std::cout << distanceX << " " <<  distanceZ << " " << remainingSegments <<" "<< maxDistance << std::endl;
 
             if (distanceX * distanceX + distanceZ * distanceZ - remainingSegments * remainingSegments >
                 maxDistance * maxDistance) {
@@ -140,7 +142,8 @@ void RavineGenerator::addTunnel(const int64_t randomSeed, const Pos2D chunk, Chu
                         for (int y = endY + 1; !waterOrLavaDetected && y >= startY - 1; --y) {
                             if (y >= 0 && y < 128) {
                                 const uint16_t blockId = chunkPrimer->getBlockId(x, y, z);
-                                if (blockId == Items::FLOWING_WATER_ID || blockId == Items::STILL_WATER_ID) {
+                                if (blockId == lce::items::ids::FLOWING_WATER_ID
+                                    || blockId == lce::items::ids::STILL_WATER_ID) {
                                     waterOrLavaDetected = true;
                                 }
 
@@ -170,19 +173,21 @@ void RavineGenerator::addTunnel(const int64_t randomSeed, const Pos2D chunk, Chu
                                         const uint16_t currentBlock = chunkPrimer->getBlockId(x, y, z);
                                         const uint16_t blockAbove = chunkPrimer->getBlockId(x, y + 1, z);
 
-                                        if (currentBlock == Items::GRASS_ID) { replaceableBlockDetected = true; }
+                                        if (currentBlock == lce::items::ids::GRASS_ID) {
+                                            replaceableBlockDetected = true;
+                                        }
 
-                                        /*if (iBlockState1 == Items::STONE_ID ||
-                                            iBlockState1 == Items::GRASS_ID ||
-                                            iBlockState1 == Items::DIRT_ID)*/
+                                        /*if (iBlockState1 == lce::items::STONE_ID ||
+                                            iBlockState1 == lce::items::GRASS_ID ||
+                                            iBlockState1 == lce::items::DIRT_ID)*/
                                         if (canReplaceBlock(currentBlock, blockAbove)) {
                                             if (y < 11) {
-                                                chunkPrimer->setBlockId(x, y, z, Items::FLOWING_LAVA_ID);
+                                                chunkPrimer->setBlockId(x, y, z, lce::items::ids::FLOWING_LAVA_ID);
                                             } else {
-                                                chunkPrimer->setBlockId(x, y, z, Items::AIR_ID);
+                                                chunkPrimer->setBlockId(x, y, z, lce::items::ids::AIR_ID);
 
                                                 if (replaceableBlockDetected &&
-                                                    chunkPrimer->getBlockId(x, y - 1, z) == Items::DIRT_ID) {
+                                                    chunkPrimer->getBlockId(x, y - 1, z) == lce::items::ids::DIRT_ID) {
                                                     chunkPrimer->setBlockId(
                                                             x, y - 1, z, topBlock(x + chunk.x * 16, z + chunk.z * 16));
                                                 }

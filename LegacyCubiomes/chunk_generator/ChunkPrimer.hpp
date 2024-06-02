@@ -57,7 +57,7 @@ public:
         blocks[getStorageIndex(x, y, z)] = ((block << 4) | data);
     }
 
-    void setBlockAndData(int64_t x, int64_t y, int64_t z, const Items::Item& item) {
+    void setBlockAndData(int64_t x, int64_t y, int64_t z, const lce::items::Item& item) {
         blocks[getStorageIndex(x, y, z)] = ((item.getID() << 4) | item.getDataTag());
     }
 

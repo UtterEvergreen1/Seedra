@@ -1,6 +1,7 @@
 #pragma once
 
-#include "LegacyCubiomes/mc/itemID.hpp"
+#include "lce/items/item_ids.hpp"
+
 #include "LegacyCubiomes/enchants/enchantment.hpp"
 
 
@@ -28,7 +29,7 @@ public:
         return enchantment->enumID != EnumName::DAMAGE;
     }
 
-    ND bool canApply(const Items::Item* item) const override {
-        return item->getID() == Items::IRON_AXE_ID || Enchantment::canApply(item);
+    ND bool canApply(const lce::items::Item* item) const override {
+        return item->getID() == lce::items::ids::IRON_AXE_ID || Enchantment::canApply(item);
     }
 };

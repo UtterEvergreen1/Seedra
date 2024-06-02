@@ -9,7 +9,7 @@ ItemStack ItemStack::splitStack(const int amount) {
 }
 
 
-ND const Items::Item* ItemStack::getItem() const { return item; }
+ND const lce::items::Item* ItemStack::getItem() const { return item; }
 
 
 void ItemStack::addEnchantment(Enchantment* enchantment, int level) { enchantments.emplace_back(enchantment, level); }

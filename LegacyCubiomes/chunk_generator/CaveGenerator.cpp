@@ -10,18 +10,18 @@ unsigned char CaveGenerator::topBlock(const int x, const int z) const {
         case beach:
         case desert:
         case mesa:
-            return Items::SAND_ID;
+            return lce::items::ids::SAND_ID;
         case mushroom_field_shore:
         case mushroom_fields:
-            return Items::MYCELIUM_ID;
+            return lce::items::ids::MYCELIUM_ID;
         case snowy_beach:
         case snowy_mountains:
         case snowy_taiga:
         case snowy_taiga_hills:
         case snowy_tundra:
-            return Items::SNOW_BLOCK_ID;
+            return lce::items::ids::SNOW_BLOCK_ID;
         case stone_beach:
-            return Items::STONE_ID;
+            return lce::items::ids::STONE_ID;
         default:
             return 2;
     }
@@ -32,20 +32,21 @@ bool CaveGenerator::canReplaceBlock(const uint16_t blockAt, const uint16_t block
     switch (blockAt) {
         default:
             return false;
-        case Items::STONE_ID:
-        case Items::GRASS_ID:
-        case Items::DIRT_ID:
-        case Items::SANDSTONE_ID:
-        case Items::SNOW_ID:
-        case Items::MYCELIUM_ID:
-        case Items::WHITE_HARDENED_CLAY_ID:
-        case Items::HARDENED_CLAY_ID:
-        case Items::RED_SANDSTONE_ID:
+        case lce::items::ids::STONE_ID:
+        case lce::items::ids::GRASS_ID:
+        case lce::items::ids::DIRT_ID:
+        case lce::items::ids::SANDSTONE_ID:
+        case lce::items::ids::SNOW_ID:
+        case lce::items::ids::MYCELIUM_ID:
+        case lce::items::ids::WHITE_HARDENED_CLAY_ID:
+        case lce::items::ids::HARDENED_CLAY_ID:
+        case lce::items::ids::RED_SANDSTONE_ID:
             return true;
-        case Items::SAND_ID:
-        case Items::GRAVEL_ID:
-            return blockAbove != Items::AIR_ID && blockAbove != Items::STILL_WATER_ID; // wii u?
-            // return blockAbove != Items::STILL_WATER_ID;
+        case lce::items::ids::SAND_ID:
+        case lce::items::ids::GRAVEL_ID:
+            return blockAbove != lce::items::ids::AIR_ID
+                   && blockAbove != lce::items::ids::STILL_WATER_ID; // wii u?
+            // return blockAbove != lce::items::STILL_WATER_ID;
     }
 }
 
@@ -177,7 +178,7 @@ void CaveGenerator::addTunnel(int64_t seedModifier, Pos2D chunk, ChunkPrimer* ch
                         for (int currentY = maxY + 1; !hasWater && currentY >= minY - 1; --currentY) {
                             if (currentY >= 0 && currentY < 128) {
                                 uint16_t blockType = chunkPrimer->getBlockId(currentX, currentY, currentZ);
-                                if (blockType == Items::STILL_WATER_ID || blockType == Items::FLOWING_WATER_ID) {
+                                if (blockType == lce::items::ids::STILL_WATER_ID || blockType == lce::items::ids::FLOWING_WATER_ID) {
                                     hasWater = true;
                                 }
 
@@ -208,18 +209,18 @@ void CaveGenerator::addTunnel(int64_t seedModifier, Pos2D chunk, ChunkPrimer* ch
                                         uint16_t currentBlock = chunkPrimer->getBlockId(currentX, currentY, currentZ);
                                         uint16_t blockAbove = chunkPrimer->getBlockId(currentX, currentY + 1, currentZ);
 
-                                        if (currentBlock == Items::GRASS_ID || currentBlock == Items::MYCELIUM_ID) {
+                                        if (currentBlock == lce::items::ids::GRASS_ID || currentBlock == lce::items::ids::MYCELIUM_ID) {
                                             isTopBlock = true;
                                         }
 
                                         if (canReplaceBlock(currentBlock, blockAbove)) {
                                             if (currentY < 11) {
                                                 chunkPrimer->setBlockId(currentX, currentY, currentZ,
-                                                                        Items::STILL_LAVA_ID);
+                                                                        lce::items::ids::STILL_LAVA_ID);
                                             } else {
-                                                chunkPrimer->setBlockId(currentX, currentY, currentZ, Items::AIR_ID);
+                                                chunkPrimer->setBlockId(currentX, currentY, currentZ, lce::items::ids::AIR_ID);
                                                 if (isTopBlock && chunkPrimer->getBlockId(currentX, currentY - 1,
-                                                                                          currentZ) == Items::DIRT_ID) {
+                                                                                          currentZ) == lce::items::ids::DIRT_ID) {
                                                     chunkPrimer->setBlockId(
                                                             currentX, currentY - 1, currentZ,
                                                             topBlock(currentX + chunk.x * 16, currentZ + chunk.z * 16));

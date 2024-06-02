@@ -1,6 +1,6 @@
 #pragma once
 
-#include "LegacyCubiomes/mc/items.hpp"
+#include "lce/items/items.hpp"
 
 class Block {
 public:
@@ -13,5 +13,5 @@ public:
 
     Block() : Block(0, 0) {}
 
-    explicit Block(const Items::Item& item) : Block(item.getID(), item.getDataTag()) {}
+    explicit Block(const lce::items::Item& item) : Block(item.getID(), item.getDataTag()) {}
 };

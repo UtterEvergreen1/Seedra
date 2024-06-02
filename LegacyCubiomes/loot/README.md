@@ -1,7 +1,7 @@
 ### Loot Table Loot
 
-<br>🟢 = Items Correct, Enchantments Correct
-<br>🟡 = Items Correct, Enchantments WRONG
+<br>🟢 = items Correct, Enchantments Correct
+<br>🟡 = items Correct, Enchantments WRONG
 <br>🔵 = Straight Up Wrong
 <br>🔴 = Not Tested Yet
 

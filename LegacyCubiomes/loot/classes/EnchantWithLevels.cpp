@@ -29,7 +29,7 @@ void EnchantWithLevelsItem::apply(ItemStack& itemStack, RNG& random) {
 /* other functions */
 ELDataArray* EnchantWithLevelsBook::buildEnchantmentList(const ItemStack& itemStackIn, RNG& rng, int level) {
 
-    const Items::Item* item = itemStackIn.getItem();
+    const lce::items::Item* item = itemStackIn.getItem();
     const int cost = (item->getCost() >> 2) + 1;
 
     level += 1 + rng.nextInt(cost) + rng.nextInt(cost);
@@ -63,7 +63,7 @@ EnchDataVec_t EnchantWithLevelsItem::buildEnchantmentList(const ItemStack& itemS
     std::vector<EnchantmentData> list;
     list.reserve(MAX_ENCHANT_LIST_SIZE);
 
-    const Items::Item* item = itemStackIn.getItem();
+    const lce::items::Item* item = itemStackIn.getItem();
     const int i = static_cast<unsigned char>(item->getCost());
 
     if (i == 0) return list;

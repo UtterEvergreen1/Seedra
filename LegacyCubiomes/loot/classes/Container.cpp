@@ -5,7 +5,7 @@
 
 
 void Container::printCombinedItems() const {
-    std::map<const Items::Item*, int> itemCount;
+    std::map<const lce::items::Item*, int> itemCount;
 
     for (const auto& itemStack: inventorySlots) {
         if (itemStack.stackSize > 0) {

@@ -15,7 +15,7 @@ public:
 
     int getMaxCost(const int enchantmentLevel) override { return enchantmentLevel * 10 + 51; }
 
-    ND bool canApply(const Items::Item* item) const override {
+    ND bool canApply(const lce::items::Item* item) const override {
         return item->isDamageable() || Enchantment::canApply(item);
     }
 };

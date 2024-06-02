@@ -94,17 +94,17 @@ void Biome::generateBiomeTerrain(RNG& rng, ChunkPrimer* chunkPrimerIn, int x, in
     for (int j1 = 255; j1 >= 0; --j1) {
         if (j1 == 0) break;
 
-        if (rng.nextInt(2) + 1 >= j1 - 1) chunkPrimerIn->setBlockId(i1, j1 - 1, l, Items::BEDROCK_ID);
+        if (rng.nextInt(2) + 1 >= j1 - 1) chunkPrimerIn->setBlockId(i1, j1 - 1, l, lce::items::ids::BEDROCK_ID);
         else {
             const uint16_t iBlockState2 = chunkPrimerIn->getBlockId(i1, j1, l);
 
             if (!iBlockState2) // if air
                 j = -1;
-            else if (iBlockState2 == Items::STONE_ID) {
+            else if (iBlockState2 == lce::items::ids::STONE_ID) {
                 if (j == -1) {
                     if (k <= 0) {
-                        iBlockState = Items::AIR_ID;
-                        iBlockState1 = Items::STONE_ID;
+                        iBlockState = lce::items::ids::AIR_ID;
+                        iBlockState1 = lce::items::ids::STONE_ID;
                     } else if (j1 >= seaLevel - 4 && j1 <= seaLevel + 1) {
                         iBlockState = this->topBlock.block;
                         iBlockState1 = this->fillerBlock.block;
@@ -112,27 +112,27 @@ void Biome::generateBiomeTerrain(RNG& rng, ChunkPrimer* chunkPrimerIn, int x, in
 
                     if (j1 < seaLevel && !iBlockState) {
                         blockPos.setPos(x, j1, z);
-                        if (this->getFloatTemperature(blockPos) < 0.15F) iBlockState = Items::ICE_ID;
+                        if (this->getFloatTemperature(blockPos) < 0.15F) iBlockState = lce::items::ids::ICE_ID;
                         else
-                            iBlockState = Items::STILL_WATER_ID;
+                            iBlockState = lce::items::ids::STILL_WATER_ID;
                     }
 
                     j = k;
 
                     if (j1 >= seaLevel - 1) chunkPrimerIn->setBlockId(i1, j1, l, iBlockState);
                     else if (j1 < seaLevel - 7 - k) {
-                        iBlockState = Items::AIR_ID;
-                        iBlockState1 = Items::STONE_ID;
-                        chunkPrimerIn->setBlockId(i1, j1, l, Items::GRAVEL_ID);
+                        iBlockState = lce::items::ids::AIR_ID;
+                        iBlockState1 = lce::items::ids::STONE_ID;
+                        chunkPrimerIn->setBlockId(i1, j1, l, lce::items::ids::GRAVEL_ID);
                     } else
                         chunkPrimerIn->setBlockId(i1, j1, l, iBlockState1);
                 } else if (j > 0) {
                     --j;
                     chunkPrimerIn->setBlockId(i1, j1, l, iBlockState1);
 
-                    if (j == 0 && iBlockState1 == Items::SAND_ID && k > 1) {
+                    if (j == 0 && iBlockState1 == lce::items::ids::SAND_ID && k > 1) {
                         j = rng.nextInt(4) + std::max(0, j1 - 63);
-                        iBlockState1 = Items::
+                        iBlockState1 = lce::items::ids::
                                 SANDSTONE_ID; // 179 for redsandstone //((iblockstate1) == "red_sand" ? "red_sandstone" : "sandstone");
                     }
                 }
@@ -182,21 +182,21 @@ void BiomeMesa::genTerrainBlocks(const int64_t worldSeedIn, RNG& rng, ChunkPrime
 
     for (int j1 = 255; j1 >= 0; --j1) {
         if (!chunkPrimerIn->getBlockId(l1, j1, k1) && j1 < (int) d4) {
-            chunkPrimerIn->setBlockId(l1, j1, k1, Items::STONE_ID);
+            chunkPrimerIn->setBlockId(l1, j1, k1, lce::items::ids::STONE_ID);
         }
         if (j1 == 0) break;
 
-        if (rng.nextInt(2) + 1 >= j1 - 1) chunkPrimerIn->setBlockId(l1, j1 - 1, k1, Items::BEDROCK_ID);
+        if (rng.nextInt(2) + 1 >= j1 - 1) chunkPrimerIn->setBlockId(l1, j1 - 1, k1, lce::items::ids::BEDROCK_ID);
         else if (i1 < 15 || this->brycePillars) {
             const uint16_t iBlockState1 = chunkPrimerIn->getBlockId(l1, j1, k1);
 
             if (!iBlockState1) l = -1;
-            else if (iBlockState1 == Items::STONE_ID) {
+            else if (iBlockState1 == lce::items::ids::STONE_ID) {
                 if (l == -1) {
                     flag1 = false;
 
                     if (k <= 0) {
-                        fillerBlock = Items::STONE_ID;
+                        fillerBlock = lce::items::ids::STONE_ID;
                     } else if (j1 >= seaLevel - 4 && j1 <= seaLevel + 1) {
                         fillerBlock = this->fillerBlock.block;
                     }
@@ -205,18 +205,18 @@ void BiomeMesa::genTerrainBlocks(const int64_t worldSeedIn, RNG& rng, ChunkPrime
 
                     if (j1 >= seaLevel - 1) {
                         if (this->hasForest && j1 > 86 + k * 2) {
-                            if (flag) chunkPrimerIn->setBlockAndData(l1, j1, k1, Items::COARSE_DIRT);
+                            if (flag) chunkPrimerIn->setBlockAndData(l1, j1, k1, lce::items::COARSE_DIRT);
                             else
-                                chunkPrimerIn->setBlockId(l1, j1, k1, Items::GRASS_ID);
+                                chunkPrimerIn->setBlockId(l1, j1, k1, lce::items::ids::GRASS_ID);
                         } else if (j1 > seaLevel + 3 + k) {
                             uint16_t iBlockState2;
 
                             if (j1 >= 64 && j1 <= 127) {
-                                if (flag) iBlockState2 = Items::HARDENED_CLAY_ID;
+                                if (flag) iBlockState2 = lce::items::ids::HARDENED_CLAY_ID;
                                 else
                                     iBlockState2 = this->getClayBand(x, j1).block;
                             } else
-                                iBlockState2 = Items::WHITE_HARDENED_CLAY_ID;
+                                iBlockState2 = lce::items::ids::WHITE_HARDENED_CLAY_ID;
 
                             chunkPrimerIn->setBlockId(l1, j1, k1, iBlockState2);
                         } else {
@@ -226,13 +226,13 @@ void BiomeMesa::genTerrainBlocks(const int64_t worldSeedIn, RNG& rng, ChunkPrime
                     } else {
                         chunkPrimerIn->setBlockId(l1, j1, k1, fillerBlock);
 
-                        if (fillerBlock == Items::WHITE_HARDENED_CLAY_ID)
-                            chunkPrimerIn->setBlockAndData(l1, j1, k1, Items::ORANGE_HARDENED_CLAY);
+                        if (fillerBlock == lce::items::ids::WHITE_HARDENED_CLAY_ID)
+                            chunkPrimerIn->setBlockAndData(l1, j1, k1, lce::items::ORANGE_HARDENED_CLAY);
                     }
                 } else if (l > 0) {
                     --l;
 
-                    if (flag1) chunkPrimerIn->setBlockAndData(l1, j1, k1, Items::ORANGE_HARDENED_CLAY);
+                    if (flag1) chunkPrimerIn->setBlockAndData(l1, j1, k1, lce::items::ORANGE_HARDENED_CLAY);
                     else
                         chunkPrimerIn->setBlockId(l1, j1, k1, this->getClayBand(x, j1).block);
                 }

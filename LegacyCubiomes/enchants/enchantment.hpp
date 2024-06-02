@@ -5,8 +5,8 @@
 #include <utility>
 #include <vector>
 
+#include "lce/items/items.hpp"
 #include "LegacyCubiomes/cubiomes/generator.hpp"
-#include "LegacyCubiomes/mc/items.hpp"
 #include "LegacyCubiomes/utils/RegistryNamespaced.hpp"
 #include "rarity.hpp"
 
@@ -23,59 +23,59 @@ public:
         class Base {
         public:
             virtual ~Base() = default;
-            virtual bool canEnchantItem(const Items::Item* itemIn) const;
+            virtual bool canEnchantItem(const lce::items::Item* itemIn) const;
         };
         class All final : public Base {
         public:
-            bool canEnchantItem(const Items::Item* itemIn) const override;
+            bool canEnchantItem(const lce::items::Item* itemIn) const override;
         };
         class Armor final : public Base {
         public:
-            bool canEnchantItem(const Items::Item* itemIn) const override;
+            bool canEnchantItem(const lce::items::Item* itemIn) const override;
         };
         class ArmorFeet final : public Base {
         public:
-            bool canEnchantItem(const Items::Item* itemIn) const override;
+            bool canEnchantItem(const lce::items::Item* itemIn) const override;
         };
         class ArmorLegs final : public Base {
         public:
-            bool canEnchantItem(const Items::Item* itemIn) const override;
+            bool canEnchantItem(const lce::items::Item* itemIn) const override;
         };
         class ArmorChest final : public Base {
         public:
-            bool canEnchantItem(const Items::Item* itemIn) const override;
+            bool canEnchantItem(const lce::items::Item* itemIn) const override;
         };
         class ArmorHead final : public Base {
         public:
-            bool canEnchantItem(const Items::Item* itemIn) const override;
+            bool canEnchantItem(const lce::items::Item* itemIn) const override;
         };
         class Weapon final : public Base {
         public:
-            bool canEnchantItem(const Items::Item* itemIn) const override;
+            bool canEnchantItem(const lce::items::Item* itemIn) const override;
         };
         class Digger final : public Base {
         public:
-            bool canEnchantItem(const Items::Item* itemIn) const override;
+            bool canEnchantItem(const lce::items::Item* itemIn) const override;
         };
         class FishingRod final : public Base {
         public:
-            bool canEnchantItem(const Items::Item* itemIn) const override;
+            bool canEnchantItem(const lce::items::Item* itemIn) const override;
         };
         class Breakable final : public Base {
         public:
-            bool canEnchantItem(const Items::Item* itemIn) const override;
+            bool canEnchantItem(const lce::items::Item* itemIn) const override;
         };
         class Bow final : public Base {
         public:
-            bool canEnchantItem(const Items::Item* itemIn) const override;
+            bool canEnchantItem(const lce::items::Item* itemIn) const override;
         };
         class Wearable final : public Base {
         public:
-            bool canEnchantItem(const Items::Item* itemIn) const override;
+            bool canEnchantItem(const lce::items::Item* itemIn) const override;
         };
         class Trident final : public Base {
         public:
-            bool canEnchantItem(const Items::Item* itemIn) const override;
+            bool canEnchantItem(const lce::items::Item* itemIn) const override;
         };
 
         static const All ALL;
@@ -201,7 +201,7 @@ public:
     virtual int getMaxCost(int enchantmentLevel);
 
     ND virtual bool canApplyTogether(const Enchantment* enchantment) const;
-    ND virtual bool canApply(const Items::Item* item) const;
+    ND virtual bool canApply(const lce::items::Item* item) const;
 
 
     /// registers all the enchantments

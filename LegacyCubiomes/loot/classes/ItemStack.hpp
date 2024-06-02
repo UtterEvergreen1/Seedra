@@ -1,22 +1,23 @@
 #pragma once
 
+#include "lce/items/items.hpp"
+
 #include "LegacyCubiomes/enchants/enchantment.hpp"
 #include "LegacyCubiomes/enchants/enchantmentData.hpp"
-#include "LegacyCubiomes/mc/items.hpp"
 
 
 class ItemStack {
 public:
-    const Items::Item* item;
+    const lce::items::Item* item;
     uint8_t stackSize{};
     std::vector<EnchantmentData> enchantments;
 
     ItemStack() : item(nullptr) {}
-    explicit ItemStack(const Items::Item* item) : item(item) {}
-    ItemStack(const Items::Item* item, const int stackSize) : item(item), stackSize(stackSize) {}
+    explicit ItemStack(const lce::items::Item* item) : item(item) {}
+    ItemStack(const lce::items::Item* item, const int stackSize) : item(item), stackSize(stackSize) {}
 
     ItemStack splitStack(int amount);
-    ND const Items::Item* getItem() const;
+    ND const lce::items::Item* getItem() const;
 
     void addEnchantment(Enchantment* enchantment, int level);
     void addEnchantmentData(EnchantmentData* enchantmentData);

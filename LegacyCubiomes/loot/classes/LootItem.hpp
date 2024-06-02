@@ -1,13 +1,13 @@
 #pragma once
 
-#include "LegacyCubiomes/mc/items.hpp"
+#include "lce/items/items.hpp"
 #include "LootFunction.hpp"
 
 
 class LootFunction;
 class LootItem {
 public:
-    const Items::Item* item;
+    const lce::items::Item* item;
 
     ///stores the functions it calls for the item
     const std::vector<LootFunction*> functions;
@@ -15,8 +15,8 @@ public:
 
     LootItem() : item(nullptr), weight(0) {}
 
-    LootItem(const Items::Item* item, const int weight) : item(item), weight(weight) {}
+    LootItem(const lce::items::Item* item, const int weight) : item(item), weight(weight) {}
 
-    LootItem(const Items::Item* item, const std::vector<LootFunction*>& lootFunctions, const int weight)
+    LootItem(const lce::items::Item* item, const std::vector<LootFunction*>& lootFunctions, const int weight)
         : item(item), functions(lootFunctions), weight(weight) {}
 };

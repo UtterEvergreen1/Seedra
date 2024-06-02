@@ -8,22 +8,22 @@ class ItemEntry : public LootItem, public UniformRoll {
 public:
     ItemEntry() = default;
 
-    ItemEntry(const Items::Item* item, const uint8_t weight) : LootItem(item, weight), UniformRoll(1, 1) {}
+    ItemEntry(const lce::items::Item* item, const uint8_t weight) : LootItem(item, weight), UniformRoll(1, 1) {}
 
-    ItemEntry(const Items::Item* item, LootFunction* lootFunction, const uint8_t weight)
+    ItemEntry(const lce::items::Item* item, LootFunction* lootFunction, const uint8_t weight)
         : LootItem(item, {lootFunction}, weight), UniformRoll(1, 1) {}
 
-    ItemEntry(const Items::Item* item, const std::vector<LootFunction*>& lootFunctions, const uint8_t weight)
+    ItemEntry(const lce::items::Item* item, const std::vector<LootFunction*>& lootFunctions, const uint8_t weight)
         : LootItem(item, lootFunctions, weight), UniformRoll(1, 1) {}
 
-    ItemEntry(const Items::Item* item, const uint8_t weight, const uint8_t min, const uint8_t max)
+    ItemEntry(const lce::items::Item* item, const uint8_t weight, const uint8_t min, const uint8_t max)
         : LootItem(item, weight), UniformRoll(min, max) {}
 
-    ItemEntry(const Items::Item* item, LootFunction* lootFunction, const uint8_t weight, const uint8_t min,
+    ItemEntry(const lce::items::Item* item, LootFunction* lootFunction, const uint8_t weight, const uint8_t min,
               const uint8_t max)
         : LootItem(item, {lootFunction}, weight), UniformRoll(min, max) {}
 
-    ItemEntry(const Items::Item* item, const std::vector<LootFunction*>& lootFunctions, const uint8_t weight,
+    ItemEntry(const lce::items::Item* item, const std::vector<LootFunction*>& lootFunctions, const uint8_t weight,
               const uint8_t min, const uint8_t max)
         : LootItem(item, lootFunctions, weight), UniformRoll(min, max) {}
 };

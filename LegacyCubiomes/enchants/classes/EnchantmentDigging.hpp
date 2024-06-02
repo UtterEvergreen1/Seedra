@@ -15,7 +15,7 @@ public:
 
     int getMaxCost(const int enchantmentLevel) override { return LEVELS_MAX[enchantmentLevel - 1]; }
 
-    ND bool canApply(const Items::Item* item) const override {
-        return item->getID() == Items::SHEARS_ID || Enchantment::canApply(item);
+    ND bool canApply(const lce::items::Item* item) const override {
+        return item->getID() == lce::items::ids::SHEARS_ID || Enchantment::canApply(item);
     }
 };
