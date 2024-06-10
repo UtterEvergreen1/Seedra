@@ -96,6 +96,20 @@ namespace lce {
     }
 
 
+    static lce::DIMENSION intToDim(const char number) {
+        switch(number) {
+            case 0:
+                return lce::DIMENSION::NETHER;
+            case 1:
+                return lce::DIMENSION::OVERWORLD;
+            case 2:
+                return lce::DIMENSION::END;
+            default:
+                return lce::DIMENSION::NONE;
+        }
+    }
+
+
     static bool consoleIsBigEndian(const CONSOLE console) {
         switch (console) {
             case CONSOLE::NONE:

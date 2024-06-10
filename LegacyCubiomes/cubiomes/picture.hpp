@@ -6,7 +6,7 @@
 #include "generator.hpp"
 
 #define STB_IMAGE_WRITE_IMPLEMENTATION
-#include "include/stb_image_write.h"
+#include "lce/include/stb_image_write.h"
 
 
 inline std::string getBiomeImageFileNameFromGenerator(const Generator* g, const std::string& directory) {
@@ -28,82 +28,82 @@ inline std::string getBiomeImageFileNameFromGenerator(const Generator* g, const 
  */
 class Picture {
 public:
-    static constexpr int RGB_SIZE = 3;
-    uint32_t width = 0;
-    uint32_t height = 0;
+    static constexpr int myRGBSize = 3;
+    uint32_t myWidth = 0;
+    uint32_t myHeight = 0;
     /**
      * goes left to right, top to bottom I think
      */
-    uint8_t* data;
+    uint8_t* myData;
 
     void allocate() {
-        delete[] data;
-        data = new uint8_t[width * height * RGB_SIZE];
-        std::memset(data, 0, width * height * RGB_SIZE);
+        delete[] myData;
+        myData = new uint8_t[myWidth * myHeight * myRGBSize];
+        std::memset(myData, 0, myWidth * myHeight * myRGBSize);
     }
 
-    Picture(const int width, const int height) : width(width), height(height) {
-        data = nullptr;
+    Picture(const int width, const int height) : myWidth(width), myHeight(height) {
+        myData = nullptr;
         allocate();
     }
 
     explicit Picture(const int size) : Picture(size, size) {}
 
-    ND uint32_t getWidth() const { return width; }
-    ND uint32_t getHeight() const { return height; }
-    ND uint32_t getIndex(const uint32_t x, const uint32_t y) const { return x + y * height; }
+    ND uint32_t getWidth() const { return myWidth; }
+    ND uint32_t getHeight() const { return myHeight; }
+    ND uint32_t getIndex(const uint32_t x, const uint32_t y) const { return x + y * myHeight; }
 
     MU void drawPixel(const unsigned char* rgb, const uint32_t x, const uint32_t y) const {
         const uint32_t index = getIndex(x, y);
-        std::memcpy(&data[index * 3], rgb, 3);
+        std::memcpy(&myData[index * 3], rgb, 3);
     }
 
     ND bool drawBox(const uint32_t startX, const uint32_t startY, const uint32_t endX, const uint32_t endY,
                     const uint8_t red, const uint8_t green, const uint8_t blue) const {
 
-        if (startX > width || startY > height) return false;
-        if (endX > width || endY > height) return false;
+        if (startX > myWidth || startY > myHeight) return false;
+        if (endX > myWidth || endY > myHeight) return false;
         if (endX < startX || endY < startY) return false;
 
         for (uint32_t x = startX; x < endX; x++) {
-            const uint32_t index = getIndex(x, startY) * RGB_SIZE;
-            data[index] = red;
-            data[index + 1] = green;
-            data[index + 2] = blue;
+            const uint32_t index = getIndex(x, startY) * myRGBSize;
+            myData[index] = red;
+            myData[index + 1] = green;
+            myData[index + 2] = blue;
         }
 
-        const uint32_t rowSize = (endX - startX) * RGB_SIZE;
-        const uint32_t firstRowIndex = getIndex(startX, startY) * RGB_SIZE;
+        const uint32_t rowSize = (endX - startX) * myRGBSize;
+        const uint32_t firstRowIndex = getIndex(startX, startY) * myRGBSize;
         for (uint32_t y = startY + 1; y < endY; y++) {
-            const uint32_t index = getIndex(startX, y) * RGB_SIZE;
-            std::memcpy(&data[index], &data[firstRowIndex], rowSize);
+            const uint32_t index = getIndex(startX, y) * myRGBSize;
+            std::memcpy(&myData[index], &myData[firstRowIndex], rowSize);
         }
         return true;
     }
 
     void fillColor(const uint8_t red, const uint8_t green, const uint8_t blue) const {
-        for (uint32_t x = 0; x < width; x++) {
-            const uint32_t index = getIndex(x, 0) * RGB_SIZE;
-            data[index] = red;
-            data[index + 1] = green;
-            data[index + 2] = blue;
+        for (uint32_t x = 0; x < myWidth; x++) {
+            const uint32_t index = getIndex(x, 0) * myRGBSize;
+            myData[index] = red;
+            myData[index + 1] = green;
+            myData[index + 2] = blue;
         }
 
-        const uint32_t rowSize = (width) *RGB_SIZE;
-        for (uint32_t y = 0; y < height; y++) {
-            const uint32_t index = getIndex(0, y) * RGB_SIZE;
-            std::memcpy(&data[index], &data[0], rowSize);
+        const uint32_t rowSize = (myWidth) *myRGBSize;
+        for (uint32_t y = 0; y < myHeight; y++) {
+            const uint32_t index = getIndex(0, y) * myRGBSize;
+            std::memcpy(&myData[index], &myData[0], rowSize);
         }
     }
 
 
     void saveWithName(std::string filename, const std::string& directory) const {
         filename = directory + filename;
-        stbi_write_png(filename.c_str(), static_cast<int>(width), static_cast<int>(height), RGB_SIZE, data,
-                       static_cast<int>(width) * RGB_SIZE);
+        stbi_write_png(filename.c_str(), static_cast<int>(myWidth), static_cast<int>(myHeight), myRGBSize, myData,
+                       static_cast<int>(myWidth) * myRGBSize);
     }
 
-    ~Picture() { delete[] data; }
+    ~Picture() { delete[] myData; }
 };
 
 
@@ -115,12 +115,12 @@ public:
 
     explicit WorldPicture(Generator* g) : Picture(g->getWorldCoordinateBounds() >> 1), g(g) {}
 
-    ~WorldPicture() { delete[] data; }
+    ~WorldPicture() { delete[] myData; }
 
 
     MU void drawBiomes() const {
-        if (width == 0) return;
-        if (height == 0) return;
+        if (myWidth == 0) return;
+        if (myHeight == 0) return;
 
         unsigned char biomeColors[256][3];
         initBiomeColors(biomeColors);
@@ -139,18 +139,18 @@ public:
         if (widthIn == 0) return;
         if (heightIn == 0) return;
 
-        width = widthIn;
-        height = heightIn;
+        myWidth = widthIn;
+        myHeight = heightIn;
 
         allocate();
 
         unsigned char biomeColors[256][3];
         initBiomeColors(biomeColors);
 
-        const int x = static_cast<int>(width);
-        const int y = static_cast<int>(height);
-        const int w = static_cast<int>(width);
-        const int h = static_cast<int>(height);
+        const int x = static_cast<int>(myWidth);
+        const int y = static_cast<int>(myHeight);
+        const int w = static_cast<int>(myWidth);
+        const int h = static_cast<int>(myHeight);
         const int* ids = g->getBiomeRange(4, x, y, w, h);
 
         for (int yi = 0; yi < getHeight(); ++yi) {
@@ -163,7 +163,7 @@ public:
 
     void save(const std::string& directory) const {
         const std::string filename = getBiomeImageFileNameFromGenerator(g, directory);
-        stbi_write_png(filename.c_str(), static_cast<int>(width), static_cast<int>(height), RGB_SIZE, data,
-                       static_cast<int>(width) * RGB_SIZE);
+        stbi_write_png(filename.c_str(), static_cast<int>(myWidth), static_cast<int>(myHeight), myRGBSize, myData,
+                       static_cast<int>(myWidth) * myRGBSize);
     }
 };
