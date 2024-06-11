@@ -19,7 +19,7 @@ file(GLOB_RECURSE LEGACY_CUBIOMES LegacyCubiomes/*)
 file(GLOB_RECURSE LCE_RESOURCES lce/*)
 
 add_executable(LCE_Cubiomes
-        programs/test_image.cpp
+    programs/test_enchants.cpp
     ${LEGACY_CUBIOMES}
     ${LCE_RESOURCES}
-        lce/include/picture.hpp)
+)

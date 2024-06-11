@@ -15,8 +15,8 @@ EnchantWithLevelsItem::EnchantWithLevelsItem(const int level) : EnchantWithLevel
 
 /* apply functions */
 void EnchantWithLevelsBook::apply(ItemStack& itemStack, RNG& random) {
-    const int level = random.nextInt(this->randomLevel.getMin(), this->randomLevel.getMax());
-    ELDataArray* enchantmentVector = buildEnchantmentList(itemStack, random, level);
+    // const int level = random.nextInt(this->randomLevel.getMin(), this->randomLevel.getMax());
+    ELDataArray* enchantmentVector = buildEnchantmentList(itemStack, random, 30);
     enchantmentVector->addEnchantments(itemStack);
 }
 

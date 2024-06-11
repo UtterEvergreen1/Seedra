@@ -49,7 +49,7 @@ public:
         size_t high = cumulativeWeights.size();
         size_t low = 0;
         while (low < high) {
-            size_t mid = low + high >> 1;
+            size_t mid = (low + high) >> 1;
             if (cumulativeWeights[mid] > randomWeight) {
                 high = mid;
             } else {

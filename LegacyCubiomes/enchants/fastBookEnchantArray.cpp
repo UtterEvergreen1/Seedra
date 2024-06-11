@@ -35,7 +35,7 @@ void ELDataArray::addRandomItem(RNG& rng) {
         size_t low = 0;
         size_t high = Enchantment::count;
         while (low < high) {
-            if (const size_t mid = low + high >> 1;
+            if (const size_t mid = (low + high) >> 1;
                 EnchantedBookEnchantsLookupTable::CUMULATIVE_WEIGHT_ALL[mid] > weight) {
                 high = mid;
             } else {
@@ -100,16 +100,19 @@ void EnchantedBookEnchantsLookupTable::setup() {
         dataArrays[cost] = new ELDataArray();
         const auto array = dataArrays[cost];
 
+        int i = 0;
         for (Enchantment* ench_pt: Enchantment::REGISTRY.getRegistry()) {
             if (ench_pt == nullptr) throw std::runtime_error("Enchantment pointer is NULL; the table is incorrect!");
             for (int level = ench_pt->maxLevel; level > 0; --level) {
-
-                if (cost >= ench_pt->getMinCost(level) && cost <= ench_pt->getMaxCost(level)) {
+                auto minCost = ench_pt->getMinCost(level);
+                auto maxCost = ench_pt->getMaxCost(level);
+                if (cost >= minCost && cost <= maxCost) {
                     array->addData(ench_pt, level);
                     array->totalWeight += ench_pt->rarity->getWeight();
                     break;
                 }
             }
+            i++;
         }
     }
     areVectorsSetup = true;
