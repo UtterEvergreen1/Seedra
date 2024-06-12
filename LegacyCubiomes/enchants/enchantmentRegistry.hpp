@@ -1,0 +1,47 @@
+#pragma once
+
+#include <unordered_map>
+#include <vector>
+
+
+#include "enchantment.hpp"
+
+
+class Enchantment;
+
+
+class EnchantmentRegistry {
+    std::vector<Enchantment*> allValues;
+    std::vector<Enchantment*> sortedRegistry;
+
+public:
+    EnchantmentRegistry() = default;
+
+    Enchantment* operator[](int index) const { return sortedRegistry[index]; }
+
+    void registerValue(Enchantment* value) { allValues.emplace_back(value); }
+
+    ND const std::vector<Enchantment*>& getRegistry() const { return sortedRegistry; }
+
+    /**
+     * Orders the values from allValues into sortedRegistry for accurate ordering
+     * @param lookupValues the look up values obtained from the order of items
+     */
+    MU void orderValues(const std::vector<int>& lookupValues) {
+        size_t lookupSize = lookupValues.size();
+        sortedRegistry.resize(lookupSize);
+        for (size_t i = 0; i < lookupSize; ++i) {
+            int sortedIndex = lookupValues[i];
+            sortedRegistry[i] = allValues[sortedIndex];
+        }
+    }
+
+    /**
+     * Returns the size of current registry
+     * @return size of current registry
+     */
+    ND int size() const { return sortedRegistry.size(); }
+
+    /// Deallocates all the stored values
+    void clear();
+};

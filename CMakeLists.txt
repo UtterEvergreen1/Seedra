@@ -22,4 +22,4 @@ add_executable(LCE_Cubiomes
     programs/test_enchants.cpp
     ${LEGACY_CUBIOMES}
     ${LCE_RESOURCES}
-)
+        LegacyCubiomes/enchants/enchantmentRegistry.cpp)

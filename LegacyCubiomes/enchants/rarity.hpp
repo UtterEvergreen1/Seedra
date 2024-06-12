@@ -3,6 +3,7 @@
 #include "lce/processor.hpp"
 
 
+// TODO: can this not just be turned into an enum?
 class Rarity {
     const int8_t weight = 0;
 

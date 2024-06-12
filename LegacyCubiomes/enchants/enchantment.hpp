@@ -5,12 +5,13 @@
 #include <utility>
 #include <vector>
 
-#include "lce/items/items.hpp"
 #include "LegacyCubiomes/cubiomes/generator.hpp"
-#include "LegacyCubiomes/utils/RegistryNamespaced.hpp"
+#include "enchantmentRegistry.hpp"
+#include "lce/items/items.hpp"
 #include "rarity.hpp"
 
 class EnchantmentHelper;
+class EnchantmentRegistry;
 
 class Enchantment {
     static bool isSetup;
@@ -165,7 +166,7 @@ public:
 
     static constexpr int8_t MAX_ENCHANTMENT_COUNT = 33;
 
-    static RegistryNamespaced<Enchantment> REGISTRY;
+    static EnchantmentRegistry REGISTRY;
     static lce::CONSOLE currentConsole;
     static LCEVERSION currentVersion;
 
