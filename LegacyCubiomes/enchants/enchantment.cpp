@@ -212,7 +212,7 @@ void Enchantment::registerEnchantments() {
     registerEnchantment(new EnchantmentDigging("Efficiency", &Rarities::COMMON));
     registerEnchantment(new EnchantmentUntouching("Silk Touch", &Rarities::EPIC));
     registerEnchantment(new EnchantmentDurability("Unbreaking", &Rarities::UNCOMMON));
-    registerEnchantment(new EnchantmentLootBonus("fortune", &Rarities::RARE, &Type::DIGGER));
+    registerEnchantment(new EnchantmentLootBonus("Fortune", &Rarities::RARE, &Type::DIGGER));
     registerEnchantment(new EnchantmentArrowDamage("Power", &Rarities::COMMON));
     registerEnchantment(new EnchantmentArrowKnockback("Punch", &Rarities::UNCOMMON));
     registerEnchantment(new EnchantmentArrowFire("Flame", &Rarities::RARE));
