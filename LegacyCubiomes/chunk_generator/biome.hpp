@@ -9,8 +9,11 @@
 
 #include "LegacyCubiomes/utils/rng.hpp"
 
-#include "lce/items/item_ids.hpp"
-#include "lce/items/items.hpp"
+#include "lce/blocks/block_ids.hpp"
+#include "lce/blocks/blocks.hpp"
+
+// #include "lce/items/item_ids.hpp"
+// #include "lce/items/items.hpp"
 
 #include "LegacyCubiomes/utils/Pos3DTemplate.hpp"
 #include "LegacyCubiomes/utils/constants.hpp"
@@ -35,10 +38,10 @@ public:
     bool enableSnow;
 
     /// The block expected to be on the top of this biome
-    Block topBlock = Block(lce::items::ids::GRASS_ID, 0);
+    Block topBlock = Block(lce::blocks::ids::GRASS_ID, 0);
 
     /// The block to fill spots in when not on the top
-    Block fillerBlock = Block(lce::items::ids::DIRT_ID, 0);
+    Block fillerBlock = Block(lce::blocks::ids::DIRT_ID, 0);
 
     NoiseGeneratorPerlin TEMPERATURE_NOISE;
 
@@ -112,8 +115,8 @@ class BiomeDesert final : public Biome {
 public:
     BiomeDesert(std::string biomeName, const float baseHeight, const float heightVariation, const bool enableSnow,
                 const float temperature)
-        : Biome(std::move(biomeName), baseHeight, heightVariation, enableSnow, temperature, Block(lce::items::ids::SAND_ID),
-                Block(lce::items::ids::SAND_ID)) {}
+        : Biome(std::move(biomeName), baseHeight, heightVariation, enableSnow, temperature, Block(lce::blocks::ids::SAND_ID),
+                Block(lce::blocks::ids::SAND_ID)) {}
 };
 
 class BiomeHills final : public Biome {
@@ -124,18 +127,18 @@ public:
 
     void genTerrainBlocks(int64_t worldSeed, RNG& rng, ChunkPrimer* chunkPrimerIn, const int x, const int z,
                           const double noiseVal) override {
-        this->topBlock.block = lce::items::ids::GRASS_ID;
-        this->fillerBlock.block = lce::items::ids::DIRT_ID;
+        this->topBlock.block = lce::blocks::ids::GRASS_ID;
+        this->fillerBlock.block = lce::blocks::ids::DIRT_ID;
 
         if ((noiseVal < -1.0 || noiseVal > 2.0) &&
             (this->biomeName == "Extreme_Hills_M" || this->biomeName == "Extreme_Hills_Plus_M")) {
-            this->topBlock.block = lce::items::ids::GRAVEL_ID;
-            this->fillerBlock.block = lce::items::ids::GRAVEL_ID;
+            this->topBlock.block = lce::blocks::ids::GRAVEL_ID;
+            this->fillerBlock.block = lce::blocks::ids::GRAVEL_ID;
         } else if (noiseVal > 1.0 &&
                    (this->biomeName == "Extreme_Hills_M" || this->biomeName == "Extreme_Hills_Plus_M" ||
                     this->biomeName == "Extreme_Hills")) {
-            this->topBlock.block = lce::items::ids::STONE_ID;
-            this->fillerBlock.block = lce::items::ids::STONE_ID;
+            this->topBlock.block = lce::blocks::ids::STONE_ID;
+            this->fillerBlock.block = lce::blocks::ids::STONE_ID;
         }
 
         generateBiomeTerrain(rng, chunkPrimerIn, x, z, noiseVal);
@@ -199,7 +202,7 @@ public:
               const bool enableSnow, const float temperature)
         : Biome(std::move(biomeName), baseHeight, heightVariation, enableSnow, temperature) {
         this->superIcy = superIcy;
-        if (superIcy) this->topBlock = Block(lce::items::ids::SNOW_BLOCK_ID);
+        if (superIcy) this->topBlock = Block(lce::blocks::ids::SNOW_BLOCK_ID);
     }
 };
 
@@ -207,7 +210,7 @@ class BiomeMushroomIsland final : public Biome {
 public:
     BiomeMushroomIsland(std::string biomeName, const float baseHeight, const float heightVariation,
                         const bool enableSnow, const float temperature)
-        : Biome(std::move(biomeName), baseHeight, heightVariation, enableSnow, temperature, Block(lce::items::ids::MYCELIUM_ID)) {
+        : Biome(std::move(biomeName), baseHeight, heightVariation, enableSnow, temperature, Block(lce::blocks::ids::MYCELIUM_ID)) {
     }
 };
 
@@ -215,8 +218,8 @@ class BiomeBeach final : public Biome {
 public:
     BiomeBeach(std::string biomeName, const float baseHeight, const float heightVariation, const bool enableSnow,
                const float temperature)
-        : Biome(std::move(biomeName), baseHeight, heightVariation, enableSnow, temperature, Block(lce::items::ids::SAND_ID),
-                Block(lce::items::ids::SAND_ID)) {}
+        : Biome(std::move(biomeName), baseHeight, heightVariation, enableSnow, temperature, Block(lce::blocks::ids::SAND_ID),
+                Block(lce::blocks::ids::SAND_ID)) {}
 };
 
 class BiomeJungle final : public Biome {
@@ -230,8 +233,8 @@ class BiomeStoneBeach final : public Biome {
 public:
     BiomeStoneBeach(std::string biomeName, const float baseHeight, const float heightVariation, const bool enableSnow,
                     const float temperature)
-        : Biome(std::move(biomeName), baseHeight, heightVariation, enableSnow, temperature, Block(lce::items::ids::STONE_ID),
-                Block(lce::items::ids::STONE_ID)) {}
+        : Biome(std::move(biomeName), baseHeight, heightVariation, enableSnow, temperature, Block(lce::blocks::ids::STONE_ID),
+                Block(lce::blocks::ids::STONE_ID)) {}
 };
 
 class BiomeSavanna final : public Biome {
@@ -261,7 +264,7 @@ public:
                           double noiseVal) override;
 
     void generateClayBands(const int64_t seed) {
-        this->clayBands.resize(64, Block(lce::items::ids::HARDENED_CLAY_ID));
+        this->clayBands.resize(64, Block(lce::blocks::ids::HARDENED_CLAY_ID));
         RNG rng;
         rng.setSeed(seed);
         this->clayBandsOffsetNoise.setNoiseGeneratorPerlin(rng, 1);
@@ -336,8 +339,8 @@ public:
     void genTerrainBlocks(int64_t worldSeed, RNG& rng, ChunkPrimer* chunkPrimerIn, const int x, const int z,
                           const double noiseVal) override {
         if (noiseVal > 1.75) {
-            this->topBlock.block = lce::items::ids::STONE_ID;
-            this->fillerBlock.block = lce::items::ids::STONE_ID;
+            this->topBlock.block = lce::blocks::ids::STONE_ID;
+            this->fillerBlock.block = lce::blocks::ids::STONE_ID;
         } else if (noiseVal > -0.5)
             this->topBlock = Block(lce::items::COARSE_DIRT);
         return generateBiomeTerrain(rng, chunkPrimerIn, x, z, noiseVal);

@@ -3,22 +3,22 @@
 
 bool WaterCaveGenerator::canReplaceBlock(uint16_t blockAt) {
     switch (blockAt) {
-        case lce::items::ids::AIR_ID:
-        case lce::items::ids::STONE_ID:
-        case lce::items::ids::GRASS_ID:
-        case lce::items::ids::DIRT_ID:
-        case lce::items::ids::FLOWING_WATER_ID:
-        case lce::items::ids::STILL_WATER_ID:
-        case lce::items::ids::FLOWING_LAVA_ID:
-        case lce::items::ids::STILL_LAVA_ID:
-        case lce::items::ids::SAND_ID:
-        case lce::items::ids::GRAVEL_ID:
-        case lce::items::ids::SANDSTONE_ID:
-        case lce::items::ids::OBSIDIAN_ID:
-        case lce::items::ids::MYCELIUM_ID:
-        case lce::items::ids::WHITE_HARDENED_CLAY_ID:
-        case lce::items::ids::HARDENED_CLAY_ID:
-        case lce::items::ids::RED_SANDSTONE_ID:
+        case lce::blocks::ids::AIR_ID:
+        case lce::blocks::ids::STONE_ID:
+        case lce::blocks::ids::GRASS_ID:
+        case lce::blocks::ids::DIRT_ID:
+        case lce::blocks::ids::FLOWING_WATER_ID:
+        case lce::blocks::ids::STILL_WATER_ID:
+        case lce::blocks::ids::FLOWING_LAVA_ID:
+        case lce::blocks::ids::STILL_LAVA_ID:
+        case lce::blocks::ids::SAND_ID:
+        case lce::blocks::ids::GRAVEL_ID:
+        case lce::blocks::ids::SANDSTONE_ID:
+        case lce::blocks::ids::OBSIDIAN_ID:
+        case lce::blocks::ids::MYCELIUM_ID:
+        case lce::blocks::ids::WHITE_HARDENED_CLAY_ID:
+        case lce::blocks::ids::HARDENED_CLAY_ID:
+        case lce::blocks::ids::RED_SANDSTONE_ID:
             return true;
         default:
             return false;
@@ -161,56 +161,56 @@ void WaterCaveGenerator::addTunnel(const int64_t seedModifier, const Pos2D chunk
 
                                     if (canReplaceBlock(chunkPrimer->getBlockId(currentX, currentY, currentZ))) {
                                         if (currentY < 9) {
-                                            chunkPrimer->setBlockId(currentX, currentY, currentZ, lce::items::ids::STILL_LAVA_ID);
+                                            chunkPrimer->setBlockId(currentX, currentY, currentZ, lce::blocks::ids::STILL_LAVA_ID);
                                         } else if (currentY < 10) {
                                             if (rng.nextFloat() >= 0.25) {
                                                 chunkPrimer->setBlockId(currentX, currentY, currentZ,
-                                                                        lce::items::ids::OBSIDIAN_ID);
+                                                                        lce::blocks::ids::OBSIDIAN_ID);
                                             } else {
                                                 chunkPrimer->setBlockId(currentX, currentY, currentZ,
-                                                                        lce::items::ids::MAGMA_BLOCK_ID);
+                                                                        lce::blocks::ids::MAGMA_BLOCK_ID);
                                             }
                                         } else {
                                             bool placedWater = false;
                                             if (currentX < 15) {
                                                 if (chunkPrimer->getBlockId(currentX + 1, currentY, currentZ) ==
-                                                    lce::items::ids::AIR_ID) {
+                                                    lce::blocks::ids::AIR_ID) {
                                                     placedWater = true;
                                                     chunkPrimer->setBlockId(currentX + 1, currentY, currentZ,
-                                                                            lce::items::ids::FLOWING_WATER_ID);
+                                                                            lce::blocks::ids::FLOWING_WATER_ID);
                                                 }
                                             }
 
                                             if (currentX > 0) {
                                                 if (chunkPrimer->getBlockId(currentX - 1, currentY, currentZ) ==
-                                                    lce::items::ids::AIR_ID) {
+                                                    lce::blocks::ids::AIR_ID) {
                                                     placedWater = true;
                                                     chunkPrimer->setBlockId(currentX - 1, currentY, currentZ,
-                                                                            lce::items::ids::FLOWING_WATER_ID);
+                                                                            lce::blocks::ids::FLOWING_WATER_ID);
                                                 }
                                             }
 
                                             if (currentZ < 15) {
                                                 if (chunkPrimer->getBlockId(currentX, currentY, currentZ + 1) ==
-                                                    lce::items::ids::AIR_ID) {
+                                                    lce::blocks::ids::AIR_ID) {
                                                     placedWater = true;
                                                     chunkPrimer->setBlockId(currentX, currentY, currentZ + 1,
-                                                                            lce::items::ids::FLOWING_WATER_ID);
+                                                                            lce::blocks::ids::FLOWING_WATER_ID);
                                                 }
                                             }
 
                                             if (currentZ > 0) {
                                                 if (chunkPrimer->getBlockId(currentX, currentY, currentZ - 1) ==
-                                                    lce::items::ids::AIR_ID) {
+                                                    lce::blocks::ids::AIR_ID) {
                                                     placedWater = true;
                                                     chunkPrimer->setBlockId(currentX, currentY, currentZ - 1,
-                                                                            lce::items::ids::FLOWING_WATER_ID);
+                                                                            lce::blocks::ids::FLOWING_WATER_ID);
                                                 }
                                             }
 
                                             if (!placedWater) {
                                                 chunkPrimer->setBlockId(currentX, currentY, currentZ,
-                                                                        lce::items::ids::STILL_WATER_ID);
+                                                                        lce::blocks::ids::STILL_WATER_ID);
                                             }
                                         }
                                     }

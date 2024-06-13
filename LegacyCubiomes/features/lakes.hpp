@@ -2,6 +2,7 @@
 
 #include "LegacyCubiomes/cubiomes/generator.hpp"
 #include "LegacyCubiomes/cubiomes/layers.hpp"
+#include "LegacyCubiomes/cubiomes/BiomeID.hpp"
 #include "LegacyCubiomes/utils/rng.hpp"
 
 #include "LegacyCubiomes/utils/Pos3DTemplate.hpp"

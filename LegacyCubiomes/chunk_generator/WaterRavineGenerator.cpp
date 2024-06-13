@@ -98,42 +98,42 @@ void WaterRavineGenerator::addTunnel(const int64_t randomSeed, const Pos2D chunk
                                     if (WaterCaveGenerator::canReplaceBlock(chunkPrimer->getBlockId(x, y, z))) {
                                         if (y < 10) {
                                             if (rng.nextFloat() >= 0.25) {
-                                                chunkPrimer->setBlockId(x, y, z, lce::items::ids::OBSIDIAN_ID);
+                                                chunkPrimer->setBlockId(x, y, z, lce::blocks::ids::OBSIDIAN_ID);
                                             } else {
-                                                chunkPrimer->setBlockId(x, y, z, lce::items::ids::MAGMA_BLOCK_ID);
+                                                chunkPrimer->setBlockId(x, y, z, lce::blocks::ids::MAGMA_BLOCK_ID);
                                             }
                                         } else {
                                             bool placedWater = false;
                                             if (x < 15) {
-                                                if (chunkPrimer->getBlockId(x + 1, y, z) == lce::items::ids::AIR_ID) {
+                                                if (chunkPrimer->getBlockId(x + 1, y, z) == lce::blocks::ids::AIR_ID) {
                                                     placedWater = true;
-                                                    chunkPrimer->setBlockId(x + 1, y, z, lce::items::ids::FLOWING_WATER_ID);
+                                                    chunkPrimer->setBlockId(x + 1, y, z, lce::blocks::ids::FLOWING_WATER_ID);
                                                 }
                                             }
 
                                             if (x > 0) {
-                                                if (chunkPrimer->getBlockId(x - 1, y, z) == lce::items::ids::AIR_ID) {
+                                                if (chunkPrimer->getBlockId(x - 1, y, z) == lce::blocks::ids::AIR_ID) {
                                                     placedWater = true;
-                                                    chunkPrimer->setBlockId(x - 1, y, z, lce::items::ids::FLOWING_WATER_ID);
+                                                    chunkPrimer->setBlockId(x - 1, y, z, lce::blocks::ids::FLOWING_WATER_ID);
                                                 }
                                             }
 
                                             if (z < 15) {
-                                                if (chunkPrimer->getBlockId(x, y, z + 1) == lce::items::ids::AIR_ID) {
+                                                if (chunkPrimer->getBlockId(x, y, z + 1) == lce::blocks::ids::AIR_ID) {
                                                     placedWater = true;
-                                                    chunkPrimer->setBlockId(x, y, z + 1, lce::items::ids::FLOWING_WATER_ID);
+                                                    chunkPrimer->setBlockId(x, y, z + 1, lce::blocks::ids::FLOWING_WATER_ID);
                                                 }
                                             }
 
                                             if (z > 0) {
-                                                if (chunkPrimer->getBlockId(x, y, z - 1) == lce::items::ids::AIR_ID) {
+                                                if (chunkPrimer->getBlockId(x, y, z - 1) == lce::blocks::ids::AIR_ID) {
                                                     placedWater = true;
-                                                    chunkPrimer->setBlockId(x, y, z - 1, lce::items::ids::FLOWING_WATER_ID);
+                                                    chunkPrimer->setBlockId(x, y, z - 1, lce::blocks::ids::FLOWING_WATER_ID);
                                                 }
                                             }
 
                                             if (!placedWater) {
-                                                chunkPrimer->setBlockId(x, y, z, lce::items::ids::STILL_WATER_ID);
+                                                chunkPrimer->setBlockId(x, y, z, lce::blocks::ids::STILL_WATER_ID);
                                             }
                                         }
                                     }

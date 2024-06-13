@@ -86,7 +86,7 @@ public:
         return value;
     }
 
-    ///TODO add all the blocks or make a block class and get the value from that
+    // TODO add all the blocks or make a block class and get the value from that
     static int getBlockLightOpacity(const uint16_t blockId) {
         switch (blockId) {
             case 0:
