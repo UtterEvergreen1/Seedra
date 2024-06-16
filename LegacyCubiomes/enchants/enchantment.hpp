@@ -96,7 +96,7 @@ public:
         static std::vector<const Base*> ALL_ITERABLE;
     };
 
-    enum class EnumName : int8_t {
+    enum class EnumName : i8 {
         OXYGEN,
         PROTECTION,
         WATER_WORKER,
@@ -128,7 +128,7 @@ public:
         NONE
     };
 
-    enum EnchantmentOrder : int8_t {
+    enum EnchantmentOrder : i8 {
         protection = 0,
         fire_protection = 1,
         feather_falling = 2,
@@ -164,7 +164,7 @@ public:
         channeling = 32
     };
 
-    static constexpr int8_t MAX_ENCHANTMENT_COUNT = 33;
+    static constexpr i8 MAX_ENCHANTMENT_COUNT = 33;
 
     static EnchantmentRegistry REGISTRY;
     static lce::CONSOLE currentConsole;
@@ -180,19 +180,19 @@ public:
     const Type::Base* type = nullptr;
     EnumName enumID = EnumName::NONE;
     bool isTreasure = false;
-    const int8_t maxLevel = 1;
+    c_i8 maxLevel = 1;
     const Rarity* rarity = &Rarities::NONE;
 
 
     Enchantment() = default;
 
-    Enchantment(std::string name, const Rarity* rarity, const EnumName enchantName, const int8_t maxLevel,
-                const bool isTreasure = false)
+    Enchantment(std::string name, const Rarity* rarity, const EnumName enchantName, c_i8 maxLevel,
+                c_bool isTreasure = false)
         : name(std::move(name)), type(&Type::ALL), enumID(enchantName), isTreasure(isTreasure), maxLevel(maxLevel),
           rarity(rarity){}
 
     Enchantment(std::string name, const Rarity* rarity, const Type::Base* type, const EnumName enchantName,
-                const int8_t maxLevel, const bool isTreasure = false)
+                c_i8 maxLevel, c_bool isTreasure = false)
         : name(std::move(name)), type(type), enumID(enchantName), isTreasure(isTreasure), maxLevel(maxLevel),
           rarity(rarity){}
 

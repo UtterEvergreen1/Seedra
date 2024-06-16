@@ -11,7 +11,7 @@ namespace Chunk {
 
     template<bool checkWaterCaves = false, bool generateCaves = true, bool generateRavines = true,
              bool generateSkyLight = false>
-    static ChunkPrimer* provideChunk(const Generator& g, const int chunkX, const int chunkZ, bool accurate = true) {
+    static ChunkPrimer* provideChunk(const Generator& g, c_int chunkX, c_int chunkZ, bool accurate = true) {
         ChunkGeneratorOverWorld chunk(g);
         ChunkPrimer* chunkPrimer = chunk.provideChunk(chunkX, chunkZ);
         if constexpr (generateCaves && checkWaterCaves) {
@@ -54,17 +54,17 @@ namespace Chunk {
     }
 
     MU static void populate(const Generator& g, int chunkX, int chunkZ, ChunkPrimer* chunkData) {
-        const int xStart = chunkX * 16;
-        const int zStart = chunkZ * 16;
+        c_int xStart = chunkX * 16;
+        c_int zStart = chunkZ * 16;
         for (int xPos = 0; xPos < 16; ++xPos) {
             for (int zPos = 0; zPos < 16; ++zPos) {
-                const int x = xStart + xPos;
-                const int z = zStart + zPos;
+                c_int x = xStart + xPos;
+                c_int z = zStart + zPos;
 
-                const int chunkPosX = x & 15;
-                const int chunkPosZ = z & 15;
+                c_int chunkPosX = x & 15;
+                c_int chunkPosZ = z & 15;
 
-                const int precipitationHeight = chunkData->getPrecipitationHeight(x, z);
+                c_int precipitationHeight = chunkData->getPrecipitationHeight(x, z);
                 const Pos3D blockPos1 = Pos3D(x, precipitationHeight, z);
                 const Pos3D blockPos2 = Pos3D(x, precipitationHeight - 1, z);
 

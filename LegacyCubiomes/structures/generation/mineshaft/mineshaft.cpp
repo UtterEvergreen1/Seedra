@@ -15,7 +15,7 @@ namespace generation {
         collisionChecks = 0;
     }
 
-    void Mineshaft::generate(const int64_t worldSeed, const int chunkX, const int chunkZ) {
+    void Mineshaft::generate(c_i64 worldSeed, c_int chunkX, c_int chunkZ) {
         RNG rng = RNG::getLargeFeatureSeed(worldSeed, chunkX, chunkZ);
         // 4 rolls (1 for skip, 3 for is feature chunk rolls (2 double, 1 int))
         rng = RNG((rng.getSeed() * 0x32EB772C5F11 + 0x2D3873C4CD04) & 0xFFFFFFFFFFFF);
@@ -24,9 +24,9 @@ namespace generation {
         pieceArraySize = 0;
 
         // build the entire structure
-        const int boundingBoxXUpper = startX + rng.nextInt(6) + 7;
-        const int boundingBoxYUpper = 54 + rng.nextInt(6);
-        const int boundingBoxZUpper = startZ + rng.nextInt(6) + 7;
+        c_int boundingBoxXUpper = startX + rng.nextInt(6) + 7;
+        c_int boundingBoxYUpper = 54 + rng.nextInt(6);
+        c_int boundingBoxZUpper = startZ + rng.nextInt(6) + 7;
         const BoundingBox roomBoundingBox(startX, 50, startZ, boundingBoxXUpper, boundingBoxYUpper, boundingBoxZUpper);
 
         // recursive gen
@@ -38,7 +38,7 @@ namespace generation {
 
         // specifically mesa
         if (mineShaftType == MineshaftType::MESA) {
-            const int i = 63 - structureBoundingBox.maxY + structureBoundingBox.getYSize() / 2 + 5;
+            c_int i = 63 - structureBoundingBox.maxY + structureBoundingBox.getYSize() / 2 + 5;
             structureBoundingBox.offset(0, i, 0);
             for (int index = 0; index < pieceArraySize; index++) { pieceArray[index].offset(0, i, 0); }
             return;
@@ -48,7 +48,7 @@ namespace generation {
         constexpr int i = 63 - 10;
         int j = structureBoundingBox.getYSize() + 1;
         if (j < i) { j += rng.nextInt(i - j); }
-        const int k = j - structureBoundingBox.maxY;
+        c_int k = j - structureBoundingBox.maxY;
         for (int piece = 0; piece < pieceArraySize; piece++) { pieceArray[piece].offset(0, k, 0); }
     }
 
@@ -62,7 +62,7 @@ namespace generation {
     }
 
 
-    void Mineshaft::genAndAddPiece(RNG& rng, const Pos3D pos, const DIRECTION direction, const int depth) {
+    void Mineshaft::genAndAddPiece(RNG& rng, const Pos3D pos, const DIRECTION direction, c_int depth) {
         // step 1: return early
         if (depth > 8)
             return;
@@ -70,7 +70,7 @@ namespace generation {
             return;
 
         // step 2: create the piece
-        const int randomRoom = rng.nextInt(100);
+        c_int randomRoom = rng.nextInt(100);
         BoundingBox boundingBox;
         int additionalData = 0;
 
@@ -92,13 +92,13 @@ namespace generation {
         } else {
             int i; // CASE CORRIDOR
             for (i = rng.nextInt(3) + 2; i > 0; --i) {
-                const int j = i * 5;
+                c_int j = i * 5;
                 boundingBox = BoundingBox::orientBox(pos, 0, 0, 0, 3, 3, j, direction);
                 if (const Piece* collidingPiece = findCollisionPiece(boundingBox); collidingPiece == nullptr) break;
             }
             if (i == 0) return;
-            const bool hasRails = rng.nextInt(3) == 0;
-            const bool hasSpiders = !hasRails && rng.nextInt(23) == 0;
+            c_bool hasRails = rng.nextInt(3) == 0;
+            c_bool hasSpiders = !hasRails && rng.nextInt(23) == 0;
             additionalData |= hasRails;
             additionalData |= hasSpiders << 1;
             buildComponent(rng, PieceType::CORRIDOR, depth + 1, boundingBox, direction, additionalData);
@@ -106,21 +106,21 @@ namespace generation {
     }
 
 
-    void Mineshaft::buildComponent(RNG& rng, const PieceType type, const int depth, const BoundingBox& boundingBox,
-                                   const DIRECTION direction, const int additionalData) {
-        auto p = Piece(static_cast<int8_t>(type), static_cast<int8_t>(depth), boundingBox, direction, additionalData);
+    void Mineshaft::buildComponent(RNG& rng, const PieceType type, c_int depth, const BoundingBox& boundingBox,
+                                   const DIRECTION direction, c_int additionalData) {
+        auto p = Piece(static_cast<i8>(type), static_cast<i8>(depth), boundingBox, direction, additionalData);
         pieceArray[pieceArraySize++] = p;
 
-        switch (p.type) {
+        switch (static_cast<PieceType>(p.type)) {
             default:
                 break;
 
-            case static_cast<int8_t>(PieceType::ROOM): {
+            case PieceType::ROOM: {
                 int k;
                 int j = p.getYSize() - 4;
                 if (j <= 0) j = 1;
-                const int roomXSize = p.getXSize();
-                const int roomZSize = p.getZSize();
+                c_int roomXSize = p.getXSize();
+                c_int roomZSize = p.getZSize();
                 for (k = 0; k < roomXSize; k += 4) {
                     k += rng.nextInt(roomXSize);
                     if (k + 3 > roomXSize) break;
@@ -148,9 +148,9 @@ namespace generation {
                 return;
             }
 
-            case static_cast<int8_t>(PieceType::CORRIDOR): {
-                const int corridorType = rng.nextInt(4);
-                int yState = p.minY + rng.nextInt(3) - 1;
+            case PieceType::CORRIDOR: {
+                c_int corridorType = rng.nextInt(4);
+                c_int yState = p.minY + rng.nextInt(3) - 1;
                 switch (p.orientation) {
                     case DIRECTION::NORTH:
                     default:
@@ -212,7 +212,7 @@ namespace generation {
                     case DIRECTION::NORTH:
                     case DIRECTION::SOUTH:
                         for (int k = p.minZ + 3; k + 3 <= p.maxZ; k += 5) {
-                            if (const int l = rng.nextInt(5); l == 0)
+                            if (c_int l = rng.nextInt(5); l == 0)
                                 genAndAddPiece(rng, {p.minX - 1, p.minY, k}, DIRECTION::WEST, p.depth + 1);
                             else if (l == 1)
                                 genAndAddPiece(rng, {p.maxX + 1, p.minY, k}, DIRECTION::EAST, p.depth + 1);
@@ -221,7 +221,7 @@ namespace generation {
                     case DIRECTION::WEST:
                     case DIRECTION::EAST:
                         for (int k = p.minX + 3; k + 3 <= p.maxX; k += 5) {
-                            if (const int l = rng.nextInt(5); l == 0)
+                            if (c_int l = rng.nextInt(5); l == 0)
                                 genAndAddPiece(rng, {k, p.minY, p.minZ - 1}, DIRECTION::NORTH, p.depth + 1);
                             else if (l == 1)
                                 genAndAddPiece(rng, {k, p.minY, p.maxZ + 1}, DIRECTION::SOUTH, p.depth + 1);
@@ -231,7 +231,7 @@ namespace generation {
                 return;
             }
 
-            case static_cast<int8_t>(PieceType::CROSSING): {
+            case PieceType::CROSSING: {
                 switch (p.orientation) {
                     case DIRECTION::NORTH:
                     default:
@@ -269,7 +269,7 @@ namespace generation {
                 return;
             }
 
-            case static_cast<int8_t>(PieceType::STAIRS): {
+            case PieceType::STAIRS: {
                 switch (p.orientation) {
                     default:
                     case DIRECTION::NORTH:

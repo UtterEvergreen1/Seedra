@@ -18,7 +18,7 @@ ChunkGeneratorOverWorld::ChunkGeneratorOverWorld(const Generator& generator) : g
 
     for (int i = -2; i <= 2; ++i) {
         for (int j = -2; j <= 2; ++j) {
-            const float f = 10.0F / sqrt(static_cast<float>(i * i + j * j) + 0.2F);
+            c_float f = 10.0F / sqrt(static_cast<float>(i * i + j * j) + 0.2F);
             biomeWeights[i + 2 + (j + 2) * 5] = f;
         }
     }
@@ -31,7 +31,7 @@ ChunkGeneratorOverWorld::~ChunkGeneratorOverWorld() {
 }
 
 
-void ChunkGeneratorOverWorld::setBiomesForGeneration(const int x, const int z, const int width, const int height, const int scale) {
+void ChunkGeneratorOverWorld::setBiomesForGeneration(c_int x, c_int z, c_int width, c_int height, c_int scale) {
     Range r{};
     // if ((scale & 0b1000000010101) == scale ) { // faster comparison
     if (scale == 1 || scale == 4 || scale == 16 || scale == 64 || scale == 256) {
@@ -51,7 +51,7 @@ void ChunkGeneratorOverWorld::setBiomesForGeneration(const int x, const int z, c
 }
 
 
-void ChunkGeneratorOverWorld::setBlocksInChunk(const int chunkX, const int chunkZ, ChunkPrimer* primer) {
+void ChunkGeneratorOverWorld::setBlocksInChunk(c_int chunkX, c_int chunkZ, ChunkPrimer* primer) {
 
     setBiomesForGeneration(chunkX * 4 - 2, chunkZ * 4 - 2, 10, 10, 4);
     generateHeightmap(chunkX * 4, 0, chunkZ * 4);
@@ -61,10 +61,10 @@ void ChunkGeneratorOverWorld::setBlocksInChunk(const int chunkX, const int chunk
         int k = (i + 1) * 5;
 
         for (int l = 0; l < 4; ++l) {
-            const int i1 = (j + l) * 33;
-            const int j1 = (j + l + 1) * 33;
-            const int k1 = (k + l) * 33;
-            const int l1 = (k + l + 1) * 33;
+            c_int i1 = (j + l) * 33;
+            c_int j1 = (j + l + 1) * 33;
+            c_int k1 = (k + l) * 33;
+            c_int l1 = (k + l + 1) * 33;
 
             for (int i2 = 0; i2 < 32; ++i2) {
                 double d1 = heightMap[i1 + i2];
@@ -79,8 +79,8 @@ void ChunkGeneratorOverWorld::setBlocksInChunk(const int chunkX, const int chunk
                 for (int j2 = 0; j2 < 8; ++j2) {
                     double d10 = d1;
                     double d11 = d2;
-                    const double d12 = (d3 - d1) * 0.25;
-                    const double d13 = (d4 - d2) * 0.25;
+                    c_double d12 = (d3 - d1) * 0.25;
+                    c_double d13 = (d4 - d2) * 0.25;
 
                     for (int k2 = 0; k2 < 4; ++k2) {
                         double d16 = (d11 - d10) * 0.25;
@@ -109,7 +109,7 @@ void ChunkGeneratorOverWorld::setBlocksInChunk(const int chunkX, const int chunk
 }
 
 
-void ChunkGeneratorOverWorld::replaceBiomeBlocks(const int x, const int z, ChunkPrimer* primer, const int* biomesIn) {
+void ChunkGeneratorOverWorld::replaceBiomeBlocks(c_int x, c_int z, ChunkPrimer* primer, c_int* biomesIn) {
     depthBuffer =
             surfaceNoise.getRegion(depthBuffer, (double) (x * 16), (double) (z * 16), 16, 16, 0.0625, 0.0625, 1.0);
     for (int i = 0; i < 16; ++i) {
@@ -121,8 +121,8 @@ void ChunkGeneratorOverWorld::replaceBiomeBlocks(const int x, const int z, Chunk
 }
 
 
-ChunkPrimer* ChunkGeneratorOverWorld::provideChunk(const int x, const int z) {
-    rng.setSeed((int64_t) x * 341873128712LL + (int64_t) z * 132897987541LL);
+ChunkPrimer* ChunkGeneratorOverWorld::provideChunk(c_int x, c_int z) {
+    rng.setSeed((i64) x * 341873128712LL + (i64) z * 132897987541LL);
     auto* chunkPrimer = new ChunkPrimer();
     setBlocksInChunk(x, z, chunkPrimer);
     setBiomesForGeneration(x * 16, z * 16, 16, 16, 1);
@@ -131,7 +131,7 @@ ChunkPrimer* ChunkGeneratorOverWorld::provideChunk(const int x, const int z) {
 }
 
 
-void ChunkGeneratorOverWorld::generateHeightmap(const int x, const int y, const int z) {
+void ChunkGeneratorOverWorld::generateHeightmap(c_int x, c_int y, c_int z) {
     // double depthNoiseScaleX = 200.0;
     // double depthNoiseScaleZ = 200.0;
     // double depthNoiseScaleExponent = 0.5;
@@ -150,11 +150,11 @@ void ChunkGeneratorOverWorld::generateHeightmap(const int x, const int y, const 
             float f2 = 0.0F;
             float f3 = 0.0F;
             float f4 = 0.0F;
-            const int biome = biomesForGeneration[k + 2 + (l + 2) * 10];
+            c_int biome = biomesForGeneration[k + 2 + (l + 2) * 10];
 
             for (int j1 = -2; j1 <= 2; ++j1) {
                 for (int k1 = -2; k1 <= 2; ++k1) {
-                    const int biome1 = biomesForGeneration[k + j1 + 2 + (l + k1 + 2) * 10];
+                    c_int biome1 = biomesForGeneration[k + j1 + 2 + (l + k1 + 2) * 10];
                     double f5;
                     double f6;
                     getBiomeDepthAndScale(biome1, &f5, &f6, 0);
@@ -203,24 +203,24 @@ void ChunkGeneratorOverWorld::generateHeightmap(const int x, const int y, const 
 
             ++j;
             auto d8 = (double) f3;
-            const auto d9 = (double) f2;
+            c_auto d9 = (double) f2;
             d8 = d8 + d7 * 0.2;
             d8 = d8 * (double) 8.5 / 8.0; //baseSize = 8.5
-            const double d0 = (double) 8.5 + d8 * 4.0;
+            c_double d0 = (double) 8.5 + d8 * 4.0;
 
             for (int l1 = 0; l1 < 33; ++l1) {
                 double d1 = ((double) l1 - d0) * (double) 12.0 * 128.0 / 256.0 / d9;
 
                 if (d1 < 0.0) d1 *= 4.0;
 
-                const double d2 = minLimitRegion[i] / (double) 512.0; // lowerLimitScale = 512.0
-                const double d3 = maxLimitRegion[i] / (double) 512.0; // upperLimitScale = 512.0
-                const double d4 = (mainNoiseRegion[i] / 10.0 + 1.0) / 2.0;
+                c_double d2 = minLimitRegion[i] / (double) 512.0; // lowerLimitScale = 512.0
+                c_double d3 = maxLimitRegion[i] / (double) 512.0; // upperLimitScale = 512.0
+                c_double d4 = (mainNoiseRegion[i] / 10.0 + 1.0) / 2.0;
                 // TODO: this could be the problem??? swap to d2, d3, d4
                 double d5 = MathHelper::clampedLerp(d4, d2, d3) - d1;
 
                 if (l1 > 29) {
-                    const auto d6 = (double) ((float) (l1 - 29) / 3.0F);
+                    c_auto d6 = (double) ((float) (l1 - 29) / 3.0F);
                     d5 = d5 * (1.0 - d6) + -10.0 * d6;
                 }
 

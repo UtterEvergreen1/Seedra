@@ -12,8 +12,8 @@
 class ChunkPrimer {
 public:
     /// all the blocks along with data in the chunk
-    uint16_t blocks[65536]{};
-    std::vector<uint8_t> skyLight;
+    u16 blocks[65536]{};
+    std::vector<u8> skyLight;
     std::vector<int> precipitationHeightMap = std::vector(256, -999);
 
     ChunkPrimer() = default;
@@ -27,42 +27,42 @@ public:
     //ChunkPrimer(ChunkPrimer &&) = delete;
     //ChunkPrimer &operator=(ChunkPrimer &&) = delete;
 
-    ND uint16_t getBlockAtIndex(const int64_t index) const { return index >= 0 && index < 65536 ? blocks[index] : 0; }
+    ND u16 getBlockAtIndex(c_i64 index) const { return index >= 0 && index < 65536 ? blocks[index] : 0; }
 
-    ND uint16_t getBlockId(const int64_t x, const int64_t y, const int64_t z) const {
+    ND u16 getBlockId(c_i64 x, c_i64 y, c_i64 z) const {
         return getBlockAtIndex(getStorageIndex(x, y, z)) >> 4;
     }
 
-    void setBlockId(const int64_t x, const int64_t y, const int64_t z, const uint16_t block) {
+    void setBlockId(c_i64 x, c_i64 y, c_i64 z, c_u16 block) {
         blocks[getStorageIndex(x, y, z)] = block << 4;
     }
 
-    ND uint16_t getData(const int64_t x, const int64_t y, const int64_t z) const {
+    ND u16 getData(c_i64 x, c_i64 y, c_i64 z) const {
         return getBlockAtIndex(getStorageIndex(x, y, z)) & 15;
     }
 
-    void setData(const int64_t x, const int64_t y, const int64_t z, const uint8_t data) {
+    void setData(c_i64 x, c_i64 y, c_i64 z, c_u8 data) {
         blocks[getStorageIndex(x, y, z)] |= data;
     }
 
-    ND uint16_t getSkyLight(const int64_t x, const int64_t y, const int64_t z) const {
+    ND u16 getSkyLight(c_i64 x, c_i64 y, c_i64 z) const {
         return getBlockAtIndex(getStorageIndex(x, y, z));
     }
 
-    void setSkyLight(const int64_t x, const int64_t y, const int64_t z, const uint8_t lightValue) {
+    void setSkyLight(c_i64 x, c_i64 y, c_i64 z, c_u8 lightValue) {
         skyLight[getStorageIndex(x, y, z)] = lightValue;
     }
 
-    void setBlockAndData(int64_t x, int64_t y, int64_t z, uint16_t block, uint8_t data) {
+    void setBlockAndData(i64 x, i64 y, i64 z, u16 block, u8 data) {
         blocks[getStorageIndex(x, y, z)] = ((block << 4) | data);
     }
 
-    void setBlockAndData(int64_t x, int64_t y, int64_t z, const lce::items::Item& item) {
+    void setBlockAndData(i64 x, i64 y, i64 z, const lce::items::Item& item) {
         blocks[getStorageIndex(x, y, z)] = ((item.getID() << 4) | item.getDataTag());
     }
 
     friend std::ostream& operator<<(std::ostream& out, const ChunkPrimer& chunkPrimer) {
-        for (const uint16_t block: chunkPrimer.blocks) {
+        for (c_u16 block: chunkPrimer.blocks) {
             out << std::hex << std::setw(2) << std::setfill('0') << (block & 0xff);
             out << std::hex << std::setw(2) << std::setfill('0') << (block >> 8);
         }
@@ -81,13 +81,13 @@ public:
         return 0;
     }
 
-    static int64_t getStorageIndex(const int64_t x, const int64_t y, const int64_t z) {
-        const int64_t value = x << 12 | z << 8 | y;
+    static i64 getStorageIndex(c_i64 x, c_i64 y, c_i64 z) {
+        c_i64 value = x << 12 | z << 8 | y;
         return value;
     }
 
     // TODO add all the blocks or make a block class and get the value from that
-    static int getBlockLightOpacity(const uint16_t blockId) {
+    static int getBlockLightOpacity(c_u16 blockId) {
         switch (blockId) {
             case 0:
             case 78:
@@ -107,7 +107,7 @@ public:
 
     void generateSkylightMap() {
         skyLight.resize(65536, 0);
-        const int topFilledSegment = getHighestYChunk();
+        c_int topFilledSegment = getHighestYChunk();
         for (int x = 0; x < 16; ++x) {
             for (int z = 0; z < 16; ++z) {
 
@@ -130,9 +130,9 @@ public:
     }
 
     int getPrecipitationHeight(int x, int z) {
-        const int i = x & 15;
-        const int j = z & 15;
-        const int k = i | j << 4;
+        c_int i = x & 15;
+        c_int j = z & 15;
+        c_int k = i | j << 4;
 
         if (precipitationHeightMap[k] == -999) {
             int highestY = getHighestYChunk() + 15;
@@ -149,24 +149,24 @@ public:
         return precipitationHeightMap[k];
     }
 
-    bool canBlockFreeze(const Generator& g, const Pos3D pos, const bool noWaterAdj) const {
+    bool canBlockFreeze(const Generator& g, const Pos3D pos, c_bool noWaterAdj) const {
         if (Biome::getBiomeForId(g.getBiomeAt(1, pos.getX(), pos.getZ()))->getFloatTemperature(pos) >= 0.15F)
             return false;
 
         if (pos.getY() >= 0 && pos.getY() < 256) {
-            const int x = pos.getX() & 15;
-            const int z = pos.getZ() & 15;
-            const uint16_t iBlockState = getBlockId(x, pos.getY(), z);
-            const uint16_t block = iBlockState;
+            c_int x = pos.getX() & 15;
+            c_int z = pos.getZ() & 15;
+            c_u16 iBlockState = getBlockId(x, pos.getY(), z);
+            c_u16 block = iBlockState;
 
             if (block == 8 || block == 9) {
                 if (!noWaterAdj) return true;
 
-                const uint16_t flagBlockWest = getBlockId(x - 1, pos.getY(), z);
-                const uint16_t flagBlockEast = getBlockId(x + 1, pos.getY(), z);
-                const uint16_t flagBlockNorth = getBlockId(x, pos.getY(), z - 1);
-                const uint16_t flagBlockSouth = getBlockId(x, pos.getY(), z + 1);
-                const bool flag =
+                c_u16 flagBlockWest = getBlockId(x - 1, pos.getY(), z);
+                c_u16 flagBlockEast = getBlockId(x + 1, pos.getY(), z);
+                c_u16 flagBlockNorth = getBlockId(x, pos.getY(), z - 1);
+                c_u16 flagBlockSouth = getBlockId(x, pos.getY(), z + 1);
+                c_bool flag =
                         flagBlockWest == 9 && flagBlockEast == 9 && flagBlockNorth == 9 && flagBlockSouth == 9;
 
                 if (!flag) return true;
@@ -176,7 +176,7 @@ public:
         return false;
     }
 
-    ND bool canSnowAt(const Generator& g, const Pos3D pos, const bool checkLight) const {
+    ND bool canSnowAt(const Generator& g, const Pos3D pos, c_bool checkLight) const {
         if (Biome::getBiomeForId(g.getBiomeAt(1, pos.getX(), pos.getZ()))->getFloatTemperature(pos) >= 0.15F) {
             return false;
         }

@@ -6,7 +6,7 @@
 namespace Placement {
 
     Pos2D Stronghold::getWorldPosition(const Generator& g) {
-        const bool xboxStronghold = g.getConsole() == lce::CONSOLE::XBOX360 ||
+        c_bool xboxStronghold = g.getConsole() == lce::CONSOLE::XBOX360 ||
                                     g.getConsole() == lce::CONSOLE::XBOX1;
         int multiplier;
         RNG rng;
@@ -47,10 +47,10 @@ namespace Placement {
      * @param xboxStronghold whether or not the console is Xbox.
      * @return stronghold position.
      */
-    Pos2D Stronghold::getRawWorldPosition(int64_t worldSeed, bool xboxStronghold) {
+    Pos2D Stronghold::getRawWorldPosition(i64 worldSeed, bool xboxStronghold) {
         RNG rng;
         rng.setSeed(worldSeed);
-        const double angle = 2.0 * PI * rng.nextDouble();
+        c_double angle = 2.0 * PI * rng.nextDouble();
 
         int multiplier;
         if (xboxStronghold) multiplier = rng.nextInt(4);

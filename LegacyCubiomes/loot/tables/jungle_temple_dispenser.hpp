@@ -9,8 +9,8 @@ namespace loot {
         static void setup();
 
         template<bool shuffle>
-        static Container getLoot(int64_t worldSeed, int chunkX, int chunkZ);
-        static Container getLootLegacy(int64_t worldSeed, int chunkX, int chunkZ);
+        static Container getLoot(i64 worldSeed, int chunkX, int chunkZ);
+        static Container getLootLegacy(i64 worldSeed, int chunkX, int chunkZ);
     };
 
     inline void JungleTempleDispenser::setup() {
@@ -20,7 +20,7 @@ namespace loot {
     }
 
     template<bool shuffle>
-    Container JungleTempleDispenser::getLoot(const int64_t worldSeed, const int chunkX, const int chunkZ) {
+    Container JungleTempleDispenser::getLoot(c_i64 worldSeed, c_int chunkX, c_int chunkZ) {
         std::vector<ItemStack> chestContents;
 
         RNG lootTableSeed = RNG::getPopulationSeed(worldSeed, chunkX, chunkZ);
@@ -29,7 +29,7 @@ namespace loot {
 
         //generate loot
         for (const LootTable& table: lootTables) {
-            const int rollCount = lootTableSeed.nextInt(table.getMin(), table.getMax());
+            c_int rollCount = lootTableSeed.nextInt(table.getMin(), table.getMax());
             for (int rollIndex = 0; rollIndex < rollCount; rollIndex++) {
                 ItemStack result = table.createLootRoll<false>(lootTableSeed);
                 chestContents.push_back(result);
@@ -43,14 +43,14 @@ namespace loot {
             return {9, chestContents};
     }
 
-    inline Container JungleTempleDispenser::getLootLegacy(const int64_t worldSeed, const int chunkX, const int chunkZ) {
+    inline Container JungleTempleDispenser::getLootLegacy(c_i64 worldSeed, c_int chunkX, c_int chunkZ) {
         auto chestContents = Container(9);
 
         RNG lootTableSeed = RNG::getPopulationSeed(worldSeed, chunkX, chunkZ);
 
         // generate loot
         for (const LootTable& table: lootTables) {
-            const int rollCount = lootTableSeed.nextIntLegacy(table.getMin(), table.getMax());
+            c_int rollCount = lootTableSeed.nextIntLegacy(table.getMin(), table.getMax());
             for (int rollIndex = 0; rollIndex < rollCount; rollIndex++) {
                 ItemStack result = table.createLootRoll<true>(lootTableSeed);
                 chestContents.setInventorySlotContents(lootTableSeed.nextInt(9), std::move(result));

@@ -15,7 +15,7 @@ namespace Placement {
          * @param xLower, zLower, xUpper, zUpper the range to get the mineshafts from
          * @return a vector of chunk positions for all the mineshafts within the radius
          */
-        ND MU static Pos2DVec_t getPositions(int64_t worldSeed, int xLower, int zLower, int xUpper, int zUpper);
+        ND MU static Pos2DVec_t getPositions(i64 worldSeed, int xLower, int zLower, int xUpper, int zUpper);
 
         /**
          * Overload function for getPositions to use a radius
@@ -25,7 +25,7 @@ namespace Placement {
          * @param radius the number of chunks to check around the target position
          * @return a vector of chunk positions for all the mineshafts within the radius
          */
-        ND MU static Pos2DVec_t getPositions(const int64_t worldSeed, const int x, const int z, const int radius) {
+        ND MU static Pos2DVec_t getPositions(c_i64 worldSeed, c_int x, c_int z, c_int radius) {
             return getPositions(worldSeed, x - radius, z - radius, x + radius, z + radius);
         }
     };

@@ -9,15 +9,15 @@ namespace Placement {
     template<class Derived>
     class StaticStructure {
     public:
-        static const uint64_t VALID_BIOMES;
-        static const int SALT;
+        static c_u64 VALID_BIOMES;
+        static c_int SALT;
         static int REGION_SIZE;
         static int CHUNK_RANGE;
         static int CHUNK_BOUNDS;
         static bool REDUCED_SPACING;
 
-        static Pos2D getRegionChunkPosition(int64_t worldSeed, int regionX, int regionZ);
-        static Pos2D getRegionBlockPosition(int64_t worldSeed, int regionX, int regionZ);
+        static Pos2D getRegionChunkPosition(i64 worldSeed, int regionX, int regionZ);
+        static Pos2D getRegionBlockPosition(i64 worldSeed, int regionX, int regionZ);
 
         static std::vector<Pos2D> getAllPositions(const Generator* g);
 
@@ -28,7 +28,7 @@ namespace Placement {
             return verifyChunkPosition(g, chunkPos.x, chunkPos.z);
         }
 
-        static bool verifyBlockPosition(const Generator* g, const int blockX, const int blockZ) {
+        static bool verifyBlockPosition(const Generator* g, c_int blockX, c_int blockZ) {
             return verifyChunkPosition(g, blockX >> 4, blockZ >> 4);
         }
 

@@ -15,8 +15,8 @@ public:
 
     LootItem() : item(nullptr), weight(0) {}
 
-    LootItem(const lce::items::Item* item, const int weight) : item(item), weight(weight) {}
+    LootItem(const lce::items::Item* item, c_int weight) : item(item), weight(weight) {}
 
-    LootItem(const lce::items::Item* item, const std::vector<LootFunction*>& lootFunctions, const int weight)
+    LootItem(const lce::items::Item* item, const std::vector<LootFunction*>& lootFunctions, c_int weight)
         : item(item), functions(lootFunctions), weight(weight) {}
 };

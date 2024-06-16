@@ -8,29 +8,29 @@
 class Piece : public BoundingBox {
 public:
     DIRECTION orientation;
-    int8_t type;
-    int8_t depth;
+    i8 type;
+    i8 depth;
 
-    int32_t additionalData;
+    i32 additionalData;
 
     Piece() : orientation(), type(0), depth(0), additionalData(0) {}
 
     Piece(const BoundingBox boundingBox, const DIRECTION orientation)
         : BoundingBox(boundingBox), orientation(orientation), type(0), depth(0), additionalData(0) {}
 
-    Piece(const int minX, const int minY, const int minZ, const int maxX, const int maxY, const int maxZ,
+    Piece(c_int minX, c_int minY, c_int minZ, c_int maxX, c_int maxY, c_int maxZ,
           const DIRECTION orientation)
         : BoundingBox(minX, minY, minZ, maxX, maxY, maxZ), orientation(orientation), type(0), depth(0),
           additionalData(0) {}
 
-    Piece(const int8_t type, const int8_t depth, const BoundingBox& boundingBox,
-          const DIRECTION orientation, const int additionalData)
+    Piece(c_i8 type, c_i8 depth, const BoundingBox& boundingBox,
+          const DIRECTION orientation, c_int additionalData)
         : BoundingBox(boundingBox), orientation(orientation), type(type), depth(depth), additionalData(additionalData) {
     }
 
     ND MU Pos2D getBoundingBoxCenter() const;
     ND int getWorldX(int offsetWidth, int offsetDepth) const;
-    ND int getWorldY(const int offsetHeight) const { return minY + offsetHeight; }
+    ND int getWorldY(c_int offsetHeight) const { return minY + offsetHeight; }
     ND int getWorldZ(int offsetWidth, int offsetDepth) const;
     ND MU Pos2D getWorldPos(int offsetWidth, int offsetDepth) const;
     MU static BoundingBox makeBoundingBox(int x, int y, int z, DIRECTION direction, int width, int height, int depth);

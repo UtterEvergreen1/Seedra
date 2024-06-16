@@ -1,12 +1,11 @@
 #pragma once
 
-#include <cstdint>
-#include <string>
+#include "lce/processor.hpp"
 
 
 /// Minecraft console versions
 // TODO: this code sucks make it better
-enum class LCEVERSION : int8_t {
+enum class LCEVERSION : i8 {
     AQUATIC = 0,
     ELYTRA = 1,
     BOUNTIFUL = 2,
@@ -21,7 +20,7 @@ enum class LCEVERSION : int8_t {
 };
 
 /// Minecraft Java versions
-enum MCVERSION : int8_t {
+enum MCVERSION : i8 {
     MC_1_0 = 0, // <=1.0 Experimental!
     MC_1_1 = 1,
     MC_1_2 = 2,
@@ -40,7 +39,7 @@ enum MCVERSION : int8_t {
 };
 
 
-enum class DIRECTION : int8_t {
+enum class DIRECTION : i8 {
     NORTH = 0,
     SOUTH = 1,
     WEST = 2,
@@ -48,7 +47,7 @@ enum class DIRECTION : int8_t {
 };
 
 
-enum class StructureType : uint8_t {
+enum class StructureType : u8 {
     DesertPyramid,
     JungleTemple,
     JunglePyramid = JungleTemple,

@@ -1,7 +1,7 @@
 #include "WaterCaveGenerator.hpp"
 
 
-bool WaterCaveGenerator::canReplaceBlock(uint16_t blockAt) {
+bool WaterCaveGenerator::canReplaceBlock(u16 blockAt) {
     switch (blockAt) {
         case lce::blocks::ids::AIR_ID:
         case lce::blocks::ids::STONE_ID:
@@ -25,15 +25,15 @@ bool WaterCaveGenerator::canReplaceBlock(uint16_t blockAt) {
     }
 }
 
-void WaterCaveGenerator::addTunnel(const int64_t seedModifier, const Pos2D chunk, ChunkPrimer* chunkPrimer,
-                                   DoublePos3D start, const float tunnelWidth, float tunnelDirection, float tunnelSlope,
+void WaterCaveGenerator::addTunnel(c_i64 seedModifier, const Pos2D chunk, ChunkPrimer* chunkPrimer,
+                                   DoublePos3D start, c_float tunnelWidth, float tunnelDirection, float tunnelSlope,
                                    int currentTunnelSegment, int maxTunnelSegment,
-                                   const double tunnelHeightMultiplier) {
+                                   c_double tunnelHeightMultiplier) {
 
     const Pos2D startPos((int) start.x, (int) start.z);
 
-    const double targetCenterX = chunk.x * 16 + 8;
-    const double targetCenterZ = chunk.z * 16 + 8;
+    c_double targetCenterX = chunk.x * 16 + 8;
+    c_double targetCenterZ = chunk.z * 16 + 8;
     float directionModifier = 0.0F;
     float slopeModifier = 0.0F;
     RNG rng;
@@ -52,15 +52,15 @@ void WaterCaveGenerator::addTunnel(const int64_t seedModifier, const Pos2D chunk
         isMainTunnel = true;
     }
 
-    const int splitPoint = rng.nextInt(maxTunnelSegment / 2) + maxTunnelSegment / 4;
+    c_int splitPoint = rng.nextInt(maxTunnelSegment / 2) + maxTunnelSegment / 4;
 
-    for (const bool isTunnelWide = rng.nextInt(6) == 0; currentTunnelSegment < maxTunnelSegment;
+    for (c_bool isTunnelWide = rng.nextInt(6) == 0; currentTunnelSegment < maxTunnelSegment;
          ++currentTunnelSegment) {
-        const double tunnelWidthScaled =
+        c_double tunnelWidthScaled =
                 1.5 + (double) (sinf((float) currentTunnelSegment * PI_FLOAT / (float) maxTunnelSegment) * tunnelWidth);
-        const double tunnelHeight = tunnelWidthScaled * tunnelHeightMultiplier;
-        const float directionCosine = cosf(tunnelSlope);
-        const float directionSine = sinf(tunnelSlope);
+        c_double tunnelHeight = tunnelWidthScaled * tunnelHeightMultiplier;
+        c_float directionCosine = cosf(tunnelSlope);
+        c_float directionSine = sinf(tunnelSlope);
         start.x += (double) (cosf(tunnelDirection) * directionCosine);
         start.y += (double) directionSine;
         start.z += (double) (sinf(tunnelDirection) * directionCosine);
@@ -76,20 +76,20 @@ void WaterCaveGenerator::addTunnel(const int64_t seedModifier, const Pos2D chunk
         slopeModifier = slopeModifier * 0.9F;
         directionModifier = directionModifier * 0.75F;
 
-        const float f1_1 = rng.nextFloat();
-        const float f1_2 = rng.nextFloat();
-        const float f1_3 = rng.nextFloat();
-        const float f1 = rng.nextFloat();
-        const float f2 = rng.nextFloat();
-        const float f3 = rng.nextFloat();
+        c_float f1_1 = rng.nextFloat();
+        c_float f1_2 = rng.nextFloat();
+        c_float f1_3 = rng.nextFloat();
+        c_float f1 = rng.nextFloat();
+        c_float f2 = rng.nextFloat();
+        c_float f3 = rng.nextFloat();
         slopeModifier = slopeModifier + (f1_1 - f1_2) * f1_3 * 2.0F;   // correct
         directionModifier = directionModifier + (f1 - f2) * f3 * 4.0F; // correct
 
         if (!isMainTunnel && currentTunnelSegment == splitPoint && tunnelWidth > 1.0F && maxTunnelSegment > 0) {
-            const bool isXbox = g.getConsole() == lce::CONSOLE::XBOX360 ||
+            c_bool isXbox = g.getConsole() == lce::CONSOLE::XBOX360 ||
                                 g.getConsole() == lce::CONSOLE::XBOX1;
             float tunnelWidth1;
-            int64_t seed1;
+            i64 seed1;
             if (isXbox) {
                 tunnelWidth1 = rng.nextFloat();
                 seed1 = rng.nextLongI();
@@ -100,7 +100,7 @@ void WaterCaveGenerator::addTunnel(const int64_t seedModifier, const Pos2D chunk
             addTunnel(seed1, chunk, chunkPrimer, start, tunnelWidth1 * 0.5F + 0.5F, tunnelDirection - HALF_PI,
                       tunnelSlope / 3.0F, currentTunnelSegment, maxTunnelSegment, 1.0);
             float tunnelWidth2;
-            int64_t seed2;
+            i64 seed2;
             if (isXbox) {
                 tunnelWidth2 = rng.nextFloat();
                 seed2 = rng.nextLongI();
@@ -116,10 +116,10 @@ void WaterCaveGenerator::addTunnel(const int64_t seedModifier, const Pos2D chunk
         if (!isOceanic(g.getBiomeAt(1, startPos))) return;
 
         if (isMainTunnel || rng.nextInt(4) != 0) {
-            const double distanceX = start.x - targetCenterX;
-            const double distanceZ = start.z - targetCenterZ;
-            const double segmentsRemaining = maxTunnelSegment - currentTunnelSegment;
-            const double maxDistance = tunnelWidth + 18.0F;
+            c_double distanceX = start.x - targetCenterX;
+            c_double distanceZ = start.z - targetCenterZ;
+            c_double segmentsRemaining = maxTunnelSegment - currentTunnelSegment;
+            c_double maxDistance = tunnelWidth + 18.0F;
 
             if (distanceX * distanceX + distanceZ * distanceZ - segmentsRemaining * segmentsRemaining >
                 maxDistance * maxDistance) {
@@ -146,15 +146,15 @@ void WaterCaveGenerator::addTunnel(const int64_t seedModifier, const Pos2D chunk
                 if (maxZ > 16) maxZ = 16;
 
                 for (int currentX = minX; currentX < maxX; ++currentX) {
-                    const double scaleX = ((double) (currentX + chunk.x * 16) + 0.5 - start.x) / tunnelWidthScaled;
+                    c_double scaleX = ((double) (currentX + chunk.x * 16) + 0.5 - start.x) / tunnelWidthScaled;
 
                     for (int currentZ = minZ; currentZ < maxZ; ++currentZ) {
-                        const double scaleZ = ((double) (currentZ + chunk.z * 16) + 0.5 - start.z) / tunnelWidthScaled;
+                        c_double scaleZ = ((double) (currentZ + chunk.z * 16) + 0.5 - start.z) / tunnelWidthScaled;
 
                         if (scaleX * scaleX + scaleZ * scaleZ < 1.0) {
                             //for (int currentY = maxY; currentY > minY; --currentY)
                             for (int currentY = maxY - 1; currentY >= minY; --currentY) {
-                                const double scaleY = ((double) currentY + 0.5 - start.y) / tunnelHeight;
+                                c_double scaleY = ((double) currentY + 0.5 - start.y) / tunnelHeight;
 
                                 if (scaleY > -0.7 && scaleX * scaleX + scaleY * scaleY + scaleZ * scaleZ < 1.0 &&
                                     currentY < 62) {
@@ -226,7 +226,7 @@ void WaterCaveGenerator::addTunnel(const int64_t seedModifier, const Pos2D chunk
     }
 }
 
-void WaterCaveGenerator::addRoom(const int64_t seedModifier, const Pos2D target, ChunkPrimer* chunkPrimer,
+void WaterCaveGenerator::addRoom(c_i64 seedModifier, const Pos2D target, ChunkPrimer* chunkPrimer,
                                  const DoublePos3D& roomStart, RNG& rng) {
     addTunnel(seedModifier, target, chunkPrimer, roomStart, 1.0F + rng.nextFloat() * 6.0F,
               0.0F, 0.0F,
@@ -234,9 +234,9 @@ void WaterCaveGenerator::addRoom(const int64_t seedModifier, const Pos2D target,
 }
 
 
-void WaterCaveGenerator::addFeature(const int baseChunkX, const int baseChunkZ, int targetX, int targetZ,
+void WaterCaveGenerator::addFeature(c_int baseChunkX, c_int baseChunkZ, int targetX, int targetZ,
                                     ChunkPrimer* chunkPrimer, bool accurate) {
-    const int tunnelCount = rng.nextInt(rng.nextInt(rng.nextInt(40) + 1) + 1);
+    c_int tunnelCount = rng.nextInt(rng.nextInt(rng.nextInt(40) + 1) + 1);
 
     if EXPECT_TRUE (rng.nextInt(15) != 0) { return; }
 
@@ -253,9 +253,9 @@ void WaterCaveGenerator::addFeature(const int baseChunkX, const int baseChunkZ, 
         }
 
         for (int currentSegment = 0; currentSegment < segmentCount; ++currentSegment) {
-            const float yaw = rng.nextFloat() * (PI_FLOAT * 2.0F);
-            const float pitch = (rng.nextFloat() - 0.5F) * 2.0F / 8.0F;
-            const float tunnelLength = rng.nextFloat() * 2.0F + rng.nextFloat();
+            c_float yaw = rng.nextFloat() * (PI_FLOAT * 2.0F);
+            c_float pitch = (rng.nextFloat() - 0.5F) * 2.0F / 8.0F;
+            c_float tunnelLength = rng.nextFloat() * 2.0F + rng.nextFloat();
 
             addTunnel(rng.nextLongI(), {targetX, targetZ}, chunkPrimer,
                       {tunnelStartX, tunnelStartY, tunnelStartZ},

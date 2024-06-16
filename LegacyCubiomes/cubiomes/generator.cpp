@@ -14,7 +14,7 @@ Generator::Generator(const lce::CONSOLE console, const LCEVERSION version, const
 }
 
 
-Generator::Generator(const lce::CONSOLE console, const LCEVERSION version, const int64_t seed, const lce::WORLDSIZE size,
+Generator::Generator(const lce::CONSOLE console, const LCEVERSION version, c_i64 seed, const lce::WORLDSIZE size,
                      const lce::BIOMESCALE scale)
     : worldSeed(seed), version(version), console(console), biomeScale(scale), worldSize(size),
       worldCoordinateBounds(getChunkWorldBounds(size) << 4) {
@@ -23,7 +23,7 @@ Generator::Generator(const lce::CONSOLE console, const LCEVERSION version, const
 }
 
 
-void Generator::applyWorldSeed(const int64_t seed) {
+void Generator::applyWorldSeed(c_i64 seed) {
     this->worldSeed = seed;
     setLayerSeed(this->layerStack.entry_1, seed);
 }
@@ -60,7 +60,7 @@ void Generator::changeWorldSize(const lce::WORLDSIZE size) {
 }
 
 
-size_t Generator::getMinCacheSize(const int scale, const int sx, const int sz) const {
+size_t Generator::getMinCacheSize(c_int scale, c_int sx, c_int sz) const {
     // recursively check the layer stack for the max buffer
     const Layer* layerForScale = getLayerForScale(scale);
     if (!layerForScale) {
@@ -70,7 +70,7 @@ size_t Generator::getMinCacheSize(const int scale, const int sx, const int sz) c
     return getMinLayerCacheSize(layerForScale, sx, sz);
 }
 
-///TODO: make it int8_t array as biome ids don't go higher than 255; will need to refactor all uses of biomes
+///TODO: make it i8 array as biome ids don't go higher than 255; will need to refactor all uses of biomes
 int* Generator::allocCache(const Range& range) const {
     const size_t len = getMinCacheSize(range.scale, range.sx, range.sz);
     return (int*) calloc(len, sizeof(int));
@@ -80,14 +80,14 @@ int* Generator::allocCache(const Range& range) const {
 int Generator::genBiomes(int* cache, const Range& range) const {
     const Layer* layerForScale = getLayerForScale(range.scale);
     if (!layerForScale) return -1;
-    const int err = genArea(layerForScale, cache, range.x, range.z, range.sx, range.sz);
+    c_int err = genArea(layerForScale, cache, range.x, range.z, range.sx, range.sz);
     if (err) return err;
 
     return 0;
 }
 
 
-int Generator::getBiomeAt(const int scale, const int x, const int z) const {
+int Generator::getBiomeAt(c_int scale, c_int x, c_int z) const {
     const Range r = {scale, x, z, 1, 1};
     int* ids = allocCache(r);
     int id = genBiomes(ids, r);
@@ -100,7 +100,7 @@ int Generator::getBiomeAt(const int scale, const int x, const int z) const {
 }
 
 
-int* Generator::getBiomeRange(const int scale, const int x, const int z, const int w, const int h) const {
+int* Generator::getBiomeRange(c_int scale, c_int x, c_int z, c_int w, c_int h) const {
     const Range r = {scale, x, z, w, h};
     int* ids = allocCache(r);
     genBiomes(ids, r);
@@ -119,7 +119,7 @@ std::pair<int, int*> Generator::generateAllBiomes() const {
 }
 
 
-Layer* Generator::getLayerForScale(const int scale) const {
+Layer* Generator::getLayerForScale(c_int scale) const {
     switch (scale) {
         case 1:
             return this->layerStack.entry_1;
@@ -141,8 +141,8 @@ Layer* Generator::getLayerForScale(const int scale) const {
 // Checking Biomes & Biome Helper Functions
 //==============================================================================
 
-bool Generator::areBiomesViable(const int x, const int z, const int rad, const uint64_t validBiomes,
-                                const uint64_t mutatedValidBiomes) const {
+bool Generator::areBiomesViable(c_int x, c_int z, c_int rad, c_u64 validBiomes,
+                                c_u64 mutatedValidBiomes) const {
     if (x - rad < -this->worldCoordinateBounds || x + rad >= this->worldCoordinateBounds ||
         z - rad < -this->worldCoordinateBounds || z + rad >= this->worldCoordinateBounds) {
         return false;
@@ -183,17 +183,17 @@ bool Generator::areBiomesViable(const int x, const int z, const int rad, const u
 }
 
 
-Pos2D Generator::locateBiome(int x, int z, int radius, uint64_t validBiomes, RNG& rng, int* passes) const {
+Pos2D Generator::locateBiome(int x, int z, int radius, u64 validBiomes, RNG& rng, int* passes) const {
     Pos2D out = {x, z};
     int i, found;
     found = 0;
 
-    const int x1 = (x - radius) >> 2;
-    const int z1 = (z - radius) >> 2;
-    const int x2 = (x + radius) >> 2;
-    const int z2 = (z + radius) >> 2;
-    const int width = x2 - x1 + 1;
-    const int height = z2 - z1 + 1;
+    c_int x1 = (x - radius) >> 2;
+    c_int z1 = (z - radius) >> 2;
+    c_int x2 = (x + radius) >> 2;
+    c_int z2 = (z + radius) >> 2;
+    c_int width = x2 - x1 + 1;
+    c_int height = z2 - z1 + 1;
 
     const Range r = {4, x1, z1, width, height};
     int* ids = allocCache(r);
@@ -216,8 +216,8 @@ Pos2D Generator::locateBiome(int x, int z, int radius, uint64_t validBiomes, RNG
 }
 
 
-int Generator::mapApproxHeight(float* y, int* ids, const SurfaceNoise* sn, const int x, const int z, const int w,
-                               const int h) const {
+int Generator::mapApproxHeight(float* y, int* ids, const SurfaceNoise* sn, c_int x, c_int z, c_int w,
+                               c_int h) const {
 
     constexpr float biome_kernel[25] = {
             // with 10 / (sqrt(i**2 + j**2) + 0.2)
@@ -229,7 +229,7 @@ int Generator::mapApproxHeight(float* y, int* ids, const SurfaceNoise* sn, const
 
     auto* depth = (double*) malloc(sizeof(double) * 2 * w * h);
     double* scale = depth + w * h;
-    int64_t i, j;
+    i64 i, j;
     int ii, jj;
 
     const Range r = {4, x - 2, z - 2, w + 5, h + 5};
@@ -241,7 +241,7 @@ int Generator::mapApproxHeight(float* y, int* ids, const SurfaceNoise* sn, const
         for (i = 0; i < w; i++) {
             double d0, s0;
             double wt = 0, ws = 0, wd = 0;
-            const int id0 = cache[(j + 2) * r.sx + (i + 2)];
+            c_int id0 = cache[(j + 2) * r.sx + (i + 2)];
             getBiomeDepthAndScale(id0, &d0, &s0, 0);
 
             for (jj = 0; jj < 5; jj++) {
@@ -318,7 +318,7 @@ int Generator::mapApproxHeight(float* y, int* ids, const SurfaceNoise* sn, const
 }
 
 
-const uint64_t Generator::spawn_biomes = (1ULL << forest) | (1ULL << plains) | (1ULL << taiga) | (1ULL << taiga_hills) |
+c_u64 Generator::spawn_biomes = (1ULL << forest) | (1ULL << plains) | (1ULL << taiga) | (1ULL << taiga_hills) |
                                          (1ULL << wooded_hills) | (1ULL << jungle) | (1ULL << jungle_hills);
 
 

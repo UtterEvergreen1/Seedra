@@ -5,8 +5,8 @@ EnchantedBookEnchantsLookupTable EnchantmentHelper::BOOK_LEVEL_TABLE;
 
 
 void EnchantmentHelper::setConsoleAndVersion(lce::CONSOLE console, LCEVERSION version) {
-    const auto consoleNum = static_cast<int8_t>(console);
-    const auto lceVersion = static_cast<int8_t>(version);
+    c_auto consoleNum = static_cast<i8>(console);
+    c_auto lceVersion = static_cast<i8>(version);
 
     // error handling
     if (consoleNum >= Enchantment::tableOfOrders.size())

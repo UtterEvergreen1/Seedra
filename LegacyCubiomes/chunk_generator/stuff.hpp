@@ -7,7 +7,7 @@
 #include "LegacyCubiomes/utils/constants.hpp"
 
 
-inline int getBiomeGroup(const int biomeID) {
+inline int getBiomeGroup(c_int biomeID) {
     switch (biomeID) {
         case 12:
         case 13:
@@ -90,12 +90,12 @@ inline int getBiomeGroup(const int biomeID) {
     }
 }
 
-inline std::vector<float> getFracs(const int* biomes) {
+inline std::vector<float> getFracs(c_int* biomes) {
     constexpr int biomesSize = 40000; // size of biomes
     std::vector fracs(8, 0.0F);
     int index = 0;
     while (index < biomesSize) {
-        const int biomeGroup = getBiomeGroup(
+        c_int biomeGroup = getBiomeGroup(
                 biomes[index]); // getting the biome group it is in (take the biomeID and assign it a catagory)
         fracs[biomeGroup]++;
         index++;
@@ -104,7 +104,7 @@ inline std::vector<float> getFracs(const int* biomes) {
     return fracs;
 }
 
-inline bool getIsMatch(const int* biomes) {
+inline bool getIsMatch(c_int* biomes) {
     const std::vector<float> floatFrac = getFracs(biomes);
     if (floatFrac[7] < 0.001F) { return false; }
     for (int i = 0; i < 5; i++) {
@@ -115,12 +115,12 @@ inline bool getIsMatch(const int* biomes) {
     return true;
 }
 
-inline int64_t findBalancedSeed(const Generator* g, RNG rng) {
-    const uint64_t timeStart = getSeconds();
+inline i64 findBalancedSeed(const Generator* g, RNG rng) {
+    c_u64 timeStart = getSeconds();
     while (true) {
-        const int64_t seed = rng.nextLongI();
+        c_i64 seed = rng.nextLongI();
         int* biomes = g->getBiomeRange(4, -100, -100, 200, 200);
-        const bool isMatch = getIsMatch(biomes);
+        c_bool isMatch = getIsMatch(biomes);
         free(biomes);
         if (isMatch) return seed;
         if (10 < getSeconds() - timeStart) return -1;

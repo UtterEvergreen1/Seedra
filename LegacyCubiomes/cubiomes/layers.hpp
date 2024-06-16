@@ -84,13 +84,13 @@ struct Layer {
     mapfunc_t* getMap;
 
     MCVERSION mc; // minecraft version
-    int8_t zoom;  // zoom factor of layer
-    int8_t edge;  // maximum border required from parent layer
+    i8 zoom;  // zoom factor of layer
+    i8 edge;  // maximum border required from parent layer
     int scale;    // scale of this layer (cell = scale x scale blocks)
 
-    uint64_t layerSalt; // processed salt or initialization mode
-    uint64_t startSalt; // (depends on world seed) used to step PRNG forward
-    uint64_t startSeed; // (depends on world seed) start for chunk seeds
+    u64 layerSalt; // processed salt or initialization mode
+    u64 startSalt; // (depends on world seed) used to step PRNG forward
+    u64 startSeed; // (depends on world seed) start for chunk seeds
 
     Layer *p, *p2; // parent layers
 };
@@ -117,16 +117,16 @@ typedef PerlinNoise EndNoise;
 //==============================================================================
 
 /// Applies the given world seed to the layer and all dependent layers.
-void setLayerSeed(Layer* layer, uint64_t worldSeed);
+void setLayerSeed(Layer* layer, u64 worldSeed);
 
 
 //==============================================================================
 // Noise
 //==============================================================================
 
-void initSurfaceNoiseOld(SurfaceNoise* rnd, uint64_t* seed, double xzScale, double yScale, double xzFactor,
+void initSurfaceNoiseOld(SurfaceNoise* rnd, u64* seed, double xzScale, double yScale, double xzFactor,
                          double yFactor);
-void initSurfaceNoiseEnd(SurfaceNoise* rnd, uint64_t seed);
+void initSurfaceNoiseEnd(SurfaceNoise* rnd, u64 seed);
 double sampleSurfaceNoise(const Generator* g, const SurfaceNoise* rnd, int x, int y, int z);
 
 int getBiomeDepthAndScale(int id, double* depth, double* scale, int* grass);
@@ -134,8 +134,8 @@ int getBiomeDepthAndScale(int id, double* depth, double* scale, int* grass);
 //==============================================================================
 // End (1.9+) Biome Noise Generation
 //==============================================================================
-void setEndSeed(EndNoise* en, uint64_t seed);
-MU int getSurfaceHeightEnd(const Generator* g, MCVERSION mc, uint64_t seed, int x, int z);
+void setEndSeed(EndNoise* en, u64 seed);
+MU int getSurfaceHeightEnd(const Generator* g, MCVERSION mc, u64 seed, int x, int z);
 
 
 //==============================================================================
@@ -184,7 +184,7 @@ mapfunc_t mapOceanTemp;
 mapfunc_t mapOceanMix;
 
 // stuff moved from generation
-Layer* setupLayer(Layer* l, mapfunc_t* map, MCVERSION theMc, int8_t zoom, int8_t edge, uint64_t saltBase, Layer* p,
+Layer* setupLayer(Layer* l, mapfunc_t* map, MCVERSION theMc, i8 zoom, i8 edge, u64 saltBase, Layer* p,
                   Layer* p2);
 void setupScale(Layer* l, int scale);
 int genArea(const Layer* layer, int* out, int areaX, int areaZ, int areaWidth, int areaHeight);

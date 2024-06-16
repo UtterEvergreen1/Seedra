@@ -13,13 +13,13 @@ namespace generation {
 
     class Village {
     public:
-        enum class GenerationStep : int8_t {
+        enum class GenerationStep : i8 {
             BLACKSMITH, // Generates the layout up to the blacksmith, hasMoreThanTwoComponents won't be calculated
             LAYOUT,     // Generates full layout, hasMoreThanTwoComponents won't be calculated
             FULL,       // Generates full layout and calculates hasMoreThanTwoComponents
         };
 
-        enum class PieceType : int8_t {
+        enum class PieceType : i8 {
             NONE,
             Start,
             Road,
@@ -43,7 +43,7 @@ namespace generation {
         };
 
         static std::map<PieceType, std::string> pieceTypeNames;
-        static const int VILLAGE_SIZE;
+        static c_int VILLAGE_SIZE;
         static const PieceWeight PIECE_WEIGHTS[9];
 
     private:
@@ -52,8 +52,8 @@ namespace generation {
             int weight;
             int maxPlaceCount;
             int amountPlaced;
-            FinalPieceWeight(const PieceType pieceType, const int weight, const int maxPlaceCount,
-                             const int amountPlaced)
+            FinalPieceWeight(const PieceType pieceType, c_int weight, c_int maxPlaceCount,
+                             c_int amountPlaced)
                 : pieceType(pieceType), weight(weight), maxPlaceCount(maxPlaceCount), amountPlaced(amountPlaced) {}
         };
 
@@ -103,9 +103,9 @@ namespace generation {
         void buildComponent(Piece piece);
         BoundingBox road(Pos3D pos, DIRECTION facing);
         void additionalRngRolls(const Piece& p);
-        Piece generateComponent(Pos3D pos, DIRECTION facing, int8_t depth);
+        Piece generateComponent(Pos3D pos, DIRECTION facing, i8 depth);
         Piece genAndAddRoadPiece(Pos3D pos, DIRECTION facing);
-        Piece genAndAddComponent(Pos3D pos, DIRECTION facing, int8_t depth);
+        Piece genAndAddComponent(Pos3D pos, DIRECTION facing, i8 depth);
         void addPiece(const Piece& piece);
         ND bool hasCollisionPiece(const BoundingBox& boundingBox) const;
     };

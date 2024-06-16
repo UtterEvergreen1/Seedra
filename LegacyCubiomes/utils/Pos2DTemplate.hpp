@@ -78,8 +78,8 @@ public:
     struct Hasher {
         template <typename T = classType, typename = std::enable_if_t<std::is_integral_v<T>>>
         std::size_t operator()(const Pos2DTemplate& pos) const {
-            const int i = 1664525 * pos.x + 1013904223;
-            const int j = 1664525 * (pos.z ^ -559038737) + 1013904223;
+            c_int i = 1664525 * pos.x + 1013904223;
+            c_int j = 1664525 * (pos.z ^ -559038737) + 1013904223;
             return static_cast<size_t>(i) ^ j;
         }
     };

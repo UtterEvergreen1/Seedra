@@ -7,21 +7,23 @@
 
 namespace structure_rolls {
 
+
     class Mineshaft : public RollsBase {
     public:
-        std::vector<std::pair<Pos3D, int64_t>> mineshaftChests;
-        void generateStructure(const generation::Mineshaft* mineshaftGenerator, ChunkPrimer* chunk, RNG& rng, int chunkX,
-                               int chunkZ);
+        std::vector<std::pair<Pos3D, i64>> mineshaftChests;
+        void generateStructure(const generation::Mineshaft* mineshaftGenerator, ChunkPrimer* chunk,
+                               RNG& rng, int chunkX, int chunkZ);
 
         /// Generate all chests for a given mineshaft
-        MU void generateAllChests(generation::Mineshaft* mineshaftGenerator, const Generator& g,
-            bool generateFullChunk);
-        void generateChest(const ChunkPrimer* chunk, const BoundingBox& chunkBB, const Piece& piece, RNG& rng, int x, int y,
-                           int z);
+        MU void generateAllChests(generation::Mineshaft* mineshaftGenerator,
+                                  const Generator& g, bool generateFullChunk);
+
+        void generateChest(const ChunkPrimer* chunk, const BoundingBox& chunkBB,
+                           const Piece& piece, RNG& rng, int x, int y, int z);
 
     private:
-        static void placeCobWeb(const ChunkPrimer* chunk, const BoundingBox& chunkBB, const Piece& piece, RNG& rng, int x,
-                                int z);
+        static void placeCobWeb(const ChunkPrimer* chunk, const BoundingBox& chunkBB,
+                                const Piece& piece, RNG& rng, int x, int z);
     };
 
-} // namespace structure_rolls
+}

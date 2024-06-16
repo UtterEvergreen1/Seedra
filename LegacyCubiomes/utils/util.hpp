@@ -4,15 +4,13 @@
 #include <cstdio>
 #include "LegacyCubiomes/cubiomes/biomeID.hpp"
 
-static void setColor(unsigned char colors[256][3], int id, uint32_t hex)
-{
+static void setColor(unsigned char colors[256][3], int id, u32 hex) {
     colors[id][0] = (hex >> 16) & 0xff;
     colors[id][1] = (hex >>  8) & 0xff;
     colors[id][2] = (hex >>  0) & 0xff;
 }
 
-static void initBiomeColors(unsigned char colors[256][3])
-{
+static void initBiomeColors(u8 colors[256][3]) {
     // This coloring scheme is largely inspired by the AMIDST program:
     // https://github.com/toolbox4minecraft/amidst/wiki/Biome-Color-Table
     // but with additional biomes for 1.18+, and with some subtle changes to
@@ -108,23 +106,17 @@ static void initBiomeTypeColors(unsigned char colors[256][3])
     setColor(colors, Freezing, 0xffffff);
 }
 
-static int biomesToImage(unsigned char *pixels,
-        unsigned char biomeColors[256][3], const int *biomes,
-        const unsigned int sx, const unsigned int sy,
-        const unsigned int pixscale, const int flip)
-{
-    unsigned int i, j;
+static int biomesToImage(u8 *pixels, u8 biomeColors[256][3], c_int *biomes,
+                         c_u32 sx, c_u32 sy, c_u32 pixScale, c_int flip) {
+    u32 i, j;
     int containsInvalidBiomes = 0;
 
-    for (j = 0; j < sy; j++)
-    {
-        for (i = 0; i < sx; i++)
-        {
+    for (j = 0; j < sy; j++) {
+        for (i = 0; i < sx; i++) {
             int id = biomes[j*sx+i];
-            unsigned int r, g, b;
+            u32 r, g, b;
 
-            if (id < 0 || id >= 256)
-            {
+            if (id < 0 || id >= 256) {
                 // This may happen for some intermediate layers
                 containsInvalidBiomes = 1;
                 r = biomeColors[id&0x7f][0]-40; r = (r>0xff) ? 0x00 : r&0xff;
@@ -138,19 +130,19 @@ static int biomesToImage(unsigned char *pixels,
                 b = biomeColors[id][2];
             }
 
-            unsigned int m, n;
-            for (m = 0; m < pixscale; m++) {
-                for (n = 0; n < pixscale; n++) {
-                    int idx = pixscale * i + n;
+            u32 m, n;
+            for (m = 0; m < pixScale; m++) {
+                for (n = 0; n < pixScale; n++) {
+                    int idx = pixScale * i + n;
                     if (flip)
-                        idx += (sx * pixscale) * ((pixscale * j) + m);
+                        idx += (sx * pixScale) * ((pixScale * j) + m);
                     else
-                        idx += (sx * pixscale) * ((pixscale * (sy-1-j)) + m);
+                        idx += (sx * pixScale) * ((pixScale * (sy-1-j)) + m);
 
                     unsigned char *pix = pixels + 3*idx;
-                    pix[0] = (unsigned char)r;
-                    pix[1] = (unsigned char)g;
-                    pix[2] = (unsigned char)b;
+                    pix[0] = (u8)r;
+                    pix[1] = (u8)g;
+                    pix[2] = (u8)b;
                 }
             }
         }
@@ -159,7 +151,7 @@ static int biomesToImage(unsigned char *pixels,
     return containsInvalidBiomes;
 }
 
-static int savePPM(const char *path, const unsigned char *pixels, const unsigned int sx, const unsigned int sy)
+static int savePPM(const char *path, c_u8 *pixels, c_u32 sx, c_u32 sy)
 {
     FILE *fp = fopen(path, "wb");
     if (!fp)

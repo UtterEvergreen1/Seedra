@@ -9,8 +9,8 @@
 #include "LegacyCubiomes/utils/MathHelper.hpp"
 #include "LegacyCubiomes/utils/rng.hpp"
 
-static int64_t lfloor(const double value) {
-    const auto i = (int64_t) value;
+static i64 lfloor(c_double value) {
+    c_auto i = (i64) value;
     return value < (double) i ? i - 1L : i;
 }
 
@@ -34,31 +34,31 @@ public:
         for (int i = 0; i < 256; i++) { p[i] = i; }
 
         for (int l = 0; l < 256; ++l) {
-            const int j = rng.nextInt(256 - l) + l;
-            const int k = p[l];
+            c_int j = rng.nextInt(256 - l) + l;
+            c_int k = p[l];
             p[l] = p[j];
             p[j] = k;
             p[l + 256] = p[l];
         }
     }
 
-    static int fastFloor(const double value) { return value > 0.0 ? (int) value : (int) value - 1; }
+    static int fastFloor(c_double value) { return value > 0.0 ? (int) value : (int) value - 1; }
 
-    static double dot(const int p_151604_0_[], double p_151604_1_, double p_151604_3_) {
+    static double dot(c_int p_151604_0_[], double p_151604_1_, double p_151604_3_) {
         return (double) p_151604_0_[0] * p_151604_1_ + (double) p_151604_0_[1] * p_151604_3_;
     }
 
-    double getValue(const double p_151605_1_, const double p_151605_3_) {
-        const double d3 = 0.5 * (SQRT_3 - 1.0);
-        const double d4 = (p_151605_1_ + p_151605_3_) * d3;
-        const int i = fastFloor(p_151605_1_ + d4);
-        const int j = fastFloor(p_151605_3_ + d4);
-        const double d5 = (3.0 - SQRT_3) / 6.0;
-        const double d6 = (double) (i + j) * d5;
-        const double d7 = (double) i - d6;
-        const double d8 = (double) j - d6;
-        const double d9 = p_151605_1_ - d7;
-        const double d10 = p_151605_3_ - d8;
+    double getValue(c_double p_151605_1_, c_double p_151605_3_) {
+        c_double d3 = 0.5 * (SQRT_3 - 1.0);
+        c_double d4 = (p_151605_1_ + p_151605_3_) * d3;
+        c_int i = fastFloor(p_151605_1_ + d4);
+        c_int j = fastFloor(p_151605_3_ + d4);
+        c_double d5 = (3.0 - SQRT_3) / 6.0;
+        c_double d6 = (double) (i + j) * d5;
+        c_double d7 = (double) i - d6;
+        c_double d8 = (double) j - d6;
+        c_double d9 = p_151605_1_ - d7;
+        c_double d10 = p_151605_3_ - d8;
         int k;
         int l;
 
@@ -70,15 +70,15 @@ public:
             l = 1;
         }
 
-        const double d11 = d9 - (double) k + d5;
-        const double d12 = d10 - (double) l + d5;
-        const double d13 = d9 - 1.0 + 2.0 * d5;
-        const double d14 = d10 - 1.0 + 2.0 * d5;
-        const int i1 = i & 255;
-        const int j1 = j & 255;
-        const int k1 = p[i1 + p[j1]] % 12;
-        const int l1 = p[i1 + k + p[j1 + l]] % 12;
-        const int i2 = p[i1 + 1 + p[j1 + 1]] % 12;
+        c_double d11 = d9 - (double) k + d5;
+        c_double d12 = d10 - (double) l + d5;
+        c_double d13 = d9 - 1.0 + 2.0 * d5;
+        c_double d14 = d10 - 1.0 + 2.0 * d5;
+        c_int i1 = i & 255;
+        c_int j1 = j & 255;
+        c_int k1 = p[i1 + p[j1]] % 12;
+        c_int l1 = p[i1 + k + p[j1 + l]] % 12;
+        c_int i2 = p[i1 + 1 + p[j1 + 1]] % 12;
         double d15 = 0.5 - d9 * d9 - d10 * d10;
         double d0;
 
@@ -422,7 +422,7 @@ public:
     std::vector<NoiseGeneratorImproved> generatorCollection;
     int octaves;
 
-    void setNoiseGeneratorOctaves(RNG& rng, const int octavesIn) {
+    void setNoiseGeneratorOctaves(RNG& rng, c_int octavesIn) {
         octaves = octavesIn;
         generatorCollection = std::vector<NoiseGeneratorImproved>(octavesIn);
 
@@ -433,9 +433,9 @@ public:
      * pars:(par2,3,4=noiseOffset ; so that adjacent noise segments connect) (pars5,6,7=x,y,zArraySize),(pars8,10,12 =
      * x,y,z noiseScale)
      */
-    std::vector<double> genNoiseOctaves(std::vector<double> noiseArray, const int xOffset, const int yOffset,
-                                        const int zOffset, const int xSize, const int ySize, const int zSize,
-                                        const double xScale, const double yScale, const double zScale) {
+    std::vector<double> genNoiseOctaves(std::vector<double> noiseArray, c_int xOffset, c_int yOffset,
+                                        c_int zOffset, c_int xSize, c_int ySize, c_int zSize,
+                                        c_double xScale, c_double yScale, c_double zScale) {
         if (noiseArray.empty()) {
             noiseArray.resize(xSize * ySize * zSize);
         } else {
@@ -448,8 +448,8 @@ public:
             double d0 = (double) xOffset * d3 * xScale;
             double d1 = (double) yOffset * d3 * yScale;
             double d2 = (double) zOffset * d3 * zScale;
-            int64_t k = lfloor(d0);
-            int64_t l = lfloor(d2);
+            i64 k = lfloor(d0);
+            i64 l = lfloor(d2);
             d0 = d0 - (double) k;
             d2 = d2 - (double) l;
             k = k % 16777216LL;
@@ -466,8 +466,8 @@ public:
     /**
      * Bouncer function to the main one with some default arguments.
      */
-    std::vector<double> genNoiseOctaves(std::vector<double> noiseArray, const int xOffset, const int zOffset,
-                                        const int xSize, const int zSize, const double xScale, const double zScale,
+    std::vector<double> genNoiseOctaves(std::vector<double> noiseArray, c_int xOffset, c_int zOffset,
+                                        c_int xSize, c_int zSize, c_double xScale, c_double zScale,
                                         double p_76305_10_) {
         return genNoiseOctaves(std::move(noiseArray), xOffset, 10, zOffset, xSize, 1, zSize, xScale, 1.0, zScale);
     }

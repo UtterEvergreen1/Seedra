@@ -16,13 +16,13 @@ namespace generation {
         //              sub-structs and sub-classes
         // #######################################################
 
-        enum class GenerationStep : int8_t {
+        enum class GenerationStep : i8 {
             PORTAL, // Generates the layout up to the portal room, Y level will be inaccurate
             LAYOUT, // Generates full layout, Y level will be inaccurate
             FULL,   // Generates full layout and calculates Y level for all pieces
         };
 
-        enum class PieceType : int8_t {
+        enum class PieceType : i8 {
             NONE,
             STRAIGHT,
             PRISON_HALL,
@@ -43,16 +43,16 @@ namespace generation {
             int placeCount;
 
             ND static const PieceWeight* get(const PieceType pieceType) {
-                return &PIECE_WEIGHTS[static_cast<int8_t>(pieceType)];
+                return &PIECE_WEIGHTS[static_cast<i8>(pieceType)];
             }
 
             ND bool isValid() const {
-                const int maxPlaceCount = PIECE_WEIGHTS[static_cast<int8_t>(pieceType)].maxPlaceCount;
+                c_int maxPlaceCount = PIECE_WEIGHTS[static_cast<i8>(pieceType)].maxPlaceCount;
                 return maxPlaceCount == 0 || placeCount < maxPlaceCount;
             }
 
-            ND bool canPlace(const int depth) const {
-                return isValid() && depth >= PIECE_WEIGHTS[static_cast<int8_t>(pieceType)].minDepth;
+            ND bool canPlace(c_int depth) const {
+                return isValid() && depth >= PIECE_WEIGHTS[static_cast<i8>(pieceType)].minDepth;
             }
         };
 
@@ -98,7 +98,7 @@ namespace generation {
         * @param chunkX x coordinate of the chunk
         * @param chunkZ z coordinate of the chunk
         */
-        void generate(int64_t worldSeed, int chunkX, int chunkZ);
+        void generate(i64 worldSeed, int chunkX, int chunkZ);
 
         /**
         * \n
@@ -106,20 +106,20 @@ namespace generation {
         * @param worldSeed the seed
         * @param chunkPos coordinates of the chunk
         */
-        void generate(const int64_t worldSeed, const Pos2D chunkPos) {
+        void generate(c_i64 worldSeed, const Pos2D chunkPos) {
             return generate(worldSeed, chunkPos.x, chunkPos.z);
         }
 
         void resetPieces();
 
         void onWeightedPiecePlaced(int piecePlaceCountIndex);
-        void createPiece(PieceType pieceType, DIRECTION direction, int8_t depth, BoundingBox boundingBox);
+        void createPiece(PieceType pieceType, DIRECTION direction, i8 depth, BoundingBox boundingBox);
 
-        bool tryAddPieceFromType(PieceType pieceType, const Pos3D& pos, DIRECTION direction, int8_t depth);
-        void genAndAddPiece(const Pos3D& pos, DIRECTION direction, int8_t depth);
+        bool tryAddPieceFromType(PieceType pieceType, const Pos3D& pos, DIRECTION direction, i8 depth);
+        void genAndAddPiece(const Pos3D& pos, DIRECTION direction, i8 depth);
 
         /// piece gen
-        bool genPieceFromSmallDoor(const Pos3D& pos, DIRECTION direction, int8_t depth);
+        bool genPieceFromSmallDoor(const Pos3D& pos, DIRECTION direction, i8 depth);
         void genSmallDoorChildForward(const Piece& piece, int n, int n2);
         void genSmallDoorChildLeft(const Piece& piece, int n, int n2);
         void genSmallDoorChildRight(const Piece& piece, int n, int n2);

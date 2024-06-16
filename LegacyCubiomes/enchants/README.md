@@ -19,10 +19,10 @@ these are the functions to use for enchanting:
 
 ```c++
 // EnchantmentHelper::EnchantWithLevels::
-static void apply(uint64_t *rng, ItemStack *stack, int min, int max, bool isBook);
-static void apply(uint64_t *rng, ItemStack *stack, int level, bool isBook);
+static void apply(u64 *rng, ItemStack *stack, int min, int max, bool isBook);
+static void apply(u64 *rng, ItemStack *stack, int level, bool isBook);
 // EnchantmentHelper::EnchantRandomly::
-static void apply(uint64_t *rng, ItemStack *stack);
+static void apply(u64 *rng, ItemStack *stack);
 ```
 
 rn it doesn't correctly shuffle Java loot, idk why

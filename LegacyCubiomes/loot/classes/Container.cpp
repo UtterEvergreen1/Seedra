@@ -7,7 +7,7 @@
 void Container::printCombinedItems() const {
     std::map<const lce::items::Item*, int> itemCount;
 
-    for (const auto& itemStack: inventorySlots) {
+    for (c_auto& itemStack: inventorySlots) {
         if (itemStack.stackSize > 0) {
             if (itemCount.contains(itemStack.item)) {
                 itemCount[itemStack.item] += itemStack.stackSize;
@@ -17,8 +17,8 @@ void Container::printCombinedItems() const {
         }
     }
 
-    for (const auto& [fst, snd]: itemCount) {
-        const auto itemStack = ItemStack(fst, snd);
+    for (c_auto& [fst, snd]: itemCount) {
+        c_auto itemStack = ItemStack(fst, snd);
         std::cout << itemStack << std::endl;
     }
 }
@@ -46,13 +46,13 @@ void Container::shuffleIntoContainer(std::vector<ItemStack>& items, MU const RNG
 
     numSlots -= items.size();
     while (numSlots > 0 && !stackableItems.empty()) {
-        const int itemIndex = rngState.nextInt(0, static_cast<int>(stackableItems.size()) - 1);
+        c_int itemIndex = rngState.nextInt(0, static_cast<int>(stackableItems.size()) - 1);
         auto iter = std::next(stackableItems.begin(), itemIndex);
         ItemStack originalStack = std::move(*iter);
 
         stackableItems.erase(iter);
 
-        const int splitAmount = rngState.nextInt(1, originalStack.stackSize >> 1);
+        c_int splitAmount = rngState.nextInt(1, originalStack.stackSize >> 1);
         ItemStack splittedStack = originalStack.splitStack(splitAmount);
 
         if (originalStack.stackSize == 0 || rngState.next(1) == 0) items.emplace_back(std::move(originalStack));
@@ -73,7 +73,7 @@ void Container::shuffleIntoContainer(std::vector<ItemStack>& items, MU const RNG
             return;
 
         if (itemStack.stackSize > 0) {
-            const int itemIndex = slotOrder.back();
+            c_int itemIndex = slotOrder.back();
             slotOrder.pop_back();
             setInventorySlotContents(itemIndex, std::move(itemStack));
         } else {

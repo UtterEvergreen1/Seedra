@@ -13,21 +13,21 @@
 class LootTable : public UniformRoll {
 public:
     std::vector<ItemEntry> items;
-    std::vector<uint16_t> cumulativeWeights;
+    std::vector<u16> cumulativeWeights;
     int totalWeight;
 
-    LootTable(const std::vector<ItemEntry>& items, const int amount)
+    LootTable(const std::vector<ItemEntry>& items, c_int amount)
         : UniformRoll(amount, amount), items(items), totalWeight(0) {
         computeCumulativeWeights();
     }
 
-    LootTable(const std::vector<ItemEntry>& items, const int min, const int max)
+    LootTable(const std::vector<ItemEntry>& items, c_int min, c_int max)
         : UniformRoll(min, max), items(items), totalWeight(0) {
         computeCumulativeWeights();
     }
 
     template<bool legacy>
-    static uint8_t getInt(RNG& rng, const uint8_t minimum, const uint8_t maximum) {
+    static u8 getInt(RNG& rng, c_u8 minimum, c_u8 maximum) {
         if constexpr (legacy) return rng.nextIntLegacy(minimum, maximum);
         else
             return rng.nextInt(minimum, maximum);
@@ -43,7 +43,7 @@ public:
      */
     template<bool legacy>
     ND ItemStack createLootRoll(RNG& rng) const {
-        const int randomWeight = rng.nextInt(totalWeight);
+        c_int randomWeight = rng.nextInt(totalWeight);
         // std::cout << randomWeight << " " << totalWeight << std::endl;
 
         size_t high = cumulativeWeights.size();

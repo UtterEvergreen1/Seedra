@@ -4,18 +4,19 @@
 
 
 class EnchantmentThorns final : public Enchantment {
-    static constexpr inline int8_t LEVELS_MIN[3] = {10, 30, 50};
-    static constexpr inline int8_t LEVELS_MAX[3] = {61, 71, 81};
+    static constexpr inline i8 LEVELS_MIN[3] = {10, 30, 50};
+    static constexpr inline i8 LEVELS_MAX[3] = {61, 71, 81};
 
 public:
     EnchantmentThorns(std::string name, const Rarity* rarity)
         : Enchantment(std::move(name), rarity, &Type::ARMOR_CHEST, EnumName::THORNS, 3){};
 
-    int getMinCost(const int enchantmentLevel) override { return LEVELS_MIN[enchantmentLevel - 1]; }
+    int getMinCost(c_int enchantmentLevel) override { return LEVELS_MIN[enchantmentLevel - 1]; }
 
-    int getMaxCost(const int enchantmentLevel) override { return LEVELS_MAX[enchantmentLevel - 1]; }
+    int getMaxCost(c_int enchantmentLevel) override { return LEVELS_MAX[enchantmentLevel - 1]; }
 
     ND bool canApply(const lce::items::Item* item) const override {
-        return item->getItemType() == lce::items::ItemType::ItemArmor || Enchantment::canApply(item);
+        return item->getItemType() == lce::items::ItemType::ItemArmor
+               || Enchantment::canApply(item);
     }
 };
