@@ -1,16 +1,19 @@
-#include "lce/blocks/block.hpp"
-#include "lce/blocks/block_ids.hpp"
-#include "lce/texture/textureMap.hpp"
+#include "lce/include/picture.hpp"
+#include "lce/registry/blockRegistry.hpp"
+#include "lce/registry/textureRegistry.hpp"
 
 int main(int argc, char* argv[]) {
-    TextureMap textures;
+    lce::registry::TextureRegistry textures{};
     textures.setup();
 
+    lce::registry::BlockRegistry blockReg{};
+    blockReg.setup();
+
     Picture canvas(48, 48, 4);
-    int sandID = lce::blocks::REGISTRY.getObjFromName("sand")->getID();
+    int sandID = blockReg.getBlockFromName("sand")->getID();
     auto const* sand = textures.getBlockFromID(sandID);
 
-    int obsidianID = lce::blocks::REGISTRY.getObjFromName("obsidian")->getID();
+    int obsidianID = blockReg.getBlockFromName("obsidian")->getID();
     auto const* obsidian = textures.getBlockFromID(obsidianID);
 
     canvas.placeSubImage(sand, 0, 0);
