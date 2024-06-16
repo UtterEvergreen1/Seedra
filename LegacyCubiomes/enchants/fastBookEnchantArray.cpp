@@ -66,7 +66,7 @@ void ELDataArray::addRandomItem(RNG& rng) {
 
 
 void ELDataArray::addEnchantments(ItemStack& itemStackIn) {
-    for (int i = 0; i <= enchants.getIndex() - 1; i++) {
+    for (int i = 0; i < enchants.getIndex(); i++) {
         itemStackIn.addEnchantmentData(&data[enchants.getValueAt(i)]);
     }
 }

@@ -9,13 +9,10 @@ public:
         const int8_t id{};
         const int8_t minEnchantability{};
         const int8_t levelCost{};
-        const int8_t levelCostSpan{};
 
         ArmorType() = default;
-        ArmorType(std::string typeName, const int8_t id, const int8_t minEnchantability, const int8_t levelCost,
-                  const int8_t levelCostSpan)
-            : typeName(std::move(typeName)), id(id), minEnchantability(minEnchantability), levelCost(levelCost),
-              levelCostSpan(levelCostSpan) {}
+        ArmorType(std::string typeName, const int8_t id, const int8_t minEnchantability, const int8_t levelCost)
+            : typeName(std::move(typeName)), id(id), minEnchantability(minEnchantability), levelCost(levelCost){}
 
         ND int8_t getEnchantIncreasePerLevel() const { return this->levelCost; }
         ND int8_t getMinimalEnchantability() const { return this->minEnchantability; }

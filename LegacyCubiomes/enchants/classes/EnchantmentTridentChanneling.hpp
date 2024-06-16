@@ -12,11 +12,5 @@ public:
     int getMinCost(int enchantmentLevel) override { return 25; }
 
     int getMaxCost(int enchantmentLevel) override { return 50; }
-
-    /// aka checkCompatability
-    ND bool canApplyTogether(const Enchantment *enchantment) const override {
-        return enchantment->enumID != EnumName::TRIDENT_RIPTIDE;
-    }
-
 };
 

@@ -202,6 +202,7 @@ public:
     virtual int getMaxCost(int enchantmentLevel);
 
     ND virtual bool canApplyTogether(const Enchantment* enchantment) const;
+    ND bool isCompatibleWith(const Enchantment *enchantment) const;
     ND virtual bool canApply(const lce::items::Item* item) const;
 
 

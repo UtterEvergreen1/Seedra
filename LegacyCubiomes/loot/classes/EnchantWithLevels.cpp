@@ -15,8 +15,8 @@ EnchantWithLevelsItem::EnchantWithLevelsItem(const int level) : EnchantWithLevel
 
 /* apply functions */
 void EnchantWithLevelsBook::apply(ItemStack& itemStack, RNG& random) {
-    // const int level = random.nextInt(this->randomLevel.getMin(), this->randomLevel.getMax());
-    ELDataArray* enchantmentVector = buildEnchantmentList(itemStack, random, 30);
+    const int level = random.nextInt(this->randomLevel.getMin(), this->randomLevel.getMax());
+    ELDataArray* enchantmentVector = buildEnchantmentList(itemStack, random, level);
     enchantmentVector->addEnchantments(itemStack);
 }
 
@@ -43,7 +43,7 @@ ELDataArray* EnchantWithLevelsBook::buildEnchantmentList(const ItemStack& itemSt
         const EnchantmentData* back = enchants->getLastEnchantmentAdded();
 
         for (int enchIndex = 0; enchIndex < enchants->totalEnchants; enchIndex++) {
-            if (!back->obj->canApplyTogether(enchants->data[enchIndex].obj)) {
+            if (!back->obj->isCompatibleWith(enchants->data[enchIndex].obj)) {
                 // std::cout << enchants->data[enchIndex].obj->name << " removed" << std::endl;
                 for (int i = 0; i < enchants->deletions.getIndex(); i++)
                     if (enchIndex == enchants->deletions.getValueAt(i)) goto END;
@@ -122,7 +122,7 @@ void EnchantWithLevelsItem::removeIncompatible(EnchDataVec_t& enchDataList, cons
     // std::cout << "REMOVE_INCOMPATIBLE" << std::endl;
 
     for (auto it = enchDataList.begin(); it != enchDataList.end();) {
-        if (!enchData.obj->canApplyTogether(it->obj)) {
+        if (!enchData.obj->isCompatibleWith(it->obj)) {
             // std::cout << it->obj->name << " removed" << std::endl;
             it = enchDataList.erase(it);
         } else {

@@ -4,7 +4,7 @@
 
 
 class EnchantmentArrowDamage final : public Enchantment {
-    static constexpr inline int8_t LEVELS_MIN[5] = {9, 19, 29, 39, 49};
+    static constexpr inline int8_t LEVELS_MIN[5] = {1, 11, 21, 31, 41};
     static constexpr inline int8_t LEVELS_MAX[5] = {16, 26, 36, 46, 56};
 
 public:

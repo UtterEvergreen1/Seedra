@@ -5,7 +5,7 @@
 
 class EnchantmentWaterWalker final : public Enchantment {
     static constexpr inline int8_t LEVELS_MIN[3] = {10, 20, 30};
-    static constexpr inline int8_t LEVELS_MAX[3] = {25, 35, 45};
+    static constexpr inline int8_t LEVELS_MAX[3] = {26, 36, 46};
 
 public:
     EnchantmentWaterWalker(std::string name, const Rarity* rarity)

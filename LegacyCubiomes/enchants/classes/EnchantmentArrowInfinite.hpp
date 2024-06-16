@@ -13,6 +13,6 @@ public:
     int getMaxCost(int enchantmentLevel) override { return 50; }
 
     ND bool canApplyTogether(const Enchantment* enchantment) const override {
-        return enchantment->enumID != EnumName::ARROW_INFINITE && Enchantment::canApplyTogether(enchantment);
+        return enchantment->enumID != EnumName::MENDING && Enchantment::canApplyTogether(enchantment);
     }
 };

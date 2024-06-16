@@ -170,6 +170,10 @@ bool Enchantment::canApplyTogether(const Enchantment *enchantment) const {
     return this->name != enchantment->name;
 }
 
+bool Enchantment::isCompatibleWith(const Enchantment *enchantment) const {
+    return this->canApplyTogether(enchantment) && enchantment->canApplyTogether(this);
+}
+
 
 bool Enchantment::canApply(const lce::items::Item *item) const {
     return this->type->canEnchantItem(item);

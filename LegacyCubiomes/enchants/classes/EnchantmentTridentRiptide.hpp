@@ -11,16 +11,14 @@ public:
             Enchantment(std::move(name), rarity, &Type::TRIDENT,
                         EnumName::TRIDENT_RIPTIDE, 3) {};
 
-    int getMinCost(const int enchantmentLevel) override {
-        return LEVELS_MIN[enchantmentLevel];
-    }
+    int getMinCost(const int enchantmentLevel) override { return LEVELS_MIN[enchantmentLevel - 1]; }
 
-    int getMaxCost(int enchantmentLevel) override {
-        return 50;
-    }
+    int getMaxCost(const int enchantmentLevel) override { return 50; }
 
     ND bool canApplyTogether(const Enchantment *enchantment) const override {
-        return enchantment->enumID != EnumName::TRIDENT_RIPTIDE;
+        return Enchantment::canApplyTogether(enchantment) &&
+               enchantment->enumID != EnumName::TRIDENT_LOYALTY &&
+               enchantment->enumID != EnumName::TRIDENT_CHANNELING;
     }
 };
 

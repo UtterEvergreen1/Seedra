@@ -11,12 +11,8 @@ public:
             Enchantment(std::move(name), rarity, &Type::TRIDENT,
                         EnumName::TRIDENT_IMPALER, 5) {};
 
-    int getMinCost(const int enchantmentLevel) override {
-        return LEVELS_MIN[enchantmentLevel - 1];
-    }
+    int getMinCost(const int enchantmentLevel) override { return LEVELS_MIN[enchantmentLevel - 1]; }
 
-    int getMaxCost(int enchantmentLevel) override {
-        return 50;
-    }
+    int getMaxCost(const int enchantmentLevel) override { return 50; }
 };
 
