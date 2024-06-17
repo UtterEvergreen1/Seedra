@@ -37,6 +37,7 @@ namespace loot {
         SimpleDungeon::setup();
         Mansion::setup();
         SpawnBonusChest::setup();
+        StrongholdCrossing::setup();
         StrongholdLibrary::setup();
         StrongholdCorridor<isAquatic>::setup();
 

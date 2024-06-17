@@ -73,8 +73,6 @@ EnchDataVec_t EnchantWithLevelsItem::buildEnchantmentList(const ItemStack& itemS
     level = MathHelper::clamp((int) std::round((float) level + (float) level * f), 1,
                               std::numeric_limits<int>::max()); // 0x7fffffff
 
-    std::cout << "Level: " << level << std::endl;
-
     std::vector<EnchantmentData> list1 = getEnchantmentDataList(level, itemStackIn);
 
     if (!list1.empty()) {

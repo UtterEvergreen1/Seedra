@@ -13,7 +13,7 @@
 
 ### Elytra Update
 
-1. 🔵End City Treasure [sometimes splits items when shouldn't?]
+1. 🟢End City Treasure
 2. 🟢Abandoned Mineshaft
 3. 🟢Blacksmith
 4. 🟢Woodland Mansion
@@ -31,25 +31,25 @@
 ### Aquatic Update:
 
 1. 🟢Abandoned Mineshaft
-2. 🔴Blacksmith
+2. 🟢Blacksmith
 3. 🟢Woodland Mansion
 4. 🟢Desert Temple
-5. 🟡End City Treasure
+5. 🟢End City Treasure
 6. 🟢Igloo Chest
-7. 🟢🔵Jungle Temple [second+ enchants wrong]
+7. 🟢Jungle Temple
 8. 🟢Jungle Temple Dispenser
 9. 🟢Nether Bridge
-10. 🟢🔵Dungeon
+10. 🟢Dungeon
 11. 🟢Spawn Bonus Chest
-12. 🟢🔵Stronghold Crossing
+12. 🟢Stronghold Crossing
 13. 🟢Stronghold Library
-14. 🔴Stronghold Corridor [Aquatic]
+14. 🟢Stronghold Corridor [Aquatic]
 15. 🟢Buried Treasure
-16. 🟢🔵Underwater Ruin Big
-17. 🟢🔵Underwater Ruin Small
+16. 🟢Underwater Ruin Big
+17. 🟢Underwater Ruin Small
 18. 🟢Shipwreck Treasure
-19. 🟢🔵Shipwreck Supply
-20. 🟢🔵Shipwreck Map
+19. 🟢Shipwreck Supply
+20. 🟢Shipwreck Map
 
 # PS3
 
@@ -73,8 +73,8 @@
 
 1. 🔴Stronghold Corridor [Aquatic]
 2. 🔴Buried Treasure
-3. 🔴Underwater Ruin [Big]
-4. 🔴Underwater Ruin [Small]
+3. 🔴Underwater Ruin Big
+4. 🔴Underwater Ruin Small
 5. 🔴Shipwreck Treasure
 6. 🔴Shipwreck Supply
 7. 🔴Shipwreck Map
