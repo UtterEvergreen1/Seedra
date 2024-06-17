@@ -8,7 +8,7 @@ public:
     EnchantmentArrowFire(std::string name, const Rarity* rarity)
         : Enchantment(std::move(name), rarity, &Type::BOW, EnumName::ARROW_FIRE, 1){};
 
-    int getMinCost(int enchantmentLevel) override { return 20; }
+    int getMinCost(c_int enchantmentLevel) override { return 20; }
 
-    int getMaxCost(int enchantmentLevel) override { return 50; }
+    int getMaxCost(c_int enchantmentLevel) override { return 50; }
 };

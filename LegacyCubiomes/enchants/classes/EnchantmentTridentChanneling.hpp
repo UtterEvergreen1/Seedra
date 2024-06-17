@@ -9,8 +9,8 @@ public:
             Enchantment(std::move(name), rarity, &Type::TRIDENT,
                         EnumName::TRIDENT_CHANNELING, 1) {};
 
-    int getMinCost(int enchantmentLevel) override { return 25; }
+    int getMinCost(c_int enchantmentLevel) override { return 25; }
 
-    int getMaxCost(int enchantmentLevel) override { return 50; }
+    int getMaxCost(c_int enchantmentLevel) override { return 50; }
 };
 

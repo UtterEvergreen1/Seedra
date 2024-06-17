@@ -5,15 +5,15 @@
 #include "biomeID.hpp"
 
 
-void setBiomeColor(unsigned char biomeColor[256][3], const int id, const unsigned char r, const unsigned char g,
+void setBiomeColor(u8 biomeColor[256][3], c_int id, const unsigned char r, const unsigned char g,
                    const unsigned char b) {
     biomeColor[id][0] = r;
     biomeColor[id][1] = g;
     biomeColor[id][2] = b;
 }
 
-void setMutationColor(unsigned char biomeColor[256][3], const int mutated, const int parent) {
-    unsigned int c;
+void setMutationColor(u8 biomeColor[256][3], c_int mutated, c_int parent) {
+    u32 c;
     biomeColor[mutated][0] = (c = biomeColor[parent][0] + 40) > 255 ? 255 : c;
     biomeColor[mutated][1] = (c = biomeColor[parent][1] + 40) > 255 ? 255 : c;
     biomeColor[mutated][2] = (c = biomeColor[parent][2] + 40) > 255 ? 255 : c;
@@ -28,7 +28,7 @@ void setMutationColor(unsigned char biomeColor[256][3], const int mutated, const
  *
  * @param biomeColors
  */
-void initBiomeColors(unsigned char biomeColors[256][3]) {
+void initBiomeColors(u8 biomeColors[256][3]) {
     memset(biomeColors, 0, 256 * 3);
 
     setBiomeColor(biomeColors, ocean, 0, 0, 112);
@@ -114,7 +114,7 @@ void initBiomeColors(unsigned char biomeColors[256][3]) {
 }
 
 
-void initBiomeTypeColors(unsigned char biomeColors[256][3]) {
+void initBiomeTypeColors(u8 biomeColors[256][3]) {
     memset(biomeColors, 0, 256 * 3);
     setBiomeColor(biomeColors, Oceanic, 0x00, 0x00, 0xa0);
     setBiomeColor(biomeColors, Warm, 0xff, 0xc0, 0x00);

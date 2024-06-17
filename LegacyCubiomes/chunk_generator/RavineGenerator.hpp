@@ -9,7 +9,7 @@ public:
     explicit RavineGenerator(const Generator& generator) : MapGenBase(generator) {}
 
     RavineGenerator(const lce::CONSOLE console, const LCEVERSION version,
-                    const int64_t seed, const lce::WORLDSIZE size, const lce::BIOMESCALE scale)
+                    c_i64 seed, const lce::WORLDSIZE size, const lce::BIOMESCALE scale)
         : MapGenBase(console, version, seed, size, scale) {}
 
     ~RavineGenerator() override = default;
@@ -18,9 +18,9 @@ public:
 
     ND unsigned char topBlock(int x, int z) const;
 
-    static bool canReplaceBlock(uint16_t blockAt, uint16_t blockAbove);
+    static bool canReplaceBlock(u16 blockAt, u16 blockAbove);
 
-    void addTunnel(int64_t randomSeed, Pos2D chunk, ChunkPrimer* chunkPrimer, DoublePos3D tunnel, float angle,
+    void addTunnel(i64 randomSeed, Pos2D chunk, ChunkPrimer* chunkPrimer, DoublePos3D tunnel, float angle,
                    float slope, float curvature, int tunnelStartSegment, int tunnelEndSegment, double widthMultiplier, bool accurate);
 
     void addFeature(int baseChunkX, int baseChunkZ, int currentChunkX, int currentChunkZ,

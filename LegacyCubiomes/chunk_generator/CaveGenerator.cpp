@@ -5,7 +5,7 @@
 #include "LegacyCubiomes/utils/MathHelper.hpp"
 
 
-unsigned char CaveGenerator::topBlock(const int x, const int z) const {
+unsigned char CaveGenerator::topBlock(c_int x, c_int z) const {
     switch (g.getBiomeAt(1, x, z)) {
         case beach:
         case desert:
@@ -28,7 +28,7 @@ unsigned char CaveGenerator::topBlock(const int x, const int z) const {
 }
 
 
-bool CaveGenerator::canReplaceBlock(const uint16_t blockAt, const uint16_t blockAbove) {
+bool CaveGenerator::canReplaceBlock(c_u16 blockAt, c_u16 blockAbove) {
     switch (blockAt) {
         default:
             return false;
@@ -51,7 +51,7 @@ bool CaveGenerator::canReplaceBlock(const uint16_t blockAt, const uint16_t block
 }
 
 
-void CaveGenerator::addTunnel(int64_t seedModifier, Pos2D chunk, ChunkPrimer* chunkPrimer, DoublePos3D start,
+void CaveGenerator::addTunnel(i64 seedModifier, Pos2D chunk, ChunkPrimer* chunkPrimer, DoublePos3D start,
                               float tunnelWidth, float tunnelDirection, float tunnelSlope, int currentTunnelSegment,
                               int maxTunnelSegment, double tunnelHeightMultiplier, bool accurate) {
 
@@ -114,7 +114,7 @@ void CaveGenerator::addTunnel(int64_t seedModifier, Pos2D chunk, ChunkPrimer* ch
             bool isXbox = g.getConsole() == lce::CONSOLE::XBOX360 ||
                           g.getConsole() == lce::CONSOLE::XBOX1;
             float tunnelWidth1;
-            int64_t seed1;
+            i64 seed1;
             if (isXbox) {
                 tunnelWidth1 = rng.nextFloat();
                 seed1 = rng.nextLongI();
@@ -125,7 +125,7 @@ void CaveGenerator::addTunnel(int64_t seedModifier, Pos2D chunk, ChunkPrimer* ch
             addTunnel(seed1, chunk, chunkPrimer, start, tunnelWidth1 * 0.5F + 0.5F, tunnelDirection - HALF_PI,
                       tunnelSlope / 3.0F, currentTunnelSegment, maxTunnelSegment, 1.0, accurate);
             float tunnelWidth2;
-            int64_t seed2;
+            i64 seed2;
             if (isXbox) {
                 tunnelWidth2 = rng.nextFloat();
                 seed2 = rng.nextLongI();
@@ -178,7 +178,7 @@ void CaveGenerator::addTunnel(int64_t seedModifier, Pos2D chunk, ChunkPrimer* ch
                     for (int currentZ = minZ; !hasWater && currentZ < maxZ; ++currentZ) {
                         for (int currentY = maxY + 1; !hasWater && currentY >= minY - 1; --currentY) {
                             if (currentY >= 0 && currentY < 128) {
-                                uint16_t blockType = chunkPrimer->getBlockId(currentX, currentY, currentZ);
+                                u16 blockType = chunkPrimer->getBlockId(currentX, currentY, currentZ);
                                 if (blockType == lce::blocks::ids::STILL_WATER_ID || blockType == lce::blocks::ids::FLOWING_WATER_ID) {
                                     hasWater = true;
                                 }
@@ -207,8 +207,8 @@ void CaveGenerator::addTunnel(int64_t seedModifier, Pos2D chunk, ChunkPrimer* ch
                                     double scaleY = ((double) (currentY - 1) + 0.5 - start.y) / tunnelHeight;
 
                                     if (scaleY > -0.7 && scaleX * scaleX + scaleY * scaleY + scaleZ * scaleZ < 1.0) {
-                                        uint16_t currentBlock = chunkPrimer->getBlockId(currentX, currentY, currentZ);
-                                        uint16_t blockAbove = chunkPrimer->getBlockId(currentX, currentY + 1, currentZ);
+                                        u16 currentBlock = chunkPrimer->getBlockId(currentX, currentY, currentZ);
+                                        u16 blockAbove = chunkPrimer->getBlockId(currentX, currentY + 1, currentZ);
 
                                         if (currentBlock == lce::blocks::ids::GRASS_ID || currentBlock == lce::blocks::ids::MYCELIUM_ID) {
                                             isTopBlock = true;
@@ -241,23 +241,24 @@ void CaveGenerator::addTunnel(int64_t seedModifier, Pos2D chunk, ChunkPrimer* ch
     }
 }
 
-void CaveGenerator::addRoom(const int64_t seedModifier, const Pos2D target, ChunkPrimer* chunkPrimer,
+
+void CaveGenerator::addRoom(c_i64 seedModifier, const Pos2D target, ChunkPrimer* chunkPrimer,
                             const DoublePos3D& roomStart, RNG& rng, bool accurate) {
     addTunnel(seedModifier, target, chunkPrimer, roomStart, 1.0F + rng.nextFloat() * 6.0F,
               0.0F, 0.0F, -1, -1, 0.5, accurate);
 }
 
 
-void CaveGenerator::addFeature(const int baseChunkX, const int baseChunkZ, int currentChunkX, int currentChunkZ,
+void CaveGenerator::addFeature(c_int baseChunkX, c_int baseChunkZ, int currentChunkX, int currentChunkZ,
                                ChunkPrimer* chunkPrimer, bool accurate) {
-    const int tunnelCount = rng.nextInt(rng.nextInt(rng.nextInt(40) + 1) + 1);
+    c_int tunnelCount = rng.nextInt(rng.nextInt(rng.nextInt(40) + 1) + 1);
 
     if EXPECT_TRUE (rng.nextInt(15) != 0) { return; }
 
     for (int currentTunnel = 0; currentTunnel < tunnelCount; ++currentTunnel) {
-        auto tunnelStartX = static_cast<double>(baseChunkX * 16 + rng.nextInt(16));
-        auto tunnelStartY = static_cast<double>(rng.nextInt(rng.nextInt(120) + 8));
-        auto tunnelStartZ = static_cast<double>(baseChunkZ * 16 + rng.nextInt(16));
+        c_auto tunnelStartX = static_cast<double>(baseChunkX * 16 + rng.nextInt(16));
+        c_auto tunnelStartY = static_cast<double>(rng.nextInt(rng.nextInt(120) + 8));
+        c_auto tunnelStartZ = static_cast<double>(baseChunkZ * 16 + rng.nextInt(16));
         int segmentCount = 1;
 
         if (rng.nextInt(4) == 0) {
@@ -267,8 +268,8 @@ void CaveGenerator::addFeature(const int baseChunkX, const int baseChunkZ, int c
         }
 
         for (int currentSegment = 0; currentSegment < segmentCount; ++currentSegment) {
-            const float yaw = rng.nextFloat() * (PI_FLOAT * 2.0F);
-            const float pitch = (rng.nextFloat() - 0.5F) * 2.0F / 8.0F;
+            c_float yaw = rng.nextFloat() * (PI_FLOAT * 2.0F);
+            c_float pitch = (rng.nextFloat() - 0.5F) * 2.0F / 8.0F;
             float tunnelLength = rng.nextFloat() * 2.0F + rng.nextFloat();
 
             if (rng.nextInt(10) == 0) { tunnelLength *= rng.nextFloat() * rng.nextFloat() * 3.0F + 1.0F; }

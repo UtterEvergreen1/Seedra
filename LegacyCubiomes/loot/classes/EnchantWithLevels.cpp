@@ -8,20 +8,20 @@
 EnchantWithLevels::EnchantWithLevels(const UniformRoll roll) : randomLevel(roll) {}
 
 EnchantWithLevelsBook::EnchantWithLevelsBook(const UniformRoll levelRange) : EnchantWithLevels(levelRange) {}
-EnchantWithLevelsBook::EnchantWithLevelsBook(const int level) : EnchantWithLevels(UniformRoll(level, level)) {}
+EnchantWithLevelsBook::EnchantWithLevelsBook(c_int level) : EnchantWithLevels(UniformRoll(level, level)) {}
 EnchantWithLevelsItem::EnchantWithLevelsItem(const UniformRoll levelRange) : EnchantWithLevels(levelRange) {}
-EnchantWithLevelsItem::EnchantWithLevelsItem(const int level) : EnchantWithLevels(UniformRoll(level, level)) {}
+EnchantWithLevelsItem::EnchantWithLevelsItem(c_int level) : EnchantWithLevels(UniformRoll(level, level)) {}
 
 
 /* apply functions */
 void EnchantWithLevelsBook::apply(ItemStack& itemStack, RNG& random) {
-    const int level = random.nextInt(this->randomLevel.getMin(), this->randomLevel.getMax());
+    c_int level = random.nextInt(this->randomLevel.getMin(), this->randomLevel.getMax());
     ELDataArray* enchantmentVector = buildEnchantmentList(itemStack, random, level);
     enchantmentVector->addEnchantments(itemStack);
 }
 
 void EnchantWithLevelsItem::apply(ItemStack& itemStack, RNG& random) {
-    const int level = random.nextInt(this->randomLevel.getMin(), this->randomLevel.getMax());
+    c_int level = random.nextInt(this->randomLevel.getMin(), this->randomLevel.getMax());
     addRandomEnchantment(random, itemStack, level);
 }
 
@@ -30,10 +30,10 @@ void EnchantWithLevelsItem::apply(ItemStack& itemStack, RNG& random) {
 ELDataArray* EnchantWithLevelsBook::buildEnchantmentList(const ItemStack& itemStackIn, RNG& rng, int level) {
 
     const lce::items::Item* item = itemStackIn.getItem();
-    const int cost = (item->getCost() >> 2) + 1;
+    c_int cost = (item->getCost() >> 2) + 1;
 
     level += 1 + rng.nextInt(cost) + rng.nextInt(cost);
-    const float f = (rng.nextFloat() + rng.nextFloat() - 1.0F) * 0.15F;
+    c_float f = (rng.nextFloat() + rng.nextFloat() - 1.0F) * 0.15F;
     level = MathHelper::clamp((int) std::round((float) level + (float) level * f), 1, 0x7fffffff);
 
     ELDataArray* enchants = EnchantmentHelper::BOOK_LEVEL_TABLE.get(level);
@@ -64,7 +64,7 @@ EnchDataVec_t EnchantWithLevelsItem::buildEnchantmentList(const ItemStack& itemS
     list.reserve(MAX_ENCHANT_LIST_SIZE);
 
     const lce::items::Item* item = itemStackIn.getItem();
-    const int i = static_cast<unsigned char>(item->getCost());
+    c_int i = static_cast<unsigned char>(item->getCost());
 
     if (i == 0) return list;
 
@@ -90,7 +90,7 @@ EnchDataVec_t EnchantWithLevelsItem::buildEnchantmentList(const ItemStack& itemS
 }
 
 
-EnchDataVec_t EnchantWithLevelsItem::getEnchantmentDataList(const int enchantmentLevelIn, const ItemStack& ItemStackIn) {
+EnchDataVec_t EnchantWithLevelsItem::getEnchantmentDataList(c_int enchantmentLevelIn, const ItemStack& ItemStackIn) {
     EnchDataVec_t list;
 
     for (Enchantment* pointer: Enchantment::REGISTRY.getRegistry()) {
@@ -98,7 +98,7 @@ EnchDataVec_t EnchantWithLevelsItem::getEnchantmentDataList(const int enchantmen
 
         if (!pointer->type->canEnchantItem(ItemStackIn.getItem())) { continue; }
 
-        for (int8_t i = pointer->maxLevel; i > 0; --i) { // maxLevel to minLevel - 1 (always 0)
+        for (i8 i = pointer->maxLevel; i > 0; --i) { // maxLevel to minLevel - 1 (always 0)
 
             if (enchantmentLevelIn >= pointer->getMinCost(i) && enchantmentLevelIn <= pointer->getMaxCost(i)) {
                 list.emplace_back(pointer, i);

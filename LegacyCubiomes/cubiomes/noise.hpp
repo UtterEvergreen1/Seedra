@@ -7,7 +7,7 @@ class Generator;
 
 
 struct PerlinNoise {
-    uint8_t d[512];
+    u8 d[512];
     double a;
     double b;
     double c;
@@ -52,4 +52,4 @@ MU double sampleOctave(const Generator* g, const OctaveNoise* noise, double x, d
 double sampleOctaveAmp(const Generator* g, const OctaveNoise* noise, double x, double y, double z, double yAmp,
                        double yMin, int yDefault);
 
-void initSurfaceNoise(SurfaceNoise* sn, lce::DIMENSION dimension, uint64_t worldSeed);
+void initSurfaceNoise(SurfaceNoise* sn, lce::DIMENSION dimension, u64 worldSeed);

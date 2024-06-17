@@ -1,8 +1,8 @@
 #include "ItemStack.hpp"
 
 
-ItemStack ItemStack::splitStack(const int amount) {
-    const int splitCount = std::min(amount, static_cast<int>(stackSize));
+ItemStack ItemStack::splitStack(c_int amount) {
+    c_int splitCount = std::min(amount, static_cast<int>(stackSize));
     ItemStack splitItem(item, splitCount);
     stackSize -= splitCount;
     return splitItem;

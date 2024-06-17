@@ -11,31 +11,31 @@ namespace loot {
     class Loot {
     public:
         static std::vector<LootTable> lootTables;
-        static uint8_t maxItemsPossible;
+        static u8 maxItemsPossible;
 
         /// combine base loot seeding and generation to get the base loot
         template<bool shuffle, bool legacy>
-        ND static Container getLootFromChunk(int64_t worldSeed, int chunkX, int chunkZ);
+        ND static Container getLootFromChunk(i64 worldSeed, int chunkX, int chunkZ);
 
         /// loot generation from seed, don't use in a search unless you know the exact seed
         template<bool shuffle>
         static Container getLootFromSeed(RNG& seed);
         template<bool shuffle>
-        static Container getLootFromLootTableSeed(uint64_t lootTableSeed);
+        static Container getLootFromLootTableSeed(u64 lootTableSeed);
 
         static Container getLootLegacyFromSeed(RNG& seed);
 
         /// other parameter options for loot finding
         template<bool shuffle, bool legacy>
-        static Container getLootFromChunk(int64_t worldSeed, Pos2D chunkPos);
+        static Container getLootFromChunk(i64 worldSeed, Pos2D chunkPos);
         template<bool shuffle, bool legacy>
-        static Container getLootFromBlock(int64_t worldSeed, int blockX, int blockZ);
+        static Container getLootFromBlock(i64 worldSeed, int blockX, int blockZ);
         template<bool shuffle, bool legacy>
-        static Container getLootFromBlock(int64_t worldSeed, Pos2D blockPos);
+        static Container getLootFromBlock(i64 worldSeed, Pos2D blockPos);
 
         /// generate loot chests in a row eg. needed to get all desert temple chests
         template<bool shuffle, bool legacy>
-        ND static std::vector<Container> getLootChests(int numChests, int64_t worldSeed, int chunkX, int chunkZ);
+        ND static std::vector<Container> getLootChests(int numChests, i64 worldSeed, int chunkX, int chunkZ);
 
         template<bool shuffle, bool legacy>
         static std::vector<Container> getLootChestsFromSeed(int numChests, RNG& seed);
@@ -46,12 +46,12 @@ namespace loot {
     std::vector<LootTable> Loot<T>::lootTables;
 
     template<typename T>
-    uint8_t Loot<T>::maxItemsPossible;
+    u8 Loot<T>::maxItemsPossible;
 
     /// combine loot seeding and generation to get the base loot
     template<typename T>
     template<bool shuffle, bool legacy>
-    Container Loot<T>::getLootFromChunk(const int64_t worldSeed, const int chunkX, const int chunkZ) {
+    Container Loot<T>::getLootFromChunk(c_i64 worldSeed, c_int chunkX, c_int chunkZ) {
         static_assert(!shuffle || !legacy, "Legacy loot does not shuffle: change shuffle to false");
         RNG seed = RNG::getPopulationSeed(worldSeed, chunkX, chunkZ);
         if constexpr (legacy) return getLootLegacyFromSeed(seed);
@@ -63,7 +63,7 @@ namespace loot {
     /// loot generation from seed
     template<typename T>
     template<bool shuffle>
-    Container Loot<T>::getLootFromLootTableSeed(const uint64_t lootTableSeed) {
+    Container Loot<T>::getLootFromLootTableSeed(c_u64 lootTableSeed) {
         std::vector<ItemStack> chestContents;
         chestContents.reserve(maxItemsPossible);
         RNG random;
@@ -71,7 +71,7 @@ namespace loot {
 
         // generate loot
         for (const LootTable& table: lootTables) {
-            const int rollCount = random.nextInt(table.getMin(), table.getMax());
+            c_int rollCount = random.nextInt(table.getMin(), table.getMax());
             for (int rollIndex = 0; rollIndex < rollCount; rollIndex++) {
                 ItemStack result = table.createLootRoll<false>(random);
                 chestContents.push_back(result);
@@ -98,7 +98,7 @@ namespace loot {
 
         //generate loot
         for (const LootTable& table: lootTables) {
-            const int rollCount = seed.nextIntLegacy(table.getMin(), table.getMax());
+            c_int rollCount = seed.nextIntLegacy(table.getMin(), table.getMax());
             for (int rollIndex = 0; rollIndex < rollCount; rollIndex++) {
                 ItemStack result = table.createLootRoll<true>(seed);
                 chestContents.setInventorySlotContents(seed.nextInt(Container::CHEST_SIZE), std::move(result));
@@ -111,19 +111,19 @@ namespace loot {
     /// other parameter options for loot finding
     template<typename T>
     template<bool shuffle, bool legacy>
-    Container Loot<T>::getLootFromChunk(const int64_t worldSeed, const Pos2D chunkPos) {
+    Container Loot<T>::getLootFromChunk(c_i64 worldSeed, const Pos2D chunkPos) {
         return getLootFromChunk<shuffle, legacy>(worldSeed, chunkPos.x, chunkPos.z);
     }
 
     template<typename T>
     template<bool shuffle, bool legacy>
-    Container Loot<T>::getLootFromBlock(const int64_t worldSeed, const int blockX, const int blockZ) {
+    Container Loot<T>::getLootFromBlock(c_i64 worldSeed, c_int blockX, c_int blockZ) {
         return getLootFromChunk<shuffle, legacy>(worldSeed, blockX >> 4, blockZ >> 4);
     }
 
     template<typename T>
     template<bool shuffle, bool legacy>
-    Container Loot<T>::getLootFromBlock(const int64_t worldSeed, const Pos2D blockPos) {
+    Container Loot<T>::getLootFromBlock(c_i64 worldSeed, const Pos2D blockPos) {
         return getLootFromChunk<shuffle, legacy>(worldSeed, blockPos.x >> 4, blockPos.z >> 4);
     }
 
@@ -131,15 +131,15 @@ namespace loot {
     /// generate loot chests in a row eg. needed to get all desert temple chests
     template<typename T>
     template<bool shuffle, bool legacy>
-    std::vector<Container> Loot<T>::getLootChests(const int numChests, const int64_t worldSeed, const int chunkX,
-                                                  const int chunkZ) {
+    std::vector<Container> Loot<T>::getLootChests(c_int numChests, c_i64 worldSeed, c_int chunkX,
+                                                  c_int chunkZ) {
         RNG seed = RNG::getPopulationSeed(worldSeed, chunkX, chunkZ);
         return getLootChestsFromSeed<shuffle, legacy>(numChests, seed);
     }
 
     template<typename T>
     template<bool shuffle, bool legacy>
-    std::vector<Container> Loot<T>::getLootChestsFromSeed(const int numChests, RNG& seed) {
+    std::vector<Container> Loot<T>::getLootChestsFromSeed(c_int numChests, RNG& seed) {
         std::vector<Container> chests(numChests);
         for (int chestIndex = 0; chestIndex < numChests; chestIndex++) {
             if constexpr (legacy) chests[chestIndex] = getLootLegacyFromSeed(seed);

@@ -21,7 +21,7 @@ Pos2DTemplate<classType> Pos2DTemplate<classType>::operator+(const Pos2DTemplate
 
 
 template<class classType>
-Pos2DTemplate<classType> Pos2DTemplate<classType>::operator+(const int other) const { return {x + other, z + other}; }
+Pos2DTemplate<classType> Pos2DTemplate<classType>::operator+(c_int other) const { return {x + other, z + other}; }
 
 
 template<class classType>
@@ -29,7 +29,7 @@ Pos2DTemplate<classType> Pos2DTemplate<classType>::operator-(const Pos2DTemplate
 
 
 template<class classType>
-Pos2DTemplate<classType> Pos2DTemplate<classType>::operator-(const int other) const { return {x - other, z - other}; }
+Pos2DTemplate<classType> Pos2DTemplate<classType>::operator-(c_int other) const { return {x - other, z - other}; }
 
 
 template<class classType>

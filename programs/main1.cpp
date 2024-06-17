@@ -39,12 +39,12 @@ int getWorldRavineTotalCount(int64_t worldSeed) {
     // seedMultiplierX nextLong()
     ret1 = ((seed * 0x5deece66d + 0xb) & 0xFFFFFFFF0000) << 16;
     seed = seed * 0xBB20B4600A69 + 0x40942DE6BA;
-    const int64_t seedMultiplierX = (int64_t) (ret1 + (int) (seed >> 16));
+    c_i64 seedMultiplierX = (int64_t) (ret1 + (int) (seed >> 16));
 
     // seedMultiplierZ nextLong()
     ret1 = ((seed * 0x5deece66d + 0xb) & 0xFFFFFFFF0000) << 16;
     seed = seed * 0xBB20B4600A69 + 0x40942DE6BA;
-    const int64_t seedMultiplierZ = (int64_t) (ret1 + (int) (seed >> 16));
+    c_i64 seedMultiplierZ = (int64_t) (ret1 + (int) (seed >> 16));
 
     // create multiplication cache
     #pragma unroll

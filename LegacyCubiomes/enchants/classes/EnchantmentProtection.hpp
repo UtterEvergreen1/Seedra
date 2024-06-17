@@ -6,16 +6,16 @@ class EnchantmentProtection final : public Enchantment {
 public:
     struct ArmorType {
         const std::string typeName;
-        const int8_t id{};
-        const int8_t minEnchantability{};
-        const int8_t levelCost{};
+        c_i8 id{};
+        c_i8 minEnchantability{};
+        c_i8 levelCost{};
 
         ArmorType() = default;
-        ArmorType(std::string typeName, const int8_t id, const int8_t minEnchantability, const int8_t levelCost)
+        ArmorType(std::string typeName, c_i8 id, c_i8 minEnchantability, c_i8 levelCost)
             : typeName(std::move(typeName)), id(id), minEnchantability(minEnchantability), levelCost(levelCost){}
 
-        ND int8_t getEnchantIncreasePerLevel() const { return this->levelCost; }
-        ND int8_t getMinimalEnchantability() const { return this->minEnchantability; }
+        ND i8 getEnchantIncreasePerLevel() const { return this->levelCost; }
+        ND i8 getMinimalEnchantability() const { return this->minEnchantability; }
     };
 
     static const ArmorType ALL;
@@ -26,7 +26,7 @@ public:
 
     const ArmorType* protType = &ALL;
 
-    EnchantmentProtection(std::string name, const Rarity* rarity, const int type)
+    EnchantmentProtection(std::string name, const Rarity* rarity, c_int type)
         : Enchantment(std::move(name), rarity, EnumName::PROTECTION, 4) {
         switch (type) {
             case 0:
@@ -56,17 +56,17 @@ public:
         }
     };
 
-    int getMinCost(const int enchantmentLevel) override {
+    int getMinCost(c_int enchantmentLevel) override {
         return protType->getMinimalEnchantability() + (enchantmentLevel - 1) * protType->getEnchantIncreasePerLevel();
     }
 
-    int getMaxCost(const int enchantmentLevel) override {
+    int getMaxCost(c_int enchantmentLevel) override {
         return getMinCost(enchantmentLevel) + protType->getEnchantIncreasePerLevel();
     }
 
     ND bool canApplyTogether(const Enchantment* enchantment) const override {
         if (enchantment->enumID == EnumName::PROTECTION) {
-            const auto enchantmentIn = dynamic_cast<const EnchantmentProtection*>(enchantment);
+            c_auto enchantmentIn = dynamic_cast<const EnchantmentProtection*>(enchantment);
 
             if (protType == enchantmentIn->protType) { return false; }
             return protType == &EnchantmentProtection::FALL || enchantmentIn->protType == &EnchantmentProtection::FALL;

@@ -49,7 +49,7 @@ namespace generation {
         * @param chunkX x coordinate of the chunk
         * @param chunkZ z coordinate of the chunk
         */
-        void generate(int64_t worldSeed, int chunkX, int chunkZ);
+        void generate(i64 worldSeed, int chunkX, int chunkZ);
 
         /**
         * \n
@@ -57,7 +57,7 @@ namespace generation {
         * @param worldSeed the seed
         * @param chunkPos coordinates of the chunk
         */
-        void generate(const int64_t worldSeed, const Pos2D chunkPos) {
+        void generate(c_i64 worldSeed, const Pos2D chunkPos) {
             return generate(worldSeed, chunkPos.x, chunkPos.z);
         }
         void reset();

@@ -9,9 +9,9 @@
 
 template<int items>
 class IndexArrayTemplate {
-    static constexpr int8_t ITEM_COUNT = items;
-    int8_t indexes[ITEM_COUNT] = {0};
-    int8_t currentIndex = 0;
+    static constexpr i8 ITEM_COUNT = items;
+    i8 indexes[ITEM_COUNT] = {0};
+    i8 currentIndex = 0;
 
 public:
     IndexArrayTemplate() = default;
@@ -22,7 +22,7 @@ public:
 
     ND int getIndex() const { return currentIndex; }
 
-    void addItem(const int indexIn) { indexes[currentIndex++] = static_cast<int8_t>(indexIn); }
+    void addItem(c_int indexIn) { indexes[currentIndex++] = static_cast<i8>(indexIn); }
 
     MU int getEnchantmentIndex(int indexIn) {
         for (int i = 0; i < currentIndex; i++)
@@ -37,8 +37,8 @@ typedef IndexArrayTemplate<16> IndexArrayLarge;
 
 class ELDataArray {
 public:
-    int8_t totalWeight = 0;
-    int8_t totalEnchants = 0;
+    i8 totalWeight = 0;
+    i8 totalEnchants = 0;
 
     IndexArrayLarge deletions = IndexArrayLarge();
     IndexArraySmall enchants = IndexArraySmall();
@@ -65,16 +65,16 @@ public:
 };
 
 class EnchantedBookEnchantsLookupTable {
-    static constexpr int8_t VECTOR_COUNT = 48;
+    static constexpr i8 VECTOR_COUNT = 48;
     ELDataArray* dataArrays[VECTOR_COUNT] = {nullptr};
     bool areVectorsSetup = false;
 
 public:
-    static int8_t TOTAL_WEIGHT;
-    static int8_t CUMULATIVE_WEIGHT_ALL[Enchantment::MAX_ENCHANTMENT_COUNT];
+    static i8 TOTAL_WEIGHT;
+    static i8 CUMULATIVE_WEIGHT_ALL[Enchantment::MAX_ENCHANTMENT_COUNT];
 
     EnchantedBookEnchantsLookupTable() = default;
-    MU explicit EnchantedBookEnchantsLookupTable(const bool allocate) {
+    MU explicit EnchantedBookEnchantsLookupTable(c_bool allocate) {
         if (allocate) setup();
     }
     ~EnchantedBookEnchantsLookupTable() { deallocate(); }

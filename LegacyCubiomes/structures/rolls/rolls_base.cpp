@@ -9,18 +9,18 @@ namespace structure_rolls {
 
     bool RollsBase::isLiquidInStructureBoundingBox(const BoundingBox& chunkBoundingBoxIn,
                                                    const BoundingBox& pieceBoundingBox, ChunkPrimer* chunk) {
-        const int minX = std::max(pieceBoundingBox.minX - 1, (int) chunkBoundingBoxIn.minX) & 15;
-        const int minY = std::max(pieceBoundingBox.minY - 1, (int) chunkBoundingBoxIn.minY);
-        const int minZ = std::max(pieceBoundingBox.minZ - 1, (int) chunkBoundingBoxIn.minZ) & 15;
-        const int maxX = std::min(pieceBoundingBox.maxX + 1, (int) chunkBoundingBoxIn.maxX) & 15;
-        const int maxY = std::min(pieceBoundingBox.maxY + 1, (int) chunkBoundingBoxIn.maxY);
-        const int maxZ = std::min(pieceBoundingBox.maxZ + 1, (int) chunkBoundingBoxIn.maxZ) & 15;
+        c_int minX = std::max(pieceBoundingBox.minX - 1, (int) chunkBoundingBoxIn.minX) & 15;
+        c_int minY = std::max(pieceBoundingBox.minY - 1, (int) chunkBoundingBoxIn.minY);
+        c_int minZ = std::max(pieceBoundingBox.minZ - 1, (int) chunkBoundingBoxIn.minZ) & 15;
+        c_int maxX = std::min(pieceBoundingBox.maxX + 1, (int) chunkBoundingBoxIn.maxX) & 15;
+        c_int maxY = std::min(pieceBoundingBox.maxY + 1, (int) chunkBoundingBoxIn.maxY);
+        c_int maxZ = std::min(pieceBoundingBox.maxZ + 1, (int) chunkBoundingBoxIn.maxZ) & 15;
         for (int x = minX; x <= maxX; ++x) {
             for (int z = minZ; z <= maxZ; ++z) {
-                uint16_t block = chunk->getBlockId(x, minY, z);
+                u16 block = chunk->getBlockId(x, minY, z);
                 if (block >= lce::blocks::ids::FLOWING_WATER_ID && block <= lce::blocks::ids::STILL_LAVA_ID) return true;
 
-                uint16_t block1 = chunk->getBlockId(x, maxY, z);
+                u16 block1 = chunk->getBlockId(x, maxY, z);
                 if (block1 >= lce::blocks::ids::FLOWING_WATER_ID && block <= lce::blocks::ids::STILL_LAVA_ID) return true;
             }
         }
@@ -28,10 +28,10 @@ namespace structure_rolls {
 
         for (int x = minX; x <= maxX; ++x) {
             for (int y = minY; y <= maxY; ++y) {
-                uint16_t block = chunk->getBlockId(x, y, minZ);
+                u16 block = chunk->getBlockId(x, y, minZ);
                 if (block >= lce::blocks::ids::FLOWING_WATER_ID && block <= lce::blocks::ids::STILL_LAVA_ID) return true;
 
-                uint16_t block1 = chunk->getBlockId(x, y, maxZ);
+                u16 block1 = chunk->getBlockId(x, y, maxZ);
                 if (block1 >= lce::blocks::ids::FLOWING_WATER_ID && block <= lce::blocks::ids::STILL_LAVA_ID) return true;
             }
         }
@@ -39,10 +39,10 @@ namespace structure_rolls {
 
         for (int z = minZ; z <= maxZ; ++z) {
             for (int y = minY; y <= maxY; ++y) {
-                uint16_t block = chunk->getBlockId(minX, y, z);
+                u16 block = chunk->getBlockId(minX, y, z);
                 if (block >= lce::blocks::ids::FLOWING_WATER_ID && block <= lce::blocks::ids::STILL_LAVA_ID) return true;
 
-                uint16_t block1 = chunk->getBlockId(maxX, y, z);
+                u16 block1 = chunk->getBlockId(maxX, y, z);
                 if (block1 >= lce::blocks::ids::FLOWING_WATER_ID && block <= lce::blocks::ids::STILL_LAVA_ID) return true;
             }
         }

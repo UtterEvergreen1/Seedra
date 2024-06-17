@@ -18,7 +18,8 @@ namespace loot {
         std::vector<ItemEntry> items6;
         std::vector<ItemEntry> items7;
         std::vector<ItemEntry> items8;
-        const std::vector LOG1_vec = {&lce::items::OAK_WOOD, &lce::items::SPRUCE_WOOD, &lce::items::BIRCH_WOOD, &lce::items::JUNGLE_WOOD};
+        const std::vector LOG1_vec = {&lce::items::OAK_WOOD, &lce::items::SPRUCE_WOOD,
+                                      &lce::items::BIRCH_WOOD, &lce::items::JUNGLE_WOOD};
         const std::vector LOG2_vec = {&lce::items::ACACIA_WOOD, &lce::items::DARK_OAK_WOOD};
 
         // table 1

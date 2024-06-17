@@ -22,7 +22,7 @@ void ELDataArray::addRandomItem(RNG& rng) {
     // get the total weight
     int theTotalWeight = this->totalWeight;
     for (int i = 0; i < deletions.getIndex(); i++) {
-        const int enchIndex = deletions.getValueAt(i);
+        c_int enchIndex = deletions.getValueAt(i);
         theTotalWeight -= data[enchIndex].getRarityWeight();
     }
 
@@ -77,7 +77,7 @@ void ELDataArray::addEnchantments(ItemStack& itemStackIn) {
 //==============================================================================
 
 
-ELDataArray* EnchantedBookEnchantsLookupTable::get(const int cost) const {
+ELDataArray* EnchantedBookEnchantsLookupTable::get(c_int cost) const {
     ELDataArray* array = dataArrays[cost];
     array->clear();
     return array;
@@ -91,14 +91,14 @@ void EnchantedBookEnchantsLookupTable::setup() {
     for (int i = 0; i < Enchantment::REGISTRY.size(); ++i) {
         const Enchantment* ench = Enchantment::REGISTRY[i];
         sum += ench->rarity->getWeight();
-        CUMULATIVE_WEIGHT_ALL[i] = static_cast<int8_t>(sum);
+        CUMULATIVE_WEIGHT_ALL[i] = static_cast<i8>(sum);
     }
-    TOTAL_WEIGHT = static_cast<int8_t>(sum);
+    TOTAL_WEIGHT = static_cast<i8>(sum);
 
     // sets up the dataArrays
     for (int cost = 0; cost < VECTOR_COUNT; cost++) {
         dataArrays[cost] = new ELDataArray();
-        const auto array = dataArrays[cost];
+        c_auto array = dataArrays[cost];
 
         int i = 0;
         for (Enchantment* ench_pt: Enchantment::REGISTRY.getRegistry()) {
@@ -127,5 +127,5 @@ void EnchantedBookEnchantsLookupTable::deallocate() {
     areVectorsSetup = false;
 }
 
-int8_t EnchantedBookEnchantsLookupTable::TOTAL_WEIGHT = 0;
-int8_t EnchantedBookEnchantsLookupTable::CUMULATIVE_WEIGHT_ALL[Enchantment::MAX_ENCHANTMENT_COUNT] = {0};
+i8 EnchantedBookEnchantsLookupTable::TOTAL_WEIGHT = 0;
+i8 EnchantedBookEnchantsLookupTable::CUMULATIVE_WEIGHT_ALL[Enchantment::MAX_ENCHANTMENT_COUNT] = {0};

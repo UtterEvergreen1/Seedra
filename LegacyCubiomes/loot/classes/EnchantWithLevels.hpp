@@ -32,8 +32,8 @@ public:
     void apply(ItemStack& itemStack, RNG& random) override;
 
 private:
-    static void addRandomEnchantment(RNG& rng, ItemStack& itemStackIn, const int level) {
-        for (const auto& enchantmentData: buildEnchantmentList(itemStackIn, rng, level)) {
+    static void addRandomEnchantment(RNG& rng, ItemStack& itemStackIn, c_int level) {
+        for (c_auto& enchantmentData: buildEnchantmentList(itemStackIn, rng, level)) {
             itemStackIn.addEnchantment(enchantmentData.obj, enchantmentData.level);
         }
     }

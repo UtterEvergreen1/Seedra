@@ -3,8 +3,12 @@
 #include "LegacyCubiomes/utils/rng.hpp"
 
 namespace Placement {
+
+
     class NetherFortress {
     public:
-        ND static Pos2D getWorldPosition(int64_t worldSeed);
+        ND static Pos2D getWorldPosition(i64 worldSeed);
     };
-} // namespace Placement
+
+
+}

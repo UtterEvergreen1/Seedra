@@ -18,7 +18,7 @@ struct SurfaceNoise;
 
 
 class Generator {
-    int64_t worldSeed;     // world seed
+    i64 worldSeed;     // world seed
     LCEVERSION version;    // LCE version, used to generate biomes
     lce::CONSOLE console;       // LCE console, used to generate terrain and stronghold
     lce::BIOMESCALE biomeScale; // biome size for biome generation
@@ -52,17 +52,17 @@ public:
      * @param size the world size for calculating world bounds
      * @param seed the world seed to apply
      */
-    Generator(lce::CONSOLE console, LCEVERSION version, int64_t seed, lce::WORLDSIZE size, lce::BIOMESCALE scale);
+    Generator(lce::CONSOLE console, LCEVERSION version, i64 seed, lce::WORLDSIZE size, lce::BIOMESCALE scale);
 
     /// returns the stored world seed
-    ND inline int64_t getWorldSeed() const { return this->worldSeed; }
+    ND inline i64 getWorldSeed() const { return this->worldSeed; }
 
     /**
      * Initializes the generator for a given world seed in the overworld.
      *
      * @param seed world seed to apply
      */
-    void applyWorldSeed(int64_t seed);
+    void applyWorldSeed(i64 seed);
 
 
     /// Fast way to increment the seed for for-loops.
@@ -164,7 +164,7 @@ public:
      * @param pos coordinates to generate the biome at
      * @return biome id or -1 if failed
      */
-    MU ND int getBiomeAt(const int scale, const Pos2D pos) const { return getBiomeAt(scale, pos.x, pos.z); }
+    MU ND int getBiomeAt(c_int scale, const Pos2D pos) const { return getBiomeAt(scale, pos.x, pos.z); }
 
     /**
      * Generates a biome range (x -> x + w, z -> z + h).
@@ -198,11 +198,11 @@ public:
      * Checks the given id against the valid biomes.
      *
      * @param id biome id to check
-     * @param validBiomes uint64_t value of the valid base biomes
-     * @param mutatedValidBiomes uint64_t value of the valid mutated biomes
+     * @param validBiomes u64 value of the valid base biomes
+     * @param mutatedValidBiomes u64 value of the valid mutated biomes
      * @return true if the biome id exists in the valid biomes
      */
-    static bool id_matches(const int id, const uint64_t validBiomes, const uint64_t mutatedValidBiomes = 0) {
+    static bool id_matches(c_int id, c_u64 validBiomes, c_u64 mutatedValidBiomes = 0) {
         return id < 128 ? (validBiomes & (1ULL << id)) != 0 : (mutatedValidBiomes & (1ULL << (id - 128))) != 0;
     }
 
@@ -211,11 +211,11 @@ public:
      *
      * @param x, z center coordinates to check valid biomes at
      * @param rad block radius to check for valid biomes
-     * @param validBiomes uint64_t value of the valid base biomes
-     * @param mutatedValidBiomes uint64_t value of the valid mutated biomes
+     * @param validBiomes u64 value of the valid base biomes
+     * @param mutatedValidBiomes u64 value of the valid mutated biomes
      * @return true if all the biomes are valid within the radius
      */
-    ND bool areBiomesViable(int x, int z, int rad, uint64_t validBiomes, uint64_t mutatedValidBiomes = 0) const;
+    ND bool areBiomesViable(int x, int z, int rad, u64 validBiomes, u64 mutatedValidBiomes = 0) const;
 
     /**
      * Overload function for that allows for using Pos2D as position in areBiomesViable.
@@ -223,12 +223,12 @@ public:
      * @see bool areBiomesViable(int x, int z, int rad, const char* validBiomes) const
      * @param pos center coordinates to check valid biomes at
      * @param rad block radius to check for valid biomes
-     * @param validBiomes uint64_t value of the valid base biomes
-     * @param mutatedValidBiomes uint64_t value of the valid mutated biomes
+     * @param validBiomes u64 value of the valid base biomes
+     * @param mutatedValidBiomes u64 value of the valid mutated biomes
      * @return true if all the biomes are valid within the radius
      */
-    MU ND bool areBiomesViable(const Pos2D pos, const int rad, const uint64_t validBiomes,
-                               const uint64_t mutatedValidBiomes = 0) const {
+    MU ND bool areBiomesViable(const Pos2D pos, c_int rad, c_u64 validBiomes,
+                               c_u64 mutatedValidBiomes = 0) const {
         return areBiomesViable(pos.x, pos.z, rad, validBiomes, mutatedValidBiomes);
     }
 
@@ -238,25 +238,25 @@ public:
      * @param[in] x center coordinates to check valid biomes at
      * @param[in] z center coordinates to check valid biomes at
      * @param[in] radius block radius to find valid biomes
-     * @param[in] validBiomes uint64_t value of the valid base biomes
+     * @param[in] validBiomes u64 value of the valid base biomes
      * @param[in] rng pointer to the rng state
      * @param[out] passes returns the total amount of positions picked
      * @return the found position, not found if passes = 0
      */
-    Pos2D locateBiome(int x, int z, int radius, uint64_t validBiomes, RNG& rng, int* passes) const;
+    Pos2D locateBiome(int x, int z, int radius, u64 validBiomes, RNG& rng, int* passes) const;
 
     /**
      * Overload function for that allows for using Pos2D as position in locateBiome.
      *
-     * @see Pos2D locateBiome(int x, int z, int radius, const uint64_t& validBiomes, uint64_t* rng, int* passes) const
+     * @see Pos2D locateBiome(int x, int z, int radius, c_u64& validBiomes, u64* rng, int* passes) const
      * @param[in] pos center coordinates to check valid biomes at
      * @param[in] radius block radius to find valid biomes
-     * @param[in] validBiomes uint64_t value of the valid base biomes
+     * @param[in] validBiomes u64 value of the valid base biomes
      * @param[in] rng pointer to the rng state
      * @param[out] passes returns the total amount of positions picked
      * @return the found position, not found if passes = 0
      */
-    MU Pos2D locateBiome(const Pos2D pos, const int radius, const uint64_t validBiomes, RNG& rng, int* passes) const {
+    MU Pos2D locateBiome(const Pos2D pos, c_int radius, c_u64 validBiomes, RNG& rng, int* passes) const {
         return locateBiome(pos.x, pos.z, radius, validBiomes, rng, passes);
     }
 
@@ -272,8 +272,8 @@ public:
      */
     int mapApproxHeight(float* y, int* ids, const SurfaceNoise* sn, int x, int z, int w, int h) const;
 
-    /// uint64_t value for the valid spawn biomes
-    static const uint64_t spawn_biomes;
+    /// u64 value for the valid spawn biomes
+    static c_u64 spawn_biomes;
 
     /**
      * Estimates the spawn by only calling locateBiome.

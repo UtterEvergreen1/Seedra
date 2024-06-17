@@ -156,12 +156,12 @@ lce::CONSOLE Enchantment::currentConsole = lce::CONSOLE::NONE;
 LCEVERSION Enchantment::currentVersion = LCEVERSION::NONE;
 
 
-int Enchantment::getMinCost(const int enchantmentLevel) {
+int Enchantment::getMinCost(c_int enchantmentLevel) {
     return 1 + enchantmentLevel * 10;
 }
 
 
-int Enchantment::getMaxCost(const int enchantmentLevel) {
+int Enchantment::getMaxCost(c_int enchantmentLevel) {
     return 6 + enchantmentLevel * 10;
 }
 

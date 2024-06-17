@@ -4,16 +4,15 @@
 
 namespace Placement {
 
-    std::vector<Pos2D> Mineshaft::getPositions(const int64_t worldSeed, const int xLower, const int zLower,
-                                               const int xUpper, const int zUpper) {
+    Pos2DVec_t Mineshaft::getPositions(c_i64 worldSeed, c_int xLower, c_int zLower, c_int xUpper, c_int zUpper) {
         RNG rng;
         Pos2DVec_t positions;
         rng.setSeed(worldSeed);
-        const uint64_t xModifier = rng.nextLong();
-        const uint64_t zModifier = rng.nextLong();
+        c_u64 xModifier = rng.nextLong();
+        c_u64 zModifier = rng.nextLong();
 
         for (int xPos = xLower; xPos <= xUpper; xPos++) {
-            const uint64_t aix = xPos * xModifier ^ worldSeed;
+            c_u64 aix = xPos * xModifier ^ worldSeed;
 
             for (int zPos = zLower; zPos <= zUpper; zPos++) {
                 rng.setSeed(aix ^ zPos * zModifier);

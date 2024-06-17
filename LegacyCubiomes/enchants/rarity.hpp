@@ -5,13 +5,13 @@
 
 // TODO: can this not just be turned into an enum?
 class Rarity {
-    const int8_t weight = 0;
+    c_i8 weight = 0;
 
 public:
     Rarity() = default;
 
-    explicit Rarity(const int8_t weight) : weight(weight) {}
-    ND __forceinline int8_t getWeight() const { return weight; }
+    explicit Rarity(c_i8 weight) : weight(weight) {}
+    ND __forceinline i8 getWeight() const { return weight; }
 };
 
 struct Rarities {

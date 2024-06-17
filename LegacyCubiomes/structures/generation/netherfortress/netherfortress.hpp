@@ -45,11 +45,11 @@ namespace generation {
             ND static const PieceWeight* get(const PieceType pieceType) { return &PIECE_WEIGHTS[pieceType]; }
 
             ND bool isValid() const {
-                const int maxPlaceCount = PIECE_WEIGHTS[pieceType].maxPlaceCount;
+                c_int maxPlaceCount = PIECE_WEIGHTS[pieceType].maxPlaceCount;
                 return maxPlaceCount == 0 || placeCount < maxPlaceCount;
             }
 
-            ND bool canPlace(const int depth) const { return isValid() && depth >= PIECE_WEIGHTS[pieceType].minDepth; }
+            ND bool canPlace(c_int depth) const { return isValid() && depth >= PIECE_WEIGHTS[pieceType].minDepth; }
         };
 
 

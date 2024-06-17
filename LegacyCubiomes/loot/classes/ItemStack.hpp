@@ -9,12 +9,12 @@
 class ItemStack {
 public:
     const lce::items::Item* item;
-    uint8_t stackSize{};
+    u8 stackSize{};
     std::vector<EnchantmentData> enchantments;
 
     ItemStack() : item(nullptr) {}
     explicit ItemStack(const lce::items::Item* item) : item(item) {}
-    ItemStack(const lce::items::Item* item, const int stackSize) : item(item), stackSize(stackSize) {}
+    ItemStack(const lce::items::Item* item, c_int stackSize) : item(item), stackSize(stackSize) {}
 
     ItemStack splitStack(int amount);
     ND const lce::items::Item* getItem() const;

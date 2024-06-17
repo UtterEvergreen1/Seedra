@@ -2,11 +2,11 @@
 
 class UniformRoll {
     /// holds both the min and max.
-    uint16_t val = 0;
+    u16 val = 0;
 
 public:
     UniformRoll() = default;
-    UniformRoll(const uint8_t min, uint8_t const max) : val(min << 8 | max & 0xff) {}
-    [[nodiscard]] uint8_t getMin() const { return val >> 8; }
-    [[nodiscard]] uint8_t getMax() const { return val & 0xff; }
+    UniformRoll(c_u8 min, u8 const max) : val(min << 8 | max & 0xff) {}
+    [[nodiscard]] u8 getMin() const { return val >> 8; }
+    [[nodiscard]] u8 getMax() const { return val & 0xff; }
 };

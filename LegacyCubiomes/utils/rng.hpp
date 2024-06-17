@@ -9,40 +9,40 @@
 
 
 class RNG {
-    uint64_t seed = 0;
+    u64 seed = 0;
 
 public:
     RNG() = default;
-    explicit RNG(const uint64_t seed) : seed(seed) {}
+    explicit RNG(c_u64 seed) : seed(seed) {}
 
     bool operator==(const RNG& other) const { return seed == other.seed; }
 
-    bool operator==(const int& rngValue) const { return seed == rngValue; }
+    bool operator==(c_int& rngValue) const { return seed == rngValue; }
 
     ND RNG copy() const {
-        const auto rng = RNG(seed);
+        c_auto rng = RNG(seed);
         return rng;
     }
 
-    static inline RNG getLargeFeatureSeed(const int64_t worldSeed, const int chunkX, const int chunkZ) {
+    static inline RNG getLargeFeatureSeed(c_i64 worldSeed, c_int chunkX, c_int chunkZ) {
         RNG rng{};
         rng.setSeed(worldSeed);
-        const auto l2 = (int64_t) rng.nextLong();
-        const auto l3 = (int64_t) rng.nextLong();
-        const int64_t l4 = (int64_t) chunkX * l2 ^ (int64_t) chunkZ * l3 ^ worldSeed;
+        c_auto l2 = (i64) rng.nextLong();
+        c_auto l3 = (i64) rng.nextLong();
+        c_i64 l4 = (i64) chunkX * l2 ^ (i64) chunkZ * l3 ^ worldSeed;
         rng.setSeed(l4);
         return rng;
     }
 
 
-    static inline RNG getPopulationSeed(const int64_t worldSeed, const int chunkX, const int chunkZ) {
+    static inline RNG getPopulationSeed(c_i64 worldSeed, c_int chunkX, c_int chunkZ) {
         RNG rng;
         rng.setSeed(worldSeed);
-        auto a = (int64_t) rng.nextLong();
-        auto b = (int64_t) rng.nextLong();
-        a = (int64_t) (((a / 2) * 2) + 1);
-        b = (int64_t) (((b / 2) * 2) + 1);
-        const int64_t decoratorSeed = (chunkX * a + chunkZ * b) ^ worldSeed;
+        auto a = (i64) rng.nextLong();
+        auto b = (i64) rng.nextLong();
+        a = (i64) (((a / 2) * 2) + 1);
+        b = (i64) (((b / 2) * 2) + 1);
+        c_i64 decoratorSeed = (chunkX * a + chunkZ * b) ^ worldSeed;
         rng.setSeed(decoratorSeed);
         return rng;
     }
@@ -59,28 +59,28 @@ public:
     MU void advance772() { seed = (seed * 0x129FF9FE0B11 + 0x80152440A804) & 0xFFFFFFFFFFFF; }
     MU void advance17292() { seed = (seed * 257489430523441 + 184379205320524) & 0xFFFFFFFFFFFF; }
 
-    ND MU uint64_t getSeed() const { return seed; }
+    ND MU u64 getSeed() const { return seed; }
 
-    MU void setValue(const uint64_t value) { seed = value; }
+    MU void setValue(c_u64 value) { seed = value; }
 
-    void setSeed(const uint64_t value) { seed = (value ^ 0x5deece66d) & 0xFFFFFFFFFFFF; }
+    void setSeed(c_u64 value) { seed = (value ^ 0x5deece66d) & 0xFFFFFFFFFFFF; }
 
-    int next(const int bits) {
+    int next(c_int bits) {
         advance();
-        return (int) ((int64_t) seed >> (48 - bits));
+        return (int) ((i64) seed >> (48 - bits));
     }
 
     bool nextBoolean() { return next(1) != 0; }
 
     int nextInt() { return next(32); }
 
-    int nextInt(const int n) {
+    int nextInt(c_int n) {
         int bits, val;
-        const int m = n - 1;
+        c_int m = n - 1;
 
         if ((m & n) == 0) {
-            uint64_t x = n * (uint64_t) next(31);
-            return (int) ((int64_t) x >> 31);
+            u64 x = n * (u64) next(31);
+            return (int) ((i64) x >> 31);
         }
 
         do {
@@ -90,15 +90,15 @@ public:
         return val;
     }
 
-    int nextInt(const int minimum, const int maximum) {
+    int nextInt(c_int minimum, c_int maximum) {
         return minimum >= maximum ? minimum : nextInt(maximum - minimum + 1) + minimum;
     }
 
-    int nextIntLegacy(const int minimum, const int maximum) { return nextInt(maximum - minimum + 1) + minimum; }
+    int nextIntLegacy(c_int minimum, c_int maximum) { return nextInt(maximum - minimum + 1) + minimum; }
 
-    uint64_t nextLong() { return ((uint64_t) next(32) << 32) + next(32); }
+    u64 nextLong() { return ((u64) next(32) << 32) + next(32); }
 
-    int64_t nextLongI() { return static_cast<int64_t>((static_cast<uint64_t>(next(32)) << 32) + next(32)); }
+    i64 nextLongI() { return static_cast<i64>((static_cast<u64>(next(32)) << 32) + next(32)); }
 
     float nextFloat() { return (float) next(24) / (float) 0x1000000; }
 
@@ -107,23 +107,23 @@ public:
     }
 
     double nextDouble() {
-        uint64_t x = next(26);
+        u64 x = next(26);
         x <<= 27;
         x += next(27);
-        return (int64_t) x / (double) 0x20000000000000;
+        return (i64) x / (double) 0x20000000000000;
     }
 
-    MU double nextDouble(const double minimum, const double maximum) {
+    MU double nextDouble(c_double minimum, c_double maximum) {
         return minimum >= maximum ? minimum : nextDouble() * (maximum - minimum) + minimum;
     }
 
     /// Jumps forwards in the random number sequence by simulating 'n' calls to next.
-    MU void skipNextN(const uint64_t n) {
-        uint64_t m = 1;
-        uint64_t a = 0;
-        uint64_t im = 0x5deece66d;
-        uint64_t ia = 0xb;
-        uint64_t k;
+    MU void skipNextN(c_u64 n) {
+        u64 m = 1;
+        u64 a = 0;
+        u64 im = 0x5deece66d;
+        u64 ia = 0xb;
+        u64 k;
         for (k = n; k; k >>= 1) {
             if (k & 1) {
                 m *= im;
@@ -172,16 +172,16 @@ public:
 
     // nextGaussianFloat__6RandomFv
     MU double nextGaussianFloat() {
-        const double dVar1 = nextFloat();
-        const double dVar2 = nextFloat(); // passes this to function?
+        c_double dVar1 = nextFloat();
+        c_double dVar2 = nextFloat(); // passes this to function?
         return static_cast<float>(dVar1 - dVar2);
     }
 
 
     // nextGaussianInt__6RandomFi
-    MU int nextGaussianInt(const int param2) {
-        const int iVar1 = nextInt();
-        const int iVar2 = nextInt(param2);
+    MU int nextGaussianInt(c_int param2) {
+        c_int iVar1 = nextInt();
+        c_int iVar2 = nextInt(param2);
         return iVar1 - iVar2;
     }
 };

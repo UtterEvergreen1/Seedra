@@ -4,12 +4,12 @@
 
 class Block {
 public:
-    uint16_t block;
-    uint8_t data;
+    u16 block;
+    u8 data;
 
-    Block(const uint16_t blockIn, const uint8_t dataIn) : block(blockIn), data(dataIn) {}
+    Block(c_u16 blockIn, c_u8 dataIn) : block(blockIn), data(dataIn) {}
 
-    explicit Block(const uint16_t blockIn) : Block(blockIn, 0) {}
+    explicit Block(c_u16 blockIn) : Block(blockIn, 0) {}
 
     Block() : Block(0, 0) {}
 

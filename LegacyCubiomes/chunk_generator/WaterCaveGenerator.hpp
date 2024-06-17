@@ -9,16 +9,16 @@ public:
     explicit WaterCaveGenerator(const Generator& generator) : WaterCaveGeneratorBase(generator) {}
 
     WaterCaveGenerator(const lce::CONSOLE console, const LCEVERSION version,
-        const int64_t seed, const lce::WORLDSIZE size, const lce::BIOMESCALE scale)
+        c_i64 seed, const lce::WORLDSIZE size, const lce::BIOMESCALE scale)
         : WaterCaveGeneratorBase(console, version, seed, size, scale) {}
 
-    static bool canReplaceBlock(uint16_t blockAt);
+    static bool canReplaceBlock(u16 blockAt);
 
-    void addTunnel(int64_t seedModifier, Pos2D chunk, ChunkPrimer* chunkPrimer, DoublePos3D start, float tunnelWidth,
+    void addTunnel(i64 seedModifier, Pos2D chunk, ChunkPrimer* chunkPrimer, DoublePos3D start, float tunnelWidth,
                    float tunnelDirection, float tunnelSlope, int currentTunnelSegment, int maxTunnelSegment,
                    double tunnelHeightMultiplier);
 
-    void addRoom(int64_t seedModifier, Pos2D target, ChunkPrimer* chunkPrimer, const DoublePos3D& roomStart, RNG& rng);
+    void addRoom(i64 seedModifier, Pos2D target, ChunkPrimer* chunkPrimer, const DoublePos3D& roomStart, RNG& rng);
 
     void addFeature(int baseChunkX, int baseChunkZ, int targetX, int targetZ, ChunkPrimer* chunkPrimer, bool accurate) override;
 };

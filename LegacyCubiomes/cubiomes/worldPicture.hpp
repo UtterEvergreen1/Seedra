@@ -20,7 +20,7 @@ class WorldPicture : public Picture {
     Generator* g;
 
 public:
-    WorldPicture(Generator* g, const int width, const int height) : Picture(width, height), g(g) {}
+    WorldPicture(Generator* g, c_int width, c_int height) : Picture(width, height), g(g) {}
 
     explicit WorldPicture(Generator* g) : Picture(g->getWorldCoordinateBounds() >> 1), g(g) {}
 
@@ -34,17 +34,17 @@ public:
         unsigned char biomeColors[256][3];
         initBiomeColors(biomeColors);
 
-        const auto [fst, snd] = g->generateAllBiomes();
+        c_auto [fst, snd] = g->generateAllBiomes();
 
         for (int y = 0; y < getHeight(); ++y) {
             for (int x = 0; x < getWidth(); ++x) {
-                const int id = snd[getIndex(x, y)];
+                c_int id = snd[getIndex(x, y)];
                 drawPixel(&biomeColors[id][0], x, y);
             }
         }
     }
 
-    MU void drawBiomesWithSize(const int widthIn, const int heightIn) {
+    MU void drawBiomesWithSize(c_int widthIn, c_int heightIn) {
         if (widthIn == 0) return;
         if (heightIn == 0) return;
 
@@ -56,15 +56,15 @@ public:
         unsigned char biomeColors[256][3];
         initBiomeColors(biomeColors);
 
-        const int x = static_cast<int>(myWidth);
-        const int y = static_cast<int>(myHeight);
-        const int w = static_cast<int>(myWidth);
-        const int h = static_cast<int>(myHeight);
-        const int* ids = g->getBiomeRange(4, x, y, w, h);
+        c_int x = static_cast<int>(myWidth);
+        c_int y = static_cast<int>(myHeight);
+        c_int w = static_cast<int>(myWidth);
+        c_int h = static_cast<int>(myHeight);
+        c_int* ids = g->getBiomeRange(4, x, y, w, h);
 
         for (int yi = 0; yi < getHeight(); ++yi) {
             for (int xi = 0; xi < getWidth(); ++xi) {
-                const int id = ids[getIndex(xi, yi)];
+                c_int id = ids[getIndex(xi, yi)];
                 drawPixel(&biomeColors[id][0], xi, yi);
             }
         }
