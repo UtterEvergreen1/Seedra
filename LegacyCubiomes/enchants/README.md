@@ -12,7 +12,8 @@ int main() {
     // ...
 }
 ```
-Any code relating to loot gen that uses enchantments will 
+
+Any code relating to loot gen that uses enchantments will
 not work if ``EnchantmentHelper::setup`` is not called.
 
 these are the functions to use for enchanting:

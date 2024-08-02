@@ -63,13 +63,17 @@ int main(int argc, char* argv[]) {
 ```
 
 ## Submodules
+
 This project uses a [separate project](https://github.com/zugebot/lce.git).
 Set this up by doing:
+
 ```bash
 git submodule add https://github.com/zugebot/lce.git
 git submodule update --init
 ```
+
 To use this as a submodule in another project, you can do
+
 ```bash
 git submodule add https://github.com/UtterEvergreen1/LegacyCubiomes.git
 git submodule update --init

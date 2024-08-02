@@ -9,9 +9,7 @@ void Container::printCombinedItems() const {
 
     for (c_auto& itemStack: inventorySlots) {
         if (itemStack.stackSize > 0) {
-            if (itemCount.contains(itemStack.item)) {
-                itemCount[itemStack.item] += itemStack.stackSize;
-            } else {
+            if (itemCount.contains(itemStack.item)) { itemCount[itemStack.item] += itemStack.stackSize; } else {
                 itemCount[itemStack.item] = itemStack.stackSize;
             }
         }
@@ -34,15 +32,14 @@ void Container::shuffleIntoContainer(std::vector<ItemStack>& items, MU const RNG
     randomShuffle<int>(slotOrder, rngState);
 
     // Separate items with stackSize > 1 into stackableItems and keep others in items
-    items.erase(std::remove_if(items.begin(), items.end(),
-                               [&](const ItemStack& item) {
-                                   if (item.stackSize > 1) {
-                                       stackableItems.push_back(item);
-                                       return true;
-                                   }
-                                   return false;
-                               }),
-                items.end());
+    std::erase_if(items,
+                  [&](const ItemStack& item) {
+                      if (item.stackSize > 1) {
+                          stackableItems.push_back(item);
+                          return true;
+                      }
+                      return false;
+                  });
 
     numSlots -= items.size();
     while (numSlots > 0 && !stackableItems.empty()) {
@@ -56,12 +53,10 @@ void Container::shuffleIntoContainer(std::vector<ItemStack>& items, MU const RNG
         ItemStack splittedStack = originalStack.splitStack(splitAmount);
 
         if (originalStack.stackSize == 0 || rngState.next(1) == 0) items.emplace_back(std::move(originalStack));
-        else
-            stackableItems.emplace_back(std::move(originalStack));
+        else stackableItems.emplace_back(std::move(originalStack));
 
         if (splittedStack.stackSize == 0 || rngState.next(1) == 0) items.emplace_back(std::move(splittedStack));
-        else
-            stackableItems.emplace_back(std::move(splittedStack));
+        else stackableItems.emplace_back(std::move(splittedStack));
     }
 
     items.insert(items.end(), std::make_move_iterator(stackableItems.begin()),
@@ -76,8 +71,6 @@ void Container::shuffleIntoContainer(std::vector<ItemStack>& items, MU const RNG
             c_int itemIndex = slotOrder.back();
             slotOrder.pop_back();
             setInventorySlotContents(itemIndex, std::move(itemStack));
-        } else {
-            slotOrder.pop_back();
-        }
+        } else { slotOrder.pop_back(); }
     }
 }

@@ -18,6 +18,6 @@ file(GLOB_RECURSE LEGACY_CUBIOMES LegacyCubiomes/*)
 file(GLOB_RECURSE LCE_RESOURCES lce/*)
 
 add_executable(LCE_Cubiomes
-    ${LEGACY_CUBIOMES}
-    ${LCE_RESOURCES}
+        ${LEGACY_CUBIOMES}
+        ${LCE_RESOURCES}
 )
