@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.24)
-project(LCE_Cubiomes)
+project(LegacyCubiomes)
 
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_FLAGS_RELEASE "-O3")
@@ -17,7 +17,7 @@ file(GLOB_RECURSE LEGACY_CUBIOMES LegacyCubiomes/*)
 
 file(GLOB_RECURSE LCE_RESOURCES lce/*)
 
-add_executable(LCE_Cubiomes
+add_executable(LegacyCubiomes
         ${LEGACY_CUBIOMES}
         ${LCE_RESOURCES}
 )
