@@ -83,8 +83,9 @@ void Biome::registerBiomes() {
 
 void Biome::generateBiomeTerrain(RNG& rng, ChunkPrimer* chunkPrimerIn, int x, int z, double noiseVal) {
     constexpr int seaLevel = 63; // sea level
-    u16 iBlockState = this->topBlock.block;
-    u16 iBlockState1 = this->fillerBlock.block;
+    // TODO: this should probably use block pointers instead of just the ID? esp. if using red sandstone...
+    u16 iBlockState = this->topBlock->getID();
+    u16 iBlockState1 = this->fillerBlock->getID();
     int j = -1;
     c_int k = (int) (((double) noiseVal / 3.0) + 3.0 + rng.nextDouble() * 0.25);
     c_int l = x & 15;
@@ -106,8 +107,8 @@ void Biome::generateBiomeTerrain(RNG& rng, ChunkPrimer* chunkPrimerIn, int x, in
                         iBlockState = lce::blocks::ids::AIR_ID;
                         iBlockState1 = lce::blocks::ids::STONE_ID;
                     } else if (j1 >= seaLevel - 4 && j1 <= seaLevel + 1) {
-                        iBlockState = this->topBlock.block;
-                        iBlockState1 = this->fillerBlock.block;
+                        iBlockState = this->topBlock->getID();
+                        iBlockState1 = this->fillerBlock->getID();
                     }
 
                     if (j1 < seaLevel && !iBlockState) {
@@ -173,7 +174,7 @@ void BiomeMesa::genTerrainBlocks(c_i64 worldSeedIn, RNG& rng, ChunkPrimer* chunk
     c_int k1 = x & 15;
     c_int l1 = z & 15;
     constexpr int seaLevel = 63; // sea level
-    u16 fillerBlock = this->fillerBlock.block;
+    u16 fillerBlock = this->fillerBlock->getID();
     c_int k = (int) (noiseVal / 3.0 + 3.0 + rng.nextDouble() * 0.25);
     c_bool flag = cos(noiseVal / 3.0 * PI) > 0.0;
     int l = -1;
@@ -198,14 +199,14 @@ void BiomeMesa::genTerrainBlocks(c_i64 worldSeedIn, RNG& rng, ChunkPrimer* chunk
                     if (k <= 0) {
                         fillerBlock = lce::blocks::ids::STONE_ID;
                     } else if (j1 >= seaLevel - 4 && j1 <= seaLevel + 1) {
-                        fillerBlock = this->fillerBlock.block;
+                        fillerBlock = this->fillerBlock->getID();
                     }
 
                     l = k + std::max(0, j1 - seaLevel);
 
                     if (j1 >= seaLevel - 1) {
                         if (this->hasForest && j1 > 86 + k * 2) {
-                            if (flag) chunkPrimerIn->setBlockAndData(l1, j1, k1, lce::items::COARSE_DIRT);
+                            if (flag) chunkPrimerIn->setBlockAndData(l1, j1, k1, lce::blocks::COARSE_DIRT);
                             else
                                 chunkPrimerIn->setBlockId(l1, j1, k1, lce::blocks::ids::GRASS_ID);
                         } else if (j1 > seaLevel + 3 + k) {
@@ -214,27 +215,27 @@ void BiomeMesa::genTerrainBlocks(c_i64 worldSeedIn, RNG& rng, ChunkPrimer* chunk
                             if (j1 >= 64 && j1 <= 127) {
                                 if (flag) iBlockState2 = lce::blocks::ids::HARDENED_CLAY_ID;
                                 else
-                                    iBlockState2 = this->getClayBand(x, j1).block;
+                                    iBlockState2 = this->getClayBand(x, j1)->getID();
                             } else
                                 iBlockState2 = lce::blocks::ids::WHITE_HARDENED_CLAY_ID;
 
                             chunkPrimerIn->setBlockId(l1, j1, k1, iBlockState2);
                         } else {
-                            chunkPrimerIn->setBlockId(l1, j1, k1, this->topBlock.block);
+                            chunkPrimerIn->setBlockId(l1, j1, k1, this->topBlock->getID());
                             flag1 = true;
                         }
                     } else {
                         chunkPrimerIn->setBlockId(l1, j1, k1, fillerBlock);
 
                         if (fillerBlock == lce::blocks::ids::WHITE_HARDENED_CLAY_ID)
-                            chunkPrimerIn->setBlockAndData(l1, j1, k1, lce::items::ORANGE_HARDENED_CLAY);
+                            chunkPrimerIn->setBlockAndData(l1, j1, k1, lce::blocks::ORANGE_HARDENED_CLAY);
                     }
                 } else if (l > 0) {
                     --l;
 
-                    if (flag1) chunkPrimerIn->setBlockAndData(l1, j1, k1, lce::items::ORANGE_HARDENED_CLAY);
+                    if (flag1) chunkPrimerIn->setBlockAndData(l1, j1, k1, lce::blocks::ORANGE_HARDENED_CLAY);
                     else
-                        chunkPrimerIn->setBlockId(l1, j1, k1, this->getClayBand(x, j1).block);
+                        chunkPrimerIn->setBlockId(l1, j1, k1, this->getClayBand(x, j1)->getID());
                 }
 
                 ++i1;

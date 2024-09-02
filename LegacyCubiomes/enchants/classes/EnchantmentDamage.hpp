@@ -13,7 +13,7 @@ public:
     const std::vector<i8> THRESHOLD_ENCHANTABILITY = {20, 20, 20};
 
 
-    EnchantmentDamage(std::string name, const Rarity* rarity, c_int damage_type)
+    EnchantmentDamage(std::string name, const eRarity rarity, c_int damage_type)
         : Enchantment(std::move(name), rarity, &Type::WEAPON, EnumName::DAMAGE, 5), damageType(damage_type){};
 
     int getMinCost(c_int enchantmentLevel) override {

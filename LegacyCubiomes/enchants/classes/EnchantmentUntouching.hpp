@@ -5,7 +5,7 @@
 
 class EnchantmentUntouching final : public Enchantment {
 public:
-    EnchantmentUntouching(std::string name, const Rarity* rarity)
+    EnchantmentUntouching(std::string name, const eRarity rarity)
         : Enchantment(std::move(name), rarity, &Type::DIGGER, EnumName::UNTOUCHING, 1){};
 
     int getMinCost(c_int enchantmentLevel) override { return 15; }

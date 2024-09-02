@@ -53,7 +53,7 @@ public:
 
         allocate(3);
 
-        unsigned char biomeColors[256][3];
+        u8 biomeColors[256][3];
         initBiomeColors(biomeColors);
 
         c_int x = static_cast<int>(myWidth);

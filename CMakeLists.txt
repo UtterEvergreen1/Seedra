@@ -20,4 +20,5 @@ file(GLOB_RECURSE LCE_RESOURCES lce/*)
 add_executable(LCE_Cubiomes
     ${LEGACY_CUBIOMES}
     ${LCE_RESOURCES}
+    programs/test_all_enchants.cpp
 )

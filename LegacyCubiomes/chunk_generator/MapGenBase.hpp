@@ -33,5 +33,6 @@ public:
         }
     }
 
-    virtual void addFeature(int baseChunkX, int baseChunkZ, int targetX, int targetZ, ChunkPrimer* chunkPrimer, bool accurate) = 0;
+    virtual void addFeature(int baseChunkX, int baseChunkZ, int targetX, int targetZ,
+                            ChunkPrimer* chunkPrimer, bool accurate) = 0;
 };

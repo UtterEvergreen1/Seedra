@@ -5,7 +5,7 @@
 
 class EnchantmentMending final : public Enchantment {
 public:
-    EnchantmentMending(std::string name, const Rarity* rarity)
+    EnchantmentMending(std::string name, const eRarity rarity)
         : Enchantment(std::move(name), rarity, &Type::BREAKABLE, EnumName::MENDING, 1, true){};
 
     int getMinCost(c_int enchantmentLevel) override { return 25; }

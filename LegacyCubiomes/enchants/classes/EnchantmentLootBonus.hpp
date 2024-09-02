@@ -8,7 +8,7 @@ class EnchantmentLootBonus : public Enchantment {
     static constexpr inline i8 LEVELS_MAX[3] = {61, 71, 81};
 
 public:
-    EnchantmentLootBonus(const std::string& name, const Rarity* rarity, const Type::Base* type)
+    EnchantmentLootBonus(const std::string& name, const eRarity rarity, const Type::Base* type)
         : Enchantment(name, rarity, type, EnumName::LOOT_BONUS, 3){};
 
     int getMinCost(c_int enchantmentLevel) override { return LEVELS_MIN[enchantmentLevel - 1]; }

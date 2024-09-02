@@ -8,7 +8,7 @@ class EnchantmentFishingSpeed final : public Enchantment {
     static constexpr inline i8 LEVELS_MAX[3] = {61, 71, 81};
 
 public:
-    EnchantmentFishingSpeed(std::string name, const Rarity* rarity)
+    EnchantmentFishingSpeed(std::string name, const eRarity rarity)
         : Enchantment(std::move(name), rarity, &Type::FISHING_ROD, EnumName::FISHING_SPEED, 3){};
 
     int getMinCost(c_int enchantmentLevel) override { return LEVELS_MIN[enchantmentLevel - 1]; }

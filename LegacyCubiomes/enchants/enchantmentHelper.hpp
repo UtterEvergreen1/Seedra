@@ -28,5 +28,5 @@ public:
     /**
      * Deallocates the book level table and registry
      */
-    static void deallocate();
+    MU static void deallocate();
 };

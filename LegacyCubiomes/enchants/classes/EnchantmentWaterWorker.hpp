@@ -5,7 +5,7 @@
 
 class EnchantmentWaterWorker final : public Enchantment {
 public:
-    EnchantmentWaterWorker(const std::string& name, const Rarity* rarity)
+    EnchantmentWaterWorker(const std::string& name, const eRarity rarity)
         : Enchantment(name, rarity, &Type::ARMOR_HEAD, EnumName::WATER_WORKER, 1){};
 
     int getMinCost(c_int enchantmentLevel) override { return 1; }

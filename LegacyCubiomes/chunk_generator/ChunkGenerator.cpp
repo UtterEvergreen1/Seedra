@@ -86,10 +86,11 @@ void ChunkGeneratorOverWorld::setBlocksInChunk(c_int chunkX, c_int chunkZ, Chunk
                         double d16 = (d11 - d10) * 0.25;
                         double lvt_45_1_ = d10 - d16;
 
+                        static constexpr int SEA_LEVEL = 63;
                         for (int l2 = 0; l2 < 4; ++l2) {
                             if ((lvt_45_1_ += d16) > 0.0) {
                                 primer->setBlockId(i * 4 + k2, i2 * 8 + j2, l * 4 + l2, lce::blocks::ids::STONE_ID);
-                            } else if (i2 * 8 + j2 < 63) { // 63 is sea level
+                            } else if (i2 * 8 + j2 < SEA_LEVEL) {
                                 primer->setBlockId(i * 4 + k2, i2 * 8 + j2, l * 4 + l2, lce::blocks::ids::STILL_WATER_ID);
                             }
                         }
@@ -168,8 +169,8 @@ void ChunkGeneratorOverWorld::generateHeightmap(c_int x, c_int y, c_int z) {
 
                     double biomeBaseHeight;
                     double biome1BaseHeight;
-                    getBiomeDepthAndScale(biome, &biomeBaseHeight, 0, 0);
-                    getBiomeDepthAndScale(biome1, &biome1BaseHeight, 0, 0);
+                    getBiomeDepthAndScale(biome, &biomeBaseHeight, nullptr, nullptr);
+                    getBiomeDepthAndScale(biome1, &biome1BaseHeight, nullptr, nullptr);
                     if (biome1BaseHeight > biomeBaseHeight) f7 /= 2.0F;
 
                     f2 += f6 * f7;

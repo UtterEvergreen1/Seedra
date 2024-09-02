@@ -6,7 +6,8 @@
 #include "noise.hpp"
 
 
-Generator::Generator(const lce::CONSOLE console, const LCEVERSION version, const lce::WORLDSIZE size, const lce::BIOMESCALE scale)
+Generator::Generator(const lce::CONSOLE console, const LCEVERSION version,
+                     const lce::WORLDSIZE size, const lce::BIOMESCALE scale)
     : worldSeed(0), version(version), console(console), biomeScale(scale), worldSize(size),
       worldCoordinateBounds(getChunkWorldBounds(size) << 4) {
     setupLayerStack(&this->layerStack, version, scale);

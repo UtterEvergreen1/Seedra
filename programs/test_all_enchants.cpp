@@ -1,3 +1,4 @@
+
 #include "LegacyCubiomes/enchants/enchantmentHelper.hpp"
 #include "LegacyCubiomes/loot/tables/include.hpp"
 

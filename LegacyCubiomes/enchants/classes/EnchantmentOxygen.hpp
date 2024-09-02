@@ -8,7 +8,7 @@ class EnchantmentOxygen final : public Enchantment {
     static constexpr inline i8 LEVELS_MAX[3] = {40, 50, 60};
 
 public:
-    EnchantmentOxygen(std::string name, const Rarity* rarity)
+    EnchantmentOxygen(std::string name, const eRarity rarity)
         : Enchantment(std::move(name), rarity, &Type::ARMOR_HEAD, EnumName::OXYGEN, 3){};
 
     int getMinCost(c_int enchantmentLevel) override { return LEVELS_MIN[enchantmentLevel - 1]; }

@@ -8,7 +8,7 @@ class CaveGenerator final : public MapGenBase {
 public:
     explicit CaveGenerator(const Generator& generator) : MapGenBase(generator) {}
 
-    CaveGenerator(const lce::CONSOLE console, const LCEVERSION version,
+    MU CaveGenerator(const lce::CONSOLE console, const LCEVERSION version,
                   c_i64 seed, const lce::WORLDSIZE size, const lce::BIOMESCALE scale)
         : MapGenBase(console, version, seed, size, scale) {}
 

@@ -17,8 +17,6 @@ public:
         if (obj == nullptr) return "NULLPTR";
         return obj->name + " " + LEVEL_ROMAN[level];
     }
-
-    ND int getRarityWeight() const { return obj->rarity->getWeight(); }
 };
 
 typedef std::vector<EnchantmentData> EnchDataVec_t;
