@@ -5,7 +5,7 @@
 
 class EnchantmentArrowFire final : public Enchantment {
 public:
-    EnchantmentArrowFire(std::string name, const Rarity* rarity)
+    EnchantmentArrowFire(std::string name, const eRarity rarity)
         : Enchantment(std::move(name), rarity, &Type::BOW, EnumName::ARROW_FIRE, 1){};
 
     int getMinCost(c_int enchantmentLevel) override { return 20; }

@@ -7,7 +7,7 @@ class EnchantmentTridentLoyalty final : public Enchantment {
     static constexpr inline i8 LEVELS_MIN[3] = {12, 19, 26};
 
 public:
-    EnchantmentTridentLoyalty(std::string name, const Rarity *rarity) :
+    EnchantmentTridentLoyalty(std::string name, const eRarity rarity) :
             Enchantment(std::move(name), rarity, &Type::TRIDENT,
                         EnumName::TRIDENT_LOYALTY, 3) {};
 

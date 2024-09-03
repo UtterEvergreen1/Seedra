@@ -27,8 +27,7 @@ namespace Placement {
     Pos2D DynamicStructure<Derived>::getPosition(const Generator* g, c_int regionX, c_int regionZ) {
         RNG rnds;
         c_i64 featureSeed = static_cast<i64>(regionX * REGION_SIZE) * 341873128712ULL +
-                                    static_cast<i64>(regionZ * REGION_SIZE) * 132897987541ULL + g->getWorldSeed() +
-                                    SALT;
+                            static_cast<i64>(regionZ * REGION_SIZE) * 132897987541ULL + g->getWorldSeed() + SALT;
         rnds.setSeed(featureSeed);
         std::unordered_set<Pos2D, Pos2D::Hasher> attempted;
         for (int attempts = 0; attempts < ATTEMPTS; attempts++) {
@@ -70,11 +69,11 @@ namespace Placement {
     }
 
     template<typename Derived>
-    bool DynamicStructure<Derived>::canSpawnAtChunk(c_i64 worldSeed, c_int chunkX, int const chunkZ,
-                                                    c_int regionX, c_int regionZ) {
+    bool DynamicStructure<Derived>::canSpawnAtChunk(c_i64 worldSeed, c_int chunkX, int const chunkZ, c_int regionX,
+                                                    c_int regionZ) {
         RNG rnds;
         c_i64 featureSeed = static_cast<i64>(regionX * REGION_SIZE) * 341873128712ULL +
-                                    static_cast<i64>(regionZ * REGION_SIZE) * 132897987541ULL + worldSeed + SALT;
+                            static_cast<i64>(regionZ * REGION_SIZE) * 132897987541ULL + worldSeed + SALT;
         rnds.setSeed(featureSeed);
         std::unordered_set<Pos2D, Pos2D::Hasher> attempted;
         for (int attempts = 0; attempts < ATTEMPTS; attempts++) {
@@ -165,8 +164,7 @@ namespace Placement {
     template<>
     c_u64 DynamicStructure<BuriedTreasure>::SECONDARY_VALID_BIOMES = DEFAULT_SECONDARY_VALID_BIOMES;
     template<>
-    c_u64 DynamicStructure<BuriedTreasure>::SECONDARY_VALID_BIOMES_MUTATED =
-            DEFAULT_SECONDARY_VALID_BIOMES_MUTATED;
+    c_u64 DynamicStructure<BuriedTreasure>::SECONDARY_VALID_BIOMES_MUTATED = DEFAULT_SECONDARY_VALID_BIOMES_MUTATED;
     void BuriedTreasure::setWorldSize(const lce::WORLDSIZE worldSize) {
         CHUNK_BOUNDS = getChunkWorldBounds(worldSize) - 3;
         // prevent from setting the same values

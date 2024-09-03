@@ -5,7 +5,7 @@
 
 class EnchantmentTridentChanneling final : public Enchantment {
 public:
-    EnchantmentTridentChanneling(std::string name, const Rarity *rarity) :
+    EnchantmentTridentChanneling(std::string name, const eRarity rarity) :
             Enchantment(std::move(name), rarity, &Type::TRIDENT,
                         EnumName::TRIDENT_CHANNELING, 1) {};
 

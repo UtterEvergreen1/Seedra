@@ -60,9 +60,9 @@ public:
         const ItemEntry& selectedItem = items[low];
         ItemStack itemStack = {selectedItem.item,
                                LootTable::getInt<legacy>(rng, selectedItem.getMin(), selectedItem.getMax())};
-        int functionsSize = (int) selectedItem.functions.size();
+        size_t functionsSize = selectedItem.functions.size();
         if EXPECT_FALSE (functionsSize) {
-            for (int index = 0; index < functionsSize; index++) {
+            for (size_t index = 0; index < functionsSize; index++) {
                 selectedItem.functions[index]->apply(itemStack, rng);
             }
         }

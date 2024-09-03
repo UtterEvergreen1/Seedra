@@ -8,7 +8,7 @@ class EnchantmentWaterWalker final : public Enchantment {
     static constexpr inline i8 LEVELS_MAX[3] = {26, 36, 46};
 
 public:
-    EnchantmentWaterWalker(std::string name, const Rarity* rarity)
+    EnchantmentWaterWalker(std::string name, const eRarity rarity)
         : Enchantment(std::move(name), rarity, &Type::ARMOR_FEET, EnumName::WATER_WALKER, 3){};
 
     int getMinCost(c_int enchantmentLevel) override { return LEVELS_MIN[enchantmentLevel - 1]; }

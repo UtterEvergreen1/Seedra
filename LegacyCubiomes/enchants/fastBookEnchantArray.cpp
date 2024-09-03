@@ -20,10 +20,10 @@ EnchantmentData* ELDataArray::getLastEnchantmentAdded() { return &data[enchants.
 void ELDataArray::addRandomItem(RNG& rng) {
 
     // get the total weight
-    int theTotalWeight = this->totalWeight;
+    int theTotalWeight = static_cast<u8>(this->totalWeight);
     for (int i = 0; i < deletions.getIndex(); i++) {
         c_int enchIndex = deletions.getValueAt(i);
-        theTotalWeight -= data[enchIndex].getRarityWeight();
+        theTotalWeight -= data[enchIndex].obj->rarity;
     }
 
     // get the rng weight
@@ -49,10 +49,19 @@ void ELDataArray::addRandomItem(RNG& rng) {
     // get the enchantment
     for (int enchIndex = 0; enchIndex < totalEnchants; enchIndex++) {
 
-        for (int i = 0; i < deletions.getIndex(); i++)
-            if (enchIndex == deletions.getValueAt(i)) goto END;
+        bool isDeleted = false;
+        for (int i = 0; i < deletions.getIndex(); i++) {
+            if (enchIndex == deletions.getValueAt(i)) {
+                isDeleted = true;
+                break;
+            }
+        }
 
-        weight -= data[enchIndex].obj->rarity->getWeight();
+        if (isDeleted) {
+            continue;
+        }
+
+        weight -= data[enchIndex].obj->rarity;
 
         // If the right weight is found, add it to the enchantments
         if (weight < 0) {
@@ -90,7 +99,7 @@ void EnchantedBookEnchantsLookupTable::setup() {
     int sum = 0;
     for (int i = 0; i < Enchantment::REGISTRY.size(); ++i) {
         const Enchantment* ench = Enchantment::REGISTRY[i];
-        sum += ench->rarity->getWeight();
+        sum += ench->rarity;
         CUMULATIVE_WEIGHT_ALL[i] = static_cast<i8>(sum);
     }
     TOTAL_WEIGHT = static_cast<i8>(sum);
@@ -108,7 +117,7 @@ void EnchantedBookEnchantsLookupTable::setup() {
                 auto maxCost = ench_pt->getMaxCost(level);
                 if (cost >= minCost && cost <= maxCost) {
                     array->addData(ench_pt, level);
-                    array->totalWeight += ench_pt->rarity->getWeight();
+                    array->totalWeight += ench_pt->rarity;
                     break;
                 }
             }

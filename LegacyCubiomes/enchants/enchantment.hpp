@@ -1,6 +1,7 @@
 #pragma once
 
 #include <iostream>
+#include <map>
 #include <string>
 #include <utility>
 #include <vector>
@@ -171,7 +172,7 @@ public:
     static LCEVERSION currentVersion;
 
     /// the order is: [console][version][pointer]
-    static const std::vector<std::vector<std::vector<int>>> tableOfOrders;
+    static const std::map<lce::CONSOLE, std::vector<std::vector<int>>> tableOfOrders;
 
     static int count;
 
@@ -179,19 +180,19 @@ public:
     const std::string name;
     const Type::Base* type = nullptr;
     EnumName enumID = EnumName::NONE;
-    bool isTreasure = false;
-    c_i8 maxLevel = 1;
-    const Rarity* rarity = &Rarities::NONE;
+    MU bool isTreasure = false;
+    c_u8 maxLevel = 1;
+    const eRarity rarity = eRarity::NONE;
 
 
     Enchantment() = default;
 
-    Enchantment(std::string name, const Rarity* rarity, const EnumName enchantName, c_i8 maxLevel,
+    Enchantment(std::string name, const eRarity rarity, const EnumName enchantName, c_i8 maxLevel,
                 c_bool isTreasure = false)
         : name(std::move(name)), type(&Type::ALL), enumID(enchantName), isTreasure(isTreasure), maxLevel(maxLevel),
           rarity(rarity){}
 
-    Enchantment(std::string name, const Rarity* rarity, const Type::Base* type, const EnumName enchantName,
+    Enchantment(std::string name, const eRarity rarity, const Type::Base* type, const EnumName enchantName,
                 c_i8 maxLevel, c_bool isTreasure = false)
         : name(std::move(name)), type(type), enumID(enchantName), isTreasure(isTreasure), maxLevel(maxLevel),
           rarity(rarity){}

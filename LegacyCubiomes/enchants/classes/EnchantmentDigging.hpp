@@ -8,7 +8,7 @@ class EnchantmentDigging final : public Enchantment {
     static constexpr inline i8 LEVELS_MAX[5] = {61, 71, 81, 91, 101};
 
 public:
-    EnchantmentDigging(std::string name, const Rarity* rarity)
+    EnchantmentDigging(std::string name, const eRarity rarity)
         : Enchantment(std::move(name), rarity, &Type::DIGGER, EnumName::DIGGING, 5){};
 
     int getMinCost(c_int enchantmentLevel) override { return LEVELS_MIN[enchantmentLevel - 1]; }

@@ -87,7 +87,7 @@ void WaterRavineGenerator::addTunnel(c_i64 randomSeed, const Pos2D chunk, ChunkP
 
                     for (int z = startZ; z < endZ; ++z) {
                         c_double dZ = ((double) (z + chunk.z * 16) + 0.5 - tunnel.z) / adjustedWidth;
-                        bool replaceableBlockDetected = false;
+                        // bool replaceableBlockDetected = false;
 
                         c_double dxdxdzdz = dX * dX + dZ * dZ;
                         if (dxdxdzdz < 1.0) {

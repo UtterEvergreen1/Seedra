@@ -27,7 +27,8 @@ public:
     //ChunkPrimer(ChunkPrimer &&) = delete;
     //ChunkPrimer &operator=(ChunkPrimer &&) = delete;
 
-    ND u16 getBlockAtIndex(c_i64 index) const { return index >= 0 && index < 65536 ? blocks[index] : 0; }
+    ND u16 getBlockAtIndex(c_i64 index) const {
+        return index >= 0 && index < 65536 ? blocks[index] : 0; }
 
     ND u16 getBlockId(c_i64 x, c_i64 y, c_i64 z) const {
         return getBlockAtIndex(getStorageIndex(x, y, z)) >> 4;
@@ -53,12 +54,8 @@ public:
         skyLight[getStorageIndex(x, y, z)] = lightValue;
     }
 
-    void setBlockAndData(i64 x, i64 y, i64 z, u16 block, u8 data) {
-        blocks[getStorageIndex(x, y, z)] = ((block << 4) | data);
-    }
-
-    void setBlockAndData(i64 x, i64 y, i64 z, const lce::items::Item& item) {
-        blocks[getStorageIndex(x, y, z)] = ((item.getID() << 4) | item.getDataTag());
+    void setBlockAndData(i64 x, i64 y, i64 z, const lce::blocks::Block& block) {
+        blocks[getStorageIndex(x, y, z)] = ((block.getID() << 4) | block.getDataTag());
     }
 
     friend std::ostream& operator<<(std::ostream& out, const ChunkPrimer& chunkPrimer) {
@@ -89,16 +86,16 @@ public:
     // TODO add all the blocks or make a block class and get the value from that
     static int getBlockLightOpacity(c_u16 blockId) {
         switch (blockId) {
-            case 0:
-            case 78:
-            case 171:
+            case lce::blocks::ids::AIR_ID:
+            case lce::blocks::ids::SNOW_ID:
+            case lce::blocks::ids::WHITE_CARPET_ID:
                 return 0;
-            case 30:
+            case lce::blocks::ids::COBWEB_ID:
                 return 1;
-            case 8:
-            case 9:
-            case 79:
-            case 212:
+            case lce::blocks::ids::FLOWING_WATER_ID:
+            case lce::blocks::ids::STILL_WATER_ID:
+            case lce::blocks::ids::ICE_ID:
+            case lce::blocks::ids::FROSTED_ICE_ID:
                 return 3;
             default:
                 return 255;
@@ -149,7 +146,7 @@ public:
         return precipitationHeightMap[k];
     }
 
-    bool canBlockFreeze(const Generator& g, const Pos3D pos, c_bool noWaterAdj) const {
+    ND bool canBlockFreeze(const Generator& g, const Pos3D pos, c_bool noWaterAdj) const {
         if (Biome::getBiomeForId(g.getBiomeAt(1, pos.getX(), pos.getZ()))->getFloatTemperature(pos) >= 0.15F)
             return false;
 

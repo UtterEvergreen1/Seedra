@@ -8,7 +8,7 @@ class EnchantmentDurability final : public Enchantment {
     static constexpr inline i8 LEVELS_MAX[3] = {61, 71, 81};
 
 public:
-    EnchantmentDurability(std::string name, const Rarity* rarity)
+    EnchantmentDurability(std::string name, const eRarity rarity)
         : Enchantment(std::move(name), rarity, &Type::BREAKABLE, EnumName::DURABILITY, 3){};
 
     int getMinCost(c_int enchantmentLevel) override { return LEVELS_MIN[enchantmentLevel - 1]; }

@@ -8,7 +8,7 @@ class EnchantmentKnockback final : public Enchantment {
     static constexpr inline i8 LEVELS_MAX[2] = {61, 71};
 
 public:
-    EnchantmentKnockback(std::string name, const Rarity* rarity)
+    EnchantmentKnockback(std::string name, const eRarity rarity)
         : Enchantment(std::move(name), rarity, &Type::WEAPON, EnumName::KNOCKBACK, 2){};
 
     int getMinCost(c_int enchantmentLevel) override { return LEVELS_MIN[enchantmentLevel - 1]; }

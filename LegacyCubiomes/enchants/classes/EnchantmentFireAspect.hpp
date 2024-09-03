@@ -8,7 +8,7 @@ class EnchantmentFireAspect final : public Enchantment {
     static constexpr inline i8 LEVELS_MAX[2] = {61, 71};
 
 public:
-    EnchantmentFireAspect(std::string name, const Rarity* rarity)
+    EnchantmentFireAspect(std::string name, const eRarity rarity)
         : Enchantment(std::move(name), rarity, &Type::WEAPON, EnumName::FIRE_ASPECT, 2){};
 
     int getMinCost(c_int enchantmentLevel) override { return LEVELS_MIN[enchantmentLevel - 1]; }

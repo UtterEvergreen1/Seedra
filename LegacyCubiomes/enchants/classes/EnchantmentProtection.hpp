@@ -26,7 +26,7 @@ public:
 
     const ArmorType* protType = &ALL;
 
-    EnchantmentProtection(std::string name, const Rarity* rarity, c_int type)
+    EnchantmentProtection(std::string name, const eRarity rarity, c_int type)
         : Enchantment(std::move(name), rarity, EnumName::PROTECTION, 4) {
         switch (type) {
             case 0:

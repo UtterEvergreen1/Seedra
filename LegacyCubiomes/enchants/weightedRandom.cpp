@@ -3,7 +3,7 @@
 
 int WeightedRandom::getTotalWeight(const EnchDataVec_t& collection) {
     int totalWeight = 0;
-    for (c_auto& item: collection) { totalWeight += item.obj->rarity->getWeight(); }
+    for (c_auto& item: collection) { totalWeight += item.obj->rarity; }
     return totalWeight;
 }
 
@@ -17,7 +17,7 @@ EnchantmentData WeightedRandom::getRandomItem(RNG& rng, const EnchDataVec_t& col
 EnchantmentData WeightedRandom::getRandomItem(const EnchDataVec_t& collection, int weightIn) {
     int count = 0;
     for (c_auto& it: collection) {
-        weightIn -= it.obj->rarity->getWeight();
+        weightIn -= it.obj->rarity;
         if (weightIn < 0) return it;
         count += 1;
     }
