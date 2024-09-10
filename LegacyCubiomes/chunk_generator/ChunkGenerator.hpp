@@ -39,4 +39,5 @@ public:
     ChunkPrimer* provideChunk(int x, int z);
     MU ChunkPrimer* provideChunk(const Pos2D chunkPos) { return provideChunk(chunkPos.x, chunkPos.z); };
     void generateHeightmap(int x, int y, int z);
+
 };

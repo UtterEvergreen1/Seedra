@@ -61,11 +61,23 @@ public:
         return {std::abs(pos.x), std::abs(pos.y), std::abs(pos.z)};
     }
 
-    void setPos(int xIn, int yIn, int zIn) {
+    void setPos(classType xIn, classType yIn, classType zIn) {
         this->x = xIn;
         this->y = yIn;
         this->z = zIn;
     }
+
+    Pos3DTemplate add(classType xOff, classType yOff, classType zOff) {
+        Pos3DTemplate<classType> pos{x + xOff, y + yOff, z + zOff};
+        return pos;
+    }
+
+    Pos3DTemplate down(classType yOff = 1) {
+        Pos3DTemplate<classType> pos{x, y + yOff, z};
+        return pos;
+    }
+
+
 
     MU ND Pos2DTemplate<classType> convert2D() const;
     MU ND bool insideBounds(classType lower, classType upper);
