@@ -9,7 +9,9 @@
 
 namespace Chunk {
 
-    template<bool checkWaterCaves = false, bool generateCaves = true, bool generateRavines = true,
+    template<bool checkWaterCaves = false,
+             bool generateCaves = true,
+             bool generateRavines = true,
              bool generateSkyLight = false>
     static ChunkPrimer* provideChunk(const Generator& g, c_int chunkX, c_int chunkZ, bool accurate = true) {
         ChunkGeneratorOverWorld chunk(g);

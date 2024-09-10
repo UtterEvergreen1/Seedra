@@ -4,6 +4,8 @@
 #include "biomeColor.hpp"
 #include "biomeID.hpp"
 
+#include "lce/processor.hpp"
+
 
 void setBiomeColor(u8 biomeColor[256][3], c_int id, const unsigned char r, const unsigned char g,
                    const unsigned char b) {

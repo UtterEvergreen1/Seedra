@@ -1,9 +1,9 @@
 #pragma once
 
-#include "lce/processor.hpp"
+#include <cstdint>
 
 
-enum BiomeTempCategory : u8 {
+enum BiomeTempCategory : uint8_t {
     Oceanic, Warm, Lush, Cold, Freezing, Special
 };
 

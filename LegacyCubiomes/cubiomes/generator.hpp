@@ -227,8 +227,7 @@ public:
      * @param mutatedValidBiomes u64 value of the valid mutated biomes
      * @return true if all the biomes are valid within the radius
      */
-    MU ND bool areBiomesViable(const Pos2D pos, c_int rad, c_u64 validBiomes,
-                               c_u64 mutatedValidBiomes = 0) const {
+    MU ND bool areBiomesViable(const Pos2D pos, c_int rad, c_u64 validBiomes, c_u64 mutatedValidBiomes = 0) const {
         return areBiomesViable(pos.x, pos.z, rad, validBiomes, mutatedValidBiomes);
     }
 

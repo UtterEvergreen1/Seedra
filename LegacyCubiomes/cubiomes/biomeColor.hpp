@@ -1,7 +1,7 @@
 #pragma once
 
-#include "lce/processor.hpp"
+#include <cstdint>
 
 /// initialize a biome colormap with some defaults
-MU void initBiomeColors(u8 biomeColors[256][3]);
-MU void initBiomeTypeColors(u8 biomeColors[256][3]);
+[[maybe_unused]] void initBiomeColors(uint8_t biomeColors[256][3]);
+[[maybe_unused]] void initBiomeTypeColors(uint8_t biomeColors[256][3]);
