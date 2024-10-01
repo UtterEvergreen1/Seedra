@@ -36,22 +36,30 @@ namespace Placement {
     }
 
     template<typename Derived>
-    std::vector<Pos2D> StaticStructure<Derived>::getAllPositions(const Generator* g) {
+    std::vector<Pos2D> StaticStructure<Derived>::getAllPositions(const Generator *g) {
+        return getAllPositionsBounded(g, -g->getWorldCoordinateBounds(), -g->getWorldCoordinateBounds(),
+                                      g->getWorldCoordinateBounds(), g->getWorldCoordinateBounds());
+    }
+
+    template<typename Derived>
+    std::vector<Pos2D>
+    StaticStructure<Derived>::getAllPositionsBounded(const Generator *g, int lowerX, int lowerZ, int upperX,
+                                                     int upperZ) {
         std::vector<Pos2D> positions;
-        c_int numRegions = CHUNK_BOUNDS / REGION_SIZE;
-        for (int regionX = -numRegions - 1; regionX <= numRegions; ++regionX) {
-            for (int regionZ = -numRegions - 1; regionZ <= numRegions; ++regionZ) {
-                if (const Pos2D structPos = getRegionChunkPosition(g->getWorldSeed(), regionX, regionZ);
-                    verifyChunkPosition(g, structPos)) {
-                    positions.emplace_back((structPos << 4) + 8);
-                }
+        c_int numXRegions = (upperX - lowerX) / REGION_SIZE;
+        c_int numZRegions = (upperZ - lowerZ) / REGION_SIZE;
+        for (int regionX = -numXRegions - 1; regionX <= numXRegions; ++regionX) {
+            for (int regionZ = -numZRegions - 1; regionZ <= numZRegions; ++regionZ) {
+                if (const Pos2D structPos = getRegionBlockPosition(g->getWorldSeed(), regionX, regionZ);
+                        verifyChunkPosition(g, structPos.toChunkPos()) && structPos.insideBounds(lowerX, lowerZ, upperX, upperZ))
+                    positions.push_back(structPos);
             }
         }
         return positions;
     }
 
     template<typename Derived>
-    bool StaticStructure<Derived>::verifyChunkPosition(const Generator* g, c_int chunkX, c_int chunkZ) {
+    bool StaticStructure<Derived>::verifyChunkPosition(const Generator *g, c_int chunkX, c_int chunkZ) {
         if (chunkX < -CHUNK_BOUNDS || chunkX > CHUNK_BOUNDS || chunkZ < -CHUNK_BOUNDS || chunkZ > CHUNK_BOUNDS)
             return false;
 
@@ -72,11 +80,12 @@ namespace Placement {
         // prevent from setting the same values
         c_bool reducedSpacing = worldSize < lce::WORLDSIZE::MEDIUM;
         if (REDUCED_SPACING == reducedSpacing) return;
+        REDUCED_SPACING = reducedSpacing;
         REGION_SIZE = reducedSpacing ? 16 : 32;
         CHUNK_RANGE = REGION_SIZE - 8;
     }
 
-    StructureType Feature::getFeatureType(const Generator* g, c_int blockX, c_int blockZ) {
+    StructureType Feature::getFeatureType(const Generator *g, c_int blockX, c_int blockZ) {
         if (blockX < -g->getWorldCoordinateBounds() || blockX > g->getWorldCoordinateBounds() ||
             blockZ < -g->getWorldCoordinateBounds() || blockZ > g->getWorldCoordinateBounds()) {
             return StructureType::NONE;
@@ -107,13 +116,22 @@ namespace Placement {
      * @param g the generator
      * @return a vector of position + type.
      */
-    std::vector<FeatureStructurePair> Feature::getAllFeaturePositions(const Generator* g) {
+    std::vector<FeatureStructurePair> Feature::getAllFeaturePositions(const Generator *g) {
+        return getAllFeaturePositionsBounded(g, -g->getWorldCoordinateBounds(), -g->getWorldCoordinateBounds(),
+                                             g->getWorldCoordinateBounds(), g->getWorldCoordinateBounds());
+    }
+
+    std::vector<FeatureStructurePair>
+    Feature::getAllFeaturePositionsBounded(const Generator *g, int lowerX, int lowerZ, int upperX, int upperZ) {
         std::vector<FeatureStructurePair> features;
-        c_int numRegions = CHUNK_BOUNDS / REGION_SIZE;
-        for (int regionX = -numRegions - 1; regionX <= numRegions; ++regionX) {
-            for (int regionZ = -numRegions - 1; regionZ <= numRegions; ++regionZ) {
+        c_int numXRegions = (upperX - lowerX) / REGION_SIZE;
+        c_int numZRegions = (upperZ - lowerZ) / REGION_SIZE;
+        for (int regionX = -numXRegions - 1; regionX <= numXRegions; ++regionX) {
+            for (int regionZ = -numZRegions - 1; regionZ <= numZRegions; ++regionZ) {
                 Pos2D structPos = getRegionBlockPosition(g->getWorldSeed(), regionX, regionZ);
-                if (StructureType structureType = getFeatureType(g, structPos); structureType != StructureType::NONE)
+                if (StructureType structureType = getFeatureType(g, structPos); structureType != StructureType::NONE &&
+                                                                                structPos.insideBounds(lowerX, lowerZ,
+                                                                                                       upperX, upperZ))
                     features.emplace_back(structPos, structureType);
             }
         }
@@ -145,6 +163,7 @@ namespace Placement {
         // prevent from setting the same values
         bool reducedSpacing = worldSize < lce::WORLDSIZE::MEDIUM;
         if (Village::REDUCED_SPACING == reducedSpacing) return;
+        Village::REDUCED_SPACING = reducedSpacing;
         Village::REGION_SIZE = reducedSpacing ? 16 : 32;
         Village::CHUNK_RANGE = Village::REGION_SIZE - 8;
     }
@@ -164,16 +183,26 @@ namespace Placement {
             1ULL << ocean | 1ULL << deep_ocean | 1ULL << warm_ocean | 1ULL << deep_warm_ocean |
             1ULL << lukewarm_ocean | 1ULL << deep_lukewarm_ocean | 1ULL << cold_ocean |
             1ULL << deep_cold_ocean | 1ULL << frozen_ocean | 1ULL << deep_frozen_ocean;
+
     void OceanRuin::setWorldSize(const lce::WORLDSIZE worldSize) { CHUNK_BOUNDS = getChunkWorldBounds(worldSize); }
 
 
 } // namespace Placement
 
-template class Placement::StaticStructure<Placement::Feature>;
+template
+class Placement::StaticStructure<Placement::Feature>;
 
-template class Placement::Village<false>;
-template class Placement::Village<true>;
-template class Placement::StaticStructure<Placement::Village<false>>;
-template class Placement::StaticStructure<Placement::Village<true>>;
+template
+class Placement::Village<false>;
 
-template class Placement::StaticStructure<Placement::OceanRuin>;
+template
+class Placement::Village<true>;
+
+template
+class Placement::StaticStructure<Placement::Village<false>>;
+
+template
+class Placement::StaticStructure<Placement::Village<true>>;
+
+template
+class Placement::StaticStructure<Placement::OceanRuin>;

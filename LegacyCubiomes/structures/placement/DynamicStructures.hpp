@@ -44,7 +44,10 @@ namespace Placement {
         static bool REDUCED_SPACING;
 
         static Pos2D getPosition(const Generator* g, int regionX, int regionZ);
-        static std::vector<Pos2D> getAllPositions(const Generator* g);
+        static std::vector<Pos2D> getAllPositions(const Generator* g, std::atomic_bool* terminateFlag = nullptr);
+
+        static std::vector<Pos2D>
+        getAllPositionsBounded(const Generator *g, int lowerX, int lowerZ, int upperX, int upperZ, std::atomic_bool* terminateFlag = nullptr);
         static bool canSpawnAtChunk(i64 worldSeed, int chunkX, int chunkZ, int regionX, int regionZ);
     };
 

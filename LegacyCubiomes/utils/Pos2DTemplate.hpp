@@ -72,8 +72,8 @@ public:
     }
 
     MU void setPos(classType xIn, classType zIn);
-    MU ND std::string toString();
-    MU ND bool insideBounds(classType lower, classType upper);
+    MU ND std::string toString() const;
+    MU ND bool insideBounds(classType lowerX, classType lowerZ, classType upperX, classType upperZ) const;
 
     struct Hasher {
         template <typename T = classType, typename = std::enable_if_t<std::is_integral_v<T>>>

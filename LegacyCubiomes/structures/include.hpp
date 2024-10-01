@@ -27,6 +27,10 @@
 
 namespace Placement {
     static void setWorldSize(lce::WORLDSIZE worldSize) {
+        Feature::setWorldSize(worldSize);
+        Village<false>::setWorldSize(worldSize);
+        Village<true>::setWorldSize(worldSize);
+        OceanRuin::setWorldSize(worldSize);
         Mansion::setWorldSize(worldSize);
         Monument::setWorldSize(worldSize);
         BuriedTreasure::setWorldSize(worldSize);
