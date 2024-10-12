@@ -4,10 +4,14 @@
 
 namespace Placement {
 
-    Pos2DVec_t Mineshaft::getPositions(c_i64 worldSeed, c_int xLower, c_int zLower, c_int xUpper, c_int zUpper) {
+    Pos2DVec_t Mineshaft::getPositions(c_i64 worldSeed, int xLower, int zLower, int xUpper, int zUpper) {
         RNG rng;
         Pos2DVec_t positions;
         rng.setSeed(worldSeed);
+        xLower >>= 4;
+        zLower >>= 4;
+        xUpper >>= 4;
+        zUpper >>= 4;
         c_u64 xModifier = rng.nextLong();
         c_u64 zModifier = rng.nextLong();
 
@@ -22,11 +26,10 @@ namespace Placement {
                     if (-xPos > distance) distance = -xPos;
                     if (+zPos > distance) distance = +zPos;
                     if (-zPos > distance) distance = -zPos;
-                    if (distance >= 80 || rng.nextInt(80) < distance) { positions.emplace_back(xPos, zPos); }
+                    if (distance >= 80 || rng.nextInt(80) < distance) { positions.emplace_back((xPos << 4) + 8, (zPos << 4) + 8); }
                 }
             }
         }
-
         return positions;
     }
 } // namespace Placement

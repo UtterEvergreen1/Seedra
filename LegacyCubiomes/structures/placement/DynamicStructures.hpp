@@ -64,6 +64,21 @@ namespace Placement {
     class BuriedTreasure : public DynamicStructure<BuriedTreasure> {
     public:
         static void setWorldSize(lce::WORLDSIZE worldSize);
+        static std::vector<Pos2D> getAllPositions(const Generator* g, std::atomic_bool* terminateFlag = nullptr) {
+            std::vector<Pos2D> positions = DynamicStructure::getAllPositions(g, terminateFlag);
+            for (Pos2D& pos : positions) {
+                pos.z += 1;
+            }
+            return positions;
+        }
+
+        static std::vector<Pos2D> getAllPositionsBounded(const Generator *g, int lowerX, int lowerZ, int upperX, int upperZ, std::atomic_bool* terminateFlag = nullptr) {
+            std::vector<Pos2D> positions = DynamicStructure::getAllPositionsBounded(g, lowerX, lowerZ, upperX, upperZ, terminateFlag);
+            for (Pos2D& pos : positions) {
+                pos.z += 1;
+            }
+            return positions;
+        }
     };
 
     class Shipwreck : public DynamicStructure<Shipwreck> {

@@ -107,7 +107,7 @@ static void initBiomeTypeColors(unsigned char colors[256][3])
 }
 
 static int biomesToImage(u8 *pixels, u8 biomeColors[256][3], c_int *biomes,
-                         c_u32 sx, c_u32 sy, c_u32 pixScale, c_int flip) {
+                         c_u32 sx, c_u32 sy, c_u32 pixScale) {
     u32 i, j;
     int containsInvalidBiomes = 0;
 
@@ -133,11 +133,7 @@ static int biomesToImage(u8 *pixels, u8 biomeColors[256][3], c_int *biomes,
             u32 m, n;
             for (m = 0; m < pixScale; m++) {
                 for (n = 0; n < pixScale; n++) {
-                    int idx = pixScale * i + n;
-                    if (flip)
-                        idx += (sx * pixScale) * ((pixScale * j) + m);
-                    else
-                        idx += (sx * pixScale) * ((pixScale * (sy-1-j)) + m);
+                    const int idx = pixScale * i + n + (pixScale * sx) * (pixScale * j + m);
 
                     unsigned char *pix = pixels + 3*idx;
                     pix[0] = (u8)r;

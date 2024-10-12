@@ -1,7 +1,9 @@
 #pragma once
 
 #include "lce/processor.hpp"
+
 #include <iostream>
+#include <chrono>
 
 ///=============================================================================
 ///                    C++ implementation of Java Random
@@ -24,8 +26,13 @@ public:
         return rng;
     }
 
+    static inline int64_t getRandomWorldSeed() {
+        RNG rng = RNG::initializeWithRandomSeed();
+        return rng.nextLongI();
+    }
+
     static inline RNG getLargeFeatureSeed(c_i64 worldSeed, c_int chunkX, c_int chunkZ) {
-        RNG rng{};
+        RNG rng;
         rng.setSeed(worldSeed);
         c_auto l2 = (i64) rng.nextLong();
         c_auto l3 = (i64) rng.nextLong();
@@ -45,6 +52,17 @@ public:
         c_i64 decoratorSeed = (chunkX * a + chunkZ * b) ^ worldSeed;
         rng.setSeed(decoratorSeed);
         return rng;
+    }
+
+    static inline RNG initializeWithRandomSeed() {
+        RNG rng{};
+        rng.setRandomSeed();
+        return rng;
+    }
+
+    MU void setRandomSeed() {
+        //generate a random seed based on the nanoseconds
+        this->setSeed(std::chrono::high_resolution_clock::now().time_since_epoch().count());
     }
 
 
