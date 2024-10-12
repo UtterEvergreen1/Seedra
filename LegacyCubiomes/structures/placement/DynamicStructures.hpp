@@ -1,6 +1,7 @@
 #pragma once
 
 #include <vector>
+#include <atomic>
 #include "LegacyCubiomes/cubiomes/biomeID.hpp"
 #include "LegacyCubiomes/cubiomes/generator.hpp"
 #include "LegacyCubiomes/cubiomes/layers.hpp"
