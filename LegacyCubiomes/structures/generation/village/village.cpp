@@ -7,19 +7,19 @@
 
 namespace generation {
 
-    std::map<Village::PieceType, std::string> Village::pieceTypeNames = {
+    std::map<int8_t, std::string> Village::pieceTypeNames = {
             {PieceType::NONE, "NONE        "},    {PieceType::Start, "Start       "},
             {PieceType::Road, "Road        "},    {PieceType::House4Garden, "House4Garden"},
             {PieceType::Church, "Church      "},  {PieceType::House1, "House1      "},
             {PieceType::WoodHut, "WoodHut     "}, {PieceType::Hall, "Hall        "},
-            {PieceType::Field1, "Field1      "},  {PieceType::Field2, "Field2      "},
-            {PieceType::House2, "House2      "},  {PieceType::House3, "House3      "},
+            {PieceType::Field1, "Double Field"},  {PieceType::Field2, "Single Field"},
+            {PieceType::House2, "Blacksmith  "},  {PieceType::House3, "House3      "},
             {PieceType::Torch, "Torch       "},
     };
 
 
     c_int Village::VILLAGE_SIZE = 0;
-    const Village::PieceWeight Village::PIECE_WEIGHTS[9] = {
+    constexpr Village::PieceWeight Village::PIECE_WEIGHTS[9] = {
             {PieceType::House4Garden, 4, 2 + Village::VILLAGE_SIZE, 4 + Village::VILLAGE_SIZE * 2},
             {PieceType::Church, 20, 0 + Village::VILLAGE_SIZE, 1 + Village::VILLAGE_SIZE},
             {PieceType::House1, 20, 0 + Village::VILLAGE_SIZE, 2 + Village::VILLAGE_SIZE},
@@ -49,6 +49,10 @@ namespace generation {
         buildComponentStart(startPiece);
 
         while (pendingRoadArraySize != 0) {
+            if (generationStep == GenerationStep::VALID && pieceArraySize - numInvalidPieces > 2) {
+                hasMoreThanTwoComponents = true;
+                return;
+            }
             c_int i = rng.nextInt(pendingRoadArraySize);
             const Piece& piece = pieceArray[pendingRoadArray[i]];
 
@@ -89,9 +93,10 @@ namespace generation {
             }
         }
 
-        // hasMoreThanTwoComponents = false;
+        hasMoreThanTwoComponents = false;
         previousPiece = PieceType::NONE;
         blackSmithPiece = nullptr;
+        numInvalidPieces = 1;
         pieceArraySize = 0;
         pendingRoadArraySize = 0;
     }
@@ -353,6 +358,7 @@ namespace generation {
     void Village::addPiece(const Piece& piece) {
         pendingRoadArray[pendingRoadArraySize++] = pieceArraySize;
         pieceArray[pieceArraySize++] = piece;
+        if (piece.type == static_cast<i8>(PieceType::Road)) { numInvalidPieces++; }
     }
 
 

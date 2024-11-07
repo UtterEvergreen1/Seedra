@@ -14,12 +14,13 @@ namespace generation {
     class Village {
     public:
         enum class GenerationStep : i8 {
-            BLACKSMITH, // Generates the layout up to the blacksmith, hasMoreThanTwoComponents won't be calculated
-            LAYOUT,     // Generates full layout, hasMoreThanTwoComponents won't be calculated
+            VALID,      // Generates the layout up until it makes the village valid
+            BLACKSMITH, // Generates the layout up to the blacksmith
+            LAYOUT,     // Generates full layout
             FULL,       // Generates full layout and calculates hasMoreThanTwoComponents
         };
 
-        enum class PieceType : i8 {
+        enum PieceType : i8 {
             NONE,
             Start,
             Road,
@@ -42,7 +43,7 @@ namespace generation {
             int PlaceCountMax;
         };
 
-        static std::map<PieceType, std::string> pieceTypeNames;
+        static std::map<int8_t, std::string> pieceTypeNames;
         static c_int VILLAGE_SIZE;
         static const PieceWeight PIECE_WEIGHTS[9];
 
@@ -75,6 +76,8 @@ namespace generation {
 
         int startX{};
         int startZ{};
+
+        int numInvalidPieces = 1;
 
         bool hasMoreThanTwoComponents{};
 

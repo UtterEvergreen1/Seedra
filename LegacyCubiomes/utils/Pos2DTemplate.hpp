@@ -11,6 +11,7 @@
 
 #include "lce/processor.hpp"
 
+class BoundingBox; // Forward declaration
 
 template<class classType>
 class Pos2DTemplate {
@@ -74,6 +75,13 @@ public:
     MU void setPos(classType xIn, classType zIn);
     MU ND std::string toString() const;
     MU ND bool insideBounds(classType lowerX, classType lowerZ, classType upperX, classType upperZ) const;
+    MU ND bool insideBounds(const BoundingBox& bb) const;
+    MU ND uint64_t asLong() const {
+        return (static_cast<uint64_t>(x) << 32) | static_cast<uint64_t>(z);
+    }
+    MU ND uint64_t hash() const {
+        return std::hash<uint64_t>()(asLong());
+    }
 
     struct Hasher {
         template <typename T = classType, typename = std::enable_if_t<std::is_integral_v<T>>>

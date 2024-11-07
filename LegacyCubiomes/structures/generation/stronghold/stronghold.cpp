@@ -9,7 +9,7 @@ static constexpr DIRECTION HORIZONTAL[4] = {DIRECTION::NORTH, DIRECTION::EAST, D
 
 namespace generation {
 
-    const std::map<Stronghold::PieceType, std::string> Stronghold::PieceTypeName = {
+    const std::map<int8_t, std::string> Stronghold::PieceTypeName = {
             {PieceType::NONE, "NONE -> something went wrong"},
             {PieceType::STRAIGHT, "STRAIGHT"},
             {PieceType::PRISON_HALL, "PRISON_HALL"},

@@ -11,33 +11,45 @@ namespace loot {
     public:
         /// loot seeding with stronghold stone rolls
         template<bool checkCaves, bool checkWaterCaves = false>
-        static RNG getLootSeed(const Generator& g, generation::Stronghold* strongholdGenerator, const Piece& piece,
-                               c_int chestChunkX, c_int chestChunkZ, bool accurate) {
-            RNG rng = RNG::getPopulationSeed(g.getWorldSeed(), chestChunkX, chestChunkZ);
-
-            if constexpr (checkCaves) {
-                ChunkPrimer* chunk = Chunk::provideChunk<checkWaterCaves>(g, chestChunkX, chestChunkZ, accurate);
-                // we roll rng equal to the stone bricks in the chunk that generated before the chest corridor
-                if (!structure_rolls::Stronghold::generateStructure<true>(chunk, strongholdGenerator, rng, piece,
-                                                                          chestChunkX, chestChunkZ)) {
-                    delete chunk;
-                    return RNG(-1);
-                }
-                delete chunk;
-            } else {
-                structure_rolls::Stronghold::generateStructure<true>(nullptr, strongholdGenerator, rng, piece,
-                                                                     chestChunkX, chestChunkZ);
-            }
-            return rng;
-        }
+        ND static RNG getLootSeed(const Generator& g, generation::Stronghold* strongholdGenerator, const Piece& piece,
+                               c_int chestChunkX, c_int chestChunkZ, bool accurate);
 
         /// combine loot seeding and generation to get the stronghold loot
         template<bool checkCaves, bool shuffle>
-        ND static Container getLoot(const Generator& g, generation::Stronghold* strongholdGenerator, const Piece& piece,
-                                    c_int chestChunkX, c_int chestChunkZ, bool accurate) {
-            u64 lootSeed = getLootSeed<checkCaves>(g, strongholdGenerator, piece, chestChunkX, chestChunkZ, accurate);
-            if (lootSeed == -1) return {};
-            return T::template getLootFromSeed<shuffle>(lootSeed);
-        }
+        MU ND static Container getLoot(const Generator& g, generation::Stronghold* strongholdGenerator, const Piece& piece,
+                                    c_int chestChunkX, c_int chestChunkZ, bool accurate);
     };
+
+    /// loot seeding with stronghold stone rolls
+    template <typename T>
+    template<bool checkCaves, bool checkWaterCaves>
+    RNG StrongholdLoot<T>::getLootSeed(const Generator& g, generation::Stronghold* strongholdGenerator, const Piece& piece,
+                                       c_int chestChunkX, c_int chestChunkZ, bool accurate) {
+        RNG rng = RNG::getPopulationSeed(g.getWorldSeed(), chestChunkX, chestChunkZ);
+
+        if constexpr (checkCaves) {
+            ChunkPrimer* chunk = Chunk::provideChunk<checkWaterCaves>(g, chestChunkX, chestChunkZ, accurate);
+            // we roll rng equal to the stone bricks in the chunk that generated before the chest corridor
+            if (!structure_rolls::Stronghold::generateStructure<true>(chunk, strongholdGenerator, rng,
+                                                                      chestChunkX, chestChunkZ, piece)) {
+                delete chunk;
+                return RNG(-1);
+            }
+            delete chunk;
+        } else {
+            structure_rolls::Stronghold::generateStructure<true>(nullptr, strongholdGenerator, rng,
+                                                                 chestChunkX, chestChunkZ, piece);
+        }
+        return rng;
+    }
+
+    /// combine loot seeding and generation to get the stronghold loot
+    template <typename T>
+    template<bool checkCaves, bool shuffle>
+    Container StrongholdLoot<T>::getLoot(const Generator& g, generation::Stronghold* strongholdGenerator, const Piece& piece,
+                                         c_int chestChunkX, c_int chestChunkZ, bool accurate) {
+        u64 lootSeed = StrongholdLoot<T>::template getLootSeed<checkCaves>(g, strongholdGenerator, piece, chestChunkX, chestChunkZ, accurate);
+        if (lootSeed == -1) return {};
+        return T::template getLootFromSeed<shuffle>(lootSeed);
+    }
 } // namespace loot

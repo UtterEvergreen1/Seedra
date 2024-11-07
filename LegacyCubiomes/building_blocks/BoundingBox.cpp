@@ -54,6 +54,11 @@ void BoundingBox::offsetY(c_int y) {
 }
 
 
+BoundingBox BoundingBox::makeChunkBox(int xChunk, int zChunk) {
+    return {xChunk << 4, 0, zChunk << 4, (xChunk << 4) + 15, 255, (zChunk << 4) + 15};
+}
+
+
 BoundingBox BoundingBox::orientBox(int x, int y, int z,
                                    c_int width, c_int height,
                                    c_int depth, const DIRECTION direction) {
@@ -144,9 +149,13 @@ BoundingBox BoundingBox::orientBox(const Pos3D& posXYZ, c_int offsetWidth, c_int
                      depth, direction);
 }
 
+std::string BoundingBox::toString() const {
+    return "(" + std::to_string(minX) + ", " + std::to_string(minY) + ", " + std::to_string(minZ) + ") -> (" +
+           std::to_string(maxX) + ", " + std::to_string(maxY) + ", " + std::to_string(maxZ) + ")";
+}
+
 
 std::ostream& operator<<(std::ostream& out, const BoundingBox& bBox) {
-    out << "(" << bBox.minX << ", " << bBox.minY << ", " << bBox.minZ << ") -> (" << bBox.maxX << ", " << bBox.maxY
-        << ", " << bBox.maxZ << ")";
+    out << bBox.toString();
     return out;
 }

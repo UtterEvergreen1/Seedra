@@ -121,6 +121,15 @@ namespace Placement {
                                              g->getWorldCoordinateBounds(), g->getWorldCoordinateBounds());
     }
 
+
+    std::vector<std::vector<Pos2D>> Feature::getAllFeaturePositionsSeparated(const Generator *g) {
+        auto features = getAllFeaturePositions(g);
+        std::vector<std::vector<Pos2D>> separatedFeatures((size_t) StructureType::FEATURE_NUM);
+        for (const auto &feature : features) {
+            separatedFeatures[(size_t) feature.type].push_back(feature.pos);
+        }
+    }
+
     std::vector<FeatureStructurePair>
     Feature::getAllFeaturePositionsBounded(const Generator *g, int lowerX, int lowerZ, int upperX, int upperZ) {
         std::vector<FeatureStructurePair> features;

@@ -25,6 +25,9 @@ Generator::Generator(const lce::CONSOLE console, const LCEVERSION version, c_i64
 
 
 void Generator::applyWorldSeed(c_i64 seed) {
+    // avoid setting up again when it's the same
+    if (this->worldSeed == seed) return;
+
     this->worldSeed = seed;
     setLayerSeed(this->layerStack.entry_1, seed);
 }

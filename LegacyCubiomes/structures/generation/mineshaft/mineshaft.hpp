@@ -16,7 +16,7 @@ namespace generation {
         //              sub-structs and sub-classes
         // #######################################################
 
-        enum class PieceType {
+        enum PieceType {
             ROOM = 0,
             CORRIDOR = 1,
             CROSSING = 2,
@@ -26,7 +26,7 @@ namespace generation {
 
         enum class MineshaftType { NORMAL, MESA };
 
-        static const std::map<PieceType, std::string> PieceTypeName;
+        static const std::map<int8_t, std::string> PieceTypeName;
 
         // #######################################################
         //       class attributes, variables, functions

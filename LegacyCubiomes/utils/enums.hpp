@@ -53,6 +53,7 @@ enum class StructureType : u8 {
     JunglePyramid = JungleTemple,
     SwampHut,
     Igloo,
+    FEATURE_NUM,
     Village,
     OceanRuin,
     Mansion,

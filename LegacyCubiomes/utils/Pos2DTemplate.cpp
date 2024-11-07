@@ -1,5 +1,5 @@
 #include "Pos2DTemplate.hpp"
-
+#include "LegacyCubiomes/building_blocks/BoundingBox.hpp"
 
 template<class classType>
 bool Pos2DTemplate<classType>::operator==(const Pos2DTemplate &other) const { return x == other.x && z == other.z; }
@@ -61,6 +61,11 @@ std::string Pos2DTemplate<classType>::toString() const {
 template<class classType>
 bool Pos2DTemplate<classType>::insideBounds(classType lowerX, classType lowerZ, classType upperX, classType upperZ) const {
     return x >= lowerX && x <= upperX && z >= lowerZ && z <= upperZ;
+}
+
+template<class classType>
+bool Pos2DTemplate<classType>::insideBounds(const BoundingBox& bb) const {
+    return insideBounds(bb.minX, bb.minZ, bb.maxX, bb.maxZ);
 }
 
 

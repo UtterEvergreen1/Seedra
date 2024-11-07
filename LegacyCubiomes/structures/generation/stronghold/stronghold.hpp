@@ -22,7 +22,7 @@ namespace generation {
             FULL,   // Generates full layout and calculates Y level for all pieces
         };
 
-        enum class PieceType : i8 {
+        enum PieceType : i8 {
             NONE,
             STRAIGHT,
             PRISON_HALL,
@@ -56,7 +56,7 @@ namespace generation {
             }
         };
 
-        static const std::map<PieceType, std::string> PieceTypeName;
+        static const std::map<int8_t, std::string> PieceTypeName;
         static const PieceWeight PIECE_WEIGHTS[12];
         static const PiecePlaceCount PIECE_PLACE_COUNT_DEFAULT[11];
 
@@ -75,6 +75,7 @@ namespace generation {
         BoundingBox structureBoundingBox;
 
         Piece* portalRoomPiece = nullptr;
+        int eyesCount = 0; // number of eyes in portal room (to be populated by the rolls)
 
         int startX = 0;
         int startZ = 0;

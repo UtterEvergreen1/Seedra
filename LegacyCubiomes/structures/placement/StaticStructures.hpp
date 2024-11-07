@@ -59,8 +59,8 @@ namespace Placement {
 
 #ifdef INCLUDE_QT
 
-        friend QDebug operator<<(QDebug out, const Pos2D &pos) {
-            out.nospace() << "(" << pos.x << ", " << pos.z << ")";
+        friend QDebug operator<<(QDebug out, const Pos2D &pos_d) {
+            out.nospace() << "(" << pos_d.x << ", " << pos_d.z << ")";
             return out.space();
         }
 
@@ -78,6 +78,8 @@ namespace Placement {
         }
 
         static std::vector<FeatureStructurePair> getAllFeaturePositions(const Generator *g);
+
+        static std::vector<std::vector<Pos2D>> getAllFeaturePositionsSeparated(const Generator *g);
 
         static std::vector<FeatureStructurePair>
         getAllFeaturePositionsBounded(const Generator *g, int lowerX, int lowerZ, int upperX, int upperZ);

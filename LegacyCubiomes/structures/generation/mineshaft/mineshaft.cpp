@@ -3,7 +3,7 @@
 
 namespace generation {
 
-    const std::map<Mineshaft::PieceType, std::string> Mineshaft::PieceTypeName = {
+    const std::map<int8_t, std::string> Mineshaft::PieceTypeName = {
             {PieceType::ROOM, "ROOM"},
             {PieceType::CORRIDOR, "CORRIDOR"},
             {PieceType::CROSSING, "CROSSING"},
