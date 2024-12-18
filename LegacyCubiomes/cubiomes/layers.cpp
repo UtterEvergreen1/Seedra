@@ -1013,7 +1013,7 @@ double sampleSurfaceNoise(const Generator* g, const SurfaceNoise* rnd, int x, in
 void setEndSeed(EndNoise* en, u64 seed) {
     RNG rng;
     rng.setSeed(seed);
-    rng.advance17292();
+    rng.advance<17292>();
     perlinInit(en, rng);
 }
 

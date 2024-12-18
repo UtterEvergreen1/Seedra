@@ -20,6 +20,8 @@ namespace structure_rolls {
         static void setEye(const BoundingBox &chunkBB, const Piece &piece, int x, int z, RNG &random,
                            std::vector<bool> &portalRoomEyes, int &success, int index);
 
+        static std::vector<bool> getEyePlacements(generation::Stronghold *strongholdGenerator, const Generator &g);
+
         /// get the number of eyes in the portal room
         MU static int getEyesCount(generation::Stronghold *strongholdGenerator, const Generator &g);
     };

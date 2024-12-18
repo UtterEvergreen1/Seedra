@@ -101,14 +101,14 @@ namespace generation {
     private:
         void setupPieces();
         ND int updatePieceWeight() const;
-        static BoundingBox createPieceBoundingBox(PieceType pieceType, Pos3D pos, DIRECTION direction);
+        static BoundingBox createPieceBoundingBox(PieceType pieceType, Pos3D pos, FACING direction);
         void buildComponentStart(const Piece& piece);
         void buildComponent(Piece piece);
-        BoundingBox road(Pos3D pos, DIRECTION facing);
+        BoundingBox road(Pos3D pos, FACING facing);
         void additionalRngRolls(const Piece& p);
-        Piece generateComponent(Pos3D pos, DIRECTION facing, i8 depth);
-        Piece genAndAddRoadPiece(Pos3D pos, DIRECTION facing);
-        Piece genAndAddComponent(Pos3D pos, DIRECTION facing, i8 depth);
+        Piece generateComponent(Pos3D pos, FACING facing, i8 depth);
+        Piece genAndAddRoadPiece(Pos3D pos, FACING facing);
+        Piece genAndAddComponent(Pos3D pos, FACING facing, i8 depth);
         void addPiece(const Piece& piece);
         ND bool hasCollisionPiece(const BoundingBox& boundingBox) const;
     };

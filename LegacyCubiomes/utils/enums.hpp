@@ -38,14 +38,104 @@ enum MCVERSION : i8 {
     MC_1_14 = 14
 };
 
-
-enum class DIRECTION : i8 {
-    NORTH = 0,
-    SOUTH = 1,
-    WEST = 2,
-    EAST = 3,
+enum class EnumAxis : i8 {
+    X = 0,
+    Y = 1,
+    Z = 2,
+    NONE = 3
 };
 
+enum class FACING : i8 {
+    DOWN = 0,
+    UP = 1,
+    NORTH = 2,
+    SOUTH = 3,
+    WEST = 4,
+    EAST = 5,
+};
+
+static constexpr FACING FACING_HORIZONTAL[4] = {FACING::NORTH, FACING::EAST, FACING::SOUTH, FACING::WEST};
+static constexpr FACING FACING_VERTICAL[2] = {FACING::UP, FACING::DOWN};
+
+static int getMetaFromHorizontalFacing(const FACING facing) {
+    switch (facing) {
+        default:
+        case FACING::SOUTH:
+            return 0;
+        case FACING::WEST:
+            return 1;
+        case FACING::NORTH:
+            return 2;
+        case FACING::EAST:
+            return 3;
+    }
+}
+
+static int getMetaFromFacingAdditive(const FACING facing) {
+    switch (facing) {
+        case FACING::SOUTH:
+            return 1;
+        case FACING::WEST:
+            return 2;
+        case FACING::NORTH:
+            return 4;
+        case FACING::EAST:
+            return 8;
+        default:
+            return 0;
+    }
+}
+
+static FACING getOppositeFacing(const FACING facing) {
+    switch (facing) {
+        default:
+        case FACING::DOWN:
+            return FACING::UP;
+        case FACING::UP:
+            return FACING::DOWN;
+        case FACING::NORTH:
+            return FACING::SOUTH;
+        case FACING::SOUTH:
+            return FACING::NORTH;
+        case FACING::WEST:
+            return FACING::EAST;
+        case FACING::EAST:
+            return FACING::WEST;
+    }
+}
+
+static int getFrontOffsetX(const FACING facing) {
+    switch (facing) {
+        case FACING::WEST:
+            return -1;
+        case FACING::EAST:
+            return 1;
+        default:
+            return 0;
+    }
+}
+
+static int getFrontOffsetY(const FACING facing) {
+    switch (facing) {
+        case FACING::DOWN:
+            return -1;
+        case FACING::UP:
+            return 1;
+        default:
+            return 0;
+    }
+}
+
+static int getFrontOffsetZ(const FACING facing) {
+    switch (facing) {
+        case FACING::NORTH:
+            return -1;
+        case FACING::SOUTH:
+            return 1;
+        default:
+            return 0;
+    }
+}
 
 enum class StructureType : u8 {
     DesertPyramid,

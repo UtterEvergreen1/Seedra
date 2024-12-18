@@ -64,11 +64,11 @@ namespace generation {
 
     private:
         Piece* findCollisionPiece(const BoundingBox& boundingBox);
-        void genAndAddPiece(RNG& rng, Pos3D pos, DIRECTION direction, int depth);
+        void genAndAddPiece(RNG& rng, Pos3D pos, FACING direction, int depth);
 
         /**
         */
-        void buildComponent(RNG& rng, PieceType type, int depth, const BoundingBox& boundingBox, DIRECTION direction,
+        void buildComponent(RNG& rng, PieceType type, int depth, const BoundingBox& boundingBox, FACING direction,
                             int additionalData);
     };
 } // namespace generation

@@ -2,6 +2,7 @@
 
 #include "LegacyCubiomes/cubiomes/biomeID.hpp"
 #include "LegacyCubiomes/cubiomes/layers.hpp"
+#include "LegacyCubiomes/utils/constants.hpp"
 #include "LegacyCubiomes/utils/MathHelper.hpp"
 
 
@@ -38,7 +39,7 @@ bool CaveGenerator::canReplaceBlock(c_u16 blockAt, c_u16 blockAbove) {
         case lce::blocks::ids::SANDSTONE_ID:
         case lce::blocks::ids::SNOW_ID:
         case lce::blocks::ids::MYCELIUM_ID:
-        case lce::blocks::ids::WHITE_HARDENED_CLAY_ID:
+        case lce::blocks::ids::STAINED_HARDENED_CLAY_ID:
         case lce::blocks::ids::HARDENED_CLAY_ID:
         case lce::blocks::ids::RED_SANDSTONE_ID:
             return true;

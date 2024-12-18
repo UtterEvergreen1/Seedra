@@ -1,5 +1,8 @@
 #include "WaterCaveGenerator.hpp"
 
+#include "LegacyCubiomes/utils/constants.hpp"
+#include "LegacyCubiomes/utils/MathHelper.hpp"
+
 
 bool WaterCaveGenerator::canReplaceBlock(u16 blockAt) {
     switch (blockAt) {
@@ -16,7 +19,7 @@ bool WaterCaveGenerator::canReplaceBlock(u16 blockAt) {
         case lce::blocks::ids::SANDSTONE_ID:
         case lce::blocks::ids::OBSIDIAN_ID:
         case lce::blocks::ids::MYCELIUM_ID:
-        case lce::blocks::ids::WHITE_HARDENED_CLAY_ID:
+        case lce::blocks::ids::STAINED_HARDENED_CLAY_ID:
         case lce::blocks::ids::HARDENED_CLAY_ID:
         case lce::blocks::ids::RED_SANDSTONE_ID:
             return true;

@@ -1,5 +1,7 @@
 #include "WaterRavineGenerator.hpp"
 #include "WaterCaveGenerator.hpp"
+#include "LegacyCubiomes/utils/constants.hpp"
+#include "LegacyCubiomes/utils/MathHelper.hpp"
 
 void WaterRavineGenerator::addTunnel(c_i64 randomSeed, const Pos2D chunk, ChunkPrimer* chunkPrimer,
                                      DoublePos3D tunnel, c_float angle, float slope, float curvature,

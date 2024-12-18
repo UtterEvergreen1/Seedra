@@ -96,7 +96,7 @@ namespace structure_rolls {
         int yPos = piece.getWorldY(y);
         int zPos = piece.getWorldZ(x, z);
         if (intersectsWithBlock(chunkBB, xPos & 15, yPos, zPos & 15)) {
-            rng.advance2(); // nextLong for loot table seed
+            rng.advance<2>(); // nextLong for loot table seed
         }
     }
 } // namespace structure_rolls

@@ -1,0 +1,38 @@
+#include "WorldGenIcePath.hpp"
+
+#include "LegacyCubiomes/chunk_generator/ChunkPrimer.hpp"
+
+bool WorldGenIcePath::generate(ChunkPrimer *worldIn, RNG &rng, const Pos3D &pos) const {
+    Pos3D position = pos;
+    while (worldIn->isAirBlock(position) && position.getY() > 2) {
+        position = position.down();
+    }
+
+    if (worldIn->getBlockId(position) != lce::blocks::ids::SNOW_BLOCK_ID) {
+        return false;
+    }
+
+    int i = rng.nextInt(this->pathWidth - 2) + 2;
+    int j = 1;
+
+    for (int xPos = position.getX() - i; xPos <= position.getX() + i; ++xPos) {
+        for (int zPos = position.getZ() - i; zPos <= position.getZ() + i; ++zPos) {
+            int i1 = xPos - position.getX();
+            int j1 = zPos - position.getZ();
+
+            if (i1 * i1 + j1 * j1 <= i * i) {
+                for (int k1 = position.getY() - 1; k1 <= position.getY() + 1; ++k1) {
+                    Pos3D blockPos = {xPos, k1, zPos};
+                    int blockId = worldIn->getBlockId(blockPos);
+
+                    using namespace lce::blocks;
+                    if (blockId == ids::DIRT_ID || blockId == ids::SNOW_BLOCK_ID || blockId == ids::ICE_ID) {
+                        worldIn->setBlock(blockPos, this->pathBlock);
+                    }
+                }
+            }
+        }
+    }
+
+    return true;
+}

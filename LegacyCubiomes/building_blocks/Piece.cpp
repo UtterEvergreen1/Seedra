@@ -11,13 +11,13 @@ Pos2D Piece::getBoundingBoxCenter() const {
 
 int Piece::getWorldX(c_int offsetWidth, c_int offsetDepth) const {
     switch (orientation) {
-        case DIRECTION::NORTH:
-        case DIRECTION::SOUTH:
+        case FACING::NORTH:
+        case FACING::SOUTH:
             return minX + offsetWidth;
-        case DIRECTION::WEST:
+        case FACING::WEST:
             return maxX - offsetDepth;
         default:
-        case DIRECTION::EAST:
+        case FACING::EAST:
             return minX + offsetDepth;
     }
 }
@@ -25,13 +25,13 @@ int Piece::getWorldX(c_int offsetWidth, c_int offsetDepth) const {
 
 int Piece::getWorldZ(c_int offsetWidth, c_int offsetDepth) const {
     switch (orientation) {
-        case DIRECTION::NORTH:
+        case FACING::NORTH:
             return maxZ - offsetDepth;
-        case DIRECTION::SOUTH:
+        case FACING::SOUTH:
             return minZ + offsetDepth;
         default:
-        case DIRECTION::WEST:
-        case DIRECTION::EAST:
+        case FACING::WEST:
+        case FACING::EAST:
             return minZ + offsetWidth;
     }
 }
@@ -42,9 +42,9 @@ Pos2D Piece::getWorldPos(c_int offsetWidth, c_int offsetDepth) const {
 }
 
 
-BoundingBox Piece::makeBoundingBox(int x, int y, int z, const DIRECTION direction,
+BoundingBox Piece::makeBoundingBox(int x, int y, int z, const FACING direction,
                                    c_int width, c_int height, c_int depth) {
-    if (direction == DIRECTION::NORTH || direction == DIRECTION::SOUTH) {
+    if (direction == FACING::NORTH || direction == FACING::SOUTH) {
         return {x, y, z, x + width - 1, y + height - 1, z + depth - 1};
     }
     return {x, y, z, x + depth - 1, y + height - 1, z + width - 1};

@@ -48,17 +48,17 @@ public:
         return (double) p_151604_0_[0] * p_151604_1_ + (double) p_151604_0_[1] * p_151604_3_;
     }
 
-    double getValue(c_double p_151605_1_, c_double p_151605_3_) {
+    double getValue(c_double posX, c_double posZ) const {
         c_double d3 = 0.5 * (SQRT_3 - 1.0);
-        c_double d4 = (p_151605_1_ + p_151605_3_) * d3;
-        c_int i = fastFloor(p_151605_1_ + d4);
-        c_int j = fastFloor(p_151605_3_ + d4);
+        c_double d4 = (posX + posZ) * d3;
+        c_int i = fastFloor(posX + d4);
+        c_int j = fastFloor(posZ + d4);
         c_double d5 = (3.0 - SQRT_3) / 6.0;
         c_double d6 = (double) (i + j) * d5;
         c_double d7 = (double) i - d6;
         c_double d8 = (double) j - d6;
-        c_double d9 = p_151605_1_ - d7;
-        c_double d10 = p_151605_3_ - d8;
+        c_double d9 = posX - d7;
+        c_double d10 = posZ - d8;
         int k;
         int l;
 
@@ -193,19 +193,25 @@ public:
     std::vector<NoiseGeneratorSimplex> noiseLevels;
     int levels;
 
-    void setNoiseGeneratorPerlin(RNG& rng, int p_i45470_2_) {
-        levels = p_i45470_2_;
-        noiseLevels = std::vector<NoiseGeneratorSimplex>(p_i45470_2_);
+    NoiseGeneratorPerlin() = default;
 
-        for (int i = 0; i < p_i45470_2_; ++i) { noiseLevels[i].setNoiseGeneratorSimplex(rng); }
+    NoiseGeneratorPerlin(RNG rng, const int levelsIn) {
+        this->setNoiseGeneratorPerlin(rng, levelsIn);
     }
 
-    double getValue(double p_151601_1_, double p_151601_3_) {
+    void setNoiseGeneratorPerlin(RNG& rng, const int levelsIn) {
+        levels = levelsIn;
+        noiseLevels = std::vector<NoiseGeneratorSimplex>(levelsIn);
+
+        for (int i = 0; i < levelsIn; ++i) { noiseLevels[i].setNoiseGeneratorSimplex(rng); }
+    }
+
+    double getValue(const double posX, const double posZ) const {
         double d0 = 0.0;
         double d1 = 1.0;
 
         for (int i = 0; i < levels; ++i) {
-            d0 += noiseLevels[i].getValue(p_151601_1_ * d1, p_151601_3_ * d1) / d1;
+            d0 += noiseLevels[i].getValue(posX * d1, posZ * d1) / d1;
             d1 /= 2.0;
         }
 

@@ -17,6 +17,8 @@ namespace Placement {
                 1ULL << mega_taiga_hills | 1ULL << extreme_hills_plus_trees | 1ULL << savanna |
                 1ULL << savanna_plateau | 1ULL << mesa | 1ULL << mesa_plateau_stone | 1ULL << mesa_plateau;
 
+        static bool useFarStronghold;
+        static void setWorldSize(const lce::WORLDSIZE worldSize) { useFarStronghold = (worldSize >= lce::WORLDSIZE::MEDIUM); }
         ND static Pos2D getWorldPosition(const Generator& g);
         MU ND static Pos2D getStartCenter(const Generator& g) { return getWorldPosition(g) - 4; }
         MU ND static Pos2D getStartChunk(const Generator& g) { return getWorldPosition(g) >> 4; }

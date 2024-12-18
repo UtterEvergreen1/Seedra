@@ -128,6 +128,7 @@ namespace Placement {
         for (const auto &feature : features) {
             separatedFeatures[(size_t) feature.type].push_back(feature.pos);
         }
+        return separatedFeatures;
     }
 
     std::vector<FeatureStructurePair>

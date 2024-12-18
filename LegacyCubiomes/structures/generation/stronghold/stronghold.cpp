@@ -4,9 +4,6 @@
 #include "stronghold.hpp"
 
 
-static constexpr DIRECTION HORIZONTAL[4] = {DIRECTION::NORTH, DIRECTION::EAST, DIRECTION::SOUTH, DIRECTION::WEST};
-
-
 namespace generation {
 
     const std::map<int8_t, std::string> Stronghold::PieceTypeName = {
@@ -50,7 +47,7 @@ namespace generation {
             resetPieces();
 
             // creates starting staircase
-            DIRECTION direction = HORIZONTAL[rng.nextInt(4)];
+            FACING direction = FACING_HORIZONTAL[rng.nextInt(4)];
             BoundingBox stairsBoundingBox = Piece::makeBoundingBox(startX, 64, startZ, direction, 5, 11, 5);
 
             pieceArray[pieceArraySize++] = {static_cast<i8>(PieceType::STAIRS_DOWN), 0, stairsBoundingBox,
@@ -158,7 +155,7 @@ namespace generation {
 
 
     BoundingBox Stronghold::createPieceBoundingBox(const PieceType pieceType, const Pos3D& pos,
-                                                   const DIRECTION facing) {
+                                                   const FACING facing) {
         switch (pieceType) {
             case PieceType::STRAIGHT:
                 return BoundingBox::orientBox(pos, -1, -1, 0, 5, 5, 7, facing);
@@ -187,7 +184,7 @@ namespace generation {
     }
 
 
-    void Stronghold::createPiece(PieceType pieceType, DIRECTION direction, i8 depth, BoundingBox boundingBox) {
+    void Stronghold::createPiece(PieceType pieceType, FACING direction, i8 depth, BoundingBox boundingBox) {
         int additionalData = 0;
 
         switch (pieceType) {
@@ -245,7 +242,7 @@ namespace generation {
     }
 
 
-    bool Stronghold::tryAddPieceFromType(const PieceType pieceType, const Pos3D& pos, const DIRECTION direction,
+    bool Stronghold::tryAddPieceFromType(const PieceType pieceType, const Pos3D& pos, const FACING direction,
                                          c_i8 depth) {
         BoundingBox bBox = createPieceBoundingBox(pieceType, pos, direction);
         if (!isOkBox(bBox) || collidesWithPiece(bBox)) {
@@ -266,7 +263,7 @@ namespace generation {
         return true;
     }
 
-    bool Stronghold::genPieceFromSmallDoor(const Pos3D& pos, DIRECTION direction, i8 depth) {
+    bool Stronghold::genPieceFromSmallDoor(const Pos3D& pos, FACING direction, i8 depth) {
         if EXPECT_FALSE (generationStopped) return false;
 
         if EXPECT_FALSE (forcedPiece != PieceType::NONE) {
@@ -325,7 +322,7 @@ namespace generation {
         return false;
     }
 
-    void Stronghold::genAndAddPiece(const Pos3D& pos, const DIRECTION direction, c_i8 depth) {
+    void Stronghold::genAndAddPiece(const Pos3D& pos, const FACING direction, c_i8 depth) {
         if (depth > 50) return;
 
         if (abs(pos.getX() - startX) <= 48 && abs(pos.getZ() - startZ) <= 48) {
@@ -362,14 +359,14 @@ namespace generation {
 
 
     void Stronghold::genSmallDoorChildForward(const Piece& piece, c_int n, c_int n2) {
-        switch (const DIRECTION direction = piece.orientation) {
-            case DIRECTION::NORTH:
+        switch (const FACING direction = piece.orientation) {
+            case FACING::NORTH:
                 return genAndAddPiece({piece.minX + n, piece.minY + n2, piece.minZ - 1}, direction, piece.depth);
-            case DIRECTION::SOUTH:
+            case FACING::SOUTH:
                 return genAndAddPiece({piece.minX + n, piece.minY + n2, piece.maxZ + 1}, direction, piece.depth);
-            case DIRECTION::WEST:
+            case FACING::WEST:
                 return genAndAddPiece({piece.minX - 1, piece.minY + n2, piece.minZ + n}, direction, piece.depth);
-            case DIRECTION::EAST:
+            case FACING::EAST:
                 return genAndAddPiece({piece.maxX + 1, piece.minY + n2, piece.minZ + n}, direction, piece.depth);
         }
     }
@@ -377,26 +374,26 @@ namespace generation {
 
     void Stronghold::genSmallDoorChildLeft(const Piece& piece, c_int n, c_int n2) {
         switch (piece.orientation) {
-            case DIRECTION::SOUTH:
-            case DIRECTION::NORTH:
-                genAndAddPiece({piece.minX - 1, piece.minY + n, piece.minZ + n2}, DIRECTION::WEST, piece.depth);
+            case FACING::SOUTH:
+            case FACING::NORTH:
+                genAndAddPiece({piece.minX - 1, piece.minY + n, piece.minZ + n2}, FACING::WEST, piece.depth);
                 break;
-            case DIRECTION::EAST:
-            case DIRECTION::WEST:
-                genAndAddPiece({piece.minX + n2, piece.minY + n, piece.minZ - 1}, DIRECTION::NORTH, piece.depth);
+            case FACING::EAST:
+            case FACING::WEST:
+                genAndAddPiece({piece.minX + n2, piece.minY + n, piece.minZ - 1}, FACING::NORTH, piece.depth);
                 break;
         }
     }
 
     void Stronghold::genSmallDoorChildRight(const Piece& piece, c_int n, c_int n2) {
         switch (piece.orientation) {
-            case DIRECTION::SOUTH:
-            case DIRECTION::NORTH:
-                genAndAddPiece({piece.maxX + 1, piece.minY + n, piece.minZ + n2}, DIRECTION::EAST, piece.depth);
+            case FACING::SOUTH:
+            case FACING::NORTH:
+                genAndAddPiece({piece.maxX + 1, piece.minY + n, piece.minZ + n2}, FACING::EAST, piece.depth);
                 break;
-            case DIRECTION::EAST:
-            case DIRECTION::WEST:
-                genAndAddPiece({piece.minX + n2, piece.minY + n, piece.maxZ + 1}, DIRECTION::SOUTH, piece.depth);
+            case FACING::EAST:
+            case FACING::WEST:
+                genAndAddPiece({piece.minX + n2, piece.minY + n, piece.maxZ + 1}, FACING::SOUTH, piece.depth);
                 break;
         }
     }
@@ -413,8 +410,8 @@ namespace generation {
                 genSmallDoorChildForward(piece, 1, 1);
                 break;
             case PieceType::LEFT_TURN: {
-                if (const DIRECTION direction = piece.orientation;
-                    direction == DIRECTION::NORTH || direction == DIRECTION::EAST) {
+                if (const FACING direction = piece.orientation;
+                    direction == FACING::NORTH || direction == FACING::EAST) {
                     genSmallDoorChildLeft(piece, 1, 1);
                 } else {
                     genSmallDoorChildRight(piece, 1, 1);
@@ -422,8 +419,8 @@ namespace generation {
                 break;
             }
             case PieceType::RIGHT_TURN: {
-                if (const DIRECTION direction = piece.orientation;
-                    direction == DIRECTION::NORTH || direction == DIRECTION::EAST) {
+                if (const FACING direction = piece.orientation;
+                    direction == FACING::NORTH || direction == FACING::EAST) {
                     genSmallDoorChildRight(piece, 1, 1);
                 } else {
                     genSmallDoorChildLeft(piece, 1, 1);
@@ -444,9 +441,9 @@ namespace generation {
                 break;
             }
             case PieceType::FIVE_CROSSING: {
-                const DIRECTION o = piece.orientation;
+                const FACING o = piece.orientation;
                 // 3 and 5 or 5 and 3
-                c_int n = 5 - 2 * (o == DIRECTION::EAST || o == DIRECTION::SOUTH);
+                c_int n = 5 - 2 * (o == FACING::EAST || o == FACING::SOUTH);
                 c_int n2 = 8 - n;
                 genSmallDoorChildForward(piece, 5, 1);
                 if ((piece.additionalData & 1) != 0) genSmallDoorChildLeft(piece, n, 1);

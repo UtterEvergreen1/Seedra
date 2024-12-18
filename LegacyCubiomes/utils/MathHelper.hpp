@@ -23,6 +23,10 @@ public:
         return instance;
     }
 
+    static int floor(c_double value) {
+        return static_cast<int>(std::floor(value));
+    }
+
     /**
      * sin looked up in a prebuilt table.
      * input value range for unique values: 0-2π

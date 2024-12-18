@@ -114,13 +114,13 @@ namespace generation {
         void resetPieces();
 
         void onWeightedPiecePlaced(int piecePlaceCountIndex);
-        void createPiece(PieceType pieceType, DIRECTION direction, i8 depth, BoundingBox boundingBox);
+        void createPiece(PieceType pieceType, FACING direction, i8 depth, BoundingBox boundingBox);
 
-        bool tryAddPieceFromType(PieceType pieceType, const Pos3D& pos, DIRECTION direction, i8 depth);
-        void genAndAddPiece(const Pos3D& pos, DIRECTION direction, i8 depth);
+        bool tryAddPieceFromType(PieceType pieceType, const Pos3D& pos, FACING direction, i8 depth);
+        void genAndAddPiece(const Pos3D& pos, FACING direction, i8 depth);
 
         /// piece gen
-        bool genPieceFromSmallDoor(const Pos3D& pos, DIRECTION direction, i8 depth);
+        bool genPieceFromSmallDoor(const Pos3D& pos, FACING direction, i8 depth);
         void genSmallDoorChildForward(const Piece& piece, int n, int n2);
         void genSmallDoorChildLeft(const Piece& piece, int n, int n2);
         void genSmallDoorChildRight(const Piece& piece, int n, int n2);
@@ -130,7 +130,7 @@ namespace generation {
         Piece* findCollisionPiece(const BoundingBox& boundingBox);
         bool collidesWithPiece(const BoundingBox& boundingBox);
 
-        static BoundingBox createPieceBoundingBox(PieceType pieceType, const Pos3D& pos, DIRECTION facing);
+        static BoundingBox createPieceBoundingBox(PieceType pieceType, const Pos3D& pos, FACING facing);
         static bool isOkBox(const BoundingBox& boundingBox);
     };
 } // namespace generation

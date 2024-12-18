@@ -18,7 +18,7 @@ namespace structure_rolls {
                             continue;
 
                         c_int sectionCount =
-                                ((piece.orientation == DIRECTION::NORTH || piece.orientation == DIRECTION::SOUTH)
+                                ((piece.orientation == FACING::NORTH || piece.orientation == FACING::SOUTH)
                                          ? piece.getZSize()
                                          : piece.getXSize()) / 5;
                         c_int depth = sectionCount * 5;
@@ -44,13 +44,13 @@ namespace structure_rolls {
                             }
                             if (shouldPlaceTorch) {
                                 if (rng.nextInt(4) != 0) {
-                                    rng.advance2(); // 2 rolls
+                                    rng.advance<2>(); // 2 rolls
                                 }
                             }
 
                             // place cobwebs
                             if (chunk == nullptr) {
-                                rng.advance8(); // 8 rolls
+                                rng.advance<8>(); // 8 rolls
                             } else {
                                 placeCobWeb(chunk, chunkBoundingBox, piece, rng, 0, currentDepth - 1);
                                 placeCobWeb(chunk, chunkBoundingBox, piece, rng, 2, currentDepth - 1);

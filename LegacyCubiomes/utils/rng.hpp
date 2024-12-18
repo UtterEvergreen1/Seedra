@@ -26,6 +26,12 @@ public:
         return rng;
     }
 
+    static inline RNG ConstructWithSetSeed(c_u64 seed) {
+        RNG rng;
+        rng.setSeed(seed);
+        return rng;
+    }
+
     static inline int64_t getRandomWorldSeed() {
         RNG rng = RNG::initializeWithRandomSeed();
         return rng.nextLongI();
@@ -65,17 +71,40 @@ public:
         this->setSeed(std::chrono::high_resolution_clock::now().time_since_epoch().count());
     }
 
+    static constexpr uint64_t mask = (1ULL << 48) - 1;
 
-    MU void advance() { seed = (seed * 0x5deece66d + 0xb) & 0xFFFFFFFFFFFF; }
-    MU void advance2() { seed = (seed * 0xBB20B4600A69 + 0x40942DE6BA) & 0xFFFFFFFFFFFF; }
-    MU void advance4() { seed = (seed * 0x32EB772C5F11 + 0x2D3873C4CD04) & 0xFFFFFFFFFFFF; }
-    MU void advance8() { seed = (seed * 128954768138017 + 137139456763464) & 0xFFFFFFFFFFFF; }
-    MU void advance12() { seed = (seed * 0x199C3838D031 + 0xD4CF89E2CFCC) & 0xFFFFFFFFFFFF; }
-    MU void advance109() { seed = (seed * 0xE3DB7EC1825D + 0xF751DEF08DC7) & 0xFFFFFFFFFFFF; }
-    MU void advance520() { seed = (seed * 0x53E5A095E721 + 0xCACA74409848) & 0xFFFFFFFFFFFF; }
-    MU void advance760() { seed = (seed * 0xE5CFDCCC10E1 + 0x2FC9E05B45B8) & 0xFFFFFFFFFFFF; }
-    MU void advance772() { seed = (seed * 0x129FF9FE0B11 + 0x80152440A804) & 0xFFFFFFFFFFFF; }
-    MU void advance17292() { seed = (seed * 257489430523441 + 184379205320524) & 0xFFFFFFFFFFFF; }
+    static constexpr uint64_t computeMultiplier(const uint64_t amount) {
+        uint64_t m = 1;
+        uint64_t im = 0x5deece66dULL;
+        for (uint64_t k = amount; k; k >>= 1) {
+            if (k & 1) {
+                m *= im;
+            }
+            im *= im;
+        }
+        return m & mask;
+    }
+
+    static constexpr uint64_t computeAddend(const uint64_t amount) {
+        uint64_t a = 0;
+        uint64_t im = 0x5deece66dULL;
+        uint64_t ia = 0xb;
+        for (uint64_t k = amount; k; k >>= 1) {
+            if (k & 1) {
+                a = im * a + ia;
+            }
+            ia = (im + 1) * ia;
+            im *= im;
+        }
+        return a & mask;
+    }
+
+    template <uint64_t amount = 1>
+    void advance() {
+        constexpr uint64_t multiplier = computeMultiplier(amount);
+        constexpr uint64_t addend = computeAddend(amount);
+        seed = (seed * multiplier + addend) & mask;
+    }
 
     ND MU u64 getSeed() const { return seed; }
 

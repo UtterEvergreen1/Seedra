@@ -5,6 +5,8 @@
 
 namespace Placement {
 
+    bool Stronghold::useFarStronghold = false;
+
     Pos2D Stronghold::getWorldPosition(const Generator& g) {
         c_bool xboxStronghold = g.getConsole() == lce::CONSOLE::XBOX360 ||
                                     g.getConsole() == lce::CONSOLE::XBOX1;
@@ -19,11 +21,12 @@ namespace Placement {
 
         for (int var7 = 0; var7 < 10; ++var7) {
 
-            if (xboxStronghold) multiplier = rng.nextInt(4);
+            if (useFarStronghold) multiplier = 32;
+            else if (xboxStronghold) multiplier = rng.nextInt(4) + 3;
             double dist = rng.nextDouble() + 1.25;
-            if (!xboxStronghold) multiplier = rng.nextInt(4);
+            if (!xboxStronghold && !useFarStronghold) multiplier = rng.nextInt(4) + 3;
 
-            dist = dist * ((double) multiplier + 3.0);
+            dist = dist * ((double) multiplier);
 
             p.x = ((int) round(cos(angle) * dist) << 4) + 8;
             p.z = ((int) round(sin(angle) * dist) << 4) + 8;
@@ -62,5 +65,6 @@ namespace Placement {
         dist *= (double) multiplier + 3.0;
         return {((int) round(cos(angle) * dist) << 4) + 8, ((int) round(sin(angle) * dist) << 4) + 8};
     }
+
 
 } // namespace Placement

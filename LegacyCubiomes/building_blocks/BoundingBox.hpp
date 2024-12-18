@@ -33,13 +33,13 @@ struct BoundingBox {
 
     static BoundingBox makeChunkBox(int xChunk, int zChunk);
     static BoundingBox orientBox(int x, int y, int z, int offsetWidth, int offsetHeight, int offsetDepth, int width,
-                                 int height, int depth, DIRECTION direction);
+                                 int height, int depth, FACING direction);
 
-    static BoundingBox orientBox(int x, int y, int z, int width, int height, int depth, DIRECTION direction);
-    static BoundingBox orientBox(const Pos3D& xyz, int width, int height, int depth, DIRECTION direction);
-    static BoundingBox orientBox(const Pos3D& posXYZ, const Pos3D& posOffset, const Pos3D& size, DIRECTION direction);
+    static BoundingBox orientBox(int x, int y, int z, int width, int height, int depth, FACING direction);
+    static BoundingBox orientBox(const Pos3D& xyz, int width, int height, int depth, FACING direction);
+    static BoundingBox orientBox(const Pos3D& posXYZ, const Pos3D& posOffset, const Pos3D& size, FACING direction);
     static BoundingBox orientBox(const Pos3D& posXYZ, int offsetWidth, int offsetHeight, int offsetDepth, int width,
-                                 int height, int depth, DIRECTION direction);
+                                 int height, int depth, FACING direction);
 
     MU ND std::string toString() const;
 

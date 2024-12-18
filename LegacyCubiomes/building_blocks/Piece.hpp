@@ -7,7 +7,7 @@
 
 class Piece : public BoundingBox {
 public:
-    DIRECTION orientation;
+    FACING orientation;
     i8 type;
     i8 depth;
 
@@ -15,16 +15,16 @@ public:
 
     Piece() : orientation(), type(0), depth(0), additionalData(0) {}
 
-    Piece(const BoundingBox boundingBox, const DIRECTION orientation)
+    Piece(const BoundingBox boundingBox, const FACING orientation)
         : BoundingBox(boundingBox), orientation(orientation), type(0), depth(0), additionalData(0) {}
 
     Piece(c_int minX, c_int minY, c_int minZ, c_int maxX, c_int maxY, c_int maxZ,
-          const DIRECTION orientation)
+          const FACING orientation)
         : BoundingBox(minX, minY, minZ, maxX, maxY, maxZ), orientation(orientation), type(0), depth(0),
           additionalData(0) {}
 
     Piece(c_i8 type, c_i8 depth, const BoundingBox& boundingBox,
-          const DIRECTION orientation, c_int additionalData)
+          const FACING orientation, c_int additionalData)
         : BoundingBox(boundingBox), orientation(orientation), type(type), depth(depth), additionalData(additionalData) {
     }
 
@@ -33,5 +33,5 @@ public:
     ND int getWorldY(c_int offsetHeight) const { return minY + offsetHeight; }
     ND int getWorldZ(int offsetWidth, int offsetDepth) const;
     ND MU Pos2D getWorldPos(int offsetWidth, int offsetDepth) const;
-    MU static BoundingBox makeBoundingBox(int x, int y, int z, DIRECTION direction, int width, int height, int depth);
+    MU static BoundingBox makeBoundingBox(int x, int y, int z, FACING direction, int width, int height, int depth);
 };

@@ -10,6 +10,7 @@
 #endif
 
 
+#include "enums.hpp"
 #include "Pos2DTemplate.hpp"
 #include "lce/processor.hpp"
 
@@ -31,6 +32,8 @@ public:
     MU ND inline classType getY() const { return y; }
 
     MU ND inline classType getZ() const { return z; }
+
+    MU ND inline bool isNull() const { return x == 0 && y == 0 && z == 0; }
 
     bool operator==(const Pos3DTemplate &other) const;
 
@@ -85,20 +88,46 @@ public:
     }
 
     Pos3DTemplate add(classType xOff, classType yOff, classType zOff) const {
-        Pos3DTemplate<classType> pos{x + xOff, y + yOff, z + zOff};
-        return pos;
+        return {x + xOff, y + yOff, z + zOff};
     }
 
     Pos3DTemplate down(classType yOff = 1) const {
-        Pos3DTemplate<classType> pos{x, y + yOff, z};
-        return pos;
+        return {x, y + yOff, z};
     }
 
+    Pos3DTemplate up(classType yOff = 1) const {
+        return {x, y - yOff, z};
+    }
+
+    Pos3DTemplate east(classType xOff = 1) const {
+        return {x + xOff, y, z};
+    }
+
+    Pos3DTemplate west(classType xOff = 1) const {
+        return {x - xOff, y, z};
+    }
+
+    Pos3DTemplate north(classType zOff = 1) const {
+        return {x, y, z - zOff};
+    }
+
+    Pos3DTemplate south(classType zOff = 1) const {
+        return {x, y, z + zOff};
+    }
+
+    Pos3DTemplate offset(FACING facing, int n = 1) const;
+
+    ND double distanceSq(c_double toX, c_double toY, c_double toZ) const;
+    ND double distanceSq(const Pos3DTemplate &to) const {
+        return distanceSq((double)to.x, (double)to.y, (double)to.z);
+    }
 
     MU ND Pos2DTemplate<classType> convert2D() const;
 
     MU ND bool insideBounds(classType lowerX, classType lowerY, classType lowerZ, classType upperX, classType upperY,
                             classType upperZ) const;
+
+    static std::vector<Pos3DTemplate> getAllInBox(const Pos3DTemplate& from, const Pos3DTemplate& to);
 };
 
 typedef Pos3DTemplate<int> Pos3D;

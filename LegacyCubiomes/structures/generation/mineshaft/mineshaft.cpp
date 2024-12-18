@@ -30,7 +30,7 @@ namespace generation {
         const BoundingBox roomBoundingBox(startX, 50, startZ, boundingBoxXUpper, boundingBoxYUpper, boundingBoxZUpper);
 
         // recursive gen
-        buildComponent(rng, PieceType::ROOM, 0, roomBoundingBox, DIRECTION::NORTH, 1);
+        buildComponent(rng, PieceType::ROOM, 0, roomBoundingBox, FACING::NORTH, 1);
 
         // get Y level
         structureBoundingBox = BoundingBox::EMPTY;
@@ -62,7 +62,7 @@ namespace generation {
     }
 
 
-    void Mineshaft::genAndAddPiece(RNG& rng, const Pos3D pos, const DIRECTION direction, c_int depth) {
+    void Mineshaft::genAndAddPiece(RNG& rng, const Pos3D pos, const FACING direction, c_int depth) {
         // step 1: return early
         if (depth > 8)
             return;
@@ -107,7 +107,7 @@ namespace generation {
 
 
     void Mineshaft::buildComponent(RNG& rng, const PieceType type, c_int depth, const BoundingBox& boundingBox,
-                                   const DIRECTION direction, c_int additionalData) {
+                                   const FACING direction, c_int additionalData) {
         auto p = Piece(static_cast<i8>(type), static_cast<i8>(depth), boundingBox, direction, additionalData);
         pieceArray[pieceArraySize++] = p;
 
@@ -124,25 +124,25 @@ namespace generation {
                 for (k = 0; k < roomXSize; k += 4) {
                     k += rng.nextInt(roomXSize);
                     if (k + 3 > roomXSize) break;
-                    genAndAddPiece(rng, {p.minX + k, p.minY + rng.nextInt(j) + 1, p.minZ - 1}, DIRECTION::NORTH,
+                    genAndAddPiece(rng, {p.minX + k, p.minY + rng.nextInt(j) + 1, p.minZ - 1}, FACING::NORTH,
                                    p.depth);
                 }
                 for (k = 0; k < roomXSize; k += 4) {
                     k += rng.nextInt(roomXSize);
                     if (k + 3 > roomXSize) break;
-                    genAndAddPiece(rng, {p.minX + k, p.minY + rng.nextInt(j) + 1, p.maxZ + 1}, DIRECTION::SOUTH,
+                    genAndAddPiece(rng, {p.minX + k, p.minY + rng.nextInt(j) + 1, p.maxZ + 1}, FACING::SOUTH,
                                    p.depth);
                 }
                 for (k = 0; k < roomZSize; k += 4) {
                     k += rng.nextInt(roomZSize);
                     if (k + 3 > roomZSize) break;
-                    genAndAddPiece(rng, {p.minX - 1, p.minY + rng.nextInt(j) + 1, p.minZ + k}, DIRECTION::WEST,
+                    genAndAddPiece(rng, {p.minX - 1, p.minY + rng.nextInt(j) + 1, p.minZ + k}, FACING::WEST,
                                    p.depth);
                 }
                 for (k = 0; k < roomZSize; k += 4) {
                     k += rng.nextInt(roomZSize);
                     if (k + 3 > roomZSize) break;
-                    genAndAddPiece(rng, {p.maxX + 1, p.minY + rng.nextInt(j) + 1, p.minZ + k}, DIRECTION::EAST,
+                    genAndAddPiece(rng, {p.maxX + 1, p.minY + rng.nextInt(j) + 1, p.minZ + k}, FACING::EAST,
                                    p.depth);
                 }
                 return;
@@ -152,56 +152,56 @@ namespace generation {
                 c_int corridorType = rng.nextInt(4);
                 c_int yState = p.minY + rng.nextInt(3) - 1;
                 switch (p.orientation) {
-                    case DIRECTION::NORTH:
+                    case FACING::NORTH:
                     default:
                         switch (corridorType) {
                             default:
                                 genAndAddPiece(rng, {p.minX, yState, p.minZ - 1}, p.orientation, p.depth);
                                 break;
                             case 2:
-                                genAndAddPiece(rng, {p.minX - 1, yState, p.minZ}, DIRECTION::WEST, p.depth);
+                                genAndAddPiece(rng, {p.minX - 1, yState, p.minZ}, FACING::WEST, p.depth);
                                 break;
                             case 3:
-                                genAndAddPiece(rng, {p.maxX + 1, yState, p.minZ}, DIRECTION::EAST, p.depth);
+                                genAndAddPiece(rng, {p.maxX + 1, yState, p.minZ}, FACING::EAST, p.depth);
                         }
                         break;
 
-                    case DIRECTION::SOUTH:
+                    case FACING::SOUTH:
                         switch (corridorType) {
                             default:
                                 genAndAddPiece(rng, {p.minX, yState, p.maxZ + 1}, p.orientation, p.depth);
                                 break;
                             case 2:
-                                genAndAddPiece(rng, {p.minX - 1, yState, p.maxZ - 3}, DIRECTION::WEST, p.depth);
+                                genAndAddPiece(rng, {p.minX - 1, yState, p.maxZ - 3}, FACING::WEST, p.depth);
                                 break;
                             case 3:
-                                genAndAddPiece(rng, {p.maxX + 1, yState, p.maxZ - 3}, DIRECTION::EAST, p.depth);
+                                genAndAddPiece(rng, {p.maxX + 1, yState, p.maxZ - 3}, FACING::EAST, p.depth);
                         }
                         break;
 
-                    case DIRECTION::WEST:
+                    case FACING::WEST:
                         switch (corridorType) {
                             default:
                                 genAndAddPiece(rng, {p.minX - 1, yState, p.minZ}, p.orientation, p.depth);
                                 break;
                             case 2:
-                                genAndAddPiece(rng, {p.minX, yState, p.minZ - 1}, DIRECTION::NORTH, p.depth);
+                                genAndAddPiece(rng, {p.minX, yState, p.minZ - 1}, FACING::NORTH, p.depth);
                                 break;
                             case 3:
-                                genAndAddPiece(rng, {p.minX, yState, p.maxZ + 1}, DIRECTION::SOUTH, p.depth);
+                                genAndAddPiece(rng, {p.minX, yState, p.maxZ + 1}, FACING::SOUTH, p.depth);
                         }
                         break;
 
-                    case DIRECTION::EAST:
+                    case FACING::EAST:
                         switch (corridorType) {
                             default:
                                 genAndAddPiece(rng, {p.maxX + 1, yState, p.minZ}, p.orientation, p.depth);
                                 break;
                             case 2:
-                                genAndAddPiece(rng, {p.maxX - 3, yState, p.minZ - 1}, DIRECTION::NORTH, p.depth);
+                                genAndAddPiece(rng, {p.maxX - 3, yState, p.minZ - 1}, FACING::NORTH, p.depth);
                                 break;
                             case 3:
-                                genAndAddPiece(rng, {p.maxX - 3, yState, p.maxZ + 1}, DIRECTION::SOUTH, p.depth);
+                                genAndAddPiece(rng, {p.maxX - 3, yState, p.maxZ + 1}, FACING::SOUTH, p.depth);
                         }
                         break;
                 }
@@ -209,22 +209,22 @@ namespace generation {
                 if (p.depth >= 8) return;
 
                 switch (p.orientation) {
-                    case DIRECTION::NORTH:
-                    case DIRECTION::SOUTH:
+                    case FACING::NORTH:
+                    case FACING::SOUTH:
                         for (int k = p.minZ + 3; k + 3 <= p.maxZ; k += 5) {
                             if (c_int l = rng.nextInt(5); l == 0)
-                                genAndAddPiece(rng, {p.minX - 1, p.minY, k}, DIRECTION::WEST, p.depth + 1);
+                                genAndAddPiece(rng, {p.minX - 1, p.minY, k}, FACING::WEST, p.depth + 1);
                             else if (l == 1)
-                                genAndAddPiece(rng, {p.maxX + 1, p.minY, k}, DIRECTION::EAST, p.depth + 1);
+                                genAndAddPiece(rng, {p.maxX + 1, p.minY, k}, FACING::EAST, p.depth + 1);
                         }
                         return;
-                    case DIRECTION::WEST:
-                    case DIRECTION::EAST:
+                    case FACING::WEST:
+                    case FACING::EAST:
                         for (int k = p.minX + 3; k + 3 <= p.maxX; k += 5) {
                             if (c_int l = rng.nextInt(5); l == 0)
-                                genAndAddPiece(rng, {k, p.minY, p.minZ - 1}, DIRECTION::NORTH, p.depth + 1);
+                                genAndAddPiece(rng, {k, p.minY, p.minZ - 1}, FACING::NORTH, p.depth + 1);
                             else if (l == 1)
-                                genAndAddPiece(rng, {k, p.minY, p.maxZ + 1}, DIRECTION::SOUTH, p.depth + 1);
+                                genAndAddPiece(rng, {k, p.minY, p.maxZ + 1}, FACING::SOUTH, p.depth + 1);
                         }
                         return;
                 }
@@ -233,38 +233,38 @@ namespace generation {
 
             case PieceType::CROSSING: {
                 switch (p.orientation) {
-                    case DIRECTION::NORTH:
+                    case FACING::NORTH:
                     default:
-                        genAndAddPiece(rng, {p.minX + 1, p.minY, p.minZ - 1}, DIRECTION::NORTH, p.depth);
-                        genAndAddPiece(rng, {p.minX - 1, p.minY, p.minZ + 1}, DIRECTION::WEST, p.depth);
-                        genAndAddPiece(rng, {p.maxX + 1, p.minY, p.minZ + 1}, DIRECTION::EAST, p.depth);
+                        genAndAddPiece(rng, {p.minX + 1, p.minY, p.minZ - 1}, FACING::NORTH, p.depth);
+                        genAndAddPiece(rng, {p.minX - 1, p.minY, p.minZ + 1}, FACING::WEST, p.depth);
+                        genAndAddPiece(rng, {p.maxX + 1, p.minY, p.minZ + 1}, FACING::EAST, p.depth);
                         break;
-                    case DIRECTION::SOUTH:
-                        genAndAddPiece(rng, {p.minX + 1, p.minY, p.maxZ + 1}, DIRECTION::SOUTH, p.depth);
-                        genAndAddPiece(rng, {p.minX - 1, p.minY, p.minZ + 1}, DIRECTION::WEST, p.depth);
-                        genAndAddPiece(rng, {p.maxX + 1, p.minY, p.minZ + 1}, DIRECTION::EAST, p.depth);
+                    case FACING::SOUTH:
+                        genAndAddPiece(rng, {p.minX + 1, p.minY, p.maxZ + 1}, FACING::SOUTH, p.depth);
+                        genAndAddPiece(rng, {p.minX - 1, p.minY, p.minZ + 1}, FACING::WEST, p.depth);
+                        genAndAddPiece(rng, {p.maxX + 1, p.minY, p.minZ + 1}, FACING::EAST, p.depth);
                         break;
-                    case DIRECTION::WEST:
-                        genAndAddPiece(rng, {p.minX + 1, p.minY, p.minZ - 1}, DIRECTION::NORTH, p.depth);
-                        genAndAddPiece(rng, {p.minX + 1, p.minY, p.maxZ + 1}, DIRECTION::SOUTH, p.depth);
-                        genAndAddPiece(rng, {p.minX - 1, p.minY, p.minZ + 1}, DIRECTION::WEST, p.depth);
+                    case FACING::WEST:
+                        genAndAddPiece(rng, {p.minX + 1, p.minY, p.minZ - 1}, FACING::NORTH, p.depth);
+                        genAndAddPiece(rng, {p.minX + 1, p.minY, p.maxZ + 1}, FACING::SOUTH, p.depth);
+                        genAndAddPiece(rng, {p.minX - 1, p.minY, p.minZ + 1}, FACING::WEST, p.depth);
                         break;
-                    case DIRECTION::EAST:
-                        genAndAddPiece(rng, {p.minX + 1, p.minY, p.minZ - 1}, DIRECTION::NORTH, p.depth);
-                        genAndAddPiece(rng, {p.minX + 1, p.minY, p.maxZ + 1}, DIRECTION::SOUTH, p.depth);
-                        genAndAddPiece(rng, {p.maxX + 1, p.minY, p.minZ + 1}, DIRECTION::EAST, p.depth);
+                    case FACING::EAST:
+                        genAndAddPiece(rng, {p.minX + 1, p.minY, p.minZ - 1}, FACING::NORTH, p.depth);
+                        genAndAddPiece(rng, {p.minX + 1, p.minY, p.maxZ + 1}, FACING::SOUTH, p.depth);
+                        genAndAddPiece(rng, {p.maxX + 1, p.minY, p.minZ + 1}, FACING::EAST, p.depth);
                     break;
                 }
 
                 if (p.additionalData) {
                     if (rng.nextBoolean())
-                        genAndAddPiece(rng, {p.minX + 1, p.minY + 4, p.minZ - 1}, DIRECTION::NORTH, p.depth);
+                        genAndAddPiece(rng, {p.minX + 1, p.minY + 4, p.minZ - 1}, FACING::NORTH, p.depth);
                     if (rng.nextBoolean())
-                        genAndAddPiece(rng, {p.minX - 1, p.minY + 4, p.minZ + 1}, DIRECTION::WEST, p.depth);
+                        genAndAddPiece(rng, {p.minX - 1, p.minY + 4, p.minZ + 1}, FACING::WEST, p.depth);
                     if (rng.nextBoolean())
-                        genAndAddPiece(rng, {p.maxX + 1, p.minY + 4, p.minZ + 1}, DIRECTION::EAST, p.depth);
+                        genAndAddPiece(rng, {p.maxX + 1, p.minY + 4, p.minZ + 1}, FACING::EAST, p.depth);
                     if (rng.nextBoolean())
-                        genAndAddPiece(rng, {p.minX + 1, p.minY + 4, p.maxZ + 1}, DIRECTION::SOUTH, p.depth);
+                        genAndAddPiece(rng, {p.minX + 1, p.minY + 4, p.maxZ + 1}, FACING::SOUTH, p.depth);
                 }
                 return;
             }
@@ -272,14 +272,14 @@ namespace generation {
             case PieceType::STAIRS: {
                 switch (p.orientation) {
                     default:
-                    case DIRECTION::NORTH:
-                        return genAndAddPiece(rng, {p.minX, p.minY, p.minZ - 1}, DIRECTION::NORTH, p.depth);
-                    case DIRECTION::SOUTH:
-                        return genAndAddPiece(rng, {p.minX, p.minY, p.maxZ + 1}, DIRECTION::SOUTH, p.depth);
-                    case DIRECTION::WEST:
-                        return genAndAddPiece(rng, {p.minX - 1, p.minY, p.minZ}, DIRECTION::WEST, p.depth);
-                    case DIRECTION::EAST:
-                        return genAndAddPiece(rng, {p.maxX + 1, p.minY, p.minZ}, DIRECTION::EAST, p.depth);
+                    case FACING::NORTH:
+                        return genAndAddPiece(rng, {p.minX, p.minY, p.minZ - 1}, FACING::NORTH, p.depth);
+                    case FACING::SOUTH:
+                        return genAndAddPiece(rng, {p.minX, p.minY, p.maxZ + 1}, FACING::SOUTH, p.depth);
+                    case FACING::WEST:
+                        return genAndAddPiece(rng, {p.minX - 1, p.minY, p.minZ}, FACING::WEST, p.depth);
+                    case FACING::EAST:
+                        return genAndAddPiece(rng, {p.maxX + 1, p.minY, p.minZ}, FACING::EAST, p.depth);
                 }
             }
         }

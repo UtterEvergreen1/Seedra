@@ -28,11 +28,11 @@ namespace structure_rolls {
                 case generation::Stronghold::PieceType::STRAIGHT:
                     // true means check for air
                     fillWithRandomizedBlocks(chunkBoundingBox, piece, 0, 0, 0, 4, 4, 6, rng, chunk);
-                    rng.advance4();
+                    rng.advance<4>();
                     break;
                 case generation::Stronghold::PieceType::PRISON_HALL:
                     fillWithRandomizedBlocks(chunkBoundingBox, piece, 0, 0, 0, 8, 4, 10, rng, chunk);
-                    rng.advance12();
+                    rng.advance<12>();
                     break;
                 case generation::Stronghold::PieceType::LEFT_TURN:
                 case generation::Stronghold::PieceType::RIGHT_TURN:
@@ -55,7 +55,7 @@ namespace structure_rolls {
                     break;
                 case generation::Stronghold::PieceType::FIVE_CROSSING:
                     fillWithRandomizedBlocks(chunkBoundingBox, piece, 0, 0, 0, 9, 8, 10, rng, chunk);
-                    rng.advance109();
+                    rng.advance<109>();
                     break;
                 case generation::Stronghold::PieceType::CHEST_CORRIDOR:
                     fillWithRandomizedBlocks(chunkBoundingBox, piece, 0, 0, 0, 4, 4, 6, rng, chunk);
@@ -67,7 +67,7 @@ namespace structure_rolls {
                 case generation::Stronghold::PieceType::LIBRARY:
                     fillWithRandomizedBlocks(chunkBoundingBox, piece, 0, 0, 0, 13,
                                              piece.additionalData ? 10 : 5, 14, rng, chunk);
-                    rng.advance520();
+                    rng.advance<520>();
                     if constexpr (stopStrongholdChest) {
                         if (piece == pieceStop) return true;
                     }
@@ -76,10 +76,10 @@ namespace structure_rolls {
                     break;
                 case generation::Stronghold::PieceType::PORTAL_ROOM:
                     if constexpr (stopPortal) {
-                        rng.advance760();
+                        rng.advance<760>();
                         return true;
                     } else {
-                        rng.advance772(); // 760 rolls + 12 eye rolls = 772 rolls
+                        rng.advance<772>(); // 760 rolls + 12 eye rolls = 772 rolls
                     }
                     break;
                 case generation::Stronghold::PieceType::FILLER_CORRIDOR:
@@ -112,7 +112,7 @@ namespace structure_rolls {
         }
     }
 
-    [[gnu::noinline]] int Stronghold::getEyesCount(generation::Stronghold *strongholdGenerator, const Generator &g) {
+    [[gnu::noinline]] std::vector<bool> Stronghold::getEyePlacements(generation::Stronghold *strongholdGenerator, const Generator &g) {
         std::vector<bool> eyes(12, false);
         const Pos2D portalRoomPos = strongholdGenerator->portalRoomPiece->getWorldPos(5, 10);
         const BoundingBox portalRoomBoundingBox = BoundingBox(portalRoomPos.x - 5, 0, portalRoomPos.z - 5,
@@ -148,17 +148,22 @@ namespace structure_rolls {
                 setEye(chunkBoundingBox, *strongholdGenerator->portalRoomPiece, 7, 10, random, eyes, eyesPlaced, 10);
                 setEye(chunkBoundingBox, *strongholdGenerator->portalRoomPiece, 7, 11, random, eyes, eyesPlaced, 11);
                 if (eyesPlaced == 12) {
-                    int eyeCount = 0;
-                    for (bool eye: eyes) {
-                        if (eye) eyeCount++;
-                    }
-                    return eyeCount;
+                    return eyes;
                 }
             }
         }
 
         //unreachable
-        return -1;
+        return eyes;
+    }
+
+    int Stronghold::getEyesCount(generation::Stronghold *strongholdGenerator, const Generator &g) {
+        std::vector<bool> eyes = getEyePlacements(strongholdGenerator, g);
+        int count = 0;
+        for (bool eye : eyes) {
+            if (eye) count++;
+        }
+        return count;
     }
 
     template bool

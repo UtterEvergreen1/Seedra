@@ -26,7 +26,8 @@
 // placement
 
 namespace Placement {
-    static void setWorldSize(lce::WORLDSIZE worldSize) {
+    static void setWorldSize(const lce::WORLDSIZE worldSize) {
+        Stronghold::setWorldSize(worldSize);
         Feature::setWorldSize(worldSize);
         Village<false>::setWorldSize(worldSize);
         Village<true>::setWorldSize(worldSize);

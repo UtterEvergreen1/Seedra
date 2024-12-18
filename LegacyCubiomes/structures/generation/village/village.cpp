@@ -40,10 +40,10 @@ namespace generation {
         setupPieces();
         rng.nextInt(4); // direction: this.setCoordBaseMode(EnumFacing.Plane.HORIZONTAL.random(rand));
         isZombieInfested = rng.nextInt(50) == 0; // zombie infested
-        const BoundingBox well = createPieceBoundingBox(PieceType::Start, {startX, 64, startZ}, DIRECTION::NORTH);
+        const BoundingBox well = createPieceBoundingBox(PieceType::Start, {startX, 64, startZ}, FACING::NORTH);
 
         // start piece
-        c_auto startPiece = Piece(static_cast<i8>(PieceType::Start), 0, well, DIRECTION::NORTH, 0);
+        c_auto startPiece = Piece(static_cast<i8>(PieceType::Start), 0, well, FACING::NORTH, 0);
         pieceArray[pieceArraySize++] = startPiece;
 
         buildComponentStart(startPiece);
@@ -102,7 +102,7 @@ namespace generation {
     }
 
 
-    BoundingBox Village::createPieceBoundingBox(const PieceType pieceType, const Pos3D pos, const DIRECTION direction) {
+    BoundingBox Village::createPieceBoundingBox(const PieceType pieceType, const Pos3D pos, const FACING direction) {
         switch (pieceType) {
             case PieceType::House4Garden:
                 return BoundingBox::orientBox(pos, 5, 6, 5, direction);
@@ -132,7 +132,7 @@ namespace generation {
     }
 
 
-    Piece Village::genAndAddRoadPiece(const Pos3D pos, const DIRECTION facing) {
+    Piece Village::genAndAddRoadPiece(const Pos3D pos, const FACING facing) {
         if (abs(startX - pos.getX()) > 112 || abs(startZ - pos.getZ()) > 112) return {};
 
         if (const BoundingBox boundingBox = road(pos, facing); boundingBox.maxY != 0) {
@@ -157,7 +157,7 @@ namespace generation {
     }
 
 
-    BoundingBox Village::road(const Pos3D pos, const DIRECTION facing) {
+    BoundingBox Village::road(const Pos3D pos, const FACING facing) {
         for (int i = 7 * rng.nextInt(3, 5); i >= 7; i -= 7) {
             if (BoundingBox structure = BoundingBox::orientBox(pos, 3, 3, i, facing); !hasCollisionPiece(structure))
                 return structure;
@@ -199,7 +199,7 @@ namespace generation {
     }
 
 
-    Piece Village::generateComponent(const Pos3D pos, const DIRECTION facing, c_i8 depth) {
+    Piece Village::generateComponent(const Pos3D pos, const FACING facing, c_i8 depth) {
         c_int i = updatePieceWeight();
         if (i <= 0) return {};
 
@@ -242,7 +242,7 @@ namespace generation {
     }
 
 
-    Piece Village::genAndAddComponent(const Pos3D pos, const DIRECTION facing, c_i8 depth) {
+    Piece Village::genAndAddComponent(const Pos3D pos, const FACING facing, c_i8 depth) {
         if (depth > 50) return {};                                                       // don't do this for elytra???
         if (abs(startX - pos.getX()) > 112 || abs(startZ - pos.getZ()) > 112) return {}; // 48 for elytra???
 
@@ -265,10 +265,10 @@ namespace generation {
 
 
     void Village::buildComponentStart(const Piece& piece) {
-        genAndAddRoadPiece({piece.minX - 1, piece.maxY - 4, piece.minZ + 1}, DIRECTION::WEST);
-        genAndAddRoadPiece({piece.maxX + 1, piece.maxY - 4, piece.minZ + 1}, DIRECTION::EAST);
-        genAndAddRoadPiece({piece.minX + 1, piece.maxY - 4, piece.minZ - 1}, DIRECTION::NORTH);
-        genAndAddRoadPiece({piece.minX + 1, piece.maxY - 4, piece.maxZ + 1}, DIRECTION::SOUTH);
+        genAndAddRoadPiece({piece.minX - 1, piece.maxY - 4, piece.minZ + 1}, FACING::WEST);
+        genAndAddRoadPiece({piece.maxX + 1, piece.maxY - 4, piece.minZ + 1}, FACING::EAST);
+        genAndAddRoadPiece({piece.minX + 1, piece.maxY - 4, piece.minZ - 1}, FACING::NORTH);
+        genAndAddRoadPiece({piece.minX + 1, piece.maxY - 4, piece.maxZ + 1}, FACING::SOUTH);
     }
 
 
@@ -278,16 +278,16 @@ namespace generation {
         for (int i = rng.nextInt(5); i < piece.additionalData - 8; i += 2 + rng.nextInt(5)) {
             Piece structureComponent;
             switch (piece.orientation) {
-                case DIRECTION::NORTH:
-                case DIRECTION::SOUTH:
+                case FACING::NORTH:
+                case FACING::SOUTH:
                 default:
                     structureComponent = genAndAddComponent({piece.minX - 1, piece.minY, piece.minZ + i},
-                                                            DIRECTION::WEST, piece.depth);
+                                                            FACING::WEST, piece.depth);
                     break;
-                case DIRECTION::WEST:
-                case DIRECTION::EAST:
+                case FACING::WEST:
+                case FACING::EAST:
                     structureComponent = genAndAddComponent({piece.minX + i, piece.minY, piece.minZ - 1},
-                                                            DIRECTION::NORTH, piece.depth);
+                                                            FACING::NORTH, piece.depth);
                     break;
             }
 
@@ -300,16 +300,16 @@ namespace generation {
         for (int j = rng.nextInt(5); j < piece.additionalData - 8; j += 2 + rng.nextInt(5)) {
             Piece structureComponent1; // = getNextComponentPP(componentIn, rand, 0, j);
             switch (piece.orientation) {
-                case DIRECTION::NORTH:
-                case DIRECTION::SOUTH:
+                case FACING::NORTH:
+                case FACING::SOUTH:
                 default:
                     structureComponent1 = genAndAddComponent({piece.maxX + 1, piece.minY, piece.minZ + j},
-                                                             DIRECTION::EAST, piece.depth);
+                                                             FACING::EAST, piece.depth);
                     break;
-                case DIRECTION::EAST:
-                case DIRECTION::WEST:
+                case FACING::EAST:
+                case FACING::WEST:
                     structureComponent1 = genAndAddComponent({piece.minX + j, piece.minY, piece.maxZ + 1},
-                                                             DIRECTION::SOUTH, piece.depth);
+                                                             FACING::SOUTH, piece.depth);
                     break;
             }
 
@@ -321,35 +321,35 @@ namespace generation {
 
         if (flag && rng.nextInt(3) > 0) {
             switch (piece.orientation) {
-                case DIRECTION::NORTH:
+                case FACING::NORTH:
                 default:
-                    genAndAddRoadPiece({piece.minX - 1, piece.minY, piece.minZ}, DIRECTION::WEST);
+                    genAndAddRoadPiece({piece.minX - 1, piece.minY, piece.minZ}, FACING::WEST);
                     break;
-                case DIRECTION::SOUTH:
-                    genAndAddRoadPiece({piece.minX - 1, piece.minY, piece.maxZ - 2}, DIRECTION::WEST);
+                case FACING::SOUTH:
+                    genAndAddRoadPiece({piece.minX - 1, piece.minY, piece.maxZ - 2}, FACING::WEST);
                     break;
-                case DIRECTION::WEST:
-                    genAndAddRoadPiece({piece.minX, piece.minY, piece.minZ - 1}, DIRECTION::NORTH);
+                case FACING::WEST:
+                    genAndAddRoadPiece({piece.minX, piece.minY, piece.minZ - 1}, FACING::NORTH);
                     break;
-                case DIRECTION::EAST:
-                    genAndAddRoadPiece({piece.maxX - 2, piece.minY, piece.minZ - 1}, DIRECTION::NORTH);
+                case FACING::EAST:
+                    genAndAddRoadPiece({piece.maxX - 2, piece.minY, piece.minZ - 1}, FACING::NORTH);
             }
         }
 
         if (flag && rng.nextInt(3) > 0) {
             switch (piece.orientation) {
-                case DIRECTION::NORTH:
+                case FACING::NORTH:
                 default:
-                    genAndAddRoadPiece({piece.maxX + 1, piece.minY, piece.minZ}, DIRECTION::EAST);
+                    genAndAddRoadPiece({piece.maxX + 1, piece.minY, piece.minZ}, FACING::EAST);
                     break;
-                case DIRECTION::SOUTH:
-                    genAndAddRoadPiece({piece.maxX + 1, piece.minY, piece.maxZ - 2}, DIRECTION::EAST);
+                case FACING::SOUTH:
+                    genAndAddRoadPiece({piece.maxX + 1, piece.minY, piece.maxZ - 2}, FACING::EAST);
                     break;
-                case DIRECTION::WEST:
-                    genAndAddRoadPiece({piece.minX, piece.minY, piece.maxZ + 1}, DIRECTION::SOUTH);
+                case FACING::WEST:
+                    genAndAddRoadPiece({piece.minX, piece.minY, piece.maxZ + 1}, FACING::SOUTH);
                     break;
-                case DIRECTION::EAST:
-                    genAndAddRoadPiece({piece.maxX - 2, piece.minY, piece.maxZ + 1}, DIRECTION::SOUTH);
+                case FACING::EAST:
+                    genAndAddRoadPiece({piece.maxX - 2, piece.minY, piece.maxZ + 1}, FACING::SOUTH);
             }
         }
     }

@@ -5,9 +5,10 @@
 #include <string>
 #include <vector>
 
-#include "LegacyCubiomes/chunk_generator/biome.hpp"
+#include "lce/blocks/block.hpp"
 #include "LegacyCubiomes/cubiomes/generator.hpp"
 #include "LegacyCubiomes/utils/Pos3DTemplate.hpp"
+#include "lce/blocks/block_ids.hpp"
 
 class ChunkPrimer {
 public:
@@ -19,31 +20,48 @@ public:
     ChunkPrimer() = default;
 
     /// do not allow copy
-    ChunkPrimer(const ChunkPrimer&) = delete;
+    ChunkPrimer(const ChunkPrimer &) = delete;
 
-    ChunkPrimer& operator=(const ChunkPrimer&) = delete;
+    ChunkPrimer &operator=(const ChunkPrimer &) = delete;
 
     ///do not allow move
     //ChunkPrimer(ChunkPrimer &&) = delete;
     //ChunkPrimer &operator=(ChunkPrimer &&) = delete;
 
     ND u16 getBlockAtIndex(c_i64 index) const {
-        return index >= 0 && index < 65536 ? blocks[index] : 0; }
+        return index >= 0 && index < 65536 ? blocks[index] : 0;
+    }
 
     ND u16 getBlockId(c_i64 x, c_i64 y, c_i64 z) const {
         return getBlockAtIndex(getStorageIndex(x, y, z)) >> 4;
+    }
+
+    ND u16 getBlockId(const Pos3D &pos) const {
+        return this->getBlockId(pos.getX(), pos.getY(), pos.getZ());
     }
 
     void setBlockId(c_i64 x, c_i64 y, c_i64 z, c_u16 block) {
         blocks[getStorageIndex(x, y, z)] = block << 4;
     }
 
+    void setBlockId(const Pos3D &pos, c_u16 block) {
+        this->setBlockId(pos.getX(), pos.getY(), pos.getZ(), block);
+    }
+
     ND u16 getData(c_i64 x, c_i64 y, c_i64 z) const {
         return getBlockAtIndex(getStorageIndex(x, y, z)) & 15;
     }
 
+    ND u16 getData(const Pos3D &pos) const {
+        return this->getData(pos.getX(), pos.getY(), pos.getZ());
+    }
+
     void setData(c_i64 x, c_i64 y, c_i64 z, c_u8 data) {
         blocks[getStorageIndex(x, y, z)] |= data;
+    }
+
+    void setData(const Pos3D &pos, c_u8 data) {
+        this->setData(pos.getX(), pos.getY(), pos.getZ(), data);
     }
 
     ND u16 getSkyLight(c_i64 x, c_i64 y, c_i64 z) const {
@@ -54,11 +72,31 @@ public:
         skyLight[getStorageIndex(x, y, z)] = lightValue;
     }
 
-    void setBlockAndData(i64 x, i64 y, i64 z, const lce::blocks::Block& block) {
-        blocks[getStorageIndex(x, y, z)] = ((block.getID() << 4) | block.getDataTag());
+    void setBlockAndData(c_i64 x, c_i64 y, c_i64 z, c_int id, c_int data) {
+        blocks[getStorageIndex(x, y, z)] = ((id << 4) | data);
     }
 
-    friend std::ostream& operator<<(std::ostream& out, const ChunkPrimer& chunkPrimer) {
+    void setBlockAndData(const Pos3D &pos, c_int id, c_int data) {
+        this->setBlockAndData(pos.getX(), pos.getY(), pos.getZ(), id, data);
+    }
+
+    void setBlock(c_i64 x, c_i64 y, c_i64 z, const lce::blocks::Block *block) {
+        this->setBlockAndData(x, y, z, block->getID(), block->getDataTag());
+    }
+
+    void setBlock(const Pos3D &pos, const lce::blocks::Block *block) {
+        this->setBlock(pos.getX(), pos.getY(), pos.getZ(), block);
+    }
+
+    ND bool isAirBlock(c_i64 x, c_i64 y, c_i64 z) const {
+        return getBlockId(x, y, z) == lce::blocks::ids::AIR_ID;
+    }
+
+    ND bool isAirBlock(const Pos3D &pos) const {
+        return isAirBlock(pos.getX(), pos.getY(), pos.getZ());
+    }
+
+    friend std::ostream &operator<<(std::ostream &out, const ChunkPrimer &chunkPrimer) {
         for (c_u16 block: chunkPrimer.blocks) {
             out << std::hex << std::setw(2) << std::setfill('0') << (block & 0xff);
             out << std::hex << std::setw(2) << std::setfill('0') << (block >> 8);
@@ -78,17 +116,31 @@ public:
         return 0;
     }
 
+    ND int getHeight(c_i64 x, c_i64 z) const {
+        for (int i = 255; i >= 0; i--) {
+            if (getBlockId(x, i, z)) return i;
+        }
+        return 0;
+    }
+
+    ND int getHeight(const Pos3D &pos) const {
+        return getHeight(pos.getX(), pos.getZ());
+    }
+
+    ND Pos3D getHeightPos(const Pos3D &pos) const {
+        return {pos.x, getHeight(pos), pos.z};
+    }
+
     static i64 getStorageIndex(c_i64 x, c_i64 y, c_i64 z) {
         c_i64 value = x << 12 | z << 8 | y;
         return value;
     }
 
-    // TODO add all the blocks or make a block class and get the value from that
     static int getBlockLightOpacity(c_u16 blockId) {
         switch (blockId) {
             case lce::blocks::ids::AIR_ID:
             case lce::blocks::ids::SNOW_ID:
-            case lce::blocks::ids::WHITE_CARPET_ID:
+            case lce::blocks::ids::CARPET_ID:
                 return 0;
             case lce::blocks::ids::COBWEB_ID:
                 return 1;
@@ -102,88 +154,15 @@ public:
         }
     }
 
-    void generateSkylightMap() {
-        skyLight.resize(65536, 0);
-        c_int topFilledSegment = getHighestYChunk();
-        for (int x = 0; x < 16; ++x) {
-            for (int z = 0; z < 16; ++z) {
+    void generateSkylightMap();
 
-                int lightValue = 15;
-                int topPos = topFilledSegment + 15;
-                while (true) {
-                    int blockOpacity = getBlockLightOpacity(getBlockId(x, topPos, z));
-                    if (blockOpacity == 0 && lightValue != 15) blockOpacity = 1;
+    int getPrecipitationHeight(int x, int z);
 
-                    lightValue -= blockOpacity;
+    ND bool canBlockFreeze(const Generator &g, const Pos3D &pos, c_bool noWaterAdj) const;
 
-                    if (lightValue > 0) setSkyLight(x, topPos, z, lightValue);
-
-                    topPos--;
-
-                    if (lightValue <= 0 || topPos <= 0) break;
-                }
-            }
-        }
+    ND bool canBlockFreezeWater(const Generator &g, const Pos3D &pos) const {
+        return canBlockFreeze(g, pos, false);
     }
 
-    int getPrecipitationHeight(int x, int z) {
-        c_int i = x & 15;
-        c_int j = z & 15;
-        c_int k = i | j << 4;
-
-        if (precipitationHeightMap[k] == -999) {
-            int highestY = getHighestYChunk() + 15;
-            int i1 = -1;
-
-            while (highestY > 0 && i1 == -1) {
-                if (!getBlockId(i, highestY, j)) i1 = highestY + 1;
-                else
-                    highestY -= 1;
-            }
-
-            precipitationHeightMap[k] = i1;
-        }
-        return precipitationHeightMap[k];
-    }
-
-    ND bool canBlockFreeze(const Generator& g, const Pos3D pos, c_bool noWaterAdj) const {
-        if (Biome::getBiomeForId(g.getBiomeAt(1, pos.getX(), pos.getZ()))->getFloatTemperature(pos) >= 0.15F)
-            return false;
-
-        if (pos.getY() >= 0 && pos.getY() < 256) {
-            c_int x = pos.getX() & 15;
-            c_int z = pos.getZ() & 15;
-            c_u16 iBlockState = getBlockId(x, pos.getY(), z);
-            c_u16 block = iBlockState;
-
-            if (block == 8 || block == 9) {
-                if (!noWaterAdj) return true;
-
-                c_u16 flagBlockWest = getBlockId(x - 1, pos.getY(), z);
-                c_u16 flagBlockEast = getBlockId(x + 1, pos.getY(), z);
-                c_u16 flagBlockNorth = getBlockId(x, pos.getY(), z - 1);
-                c_u16 flagBlockSouth = getBlockId(x, pos.getY(), z + 1);
-                c_bool flag =
-                        flagBlockWest == 9 && flagBlockEast == 9 && flagBlockNorth == 9 && flagBlockSouth == 9;
-
-                if (!flag) return true;
-            }
-        }
-
-        return false;
-    }
-
-    ND bool canSnowAt(const Generator& g, const Pos3D pos, c_bool checkLight) const {
-        if (Biome::getBiomeForId(g.getBiomeAt(1, pos.getX(), pos.getZ()))->getFloatTemperature(pos) >= 0.15F) {
-            return false;
-        }
-
-        if (!checkLight) { return true; }
-
-        // needs to check block light later on to replace a perfect chunk
-        if (pos.getY() >= 0 && pos.getY() < 256 /* && getLightFor(EnumSkyBlock.BLOCK, pos) < 10*/) {
-            if (!getBlockId(pos.getX(), pos.getY(), pos.getZ())) return true;
-        }
-        return false;
-    }
+    ND bool canSnowAt(const Generator &g, const Pos3D &pos, c_bool checkLight) const;
 };

@@ -1,0 +1,52 @@
+#include "WorldGenVines.hpp"
+
+#include "LegacyCubiomes/chunk_generator/ChunkPrimer.hpp"
+
+bool BlockVine::canPlaceBlockOnSide(const ChunkPrimer *worldIn, const Pos3D &pos, const FACING &facing) {
+    if (facing == FACING::UP || facing == FACING::DOWN) {
+        return false;
+    }
+
+    if(!BlockVine::canBlockStay(worldIn->getBlockId(pos.offset(getOppositeFacing(facing))))){
+        return false;
+    }
+
+    using namespace lce::blocks::ids;
+    int blockId = worldIn->getBlockId(pos.up());
+    if (blockId != AIR_ID && blockId != VINES_ID && !BlockVine::canBlockStay(blockId)) {
+        return false;
+    }
+
+    return true;
+}
+
+bool BlockVine::canBlockStay(const int blockId) {
+    using namespace lce::blocks::ids;
+    if ((blockId >= WHITE_SHULKER_BOX_ID && blockId <= BLACK_GLAZED_TERRACOTTA_ID) || blockId == BEACON_ID ||
+        blockId == CAULDRON_ID || blockId == GLASS_ID || blockId == STAINED_GLASS_ID || blockId == PISTON_ID || blockId
+        == STICKY_PISTON_ID || blockId == PISTON_HEAD_ID || blockId == WOODEN_TRAPDOOR_ID) {
+        return false;
+    }
+
+    return isSolidBlock(blockId); // only that face needs to be solid, but we'll just check if the block is solid
+}
+
+bool WorldGenVines::generate(ChunkPrimer *worldIn, RNG &rng, const Pos3D &position) const {
+    Pos3D pos = position;
+
+    while (pos.getY() < 128) {
+        if (worldIn->isAirBlock(pos)) {
+            for (const FACING &facing: FACING_HORIZONTAL) {
+                if (BlockVine::canPlaceBlockOnSide(worldIn, pos, facing)) {
+                    worldIn->setBlockAndData(pos, lce::blocks::ids::VINES_ID, getMetaFromFacingAdditive(facing));
+                    break;
+                }
+            }
+        } else {
+            pos = pos.add(rng.nextInt(4) - rng.nextInt(4), 0, rng.nextInt(4) - rng.nextInt(4));
+        }
+        pos = pos.up();
+    }
+
+    return true;
+}
