@@ -27,7 +27,7 @@ int main() {
     auto version = LCEVERSION::AQUATIC;
     Generator g(console, version, -101, lce::WORLDSIZE::CLASSIC, lce::BIOMESCALE::SMALL);
 
-    int WIDTH = 5;
+    int WIDTH = 20;
     int X_OFF = 5;//10 15 or 5 11
     int Z_OFF = 11;
 

@@ -156,7 +156,7 @@ public:
     ND int getTopSolidOrLiquidBlock(c_i64 x, c_i64 z) const {
         for (int i = 255; i >= 0; i--) {
             int blockId = getBlockId(x, i - 1, z);
-            if (blockId != lce::blocks::ids::AIR_ID && !lce::blocks::ids::isLeavesBlock(blockId)) return i;
+            if (lce::blocks::ids::isSolidBlock(blockId) && !lce::blocks::ids::isLeavesBlock(blockId)) return i;
         }
         return 0;
     }

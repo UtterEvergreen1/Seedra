@@ -297,7 +297,7 @@ public:
     /**
      * noiseArray should be xSize*ySize*zSize in size
      */
-    std::vector<double> populateNoiseArray(std::vector<double> noiseArray, double xOffset, double yOffset,
+    std::vector<double> populateNoiseArray(Generator* g, std::vector<double> noiseArray, double xOffset, double yOffset,
                                            double zOffset, int xSize, int ySize, int zSize, double xScale,
                                            double yScale, double zScale, double noiseScale) {
         if (ySize == 1) {
@@ -312,23 +312,25 @@ public:
 
             double d17 = xOffset + xCoord;
             for (int j2 = 0; j2 < xSize; ++j2) {
-                // double d17 = xOffset + (double)j2 * xScale + xCoord; // 8942.070107
+                // double d17 = xOffset + (double)j2 * xScale + xCoord;
                 int i6 = (int) d17;
 
                 if (d17 < (double) i6) { --i6; }
 
                 int k2 = i6 & 255;
-                //d17 = d17 - (double)i6; // only on xbox (and java)
-                double d18 = d17 * d17 * d17 * (d17 * (d17 * 6.0 - 15.0) + 10.0); // 53637.420644
+                if (g->getConsole() != lce::CONSOLE::WIIU)
+                    d17 = d17 - (double)i6; // only on xbox (and java)
+                double d18 = d17 * d17 * d17 * (d17 * (d17 * 6.0 - 15.0) + 10.0);
 
                 for (int j6 = 0; j6 < zSize; ++j6) {
-                    double d19 = zOffset + (double) j6 * zScale + zCoord; // d17 should equal 12973.405044
+                    double d19 = zOffset + (double) j6 * zScale + zCoord;
                     int k6 = (int) d19;
 
                     if (d19 < (double) k6) { --k6; }
 
                     int l6 = k6 & 255;
-                    //d19 = d19 - (double)k6; // only on xbox (and java)
+                    if (g->getConsole() != lce::CONSOLE::WIIU)
+                        d19 = d19 - (double)k6; // only on xbox (and java)
                     double d20 = d19 * d19 * d19 * (d19 * (d19 * 6.0 - 15.0) + 10.0);
                     i5 = permutations[k2] + 0;
                     j5 = permutations[i5] + l6;
@@ -439,7 +441,7 @@ public:
      * pars:(par2,3,4=noiseOffset ; so that adjacent noise segments connect) (pars5,6,7=x,y,zArraySize),(pars8,10,12 =
      * x,y,z noiseScale)
      */
-    std::vector<double> genNoiseOctaves(std::vector<double> noiseArray, c_int xOffset, c_int yOffset,
+    std::vector<double> genNoiseOctaves(Generator* g, std::vector<double> noiseArray, c_int xOffset, c_int yOffset,
                                         c_int zOffset, c_int xSize, c_int ySize, c_int zSize,
                                         c_double xScale, c_double yScale, c_double zScale) {
         if (noiseArray.empty()) {
@@ -462,7 +464,7 @@ public:
             l = l % 16777216LL;
             d0 = d0 + (double) k;
             d2 = d2 + (double) l;
-            noiseArray = generatorCollection[j].populateNoiseArray(noiseArray, d0, d1, d2, xSize, ySize, zSize,
+            noiseArray = generatorCollection[j].populateNoiseArray(g, noiseArray, d0, d1, d2, xSize, ySize, zSize,
                                                                    xScale * d3, yScale * d3, zScale * d3, d3);
             d3 /= 2.0;
         }
@@ -472,9 +474,9 @@ public:
     /**
      * Bouncer function to the main one with some default arguments.
      */
-    std::vector<double> genNoiseOctaves(std::vector<double> noiseArray, c_int xOffset, c_int zOffset,
+    std::vector<double> genNoiseOctaves(Generator* g, std::vector<double> noiseArray, c_int xOffset, c_int zOffset,
                                         c_int xSize, c_int zSize, c_double xScale, c_double zScale,
                                         double p_76305_10_) {
-        return genNoiseOctaves(std::move(noiseArray), xOffset, 10, zOffset, xSize, 1, zSize, xScale, 1.0, zScale);
+        return genNoiseOctaves(g, std::move(noiseArray), xOffset, 10, zOffset, xSize, 1, zSize, xScale, 1.0, zScale);
     }
 };

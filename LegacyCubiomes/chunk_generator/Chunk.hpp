@@ -7,6 +7,7 @@
 #include "WaterCaveGenerator.hpp"
 #include "WaterRavineGenerator.hpp"
 #include "LegacyCubiomes/features/WorldGenerator/WorldGenLakes.hpp"
+#include "LegacyCubiomes/features/WorldGenerator/WorldGenDungeons.hpp"
 
 namespace Chunk {
     template<bool checkWaterCaves = false,
@@ -70,13 +71,12 @@ namespace Chunk {
             lavaGen.generate(worldIn, rng, lavaPos);
         }
 
-        /*for (int i = 0; i < 8; i++) {
-            //world gen dungeons
-            //Pos3D pos = FeaturePositions::dungeon(rng, cx, cz);
-            //skip rng for now
-            //rng.advance<2>();
-        }*/
-        rng.advance<40>();
+        for (int i = 0; i < 8; i++) {
+            if (Pos3D pos = FeaturePositions::dungeon(rng, chunkX, chunkZ); !pos.isNull()) {
+                WorldGenDungeons dungeonGen;
+                dungeonGen.generate(worldIn, rng, pos);
+            }
+        }
 
         Biome::registry[g.getBiomeAt(1, (chunkX << 4) + 16, (chunkZ << 4) + 16)]->decorate(
             worldIn, rng, {chunkX << 4, chunkZ << 4});

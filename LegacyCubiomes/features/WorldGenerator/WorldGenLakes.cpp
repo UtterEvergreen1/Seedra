@@ -60,7 +60,7 @@ bool WorldGenLakes::generate(World * worldIn, RNG &rng, const Pos3D &pos) const 
                 if (flag) {
                     Pos3D materialPos = position.add(k1, k, l2);
 
-                    if (k >= 4 && lce::blocks::ids::isSolidBlock(worldIn->getBlockId(materialPos))) {
+                    if (k >= 4 && lce::blocks::ids::isLiquidBlock(worldIn->getBlockId(materialPos))) {
                         return false;
                     }
 
@@ -105,7 +105,7 @@ bool WorldGenLakes::generate(World * worldIn, RNG &rng, const Pos3D &pos) const 
         }
     }
 
-    if (this->block == &lce::blocks::BlocksInit::FLOWING_LAVA || this->block == &lce::blocks::BlocksInit::STILL_LAVA) {
+    if (this->block == &lce::blocks::BlocksInit::STILL_LAVA) {
         for (int j2 = 0; j2 < 16; ++j2) {
             for (int k3 = 0; k3 < 16; ++k3) {
                 for (int k4 = 0; k4 < 8; ++k4) {
@@ -126,7 +126,7 @@ bool WorldGenLakes::generate(World * worldIn, RNG &rng, const Pos3D &pos) const 
         }
     }
 
-    if (this->block == &lce::blocks::BlocksInit::FLOWING_WATER || this->block == &lce::blocks::BlocksInit::STILL_WATER) {
+    if (this->block == &lce::blocks::BlocksInit::STILL_WATER) {
         for (int k2 = 0; k2 < 16; ++k2) {
             for (int l3 = 0; l3 < 16; ++l3) {
                 if (worldIn->canBlockFreezeWater(position.add(k2, 4, l3))) {

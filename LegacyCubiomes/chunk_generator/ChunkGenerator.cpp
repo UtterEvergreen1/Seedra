@@ -139,10 +139,10 @@ void ChunkGeneratorOverWorld::generateHeightmap(c_int x, c_int y, c_int z) {
     // double mainNoiseScaleX = 80.0;
     // double mainNoiseScaleY = 160.0;
     // double mainNoiseScaleZ = 80.0;
-    depthRegion = depthNoise.genNoiseOctaves(depthRegion, x, z, 5, 5, 200.0, 200.0, 0.5);
-    mainNoiseRegion = mainPerlinNoise.genNoiseOctaves(mainNoiseRegion, x, y, z, 5, 33, 5, 8.55515, 4.277575, 8.55515);
-    minLimitRegion = minLimitPerlinNoise.genNoiseOctaves(minLimitRegion, x, y, z, 5, 33, 5, 684.412, 684.412, 684.412);
-    maxLimitRegion = maxLimitPerlinNoise.genNoiseOctaves(maxLimitRegion, x, y, z, 5, 33, 5, 684.412, 684.412, 684.412);
+    depthRegion = depthNoise.genNoiseOctaves(&g, depthRegion, x, z, 5, 5, 200.0, 200.0, 0.5);
+    mainNoiseRegion = mainPerlinNoise.genNoiseOctaves(&g, mainNoiseRegion, x, y, z, 5, 33, 5, 8.55515, 4.277575, 8.55515);
+    minLimitRegion = minLimitPerlinNoise.genNoiseOctaves(&g, minLimitRegion, x, y, z, 5, 33, 5, 684.412, 684.412, 684.412);
+    maxLimitRegion = maxLimitPerlinNoise.genNoiseOctaves(&g, maxLimitRegion, x, y, z, 5, 33, 5, 684.412, 684.412, 684.412);
     int i = 0;
     int j = 0;
 

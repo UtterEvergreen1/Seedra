@@ -26,7 +26,6 @@ void World::decorateChunkAndNeighbors(const Pos2D &pos, int radius) {
     std::cout << "Generating chunks around " << pos << " with radius " << radius << std::endl;
     for (int dx = -radius - 1; dx <= radius + 1; ++dx) {
         for (int dz = -radius - 1; dz <= radius + 1; ++dz) {
-            std::cout << "Generating chunk " << pos + Pos2D(dx, dz) << std::endl;
             Pos2D neighborPos = pos + Pos2D(dx, dz);
             getOrCreateChunk(neighborPos);
         }

@@ -251,7 +251,10 @@ void BiomeDecorator::genStandardOre1(World *world, RNG &rng, const WorldGenMinab
                                      const int minHeight, const int maxHeight) const {
     if (0 < count) {
         for (int bl = count; bl != 0; bl--) {
-            Pos3D blockPos = this->chunkBlockPos.add(rng.nextInt(16), rng.nextInt(maxHeight - minHeight) + minHeight, rng.nextInt(16));
+            int x_off = rng.nextInt(16);
+            int y_off = rng.nextInt(maxHeight - minHeight) + minHeight;
+            int z_off = rng.nextInt(16);
+            Pos3D blockPos = this->chunkBlockPos.add(x_off, y_off, z_off);
             gen->generate(world, rng, blockPos);
         }
     }
