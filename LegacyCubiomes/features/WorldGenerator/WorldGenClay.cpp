@@ -3,8 +3,8 @@
 #include "lce/blocks/blocks.hpp"
 #include "LegacyCubiomes/chunk_generator/ChunkPrimer.hpp"
 
-bool WorldGenClay::generate(ChunkPrimer* worldIn, RNG& rand, const Pos3D& position) const {
-    if (lce::blocks::ids::isWaterMaterial(worldIn->getBlockId(position))) {
+bool WorldGenClay::generate(World * worldIn, RNG& rand, const Pos3D& position) const {
+    if (!lce::blocks::ids::isWaterMaterial(worldIn->getBlockId(position))) {
         return false;
     }
 
@@ -21,7 +21,7 @@ bool WorldGenClay::generate(ChunkPrimer* worldIn, RNG& rand, const Pos3D& positi
                     int blockId = worldIn->getBlockId(blockPos);
 
                     if (blockId == lce::blocks::ids::DIRT_ID || blockId == lce::blocks::ids::CLAY_BLOCK_ID) {
-                        worldIn->setBlock(blockPos, &lce::blocks::CLAY_BLOCK);
+                        worldIn->setBlock(blockPos, &lce::blocks::BlocksInit::CLAY_BLOCK);
                     }
                 }
             }

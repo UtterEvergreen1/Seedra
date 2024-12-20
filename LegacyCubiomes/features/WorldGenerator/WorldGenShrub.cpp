@@ -1,7 +1,7 @@
 #include "WorldGenShrub.hpp"
 #include "LegacyCubiomes/chunk_generator/ChunkPrimer.hpp"
 
-bool WorldGenShrub::generate(ChunkPrimer *worldIn, RNG &rng, const Pos3D &position) const {
+bool WorldGenShrub::generate(World * worldIn, RNG &rng, const Pos3D &position) const {
     Pos3D pos = position;
     while ((worldIn->getBlockId(pos) == lce::blocks::ids::AIR_ID ||
             lce::blocks::ids::isLeavesBlock(worldIn->getBlockId(pos))) && pos.getY() > 0) {

@@ -58,10 +58,10 @@ public:
     MU bool enableSnow;
 
     /// The block expected to be on the top of this biome
-    lce::blocks::Block const *topBlock = &lce::blocks::GRASS;
+    lce::blocks::Block const *topBlock = &lce::blocks::BlocksInit::GRASS;
 
     /// The block to fill spots in when not on the top
-    lce::blocks::Block const *fillerBlock = &lce::blocks::DIRT;
+    lce::blocks::Block const *fillerBlock = &lce::blocks::BlocksInit::DIRT;
 
     BiomeDecorator *decorator = this->createBiomeDecorator();
 
@@ -101,9 +101,9 @@ public:
 
     ND float getFloatTemperature(const Pos3D &pos) const;
 
-    virtual void decorate(ChunkPrimer *worldIn, RNG &rand, const Pos2D &pos);
+    virtual void decorate(World *worldIn, RNG &rand, const Pos2D &pos);
 
-    void generateBiomeTerrain(RNG &rng, ChunkPrimer *chunkPrimerIn, int x, int z, double noiseVal);
+    void generateBiomeTerrain(RNG &rng, ChunkPrimer *chunkPrimerIn, int x, int z, double noiseVal) const;
 
     virtual void genTerrainBlocks(i64 worldSeed, RNG &rng, ChunkPrimer *chunkPrimerIn, c_int x, c_int z,
                                   c_double noiseVal);
@@ -134,7 +134,7 @@ public:
         this->decorator->grassPerChunk = 10;
     }
 
-    void decorate(ChunkPrimer *worldIn, RNG &rng, const Pos2D &pos) override;
+    void decorate(World *worldIn, RNG &rng, const Pos2D &pos) override;
 
     const WorldGenAbstractTree *genBigTreeChance(RNG &rng) const override;
 };
@@ -143,15 +143,15 @@ class BiomeDesert final : public Biome {
 public:
     BiomeDesert(MU std::string biomeName, c_float baseHeight, c_float heightVariation, c_bool enableSnow,
                 c_float temperature)
-        : Biome(std::move(biomeName), baseHeight, heightVariation, enableSnow, temperature, &lce::blocks::SAND,
-                &lce::blocks::SAND) {
+        : Biome(std::move(biomeName), baseHeight, heightVariation, enableSnow, temperature, &lce::blocks::BlocksInit::SAND,
+                &lce::blocks::BlocksInit::SAND) {
         this->decorator->treesPerChunk = -999;
         this->decorator->deadBushPerChunk = 2;
         this->decorator->reedsPerChunk = 50;
         this->decorator->cactiPerChunk = 10;
     }
 
-    void decorate(ChunkPrimer *worldIn, RNG &rng, const Pos2D &pos) override;
+    void decorate(World *worldIn, RNG &rng, const Pos2D &pos) override;
 };
 
 class BiomeHills final : public Biome {
@@ -179,13 +179,13 @@ public:
     void genTerrainBlocks(i64 worldSeed, RNG &rng, ChunkPrimer *chunkPrimerIn, c_int x, c_int z,
                           c_double noiseVal) override;
 
-    void decorate(ChunkPrimer *worldIn, RNG &rng, const Pos2D &pos) override;
+    void decorate(World *worldIn, RNG &rng, const Pos2D &pos) override;
 
     const WorldGenAbstractTree *genBigTreeChance(RNG &rng) const override;
 
 private:
     WorldGenAbstractTree *spruceGenerator = new WorldGenTaiga2();
-    WorldGenMinable *sliverfishGenerator = new WorldGenMinable(&lce::blocks::STONE_MONSTER_EGG, 9);
+    WorldGenMinable *sliverfishGenerator = new WorldGenMinable(&lce::blocks::BlocksInit::STONE_MONSTER_EGG, 9);
     BiomeHills::Type type;
 };
 
@@ -213,16 +213,16 @@ public:
         }
     }
 
-    void decorate(ChunkPrimer *worldIn, RNG &rng, const Pos2D &pos) override;
+    void decorate(World *worldIn, RNG &rng, const Pos2D &pos) override;
 
     const WorldGenAbstractTree *genBigTreeChance(RNG &rng) const override;
 
     ND BlockFlower::EnumFlowerType pickRandomFlower(RNG &rng, const Pos2D &pos) const override;
 
 private:
-    void addMushrooms(ChunkPrimer *worldIn, RNG &rng, const Pos2D &pos) const;
+    void addMushrooms(World *worldIn, RNG &rng, const Pos2D &pos) const;
 
-    static void addDoublePlants(ChunkPrimer *worldIn, RNG &rng, const Pos2D &pos, int amount);
+    static void addDoublePlants(World *worldIn, RNG &rng, const Pos2D &pos, int amount);
 
     BiomeForest::Type type;
 
@@ -272,7 +272,7 @@ public:
     void genTerrainBlocks(i64 worldSeed, RNG &rng, ChunkPrimer *chunkPrimerIn, c_int x, c_int z,
                           c_double noiseVal) override;
 
-    void decorate(ChunkPrimer *worldIn, RNG &rng, const Pos2D &pos) override;
+    void decorate(World *worldIn, RNG &rng, const Pos2D &pos) override;
 
     const WorldGenAbstractTree *genBigTreeChance(RNG &rng) const override;
 
@@ -307,7 +307,7 @@ public:
     void genTerrainBlocks(i64 worldSeed, RNG &rng, ChunkPrimer *chunkPrimerIn, c_int x, c_int z,
                           c_double noiseVal) override;
 
-    void decorate(ChunkPrimer *worldIn, RNG &rng, const Pos2D &pos) override;
+    void decorate(World *worldIn, RNG &rng, const Pos2D &pos) override;
 
     const WorldGenAbstractTree *genBigTreeChance(RNG &rng) const override;
 
@@ -333,10 +333,10 @@ public:
               c_bool enableSnow, c_float temperature)
         : Biome(std::move(biomeName), baseHeight, heightVariation, enableSnow, temperature) {
         this->superIcy = superIcy;
-        if (superIcy) this->topBlock = &lce::blocks::SNOW_BLOCK;
+        if (superIcy) this->topBlock = &lce::blocks::BlocksInit::SNOW_BLOCK;
     }
 
-    void decorate(ChunkPrimer *worldIn, RNG &rng, const Pos2D &pos) override;
+    void decorate(World *worldIn, RNG &rng, const Pos2D &pos) override;
 
     const WorldGenAbstractTree *genBigTreeChance(RNG &rng) const override;
 
@@ -349,7 +349,7 @@ class BiomeMushroomIsland final : public Biome {
 public:
     BiomeMushroomIsland(MU std::string biomeName, c_float baseHeight, c_float heightVariation,
                         c_bool enableSnow, c_float temperature)
-        : Biome(std::move(biomeName), baseHeight, heightVariation, enableSnow, temperature, &lce::blocks::MYCELIUM) {
+        : Biome(std::move(biomeName), baseHeight, heightVariation, enableSnow, temperature, &lce::blocks::BlocksInit::MYCELIUM) {
         this->decorator->treesPerChunk = -100;
         this->decorator->flowersPerChunk = -100;
         this->decorator->grassPerChunk = -100;
@@ -362,8 +362,8 @@ class BiomeBeach final : public Biome {
 public:
     BiomeBeach(MU std::string biomeName, c_float baseHeight, c_float heightVariation, c_bool enableSnow,
                c_float temperature)
-        : Biome(std::move(biomeName), baseHeight, heightVariation, enableSnow, temperature, &lce::blocks::SAND,
-                &lce::blocks::SAND) {
+        : Biome(std::move(biomeName), baseHeight, heightVariation, enableSnow, temperature, &lce::blocks::BlocksInit::SAND,
+                &lce::blocks::BlocksInit::SAND) {
         this->decorator->treesPerChunk = -999;
     }
 };
@@ -382,7 +382,7 @@ public:
         this->decorator->flowersPerChunk = 4;
     }
 
-    void decorate(ChunkPrimer *worldIn, RNG &rng, const Pos2D &pos) override;
+    void decorate(World *worldIn, RNG &rng, const Pos2D &pos) override;
 
     const WorldGenAbstractTree *genBigTreeChance(RNG &rng) const override;
 
@@ -396,8 +396,8 @@ class BiomeStoneBeach final : public Biome {
 public:
     BiomeStoneBeach(MU std::string biomeName, c_float baseHeight, c_float heightVariation, c_bool enableSnow,
                     c_float temperature)
-        : Biome(std::move(biomeName), baseHeight, heightVariation, enableSnow, temperature, &lce::blocks::STONE,
-                &lce::blocks::STONE) {
+        : Biome(std::move(biomeName), baseHeight, heightVariation, enableSnow, temperature, &lce::blocks::BlocksInit::STONE,
+                &lce::blocks::BlocksInit::STONE) {
         this->decorator->treesPerChunk = -999;
     }
 };
@@ -412,7 +412,7 @@ public:
         this->decorator->grassPerChunk = 20;
     }
 
-    void decorate(ChunkPrimer *worldIn, RNG &rng, const Pos2D &pos) override;
+    void decorate(World *worldIn, RNG &rng, const Pos2D &pos) override;
 
     const WorldGenAbstractTree *genBigTreeChance(RNG &rng) const override;
 
@@ -435,8 +435,8 @@ public:
         : Biome(std::move(biomeName), baseHeight, heightVariation, enableSnow, temperature),
           brycePillars(hasBrycePillars),
           hasForest(hasForest) {
-        this->topBlock = &lce::blocks::RED_SAND;
-        this->fillerBlock = &lce::blocks::ORANGE_HARDENED_CLAY;
+        this->topBlock = &lce::blocks::BlocksInit::RED_SAND;
+        this->fillerBlock = &lce::blocks::BlocksInit::ORANGE_HARDENED_CLAY;
         this->decorator->treesPerChunk = -999;
         this->decorator->deadBushPerChunk = 20;
         this->decorator->reedsPerChunk = 3;
@@ -461,7 +461,7 @@ public:
 
     class Decorator : public BiomeDecorator {
     protected:
-        void generateOres(ChunkPrimer *chunk, RNG &rng) override;
+        void generateOres(World *world, RNG &rng) override;
     };
 };
 
@@ -478,5 +478,5 @@ public:
     void genTerrainBlocks(i64 worldSeed, RNG &rng, ChunkPrimer *chunkPrimerIn, c_int x, c_int z,
                           c_double noiseVal) override;
 
-    void decorate(ChunkPrimer *worldIn, RNG &rng, const Pos2D &pos) override;
+    void decorate(World *worldIn, RNG &rng, const Pos2D &pos) override;
 };

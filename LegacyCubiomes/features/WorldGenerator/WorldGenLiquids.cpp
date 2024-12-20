@@ -2,7 +2,7 @@
 #include "LegacyCubiomes/chunk_generator/ChunkPrimer.hpp"
 #include "lce/blocks/blocks.hpp"
 
-bool WorldGenLiquids::generate(ChunkPrimer* worldIn, RNG& rand, const Pos3D& position) const {
+bool WorldGenLiquids::generate(World * worldIn, RNG& rand, const Pos3D& position) const {
     using namespace lce::blocks;
 
     if (worldIn->getBlockId(position.up()) != ids::STONE_ID)
@@ -28,7 +28,7 @@ bool WorldGenLiquids::generate(ChunkPrimer* worldIn, RNG& rand, const Pos3D& pos
     }
 
     if (numStoneBlocks == 3 && numAirBlocks == 1) {
-        worldIn->setBlockId(position, this->blockId);
+        worldIn->setBlock(position, this->blockId);
         //worldIn->immediateBlockTick(position, this->block, rand);
     }
 

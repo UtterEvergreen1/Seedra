@@ -2,7 +2,7 @@
 #include "LegacyCubiomes/chunk_generator/ChunkPrimer.hpp"
 #include "LegacyCubiomes/utils/MathHelper.hpp"
 
-bool WorldGenMegaPineTree::generate(ChunkPrimer* worldIn, RNG& rand, const Pos3D& position) const {
+bool WorldGenMegaPineTree::generate(World * worldIn, RNG& rand, const Pos3D& position) const {
     using namespace lce::blocks;
     const int height = this->getHeight(rand);
 
@@ -40,7 +40,7 @@ bool WorldGenMegaPineTree::generate(ChunkPrimer* worldIn, RNG& rand, const Pos3D
     return true;
 }
 
-void WorldGenMegaPineTree::createCrown(ChunkPrimer* worldIn, int x, int z, int y, int p_150541_5_, RNG& rand) const {
+void WorldGenMegaPineTree::createCrown(World *worldIn, int x, int z, int y, int p_150541_5_, RNG& rand) const {
     int i = rand.nextInt(5) + (this->useBaseHeight ? this->baseHeight : 3);
     int j = 0;
 
@@ -52,7 +52,7 @@ void WorldGenMegaPineTree::createCrown(ChunkPrimer* worldIn, int x, int z, int y
     }
 }
 
-void WorldGenMegaPineTree::generateSaplings(ChunkPrimer* worldIn, RNG& random, const Pos3D& pos) const {
+void WorldGenMegaPineTree::generateSaplings(World *worldIn, RNG& random, const Pos3D& pos) const {
     placePodzolCircle(worldIn, pos.west().north());
     placePodzolCircle(worldIn, pos.east(2).north());
     placePodzolCircle(worldIn, pos.west().south(2));
@@ -69,7 +69,7 @@ void WorldGenMegaPineTree::generateSaplings(ChunkPrimer* worldIn, RNG& random, c
     }
 }
 
-void WorldGenMegaPineTree::placePodzolCircle(ChunkPrimer* worldIn, const Pos3D& center) {
+void WorldGenMegaPineTree::placePodzolCircle(World *worldIn, const Pos3D& center) {
     for (int i = -2; i <= 2; ++i) {
         for (int j = -2; j <= 2; ++j) {
             if (std::abs(i) != 2 || std::abs(j) != 2) {
@@ -79,13 +79,13 @@ void WorldGenMegaPineTree::placePodzolCircle(ChunkPrimer* worldIn, const Pos3D& 
     }
 }
 
-void WorldGenMegaPineTree::placePodzolAt(ChunkPrimer* worldIn, const Pos3D& pos) {
+void WorldGenMegaPineTree::placePodzolAt(World *worldIn, const Pos3D& pos) {
     for (int i = 2; i >= -3; --i) {
         Pos3D blockPos = pos.up(i);
         int blockId = worldIn->getBlockId(blockPos);
 
         if (blockId == lce::blocks::ids::GRASS_ID || blockId == lce::blocks::ids::DIRT_ID) {
-            worldIn->setBlock(blockPos, &lce::blocks::PODZOL);
+            worldIn->setBlock(blockPos, &lce::blocks::BlocksInit::PODZOL);
             break;
         }
 

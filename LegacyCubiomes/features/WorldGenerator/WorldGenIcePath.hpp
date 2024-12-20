@@ -10,9 +10,9 @@ public:
         : pathWidth(path_width) {
     }
 
-    bool generate(ChunkPrimer *worldIn, RNG &rng, const Pos3D &pos) const override;
+    bool generate(World * worldIn, RNG &rng, const Pos3D &pos) const override;
 
 private:
-    const lce::blocks::Block* pathBlock = &lce::blocks::PACKED_ICE;
+    const lce::blocks::Block* pathBlock = &lce::blocks::BlocksInit::PACKED_ICE;
     const int pathWidth;
 };

@@ -6,7 +6,7 @@
 
 class BlockVine {
 public:
-    static bool canPlaceBlockOnSide(const ChunkPrimer* worldIn, const Pos3D& pos, const FACING& facing);
+    static bool canPlaceBlockOnSide(const World* worldIn, const Pos3D& pos, const FACING& facing);
 
 private:
     static bool canBlockStay(int blockId);
@@ -14,5 +14,5 @@ private:
 
 class WorldGenVines final : public WorldGenerator {
 public:
-    bool generate(ChunkPrimer* worldIn, RNG& rng, const Pos3D& position) const override;
+    bool generate(World * worldIn, RNG& rng, const Pos3D& position) const override;
 };

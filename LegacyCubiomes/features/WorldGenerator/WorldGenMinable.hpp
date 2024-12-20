@@ -12,5 +12,5 @@ class WorldGenMinable : public WorldGenerator {
 
 public:
     WorldGenMinable(lce::blocks::Block const* block, int blockCount) : oreBlock(block), blockCount(blockCount) {}
-    bool generate(ChunkPrimer* chunk, RNG& rng, const Pos3D& pos) const override;
+    bool generate(World * world, RNG& rng, const Pos3D& pos) const override;
 };

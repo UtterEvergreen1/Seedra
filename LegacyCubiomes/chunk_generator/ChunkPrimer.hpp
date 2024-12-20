@@ -9,11 +9,20 @@
 #include "LegacyCubiomes/cubiomes/generator.hpp"
 #include "LegacyCubiomes/utils/Pos3DTemplate.hpp"
 #include "lce/blocks/block_ids.hpp"
+#include "lce/registry/blockRegistry.hpp"
+
+enum class Stage : u8 {
+    STAGE_TERRAIN = 0,
+    STAGE_CAVES = 1,
+    STAGE_DECORATE = 2,
+    STAGE_DONE = 4
+};
 
 class ChunkPrimer {
 public:
     /// all the blocks along with data in the chunk
     u16 blocks[65536]{};
+    Stage stage = Stage::STAGE_TERRAIN;
     std::vector<u8> skyLight;
     std::vector<int> precipitationHeightMap = std::vector(256, -999);
 
@@ -33,6 +42,7 @@ public:
     }
 
     ND u16 getBlockId(c_i64 x, c_i64 y, c_i64 z) const {
+        if (x < 0 || y < 0 || z < 0 || x >= 16 || y >= 256 || z >= 16) {/*std::cout << "Invalid coords: " << x << ", " << y << ", " << z << std::endl;*/ return 0;}
         return getBlockAtIndex(getStorageIndex(x, y, z)) >> 4;
     }
 
@@ -41,6 +51,7 @@ public:
     }
 
     void setBlockId(c_i64 x, c_i64 y, c_i64 z, c_u16 block) {
+        if (x < 0 || y < 0 || z < 0 || x >= 16 || y >= 256 || z >= 16) {/*std::cout << "Invalid coords: " << x << ", " << y << ", " << z << std::endl;*/ return;}
         blocks[getStorageIndex(x, y, z)] = block << 4;
     }
 
@@ -49,6 +60,7 @@ public:
     }
 
     ND u16 getData(c_i64 x, c_i64 y, c_i64 z) const {
+        if (x < 0 || y < 0 || z < 0 || x >= 16 || y >= 256 || z >= 16) {/*std::cout << "Invalid coords: " << x << ", " << y << ", " << z << std::endl;*/ return 0;}
         return getBlockAtIndex(getStorageIndex(x, y, z)) & 15;
     }
 
@@ -57,11 +69,20 @@ public:
     }
 
     void setData(c_i64 x, c_i64 y, c_i64 z, c_u8 data) {
+        if (x < 0 || y < 0 || z < 0 || x >= 16 || y >= 256 || z >= 16) {/*std::cout << "Invalid coords: " << x << ", " << y << ", " << z << std::endl;*/ return;}
         blocks[getStorageIndex(x, y, z)] |= data;
     }
 
     void setData(const Pos3D &pos, c_u8 data) {
         this->setData(pos.getX(), pos.getY(), pos.getZ(), data);
+    }
+
+    ND const lce::blocks::Block* getBlock(c_i64 x, c_i64 y, c_i64 z) const {
+        return lce::registry::BlockRegistry::getBlock(getBlockId(x, y, z), getData(x, y, z));
+    }
+
+    ND const lce::blocks::Block* getBlock(const Pos3D &pos) const {
+        return this->getBlock(pos.getX(), pos.getY(), pos.getZ());
     }
 
     ND u16 getSkyLight(c_i64 x, c_i64 y, c_i64 z) const {
@@ -73,6 +94,7 @@ public:
     }
 
     void setBlockAndData(c_i64 x, c_i64 y, c_i64 z, c_int id, c_int data) {
+        if (x < 0 || y < 0 || z < 0 || x >= 16 || y >= 256 || z >= 16) {/*std::cout << "Invalid coords: " << x << ", " << y << ", " << z << std::endl;*/ return;}
         blocks[getStorageIndex(x, y, z)] = ((id << 4) | data);
     }
 
@@ -118,7 +140,7 @@ public:
 
     ND int getHeight(c_i64 x, c_i64 z) const {
         for (int i = 255; i >= 0; i--) {
-            if (getBlockId(x, i, z)) return i;
+            if (!isAirBlock(x, i - 1, z)) return i;
         }
         return 0;
     }
@@ -129,6 +151,14 @@ public:
 
     ND Pos3D getHeightPos(const Pos3D &pos) const {
         return {pos.x, getHeight(pos), pos.z};
+    }
+
+    ND int getTopSolidOrLiquidBlock(c_i64 x, c_i64 z) const {
+        for (int i = 255; i >= 0; i--) {
+            int blockId = getBlockId(x, i - 1, z);
+            if (blockId != lce::blocks::ids::AIR_ID && !lce::blocks::ids::isLeavesBlock(blockId)) return i;
+        }
+        return 0;
     }
 
     static i64 getStorageIndex(c_i64 x, c_i64 y, c_i64 z) {

@@ -53,51 +53,51 @@ BiomeDecorator::~BiomeDecorator() {
     delete this->waterlilyGen;
 }
 
-void BiomeDecorator::decorate(ChunkPrimer *chunk, Biome *biome, RNG &rng, int chunkX, int chunkZ) {
+void BiomeDecorator::decorate(World *world, Biome *biome, RNG &rng, int posX, int posZ) {
     if (this->decorating) {
         return;
     }
 
     this->decorating = true;
-    this->chunkPos = {chunkX, 0, chunkZ};
-    this->dirtGen = new WorldGenMinable(&lce::blocks::DIRT, STONE_SUBS_SIZE);
-    this->gravelGen = new WorldGenMinable(&lce::blocks::GRAVEL, STONE_SUBS_SIZE);
-    this->graniteGen = new WorldGenMinable(&lce::blocks::GRANITE, STONE_SUBS_SIZE);
-    this->dioriteGen = new WorldGenMinable(&lce::blocks::DIORITE, STONE_SUBS_SIZE);
-    this->andesiteGen = new WorldGenMinable(&lce::blocks::ANDESITE, STONE_SUBS_SIZE);
-    this->coalGen = new WorldGenMinable(&lce::blocks::COAL_ORE, COAL_SIZE);
-    this->ironGen = new WorldGenMinable(&lce::blocks::IRON_ORE, IRON_SIZE);
-    this->goldGen = new WorldGenMinable(&lce::blocks::GOLD_ORE, GOLD_SIZE);
-    this->redstoneGen = new WorldGenMinable(&lce::blocks::REDSTONE_ORE, REDSTONE_SIZE);
-    this->diamondGen = new WorldGenMinable(&lce::blocks::DIAMOND_ORE, DIAMOND_SIZE);
-    this->lapisGen = new WorldGenMinable(&lce::blocks::LAPIS_LAZULI_ORE, LAPIS_SIZE);
-    this->genDecorations(chunk, biome, rng);
+    this->chunkBlockPos = {posX, 0, posZ};
+    this->dirtGen = new WorldGenMinable(&lce::blocks::BlocksInit::DIRT, STONE_SUBS_SIZE);
+    this->gravelGen = new WorldGenMinable(&lce::blocks::BlocksInit::GRAVEL, STONE_SUBS_SIZE);
+    this->graniteGen = new WorldGenMinable(&lce::blocks::BlocksInit::GRANITE, STONE_SUBS_SIZE);
+    this->dioriteGen = new WorldGenMinable(&lce::blocks::BlocksInit::DIORITE, STONE_SUBS_SIZE);
+    this->andesiteGen = new WorldGenMinable(&lce::blocks::BlocksInit::ANDESITE, STONE_SUBS_SIZE);
+    this->coalGen = new WorldGenMinable(&lce::blocks::BlocksInit::COAL_ORE, COAL_SIZE);
+    this->ironGen = new WorldGenMinable(&lce::blocks::BlocksInit::IRON_ORE, IRON_SIZE);
+    this->goldGen = new WorldGenMinable(&lce::blocks::BlocksInit::GOLD_ORE, GOLD_SIZE);
+    this->redstoneGen = new WorldGenMinable(&lce::blocks::BlocksInit::REDSTONE_ORE, REDSTONE_SIZE);
+    this->diamondGen = new WorldGenMinable(&lce::blocks::BlocksInit::DIAMOND_ORE, DIAMOND_SIZE);
+    this->lapisGen = new WorldGenMinable(&lce::blocks::BlocksInit::LAPIS_LAZULI_ORE, LAPIS_SIZE);
+    this->genDecorations(world, biome, rng);
     this->decorating = false;
 }
 
-void BiomeDecorator::decorate(ChunkPrimer *chunk, Biome *biome, RNG &rng, const Pos2D &chunkPos) {
-    this->decorate(chunk, biome, rng, chunkPos.x, chunkPos.z);
+void BiomeDecorator::decorate(World *world, Biome *biome, RNG &rng, const Pos2D &pos) {
+    this->decorate(world, biome, rng, pos.x, pos.z);
 }
 
-void BiomeDecorator::genDecorations(ChunkPrimer *chunk, Biome *biome, RNG &rng) {
-    this->generateOres(chunk, rng);
+void BiomeDecorator::genDecorations(World *world, Biome *biome, RNG &rng) {
+    this->generateOres(world, rng);
 
     for (int i = 0; i < this->sandPatchesPerChunk; ++i) {
         c_int x = rng.nextInt(16) + 8;
         c_int z = rng.nextInt(16) + 8;
-        this->sandGen->generate(chunk, rng, this->chunkPos.add(x, 0, z));
+        this->sandGen->generate(world, rng, world->getTopSolidOrLiquidBlock(this->chunkBlockPos.add(x, 0, z)));
     }
 
     for (int i = 0; i < this->clayPerChunk; ++i) {
         c_int x = rng.nextInt(16) + 8;
         c_int z = rng.nextInt(16) + 8;
-        this->sandGen->generate(chunk, rng, this->chunkPos.add(x, 0, z));
+        this->clayGen->generate(world, rng, world->getTopSolidOrLiquidBlock(this->chunkBlockPos.add(x, 0, z)));
     }
 
     for (int i = 0; i < this->gravelPatchesPerChunk; ++i) {
         c_int x = rng.nextInt(16) + 8;
         c_int z = rng.nextInt(16) + 8;
-        this->gravelAsSandGen->generate(chunk, rng, this->chunkPos.add(x, 0, z));
+        this->gravelAsSandGen->generate(world, rng, world->getTopSolidOrLiquidBlock(this->chunkBlockPos.add(x, 0, z)));
     }
 
     int trees = this->treesPerChunk;
@@ -109,36 +109,36 @@ void BiomeDecorator::genDecorations(ChunkPrimer *chunk, Biome *biome, RNG &rng) 
         c_int z = rng.nextInt(16) + 8;
         auto *tree = biome->genBigTreeChance(rng);
         tree->setDecorationDefaults();
-        Pos3D blockPos = chunk->getHeightPos(this->chunkPos.add(x, 0, z));
-        if (tree->generate(chunk, rng, blockPos)) {
-            tree->generateSaplings(chunk, rng, blockPos);
+        Pos3D blockPos = world->getHeight(this->chunkBlockPos.add(x, 0, z));
+        if (tree->generate(world, rng, blockPos)) {
+            tree->generateSaplings(world, rng, blockPos);
         }
     }
 
     for (int i = 0; i < this->bigMushroomsPerChunk; ++i) {
         c_int x = rng.nextInt(16) + 8;
         c_int z = rng.nextInt(16) + 8;
-        this->bigMushroomGen->generate(chunk, rng, chunk->getHeightPos(this->chunkPos.add(x, 0, z)));
+        this->bigMushroomGen->generate(world, rng, world->getHeight(this->chunkBlockPos.add(x, 0, z)));
     }
 
     for (int i = 0; i < this->flowersPerChunk; ++i) {
         c_int x = rng.nextInt(16) + 8;
         c_int z = rng.nextInt(16) + 8;
-        c_int y = rng.nextInt(chunk->getHeight(this->chunkPos.add(x, 0, z)) + 32);
+        c_int y = rng.nextInt(world->getHeight(this->chunkBlockPos.add(x, 0, z)).getY() + 32);
 
-        Pos3D blockPos = this->chunkPos.add(x, y, z);
+        Pos3D blockPos = this->chunkBlockPos.add(x, y, z);
         BlockFlower::EnumFlowerType flowerType = biome->pickRandomFlower(rng, blockPos.convert2D());
 
         c_int flowerBlock = flowerType == BlockFlower::EnumFlowerType::DANDELION ? lce::blocks::ids::DANDELION_ID : lce::blocks::ids::POPPY_ID;
         this->flowerGen->setGeneratedBlock(flowerBlock, flowerType);
-        this->flowerGen->generate(chunk, rng, blockPos);
+        this->flowerGen->generate(world, rng, blockPos);
     }
 
     for (int i = 0; i < this->grassPerChunk; ++i) {
         c_int x = rng.nextInt(16) + 8;
         c_int z = rng.nextInt(16) + 8;
-        c_int y = rng.nextInt(chunk->getHeight(this->chunkPos.add(x, 0, z)) * 2);
-        biome->getRandomWorldGenForGrass(rng)->generate(chunk, rng, this->chunkPos.add(x, y, z));
+        c_int y = rng.nextInt(world->getHeight(this->chunkBlockPos.add(x, 0, z)).getY() * 2);
+        biome->getRandomWorldGenForGrass(rng)->generate(world, rng, this->chunkBlockPos.add(x, y, z));
     }
 
     //seagrass here
@@ -146,53 +146,53 @@ void BiomeDecorator::genDecorations(ChunkPrimer *chunk, Biome *biome, RNG &rng) 
     for (int i = 0; i < this->deadBushPerChunk; ++i) {
         c_int x = rng.nextInt(16) + 8;
         c_int z = rng.nextInt(16) + 8;
-        c_int y = rng.nextInt(chunk->getHeight(this->chunkPos.add(x, 0, z)) * 2);
-        (WorldGenDeadBush()).generate(chunk, rng, this->chunkPos.add(x, y, z));
+        c_int y = rng.nextInt(world->getHeight(this->chunkBlockPos.add(x, 0, z)).getY() * 2);
+        (WorldGenDeadBush()).generate(world, rng, this->chunkBlockPos.add(x, y, z));
     }
 
     for (int i = 0; i < this->waterlilyPerChunk; ++i) {
         c_int x = rng.nextInt(16) + 8;
         c_int z = rng.nextInt(16) + 8;
-        c_int y = rng.nextInt(chunk->getHeight(this->chunkPos.add(x, 0, z)) * 2);
+        c_int y = rng.nextInt(world->getHeight(this->chunkBlockPos.add(x, 0, z)).getY() * 2);
 
-        Pos3D blockPos = this->chunkPos.add(x, y, z);
+        Pos3D blockPos = this->chunkBlockPos.add(x, y, z);
         while (blockPos.getY() > 0) {
             blockPos = blockPos.down();
-            if (!chunk->isAirBlock(blockPos)) {
+            if (!world->isAirBlock(blockPos)) {
                 break;
             }
         }
 
-        this->waterlilyGen->generate(chunk, rng, blockPos.up());
+        this->waterlilyGen->generate(world, rng, blockPos.up());
     }
 
     for (int i = 0; i < this->mushroomsPerChunk; ++i) {
         if (rng.nextInt(4) == 0) {
             c_int x = rng.nextInt(16) + 8;
             c_int z = rng.nextInt(16) + 8;
-            this->mushroomBrownGen->generate(chunk, rng, chunk->getHeightPos(this->chunkPos.add(x, 0, z)));
+            this->mushroomBrownGen->generate(world, rng, world->getHeight(this->chunkBlockPos.add(x, 0, z)));
         }
 
         if (rng.nextInt(8) == 0) {
             c_int x = rng.nextInt(16) + 8;
             c_int z = rng.nextInt(16) + 8;
-            c_int y = rng.nextInt(chunk->getHeight(this->chunkPos.add(x, 0, z)) * 2);
-            this->mushroomRedGen->generate(chunk, rng, this->chunkPos.add(x, y, z));
+            c_int y = rng.nextInt(world->getHeight(this->chunkBlockPos.add(x, 0, z)).getY() * 2);
+            this->mushroomRedGen->generate(world, rng, this->chunkBlockPos.add(x, y, z));
         }
     }
 
     if (rng.nextInt(4) == 0) {
         c_int x = rng.nextInt(16) + 8;
         c_int z = rng.nextInt(16) + 8;
-        c_int y = rng.nextInt(chunk->getHeight(this->chunkPos.add(x, 0, z)) * 2);
-        this->mushroomBrownGen->generate(chunk, rng, this->chunkPos.add(x, y, z));
+        c_int y = rng.nextInt(world->getHeight(this->chunkBlockPos.add(x, 0, z)).getY() * 2);
+        this->mushroomBrownGen->generate(world, rng, this->chunkBlockPos.add(x, y, z));
     }
 
     if (rng.nextInt(8) == 0) {
         c_int x = rng.nextInt(16) + 8;
         c_int z = rng.nextInt(16) + 8;
-        c_int y = rng.nextInt(chunk->getHeight(this->chunkPos.add(x, 0, z)) * 2);
-        this->mushroomRedGen->generate(chunk, rng, this->chunkPos.add(x, y, z));
+        c_int y = rng.nextInt(world->getHeight(this->chunkBlockPos.add(x, 0, z)).getY() * 2);
+        this->mushroomRedGen->generate(world, rng, this->chunkBlockPos.add(x, y, z));
     }
 
     //kelp here
@@ -200,71 +200,71 @@ void BiomeDecorator::genDecorations(ChunkPrimer *chunk, Biome *biome, RNG &rng) 
     for (int i = 0; i < this->reedsPerChunk + 10; ++i) {
         c_int x = rng.nextInt(16) + 8;
         c_int z = rng.nextInt(16) + 8;
-        c_int y = rng.nextInt(chunk->getHeight(this->chunkPos.add(x, 0, z)) * 2);
-        this->reedGen->generate(chunk, rng, this->chunkPos.add(x, y, z));
+        c_int y = rng.nextInt(world->getHeight(this->chunkBlockPos.add(x, 0, z)).getY() * 2);
+        this->reedGen->generate(world, rng, this->chunkBlockPos.add(x, y, z));
     }
 
     if (rng.nextInt(32) == 0) {
         c_int x = rng.nextInt(16) + 8;
         c_int z = rng.nextInt(16) + 8;
-        c_int y = rng.nextInt(chunk->getHeight(this->chunkPos.add(x, 0, z)) * 2);
-        (WorldGenCucurbitsBlock(lce::blocks::ids::PUMPKIN_ID, true)).generate(chunk, rng, this->chunkPos.add(x, y, z));
+        c_int y = rng.nextInt(world->getHeight(this->chunkBlockPos.add(x, 0, z)).getY() * 2);
+        (WorldGenCucurbitsBlock(lce::blocks::ids::PUMPKIN_ID, true)).generate(world, rng, this->chunkBlockPos.add(x, y, z));
     }
 
     for (int i = 0; i < this->cactiPerChunk; ++i) {
         c_int x = rng.nextInt(16) + 8;
         c_int z = rng.nextInt(16) + 8;
-        c_int y = rng.nextInt(chunk->getHeight(this->chunkPos.add(x, 0, z)) * 2);
-        this->cactusGen->generate(chunk, rng, this->chunkPos.add(x, y, z));
+        c_int y = rng.nextInt(world->getHeight(this->chunkBlockPos.add(x, 0, z)).getY() * 2);
+        this->cactusGen->generate(world, rng, this->chunkBlockPos.add(x, y, z));
     }
 
     for (int i = 0; i < 50; ++i) {
         c_int x = rng.nextInt(16) + 8;
         c_int z = rng.nextInt(16) + 8;
         c_int y = rng.nextInt(rng.nextInt(120) + 8);
-        (WorldGenLiquids(lce::blocks::ids::FLOWING_WATER_ID)).generate(chunk, rng, this->chunkPos.add(x, y, z));
+        (WorldGenLiquids(lce::blocks::ids::FLOWING_WATER_ID)).generate(world, rng, this->chunkBlockPos.add(x, y, z));
     }
 
     for (int i = 0; i < 20; ++i) {
         c_int x = rng.nextInt(16) + 8;
         c_int z = rng.nextInt(16) + 8;
         c_int y = rng.nextInt(rng.nextInt(rng.nextInt(112) + 8) + 8);
-        (WorldGenLiquids(lce::blocks::ids::FLOWING_LAVA_ID)).generate(chunk, rng, this->chunkPos.add(x, y, z));
+        (WorldGenLiquids(lce::blocks::ids::FLOWING_LAVA_ID)).generate(world, rng, this->chunkBlockPos.add(x, y, z));
     }
 }
 
-void BiomeDecorator::generateOres(ChunkPrimer *chunk, RNG &rng) {
-    this->genStandardOre1(chunk, rng, this->dirtGen, STONE_SUBS_COUNT, ORES_MIN_HEIGHT, HIGH_ORES_MAX_HEIGHT);
-    this->genStandardOre1(chunk, rng, this->gravelGen, UNCOMMON_ORES_COUNT, ORES_MIN_HEIGHT, HIGH_ORES_MAX_HEIGHT);
-    this->genStandardOre1(chunk, rng, this->dioriteGen, STONE_SUBS_COUNT, ORES_MIN_HEIGHT, STONE_SUBS_MAX_HEIGHT);
-    this->genStandardOre1(chunk, rng, this->graniteGen, STONE_SUBS_COUNT, ORES_MIN_HEIGHT, STONE_SUBS_MAX_HEIGHT);
-    this->genStandardOre1(chunk, rng, this->andesiteGen, STONE_SUBS_COUNT, ORES_MIN_HEIGHT, STONE_SUBS_MAX_HEIGHT);
-    this->genStandardOre1(chunk, rng, this->coalGen, COMMON_ORES_COUNT, ORES_MIN_HEIGHT, HIGH_ORES_MAX_HEIGHT);
-    this->genStandardOre1(chunk, rng, this->ironGen, COMMON_ORES_COUNT, ORES_MIN_HEIGHT, IRON_ORE_MAX_HEIGHT);
-    this->genStandardOre1(chunk, rng, this->goldGen, RARE_ORES_COUNT, ORES_MIN_HEIGHT, GOLD_ORE_MAX_HEIGHT);
-    this->genStandardOre1(chunk, rng, this->redstoneGen, UNCOMMON_ORES_COUNT, ORES_MIN_HEIGHT, DIAMOND_ORE_MAX_HEIGHT);
-    this->genStandardOre1(chunk, rng, this->diamondGen, VERY_RARE_ORES_COUNT, ORES_MIN_HEIGHT, DIAMOND_ORE_MAX_HEIGHT);
-    this->genStandardOre2(chunk, rng, this->lapisGen, VERY_RARE_ORES_COUNT, LAPIS_CENTER_HEIGHT, LAPIS_SPREAD);
+void BiomeDecorator::generateOres(World *world, RNG &rng) {
+    this->genStandardOre1(world, rng, this->dirtGen, STONE_SUBS_COUNT, ORES_MIN_HEIGHT, HIGH_ORES_MAX_HEIGHT);
+    this->genStandardOre1(world, rng, this->gravelGen, UNCOMMON_ORES_COUNT, ORES_MIN_HEIGHT, HIGH_ORES_MAX_HEIGHT);
+    this->genStandardOre1(world, rng, this->dioriteGen, STONE_SUBS_COUNT, ORES_MIN_HEIGHT, STONE_SUBS_MAX_HEIGHT);
+    this->genStandardOre1(world, rng, this->graniteGen, STONE_SUBS_COUNT, ORES_MIN_HEIGHT, STONE_SUBS_MAX_HEIGHT);
+    this->genStandardOre1(world, rng, this->andesiteGen, STONE_SUBS_COUNT, ORES_MIN_HEIGHT, STONE_SUBS_MAX_HEIGHT);
+    this->genStandardOre1(world, rng, this->coalGen, COMMON_ORES_COUNT, ORES_MIN_HEIGHT, HIGH_ORES_MAX_HEIGHT);
+    this->genStandardOre1(world, rng, this->ironGen, COMMON_ORES_COUNT, ORES_MIN_HEIGHT, IRON_ORE_MAX_HEIGHT);
+    this->genStandardOre1(world, rng, this->goldGen, RARE_ORES_COUNT, ORES_MIN_HEIGHT, GOLD_ORE_MAX_HEIGHT);
+    this->genStandardOre1(world, rng, this->redstoneGen, UNCOMMON_ORES_COUNT, ORES_MIN_HEIGHT, DIAMOND_ORE_MAX_HEIGHT);
+    this->genStandardOre1(world, rng, this->diamondGen, VERY_RARE_ORES_COUNT, ORES_MIN_HEIGHT, DIAMOND_ORE_MAX_HEIGHT);
+    this->genStandardOre2(world, rng, this->lapisGen, VERY_RARE_ORES_COUNT, LAPIS_CENTER_HEIGHT, LAPIS_SPREAD);
 }
 
-void BiomeDecorator::genStandardOre1(ChunkPrimer *chunk, RNG &rng, const WorldGenMinable *gen, const int count,
+void BiomeDecorator::genStandardOre1(World *world, RNG &rng, const WorldGenMinable *gen, const int count,
                                      const int minHeight, const int maxHeight) const {
     if (0 < count) {
         for (int bl = count; bl != 0; bl--) {
-            Pos3D blockPos = this->chunkPos.add(rng.nextInt(16), rng.nextInt(minHeight, maxHeight), rng.nextInt(16));
-            gen->generate(chunk, rng, blockPos);
+            Pos3D blockPos = this->chunkBlockPos.add(rng.nextInt(16), rng.nextInt(maxHeight - minHeight) + minHeight, rng.nextInt(16));
+            gen->generate(world, rng, blockPos);
         }
     }
 }
 
-void BiomeDecorator::genStandardOre2(ChunkPrimer *chunk, RNG &rng, WorldGenMinable *gen, const int count,
+void BiomeDecorator::genStandardOre2(World *world, RNG &rng, WorldGenMinable *gen, const int count,
                                      const int centerHeight, const int spread) const {
     if (0 < count) {
         for (int bl = count; bl != 0; bl--) {
-            Pos3D blockPos = this->chunkPos.add(rng.nextInt(16),
+            Pos3D blockPos = this->chunkBlockPos.add(rng.nextInt(16),
                                                 (rng.nextInt(spread) + rng.nextInt(spread) + centerHeight) -
                                                 spread, rng.nextInt(16));
-            gen->generate(chunk, rng, blockPos);
+            gen->generate(world, rng, blockPos);
         }
     }
 }

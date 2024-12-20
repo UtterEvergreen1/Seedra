@@ -6,7 +6,7 @@
 
 class BlockLilyPad {
 public:
-    static bool canPlaceBlockAt(const ChunkPrimer* worldIn, const Pos3D& pos);
+    static bool canPlaceBlockAt(const World* worldIn, const Pos3D& pos);
 
 private:
     static bool canSustainBush(int blockId);
@@ -14,5 +14,5 @@ private:
 
 class WorldGenWaterlily final : public WorldGenerator {
 public:
-    bool generate(ChunkPrimer* worldIn, RNG& rng, const Pos3D& position) const override;
+    bool generate(World * worldIn, RNG& rng, const Pos3D& position) const override;
 };

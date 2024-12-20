@@ -33,9 +33,9 @@ public:
                                           metaLeaves(metaLeaves) {
     }
 
-    bool generate(ChunkPrimer *worldIn, RNG &rng, const Pos3D &pos) const override;
+    bool generate(World * worldIn, RNG &rng, const Pos3D &pos) const override;
 
 private:
-    static void placeCocoa(ChunkPrimer *worldIn, const Pos3D &pos, FACING side, int age);
-    static void addHangingVine(ChunkPrimer *worldIn, const Pos3D &pos, FACING direction);
+    static void placeCocoa(World *worldIn, const Pos3D &pos, FACING side, int age);
+    static void addHangingVine(World *worldIn, const Pos3D &pos, FACING direction);
 };

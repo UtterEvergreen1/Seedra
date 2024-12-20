@@ -1,6 +1,5 @@
 #pragma once
 #include "WorldGenAbstractTree.hpp"
-#include "lce/blocks/blocks.hpp"
 #include "LegacyCubiomes/chunk_generator/ChunkPrimer.hpp"
 #include "LegacyCubiomes/utils/Pos3DTemplate.hpp"
 #include "LegacyCubiomes/utils/rng.hpp"
@@ -8,8 +7,8 @@
 
 class WorldGenBigTree final : public WorldGenAbstractTree {
     class FoliageCoordinates;
-    mutable RNG* rand{};
-    mutable ChunkPrimer* world{};
+    mutable RNG rand;
+    mutable World *world{};
     mutable Pos3D basePos;
     mutable int heightLimit{};
     mutable int height{};
@@ -24,7 +23,7 @@ class WorldGenBigTree final : public WorldGenAbstractTree {
 
 public:
 
-    bool generate(ChunkPrimer* worldIn, RNG& rand, const Pos3D& position) const override;
+    bool generate(World * worldIn, RNG& rand, const Pos3D& position) const override;
 
     void setDecorationDefaults() const override {
         this->leafDistanceLimit = 5;
@@ -36,8 +35,8 @@ private:
     float leafSize(int y) const;
     void generateLeafNode(const Pos3D& pos) const;
     void limb(const Pos3D& start, const Pos3D& end, const lce::blocks::Block* block) const;
-    int getGreatestDistance(const Pos3D& pos) const;
-    EnumAxis getLogAxis(const Pos3D& start, const Pos3D& end) const;
+    static int getGreatestDistance(const Pos3D& pos) ;
+    static EnumAxis getLogAxis(const Pos3D& start, const Pos3D& end) ;
     void generateLeaves() const;
     bool leafNodeNeedsBase(int y) const;
     void generateTrunk() const;

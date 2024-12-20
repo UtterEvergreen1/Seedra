@@ -2,9 +2,9 @@
 #include "LegacyCubiomes/chunk_generator/ChunkPrimer.hpp"
 #include "lce/blocks/blocks.hpp"
 
-void WorldGenAbstractTree::setDirtAt(ChunkPrimer *worldIn, const Pos3D &pos) {
+void WorldGenAbstractTree::setDirtAt(World *worldIn, const Pos3D &pos) {
     if (worldIn->getBlockId(pos) != lce::blocks::ids::DIRT_ID) {
-        worldIn->setBlockId(pos, lce::blocks::ids::DIRT_ID);
+        worldIn->setBlock(pos, lce::blocks::ids::DIRT_ID);
     }
 }
 
@@ -24,11 +24,11 @@ bool WorldGenAbstractTree::canGrowInto(int blockId) {
     }
 }
 
-void WorldGenAbstractTree::addVine(ChunkPrimer *worldIn, const Pos3D &pos, const FACING facing) {
-    worldIn->setBlockAndData(pos, lce::blocks::ids::VINES_ID, getMetaFromFacingAdditive(facing));
+void WorldGenAbstractTree::addVine(World *worldIn, const Pos3D &pos, const FACING facing) {
+    worldIn->setBlock(pos, lce::blocks::ids::VINES_ID, getMetaFromFacingAdditive(facing));
 }
 
-void WorldGenAbstractTree::placeFallenTrunk(ChunkPrimer *worldIn, RNG &rand, const Pos3D &pos, int height,
+void WorldGenAbstractTree::placeFallenTrunk(World *worldIn, RNG &rand, const Pos3D &pos, int height,
                                             const lce::blocks::Block *woodType) {
     FACING facing = FACING_HORIZONTAL[rand.nextInt(4)];
     double vineChance = 0.5;
@@ -84,12 +84,12 @@ void WorldGenAbstractTree::placeFallenTrunk(ChunkPrimer *worldIn, RNG &rand, con
     }
 }
 
-int WorldGenAbstractTree::placeTrunk(ChunkPrimer *worldIn, RNG &rand, const Pos3D &pos, int height,
+int WorldGenAbstractTree::placeTrunk(World *worldIn, RNG &rand, const Pos3D &pos, int height,
                                      const lce::blocks::Block *woodType, const bool vinesGrow) {
     const int fallenTrunk = rand.nextInt(80);
     double vineGrowthChance = 0.0;
 
-    if (woodType != &lce::blocks::BIRCH_WOOD) {
+    if (woodType != &lce::blocks::BlocksInit::BIRCH_WOOD) {
         if (fallenTrunk == 0) {
             vineGrowthChance = 0.75;
         } else if (vinesGrow) {

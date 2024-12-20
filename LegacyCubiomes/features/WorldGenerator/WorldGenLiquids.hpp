@@ -10,5 +10,5 @@ class WorldGenLiquids : public WorldGenerator {
 public:
     explicit WorldGenLiquids(int blockId) : blockId(blockId) {}
 
-    bool generate(ChunkPrimer* worldIn, RNG& rand, const Pos3D& position) const override;
+    bool generate(World * worldIn, RNG& rand, const Pos3D& position) const override;
 };

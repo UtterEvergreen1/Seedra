@@ -18,7 +18,7 @@ namespace generation {
     void Mineshaft::generate(c_i64 worldSeed, c_int chunkX, c_int chunkZ) {
         RNG rng = RNG::getLargeFeatureSeed(worldSeed, chunkX, chunkZ);
         // 4 rolls (1 for skip, 3 for is feature chunk rolls (2 double, 1 int))
-        rng = RNG((rng.getSeed() * 0x32EB772C5F11 + 0x2D3873C4CD04) & 0xFFFFFFFFFFFF);
+        rng = RNG::ConstructWithoutSetSeed((rng.getSeed() * 0x32EB772C5F11 + 0x2D3873C4CD04) & 0xFFFFFFFFFFFF);
         startX = (chunkX << 4) + 2;
         startZ = (chunkZ << 4) + 2;
         pieceArraySize = 0;

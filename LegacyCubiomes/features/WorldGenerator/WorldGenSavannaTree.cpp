@@ -1,6 +1,6 @@
 #include "WorldGenSavannaTree.hpp"
 
-bool WorldGenSavannaTree::generate(ChunkPrimer *worldIn, RNG &rand, const Pos3D &position) const {
+bool WorldGenSavannaTree::generate(World * worldIn, RNG &rand, const Pos3D &position) const {
     const int height = rand.nextInt(3) + rand.nextInt(3) + 5;
 
     if (position.getY() >= 1 && position.getY() + height <= 255) {
@@ -142,14 +142,14 @@ bool WorldGenSavannaTree::generate(ChunkPrimer *worldIn, RNG &rand, const Pos3D 
     return false;
 }
 
-void WorldGenSavannaTree::placeLogAt(ChunkPrimer *worldIn, const Pos3D &pos) {
-    worldIn->setBlock(pos, &lce::blocks::ACACIA_WOOD);
+void WorldGenSavannaTree::placeLogAt(World *worldIn, const Pos3D &pos) {
+    worldIn->setBlock(pos, &lce::blocks::BlocksInit::ACACIA_WOOD);
 }
 
-void WorldGenSavannaTree::placeLeafAt(ChunkPrimer *worldIn, const Pos3D &pos) {
+void WorldGenSavannaTree::placeLeafAt(World *worldIn, const Pos3D &pos) {
     int material = worldIn->getBlockId(pos);
 
     if (material == lce::blocks::ids::AIR_ID || lce::blocks::ids::isLeavesBlock(material)) {
-        worldIn->setBlock(pos, &lce::blocks::ACACIA_LEAVES);
+        worldIn->setBlock(pos, &lce::blocks::BlocksInit::ACACIA_LEAVES);
     }
 }

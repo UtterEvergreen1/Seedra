@@ -1,6 +1,6 @@
 #include "WorldGenCanopyTree.hpp"
 
-bool WorldGenCanopyTree::generate(ChunkPrimer *worldIn, RNG &rand, const Pos3D &position) const {
+bool WorldGenCanopyTree::generate(World * worldIn, RNG &rand, const Pos3D &position) const {
     int height = rand.nextInt(3) + rand.nextInt(2) + 6;
     int j = position.getX();
     int k = position.getY();
@@ -113,7 +113,7 @@ bool WorldGenCanopyTree::generate(ChunkPrimer *worldIn, RNG &rand, const Pos3D &
     return false;
 }
 
-bool WorldGenCanopyTree::placeTreeOfHeight(ChunkPrimer *worldIn, const Pos3D &pos, int height) {
+bool WorldGenCanopyTree::placeTreeOfHeight(World *worldIn, const Pos3D &pos, int height) {
     c_int x = pos.getX();
     c_int y = pos.getY();
     c_int z = pos.getZ();
@@ -143,17 +143,17 @@ bool WorldGenCanopyTree::placeTreeOfHeight(ChunkPrimer *worldIn, const Pos3D &po
     return true;
 }
 
-void WorldGenCanopyTree::placeLogAt(ChunkPrimer *worldIn, const Pos3D &pos) {
+void WorldGenCanopyTree::placeLogAt(World *worldIn, const Pos3D &pos) {
     if (canGrowInto(worldIn->getBlockId(pos))) {
-        worldIn->setBlock(pos, &lce::blocks::DARK_OAK_WOOD);
+        worldIn->setBlock(pos, &lce::blocks::BlocksInit::DARK_OAK_WOOD);
     }
 }
 
-void WorldGenCanopyTree::placeLeafAt(ChunkPrimer *worldIn, int x, int y, int z) {
+void WorldGenCanopyTree::placeLeafAt(World *worldIn, int x, int y, int z) {
     Pos3D blockPos(x, y, z);
     int material = worldIn->getBlockId(blockPos);
 
     if (material == lce::blocks::ids::AIR_ID) {
-        worldIn->setBlock(blockPos, &lce::blocks::DARK_OAK_LEAVES);
+        worldIn->setBlock(blockPos, &lce::blocks::BlocksInit::DARK_OAK_LEAVES);
     }
 }

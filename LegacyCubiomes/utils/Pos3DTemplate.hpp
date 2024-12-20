@@ -92,11 +92,11 @@ public:
     }
 
     Pos3DTemplate down(classType yOff = 1) const {
-        return {x, y + yOff, z};
+        return {x, y - yOff, z};
     }
 
     Pos3DTemplate up(classType yOff = 1) const {
-        return {x, y - yOff, z};
+        return {x, y + yOff, z};
     }
 
     Pos3DTemplate east(classType xOff = 1) const {
@@ -123,6 +123,10 @@ public:
     }
 
     MU ND Pos2DTemplate<classType> convert2D() const;
+
+    // only works for integral types
+    template<typename T = classType, typename = std::enable_if_t<std::is_integral_v<T>>> MU ND
+    Pos3DTemplate convertToChunkCords() const;
 
     MU ND bool insideBounds(classType lowerX, classType lowerY, classType lowerZ, classType upperX, classType upperY,
                             classType upperZ) const;

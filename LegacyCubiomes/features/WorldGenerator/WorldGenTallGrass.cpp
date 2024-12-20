@@ -2,11 +2,11 @@
 #include "lce/blocks/block_ids.hpp"
 #include "LegacyCubiomes/chunk_generator/ChunkPrimer.hpp"
 
-bool BlockTallGrass::canBlockStay(const ChunkPrimer *worldIn, const Pos3D &pos) {
+bool BlockTallGrass::canBlockStay(const World *worldIn, const Pos3D &pos) {
     return BlockBush::canSustainBush(worldIn->getBlockId(pos.down()));
 }
 
-bool WorldGenTallGrass::generate(ChunkPrimer *worldIn, RNG &rng, const Pos3D &pos) const {
+bool WorldGenTallGrass::generate(World * worldIn, RNG &rng, const Pos3D &pos) const {
     Pos3D position = pos;
     for (int blockId = worldIn->getBlockId(position);
          (blockId == lce::blocks::ids::AIR_ID || lce::blocks::ids::isLeavesBlock(blockId)) && position.getY() > 0;
@@ -19,7 +19,7 @@ bool WorldGenTallGrass::generate(ChunkPrimer *worldIn, RNG &rng, const Pos3D &po
                                       rng.nextInt(8) - rng.nextInt(8));
 
         if (worldIn->isAirBlock(blockPos) && BlockTallGrass::canBlockStay(worldIn, blockPos)) {
-            worldIn->setBlockAndData(blockPos, lce::blocks::ids::TALL_GRASS_SHRUB_ID, static_cast<int>(this->type));
+            worldIn->setBlock(blockPos, BlockTallGrass::getBlockVarientById(this->type));
         }
     }
 

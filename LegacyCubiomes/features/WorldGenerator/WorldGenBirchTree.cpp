@@ -3,7 +3,7 @@
 #include "lce/blocks/blocks.hpp"
 #include "LegacyCubiomes/chunk_generator/ChunkPrimer.hpp"
 
-bool WorldGenBirchTree::generate(ChunkPrimer *worldIn, RNG &rng, const Pos3D &pos) const {
+bool WorldGenBirchTree::generate(World * worldIn, RNG &rng, const Pos3D &pos) const {
     int height = rng.nextInt(3) + 5;
     if (this->useExtraRandomHeight) {
         height += rng.nextInt(7);
@@ -23,8 +23,7 @@ bool WorldGenBirchTree::generate(ChunkPrimer *worldIn, RNG &rng, const Pos3D &po
             for (int x = pos.getX() - radius; x <= pos.getX() + radius && flag; ++x) {
                 for (int z = pos.getZ() - radius; z <= pos.getZ() + radius && flag; ++z) {
                     if (y >= 0 && y < 256) {
-                        int blockId = worldIn->getBlockId(Pos3D(x, y, z));
-                        if (!canGrowInto(blockId)) {
+                        if (!canGrowInto(worldIn->getBlockId(x, y, z))) {
                             flag = false;
                         }
                     } else {
@@ -44,7 +43,7 @@ bool WorldGenBirchTree::generate(ChunkPrimer *worldIn, RNG &rng, const Pos3D &po
             pos.getY() + height < 255) {
             setDirtAt(worldIn, pos.down());
 
-            if (!placeTrunk(worldIn, rng, pos, height, &BIRCH_WOOD, false))
+            if (!placeTrunk(worldIn, rng, pos, height, &BlocksInit::BIRCH_WOOD, false))
                 return true;
 
             for (int y = pos.getY() - 3 + height; y <= pos.getY() + height; ++y) {
@@ -59,7 +58,7 @@ bool WorldGenBirchTree::generate(ChunkPrimer *worldIn, RNG &rng, const Pos3D &po
                             != 0) {
                             c_int blockId = worldIn->getBlockId(x, y, z);
                             if (blockId == ids::AIR_ID || ids::isLeavesBlock(blockId) || blockId == ids::VINES_ID) {
-                                worldIn->setBlock(x, y, z, &BIRCH_LEAVES);
+                                worldIn->setBlock(x, y, z, &BlocksInit::JUNGLE_LEAVES);
                             }
                         }
                     }

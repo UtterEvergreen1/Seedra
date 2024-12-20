@@ -8,7 +8,7 @@ public:
         : block(blockIn), startRadius(startRadiusIn) {
     }
 
-    bool generate(ChunkPrimer *worldIn, RNG &rng, const Pos3D &pos) const override;
+    bool generate(World * worldIn, RNG &rng, const Pos3D &pos) const override;
 
 private:
     const lce::blocks::Block *block;

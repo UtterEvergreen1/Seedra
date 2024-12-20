@@ -2,7 +2,7 @@
 
 #include "LegacyCubiomes/chunk_generator/ChunkPrimer.hpp"
 
-bool WorldGenIceSpike::generate(ChunkPrimer *worldIn, RNG &rng, const Pos3D &pos) const {
+bool WorldGenIceSpike::generate(World * worldIn, RNG &rng, const Pos3D &pos) const {
     Pos3D position = pos;
     while (worldIn->isAirBlock(position) && position.getY() > 2) {
         position = position.down();
@@ -37,7 +37,7 @@ bool WorldGenIceSpike::generate(ChunkPrimer *worldIn, RNG &rng, const Pos3D &pos
                     using namespace lce::blocks;
                     if (blockId == ids::AIR_ID || blockId == ids::DIRT_ID || blockId == ids::SNOW_BLOCK_ID || blockId ==
                         ids::ICE_ID) {
-                        worldIn->setBlockId(position.add(i1, k, j1), ids::PACKED_ICE_ID);
+                        worldIn->setBlock(position.add(i1, k, j1), ids::PACKED_ICE_ID);
                     }
 
                     if (k != 0 && l > 1) {
@@ -46,7 +46,7 @@ bool WorldGenIceSpike::generate(ChunkPrimer *worldIn, RNG &rng, const Pos3D &pos
                         if (blockId1 == ids::AIR_ID || blockId1 == ids::DIRT_ID || blockId1 == ids::SNOW_BLOCK_ID ||
                             blockId1 ==
                             ids::ICE_ID) {
-                            worldIn->setBlockId(position.add(i1, -k, j1), ids::PACKED_ICE_ID);
+                            worldIn->setBlock(position.add(i1, -k, j1), ids::PACKED_ICE_ID);
                         }
                     }
                 }
@@ -80,7 +80,7 @@ bool WorldGenIceSpike::generate(ChunkPrimer *worldIn, RNG &rng, const Pos3D &pos
                     break;
                 }
 
-                worldIn->setBlockId(blockPos, ids::PACKED_ICE_ID);
+                worldIn->setBlock(blockPos, ids::PACKED_ICE_ID);
                 blockPos = blockPos.down();
                 --j2;
 

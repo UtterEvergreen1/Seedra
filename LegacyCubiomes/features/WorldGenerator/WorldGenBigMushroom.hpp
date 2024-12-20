@@ -27,7 +27,7 @@ class WorldGenBigMushroom final : public WorldGenerator {
 public:
     explicit WorldGenBigMushroom(lce::blocks::Block* mushroomType = nullptr) : mushroomType(mushroomType) {}
 
-    bool generate(ChunkPrimer* worldIn, RNG& rand, const Pos3D& position) const override;
+    bool generate(World * worldIn, RNG& rand, const Pos3D& position) const override;
 
 private:
     lce::blocks::Block* mushroomType;

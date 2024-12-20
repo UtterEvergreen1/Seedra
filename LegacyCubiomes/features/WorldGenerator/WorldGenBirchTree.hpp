@@ -9,7 +9,7 @@ public:
         : useExtraRandomHeight(use_extra_random_height) {
     }
 
-    bool generate(ChunkPrimer *worldIn, RNG &rng, const Pos3D &pos) const override;
+    bool generate(World * worldIn, RNG &rng, const Pos3D &pos) const override;
 
 private:
     bool useExtraRandomHeight;

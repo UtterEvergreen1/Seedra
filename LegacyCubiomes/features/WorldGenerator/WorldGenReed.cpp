@@ -3,7 +3,7 @@
 #include "lce/blocks/blocks.hpp"
 #include "lce/blocks/block_ids.hpp"
 
-bool BlockReed::canBlockStay(const ChunkPrimer *worldIn, const Pos3D &pos) {
+bool BlockReed::canBlockStay(const World *worldIn, const Pos3D &pos) {
     const int blockId = worldIn->getBlockId(pos.down());
     if (blockId == lce::blocks::ids::SUGAR_CANES_ID) {
         return true;
@@ -26,7 +26,7 @@ bool BlockReed::canBlockStay(const ChunkPrimer *worldIn, const Pos3D &pos) {
     return blockId == lce::blocks::ids::GRASS_ID || blockId == lce::blocks::ids::DIRT_ID;
 }
 
-bool WorldGenReed::generate(ChunkPrimer *worldIn, RNG &rand, const Pos3D &position) const {
+bool WorldGenReed::generate(World * worldIn, RNG &rand, const Pos3D &position) const {
     for (int i = 0; i < 20; ++i) {
         Pos3D blockPos = position.add(rand.nextInt(4) - rand.nextInt(4), 0, rand.nextInt(4) - rand.nextInt(4));
 
@@ -41,7 +41,7 @@ bool WorldGenReed::generate(ChunkPrimer *worldIn, RNG &rand, const Pos3D &positi
 
                 for (int k = 0; k < j; ++k) {
                     if (BlockReed::canBlockStay(worldIn, blockPos)) {
-                        worldIn->setBlockId(blockPos.up(k), lce::blocks::ids::SUGAR_CANES_ID);
+                        worldIn->setBlock(blockPos.up(k), lce::blocks::ids::SUGAR_CANES_ID);
                     }
                 }
             }

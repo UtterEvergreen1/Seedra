@@ -6,16 +6,17 @@
 #include "RavineGenerator.hpp"
 #include "WaterCaveGenerator.hpp"
 #include "WaterRavineGenerator.hpp"
+#include "LegacyCubiomes/features/WorldGenerator/WorldGenLakes.hpp"
 
 namespace Chunk {
-
     template<bool checkWaterCaves = false,
-             bool generateCaves = true,
-             bool generateRavines = true,
-             bool generateSkyLight = false>
-    static ChunkPrimer* provideChunk(const Generator& g, c_int chunkX, c_int chunkZ, bool accurate = true) {
+        bool generateCaves = true,
+        bool generateRavines = true,
+        bool generateSkyLight = false>
+    static ChunkPrimer *provideChunk(const Generator &g, c_int chunkX, c_int chunkZ, bool accurate = true) {
         ChunkGeneratorOverWorld chunk(g);
-        ChunkPrimer* chunkPrimer = chunk.provideChunk(chunkX, chunkZ);
+        ChunkPrimer *chunkPrimer = chunk.provideChunk(chunkX, chunkZ);
+        chunkPrimer->stage = Stage::STAGE_CAVES;
         if constexpr (generateCaves && checkWaterCaves) {
             if (g.getLCEVersion() == LCEVERSION::AQUATIC) {
                 WaterCaveGenerator waterCaveGenerator(g);
@@ -38,6 +39,8 @@ namespace Chunk {
             ravineGenerator.generate(chunkX, chunkZ, chunkPrimer, accurate);
         }
 
+        chunkPrimer->stage = Stage::STAGE_DECORATE;
+
         /*
         structure order after caves:
         mineshaft
@@ -55,7 +58,30 @@ namespace Chunk {
         return chunkPrimer;
     }
 
-    MU static void populate(const Generator& g, int chunkX, int chunkZ, ChunkPrimer* chunkData) {
+    MU static void populate(const Generator &g, int chunkX, int chunkZ, World *worldIn) {
+        RNG rng = RNG::getPopulationSeed(g.getWorldSeed(), chunkX, chunkZ);
+        if (Pos3D waterPos = FeaturePositions::waterLake(&g, rng, chunkX, chunkZ); !waterPos.isNull()) {
+            WorldGenLakes waterGen(&g, &lce::blocks::BlocksInit::STILL_WATER);
+            waterGen.generate(worldIn, rng, waterPos);
+        }
+
+        if (Pos3D lavaPos = FeaturePositions::lavaLake(rng, chunkX, chunkZ); !lavaPos.isNull()) {
+            WorldGenLakes lavaGen(&g, &lce::blocks::BlocksInit::STILL_LAVA);
+            lavaGen.generate(worldIn, rng, lavaPos);
+        }
+
+        /*for (int i = 0; i < 8; i++) {
+            //world gen dungeons
+            //Pos3D pos = FeaturePositions::dungeon(rng, cx, cz);
+            //skip rng for now
+            //rng.advance<2>();
+        }*/
+        rng.advance<40>();
+
+        Biome::registry[g.getBiomeAt(1, (chunkX << 4) + 16, (chunkZ << 4) + 16)]->decorate(
+            worldIn, rng, {chunkX << 4, chunkZ << 4});
+
+
         c_int xStart = chunkX * 16;
         c_int zStart = chunkZ * 16;
         for (int xPos = 0; xPos < 16; ++xPos) {
@@ -66,16 +92,16 @@ namespace Chunk {
                 c_int chunkPosX = x & 15;
                 c_int chunkPosZ = z & 15;
 
-                c_int precipitationHeight = chunkData->getPrecipitationHeight(x, z);
+                c_int precipitationHeight = worldIn->getPrecipitationHeight(x, z);
                 const Pos3D blockPos1 = Pos3D(x, precipitationHeight, z);
                 const Pos3D blockPos2 = Pos3D(x, precipitationHeight - 1, z);
 
-                if (chunkData->canBlockFreeze(g, blockPos2, false)) {
-                    chunkData->setBlockId(chunkPosX, blockPos2.getY(), chunkPosZ, lce::blocks::ids::ICE_ID);
+                if (worldIn->canBlockFreeze(blockPos2, false)) {
+                    worldIn->setBlock(chunkPosX, blockPos2.getY(), chunkPosZ, lce::blocks::ids::ICE_ID);
                 }
 
-                if (chunkData->canSnowAt(g, blockPos1, true)) {
-                    chunkData->setBlockId(chunkPosX, precipitationHeight, chunkPosZ, lce::blocks::ids::SNOW_ID);
+                if (worldIn->canSnowAt(blockPos1, true)) {
+                    worldIn->setBlock(chunkPosX, precipitationHeight, chunkPosZ, lce::blocks::ids::SNOW_ID);
                 }
             }
         }

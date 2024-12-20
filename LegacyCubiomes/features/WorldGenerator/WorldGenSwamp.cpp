@@ -1,6 +1,6 @@
 #include "WorldGenSwamp.hpp"
 
-bool WorldGenSwamp::generate(ChunkPrimer *worldIn, RNG &rand, const Pos3D &position) const {
+bool WorldGenSwamp::generate(World * worldIn, RNG &rand, const Pos3D &position) const {
     const int height = rand.nextInt(4) + 5;
     Pos3D pos = position;
 
@@ -61,7 +61,7 @@ bool WorldGenSwamp::generate(ChunkPrimer *worldIn, RNG &rand, const Pos3D &posit
                             Pos3D blockPos(j3, k1, i4);
 
                             if (!lce::blocks::ids::isFullBlock(worldIn->getBlockId(blockPos))) {
-                                worldIn->setBlock(blockPos, &lce::blocks::OAK_LEAVES);
+                                worldIn->setBlock(blockPos, &lce::blocks::BlocksInit::OAK_LEAVES);
                             }
                         }
                     }
@@ -72,7 +72,7 @@ bool WorldGenSwamp::generate(ChunkPrimer *worldIn, RNG &rand, const Pos3D &posit
                 int blockId = worldIn->getBlockId(pos.up(l1));
                 if (blockId == lce::blocks::ids::AIR_ID || lce::blocks::ids::isLeavesBlock(blockId) ||
                     lce::blocks::ids::isWaterMaterial(blockId)) {
-                    worldIn->setBlock(pos.up(l1), &lce::blocks::OAK_WOOD);
+                    worldIn->setBlock(pos.up(l1), &lce::blocks::BlocksInit::OAK_WOOD);
                 }
             }
 
@@ -116,13 +116,13 @@ bool WorldGenSwamp::generate(ChunkPrimer *worldIn, RNG &rand, const Pos3D &posit
     return false;
 }
 
-void WorldGenSwamp::addVine(ChunkPrimer *worldIn, const Pos3D &pos, const FACING direction) {
+void WorldGenSwamp::addVine(World *worldIn, const Pos3D &pos, const FACING direction) {
     const int vineMetaData = getMetaFromFacingAdditive(direction);
-    worldIn->setBlockAndData(pos, lce::blocks::ids::VINES_ID, vineMetaData);
+    worldIn->setBlock(pos, lce::blocks::ids::VINES_ID, vineMetaData);
 
     int i = 4;
     for (Pos3D blockpos = pos.down(); worldIn->getBlockId(blockpos) == lce::blocks::ids::AIR_ID && i > 0; --i) {
-        worldIn->setBlockAndData(pos, lce::blocks::ids::VINES_ID, vineMetaData);
+        worldIn->setBlock(pos, lce::blocks::ids::VINES_ID, vineMetaData);
         blockpos = blockpos.down();
     }
 }

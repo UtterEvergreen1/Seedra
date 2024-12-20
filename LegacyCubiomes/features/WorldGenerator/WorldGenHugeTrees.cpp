@@ -8,7 +8,7 @@ int WorldGenHugeTrees::getHeight(RNG &rand) const {
     return height;
 }
 
-bool WorldGenHugeTrees::isSpaceAt(ChunkPrimer *worldIn, const Pos3D &leavesPos, int height) {
+bool WorldGenHugeTrees::isSpaceAt(World *worldIn, const Pos3D &leavesPos, int height) {
     if (leavesPos.getY() < 1 || leavesPos.getY() + height + 1 > 256) {
         return false;
     }
@@ -27,7 +27,7 @@ bool WorldGenHugeTrees::isSpaceAt(ChunkPrimer *worldIn, const Pos3D &leavesPos, 
     return true;
 }
 
-bool WorldGenHugeTrees::ensureDirtsUnderneath(const Pos3D &pos, ChunkPrimer *worldIn) {
+bool WorldGenHugeTrees::ensureDirtsUnderneath(const Pos3D &pos, World *worldIn) {
     Pos3D blockpos = pos.down();
     int block = worldIn->getBlockId(blockpos);
 
@@ -41,11 +41,11 @@ bool WorldGenHugeTrees::ensureDirtsUnderneath(const Pos3D &pos, ChunkPrimer *wor
     return false;
 }
 
-bool WorldGenHugeTrees::ensureGrowable(ChunkPrimer *worldIn, RNG &rng, const Pos3D &treePos, int height) {
+bool WorldGenHugeTrees::ensureGrowable(World *worldIn, RNG &rng, const Pos3D &treePos, int height) {
     return isSpaceAt(worldIn, treePos, height) && ensureDirtsUnderneath(treePos, worldIn);
 }
 
-void WorldGenHugeTrees::growLeavesLayerStrict(ChunkPrimer *worldIn, const Pos3D &layerCenter, int width) const {
+void WorldGenHugeTrees::growLeavesLayerStrict(World *worldIn, const Pos3D &layerCenter, int width) const {
     int i = width * width;
     for (int j = -width; j <= width + 1; ++j) {
         for (int k = -width; k <= width + 1; ++k) {
@@ -62,7 +62,7 @@ void WorldGenHugeTrees::growLeavesLayerStrict(ChunkPrimer *worldIn, const Pos3D 
     }
 }
 
-void WorldGenHugeTrees::growLeavesLayer(ChunkPrimer *worldIn, const Pos3D &layerCenter, int width) const {
+void WorldGenHugeTrees::growLeavesLayer(World *worldIn, const Pos3D &layerCenter, int width) const {
     int i = width * width;
     for (int j = -width; j <= width; ++j) {
         for (int k = -width; k <= width; ++k) {

@@ -6,14 +6,14 @@ public:
     virtual void setDecorationDefaults() const {
     }
 
-    virtual void generateSaplings(ChunkPrimer *worldIn, RNG &rand, const Pos3D &pos) const {
+    virtual void generateSaplings(World *worldIn, RNG &rand, const Pos3D &pos) const {
     }
 
 protected:
     /**
      * Sets dirt at a specific location if it isn't already dirt
      */
-    static void setDirtAt(ChunkPrimer *worldIn, const Pos3D &pos);
+    static void setDirtAt(World *worldIn, const Pos3D &pos);
 
     /**
      *
@@ -22,11 +22,11 @@ protected:
      */
     static bool canGrowInto(int blockId);
 
-    static void addVine(ChunkPrimer *worldIn, const Pos3D &pos, FACING facing);
+    static void addVine(World *worldIn, const Pos3D &pos, FACING facing);
 
-    static int placeTrunk(ChunkPrimer *worldIn, RNG &rand, const Pos3D &pos, int height,
+    static int placeTrunk(World *worldIn, RNG &rand, const Pos3D &pos, int height,
                           const lce::blocks::Block *woodType, bool vinesGrow);
 
-    static void placeFallenTrunk(ChunkPrimer *worldIn, RNG &rand, const Pos3D &pos, int height,
+    static void placeFallenTrunk(World *worldIn, RNG &rand, const Pos3D &pos, int height,
                                  const lce::blocks::Block *woodType);
 };

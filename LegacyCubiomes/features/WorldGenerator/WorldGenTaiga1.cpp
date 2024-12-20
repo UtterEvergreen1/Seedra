@@ -2,7 +2,7 @@
 
 #include "LegacyCubiomes/chunk_generator/ChunkPrimer.hpp"
 
-bool WorldGenTaiga1::generate(ChunkPrimer* worldIn, RNG& rand, const Pos3D& position) const {
+bool WorldGenTaiga1::generate(World * worldIn, RNG& rand, const Pos3D& position) const {
     const int height = rand.nextInt(5) + 7;
     int j = height - rand.nextInt(2) - 3;
     int k = height - j;
@@ -48,7 +48,7 @@ bool WorldGenTaiga1::generate(ChunkPrimer* worldIn, RNG& rand, const Pos3D& posi
                             Pos3D blockpos(j3, l2, i2);
 
                             if (!lce::blocks::ids::isFullBlock(worldIn->getBlockId(blockpos))) {
-                                worldIn->setBlock(blockpos, &lce::blocks::SPRUCE_LEAVES);
+                                worldIn->setBlock(blockpos, &lce::blocks::BlocksInit::SPRUCE_LEAVES);
                             }
                         }
                     }
@@ -63,7 +63,7 @@ bool WorldGenTaiga1::generate(ChunkPrimer* worldIn, RNG& rand, const Pos3D& posi
 
             for (int i3 = 0; i3 < height - 1; ++i3) {
                 if (worldIn->isAirBlock(position.up(i3)) || lce::blocks::ids::isLeavesBlock(worldIn->getBlockId(position.up(i3)))) {
-                    worldIn->setBlock(position.up(i3), &lce::blocks::SPRUCE_WOOD);
+                    worldIn->setBlock(position.up(i3), &lce::blocks::BlocksInit::SPRUCE_WOOD);
                 }
             }
 

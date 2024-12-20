@@ -2,17 +2,17 @@
 
 #include "LegacyCubiomes/chunk_generator/ChunkPrimer.hpp"
 
-bool BlockDoublePlant::canPlaceBlockAt(const ChunkPrimer* chunk, const Pos3D& pos) {
+bool BlockDoublePlant::canPlaceBlockAt(const World* chunk, const Pos3D& pos) {
     return BlockBush::canPlaceBlockAt(chunk, pos) && chunk->isAirBlock(pos.up());
 }
 
-void BlockDoublePlant::placeAt(ChunkPrimer* chunk, const Pos3D& lowerPos, const EnumPlantType variant)
+void BlockDoublePlant::placeAt(World *chunk, const Pos3D& lowerPos, const EnumPlantType variant)
 {
-    chunk->setBlockAndData(lowerPos, lce::blocks::ids::DOUBLE_PLANT_ID, static_cast<int>(variant));
-    chunk->setBlockAndData(lowerPos.up(), lce::blocks::ids::DOUBLE_PLANT_ID, 10); // 8 is the top | 2 is facing north
+    chunk->setBlock(lowerPos, lce::blocks::ids::DOUBLE_PLANT_ID, static_cast<int>(variant));
+    chunk->setBlock(lowerPos.up(), lce::blocks::ids::DOUBLE_PLANT_ID, 10); // 8 is the top | 2 is facing north
 }
 
-bool WorldGenDoublePlant::generate(ChunkPrimer* worldIn, RNG& rng, const Pos3D& pos) const {
+bool WorldGenDoublePlant::generate(World * worldIn, RNG& rng, const Pos3D& pos) const {
     bool flag = false;
 
     for (int i = 0; i < 64; ++i)

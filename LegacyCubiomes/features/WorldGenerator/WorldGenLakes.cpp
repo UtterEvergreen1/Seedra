@@ -2,7 +2,7 @@
 
 #include "LegacyCubiomes/chunk_generator/ChunkPrimer.hpp"
 
-bool WorldGenLakes::generate(ChunkPrimer *worldIn, RNG &rng, const Pos3D &pos) const {
+bool WorldGenLakes::generate(World * worldIn, RNG &rng, const Pos3D &pos) const {
     Pos3D position = pos;
     for (position = position.add(-8, 0, -8); position.getY() > 5 && worldIn->isAirBlock(position);
          position = position.down()) {
@@ -78,7 +78,7 @@ bool WorldGenLakes::generate(ChunkPrimer *worldIn, RNG &rng, const Pos3D &pos) c
             for (int i4 = 0; i4 < 8; ++i4) {
                 if (aboolean[(l1 * 16 + i3) * 8 + i4]) {
                     worldIn->setBlock(position.add(l1, i4, i3),
-                                      i4 >= 4 ? &lce::blocks::AIR : this->block);
+                                      i4 >= 4 ? &lce::blocks::BlocksInit::AIR : this->block);
                 }
             }
         }
@@ -94,10 +94,10 @@ bool WorldGenLakes::generate(ChunkPrimer *worldIn, RNG &rng, const Pos3D &pos) c
                                     worldIn.getLightFor(EnumSkyBlock.SKY, position.add(i2, j4, j3)) > 0*/) {
                         Biome *biome = Biome::getBiomeForId(g->getBiomeAt(1, blockPos.convert2D()));
 
-                        if (biome->topBlock == &lce::blocks::MYCELIUM) {
-                            worldIn->setBlockId(blockPos, lce::blocks::ids::MYCELIUM_ID);
+                        if (biome->topBlock == &lce::blocks::BlocksInit::MYCELIUM) {
+                            worldIn->setBlock(blockPos, lce::blocks::ids::MYCELIUM_ID);
                         } else {
-                            worldIn->setBlockId(blockPos, lce::blocks::ids::GRASS_ID);
+                            worldIn->setBlock(blockPos, lce::blocks::ids::GRASS_ID);
                         }
                     }
                 }
@@ -105,7 +105,7 @@ bool WorldGenLakes::generate(ChunkPrimer *worldIn, RNG &rng, const Pos3D &pos) c
         }
     }
 
-    if (this->block == &lce::blocks::FLOWING_LAVA || this->block == &lce::blocks::STILL_LAVA) {
+    if (this->block == &lce::blocks::BlocksInit::FLOWING_LAVA || this->block == &lce::blocks::BlocksInit::STILL_LAVA) {
         for (int j2 = 0; j2 < 16; ++j2) {
             for (int k3 = 0; k3 < 16; ++k3) {
                 for (int k4 = 0; k4 < 8; ++k4) {
@@ -119,18 +119,18 @@ bool WorldGenLakes::generate(ChunkPrimer *worldIn, RNG &rng, const Pos3D &pos) c
 
                     if (flag1 && (k4 < 4 || rng.nextInt(2) != 0)
                         && lce::blocks::ids::isSolidBlock(worldIn->getBlockId(position.add(j2, k4, k3)))) {
-                        worldIn->setBlockId(position.add(j2, k4, k3), lce::blocks::ids::STONE_ID);
+                        worldIn->setBlock(position.add(j2, k4, k3), lce::blocks::ids::STONE_ID);
                     }
                 }
             }
         }
     }
 
-    if (this->block == &lce::blocks::FLOWING_WATER || this->block == &lce::blocks::STILL_WATER) {
+    if (this->block == &lce::blocks::BlocksInit::FLOWING_WATER || this->block == &lce::blocks::BlocksInit::STILL_WATER) {
         for (int k2 = 0; k2 < 16; ++k2) {
             for (int l3 = 0; l3 < 16; ++l3) {
-                if (worldIn->canBlockFreezeWater(*g, position.add(k2, 4, l3))) {
-                    worldIn->setBlockId(position.add(k2, 4, l3), lce::blocks::ids::ICE_ID);
+                if (worldIn->canBlockFreezeWater(position.add(k2, 4, l3))) {
+                    worldIn->setBlock(position.add(k2, 4, l3), lce::blocks::ids::ICE_ID);
                 }
             }
         }

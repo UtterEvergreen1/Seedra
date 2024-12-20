@@ -11,5 +11,5 @@ class WorldGenSand : public WorldGenerator {
 public:
     explicit WorldGenSand(const lce::blocks::Block* block, const int radiusIn) : block(block), radius(radiusIn) {}
 
-    bool generate(ChunkPrimer* worldIn, RNG& rand, const Pos3D& position) const override;
+    bool generate(World * worldIn, RNG& rand, const Pos3D& position) const override;
 };

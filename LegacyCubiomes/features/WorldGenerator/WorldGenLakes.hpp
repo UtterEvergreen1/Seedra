@@ -16,7 +16,7 @@ public:
     MU explicit WorldGenLakes(const Generator *g, lce::blocks::Block const *blockIn) : g(g), block(blockIn) {
     }
 
-    bool generate(ChunkPrimer *worldIn, RNG &rng, const Pos3D &pos) const override;
+    bool generate(World * worldIn, RNG &rng, const Pos3D &pos) const override;
 };
 
 class FeaturePositions {

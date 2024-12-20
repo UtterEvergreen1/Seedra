@@ -9,18 +9,18 @@ class WorldGenMegaPineTree final : public WorldGenHugeTrees {
 
 public:
     explicit WorldGenMegaPineTree(const bool useBaseHeight)
-        : WorldGenHugeTrees(13, 15, &lce::blocks::SPRUCE_WOOD, &lce::blocks::SPRUCE_LEAVES),
+        : WorldGenHugeTrees(13, 15, &lce::blocks::BlocksInit::SPRUCE_WOOD, &lce::blocks::BlocksInit::SPRUCE_LEAVES),
           useBaseHeight(useBaseHeight) {
     }
 
-    bool generate(ChunkPrimer *worldIn, RNG &rand, const Pos3D &position) const override;
+    bool generate(World * worldIn, RNG &rand, const Pos3D &position) const override;
 
-    void generateSaplings(ChunkPrimer *worldIn, RNG &random, const Pos3D &pos) const override;
+    void generateSaplings(World *worldIn, RNG &random, const Pos3D &pos) const override;
 
 private:
-    void createCrown(ChunkPrimer *worldIn, int x, int z, int y, int p_150541_5_, RNG &rand) const;
+    void createCrown(World *worldIn, int x, int z, int y, int p_150541_5_, RNG &rand) const;
 
-    static void placePodzolCircle(ChunkPrimer *worldIn, const Pos3D &center) ;
+    static void placePodzolCircle(World *worldIn, const Pos3D &center) ;
 
-    static void placePodzolAt(ChunkPrimer *worldIn, const Pos3D &pos) ;
+    static void placePodzolAt(World *worldIn, const Pos3D &pos) ;
 };

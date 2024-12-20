@@ -3,10 +3,11 @@
 #include "lce/blocks/block_ids.hpp"
 #include <cmath>
 
-bool WorldGenBigTree::generate(ChunkPrimer *worldIn, RNG &rand, const Pos3D &position) const {
+bool WorldGenBigTree::generate(World * worldIn, RNG &rand, const Pos3D &position) const {
     this->world = worldIn;
     this->basePos = position;
-    this->rand = &rand;
+    this->rand = RNG(rand.nextLong());
+
     this->heightLimit = 5 + rand.nextInt(this->heightLimitLimit);
 
     if (!this->validTreeLocation()) {
@@ -27,7 +28,7 @@ void WorldGenBigTree::generateLeafNodeList() const {
         this->height = this->heightLimit - 1;
     }
 
-    int i = static_cast<int>(1.382 + std::pow(this->leafDensity * this->heightLimit / 13.0, 2.0));
+    int i = static_cast<int>(1.382 + std::pow(this->leafDensity * (double)this->heightLimit / 13.0, 2.0));
 
     if (i < 1) {
         i = 1;
@@ -43,22 +44,22 @@ void WorldGenBigTree::generateLeafNodeList() const {
 
         if (f >= 0.0F) {
             for (int l = 0; l < i; ++l) {
-                double d0 = this->scaleWidth * f * (this->rand->nextFloat() + 0.328);
-                double d1 = this->rand->nextFloat() * 2.0 * M_PI;
+                double d0 = this->scaleWidth * (double)f * ((double)this->rand.nextFloat() + 0.328);
+                double d1 = (double)(this->rand.nextFloat() * 2.0F) * M_PI;
                 double d2 = d0 * std::sin(d1) + 0.5;
                 double d3 = d0 * std::cos(d1) + 0.5;
-                Pos3D blockpos = this->basePos.add(d2, k - 1, d3);
+                Pos3D blockpos = this->basePos.add((int)std::floor(d2), k - 1, (int)std::floor(d3));
                 Pos3D blockpos1 = blockpos.up(this->leafDistanceLimit);
 
                 if (this->checkBlockLine(blockpos, blockpos1) == -1) {
                     int i1 = this->basePos.getX() - blockpos.getX();
                     int j1 = this->basePos.getZ() - blockpos.getZ();
-                    double d4 = blockpos.getY() - std::sqrt(i1 * i1 + j1 * j1) * this->branchSlope;
-                    int k1 = d4 > j ? j : static_cast<int>(d4);
+                    double d4 = (double)blockpos.getY() - std::sqrt((double)(i1 * i1 + j1 * j1)) * this->branchSlope;
+                    int k1 = d4 > (double)j ? j : static_cast<int>(d4);
                     Pos3D blockpos2(this->basePos.getX(), k1, this->basePos.getZ());
 
                     if (this->checkBlockLine(blockpos2, blockpos) == -1) {
-                        this->foliageCoords.emplace_back(blockpos2, blockpos2.getY());
+                        this->foliageCoords.emplace_back(blockpos, blockpos2.getY());
                     }
                 }
             }
@@ -88,8 +89,8 @@ float WorldGenBigTree::layerSize(int y) const {
         return -1.0F;
     }
 
-    float f = this->heightLimit / 2.0F;
-    float f1 = f - y;
+    float f = (float)this->heightLimit / 2.0F;
+    float f1 = f - (float)y;
     float f2 = std::sqrt(f * f - f1 * f1);
 
     if (f1 == 0.0F) {
@@ -111,26 +112,26 @@ float WorldGenBigTree::leafSize(int y) const {
 
 void WorldGenBigTree::generateLeafNode(const Pos3D &pos) const {
     for (int i = 0; i < this->leafDistanceLimit; ++i) {
-        this->crossSection(pos.up(i), this->leafSize(i), &lce::blocks::OAK_LEAVES);
+        this->crossSection(pos.up(i), this->leafSize(i), &lce::blocks::BlocksInit::OAK_LEAVES);
     }
 }
 
 void WorldGenBigTree::limb(const Pos3D &start, const Pos3D &end, const lce::blocks::Block *block) const {
     Pos3D blockpos = end.add(-start.getX(), -start.getY(), -start.getZ());
-    int i = this->getGreatestDistance(blockpos);
-    float f = static_cast<float>(blockpos.getX()) / i;
-    float f1 = static_cast<float>(blockpos.getY()) / i;
-    float f2 = static_cast<float>(blockpos.getZ()) / i;
+    int i = WorldGenBigTree::getGreatestDistance(blockpos);
+    float f = static_cast<float>(blockpos.getX()) / (float)i;
+    float f1 = static_cast<float>(blockpos.getY()) / (float)i;
+    float f2 = static_cast<float>(blockpos.getZ()) / (float)i;
 
     for (int j = 0; j <= i; ++j) {
-        Pos3D blockpos1 = start.add(0.5F + j * f, 0.5F + j * f1, 0.5F + j * f2);
-        EnumAxis axis = this->getLogAxis(start, blockpos1);
+        Pos3D blockpos1 = start.add((int)(0.5F + (float)j * f), (int)(0.5F + (float)j * f1), (int)(0.5F + (float)j * f2));
+        EnumAxis axis = WorldGenBigTree::getLogAxis(start, blockpos1);
         const int metaStateAxis = axis == EnumAxis::Y ? 0 : axis == EnumAxis::X ? 4 : 8;
-        this->world->setBlockAndData(blockpos1, block->getID(), block->getDataTag() | metaStateAxis);
+        this->world->setBlock(blockpos1, block->getID(), block->getDataTag() | metaStateAxis);
     }
 }
 
-int WorldGenBigTree::getGreatestDistance(const Pos3D &pos) const {
+int WorldGenBigTree::getGreatestDistance(const Pos3D &pos) {
     int i = std::abs(pos.getX());
     int j = std::abs(pos.getY());
     int k = std::abs(pos.getZ());
@@ -142,7 +143,7 @@ int WorldGenBigTree::getGreatestDistance(const Pos3D &pos) const {
     return j > i ? j : i;
 }
 
-EnumAxis WorldGenBigTree::getLogAxis(const Pos3D &start, const Pos3D &end) const {
+EnumAxis WorldGenBigTree::getLogAxis(const Pos3D &start, const Pos3D &end) {
     EnumAxis axis = EnumAxis::Y;
     int i = std::abs(end.getX() - start.getX());
     int j = std::abs(end.getZ() - start.getZ());
@@ -166,13 +167,13 @@ void WorldGenBigTree::generateLeaves() const {
 }
 
 bool WorldGenBigTree::leafNodeNeedsBase(int y) const {
-    return y >= this->heightLimit * 0.2;
+    return (double)y >= this->heightLimit * 0.2;
 }
 
 void WorldGenBigTree::generateTrunk() const {
     Pos3D blockpos = this->basePos;
     Pos3D blockpos1 = this->basePos.up(this->height);
-    const lce::blocks::Block *trunkBlock = &lce::blocks::OAK_WOOD;
+    const lce::blocks::Block *trunkBlock = &lce::blocks::BlocksInit::OAK_WOOD;
     this->limb(blockpos, blockpos1, trunkBlock);
 
     if (this->trunkSize == 2) {
@@ -188,23 +189,23 @@ void WorldGenBigTree::generateLeafNodeBases() const {
         const Pos3D blockPos(this->basePos.getX(), i, this->basePos.getZ());
 
         if (blockPos != foliage && this->leafNodeNeedsBase(i - this->basePos.getY())) {
-            this->limb(blockPos, foliage, &lce::blocks::OAK_WOOD);
+            this->limb(blockPos, foliage, &lce::blocks::BlocksInit::OAK_WOOD);
         }
     }
 }
 
 int WorldGenBigTree::checkBlockLine(const Pos3D &start, const Pos3D &end) const {
     Pos3D blockpos = end.add(-start.getX(), -start.getY(), -start.getZ());
-    int i = this->getGreatestDistance(blockpos);
-    float f = static_cast<float>(blockpos.getX()) / i;
-    float f1 = static_cast<float>(blockpos.getY()) / i;
-    float f2 = static_cast<float>(blockpos.getZ()) / i;
+    int i = WorldGenBigTree::getGreatestDistance(blockpos);
+    float f = static_cast<float>(blockpos.getX()) / (float)i;
+    float f1 = static_cast<float>(blockpos.getY()) / (float)i;
+    float f2 = static_cast<float>(blockpos.getZ()) / (float)i;
 
     if (i == 0) {
         return -1;
     } else {
         for (int j = 0; j <= i; ++j) {
-            Pos3D blockpos1 = start.add(0.5F + j * f, 0.5F + j * f1, 0.5F + j * f2);
+            Pos3D blockpos1 = start.add((int)(0.5F + (float)j * f), (int)(0.5F + (float)j * f1), (int)(0.5F + (float)j * f2));
 
             if (!canGrowInto(this->world->getBlockId(blockpos1))) {
                 return j;

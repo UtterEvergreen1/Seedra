@@ -75,6 +75,12 @@ double Pos3DTemplate<classType>::distanceSq(c_double toX, c_double toY, c_double
 template<class classType>
 Pos2DTemplate<classType> Pos3DTemplate<classType>::convert2D() const { return {x, z}; }
 
+template<class classType>
+template<typename T, typename>
+Pos3DTemplate<classType> Pos3DTemplate<classType>::convertToChunkCords() const {
+    return {x & 15, y & 255, z & 15};
+}
+
 
 template<class classType>
 bool Pos3DTemplate<classType>::insideBounds(classType lowerX, classType lowerY, classType lowerZ, classType upperX,
@@ -108,3 +114,5 @@ class Pos3DTemplate<int>;
 
 template
 class Pos3DTemplate<double>;
+
+template Pos3DTemplate<int> Pos3DTemplate<int>::convertToChunkCords<int, void>() const;

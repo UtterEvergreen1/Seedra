@@ -2,7 +2,7 @@
 
 #include "LegacyCubiomes/chunk_generator/ChunkPrimer.hpp"
 
-bool WorldGenBlockBlob::generate(ChunkPrimer *worldIn, RNG &rng, const Pos3D &pos) const {
+bool WorldGenBlockBlob::generate(World * worldIn, RNG &rng, const Pos3D &pos) const {
     Pos3D position = pos;
     const int rad = this->startRadius;
     while (true) {

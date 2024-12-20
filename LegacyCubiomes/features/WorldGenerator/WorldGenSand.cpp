@@ -2,8 +2,8 @@
 
 #include "LegacyCubiomes/chunk_generator/ChunkPrimer.hpp"
 
-bool WorldGenSand::generate(ChunkPrimer* worldIn, RNG& rand, const Pos3D& position) const {
-    if (lce::blocks::ids::isWaterMaterial(worldIn->getBlockId(position))) {
+bool WorldGenSand::generate(World * worldIn, RNG& rand, const Pos3D& position) const {
+    if (!lce::blocks::ids::isWaterMaterial(worldIn->getBlockId(position))) {
         return false;
     }
 

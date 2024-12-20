@@ -33,7 +33,7 @@ namespace loot {
             if (!structure_rolls::Stronghold::generateStructure<true>(chunk, strongholdGenerator, rng,
                                                                       chestChunkX, chestChunkZ, piece)) {
                 delete chunk;
-                return RNG(-1);
+                return RNG::ConstructWithoutSetSeed(-1);
             }
             delete chunk;
         } else {

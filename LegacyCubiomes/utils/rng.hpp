@@ -15,7 +15,7 @@ class RNG {
 
 public:
     RNG() = default;
-    explicit RNG(c_u64 seed) : seed(seed) {}
+    explicit RNG(c_u64 seedIn) { this->setSeed(seedIn); }
 
     bool operator==(const RNG& other) const { return seed == other.seed; }
 
@@ -26,9 +26,9 @@ public:
         return rng;
     }
 
-    static inline RNG ConstructWithSetSeed(c_u64 seed) {
+    static inline RNG ConstructWithoutSetSeed(c_u64 seedIn) {
         RNG rng;
-        rng.setSeed(seed);
+        rng.seed = seedIn;
         return rng;
     }
 

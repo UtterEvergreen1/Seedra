@@ -2,7 +2,7 @@
 
 #include "LegacyCubiomes/chunk_generator/ChunkPrimer.hpp"
 
-bool WorldGeneratorBonusChest::generate(ChunkPrimer *worldIn, RNG &rand, const Pos3D &pos) const {
+bool WorldGeneratorBonusChest::generate(World * worldIn, RNG &rand, const Pos3D &pos) const {
     using namespace lce::blocks;
     Pos3D position = pos;
     while ((worldIn->getBlockId(position) == ids::AIR_ID || ids::isLeavesBlock(worldIn->getBlockId(pos))) &&
@@ -21,7 +21,7 @@ bool WorldGeneratorBonusChest::generate(ChunkPrimer *worldIn, RNG &rand, const P
                                       rand.nextInt(4) - rand.nextInt(4));
 
         if (worldIn->isAirBlock(blockPos) && ids::isFullyOpaqueBlock(worldIn->getBlockId(blockPos.down()))) {
-            worldIn->setBlock(blockPos, &CHEST);
+            worldIn->setBlock(blockPos, &BlocksInit::CHEST);
             // Assuming TileEntityChest and LootTableList are handled elsewhere in the C++ codebase
             // TileEntity* tileentity = worldIn->getTileEntity(blockPos);
             // if (tileentity && dynamic_cast<TileEntityChest*>(tileentity)) {
@@ -34,19 +34,19 @@ bool WorldGeneratorBonusChest::generate(ChunkPrimer *worldIn, RNG &rand, const P
             Pos3D southBlock = blockPos.south();
 
             if (worldIn->isAirBlock(eastBlock) && ids::isFullyOpaqueBlock(worldIn->getBlockId(eastBlock.down()))) {
-                worldIn->setBlockId(eastBlock, ids::TORCH_ID);
+                worldIn->setBlock(eastBlock, ids::TORCH_ID);
             }
 
             if (worldIn->isAirBlock(westBlock) && ids::isFullyOpaqueBlock(worldIn->getBlockId(westBlock.down()))) {
-                worldIn->setBlockId(westBlock, ids::TORCH_ID);
+                worldIn->setBlock(westBlock, ids::TORCH_ID);
             }
 
             if (worldIn->isAirBlock(northBlock) && ids::isFullyOpaqueBlock(worldIn->getBlockId(northBlock.down()))) {
-                worldIn->setBlockId(northBlock, ids::TORCH_ID);
+                worldIn->setBlock(northBlock, ids::TORCH_ID);
             }
 
             if (worldIn->isAirBlock(southBlock) && ids::isFullyOpaqueBlock(worldIn->getBlockId(southBlock.down()))) {
-                worldIn->setBlockId(southBlock, ids::TORCH_ID);
+                worldIn->setBlock(southBlock, ids::TORCH_ID);
             }
 
             return true;

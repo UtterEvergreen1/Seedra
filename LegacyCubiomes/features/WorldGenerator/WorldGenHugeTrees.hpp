@@ -13,15 +13,15 @@ public:
 protected:
     int getHeight(RNG& rand) const;
 
-    static bool isSpaceAt(ChunkPrimer* worldIn, const Pos3D& leavesPos, int height);
+    static bool isSpaceAt(World *worldIn, const Pos3D& leavesPos, int height);
 
-    static bool ensureDirtsUnderneath(const Pos3D& pos, ChunkPrimer* worldIn);
+    static bool ensureDirtsUnderneath(const Pos3D& pos, World *worldIn);
 
-    static bool ensureGrowable(ChunkPrimer* worldIn, RNG& rng, const Pos3D& treePos, int height);
+    static bool ensureGrowable(World *worldIn, RNG& rng, const Pos3D& treePos, int height);
 
-    void growLeavesLayerStrict(ChunkPrimer* worldIn, const Pos3D& layerCenter, int width) const;
+    void growLeavesLayerStrict(World *worldIn, const Pos3D& layerCenter, int width) const;
 
-    void growLeavesLayer(ChunkPrimer* worldIn, const Pos3D& layerCenter, int width) const;
+    void growLeavesLayer(World *worldIn, const Pos3D& layerCenter, int width) const;
 
     int baseHeight;
     int extraRandomHeight;

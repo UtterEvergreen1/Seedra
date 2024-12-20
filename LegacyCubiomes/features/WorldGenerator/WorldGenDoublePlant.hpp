@@ -16,8 +16,8 @@ public:
         PAEONIA
     };
 
-    static bool canPlaceBlockAt(const ChunkPrimer* chunk, const Pos3D& pos);
-    static void placeAt(ChunkPrimer* chunk, const Pos3D& lowerPos, EnumPlantType variant);
+    static bool canPlaceBlockAt(const World* chunk, const Pos3D& pos);
+    static void placeAt(World *chunk, const Pos3D& lowerPos, EnumPlantType variant);
 };
 class WorldGenDoublePlant final : public WorldGenerator {
     mutable BlockDoublePlant::EnumPlantType plantType = BlockDoublePlant::EnumPlantType::SUNFLOWER;
@@ -27,5 +27,5 @@ public:
         this->plantType = type;
     }
 
-    bool generate(ChunkPrimer* worldIn, RNG& rng, const Pos3D& pos) const override;
+    bool generate(World * worldIn, RNG& rng, const Pos3D& pos) const override;
 };

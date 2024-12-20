@@ -10,5 +10,5 @@ class WorldGenClay final : public WorldGenerator {
 public:
     explicit WorldGenClay(const int numBlocks) : numberOfBlocks(numBlocks) {}
 
-    bool generate(ChunkPrimer* worldIn, RNG& rand, const Pos3D& position) const override;
+    bool generate(World * worldIn, RNG& rand, const Pos3D& position) const override;
 };

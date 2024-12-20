@@ -36,5 +36,5 @@ public:
         this->flowerType = typeIn;
     }
 
-    bool generate(ChunkPrimer *worldIn, RNG &rng, const Pos3D &position) const override;
+    bool generate(World * worldIn, RNG &rng, const Pos3D &position) const override;
 };

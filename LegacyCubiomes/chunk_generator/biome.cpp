@@ -22,8 +22,8 @@
 
 #pragma region Definitions
 
-const NoiseGeneratorPerlin Biome::TEMPERATURE_NOISE = NoiseGeneratorPerlin(RNG::ConstructWithSetSeed(1234ULL), 1);
-const NoiseGeneratorPerlin Biome::GRASS_COLOR_NOISE = NoiseGeneratorPerlin(RNG::ConstructWithSetSeed(2345ULL), 1);
+const NoiseGeneratorPerlin Biome::TEMPERATURE_NOISE = NoiseGeneratorPerlin(RNG(1234ULL), 1);
+const NoiseGeneratorPerlin Biome::GRASS_COLOR_NOISE = NoiseGeneratorPerlin(RNG(2345ULL), 1);
 
 const WorldGenDoublePlant Biome::DOUBLE_PLANT_GENERATOR;
 const WorldGenTrees Biome::TREE_FEATURE;
@@ -37,7 +37,7 @@ const WorldGenTaiga1 BiomeTaiga::PINE_GENERATOR;
 const WorldGenTaiga2 BiomeTaiga::SPRUCE_GENERATOR;
 const WorldGenMegaPineTree BiomeTaiga::MEGA_PINE_GENERATOR = WorldGenMegaPineTree(false);
 const WorldGenMegaPineTree BiomeTaiga::MEGA_SPRUCE_GENERATOR = WorldGenMegaPineTree(true);
-const WorldGenBlockBlob BiomeTaiga::FOREST_ROCK_GENERATOR = WorldGenBlockBlob(&lce::blocks::MOSS_STONE, 0);
+const WorldGenBlockBlob BiomeTaiga::FOREST_ROCK_GENERATOR = WorldGenBlockBlob(&lce::blocks::BlocksInit::MOSS_STONE, 0);
 
 const WorldGenSwamp BiomeSwamp::SWAMP_FEATURE;
 
@@ -150,7 +150,7 @@ float Biome::getFloatTemperature(const Pos3D &pos) const {
     return this->temperature;
 }
 
-void Biome::generateBiomeTerrain(RNG &rng, ChunkPrimer *chunkPrimerIn, int x, int z, double noiseVal) {
+void Biome::generateBiomeTerrain(RNG &rng, ChunkPrimer *chunkPrimerIn, int x, int z, double noiseVal) const {
     constexpr int seaLevel = 63; // sea level
     const lce::blocks::Block *top = this->topBlock;
     const lce::blocks::Block *filler = this->fillerBlock;
@@ -172,26 +172,26 @@ void Biome::generateBiomeTerrain(RNG &rng, ChunkPrimer *chunkPrimerIn, int x, in
             else if (currentBlockId == lce::blocks::ids::STONE_ID) {
                 if (j == -1) {
                     if (k <= 0) {
-                        top = &lce::blocks::AIR;
-                        filler = &lce::blocks::STONE;
+                        top = &lce::blocks::BlocksInit::AIR;
+                        filler = &lce::blocks::BlocksInit::STONE;
                     } else if (j1 >= seaLevel - 4 && j1 <= seaLevel + 1) {
                         top = this->topBlock;
                         filler = this->fillerBlock;
                     }
 
-                    if (j1 < seaLevel && top == &lce::blocks::AIR) {
+                    if (j1 < seaLevel && top == &lce::blocks::BlocksInit::AIR) {
                         blockPos.setPos(x, j1, z);
-                        if (this->getFloatTemperature(blockPos) < 0.15F) top = &lce::blocks::ICE;
+                        if (this->getFloatTemperature(blockPos) < 0.15F) top = &lce::blocks::BlocksInit::ICE;
                         else
-                            top = &lce::blocks::STILL_WATER;
+                            top = &lce::blocks::BlocksInit::STILL_WATER;
                     }
 
                     j = k;
 
                     if (j1 >= seaLevel - 1) chunkPrimerIn->setBlock(i1, j1, l, top);
                     else if (j1 < seaLevel - 7 - k) {
-                        top = &lce::blocks::AIR;
-                        filler = &lce::blocks::STONE;
+                        top = &lce::blocks::BlocksInit::AIR;
+                        filler = &lce::blocks::BlocksInit::STONE;
                         chunkPrimerIn->setBlockId(i1, j1, l, lce::blocks::ids::GRAVEL_ID);
                     } else
                         chunkPrimerIn->setBlock(i1, j1, l, filler);
@@ -201,7 +201,7 @@ void Biome::generateBiomeTerrain(RNG &rng, ChunkPrimer *chunkPrimerIn, int x, in
 
                     if (j == 0 && filler->getID() == lce::blocks::ids::SAND_ID && k > 1) {
                         j = rng.nextInt(4) + std::max(0, j1 - 63);
-                        filler = filler->getDataTag() == 1 ? &lce::blocks::RED_SANDSTONE : &lce::blocks::SANDSTONE;
+                        filler = filler->getDataTag() == 1 ? &lce::blocks::BlocksInit::RED_SANDSTONE : &lce::blocks::BlocksInit::SANDSTONE;
                     }
                 }
             }
@@ -221,11 +221,11 @@ void Biome::genTerrainBlocks(i64 worldSeed, RNG &rng, ChunkPrimer *chunkPrimerIn
 void BiomeHills::genTerrainBlocks(i64 worldSeed, RNG &rng, ChunkPrimer *chunkPrimerIn, c_int x, c_int z,
                                   c_double noiseVal) {
     if ((noiseVal < -1.0 || noiseVal > 2.0) && this->type == BiomeHills::Type::MUTATED) {
-        this->topBlock = &lce::blocks::GRAVEL;
-        this->fillerBlock = &lce::blocks::GRAVEL;
+        this->topBlock = &lce::blocks::BlocksInit::GRAVEL;
+        this->fillerBlock = &lce::blocks::BlocksInit::GRAVEL;
     } else if (noiseVal > 1.0 && this->type != BiomeHills::Type::EXTRA_TREES) {
-        this->topBlock = &lce::blocks::STONE;
-        this->fillerBlock = &lce::blocks::STONE;
+        this->topBlock = &lce::blocks::BlocksInit::STONE;
+        this->fillerBlock = &lce::blocks::BlocksInit::STONE;
     }
 
     this->generateBiomeTerrain(rng, chunkPrimerIn, x, z, noiseVal);
@@ -235,9 +235,9 @@ void BiomeTaiga::genTerrainBlocks(i64 worldSeed, RNG &rng, ChunkPrimer *chunkPri
                                   c_double noiseVal) {
     if (this->type == BiomeTaiga::Type::MEGA || this->type == BiomeTaiga::Type::MEGA_SPRUCE) {
         if (noiseVal > 1.75) {
-            this->topBlock = &lce::blocks::COARSE_DIRT;
+            this->topBlock = &lce::blocks::BlocksInit::COARSE_DIRT;
         } else if (noiseVal > -0.95) {
-            this->topBlock = &lce::blocks::PODZOL;
+            this->topBlock = &lce::blocks::BlocksInit::PODZOL;
         }
     }
 
@@ -325,7 +325,7 @@ void BiomeMesa::genTerrainBlocks(c_i64 worldSeedIn, RNG &rng, ChunkPrimer *chunk
                     flag1 = false;
 
                     if (k <= 0) {
-                        filler = &lce::blocks::STONE;
+                        filler = &lce::blocks::BlocksInit::STONE;
                     } else if (j1 >= seaLevel - 4 && j1 <= seaLevel + 1) {
                         filler = this->fillerBlock;
                     }
@@ -334,18 +334,18 @@ void BiomeMesa::genTerrainBlocks(c_i64 worldSeedIn, RNG &rng, ChunkPrimer *chunk
 
                     if (j1 >= seaLevel - 1) {
                         if (this->hasForest && j1 > 86 + k * 2) {
-                            if (flag) chunkPrimerIn->setBlock(l1, j1, k1, &lce::blocks::COARSE_DIRT);
+                            if (flag) chunkPrimerIn->setBlock(l1, j1, k1, &lce::blocks::BlocksInit::COARSE_DIRT);
                             else
                                 chunkPrimerIn->setBlockId(l1, j1, k1, lce::blocks::ids::GRASS_ID);
                         } else if (j1 > seaLevel + 3 + k) {
                             lce::blocks::Block const *iBlockState2;
 
                             if (j1 >= 64 && j1 <= 127) {
-                                if (flag) iBlockState2 = &lce::blocks::HARDENED_CLAY;
+                                if (flag) iBlockState2 = &lce::blocks::BlocksInit::HARDENED_CLAY;
                                 else
                                     iBlockState2 = this->getClayBand(x, j1);
                             } else
-                                iBlockState2 = &lce::blocks::ORANGE_HARDENED_CLAY;
+                                iBlockState2 = &lce::blocks::BlocksInit::ORANGE_HARDENED_CLAY;
 
                             chunkPrimerIn->setBlock(l1, j1, k1, iBlockState2);
                         } else {
@@ -356,12 +356,12 @@ void BiomeMesa::genTerrainBlocks(c_i64 worldSeedIn, RNG &rng, ChunkPrimer *chunk
                         chunkPrimerIn->setBlock(l1, j1, k1, filler);
 
                         if (filler->getID() == lce::blocks::ids::STAINED_HARDENED_CLAY_ID)
-                            chunkPrimerIn->setBlock(l1, j1, k1, &lce::blocks::ORANGE_HARDENED_CLAY);
+                            chunkPrimerIn->setBlock(l1, j1, k1, &lce::blocks::BlocksInit::ORANGE_HARDENED_CLAY);
                     }
                 } else if (l > 0) {
                     --l;
 
-                    if (flag1) chunkPrimerIn->setBlock(l1, j1, k1, &lce::blocks::ORANGE_HARDENED_CLAY);
+                    if (flag1) chunkPrimerIn->setBlock(l1, j1, k1, &lce::blocks::BlocksInit::ORANGE_HARDENED_CLAY);
                     else
                         chunkPrimerIn->setBlock(l1, j1, k1, this->getClayBand(x, j1));
                 }
@@ -373,7 +373,7 @@ void BiomeMesa::genTerrainBlocks(c_i64 worldSeedIn, RNG &rng, ChunkPrimer *chunk
 }
 
 void BiomeMesa::generateClayBands(c_i64 seed) {
-    this->clayBands.resize(64, &lce::blocks::HARDENED_CLAY);
+    this->clayBands.resize(64, &lce::blocks::BlocksInit::HARDENED_CLAY);
     RNG rng;
     rng.setSeed(seed);
     this->clayBandsOffsetNoise.setNoiseGeneratorPerlin(rng, 1);
@@ -381,7 +381,7 @@ void BiomeMesa::generateClayBands(c_i64 seed) {
     for (int index = 0; index < 64; ++index) {
         index += rng.nextInt(5) + 1;
 
-        if (index < 64) this->clayBands[index] = &lce::blocks::WHITE_HARDENED_CLAY;
+        if (index < 64) this->clayBands[index] = &lce::blocks::BlocksInit::WHITE_HARDENED_CLAY;
     }
 
     c_int orangeBands = rng.nextInt(4) + 2;
@@ -391,7 +391,7 @@ void BiomeMesa::generateClayBands(c_i64 seed) {
         c_int startPos = rng.nextInt(64);
 
         for (int offset = 0; startPos + offset < 64 && offset < bandLength; ++offset)
-            this->clayBands[startPos + offset] = &lce::blocks::YELLOW_HARDENED_CLAY;
+            this->clayBands[startPos + offset] = &lce::blocks::BlocksInit::YELLOW_HARDENED_CLAY;
     }
 
     c_int brownBands = rng.nextInt(4) + 2;
@@ -401,7 +401,7 @@ void BiomeMesa::generateClayBands(c_i64 seed) {
         c_int startPos = rng.nextInt(64);
 
         for (int offset = 0; startPos + offset < 64 && offset < bandLength; ++offset)
-            this->clayBands[startPos + offset] = &lce::blocks::BROWN_HARDENED_CLAY;
+            this->clayBands[startPos + offset] = &lce::blocks::BlocksInit::BROWN_HARDENED_CLAY;
     }
 
     c_int redBands = rng.nextInt(4) + 2;
@@ -411,7 +411,7 @@ void BiomeMesa::generateClayBands(c_i64 seed) {
         c_int startPos = rng.nextInt(64);
 
         for (int offset = 0; startPos + offset < 64 && offset < bandLength; ++offset)
-            this->clayBands[startPos + offset] = &lce::blocks::RED_HARDENED_CLAY;
+            this->clayBands[startPos + offset] = &lce::blocks::BlocksInit::RED_HARDENED_CLAY;
     }
 
     c_int grayBands = rng.nextInt(3) + 3;
@@ -421,13 +421,13 @@ void BiomeMesa::generateClayBands(c_i64 seed) {
         previousPos += rng.nextInt(16) + 4;
 
         for (int offset = 0; previousPos + offset < 64 && offset < 1; ++offset) {
-            this->clayBands[previousPos + offset] = &lce::blocks::WHITE_HARDENED_CLAY;
+            this->clayBands[previousPos + offset] = &lce::blocks::BlocksInit::WHITE_HARDENED_CLAY;
 
             if (previousPos + offset > 1 && rng.nextBoolean())
-                this->clayBands[previousPos + offset - 1] = &lce::blocks::LIGHT_GRAY_HARDENED_CLAY;
+                this->clayBands[previousPos + offset - 1] = &lce::blocks::BlocksInit::LIGHT_GRAY_HARDENED_CLAY;
 
             if (previousPos + offset < 63 && rng.nextBoolean())
-                this->clayBands[previousPos + offset + 1] = &lce::blocks::LIGHT_GRAY_HARDENED_CLAY;
+                this->clayBands[previousPos + offset + 1] = &lce::blocks::BlocksInit::LIGHT_GRAY_HARDENED_CLAY;
         }
     }
 }
@@ -441,10 +441,10 @@ lce::blocks::Block const *BiomeMesa::getClayBand(c_int x, c_int y) {
 void BiomeSavannaMutated::genTerrainBlocks(i64 worldSeed, RNG &rng, ChunkPrimer *chunkPrimerIn, c_int x, c_int z,
                                            c_double noiseVal) {
     if (noiseVal > 1.75) {
-        this->topBlock = &lce::blocks::STONE;
-        this->fillerBlock = &lce::blocks::STONE;
+        this->topBlock = &lce::blocks::BlocksInit::STONE;
+        this->fillerBlock = &lce::blocks::BlocksInit::STONE;
     } else if (noiseVal > -0.5)
-        this->topBlock = &lce::blocks::COARSE_DIRT;
+        this->topBlock = &lce::blocks::BlocksInit::COARSE_DIRT;
 
     this->generateBiomeTerrain(rng, chunkPrimerIn, x, z, noiseVal);
 }
@@ -453,11 +453,11 @@ void BiomeSavannaMutated::genTerrainBlocks(i64 worldSeed, RNG &rng, ChunkPrimer 
 
 #pragma region Decorator
 
-void Biome::decorate(ChunkPrimer *worldIn, RNG &rng, const Pos2D &pos) {
+void Biome::decorate(World *worldIn, RNG &rng, const Pos2D &pos) {
     this->decorator->decorate(worldIn, this, rng, pos);
 }
 
-void BiomePlains::decorate(ChunkPrimer *worldIn, RNG &rng, const Pos2D &pos) {
+void BiomePlains::decorate(World *worldIn, RNG &rng, const Pos2D &pos) {
     c_double d0 = GRASS_COLOR_NOISE.getValue((double) (pos.x + 8) / 200.0, (double) (pos.z + 8) / 200.0);
 
     const Pos3D blockPos = {pos.x, 0, pos.z};
@@ -471,7 +471,7 @@ void BiomePlains::decorate(ChunkPrimer *worldIn, RNG &rng, const Pos2D &pos) {
         for (int i = 0; i < 7; ++i) {
             int x_off = rng.nextInt(16) + 8;
             int z_off = rng.nextInt(16) + 8;
-            int y_off = rng.nextInt(worldIn->getHeight(blockPos.add(x_off, 0, z_off)) + 32);
+            int y_off = rng.nextInt(worldIn->getHeight(blockPos.add(x_off, 0, z_off)).getY() + 32);
             DOUBLE_PLANT_GENERATOR.generate(worldIn, rng, blockPos.add(x_off, y_off, z_off));
         }
     }
@@ -482,7 +482,7 @@ void BiomePlains::decorate(ChunkPrimer *worldIn, RNG &rng, const Pos2D &pos) {
         for (int i1 = 0; i1 < 10; ++i1) {
             int x_off = rng.nextInt(16) + 8;
             int z_off = rng.nextInt(16) + 8;
-            int y_off = rng.nextInt(worldIn->getHeight(blockPos.add(x_off, 0, z_off)) + 32);
+            int y_off = rng.nextInt(worldIn->getHeight(blockPos.add(x_off, 0, z_off)).getY() + 32);
             DOUBLE_PLANT_GENERATOR.generate(worldIn, rng, blockPos.add(x_off, y_off, z_off));
         }
     }
@@ -490,14 +490,14 @@ void BiomePlains::decorate(ChunkPrimer *worldIn, RNG &rng, const Pos2D &pos) {
     Biome::decorate(worldIn, rng, pos);
 }
 
-void BiomeDesert::decorate(ChunkPrimer *worldIn, RNG &rng, const Pos2D &pos) {
+void BiomeDesert::decorate(World *worldIn, RNG &rng, const Pos2D &pos) {
     Biome::decorate(worldIn, rng, pos);
 
     Pos3D blockPos = {pos.x, 0, pos.z};
     if (rng.nextInt(1000) == 0) {
         int x_off = rng.nextInt(16) + 8;
         int z_off = rng.nextInt(16) + 8;
-        const Pos3D position = worldIn->getHeightPos(blockPos.add(x_off, 0, z_off));
+        const Pos3D position = worldIn->getHeight(blockPos.add(x_off, 0, z_off));
         //(WorldGenDesertWells()).generate(worldIn, rng, position);
     }
 
@@ -506,7 +506,7 @@ void BiomeDesert::decorate(ChunkPrimer *worldIn, RNG &rng, const Pos2D &pos) {
     }
 }
 
-void BiomeHills::decorate(ChunkPrimer *worldIn, RNG &rng, const Pos2D &pos) {
+void BiomeHills::decorate(World *worldIn, RNG &rng, const Pos2D &pos) {
     Biome::decorate(worldIn, rng, pos);
     const int emeraldAmount = 3 + rng.nextInt(6);
 
@@ -518,7 +518,7 @@ void BiomeHills::decorate(ChunkPrimer *worldIn, RNG &rng, const Pos2D &pos) {
         const Pos3D generatePos = blockPos.add(x_off, y_off, z_off);
 
         if (worldIn->getBlockId(generatePos) == lce::blocks::ids::STONE_ID) {
-            worldIn->setBlockId(generatePos, lce::blocks::ids::EMERALD_ORE_ID);
+            worldIn->setBlock(generatePos, lce::blocks::ids::EMERALD_ORE_ID);
         }
     }
 
@@ -530,7 +530,7 @@ void BiomeHills::decorate(ChunkPrimer *worldIn, RNG &rng, const Pos2D &pos) {
     }
 }
 
-void BiomeForest::decorate(ChunkPrimer *worldIn, RNG &rng, const Pos2D &pos) {
+void BiomeForest::decorate(World *worldIn, RNG &rng, const Pos2D &pos) {
     if (this->type == BiomeForest::Type::ROOFED) {
         BiomeForest::addMushrooms(worldIn, rng, pos);
     }
@@ -546,13 +546,13 @@ void BiomeForest::decorate(ChunkPrimer *worldIn, RNG &rng, const Pos2D &pos) {
     Biome::decorate(worldIn, rng, pos);
 }
 
-void BiomeForest::addMushrooms(ChunkPrimer *worldIn, RNG &rng, const Pos2D &pos) const {
+void BiomeForest::addMushrooms(World *worldIn, RNG &rng, const Pos2D &pos) const {
     Pos3D blockPos = {pos.x, 0, pos.z};
     for (int i = 0; i < 4; ++i) {
         for (int j = 0; j < 4; ++j) {
             c_int x_off = i * 4 + 1 + 8 + rng.nextInt(3);
             c_int z_off = j * 4 + 1 + 8 + rng.nextInt(3);
-            Pos3D heightBlock = worldIn->getHeightPos(blockPos.add(x_off, 0, z_off));
+            Pos3D heightBlock = worldIn->getHeight(blockPos.add(x_off, 0, z_off));
 
             if (rng.nextInt(20) == 0) {
                 WorldGenBigMushroom bigMushroom;
@@ -569,7 +569,7 @@ void BiomeForest::addMushrooms(ChunkPrimer *worldIn, RNG &rng, const Pos2D &pos)
     }
 }
 
-void BiomeForest::addDoublePlants(ChunkPrimer *worldIn, RNG &rng, const Pos2D &pos, int amount) {
+void BiomeForest::addDoublePlants(World *worldIn, RNG &rng, const Pos2D &pos, int amount) {
     const Pos3D blockPos = {pos.x, 0, pos.z};
     for (int i = 0; i < amount; ++i) {
         const int flowerType = rng.nextInt(3);
@@ -585,7 +585,7 @@ void BiomeForest::addDoublePlants(ChunkPrimer *worldIn, RNG &rng, const Pos2D &p
         for (int k = 0; k < 5; ++k) {
             const int x_off = rng.nextInt(16) + 8;
             const int z_off = rng.nextInt(16) + 8;
-            const int y_off = rng.nextInt(worldIn->getHeight(blockPos.add(x_off, 0, z_off)) + 32);
+            const int y_off = rng.nextInt(worldIn->getHeight(blockPos.add(x_off, 0, z_off)).getY() + 32);
             if (DOUBLE_PLANT_GENERATOR.generate(worldIn, rng,
                                                 {blockPos.getX() + x_off, y_off, blockPos.getZ() + z_off})) {
                 break;
@@ -594,7 +594,7 @@ void BiomeForest::addDoublePlants(ChunkPrimer *worldIn, RNG &rng, const Pos2D &p
     }
 }
 
-void BiomeTaiga::decorate(ChunkPrimer *worldIn, RNG &rng, const Pos2D &pos) {
+void BiomeTaiga::decorate(World *worldIn, RNG &rng, const Pos2D &pos) {
     const Pos3D blockPos = {pos.x, 0, pos.z};
     if (this->type == BiomeTaiga::Type::MEGA || this->type == BiomeTaiga::Type::MEGA_SPRUCE) {
         const int i = rng.nextInt(3);
@@ -602,7 +602,7 @@ void BiomeTaiga::decorate(ChunkPrimer *worldIn, RNG &rng, const Pos2D &pos) {
         for (int j = 0; j < i; ++j) {
             c_int x_off = rng.nextInt(16) + 8;
             c_int z_off = rng.nextInt(16) + 8;
-            const Pos3D generatePos = worldIn->getHeightPos(blockPos.add(x_off, 0, z_off));
+            const Pos3D generatePos = worldIn->getHeight(blockPos.add(x_off, 0, z_off));
             FOREST_ROCK_GENERATOR.generate(worldIn, rng, generatePos);
         }
     }
@@ -612,14 +612,14 @@ void BiomeTaiga::decorate(ChunkPrimer *worldIn, RNG &rng, const Pos2D &pos) {
     for (int i1 = 0; i1 < 7; ++i1) {
         c_int x_off = rng.nextInt(16) + 8;
         c_int z_off = rng.nextInt(16) + 8;
-        c_int y_off = rng.nextInt(worldIn->getHeight(blockPos.add(x_off, 0, z_off)) + 32);
+        c_int y_off = rng.nextInt(worldIn->getHeight(blockPos.add(x_off, 0, z_off)).getY() + 32);
         DOUBLE_PLANT_GENERATOR.generate(worldIn, rng, blockPos.add(x_off, y_off, z_off));
     }
 
     Biome::decorate(worldIn, rng, pos);
 }
 
-void BiomeSwamp::decorate(ChunkPrimer *worldIn, RNG &rng, const Pos2D &pos) {
+void BiomeSwamp::decorate(World *worldIn, RNG &rng, const Pos2D &pos) {
     Biome::decorate(worldIn, rng, pos);
 
     if (rng.nextInt(64) == 0) {
@@ -628,32 +628,32 @@ void BiomeSwamp::decorate(ChunkPrimer *worldIn, RNG &rng, const Pos2D &pos) {
     }
 }
 
-void BiomeSnow::decorate(ChunkPrimer *worldIn, RNG &rng, const Pos2D &pos) {
+void BiomeSnow::decorate(World *worldIn, RNG &rng, const Pos2D &pos) {
     if (this->superIcy) {
         Pos3D blockPos = {pos.x, 0, pos.z};
         for (int i = 0; i < 3; ++i) {
             int x_off = rng.nextInt(16) + 8;
             int z_off = rng.nextInt(16) + 8;
-            this->iceSpike.generate(worldIn, rng, worldIn->getHeightPos(blockPos.add(x_off, 0, z_off)));
+            this->iceSpike.generate(worldIn, rng, worldIn->getHeight(blockPos.add(x_off, 0, z_off)));
         }
 
         for (int l = 0; l < 2; ++l) {
             int x_off = rng.nextInt(16) + 8;
             int z_off = rng.nextInt(16) + 8;
-            this->icePatch.generate(worldIn, rng, worldIn->getHeightPos(blockPos.add(x_off, 0, z_off)));
+            this->icePatch.generate(worldIn, rng, worldIn->getHeight(blockPos.add(x_off, 0, z_off)));
         }
     }
 
     Biome::decorate(worldIn, rng, pos);
 }
 
-void BiomeJungle::decorate(ChunkPrimer *worldIn, RNG &rng, const Pos2D &pos) {
+void BiomeJungle::decorate(World *worldIn, RNG &rng, const Pos2D &pos) {
     Biome::decorate(worldIn, rng, pos);
 
     Pos3D blockPos = {pos.x, 0, pos.z};
     int x_off = rng.nextInt(16) + 8;
     int z_off = rng.nextInt(16) + 8;
-    int y_off = rng.nextInt(worldIn->getHeight(blockPos.add(x_off, 0, z_off)) * 2);
+    int y_off = rng.nextInt(worldIn->getHeight(blockPos.add(x_off, 0, z_off)).getY() * 2);
     (WorldGenCucurbitsBlock(lce::blocks::ids::MELON_BLOCK_ID, false)).generate(
         worldIn, rng, blockPos.add(x_off, y_off, z_off));
     WorldGenVines genVines;
@@ -665,21 +665,21 @@ void BiomeJungle::decorate(ChunkPrimer *worldIn, RNG &rng, const Pos2D &pos) {
     }
 }
 
-void BiomeSavanna::decorate(ChunkPrimer *worldIn, RNG &rng, const Pos2D &pos) {
+void BiomeSavanna::decorate(World *worldIn, RNG &rng, const Pos2D &pos) {
     DOUBLE_PLANT_GENERATOR.setPlantType(BlockDoublePlant::EnumPlantType::GRASS);
 
     const Pos3D blockPos = {pos.x, 0, pos.z};
     for (int i = 0; i < 7; ++i) {
         c_int x_off = rng.nextInt(16) + 8;
         c_int z_off = rng.nextInt(16) + 8;
-        c_int y_off = rng.nextInt(worldIn->getHeight(blockPos.add(x_off, 0, z_off)) + 32);
+        c_int y_off = rng.nextInt(worldIn->getHeight(blockPos.add(x_off, 0, z_off)).getY() + 32);
         DOUBLE_PLANT_GENERATOR.generate(worldIn, rng, blockPos.add(x_off, y_off, z_off));
     }
 
     Biome::decorate(worldIn, rng, pos);
 }
 
-void BiomeSavannaMutated::decorate(ChunkPrimer *worldIn, RNG &rng, const Pos2D &pos) {
+void BiomeSavannaMutated::decorate(World *worldIn, RNG &rng, const Pos2D &pos) {
     Biome::decorate(worldIn, rng, pos);
 }
 
@@ -732,12 +732,12 @@ const WorldGenAbstractTree *BiomeJungle::genBigTreeChance(RNG &rng) const {
         return &BIG_TREE_FEATURE;
     }
     if (rng.nextInt(2) == 0) {
-        return new WorldGenShrub(&lce::blocks::JUNGLE_WOOD, &lce::blocks::OAK_LEAVES);
+        return new WorldGenShrub(&lce::blocks::BlocksInit::JUNGLE_WOOD, &lce::blocks::BlocksInit::OAK_LEAVES);
     }
 
     return !this->isEdge && rng.nextInt(3) == 0
-               ? (WorldGenAbstractTree*)new WorldGenMegaJungle(10, 20, &lce::blocks::JUNGLE_WOOD, &lce::blocks::JUNGLE_LEAVES)
-               : (WorldGenAbstractTree*)new WorldGenTrees(4 + rng.nextInt(7), &lce::blocks::JUNGLE_WOOD, &lce::blocks::JUNGLE_LEAVES, true);
+               ? (WorldGenAbstractTree*)new WorldGenMegaJungle(10, 20, &lce::blocks::BlocksInit::JUNGLE_WOOD, &lce::blocks::BlocksInit::JUNGLE_LEAVES)
+               : (WorldGenAbstractTree*)new WorldGenTrees(4 + rng.nextInt(7), &lce::blocks::BlocksInit::JUNGLE_WOOD, &lce::blocks::BlocksInit::JUNGLE_LEAVES, true);
 }
 
 const WorldGenAbstractTree *BiomeSavanna::genBigTreeChance(RNG &rng) const {
@@ -795,9 +795,9 @@ BiomeDecorator *BiomeMesa::createBiomeDecorator() const {
     return new BiomeMesa::Decorator();
 }
 
-void BiomeMesa::Decorator::generateOres(ChunkPrimer *chunk, RNG &rng) {
-    BiomeDecorator::generateOres(chunk, rng);
-    this->genStandardOre1(chunk, rng, this->goldGen, 20, 32, 80);
+void BiomeMesa::Decorator::generateOres(World *world, RNG &rng) {
+    BiomeDecorator::generateOres(world, rng);
+    this->genStandardOre1(world, rng, this->goldGen, 20, 32, 80);
 }
 
 #pragma endregion

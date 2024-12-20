@@ -2,7 +2,7 @@
 
 #include "LegacyCubiomes/chunk_generator/ChunkPrimer.hpp"
 
-bool BlockVine::canPlaceBlockOnSide(const ChunkPrimer *worldIn, const Pos3D &pos, const FACING &facing) {
+bool BlockVine::canPlaceBlockOnSide(const World *worldIn, const Pos3D &pos, const FACING &facing) {
     if (facing == FACING::UP || facing == FACING::DOWN) {
         return false;
     }
@@ -31,14 +31,14 @@ bool BlockVine::canBlockStay(const int blockId) {
     return isSolidBlock(blockId); // only that face needs to be solid, but we'll just check if the block is solid
 }
 
-bool WorldGenVines::generate(ChunkPrimer *worldIn, RNG &rng, const Pos3D &position) const {
+bool WorldGenVines::generate(World * worldIn, RNG &rng, const Pos3D &position) const {
     Pos3D pos = position;
 
     while (pos.getY() < 128) {
         if (worldIn->isAirBlock(pos)) {
             for (const FACING &facing: FACING_HORIZONTAL) {
                 if (BlockVine::canPlaceBlockOnSide(worldIn, pos, facing)) {
-                    worldIn->setBlockAndData(pos, lce::blocks::ids::VINES_ID, getMetaFromFacingAdditive(facing));
+                    worldIn->setBlock(pos, lce::blocks::ids::VINES_ID, getMetaFromFacingAdditive(facing));
                     break;
                 }
             }

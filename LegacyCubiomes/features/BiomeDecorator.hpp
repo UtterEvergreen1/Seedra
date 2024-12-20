@@ -24,15 +24,15 @@ public:
     
 protected:
     bool decorating = false;
-    Pos3D chunkPos;
+    Pos3D chunkBlockPos;
     /** The clay generator. */
     WorldGenClay *clayGen = new WorldGenClay(4);
 
     /** The sand generator. */
-    WorldGenSand *sandGen = new WorldGenSand(&lce::blocks::SAND, 7);
+    WorldGenSand *sandGen = new WorldGenSand(&lce::blocks::BlocksInit::SAND, 7);
 
     /** The gravel generator. */
-    WorldGenSand *gravelAsSandGen = new WorldGenSand(&lce::blocks::GRAVEL, 6);
+    WorldGenSand *gravelAsSandGen = new WorldGenSand(&lce::blocks::BlocksInit::GRAVEL, 6);
 
     /** The dirt generator. */
     WorldGenMinable *dirtGen{};
@@ -54,10 +54,10 @@ protected:
     WorldGenFlowers* flowerGen = new WorldGenFlowers(lce::blocks::ids::DANDELION_ID, BlockFlower::EnumFlowerType::DANDELION);
 
     /** Field that holds mushroomBrown WorldGenFlowers */
-    WorldGenBush* mushroomBrownGen = new WorldGenBush(&lce::blocks::BROWN_MUSHROOM);
+    WorldGenBush* mushroomBrownGen = new WorldGenBush(&lce::blocks::BlocksInit::BROWN_MUSHROOM);
 
     /** Field that holds mushroomRed WorldGenFlowers */
-    WorldGenBush* mushroomRedGen = new WorldGenBush(&lce::blocks::RED_MUSHROOM);
+    WorldGenBush* mushroomRedGen = new WorldGenBush(&lce::blocks::BlocksInit::RED_MUSHROOM);
 
     /** Field that holds big mushroom generator */
     WorldGenBigMushroom* bigMushroomGen = new WorldGenBigMushroom();
@@ -80,20 +80,20 @@ public:
     int mushroomsPerChunk = 0;
     int reedsPerChunk = 0;
     int cactiPerChunk = 0;
-    int sandPatchesPerChunk = 1;
-    int gravelPatchesPerChunk = 3;
+    int sandPatchesPerChunk = 3;
+    int gravelPatchesPerChunk = 1;
     int clayPerChunk = 1;
     int bigMushroomsPerChunk = 0;
     int waterlilyPerChunk = 0;
 
 protected:
-    void genDecorations(ChunkPrimer* chunk, Biome* biome, RNG& rng);
-    virtual void generateOres(ChunkPrimer* chunk, RNG& rng);
-    void genStandardOre1(ChunkPrimer* chunk, RNG& rng, const WorldGenMinable* gen, int count, int minHeight, int maxHeight) const;
-    void genStandardOre2(ChunkPrimer *chunk, RNG &rng, WorldGenMinable *gen, int count, int centerHeight, int spread) const;
+    void genDecorations(World *chunk, Biome* biome, RNG& rng);
+    virtual void generateOres(World *chunk, RNG& rng);
+    void genStandardOre1(World *chunk, RNG& rng, const WorldGenMinable* gen, int count, int minHeight, int maxHeight) const;
+    void genStandardOre2(World *world, RNG &rng, WorldGenMinable *gen, int count, int centerHeight, int spread) const;
 
 public:
-    void decorate(ChunkPrimer* chunk, Biome* biome, RNG& rng, int chunkX, int chunkZ);
-    void decorate(ChunkPrimer* chunk, Biome* biome, RNG& rng, const Pos2D &chunkPos);
+    void decorate(World *chunk, Biome* biome, RNG& rng, int posX, int posZ);
+    void decorate(World *chunk, Biome* biome, RNG& rng, const Pos2D &pos);
 };
 

@@ -3,7 +3,7 @@
 #include "LegacyCubiomes/utils/constants.hpp"
 #include "LegacyCubiomes/utils/MathHelper.hpp"
 
-bool WorldGenMegaJungle::generate(ChunkPrimer* worldIn, RNG& rng, const Pos3D& pos) const {
+bool WorldGenMegaJungle::generate(World * worldIn, RNG& rng, const Pos3D& pos) const {
     const int height = this->getHeight(rng);
 
     if (!ensureGrowable(worldIn, rng, pos, height)) {
@@ -83,13 +83,13 @@ bool WorldGenMegaJungle::generate(ChunkPrimer* worldIn, RNG& rng, const Pos3D& p
     return true;
 }
 
-void WorldGenMegaJungle::placeVine(ChunkPrimer* worldIn, RNG& rand, const Pos3D& pos, FACING direction) {
+void WorldGenMegaJungle::placeVine(World *worldIn, RNG& rand, const Pos3D& pos, FACING direction) {
     if (rand.nextInt(3) > 0 && worldIn->isAirBlock(pos)) {
-        worldIn->setBlock(pos, &lce::blocks::VINES); // Assuming VINES is defined in lce::blocks
+        worldIn->setBlock(pos, &lce::blocks::BlocksInit::VINES); // Assuming VINES is defined in lce::blocks
     }
 }
 
-void WorldGenMegaJungle::createCrown(ChunkPrimer* worldIn, const Pos3D& pos, int width) const {
+void WorldGenMegaJungle::createCrown(World *worldIn, const Pos3D& pos, int width) const {
     for (int j = -2; j <= 0; ++j) {
         this->growLeavesLayerStrict(worldIn, pos.up(j), width + 1 - j);
     }

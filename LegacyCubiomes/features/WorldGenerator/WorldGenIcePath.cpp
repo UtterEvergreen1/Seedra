@@ -2,7 +2,7 @@
 
 #include "LegacyCubiomes/chunk_generator/ChunkPrimer.hpp"
 
-bool WorldGenIcePath::generate(ChunkPrimer *worldIn, RNG &rng, const Pos3D &pos) const {
+bool WorldGenIcePath::generate(World * worldIn, RNG &rng, const Pos3D &pos) const {
     Pos3D position = pos;
     while (worldIn->isAirBlock(position) && position.getY() > 2) {
         position = position.down();

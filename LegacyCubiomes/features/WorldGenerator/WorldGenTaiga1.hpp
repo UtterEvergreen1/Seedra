@@ -6,5 +6,5 @@
 
 class WorldGenTaiga1 final : public WorldGenAbstractTree {
 public:
-    bool generate(ChunkPrimer* worldIn, RNG& rng, const Pos3D& pos) const override;
+    bool generate(World * worldIn, RNG& rng, const Pos3D& pos) const override;
 };

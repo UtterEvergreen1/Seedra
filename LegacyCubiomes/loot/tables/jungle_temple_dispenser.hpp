@@ -25,7 +25,6 @@ namespace loot {
 
         RNG lootTableSeed = RNG::getPopulationSeed(worldSeed, chunkX, chunkZ);
         lootTableSeed = RNG(lootTableSeed.nextLong());
-        lootTableSeed.setSeed(lootTableSeed.getSeed());
 
         //generate loot
         for (const LootTable& table: lootTables) {
