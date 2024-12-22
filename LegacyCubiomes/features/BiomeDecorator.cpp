@@ -5,6 +5,7 @@
 #include "WorldGenerator/WorldGenDeadBush.hpp"
 #include "WorldGenerator/WorldGenLiquids.hpp"
 #include "WorldGenerator/WorldGenMinable.hpp"
+#include "WorldGenerator/WorldGenTrees.hpp"
 
 #define STONE_SUBS_SIZE 33
 #define COAL_SIZE 17
@@ -105,11 +106,17 @@ void BiomeDecorator::genDecorations(World *world, Biome *biome, RNG &rng) {
         ++trees;
     }
     for (int i = 0; i < trees; ++i) {
+        /*if (this->chunkBlockPos.getX() >> 4 == -9 && this->chunkBlockPos.getZ() >> 4 == 11) {
+            std::cout << "Tree seed: " << rng.nextLongI() << std::endl;
+        }*/
         c_int x = rng.nextInt(16) + 8;
         c_int z = rng.nextInt(16) + 8;
         auto *tree = biome->genBigTreeChance(rng);
         tree->setDecorationDefaults();
         Pos3D blockPos = world->getHeight(this->chunkBlockPos.add(x, 0, z));
+        /*if (this->chunkBlockPos.getX() >> 4 == -9 && this->chunkBlockPos.getZ() >> 4 == 11) {
+            std::cout << "Tree pos: " << blockPos << std::endl;
+        }*/
         if (tree->generate(world, rng, blockPos)) {
             tree->generateSaplings(world, rng, blockPos);
         }
@@ -129,7 +136,9 @@ void BiomeDecorator::genDecorations(World *world, Biome *biome, RNG &rng) {
         Pos3D blockPos = this->chunkBlockPos.add(x, y, z);
         BlockFlower::EnumFlowerType flowerType = biome->pickRandomFlower(rng, blockPos.convert2D());
 
-        c_int flowerBlock = flowerType == BlockFlower::EnumFlowerType::DANDELION ? lce::blocks::ids::DANDELION_ID : lce::blocks::ids::POPPY_ID;
+        c_int flowerBlock = flowerType == BlockFlower::EnumFlowerType::DANDELION
+                                ? lce::blocks::ids::DANDELION_ID
+                                : lce::blocks::ids::POPPY_ID;
         this->flowerGen->setGeneratedBlock(flowerBlock, flowerType);
         this->flowerGen->generate(world, rng, blockPos);
     }
@@ -208,7 +217,8 @@ void BiomeDecorator::genDecorations(World *world, Biome *biome, RNG &rng) {
         c_int x = rng.nextInt(16) + 8;
         c_int z = rng.nextInt(16) + 8;
         c_int y = rng.nextInt(world->getHeight(this->chunkBlockPos.add(x, 0, z)).getY() * 2);
-        (WorldGenCucurbitsBlock(lce::blocks::ids::PUMPKIN_ID, true)).generate(world, rng, this->chunkBlockPos.add(x, y, z));
+        (WorldGenCucurbitsBlock(lce::blocks::ids::CARVED_PUMPKIN_ID, true)).generate(
+            world, rng, this->chunkBlockPos.add(x, y, z));
     }
 
     for (int i = 0; i < this->cactiPerChunk; ++i) {
@@ -251,11 +261,21 @@ void BiomeDecorator::genStandardOre1(World *world, RNG &rng, const WorldGenMinab
                                      const int minHeight, const int maxHeight) const {
     if (0 < count) {
         for (int bl = count; bl != 0; bl--) {
-            int x_off = rng.nextInt(16);
-            int y_off = rng.nextInt(maxHeight - minHeight) + minHeight;
-            int z_off = rng.nextInt(16);
-            Pos3D blockPos = this->chunkBlockPos.add(x_off, y_off, z_off);
-            gen->generate(world, rng, blockPos);
+            int x_off;
+            int y_off;
+            int z_off;
+            if (world->getGenerator()->getConsole() != lce::CONSOLE::XBOX360 && world->getGenerator()->getConsole() != lce::CONSOLE::XBOX1) {
+                x_off = rng.nextInt(16);
+                y_off = rng.nextInt(maxHeight - minHeight) + minHeight;
+                z_off = rng.nextInt(16);
+            }
+            else {
+                z_off = rng.nextInt(16);
+                y_off = rng.nextInt(maxHeight - minHeight) + minHeight;
+                x_off = rng.nextInt(16);
+            }
+
+            gen->generate(world, rng, this->chunkBlockPos.add(x_off, y_off, z_off));
         }
     }
 }
@@ -264,9 +284,20 @@ void BiomeDecorator::genStandardOre2(World *world, RNG &rng, WorldGenMinable *ge
                                      const int centerHeight, const int spread) const {
     if (0 < count) {
         for (int bl = count; bl != 0; bl--) {
-            Pos3D blockPos = this->chunkBlockPos.add(rng.nextInt(16),
-                                                (rng.nextInt(spread) + rng.nextInt(spread) + centerHeight) -
-                                                spread, rng.nextInt(16));
+            int x_off;
+            int y_off;
+            int z_off;
+            if (world->getGenerator()->getConsole() != lce::CONSOLE::XBOX360 && world->getGenerator()->getConsole() != lce::CONSOLE::XBOX1) {
+                x_off = rng.nextInt(16);
+                y_off = rng.nextInt(spread) + rng.nextInt(spread) + centerHeight;
+                z_off = rng.nextInt(16);
+            }
+            else {
+                z_off = rng.nextInt(16);
+                y_off = rng.nextInt(spread) + rng.nextInt(spread) + centerHeight;
+                x_off = rng.nextInt(16);
+            }
+            Pos3D blockPos = this->chunkBlockPos.add(x_off, y_off, z_off);
             gen->generate(world, rng, blockPos);
         }
     }

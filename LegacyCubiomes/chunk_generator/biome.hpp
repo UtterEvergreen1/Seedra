@@ -137,6 +137,8 @@ public:
     void decorate(World *worldIn, RNG &rng, const Pos2D &pos) override;
 
     const WorldGenAbstractTree *genBigTreeChance(RNG &rng) const override;
+
+    ND BlockFlower::EnumFlowerType pickRandomFlower(RNG &rng, const Pos2D &pos) const override;
 };
 
 class BiomeDesert final : public Biome {

@@ -7,11 +7,11 @@ class ChunkPrimer;
 
 class BlockBush {
 public:
-    static bool canPlaceBlockAt(const World *world, const Pos3D &pos);
+    static bool canPlaceBlockAt(World *world, const Pos3D &pos);
 
     static bool canSustainBush(int blockId);
 
-    static bool canBlockStay(const World *world, const Pos3D &pos);
+    static bool canBlockStay(World *world, const Pos3D &pos);
 };
 
 class WorldGenBush final : public WorldGenerator {

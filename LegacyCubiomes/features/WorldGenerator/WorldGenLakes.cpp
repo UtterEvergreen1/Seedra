@@ -2,29 +2,28 @@
 
 #include "LegacyCubiomes/chunk_generator/ChunkPrimer.hpp"
 
-bool WorldGenLakes::generate(World * worldIn, RNG &rng, const Pos3D &pos) const {
+bool WorldGenLakes::generate(World *worldIn, RNG &rng, const Pos3D &pos) const {
     Pos3D position = pos;
     for (position = position.add(-8, 0, -8); position.getY() > 5 && worldIn->isAirBlock(position);
          position = position.down()) {
         ;
     }
 
-    bool aboolean[16 * 16 * 8] = {};
-
     if (position.getY() <= 4) {
         return false;
     }
 
     position = position.down(4);
+    bool aboolean[16 * 16 * 8] = {};
     int i = rng.nextInt(4) + 4;
 
     for (int j = 0; j < i; ++j) {
         const double d0 = rng.nextDouble() * 6.0 + 3.0;
         const double d1 = rng.nextDouble() * 4.0 + 2.0;
         const double d2 = rng.nextDouble() * 6.0 + 3.0;
-        const double d3 = rng.nextDouble() * (16.0 - d0 - 2.0) + 1.0 + d0 / 2.0;
-        const double d4 = rng.nextDouble() * (8.0 - d1 - 4.0) + 2.0 + d1 / 2.0;
-        const double d5 = rng.nextDouble() * (16.0 - d2 - 2.0) + 1.0 + d2 / 2.0;
+        const double d3 = rng.nextDouble() * (14.0 - d0) + 1.0 + d0 / 2.0;
+        const double d4 = rng.nextDouble() * (4.0 - d1) + 2.0 + d1 / 2.0;
+        const double d5 = rng.nextDouble() * (14.0 - d2) + 1.0 + d2 / 2.0;
 
         for (int l = 1; l < 15; ++l) {
             for (int i1 = 1; i1 < 15; ++i1) {
@@ -45,17 +44,11 @@ bool WorldGenLakes::generate(World * worldIn, RNG &rng, const Pos3D &pos) const 
     for (int k1 = 0; k1 < 16; ++k1) {
         for (int l2 = 0; l2 < 16; ++l2) {
             for (int k = 0; k < 8; ++k) {
-                const bool flag = !aboolean[(k1 * 16 + l2) * 8 + k] && (k1 < 15
-                                                                        && aboolean[((k1 + 1) * 16 + l2) * 8 + k] || k1
-                                                                        > 0
-                                                                        && aboolean[((k1 - 1) * 16 + l2) * 8 + k] || l2
-                                                                        < 15
-                                                                        && aboolean[(k1 * 16 + l2 + 1) * 8 + k] || l2 >
-                                                                        0
-                                                                        && aboolean[(k1 * 16 + (l2 - 1)) * 8 + k] || k <
-                                                                        7
-                                                                        && aboolean[(k1 * 16 + l2) * 8 + k + 1] || k > 0
-                                                                        && aboolean[(k1 * 16 + l2) * 8 + (k - 1)]);
+                const bool flag = !aboolean[(k1 * 16 + l2) * 8 + k] &&
+                                  (k1 < 15 && aboolean[((k1 + 1) * 16 + l2) * 8 + k] || k1 > 0 && aboolean[
+                                       ((k1 - 1) * 16 + l2) * 8 + k] || l2 < 15 && aboolean[(k1 * 16 + l2 + 1) * 8 + k]
+                                   || l2 > 0 && aboolean[(k1 * 16 + (l2 - 1)) * 8 + k] || k < 7 && aboolean[
+                                       (k1 * 16 + l2) * 8 + k + 1] || k > 0 && aboolean[(k1 * 16 + l2) * 8 + (k - 1)]);
 
                 if (flag) {
                     Pos3D materialPos = position.add(k1, k, l2);
@@ -90,8 +83,7 @@ bool WorldGenLakes::generate(World * worldIn, RNG &rng, const Pos3D &pos) const 
                 if (aboolean[(i2 * 16 + j3) * 8 + j4]) {
                     Pos3D blockPos = position.add(i2, j4 - 1, j3);
 
-                    if (worldIn->getBlockId(blockPos) == lce::blocks::ids::GRASS_ID /*&&
-                                    worldIn.getLightFor(EnumSkyBlock.SKY, position.add(i2, j4, j3)) > 0*/) {
+                    if (worldIn->getBlockId(blockPos) == lce::blocks::ids::DIRT_ID && !lce::blocks::ids::isFullyOpaqueBlock(worldIn->getBlockId(blockPos.up()))) {
                         Biome *biome = Biome::getBiomeForId(g->getBiomeAt(1, blockPos.convert2D()));
 
                         if (biome->topBlock == &lce::blocks::BlocksInit::MYCELIUM) {

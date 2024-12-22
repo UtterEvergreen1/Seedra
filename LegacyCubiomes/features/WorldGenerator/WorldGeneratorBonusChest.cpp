@@ -2,7 +2,7 @@
 
 #include "LegacyCubiomes/chunk_generator/ChunkPrimer.hpp"
 
-bool WorldGeneratorBonusChest::generate(World * worldIn, RNG &rand, const Pos3D &pos) const {
+bool WorldGeneratorBonusChest::generate(World * worldIn, RNG &rng, const Pos3D &pos) const {
     using namespace lce::blocks;
     Pos3D position = pos;
     while ((worldIn->getBlockId(position) == ids::AIR_ID || ids::isLeavesBlock(worldIn->getBlockId(pos))) &&
@@ -17,8 +17,20 @@ bool WorldGeneratorBonusChest::generate(World * worldIn, RNG &rand, const Pos3D 
     position = position.up();
 
     for (int i = 0; i < 4; ++i) {
-        Pos3D blockPos = position.add(rand.nextInt(4) - rand.nextInt(4), rand.nextInt(3) - rand.nextInt(3),
-                                      rand.nextInt(4) - rand.nextInt(4));
+        int x_off;
+        int y_off;
+        int z_off;
+        if (worldIn->getGenerator()->getConsole() != lce::CONSOLE::XBOX360 && worldIn->getGenerator()->getConsole() != lce::CONSOLE::XBOX1) {
+            x_off = rng.nextInt(4) - rng.nextInt(4);
+            y_off = rng.nextInt(3) - rng.nextInt(3);
+            z_off = rng.nextInt(4) - rng.nextInt(4);
+        }
+        else {
+            z_off = rng.nextInt(4) - rng.nextInt(4);
+            y_off = rng.nextInt(3) - rng.nextInt(3);
+            x_off = rng.nextInt(4) - rng.nextInt(4);
+        }
+        Pos3D blockPos = position.add(x_off, y_off, z_off);
 
         if (worldIn->isAirBlock(blockPos) && ids::isFullyOpaqueBlock(worldIn->getBlockId(blockPos.down()))) {
             worldIn->setBlock(blockPos, &BlocksInit::CHEST);

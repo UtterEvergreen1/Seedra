@@ -11,7 +11,7 @@ class ChunkPrimer;
 class WorldGenTrees : public WorldGenAbstractTree {
     static const lce::blocks::Block *DEFAULT_TRUNK;
     static const lce::blocks::Block *DEFAULT_LEAF;
-
+public:
     /** The minimum height of a generated tree. */
     const int minTreeHeight;
 

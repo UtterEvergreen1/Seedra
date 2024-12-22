@@ -16,7 +16,7 @@ public:
         PAEONIA
     };
 
-    static bool canPlaceBlockAt(const World* chunk, const Pos3D& pos);
+    static bool canPlaceBlockAt(World* chunk, const Pos3D& pos);
     static void placeAt(World *chunk, const Pos3D& lowerPos, EnumPlantType variant);
 };
 class WorldGenDoublePlant final : public WorldGenerator {

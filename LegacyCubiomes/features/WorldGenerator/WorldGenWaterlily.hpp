@@ -6,7 +6,7 @@
 
 class BlockLilyPad {
 public:
-    static bool canPlaceBlockAt(const World* worldIn, const Pos3D& pos);
+    static bool canPlaceBlockAt(World* worldIn, const Pos3D& pos);
 
 private:
     static bool canSustainBush(int blockId);

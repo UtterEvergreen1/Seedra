@@ -12,6 +12,7 @@ bool WorldGenAbstractTree::canGrowInto(int blockId) {
     switch (blockId) {
         case lce::blocks::ids::AIR_ID:
         case lce::blocks::ids::OAK_LEAVES_ID:
+        case lce::blocks::ids::ACACIA_LEAVES_ID:
         case lce::blocks::ids::GRASS_ID:
         case lce::blocks::ids::DIRT_ID:
         case lce::blocks::ids::OAK_WOOD_ID:

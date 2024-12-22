@@ -10,26 +10,29 @@
 
 int main() {
 
+    // rng tests
     /*RNG rngSeed;
-    int64_t testLongSeed = 3343649769771685376LL;
-    for (int i = 0; i < 10000; i++) {
-        rngSeed = RNG::getPopulationSeed(27184353441555, 10, 15);
+    int64_t testLongSeed = 5093713735541695132LL;
+    for (int i = 0; i < 100000; i++) {
+        rngSeed = RNG::getPopulationSeed(-101, -9, 11);
         for (int x = 0; x < i; x++) {
             rngSeed.nextInt();
         }
         if (rngSeed.nextLong() == testLongSeed) {
             std::cout << i << " rolls" << std::endl;
+            break;
         }
     }*/
 
     Biome::registerBiomes();
-    auto console = lce::CONSOLE::WIIU;
+    auto console = lce::CONSOLE::XBOX360;
     auto version = LCEVERSION::AQUATIC;
-    Generator g(console, version, -101, lce::WORLDSIZE::CLASSIC, lce::BIOMESCALE::SMALL);
+    Generator g(console, version, 27184353441555, lce::WORLDSIZE::CLASSIC, lce::BIOMESCALE::SMALL);
 
-    int WIDTH = 20;
-    int X_OFF = 5;//10 15 or 5 11
-    int Z_OFF = 11;
+    // 3 13 for seed -101, 8 15 for seed 1, 11 16 or 15 5 for seed 27184353441555
+    int WIDTH = 5;
+    int X_OFF = 11;
+    int Z_OFF = 16;
 
 
 
@@ -44,7 +47,8 @@ int main() {
 
 
     auto* world = new World(&g);
-    world->decorateChunkAndNeighbors({X_OFF, Z_OFF}, WIDTH);
+    world->getOrCreateChunk({X_OFF, Z_OFF});
+    world->decorateChunks({X_OFF, Z_OFF}, WIDTH);
     for (int cx = -WIDTH + X_OFF; cx < WIDTH + X_OFF + 1; cx++) {
         for (int cz = -WIDTH + Z_OFF; cz < WIDTH + Z_OFF + 1; cz++) {
             auto* chunk = world->getChunk({cx, cz});
@@ -60,7 +64,8 @@ int main() {
                 }
             }*/
 
-            /*auto* chunkPrimer = new ChunkPrimer();
+            // useful for set certain blocks in the world
+            /*
             //set all the blocks to all the blocks available
             lce::registry::BlockRegistry blocks;
             blocks.setup();
@@ -68,7 +73,7 @@ int main() {
             int y = 0;
             int z = 0;
             for (auto block : blocks.REGISTRY.getAllValues()) {
-                chunkPrimer->setBlockAndData(x, y, z, block->object->getID(), block->object->getDataTag());
+                world->setBlock(x, y, z, block->object->getID(), block->object->getDataTag());
                 x+=2;
                 if (x == 16) {
                     x = 0;
@@ -90,10 +95,10 @@ int main() {
 
             if (!file) {
                 std::cerr << "Error writing to file: " << filename << std::endl;
-            } else {
+            }/* else {
                 std::cout << "Chunk (" << cx << ", " << cz << ") "
                         "written to file: " << filename << std::endl;
-            }
+            }*/
         }
     }
 

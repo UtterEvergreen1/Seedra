@@ -3,7 +3,7 @@
 
 class BlockCactus {
 public:
-    static bool canBlockStay(const World *worldIn, const Pos3D &pos);
+    static bool canBlockStay(World *worldIn, const Pos3D &pos);
 };
 
 class WorldGenCactus final : public WorldGenerator {

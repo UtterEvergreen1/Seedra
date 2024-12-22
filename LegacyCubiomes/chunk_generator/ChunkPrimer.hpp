@@ -139,8 +139,8 @@ public:
     }
 
     ND int getHeight(c_i64 x, c_i64 z) const {
-        for (int i = 255; i >= 0; i--) {
-            if (!isAirBlock(x, i - 1, z)) return i;
+        for (int y = 255; y >= 0; y--) {
+            if (lce::blocks::ids::hasLightOpacity(getBlockId(x, y - 1, z))) return y;
         }
         return 0;
     }

@@ -3,7 +3,7 @@
 #include "lce/blocks/blocks.hpp"
 #include "lce/blocks/block_ids.hpp"
 
-bool BlockReed::canBlockStay(const World *worldIn, const Pos3D &pos) {
+bool BlockReed::canBlockStay(World *worldIn, const Pos3D &pos) {
     const int blockId = worldIn->getBlockId(pos.down());
     if (blockId == lce::blocks::ids::SUGAR_CANES_ID) {
         return true;
@@ -26,9 +26,19 @@ bool BlockReed::canBlockStay(const World *worldIn, const Pos3D &pos) {
     return blockId == lce::blocks::ids::GRASS_ID || blockId == lce::blocks::ids::DIRT_ID;
 }
 
-bool WorldGenReed::generate(World * worldIn, RNG &rand, const Pos3D &position) const {
+bool WorldGenReed::generate(World * worldIn, RNG &rng, const Pos3D &position) const {
     for (int i = 0; i < 20; ++i) {
-        Pos3D blockPos = position.add(rand.nextInt(4) - rand.nextInt(4), 0, rand.nextInt(4) - rand.nextInt(4));
+        int x_off;
+        int z_off;
+        if (worldIn->getGenerator()->getConsole() != lce::CONSOLE::XBOX360 && worldIn->getGenerator()->getConsole() != lce::CONSOLE::XBOX1) {
+            x_off = rng.nextInt(4) - rng.nextInt(4);
+            z_off = rng.nextInt(4) - rng.nextInt(4);
+        }
+        else {
+            z_off = rng.nextInt(4) - rng.nextInt(4);
+            x_off = rng.nextInt(4) - rng.nextInt(4);
+        }
+        Pos3D blockPos = position.add(x_off, 0, z_off);
 
         if (worldIn->isAirBlock(blockPos)) {
             Pos3D blockPos1 = blockPos.down();
@@ -37,7 +47,7 @@ bool WorldGenReed::generate(World * worldIn, RNG &rand, const Pos3D &position) c
                 lce::blocks::ids::isWaterMaterial(worldIn->getBlockId(blockPos1.east())) ||
                 lce::blocks::ids::isWaterMaterial(worldIn->getBlockId(blockPos1.north())) ||
                 lce::blocks::ids::isWaterMaterial(worldIn->getBlockId(blockPos1.south()))) {
-                int j = 2 + rand.nextInt(rand.nextInt(3) + 1);
+                int j = 2 + rng.nextInt(rng.nextInt(3) + 1);
 
                 for (int k = 0; k < j; ++k) {
                     if (BlockReed::canBlockStay(worldIn, blockPos)) {

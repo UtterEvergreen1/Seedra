@@ -9,16 +9,16 @@ int WorldGenHugeTrees::getHeight(RNG &rand) const {
 }
 
 bool WorldGenHugeTrees::isSpaceAt(World *worldIn, const Pos3D &leavesPos, int height) {
-    if (leavesPos.getY() < 1 || leavesPos.getY() + height + 1 > 256) {
+    if (leavesPos.getY() < 1 || leavesPos.getY() + height > 255) {
         return false;
     }
 
-    for (int i = 0; i <= 1 + height; ++i) {
-        int j = (i == 0) ? 1 : 2;
-        for (int k = -j; k <= j; ++k) {
-            for (int l = -j; l <= j; ++l) {
-                if (leavesPos.getY() + i < 0 || leavesPos.getY() + i >= 256 || !canGrowInto(
-                        worldIn->getBlockId(leavesPos.add(k, i, l)))) {
+    for (int y_off = 0; y_off <= 1 + height; ++y_off) {
+        int radius = (y_off == 0) ? 1 : 2;
+        for (int x_off = -radius; x_off <= radius; ++x_off) {
+            for (int z_off = -radius; z_off <= radius; ++z_off) {
+                if (leavesPos.getY() + y_off < 0 || leavesPos.getY() + y_off >= 256 || !canGrowInto(
+                        worldIn->getBlockId(leavesPos.add(x_off, y_off, z_off)))) {
                     return false;
                 }
             }

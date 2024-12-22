@@ -6,10 +6,10 @@
 
 class BlockReed {
 public:
-    static bool canBlockStay(const World* worldIn, const Pos3D& pos);
+    static bool canBlockStay(World* worldIn, const Pos3D& pos);
 };
 
 class WorldGenReed final : public WorldGenerator {
 public:
-    bool generate(World * worldIn, RNG& rand, const Pos3D& position) const override;
+    bool generate(World * worldIn, RNG& rng, const Pos3D& position) const override;
 };

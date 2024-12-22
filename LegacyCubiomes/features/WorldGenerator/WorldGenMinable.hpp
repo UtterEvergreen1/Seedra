@@ -7,10 +7,12 @@
 class ChunkPrimer;
 
 class WorldGenMinable : public WorldGenerator {
-    lce::blocks::Block const* oreBlock;
+    lce::blocks::Block const *oreBlock;
     int blockCount;
 
 public:
-    WorldGenMinable(lce::blocks::Block const* block, int blockCount) : oreBlock(block), blockCount(blockCount) {}
-    bool generate(World * world, RNG& rng, const Pos3D& pos) const override;
+    WorldGenMinable(lce::blocks::Block const *block, int blockCount) : oreBlock(block), blockCount(blockCount) {
+    }
+
+    bool generate(World *world, RNG &rng, const Pos3D &pos) const override;
 };

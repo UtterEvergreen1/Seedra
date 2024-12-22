@@ -2,7 +2,7 @@
 
 #include "LegacyCubiomes/chunk_generator/ChunkPrimer.hpp"
 
-bool BlockCactus::canBlockStay(const World *worldIn, const Pos3D &pos) {
+bool BlockCactus::canBlockStay(World *worldIn, const Pos3D &pos) {
     using namespace lce::blocks;
     for (FACING enumFacing: FACING_HORIZONTAL) {
         int blockId = worldIn->getBlockId(pos.offset(enumFacing));
@@ -18,8 +18,20 @@ bool BlockCactus::canBlockStay(const World *worldIn, const Pos3D &pos) {
 bool WorldGenCactus::generate(World *worldIn, RNG &rng, const Pos3D &pos) const {
     Pos3D position = pos;
     for (int i = 10; i != 0; --i) {
-        Pos3D blockPos = position.add(rng.nextInt(8) - rng.nextInt(8), rng.nextInt(4) - rng.nextInt(4),
-                                      rng.nextInt(8) - rng.nextInt(8));
+        int x_off;
+        int y_off;
+        int z_off;
+        if (worldIn->getGenerator()->getConsole() != lce::CONSOLE::XBOX360 && worldIn->getGenerator()->getConsole() != lce::CONSOLE::XBOX1) {
+            x_off = rng.nextInt(8) - rng.nextInt(8);
+            y_off = rng.nextInt(4) - rng.nextInt(4);
+            z_off = rng.nextInt(8) - rng.nextInt(8);
+        }
+        else {
+            z_off = rng.nextInt(8) - rng.nextInt(8);
+            y_off = rng.nextInt(4) - rng.nextInt(4);
+            x_off = rng.nextInt(8) - rng.nextInt(8);
+        }
+        Pos3D blockPos = position.add(x_off, y_off, z_off);
 
         if (worldIn->isAirBlock(blockPos)) {
             int cactusYPos = 0;

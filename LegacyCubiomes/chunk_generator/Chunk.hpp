@@ -17,6 +17,7 @@ namespace Chunk {
     static ChunkPrimer *provideChunk(const Generator &g, c_int chunkX, c_int chunkZ, bool accurate = true) {
         ChunkGeneratorOverWorld chunk(g);
         ChunkPrimer *chunkPrimer = chunk.provideChunk(chunkX, chunkZ);
+        // std::cout << "Providing chunk " << chunkX << ", " << chunkZ << std::endl;
         chunkPrimer->stage = Stage::STAGE_CAVES;
         if constexpr (generateCaves && checkWaterCaves) {
             if (g.getLCEVersion() == LCEVERSION::AQUATIC) {
@@ -60,6 +61,12 @@ namespace Chunk {
     }
 
     MU static void populate(const Generator &g, int chunkX, int chunkZ, World *worldIn) {
+        ChunkPrimer* chunk = worldIn->getChunk({chunkX, chunkZ});
+        if (!chunk || chunk->stage != Stage::STAGE_DECORATE) {
+            return;
+        }
+        // std::cout << "Populating chunk " << chunkX << ", " << chunkZ << std::endl;
+
         RNG rng = RNG::getPopulationSeed(g.getWorldSeed(), chunkX, chunkZ);
         if (Pos3D waterPos = FeaturePositions::waterLake(&g, rng, chunkX, chunkZ); !waterPos.isNull()) {
             WorldGenLakes waterGen(&g, &lce::blocks::BlocksInit::STILL_WATER);
@@ -89,21 +96,41 @@ namespace Chunk {
                 c_int x = xStart + xPos;
                 c_int z = zStart + zPos;
 
-                c_int chunkPosX = x & 15;
-                c_int chunkPosZ = z & 15;
-
                 c_int precipitationHeight = worldIn->getPrecipitationHeight(x, z);
                 const Pos3D blockPos1 = Pos3D(x, precipitationHeight, z);
                 const Pos3D blockPos2 = Pos3D(x, precipitationHeight - 1, z);
 
                 if (worldIn->canBlockFreeze(blockPos2, false)) {
-                    worldIn->setBlock(chunkPosX, blockPos2.getY(), chunkPosZ, lce::blocks::ids::ICE_ID);
+                    worldIn->setBlock(x, blockPos2.getY(), z, lce::blocks::ids::ICE_ID);
                 }
 
                 if (worldIn->canSnowAt(blockPos1, true)) {
-                    worldIn->setBlock(chunkPosX, precipitationHeight, chunkPosZ, lce::blocks::ids::SNOW_ID);
+                    worldIn->setBlock(x, precipitationHeight, z, lce::blocks::ids::SNOW_ID);
                 }
             }
+        }
+        chunk->stage = Stage::STAGE_DONE;
+    }
+
+    MU static void populateChunk(const Generator &g, int chunkX, int chunkZ, World *worldIn) {
+        ChunkPrimer* chunk = worldIn->getChunk({chunkX, chunkZ - 1});
+        ChunkPrimer* chunk1 = worldIn->getChunk({chunkX + 1, chunkZ});
+        ChunkPrimer* chunk2 = worldIn->getChunk({chunkX, chunkZ + 1});
+        ChunkPrimer* chunk3 = worldIn->getChunk({chunkX - 1, chunkZ});
+        if (chunk1 && chunk2 && worldIn->getChunk({chunkX + 1, chunkZ + 1}) != nullptr) {
+            Chunk::populate(g, chunkX, chunkZ, worldIn);
+        }
+
+        if (chunk3 && chunk2 && worldIn->getChunk({chunkX - 1, chunkZ + 1}) != nullptr) {
+            Chunk::populate(g, chunkX - 1, chunkZ, worldIn);
+        }
+
+        if (chunk && chunk1 && worldIn->getChunk({chunkX + 1, chunkZ - 1}) != nullptr) {
+            Chunk::populate(g, chunkX, chunkZ - 1, worldIn);
+        }
+
+        if (chunk && chunk3 && worldIn->getChunk({chunkX - 1, chunkZ - 1}) != nullptr) {
+            Chunk::populate(g, chunkX - 1, chunkZ - 1, worldIn);
         }
     }
 }

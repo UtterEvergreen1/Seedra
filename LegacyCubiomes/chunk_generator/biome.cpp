@@ -220,6 +220,8 @@ void Biome::genTerrainBlocks(i64 worldSeed, RNG &rng, ChunkPrimer *chunkPrimerIn
 
 void BiomeHills::genTerrainBlocks(i64 worldSeed, RNG &rng, ChunkPrimer *chunkPrimerIn, c_int x, c_int z,
                                   c_double noiseVal) {
+    this->topBlock = &lce::blocks::BlocksInit::GRASS;
+    this->fillerBlock = &lce::blocks::BlocksInit::DIRT;
     if ((noiseVal < -1.0 || noiseVal > 2.0) && this->type == BiomeHills::Type::MUTATED) {
         this->topBlock = &lce::blocks::BlocksInit::GRAVEL;
         this->fillerBlock = &lce::blocks::BlocksInit::GRAVEL;
@@ -654,6 +656,10 @@ void BiomeJungle::decorate(World *worldIn, RNG &rng, const Pos2D &pos) {
     int x_off = rng.nextInt(16) + 8;
     int z_off = rng.nextInt(16) + 8;
     int y_off = rng.nextInt(worldIn->getHeight(blockPos.add(x_off, 0, z_off)).getY() * 2);
+    /*if (pos.x >> 4 == 0 && pos.z >> 4 == 10) {
+        std::cout << "Generating melon at " << x_off << ", " << y_off << ", " << z_off << std::endl;
+        std::cout << rng.nextLong() << std::endl;
+    }*/
     (WorldGenCucurbitsBlock(lce::blocks::ids::MELON_BLOCK_ID, false)).generate(
         worldIn, rng, blockPos.add(x_off, y_off, z_off));
     WorldGenVines genVines;
@@ -767,6 +773,38 @@ const WorldGenerator *BiomeJungle::getRandomWorldGenForGrass(RNG &rng) const {
 #pragma endregion
 
 #pragma region FlowerType
+
+BlockFlower::EnumFlowerType BiomePlains::pickRandomFlower(RNG &rng, const Pos2D &pos) const {
+    double d0 = GRASS_COLOR_NOISE.getValue((double) pos.x / 200.0, (double) pos.z / 200.0);
+
+    if (d0 < -0.8) {
+        int i = rng.nextInt(4);
+        switch (i) {
+            case 0:
+                return BlockFlower::EnumFlowerType::ORANGE_TULIP;
+            case 1:
+                return BlockFlower::EnumFlowerType::RED_TULIP;
+            case 2:
+                return BlockFlower::EnumFlowerType::PINK_TULIP;
+            case 3:
+            default:
+                return BlockFlower::EnumFlowerType::WHITE_TULIP;
+        }
+    }
+    if (rng.nextInt(3) > 0) {
+        switch (rng.nextInt(3)) {
+            case 0:
+                return BlockFlower::EnumFlowerType::POPPY;
+            case 1:
+                return BlockFlower::EnumFlowerType::AZURE_BLUET;
+            case 2:
+            default:
+                return BlockFlower::EnumFlowerType::OXEYE_DAISY;
+        }
+    }
+
+    return BlockFlower::EnumFlowerType::DANDELION;
+}
 
 BlockFlower::EnumFlowerType BiomeForest::pickRandomFlower(RNG &rng, const Pos2D &pos) const {
     if (this->type != BiomeForest::Type::FLOWER) {

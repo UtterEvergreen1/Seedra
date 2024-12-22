@@ -76,6 +76,7 @@ bool WorldGenDungeons::generate(World* worldIn, RNG& rng, const Pos3D &position)
 
                     if (j3 == 1) {
                         worldIn->setBlock(blockpos2, ids::CHEST_ID);
+                        rng.nextLong(); // skip the loot seed
                         /*TileEntity *tileentity1 = worldIn.getTileEntity(blockpos2);
 
                         if (auto chest = dynamic_cast<TileEntityChest*>(tileentity1)) {

@@ -13,18 +13,18 @@ bool WorldGenShrub::generate(World * worldIn, RNG &rng, const Pos3D &position) c
         pos = pos.up();
         worldIn->setBlock(pos, this->woodMetadata);
 
-        for (int i = pos.getY(); i <= pos.getY() + 2; ++i) {
-            int j = i - pos.getY();
-            int k = 2 - j;
+        for (int y = pos.getY(); y <= pos.getY() + 2; ++y) {
+            int y_off = y - pos.getY();
+            int radius = 2 - y_off;
 
-            for (int l = pos.getX() - k; l <= pos.getX() + k; ++l) {
-                int i1 = l - pos.getX();
+            for (int x = pos.getX() - radius; x <= pos.getX() + radius; ++x) {
+                int x_off = x - pos.getX();
 
-                for (int j1 = pos.getZ() - k; j1 <= pos.getZ() + k; ++j1) {
-                    int k1 = j1 - pos.getZ();
+                for (int z = pos.getZ() - radius; z <= pos.getZ() + radius; ++z) {
+                    int z_off = z - pos.getZ();
 
-                    if (std::abs(i1) != k || std::abs(k1) != k || rng.nextInt(2) != 0) {
-                        Pos3D blockpos(l, i, j1);
+                    if (std::abs(x_off) != radius || std::abs(z_off) != radius || rng.nextInt(2) != 0) {
+                        Pos3D blockpos(x, y, z);
                         int material = worldIn->getBlockId(blockpos);
 
                         if (material == lce::blocks::ids::AIR_ID || lce::blocks::ids::isLeavesBlock(material)) {

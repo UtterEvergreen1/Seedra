@@ -6,5 +6,5 @@
 
 class WorldGeneratorBonusChest : public WorldGenerator {
 public:
-    bool generate(World * worldIn, RNG& rand, const Pos3D& pos) const override;
+    bool generate(World * worldIn, RNG& rng, const Pos3D& pos) const override;
 };

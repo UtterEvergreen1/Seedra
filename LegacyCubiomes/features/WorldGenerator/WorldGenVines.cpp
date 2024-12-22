@@ -2,7 +2,7 @@
 
 #include "LegacyCubiomes/chunk_generator/ChunkPrimer.hpp"
 
-bool BlockVine::canPlaceBlockOnSide(const World *worldIn, const Pos3D &pos, const FACING &facing) {
+bool BlockVine::canPlaceBlockOnSide(World *worldIn, const Pos3D &pos, const FACING &facing) {
     if (facing == FACING::UP || facing == FACING::DOWN) {
         return false;
     }
@@ -43,7 +43,9 @@ bool WorldGenVines::generate(World * worldIn, RNG &rng, const Pos3D &position) c
                 }
             }
         } else {
-            pos = pos.add(rng.nextInt(4) - rng.nextInt(4), 0, rng.nextInt(4) - rng.nextInt(4));
+            int x_off = rng.nextInt(4) - rng.nextInt(4);
+            int z_off = rng.nextInt(4) - rng.nextInt(4);
+            pos = pos.add(x_off, 0, z_off);
         }
         pos = pos.up();
     }

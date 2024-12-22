@@ -8,21 +8,27 @@ public:
     explicit World(Generator *g) : g(g) {
     }
 
+    Generator *getGenerator() const {
+        return g;
+    }
+
     void addChunk(const Pos2D &pos, ChunkPrimer *chunk);
 
     ChunkPrimer *getChunk(const Pos2D &pos) const;
 
     ChunkPrimer *getOrCreateChunk(const Pos2D &pos);
 
-    void decorateChunkAndNeighbors(const Pos2D &pos, int radius);
+    void decorateChunks(const Pos2D &pos, int radius);
 
-    int getBlockId(int x, int y, int z) const;
+    int getBlockId(int x, int y, int z);
 
-    int getBlockId(const Pos3D &pos) const;
+    int getBlockId(const Pos3D &pos);
 
-    const lce::blocks::Block *getBlock(int x, int y, int z) const;
+    const lce::blocks::Block *getBlock(int x, int y, int z);
 
-    const lce::blocks::Block *getBlock(const Pos3D &pos) const;
+    const lce::blocks::Block *getBlock(const Pos3D &pos);
+
+    void notifyNeighbors(int x, int y, int z);
 
     void setBlock(int x, int y, int z, int blockId);
 
@@ -36,26 +42,26 @@ public:
 
     void setBlock(const Pos3D &pos, const lce::blocks::Block *block);
 
-    bool isAirBlock(int x, int y, int z) const;
+    bool isAirBlock(int x, int y, int z);
 
-    bool isAirBlock(const Pos3D &pos) const;
+    bool isAirBlock(const Pos3D &pos);
 
-    int getHeight(int x, int z) const;
+    int getHeight(int x, int z);
 
-    Pos3D getHeight(const Pos3D &pos) const;
+    Pos3D getHeight(const Pos3D &pos);
 
-    int getTopSolidOrLiquidBlock(int x, int z) const;
+    int getTopSolidOrLiquidBlock(int x, int z);
 
-    Pos3D getTopSolidOrLiquidBlock(const Pos3D &pos) const;
+    Pos3D getTopSolidOrLiquidBlock(const Pos3D &pos);
 
 
-    int getPrecipitationHeight(c_int x, c_int z) const;
+    int getPrecipitationHeight(c_int x, c_int z);
 
-    bool canBlockFreeze(const Pos3D &pos, bool noWaterAdj) const;
+    bool canBlockFreeze(const Pos3D &pos, bool noWaterAdj);
 
-    ND bool canBlockFreezeWater(const Pos3D &pos) const;
+    ND bool canBlockFreezeWater(const Pos3D &pos);
 
-    bool canSnowAt(const Pos3D &pos, bool checkLight) const;
+    bool canSnowAt(const Pos3D &pos, bool checkLight);
 
 private:
     Generator *g;
