@@ -1,8 +1,9 @@
-#include <stdlib.h>
-#include <string.h>
+#include "LegacyCubiomes/cubiomes/biomeID.hpp"
+#include "lce/processor.hpp"
 #include <cstdint>
 #include <cstdio>
-#include "LegacyCubiomes/cubiomes/biomeID.hpp"
+#include <stdlib.h>
+#include <string.h>
 
 static void setColor(unsigned char colors[256][3], int id, u32 hex) {
     colors[id][0] = (hex >> 16) & 0xff;

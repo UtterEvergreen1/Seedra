@@ -45,6 +45,14 @@ bool Pos2DTemplate<classType>::operator<(classType value) const { return x < val
 
 
 template<class classType>
+bool Pos2DTemplate<classType>::operator<(const Pos2DTemplate& other) const {
+    if (x < other.x) return true;
+    if (x > other.x) return false;
+    return z < other.z;
+}
+
+
+template<class classType>
 bool Pos2DTemplate<classType>::operator>=(classType value) const { return x >= value && z >= value; }
 
 
