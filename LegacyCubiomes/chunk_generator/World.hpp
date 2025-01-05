@@ -54,7 +54,6 @@ public:
 
     Pos3D getTopSolidOrLiquidBlock(const Pos3D &pos);
 
-
     int getPrecipitationHeight(c_int x, c_int z);
 
     bool canBlockFreeze(const Pos3D &pos, bool noWaterAdj);

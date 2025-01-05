@@ -37,7 +37,8 @@ int writeChunkToFile() {
 
 
     auto* world = new World(&g);
-    world->decorateChunkAndNeighbors({X_OFF, Z_OFF}, WIDTH);
+    world->getOrCreateChunk({X_OFF, Z_OFF});
+    world->decorateChunks({X_OFF, Z_OFF}, WIDTH);
     for (int cx = -WIDTH + X_OFF; cx < WIDTH + X_OFF + 1; cx++) {
         for (int cz = -WIDTH + Z_OFF; cz < WIDTH + Z_OFF + 1; cz++) {
             auto* chunk = world->getChunk({cx, cz});
