@@ -2,7 +2,7 @@
 
 #include "LegacyCubiomes/chunk_generator/Chunk.hpp"
 #include "LegacyCubiomes/structures/generation/mineshaft/mineshaft.hpp"
-#include "LegacyCubiomes/structures/rolls/rolls_base.hpp"
+#include "LegacyCubiomes/structures/rolls/RollsBase.hpp"
 
 
 namespace structure_rolls {

@@ -79,6 +79,9 @@ namespace generation {
                 k++;
         }
 
+        structureBoundingBox = BoundingBox::EMPTY;
+        for (int index = 0; index < pieceArraySize; index++) { structureBoundingBox.encompass(pieceArray[index]); }
+
         hasMoreThanTwoComponents = k > 2;
     }
 

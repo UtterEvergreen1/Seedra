@@ -1,4 +1,4 @@
-#include "rolls_base.hpp"
+#include "RollsBase.hpp"
 
 #include "LegacyCubiomes/building_blocks/BoundingBox.hpp"
 #include "LegacyCubiomes/building_blocks/Piece.hpp"
@@ -18,10 +18,11 @@ namespace structure_rolls {
         for (int x = minX; x <= maxX; ++x) {
             for (int z = minZ; z <= maxZ; ++z) {
                 u16 block = chunk->getBlockId(x, minY, z);
-                if (block >= lce::blocks::ids::FLOWING_WATER_ID && block <= lce::blocks::ids::STILL_LAVA_ID) return true;
+
+                if (lce::blocks::ids::isLiquidBlock(block)) return true;
 
                 u16 block1 = chunk->getBlockId(x, maxY, z);
-                if (block1 >= lce::blocks::ids::FLOWING_WATER_ID && block <= lce::blocks::ids::STILL_LAVA_ID) return true;
+                if (lce::blocks::ids::isLiquidBlock(block1)) return true;
             }
         }
 
@@ -29,10 +30,10 @@ namespace structure_rolls {
         for (int x = minX; x <= maxX; ++x) {
             for (int y = minY; y <= maxY; ++y) {
                 u16 block = chunk->getBlockId(x, y, minZ);
-                if (block >= lce::blocks::ids::FLOWING_WATER_ID && block <= lce::blocks::ids::STILL_LAVA_ID) return true;
+                if (lce::blocks::ids::isLiquidBlock(block)) return true;
 
                 u16 block1 = chunk->getBlockId(x, y, maxZ);
-                if (block1 >= lce::blocks::ids::FLOWING_WATER_ID && block <= lce::blocks::ids::STILL_LAVA_ID) return true;
+                if (lce::blocks::ids::isLiquidBlock(block1)) return true;
             }
         }
 
@@ -40,10 +41,10 @@ namespace structure_rolls {
         for (int z = minZ; z <= maxZ; ++z) {
             for (int y = minY; y <= maxY; ++y) {
                 u16 block = chunk->getBlockId(minX, y, z);
-                if (block >= lce::blocks::ids::FLOWING_WATER_ID && block <= lce::blocks::ids::STILL_LAVA_ID) return true;
+                if (lce::blocks::ids::isLiquidBlock(block)) return true;
 
                 u16 block1 = chunk->getBlockId(maxX, y, z);
-                if (block1 >= lce::blocks::ids::FLOWING_WATER_ID && block <= lce::blocks::ids::STILL_LAVA_ID) return true;
+                if (lce::blocks::ids::isLiquidBlock(block1)) return true;
             }
         }
 
@@ -57,7 +58,7 @@ namespace structure_rolls {
     }
 
 
-    bool RollsBase::validToPlace(const BoundingBox& chunkBoundingBox, const BoundingBox& bb, int x, int y, int z) {
+    MU bool RollsBase::validToPlace(const BoundingBox& chunkBoundingBox, const BoundingBox& bb, int x, int y, int z) {
         if (intersectsWithBlock(chunkBoundingBox, x, y, z)) {
             return bb.maxX >= x && bb.minX <= x && bb.maxY >= y && bb.minY <= y && bb.maxZ >= z && bb.minZ <= z;
         } else {
@@ -99,4 +100,34 @@ namespace structure_rolls {
             rng.advance<2>(); // nextLong for loot table seed
         }
     }
+
+
+    void RollsBase::fillWithBlocks(World& worldIn, const BoundingBox& boundingBoxIn,
+                                   int xMin, int yMin, int zMin, int xMax, int yMax, int zMax,
+                                   const lce::blocks::Block* boundaryBlockState,
+                                   const lce::blocks::Block* insideBlockState) {
+        for (int i = yMin; i <= yMax; ++i) {
+            for (int j = xMin; j <= xMax; ++j) {
+                for (int k = zMin; k <= zMax; ++k) {
+                    if (boundingBoxIn.isVecInside({j, i, k})) {
+                        if (worldIn.getBlock(j, i, k)->getID() != lce::blocks::ids::AIR_ID) {
+                            if (i != yMin && i != yMax && j != xMin && j != xMax && k != zMin && k != zMax) {
+                                worldIn.setBlock(j, i, k, insideBlockState->getID());
+                            } else {
+                                worldIn.setBlock(j, i, k, boundaryBlockState->getID());
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+
+
+
+
+
+
+
 } // namespace structure_rolls

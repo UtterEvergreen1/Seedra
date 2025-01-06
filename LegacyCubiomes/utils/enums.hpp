@@ -39,13 +39,14 @@ enum MCVERSION : i8 {
 };
 
 enum class EnumAxis : i8 {
+    NONE = -1,
     X = 0,
     Y = 1,
     Z = 2,
-    NONE = 3
 };
 
 enum class FACING : i8 {
+    NONE = -1,
     DOWN = 0,
     UP = 1,
     NORTH = 2,
@@ -68,6 +69,21 @@ static int getMetaFromHorizontalFacing(const FACING facing) {
             return 2;
         case FACING::EAST:
             return 3;
+    }
+}
+
+static EnumAxis getAxis(FACING facing) {
+    switch (facing) {
+        case FACING::NORTH:
+        case FACING::SOUTH:
+            return EnumAxis::Z;
+        case FACING::EAST:
+        case FACING::WEST:
+            return EnumAxis::X;
+        case FACING::UP:
+        case FACING::DOWN:
+        default:
+            return EnumAxis::Y;
     }
 }
 

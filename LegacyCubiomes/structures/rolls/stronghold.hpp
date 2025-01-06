@@ -1,7 +1,7 @@
 #pragma once
 
-#include "LegacyCubiomes/structures/rolls/rolls_base.hpp"
 #include "LegacyCubiomes/structures/generation/stronghold/stronghold.hpp"
+#include "LegacyCubiomes/structures/rolls/RollsBase.hpp"
 
 namespace structure_rolls {
     class Stronghold : public RollsBase {

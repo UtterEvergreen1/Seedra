@@ -465,10 +465,10 @@ public:
     std::vector<double> genNoiseOctaves(Generator* g, std::vector<double> noiseArray, c_int xOffset, c_int yOffset,
                                         c_int zOffset, c_int xSize, c_int ySize, c_int zSize,
                                         c_double xScale, c_double yScale, c_double zScale) {
-        if (noiseArray.empty()) {
+        if EXPECT_TRUE (noiseArray.empty()) {
             noiseArray.resize(xSize * ySize * zSize);
         } else {
-            for (int i = 0; i < sizeof(noiseArray); ++i) { noiseArray[i] = 0.0; }
+            for (double & i : noiseArray) { i = 0.0; }
         }
 
         double d3 = 1.0;

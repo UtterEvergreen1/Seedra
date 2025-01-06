@@ -38,6 +38,13 @@ void BoundingBox::encompass(const BoundingBox& other) {
 }
 
 
+bool BoundingBox::isVecInside(Pos3D pos) const {
+    return this->maxX >= pos.x && this->minX <= pos.x &&
+           this->maxY >= pos.y && this->minY <= pos.y &&
+           this->maxZ >= pos.z && this->minZ <= pos.z;
+}
+
+
 void BoundingBox::offset(c_int x, c_int y, c_int z) {
     minX += x;
     minY += y;
