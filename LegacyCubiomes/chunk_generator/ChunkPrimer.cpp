@@ -2,7 +2,7 @@
 #include "LegacyCubiomes/chunk_generator/biome.hpp"
 void ChunkPrimer::generateSkylightMap() {
     skyLight.resize(65536, 0);
-    c_int topFilledSegment = getHighestYChunk();
+    c_int topFilledSegment = getHighestYBlock();
     for (int x = 0; x < 16; ++x) {
         for (int z = 0; z < 16; ++z) {
             int lightValue = 15;
@@ -28,58 +28,39 @@ int ChunkPrimer::getPrecipitationHeight(c_int x, c_int z) {
     c_int j = z & 15;
     c_int k = i | j << 4;
 
+    using namespace lce::blocks;
     if (precipitationHeightMap[k] == -999) {
-        int highestY = getHighestYChunk() + 15;
-        int i1 = -1;
+        int highestY = this->getHighestYBlock();
+        int y = -1;
 
-        while (highestY > 0 && i1 == -1) {
-            if (!getBlockId(i, highestY, j)) i1 = highestY + 1;
+        while (highestY > 0 && y == -1) {
+            int blockID = getBlockId(i, highestY, j);
+            if (ids::blocksMovement(blockID) || ids::isLiquidBlock(blockID)) y = highestY + 1;
             else
                 highestY -= 1;
         }
 
-        precipitationHeightMap[k] = i1;
+        precipitationHeightMap[k] = y;
     }
     return precipitationHeightMap[k];
 }
 
-bool ChunkPrimer::canBlockFreeze(const Generator &g, const Pos3D &pos, c_bool noWaterAdj) const {
-    if (Biome::getBiomeForId(g.getBiomeAt(1, pos.getX(), pos.getZ()))->getFloatTemperature(pos) >= 0.15F)
-        return false;
-
+bool ChunkPrimer::canBlockFreeze(const Pos3D &pos) const {
     if (pos.getY() >= 0 && pos.getY() < 256) {
-        c_int x = pos.getX() & 15;
-        c_int z = pos.getZ() & 15;
-        c_u16 iBlockState = getBlockId(x, pos.getY(), z);
+        c_u16 iBlockState = getBlockId(pos);
         c_u16 block = iBlockState;
 
         if (block == 8 || block == 9) {
-            if (!noWaterAdj) return true;
-
-            c_u16 flagBlockWest = getBlockId(x - 1, pos.getY(), z);
-            c_u16 flagBlockEast = getBlockId(x + 1, pos.getY(), z);
-            c_u16 flagBlockNorth = getBlockId(x, pos.getY(), z - 1);
-            c_u16 flagBlockSouth = getBlockId(x, pos.getY(), z + 1);
-            c_bool flag =
-                    flagBlockWest == 9 && flagBlockEast == 9 && flagBlockNorth == 9 && flagBlockSouth == 9;
-
-            if (!flag) return true;
+            return true;
         }
     }
 
     return false;
 }
 
-bool ChunkPrimer::canSnowAt(const Generator &g, const Pos3D &pos, c_bool checkLight) const {
-    if (Biome::getBiomeForId(g.getBiomeAt(1, pos.getX(), pos.getZ()))->getFloatTemperature(pos) >= 0.15F) {
-        return false;
-    }
-
-    if (!checkLight) { return true; }
-
-    // needs to check block light later on to replace a perfect chunk
+bool ChunkPrimer::canSnowAt(const Pos3D &pos) const {
     if (pos.getY() >= 0 && pos.getY() < 256 /* && getLightFor(EnumSkyBlock.BLOCK, pos) < 10*/) {
-        if (!getBlockId(pos.getX(), pos.getY(), pos.getZ())) return true;
+        if (getBlockId(pos.getX(), pos.getY(), pos.getZ()) == lce::blocks::ids::AIR_ID) return true;
     }
     return false;
 }

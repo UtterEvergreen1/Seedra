@@ -25,6 +25,7 @@ public:
     Stage stage = Stage::STAGE_TERRAIN;
     std::vector<u8> skyLight;
     std::vector<int> precipitationHeightMap = std::vector(256, -999);
+    int highestYBlock = -1;
 
     ChunkPrimer() = default;
 
@@ -127,11 +128,12 @@ public:
     }
 
     /// in block cords not chunk cords
-    ND int getHighestYChunk() const {
+    ND int getHighestYBlock() {
+        if (highestYBlock != -1) return highestYBlock;
         for (int y = 255; y >= 0; y--) {
             for (int x = 0; x < 16; x++) {
                 for (int z = 0; z < 16; z++) {
-                    if (getBlockId(x, y, z)) { return y; }
+                    if (getBlockId(x, y, z) != lce::blocks::ids::AIR_ID) { highestYBlock = y; return y; }
                 }
             }
         }
@@ -156,7 +158,7 @@ public:
     ND int getTopSolidOrLiquidBlock(c_i64 x, c_i64 z) const {
         for (int i = 255; i >= 0; i--) {
             int blockId = getBlockId(x, i - 1, z);
-            if (lce::blocks::ids::isSolidBlock(blockId) && !lce::blocks::ids::isLeavesBlock(blockId)) return i;
+            if (lce::blocks::ids::blocksMovement(blockId) && !lce::blocks::ids::isLeavesBlock(blockId)) return i;
         }
         return 0;
     }
@@ -188,11 +190,7 @@ public:
 
     int getPrecipitationHeight(int x, int z);
 
-    ND bool canBlockFreeze(const Generator &g, const Pos3D &pos, c_bool noWaterAdj) const;
+    ND bool canBlockFreeze(const Pos3D &pos) const;
 
-    ND bool canBlockFreezeWater(const Generator &g, const Pos3D &pos) const {
-        return canBlockFreeze(g, pos, false);
-    }
-
-    ND bool canSnowAt(const Generator &g, const Pos3D &pos, c_bool checkLight) const;
+    ND bool canSnowAt(const Pos3D &pos) const;
 };

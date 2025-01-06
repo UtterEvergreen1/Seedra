@@ -89,23 +89,23 @@ namespace Chunk {
             worldIn, rng, {chunkX << 4, chunkZ << 4});
 
 
-        c_int xStart = chunkX * 16;
-        c_int zStart = chunkZ * 16;
+        c_int xStart = chunkX * 16 + 8;
+        c_int zStart = chunkZ * 16 + 8;
         for (int xPos = 0; xPos < 16; ++xPos) {
             for (int zPos = 0; zPos < 16; ++zPos) {
                 c_int x = xStart + xPos;
                 c_int z = zStart + zPos;
 
                 c_int precipitationHeight = worldIn->getPrecipitationHeight(x, z);
-                const Pos3D blockPos1 = Pos3D(x, precipitationHeight, z);
-                const Pos3D blockPos2 = Pos3D(x, precipitationHeight - 1, z);
+                const Pos3D snowPos = Pos3D(x, precipitationHeight, z);
+                const Pos3D waterPos = Pos3D(x, precipitationHeight - 1, z);
 
-                if (worldIn->canBlockFreeze(blockPos2, false)) {
-                    worldIn->setBlock(x, blockPos2.getY(), z, lce::blocks::ids::ICE_ID);
+                if (worldIn->canBlockFreezeWater(waterPos)) {
+                    worldIn->setBlock(waterPos, lce::blocks::ids::ICE_ID);
                 }
 
-                if (worldIn->canSnowAt(blockPos1, true)) {
-                    worldIn->setBlock(x, precipitationHeight, z, lce::blocks::ids::SNOW_ID);
+                if (worldIn->canSnowAt(snowPos, false)) { // TODO: check light
+                    worldIn->setBlock(snowPos, lce::blocks::ids::SNOW_ID);
                 }
             }
         }
