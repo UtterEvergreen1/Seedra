@@ -48,7 +48,7 @@ public:
         return (double) p_151604_0_[0] * p_151604_1_ + (double) p_151604_0_[1] * p_151604_3_;
     }
 
-    double getValue(c_double posX, c_double posZ) const {
+    ND double getValue(c_double posX, c_double posZ) const {
         c_double d3 = 0.5 * (SQRT_3 - 1.0);
         c_double d4 = (posX + posZ) * d3;
         c_int i = fastFloor(posX + d4);
@@ -191,7 +191,7 @@ public:
 class NoiseGeneratorPerlin {
 public:
     std::vector<NoiseGeneratorSimplex> noiseLevels;
-    int levels;
+    int levels{};
 
     NoiseGeneratorPerlin() = default;
 
@@ -206,7 +206,7 @@ public:
         for (int i = 0; i < levelsIn; ++i) { noiseLevels[i].setNoiseGeneratorSimplex(rng); }
     }
 
-    double getValue(const double posX, const double posZ) const {
+    ND double getValue(const double posX, const double posZ) const {
         double d0 = 0.0;
         double d1 = 1.0;
 
@@ -224,7 +224,9 @@ public:
         //p_151600_8_ = p_151600_8_ / 1.5; // WiiU?
         //p_151600_10_ = p_151600_10_ / 1.5;
         if (!p_151600_1_.empty() && (int) p_151600_1_.size() >= p_151600_6_ * p_151600_7_) {
-            for (int i = 0; i < (int) p_151600_1_.size(); ++i) { p_151600_1_[i] = 0.0; }
+            for (int i = 0; i < (int) p_151600_1_.size(); ++i) {
+                p_151600_1_[i] = 0.0;
+            }
         } else {
             p_151600_1_ = std::vector<double>(p_151600_6_ * p_151600_7_);
         }
@@ -250,6 +252,17 @@ public:
 };
 
 class NoiseGeneratorImproved {
+
+    static constexpr std::array<int, 256> oneTo255Array = []() constexpr {
+        std::array<int, 256> arr = {};
+        for (int i = 0; i < 256; ++i) {
+            arr[i] = i;
+        }
+        return arr;
+    }();
+
+
+
 public:
     /**
      * An int[512], where the first 256 elements are the numbers 0..255, in random shuffled order,
@@ -272,8 +285,12 @@ public:
         yCoord = rng.nextDouble() * 256.0;
         zCoord = rng.nextDouble() * 256.0;
 
-        // TODO: this could definitely be statically loaded with a memcpy()
-        for (int i = 0; i < 256; i++) { permutations[i] = i; }
+        // for (int i = 0; i < 256; i++) {
+        //     permutations[i] = i;
+        // }
+
+        memcpy(permutations, oneTo255Array.data(), 256 * sizeof(int));
+
 
         for (int l = 0; l < 256; ++l) {
             int j = rng.nextInt(256 - l) + l;
@@ -284,12 +301,12 @@ public:
         }
     }
 
-    double grad(int p_76310_1_, double p_76310_2_, double p_76310_4_, double p_76310_6_) const {
+    ND double grad(int p_76310_1_, double p_76310_2_, double p_76310_4_, double p_76310_6_) const {
         int i = p_76310_1_ & 15;
         return GRAD_X[i] * p_76310_2_ + GRAD_Y[i] * p_76310_4_ + GRAD_Z[i] * p_76310_6_;
     }
 
-    double grad2(int p_76309_1_, double p_76309_2_, double p_76309_4_) const {
+    ND double grad2(int p_76309_1_, double p_76309_2_, double p_76309_4_) const {
         int i = p_76309_1_ & 15;
         return GRAD_2X[i] * p_76309_2_ + GRAD_2Z[i] * p_76309_4_;
     }
@@ -318,8 +335,10 @@ public:
                 if (d17 < (double) i6) { --i6; }
 
                 int k2 = i6 & 255;
-                if (g->getConsole() != lce::CONSOLE::WIIU)
-                    d17 = d17 - (double)i6; // only on xbox (and java)
+                // only on xbox (and java)
+                if (g->getConsole() != lce::CONSOLE::WIIU) {
+                    d17 = d17 - (double)i6;
+                }
                 double d18 = d17 * d17 * d17 * (d17 * (d17 * 6.0 - 15.0) + 10.0);
 
                 for (int j6 = 0; j6 < zSize; ++j6) {
@@ -329,8 +348,10 @@ public:
                     if (d19 < (double) k6) { --k6; }
 
                     int l6 = k6 & 255;
-                    if (g->getConsole() != lce::CONSOLE::WIIU)
-                        d19 = d19 - (double)k6; // only on xbox (and java)
+                    // only on xbox (and java)
+                    if (g->getConsole() != lce::CONSOLE::WIIU) {
+                        d19 = d19 - (double)k6;
+                    }
                     double d20 = d19 * d19 * d19 * (d19 * (d19 * 6.0 - 15.0) + 10.0);
                     i5 = permutations[k2] + 0;
                     j5 = permutations[i5] + l6;
@@ -444,10 +465,10 @@ public:
     std::vector<double> genNoiseOctaves(Generator* g, std::vector<double> noiseArray, c_int xOffset, c_int yOffset,
                                         c_int zOffset, c_int xSize, c_int ySize, c_int zSize,
                                         c_double xScale, c_double yScale, c_double zScale) {
-        if (noiseArray.empty()) {
+        if EXPECT_TRUE (noiseArray.empty()) {
             noiseArray.resize(xSize * ySize * zSize);
         } else {
-            for (int i = 0; i < sizeof(noiseArray); ++i) { noiseArray[i] = 0.0; }
+            for (double & i : noiseArray) { i = 0.0; }
         }
 
         double d3 = 1.0;

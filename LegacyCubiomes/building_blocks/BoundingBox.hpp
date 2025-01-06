@@ -21,6 +21,8 @@ struct BoundingBox {
     ND bool contains(const BoundingBox& other) const;
     MU void encompass(const BoundingBox& other);
 
+    MU bool isVecInside(Pos3D pos) const;
+
     MU void offset(int x, int y, int z);
     MU void offsetY(int y);
 

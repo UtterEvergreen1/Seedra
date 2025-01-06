@@ -69,6 +69,8 @@ namespace generation {
         bool isZombieInfested{};
         GenerationStep generationStep = GenerationStep::FULL;
 
+        BoundingBox structureBoundingBox;
+
         Piece pieceArray[512];
         int pieceArraySize{};
 

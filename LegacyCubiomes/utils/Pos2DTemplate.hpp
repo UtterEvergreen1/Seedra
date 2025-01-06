@@ -33,6 +33,7 @@ public:
     Pos2DTemplate operator-(int other) const;
     bool operator>(classType value) const;
     bool operator<(classType value) const;
+    bool operator<(const Pos2DTemplate& other) const;
     bool operator>=(classType value) const;
     bool operator<=(classType value) const;
 
