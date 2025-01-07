@@ -23,8 +23,8 @@ ChunkPrimer *World::getOrCreateChunk(const Pos2D &pos) {
 
 void World::decorateChunks(const Pos2D &pos, int radius) {
     std::cout << "Decorating chunks around " << pos << " with radius " << radius << std::endl;
-    for (int dx = -radius; dx <= radius; ++dx) {
-        for (int dz = -radius; dz <= radius; ++dz) {
+    for (int dx = -radius; dx <= radius - 1; ++dx) {
+        for (int dz = -radius; dz <= radius - 1; ++dz) {
             Pos2D chunkPos = pos + Pos2D(dx, dz);
             this->getOrCreateChunk(chunkPos);
             Chunk::populateChunk(*g, chunkPos.x, chunkPos.z, this);

@@ -28,7 +28,7 @@ public:
                     blockStateIn = blockStateIn.withRotation(this->rotation);
                 }
                  */
-            worldIn.setBlock(blockPos, blockStateIn->getID()); // flags = 2
+            worldIn.setBlock(blockPos, blockStateIn); // flags = 2
         }
     }
 

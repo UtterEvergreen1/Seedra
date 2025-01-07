@@ -117,11 +117,11 @@ namespace structure_rolls {
                     const int wZ = piece.getWorldZ(x, z);
 
                     // if (bbIn.isVecInside({wX, wY, wZ})) {
-                    if (override || worldIn.getBlock(wX, wY, wZ)->getID() != lce::blocks::ids::AIR_ID) {
+                    if (!override || worldIn.getBlock(wX, wY, wZ)->getID() != lce::blocks::ids::AIR_ID) {
                         if (y != minY && y != maxY && x != minX && x != maxX && z != minZ && z != maxZ) {
-                            worldIn.setBlock(wX, wY, wZ, insideBlockState->getID());
+                            worldIn.setBlock(wX, wY, wZ, insideBlockState);
                         } else {
-                            worldIn.setBlock(wX, wY, wZ, boundaryBlockState->getID());
+                            worldIn.setBlock(wX, wY, wZ, boundaryBlockState);
                         }
                     }
                     // }

@@ -11,91 +11,89 @@
 
 
 namespace structure_rolls {
-    
-
-
-
 
     class Village : public RollsBase, public StructureComponent {
     protected:
         MU int villagersSpawned{};
         generation::Village* villageData{};
         int averageGroundLvl = -1;
+        int structureType = -1;
+        
     public:
 
         Village() = delete;
 
-        explicit Village(generation::Village* villageIn) {
+        explicit Village(generation::Village* villageIn, int structureTypeIn) {
             villageData = villageIn;
+            structureType = structureTypeIn;
         }
 
-        static const lce::blocks::Block* getBiomeSpecificBlockState(const lce::blocks::Block* blockPtr) {
-            return blockPtr;
-            /*
-                if (this->structureType == 1) {
-                    if (blockstateIn.getBlock() == Blocks.LOG || blockstateIn.getBlock() == Blocks.LOG2) {
-                        return Blocks.SANDSTONE.getDefaultState();
-                    }
+        const lce::blocks::Block* getBiomeSpecificBlockState(const lce::blocks::Block* blockPtr) const {
 
-                    if (blockstateIn.getBlock() == Blocks.COBBLESTONE) {
-                        return Blocks.SANDSTONE.getStateFromMeta(BlockSandStone.EnumType.DEFAULT.getMetadata());
-                    }
 
-                    if (blockstateIn.getBlock() == Blocks.PLANKS) {
-                        return Blocks.SANDSTONE.getStateFromMeta(BlockSandStone.EnumType.SMOOTH.getMetadata());
-                    }
-
-                    if (blockstateIn.getBlock() == Blocks.OAK_STAIRS) {
-                        return Blocks.SANDSTONE_STAIRS.getDefaultState().withProperty(BlockStairs.FACING, blockstateIn.getValue(BlockStairs.FACING));
-                    }
-
-                    if (blockstateIn.getBlock() == Blocks.STONE_STAIRS) {
-                        return Blocks.SANDSTONE_STAIRS.getDefaultState().withProperty(BlockStairs.FACING, blockstateIn.getValue(BlockStairs.FACING));
-                    }
-
-                    if (blockstateIn.getBlock() == Blocks.GRAVEL) {
-                        return Blocks.SANDSTONE.getDefaultState();
-                    }
-                } else if (this->structureType == 3) {
-                    if (blockstateIn.getBlock() == Blocks.LOG || blockstateIn.getBlock() == Blocks.LOG2) {
-                        return Blocks.LOG.getDefaultState().withProperty(BlockOldLog.VARIANT, BlockPlanks.EnumType.SPRUCE).withProperty(BlockLog.LOG_AXIS, blockstateIn.getValue(BlockLog.LOG_AXIS));
-                    }
-
-                    if (blockstateIn.getBlock() == Blocks.PLANKS) {
-                        return Blocks.PLANKS.getDefaultState().withProperty(BlockPlanks.VARIANT, BlockPlanks.EnumType.SPRUCE);
-                    }
-
-                    if (blockstateIn.getBlock() == Blocks.OAK_STAIRS) {
-                        return Blocks.SPRUCE_STAIRS.getDefaultState().withProperty(BlockStairs.FACING, blockstateIn.getValue(BlockStairs.FACING));
-                    }
-
-                    if (blockstateIn.getBlock() == Blocks.OAK_FENCE) {
-                        return Blocks.SPRUCE_FENCE.getDefaultState();
-                    }
-                } else if (this->structureType == 2) {
-                    if (blockstateIn.getBlock() == Blocks.LOG || blockstateIn.getBlock() == Blocks.LOG2) {
-                        return Blocks.LOG2.getDefaultState().withProperty(BlockNewLog.VARIANT, BlockPlanks.EnumType.ACACIA).withProperty(BlockLog.LOG_AXIS, blockstateIn.getValue(BlockLog.LOG_AXIS));
-                    }
-
-                    if (blockstateIn.getBlock() == Blocks.PLANKS) {
-                        return Blocks.PLANKS.getDefaultState().withProperty(BlockPlanks.VARIANT, BlockPlanks.EnumType.ACACIA);
-                    }
-
-                    if (blockstateIn.getBlock() == Blocks.OAK_STAIRS) {
-                        return Blocks.ACACIA_STAIRS.getDefaultState().withProperty(BlockStairs.FACING, blockstateIn.getValue(BlockStairs.FACING));
-                    }
-
-                    if (blockstateIn.getBlock() == Blocks.COBBLESTONE) {
-                        return Blocks.LOG2.getDefaultState().withProperty(BlockNewLog.VARIANT, BlockPlanks.EnumType.ACACIA).withProperty(BlockLog.LOG_AXIS, BlockLog.EnumAxis.Y);
-                    }
-
-                    if (blockstateIn.getBlock() == Blocks.OAK_FENCE) {
-                        return Blocks.ACACIA_FENCE.getDefaultState();
-                    }
+            if (this->structureType == 1) {
+                if (blockPtr == &lce::blocks::BlocksInit::OAK_WOOD/* || blockPtr == Blocks.LOG2*/) {
+                    return &lce::blocks::BlocksInit::SANDSTONE;
                 }
 
-                return blockstateIn;
-    */
+                if (blockPtr == &lce::blocks::BlocksInit::COBBLESTONE) {
+                    return &lce::blocks::BlocksInit::SANDSTONE;
+                }
+
+                if (blockPtr == &lce::blocks::BlocksInit::OAK_WOOD_PLANK) {
+                    return &lce::blocks::BlocksInit::SMOOTH_SANDSTONE;
+                }
+
+                if (blockPtr == &lce::blocks::BlocksInit::OAK_WOOD_STAIRS) {
+                    return &lce::blocks::BlocksInit::SANDSTONE_STAIRS; // .withProperty(BlockStairs.FACING, blockstateIn.getValue(BlockStairs.FACING));
+                }
+
+                if (blockPtr == &lce::blocks::BlocksInit::COBBLESTONE_STAIRS) {
+                    return &lce::blocks::BlocksInit::SANDSTONE_STAIRS; // .withProperty(BlockStairs.FACING, blockstateIn.getValue(BlockStairs.FACING));
+                }
+
+                if (blockPtr == &lce::blocks::BlocksInit::GRAVEL) {
+                    return &lce::blocks::BlocksInit::SANDSTONE;
+                }
+            } else if (this->structureType == 3) {
+                if (blockPtr == &lce::blocks::BlocksInit::OAK_WOOD/* || blockPtr == Blocks.LOG2*/) {
+                    return &lce::blocks::BlocksInit::SPRUCE_WOOD; // .withProperty(BlockLog.LOG_AXIS, blockstateIn.getValue(BlockLog.LOG_AXIS));
+                }
+
+                if (blockPtr == &lce::blocks::BlocksInit::OAK_WOOD_PLANK) {
+                    return &lce::blocks::BlocksInit::SPRUCE_WOOD_PLANK;
+                }
+
+                if (blockPtr == &lce::blocks::BlocksInit::OAK_WOOD_STAIRS) {
+                    return &lce::blocks::BlocksInit::SPRUCE_WOOD_STAIRS; // .withProperty(BlockStairs.FACING, blockstateIn.getValue(BlockStairs.FACING));
+                }
+
+                if (blockPtr == &lce::blocks::BlocksInit::OAK_FENCE) {
+                    return &lce::blocks::BlocksInit::SPRUCE_FENCE;
+                }
+            } else if (this->structureType == 2) {
+                if (blockPtr == &lce::blocks::BlocksInit::OAK_WOOD/* || blockPtr == Blocks.LOG2*/) {
+                    return &lce::blocks::BlocksInit::ACACIA_WOOD; // .withProperty(BlockLog.LOG_AXIS, blockstateIn.getValue(BlockLog.LOG_AXIS));
+                }
+
+                if (blockPtr == &lce::blocks::BlocksInit::OAK_WOOD_PLANK) {
+                    return &lce::blocks::BlocksInit::ACACIA_WOOD_PLANK;
+                }
+
+                if (blockPtr == &lce::blocks::BlocksInit::OAK_WOOD_STAIRS) {
+                    return &lce::blocks::BlocksInit::ACACIA_WOOD_STAIRS; // .withProperty(BlockStairs.FACING, blockstateIn.getValue(BlockStairs.FACING));
+                }
+
+                if (blockPtr == &lce::blocks::BlocksInit::COBBLESTONE) {
+                    return &lce::blocks::BlocksInit::ACACIA_WOOD; // .withProperty(BlockLog.LOG_AXIS, BlockLog.EnumAxis.Y);
+                }
+
+                if (blockPtr == &lce::blocks::BlocksInit::OAK_FENCE) {
+                    return &lce::blocks::BlocksInit::ACACIA_FENCE;
+                }
+            }
+
+            return blockPtr;
         }
 
         MU ND int getAverageGroundLevel(World& worldIn, const BoundingBox& structureBB) const {
@@ -134,12 +132,14 @@ namespace structure_rolls {
         }
 
     };
+    
 
     class MU Church final : public Village {
     public:
         Church() = delete;
 
-        MU explicit Church(generation::Village* villageIn, const Piece& p) : Village(villageIn) {
+        MU explicit Church(generation::Village* villageIn, const Piece& p, int structureType)
+            : Village(villageIn, structureType) {
             piece = p;
         }
 
@@ -150,23 +150,23 @@ namespace structure_rolls {
                 this->piece.offset(0, this->averageGroundLvl - this->piece.maxY + 12 - 1, 0);
             }
 
-            const lce::blocks::Block* cobblestone = &lce::blocks::BlocksInit::COBBLESTONE;
+            const lce::blocks::Block* cobblestone = getBiomeSpecificBlockState(&lce::blocks::BlocksInit::COBBLESTONE);
             const lce::blocks::Block* iBlockState1 = getBiomeSpecificBlockState(&lce::blocks::BlocksInit::COBBLESTONE_STAIRS); // .withProperty(BlockStairs.FACING, FACING::NORTH));
             const lce::blocks::Block* iBlockState2 = getBiomeSpecificBlockState(&lce::blocks::BlocksInit::COBBLESTONE_STAIRS); // .withProperty(BlockStairs.FACING, FACING::WEST));
             const lce::blocks::Block* iBlockState3 = getBiomeSpecificBlockState(&lce::blocks::BlocksInit::COBBLESTONE_STAIRS); // .withProperty(BlockStairs.FACING, FACING::EAST));
-            fillWithBlocks(worldIn, piece, 1, 1, 1, 3, 3, 7, &lce::blocks::BlocksInit::AIR, &lce::blocks::BlocksInit::AIR, true);
-            fillWithBlocks(worldIn, piece, 1, 5, 1, 3, 9, 3, &lce::blocks::BlocksInit::AIR, &lce::blocks::BlocksInit::AIR, true);
-            fillWithBlocks(worldIn, piece, 1, 0, 0, 3, 0, 8, cobblestone, cobblestone, true);
-            fillWithBlocks(worldIn, piece, 1, 1, 0, 3, 10, 0, cobblestone, cobblestone, true);
-            fillWithBlocks(worldIn, piece, 0, 1, 1, 0, 10, 3, cobblestone, cobblestone, true);
-            fillWithBlocks(worldIn, piece, 4, 1, 1, 4, 10, 3, cobblestone, cobblestone, true);
-            fillWithBlocks(worldIn, piece, 0, 0, 4, 0, 4, 7, cobblestone, cobblestone, true);
-            fillWithBlocks(worldIn, piece, 4, 0, 4, 4, 4, 7, cobblestone, cobblestone, true);
-            fillWithBlocks(worldIn, piece, 1, 1, 8, 3, 4, 8, cobblestone, cobblestone, true);
-            fillWithBlocks(worldIn, piece, 1, 5, 4, 3, 10, 4, cobblestone, cobblestone, true);
-            fillWithBlocks(worldIn, piece, 1, 5, 5, 3, 5, 7, cobblestone, cobblestone, true);
-            fillWithBlocks(worldIn, piece, 0, 9, 0, 4, 9, 4, cobblestone, cobblestone, true);
-            fillWithBlocks(worldIn, piece, 0, 4, 0, 4, 4, 4, cobblestone, cobblestone, true);
+            fillWithBlocks(worldIn, piece, 1, 1, 1, 3, 3, 7, &lce::blocks::BlocksInit::AIR, &lce::blocks::BlocksInit::AIR, false);
+            fillWithBlocks(worldIn, piece, 1, 5, 1, 3, 9, 3, &lce::blocks::BlocksInit::AIR, &lce::blocks::BlocksInit::AIR, false);
+            fillWithBlocks(worldIn, piece, 1, 0, 0, 3, 0, 8, cobblestone, cobblestone, false);
+            fillWithBlocks(worldIn, piece, 1, 1, 0, 3, 10, 0, cobblestone, cobblestone, false);
+            fillWithBlocks(worldIn, piece, 0, 1, 1, 0, 10, 3, cobblestone, cobblestone, false);
+            fillWithBlocks(worldIn, piece, 4, 1, 1, 4, 10, 3, cobblestone, cobblestone, false);
+            fillWithBlocks(worldIn, piece, 0, 0, 4, 0, 4, 7, cobblestone, cobblestone, false);
+            fillWithBlocks(worldIn, piece, 4, 0, 4, 4, 4, 7, cobblestone, cobblestone, false);
+            fillWithBlocks(worldIn, piece, 1, 1, 8, 3, 4, 8, cobblestone, cobblestone, false);
+            fillWithBlocks(worldIn, piece, 1, 5, 4, 3, 10, 4, cobblestone, cobblestone, false);
+            fillWithBlocks(worldIn, piece, 1, 5, 5, 3, 5, 7, cobblestone, cobblestone, false);
+            fillWithBlocks(worldIn, piece, 0, 9, 0, 4, 9, 4, cobblestone, cobblestone, false);
+            fillWithBlocks(worldIn, piece, 0, 4, 0, 4, 4, 4, cobblestone, cobblestone, false);
             this->setBlockState(worldIn, cobblestone, 0, 11, 2, structureBB);
             this->setBlockState(worldIn, cobblestone, 4, 11, 2, structureBB);
             this->setBlockState(worldIn, cobblestone, 2, 11, 0, structureBB);
@@ -211,8 +211,8 @@ namespace structure_rolls {
             this->setBlockState(worldIn, &lce::blocks::BlocksInit::AIR, 2, 2, 0, structureBB);
             this->func_189927_a(worldIn, structureBB, rng, 2, 1, 0, FACING::NORTH);
 
-            if (this->getBlockStateFromPos(worldIn, 2, 0, -1, structureBB)->getID() == lce::blocks::ids::AIR_ID &&
-                this->getBlockStateFromPos(worldIn, 2, -1, -1, structureBB)->getID() != lce::blocks::ids::AIR_ID) { // material air
+            if (lce::blocks::ids::isReplaceableBlock(this->getBlockStateFromPos(worldIn, 2, 0, -1, structureBB)->getID()) &&
+                !lce::blocks::ids::isReplaceableBlock(this->getBlockStateFromPos(worldIn, 2, -1, -1, structureBB)->getID())) {
                 this->setBlockState(worldIn, iBlockState1, 2, 0, -1, structureBB);
 
                 if (this->getBlockStateFromPos(worldIn, 2, -1, -1, structureBB) == &lce::blocks::BlocksInit::GRASS_PATH) {
@@ -234,23 +234,13 @@ namespace structure_rolls {
     };
 
     class MU Field1 final : public Village {
-        const lce::blocks::Block* cropTypeA{};
-        const lce::blocks::Block* cropTypeB{};
-        const lce::blocks::Block* cropTypeC{};
-        const lce::blocks::Block* cropTypeD{};
     public:
-
         Field1() = delete;
 
-        MU explicit Field1(generation::Village* villageIn, const Piece& p) : Village(villageIn) {
-            this->piece = p;
-            this->cropTypeA = getRandomCropType(p.additionalData >> 15 & 0xF);
-            this->cropTypeB = getRandomCropType(p.additionalData >> 10 & 0xF);
-            this->cropTypeC = getRandomCropType(p.additionalData >> 5 & 0xF);
-            this->cropTypeD = getRandomCropType(p.additionalData & 0xF);
+        MU explicit Field1(generation::Village* villageIn, const Piece& p, int structureType)
+            : Village(villageIn, structureType) {
+            piece = p;
         }
-
-
 
         MU static const lce::blocks::Block* getRandomCropType(const int data) {
             switch (data) {
@@ -267,6 +257,19 @@ namespace structure_rolls {
             }
         }
 
+
+        MU static int getMaxAgeFromCrop(int id) {
+            switch (id) {
+                case lce::blocks::ids::CARROTS_ID:
+                case lce::blocks::ids::POTATOES_ID:
+                case lce::blocks::ids::BEETROOT_BLOCK_ID:
+                default:
+                    return 4;
+                case lce::blocks::ids::WHEAT_CROPS_ID:
+                    return 8;
+            }
+        }
+
         bool addComponentParts(World& worldIn, RNG& rng, const BoundingBox& structureBB) override {
             if (this->averageGroundLvl < 0) {
                 this->averageGroundLvl = getAverageGroundLevel(worldIn, structureBB);
@@ -275,36 +278,40 @@ namespace structure_rolls {
             }
 
             const lce::blocks::Block* iBlockState = getBiomeSpecificBlockState(&lce::blocks::BlocksInit::OAK_WOOD);
-            fillWithBlocks(worldIn, piece, 0, 1, 0, 12, 4, 8, &lce::blocks::BlocksInit::AIR, &lce::blocks::BlocksInit::AIR, true);
-            fillWithBlocks(worldIn, piece, 1, 0, 1, 2, 0, 7, &lce::blocks::BlocksInit::FARMLAND, &lce::blocks::BlocksInit::FARMLAND, true);
-            fillWithBlocks(worldIn, piece, 4, 0, 1, 5, 0, 7, &lce::blocks::BlocksInit::FARMLAND, &lce::blocks::BlocksInit::FARMLAND, true);
-            fillWithBlocks(worldIn, piece, 7, 0, 1, 8, 0, 7, &lce::blocks::BlocksInit::FARMLAND, &lce::blocks::BlocksInit::FARMLAND, true);
-            fillWithBlocks(worldIn, piece, 10, 0, 1, 11, 0, 7, &lce::blocks::BlocksInit::FARMLAND, &lce::blocks::BlocksInit::FARMLAND, true);
-            fillWithBlocks(worldIn, piece, 0, 0, 0, 0, 0, 8, iBlockState, iBlockState, true);
-            fillWithBlocks(worldIn, piece, 6, 0, 0, 6, 0, 8, iBlockState, iBlockState, true);
-            fillWithBlocks(worldIn, piece, 12, 0, 0, 12, 0, 8, iBlockState, iBlockState, true);
-            fillWithBlocks(worldIn, piece, 1, 0, 0, 11, 0, 0, iBlockState, iBlockState, true);
-            fillWithBlocks(worldIn, piece, 1, 0, 8, 11, 0, 8, iBlockState, iBlockState, true);
-            fillWithBlocks(worldIn, piece, 3, 0, 1, 3, 0, 7, &lce::blocks::BlocksInit::FLOWING_WATER, &lce::blocks::BlocksInit::FLOWING_WATER, true);
-            fillWithBlocks(worldIn, piece, 9, 0, 1, 9, 0, 7, &lce::blocks::BlocksInit::STILL_WATER, &lce::blocks::BlocksInit::FLOWING_WATER, true);
+            fillWithBlocks(worldIn, piece, 0, 1, 0, 12, 4, 8, &lce::blocks::BlocksInit::AIR, &lce::blocks::BlocksInit::AIR, false);
+            fillWithBlocks(worldIn, piece, 1, 0, 1, 2, 0, 7, &lce::blocks::BlocksInit::FARMLAND, &lce::blocks::BlocksInit::FARMLAND, false);
+            fillWithBlocks(worldIn, piece, 4, 0, 1, 5, 0, 7, &lce::blocks::BlocksInit::FARMLAND, &lce::blocks::BlocksInit::FARMLAND, false);
+            fillWithBlocks(worldIn, piece, 7, 0, 1, 8, 0, 7, &lce::blocks::BlocksInit::FARMLAND, &lce::blocks::BlocksInit::FARMLAND, false);
+            fillWithBlocks(worldIn, piece, 10, 0, 1, 11, 0, 7, &lce::blocks::BlocksInit::FARMLAND, &lce::blocks::BlocksInit::FARMLAND, false);
+            fillWithBlocks(worldIn, piece, 0, 0, 0, 0, 0, 8, iBlockState, iBlockState, false);
+            fillWithBlocks(worldIn, piece, 6, 0, 0, 6, 0, 8, iBlockState, iBlockState, false);
+            fillWithBlocks(worldIn, piece, 12, 0, 0, 12, 0, 8, iBlockState, iBlockState, false);
+            fillWithBlocks(worldIn, piece, 1, 0, 0, 11, 0, 0, iBlockState, iBlockState, false);
+            fillWithBlocks(worldIn, piece, 1, 0, 8, 11, 0, 8, iBlockState, iBlockState, false);
+            fillWithBlocks(worldIn, piece, 3, 0, 1, 3, 0, 7, &lce::blocks::BlocksInit::FLOWING_WATER, &lce::blocks::BlocksInit::FLOWING_WATER, false);
+            fillWithBlocks(worldIn, piece, 9, 0, 1, 9, 0, 7, &lce::blocks::BlocksInit::STILL_WATER, &lce::blocks::BlocksInit::FLOWING_WATER, false);
 
+            const lce::blocks::Block* cropTypeA = getRandomCropType(piece.additionalData >> 15 & 0xF);
+            const lce::blocks::Block* cropTypeB = getRandomCropType(piece.additionalData >> 10 & 0xF);
+            const lce::blocks::Block* cropTypeC = getRandomCropType(piece.additionalData >> 5 & 0xF);
+            const lce::blocks::Block* cropTypeD = getRandomCropType(piece.additionalData & 0xF);
             for (int i = 1; i <= 7; ++i) {
-                int j = 0; // ((BlockCrops) this->cropTypeA).getMaxAge();
+                int j = getMaxAgeFromCrop(cropTypeA->getID());
                 int k = j / 3;
-                this->setBlockState(worldIn, this->cropTypeA->getStateFromMeta(rng.nextInt(k, j)), 1, 1, i, structureBB);
-                this->setBlockState(worldIn, this->cropTypeA->getStateFromMeta(rng.nextInt(k, j)), 2, 1, i, structureBB);
-                const int l = 0; // ((BlockCrops) this->cropTypeB).getMaxAge();
+                this->setBlockState(worldIn, cropTypeA->getStateFromMeta(rng.nextInt(k, j)), 1, 1, i, structureBB);
+                this->setBlockState(worldIn, cropTypeA->getStateFromMeta(rng.nextInt(k, j)), 2, 1, i, structureBB);
+                const int l = getMaxAgeFromCrop(cropTypeB->getID());
                 const int i1 = l / 3;
-                this->setBlockState(worldIn, this->cropTypeB->getStateFromMeta(rng.nextInt(i1, l)), 4, 1, i, structureBB);
-                this->setBlockState(worldIn, this->cropTypeB->getStateFromMeta(rng.nextInt(i1, l)), 5, 1, i, structureBB);
-                const int j1 = 0; // ((BlockCrops) this->cropTypeC).getMaxAge();
+                this->setBlockState(worldIn, cropTypeB->getStateFromMeta(rng.nextInt(i1, l)), 4, 1, i, structureBB);
+                this->setBlockState(worldIn, cropTypeB->getStateFromMeta(rng.nextInt(i1, l)), 5, 1, i, structureBB);
+                const int j1 = 0; getMaxAgeFromCrop(cropTypeC->getID());
                 const int k1 = j1 / 3;
-                this->setBlockState(worldIn, this->cropTypeC->getStateFromMeta(rng.nextInt(k1, j1)), 7, 1, i, structureBB);
-                this->setBlockState(worldIn, this->cropTypeC->getStateFromMeta(rng.nextInt(k1, j1)), 8, 1, i, structureBB);
-                const int l1 = 0; // ((BlockCrops) this->cropTypeD).getMaxAge();
+                this->setBlockState(worldIn, cropTypeC->getStateFromMeta(rng.nextInt(k1, j1)), 7, 1, i, structureBB);
+                this->setBlockState(worldIn, cropTypeC->getStateFromMeta(rng.nextInt(k1, j1)), 8, 1, i, structureBB);
+                const int l1 = 0; getMaxAgeFromCrop(cropTypeD->getID());
                 const int i2 = l1 / 3;
-                this->setBlockState(worldIn, this->cropTypeD->getStateFromMeta(rng.nextInt(i2, l1)), 10, 1, i, structureBB);
-                this->setBlockState(worldIn, this->cropTypeD->getStateFromMeta(rng.nextInt(i2, l1)), 11, 1, i, structureBB);
+                this->setBlockState(worldIn, cropTypeD->getStateFromMeta(rng.nextInt(i2, l1)), 10, 1, i, structureBB);
+                this->setBlockState(worldIn, cropTypeD->getStateFromMeta(rng.nextInt(i2, l1)), 11, 1, i, structureBB);
             }
 
             for (int j2 = 0; j2 < 9; ++j2) {
@@ -319,16 +326,13 @@ namespace structure_rolls {
     };
 
     class MU Field2 final : public Village {
-        const lce::blocks::Block* cropTypeA{};
-        const lce::blocks::Block* cropTypeB{};
     public:
 
         Field2() = delete;
 
-        MU explicit Field2(generation::Village* villageIn, const Piece& p) : Village(villageIn) {
-            this->piece = p;
-            this->cropTypeA = getRandomCropType(p.additionalData >> 5 & 0xF);
-            this->cropTypeB = getRandomCropType(p.additionalData & 0xF);
+        MU explicit Field2(generation::Village* villageIn, const Piece& p, int structureType)
+            : Village(villageIn, structureType) {
+            piece = p;
         }
 
         MU static const lce::blocks::Block* getRandomCropType(const int data) {
@@ -346,6 +350,18 @@ namespace structure_rolls {
             }
         }
 
+        MU static int getMaxAgeFromCrop(int id) {
+            switch (id) {
+                case lce::blocks::ids::CARROTS_ID:
+                case lce::blocks::ids::POTATOES_ID:
+                case lce::blocks::ids::BEETROOT_BLOCK_ID:
+                default:
+                    return 4;
+                case lce::blocks::ids::WHEAT_CROPS_ID:
+                    return 8;
+            }
+        }
+
         bool addComponentParts(World& worldIn, RNG& rng, const BoundingBox& structureBB) override {
             if (this->averageGroundLvl < 0) {
                 this->averageGroundLvl = getAverageGroundLevel(worldIn, structureBB);
@@ -355,24 +371,26 @@ namespace structure_rolls {
             const lce::blocks::Block* iBlockState = getBiomeSpecificBlockState(&lce::blocks::BlocksInit::OAK_WOOD);
             const lce::blocks::Block* farmLand = &lce::blocks::BlocksInit::FARMLAND;
             const lce::blocks::Block* stillWater = &lce::blocks::BlocksInit::STILL_WATER;
-            fillWithBlocks(worldIn, piece, 0, 1, 0, 6, 4, 8, &lce::blocks::BlocksInit::AIR, &lce::blocks::BlocksInit::AIR, true);
-            fillWithBlocks(worldIn, piece, 1, 0, 1, 2, 0, 7, farmLand, farmLand, true);
-            fillWithBlocks(worldIn, piece, 4, 0, 1, 5, 0, 7, farmLand, farmLand, true);
-            fillWithBlocks(worldIn, piece, 0, 0, 0, 0, 0, 8, iBlockState, iBlockState, true);
-            fillWithBlocks(worldIn, piece, 6, 0, 0, 6, 0, 8, iBlockState, iBlockState, true);
-            fillWithBlocks(worldIn, piece, 1, 0, 0, 5, 0, 0, iBlockState, iBlockState, true);
-            fillWithBlocks(worldIn, piece, 1, 0, 8, 5, 0, 8, iBlockState, iBlockState, true);
-            fillWithBlocks(worldIn, piece, 3, 0, 1, 3, 0, 7, stillWater, stillWater, true);
+            fillWithBlocks(worldIn, piece, 0, 1, 0, 6, 4, 8, &lce::blocks::BlocksInit::AIR, &lce::blocks::BlocksInit::AIR, false);
+            fillWithBlocks(worldIn, piece, 1, 0, 1, 2, 0, 7, farmLand, farmLand, false);
+            fillWithBlocks(worldIn, piece, 4, 0, 1, 5, 0, 7, farmLand, farmLand, false);
+            fillWithBlocks(worldIn, piece, 0, 0, 0, 0, 0, 8, iBlockState, iBlockState, false);
+            fillWithBlocks(worldIn, piece, 6, 0, 0, 6, 0, 8, iBlockState, iBlockState, false);
+            fillWithBlocks(worldIn, piece, 1, 0, 0, 5, 0, 0, iBlockState, iBlockState, false);
+            fillWithBlocks(worldIn, piece, 1, 0, 8, 5, 0, 8, iBlockState, iBlockState, false);
+            fillWithBlocks(worldIn, piece, 3, 0, 1, 3, 0, 7, stillWater, stillWater, false);
 
+            const lce::blocks::Block* cropTypeA = getRandomCropType(piece.additionalData >> 5 & 0xF);
+            const lce::blocks::Block* cropTypeB = getRandomCropType(piece.additionalData & 0xF);
             for (int i = 1; i <= 7; ++i) {
-                int j = 0; // ((BlockCrops) this->cropTypeA).getMaxAge();
+                int j = getMaxAgeFromCrop(cropTypeA->getID());
                 int k = j / 3;
-                this->setBlockState(worldIn, this->cropTypeA->getStateFromMeta(rng.nextInt(k, j)), 1, 1, i, structureBB);
-                this->setBlockState(worldIn, this->cropTypeA->getStateFromMeta(rng.nextInt(k, j)), 2, 1, i, structureBB);
-                int l = 0; // ((BlockCrops) this->cropTypeB).getMaxAge();
+                this->setBlockState(worldIn, cropTypeA->getStateFromMeta(rng.nextInt(k, j)), 1, 1, i, structureBB);
+                this->setBlockState(worldIn, cropTypeA->getStateFromMeta(rng.nextInt(k, j)), 2, 1, i, structureBB);
+                int l = getMaxAgeFromCrop(cropTypeB->getID());
                 int i1=l / 3;
-                this->setBlockState(worldIn, this->cropTypeB->getStateFromMeta(rng.nextInt(i1, l)), 4, 1, i, structureBB);
-                this->setBlockState(worldIn, this->cropTypeB->getStateFromMeta(rng.nextInt(i1, l)), 5, 1, i, structureBB);
+                this->setBlockState(worldIn, cropTypeB->getStateFromMeta(rng.nextInt(i1, l)), 4, 1, i, structureBB);
+                this->setBlockState(worldIn, cropTypeB->getStateFromMeta(rng.nextInt(i1, l)), 5, 1, i, structureBB);
             }
 
             for (int j1=0; j1 < 9; ++j1) {
@@ -391,8 +409,9 @@ namespace structure_rolls {
 
         Hall() = delete;
 
-        MU explicit Hall(generation::Village* villageIn, const Piece& p) : Village(villageIn) {
-            this->piece = p;
+        MU explicit Hall(generation::Village* villageIn, const Piece& p, int structureType)
+            : Village(villageIn, structureType) {
+            piece = p;
         }
 
         bool addComponentParts(World& worldIn, RNG& rng, const BoundingBox& structureBB) override {
@@ -408,23 +427,23 @@ namespace structure_rolls {
             const lce::blocks::Block* iBlockState4 = getBiomeSpecificBlockState(&lce::blocks::BlocksInit::OAK_WOOD_PLANK);
             const lce::blocks::Block* iBlockState5 = getBiomeSpecificBlockState(&lce::blocks::BlocksInit::OAK_WOOD);
             const lce::blocks::Block* iBlockState6 = getBiomeSpecificBlockState(&lce::blocks::BlocksInit::OAK_FENCE);
-            fillWithBlocks(worldIn, piece, 1, 1, 1, 7, 4, 4, &lce::blocks::BlocksInit::AIR, &lce::blocks::BlocksInit::AIR, true);
-            fillWithBlocks(worldIn, piece, 2, 1, 6, 8, 4, 10, &lce::blocks::BlocksInit::AIR, &lce::blocks::BlocksInit::AIR, true);
-            fillWithBlocks(worldIn, piece, 2, 0, 6, 8, 0, 10, &lce::blocks::BlocksInit::DIRT, &lce::blocks::BlocksInit::DIRT, true);
+            fillWithBlocks(worldIn, piece, 1, 1, 1, 7, 4, 4, &lce::blocks::BlocksInit::AIR, &lce::blocks::BlocksInit::AIR, false);
+            fillWithBlocks(worldIn, piece, 2, 1, 6, 8, 4, 10, &lce::blocks::BlocksInit::AIR, &lce::blocks::BlocksInit::AIR, false);
+            fillWithBlocks(worldIn, piece, 2, 0, 6, 8, 0, 10, &lce::blocks::BlocksInit::DIRT, &lce::blocks::BlocksInit::DIRT, false);
             this->setBlockState(worldIn, iBlockState, 6, 0, 6, structureBB);
-            fillWithBlocks(worldIn, piece, 2, 1, 6, 2, 1, 10, iBlockState6, iBlockState6, true);
-            fillWithBlocks(worldIn, piece, 8, 1, 6, 8, 1, 10, iBlockState6, iBlockState6, true);
-            fillWithBlocks(worldIn, piece, 3, 1, 10, 7, 1, 10, iBlockState6, iBlockState6, true);
-            fillWithBlocks(worldIn, piece, 1, 0, 1, 7, 0, 4, iBlockState4, iBlockState4, true);
-            fillWithBlocks(worldIn, piece, 0, 0, 0, 0, 3, 5, iBlockState, iBlockState, true);
-            fillWithBlocks(worldIn, piece, 8, 0, 0, 8, 3, 5, iBlockState, iBlockState, true);
-            fillWithBlocks(worldIn, piece, 1, 0, 0, 7, 1, 0, iBlockState, iBlockState, true);
-            fillWithBlocks(worldIn, piece, 1, 0, 5, 7, 1, 5, iBlockState, iBlockState, true);
-            fillWithBlocks(worldIn, piece, 1, 2, 0, 7, 3, 0, iBlockState4, iBlockState4, true);
-            fillWithBlocks(worldIn, piece, 1, 2, 5, 7, 3, 5, iBlockState4, iBlockState4, true);
-            fillWithBlocks(worldIn, piece, 0, 4, 1, 8, 4, 1, iBlockState4, iBlockState4, true);
-            fillWithBlocks(worldIn, piece, 0, 4, 4, 8, 4, 4, iBlockState4, iBlockState4, true);
-            fillWithBlocks(worldIn, piece, 0, 5, 2, 8, 5, 3, iBlockState4, iBlockState4, true);
+            fillWithBlocks(worldIn, piece, 2, 1, 6, 2, 1, 10, iBlockState6, iBlockState6, false);
+            fillWithBlocks(worldIn, piece, 8, 1, 6, 8, 1, 10, iBlockState6, iBlockState6, false);
+            fillWithBlocks(worldIn, piece, 3, 1, 10, 7, 1, 10, iBlockState6, iBlockState6, false);
+            fillWithBlocks(worldIn, piece, 1, 0, 1, 7, 0, 4, iBlockState4, iBlockState4, false);
+            fillWithBlocks(worldIn, piece, 0, 0, 0, 0, 3, 5, iBlockState, iBlockState, false);
+            fillWithBlocks(worldIn, piece, 8, 0, 0, 8, 3, 5, iBlockState, iBlockState, false);
+            fillWithBlocks(worldIn, piece, 1, 0, 0, 7, 1, 0, iBlockState, iBlockState, false);
+            fillWithBlocks(worldIn, piece, 1, 0, 5, 7, 1, 5, iBlockState, iBlockState, false);
+            fillWithBlocks(worldIn, piece, 1, 2, 0, 7, 3, 0, iBlockState4, iBlockState4, false);
+            fillWithBlocks(worldIn, piece, 1, 2, 5, 7, 3, 5, iBlockState4, iBlockState4, false);
+            fillWithBlocks(worldIn, piece, 0, 4, 1, 8, 4, 1, iBlockState4, iBlockState4, false);
+            fillWithBlocks(worldIn, piece, 0, 4, 4, 8, 4, 4, iBlockState4, iBlockState4, false);
+            fillWithBlocks(worldIn, piece, 0, 5, 2, 8, 5, 3, iBlockState4, iBlockState4, false);
             this->setBlockState(worldIn, iBlockState4, 0, 4, 2, structureBB);
             this->setBlockState(worldIn, iBlockState4, 0, 4, 3, structureBB);
             this->setBlockState(worldIn, iBlockState4, 8, 4, 2, structureBB);
@@ -457,7 +476,7 @@ namespace structure_rolls {
             this->setBlockState(worldIn, iBlockState4, 1, 1, 4, structureBB);
             this->setBlockState(worldIn, iBlockState7, 2, 1, 4, structureBB);
             this->setBlockState(worldIn, iBlockState3, 1, 1, 3, structureBB);
-            fillWithBlocks(worldIn, piece, 5, 0, 1, 7, 0, 3, &lce::blocks::BlocksInit::DOUBLE_STONE_SLAB, &lce::blocks::BlocksInit::DOUBLE_STONE_SLAB, true);
+            fillWithBlocks(worldIn, piece, 5, 0, 1, 7, 0, 3, &lce::blocks::BlocksInit::DOUBLE_STONE_SLAB, &lce::blocks::BlocksInit::DOUBLE_STONE_SLAB, false);
             this->setBlockState(worldIn, &lce::blocks::BlocksInit::DOUBLE_STONE_SLAB, 6, 1, 1, structureBB);
             this->setBlockState(worldIn, &lce::blocks::BlocksInit::DOUBLE_STONE_SLAB, 6, 1, 2, structureBB);
             this->setBlockState(worldIn, &lce::blocks::BlocksInit::AIR, 2, 1, 0, structureBB);
@@ -465,8 +484,8 @@ namespace structure_rolls {
             this->func_189926_a(worldIn, FACING::NORTH, 2, 3, 1, structureBB);
             this->func_189927_a(worldIn, structureBB, rng, 2, 1, 0, FACING::NORTH);
 
-            if (this->getBlockStateFromPos(worldIn, 2, 0, -1, structureBB)->getID() == lce::blocks::ids::AIR_ID &&
-                this->getBlockStateFromPos(worldIn, 2, -1, -1, structureBB)->getID() != lce::blocks::ids::AIR_ID) { // material air
+            if (lce::blocks::ids::isReplaceableBlock(this->getBlockStateFromPos(worldIn, 2, 0, -1, structureBB)->getID()) &&
+                !lce::blocks::ids::isReplaceableBlock(this->getBlockStateFromPos(worldIn, 2, -1, -1, structureBB)->getID())) {
                 this->setBlockState(worldIn, iBlockState7, 2, 0, -1, structureBB);
 
                 if (this->getBlockStateFromPos(worldIn, 2, -1, -1, structureBB) == &lce::blocks::BlocksInit::GRASS_PATH) {
@@ -496,8 +515,9 @@ namespace structure_rolls {
 
         House1() = delete;
 
-        MU explicit House1(generation::Village* villageIn, const Piece& p) : Village(villageIn) {
-            this->piece = p;
+        MU explicit House1(generation::Village* villageIn, const Piece& p, int structureType)
+            : Village(villageIn, structureType) {
+            piece = p;
         }
 
         bool addComponentParts(World& worldIn, RNG& rng, const BoundingBox& structureBB) override {
@@ -513,11 +533,11 @@ namespace structure_rolls {
             const lce::blocks::Block* iBlockState4 = getBiomeSpecificBlockState(&lce::blocks::BlocksInit::OAK_WOOD_PLANK);
             const lce::blocks::Block* iBlockState5 = getBiomeSpecificBlockState(&lce::blocks::BlocksInit::COBBLESTONE_STAIRS); // .withProperty(BlockStairs.FACING, FACING::NORTH));
             const lce::blocks::Block* iBlockState6 = getBiomeSpecificBlockState(&lce::blocks::BlocksInit::OAK_FENCE);
-            fillWithBlocks(worldIn, piece, 1, 1, 1, 7, 5, 4, &lce::blocks::BlocksInit::AIR, &lce::blocks::BlocksInit::AIR, true);
-            fillWithBlocks(worldIn, piece, 0, 0, 0, 8, 0, 5, iBlockState, iBlockState, true);
-            fillWithBlocks(worldIn, piece, 0, 5, 0, 8, 5, 5, iBlockState, iBlockState, true);
-            fillWithBlocks(worldIn, piece, 0, 6, 1, 8, 6, 4, iBlockState, iBlockState, true);
-            fillWithBlocks(worldIn, piece, 0, 7, 2, 8, 7, 3, iBlockState, iBlockState, true);
+            fillWithBlocks(worldIn, piece, 1, 1, 1, 7, 5, 4, &lce::blocks::BlocksInit::AIR, &lce::blocks::BlocksInit::AIR, false);
+            fillWithBlocks(worldIn, piece, 0, 0, 0, 8, 0, 5, iBlockState, iBlockState, false);
+            fillWithBlocks(worldIn, piece, 0, 5, 0, 8, 5, 5, iBlockState, iBlockState, false);
+            fillWithBlocks(worldIn, piece, 0, 6, 1, 8, 6, 4, iBlockState, iBlockState, false);
+            fillWithBlocks(worldIn, piece, 0, 7, 2, 8, 7, 3, iBlockState, iBlockState, false);
 
             for (int i=-1; i <= 2; ++i) {
                 for (int j=0; j <= 8; ++j) {
@@ -526,18 +546,18 @@ namespace structure_rolls {
                 }
             }
 
-            fillWithBlocks(worldIn, piece, 0, 1, 0, 0, 1, 5, iBlockState, iBlockState, true);
-            fillWithBlocks(worldIn, piece, 1, 1, 5, 8, 1, 5, iBlockState, iBlockState, true);
-            fillWithBlocks(worldIn, piece, 8, 1, 0, 8, 1, 4, iBlockState, iBlockState, true);
-            fillWithBlocks(worldIn, piece, 2, 1, 0, 7, 1, 0, iBlockState, iBlockState, true);
-            fillWithBlocks(worldIn, piece, 0, 2, 0, 0, 4, 0, iBlockState, iBlockState, true);
-            fillWithBlocks(worldIn, piece, 0, 2, 5, 0, 4, 5, iBlockState, iBlockState, true);
-            fillWithBlocks(worldIn, piece, 8, 2, 5, 8, 4, 5, iBlockState, iBlockState, true);
-            fillWithBlocks(worldIn, piece, 8, 2, 0, 8, 4, 0, iBlockState, iBlockState, true);
-            fillWithBlocks(worldIn, piece, 0, 2, 1, 0, 4, 4, iBlockState4, iBlockState4, true);
-            fillWithBlocks(worldIn, piece, 1, 2, 5, 7, 4, 5, iBlockState4, iBlockState4, true);
-            fillWithBlocks(worldIn, piece, 8, 2, 1, 8, 4, 4, iBlockState4, iBlockState4, true);
-            fillWithBlocks(worldIn, piece, 1, 2, 0, 7, 4, 0, iBlockState4, iBlockState4, true);
+            fillWithBlocks(worldIn, piece, 0, 1, 0, 0, 1, 5, iBlockState, iBlockState, false);
+            fillWithBlocks(worldIn, piece, 1, 1, 5, 8, 1, 5, iBlockState, iBlockState, false);
+            fillWithBlocks(worldIn, piece, 8, 1, 0, 8, 1, 4, iBlockState, iBlockState, false);
+            fillWithBlocks(worldIn, piece, 2, 1, 0, 7, 1, 0, iBlockState, iBlockState, false);
+            fillWithBlocks(worldIn, piece, 0, 2, 0, 0, 4, 0, iBlockState, iBlockState, false);
+            fillWithBlocks(worldIn, piece, 0, 2, 5, 0, 4, 5, iBlockState, iBlockState, false);
+            fillWithBlocks(worldIn, piece, 8, 2, 5, 8, 4, 5, iBlockState, iBlockState, false);
+            fillWithBlocks(worldIn, piece, 8, 2, 0, 8, 4, 0, iBlockState, iBlockState, false);
+            fillWithBlocks(worldIn, piece, 0, 2, 1, 0, 4, 4, iBlockState4, iBlockState4, false);
+            fillWithBlocks(worldIn, piece, 1, 2, 5, 7, 4, 5, iBlockState4, iBlockState4, false);
+            fillWithBlocks(worldIn, piece, 8, 2, 1, 8, 4, 4, iBlockState4, iBlockState4, false);
+            fillWithBlocks(worldIn, piece, 1, 2, 0, 7, 4, 0, iBlockState4, iBlockState4, false);
             const lce::blocks::Block* glassPane = &lce::blocks::BlocksInit::GLASS_PANE;
             this->setBlockState(worldIn, glassPane, 4, 2, 0, structureBB);
             this->setBlockState(worldIn, glassPane, 5, 2, 0, structureBB);
@@ -557,9 +577,9 @@ namespace structure_rolls {
             this->setBlockState(worldIn, glassPane, 3, 2, 5, structureBB);
             this->setBlockState(worldIn, glassPane, 5, 2, 5, structureBB);
             this->setBlockState(worldIn, glassPane, 6, 2, 5, structureBB);
-            fillWithBlocks(worldIn, piece, 1, 4, 1, 7, 4, 1, iBlockState4, iBlockState4, true);
-            fillWithBlocks(worldIn, piece, 1, 4, 4, 7, 4, 4, iBlockState4, iBlockState4, true);
-            fillWithBlocks(worldIn, piece, 1, 3, 4, 7, 3, 4, &lce::blocks::BlocksInit::BOOKSHELF, &lce::blocks::BlocksInit::BOOKSHELF, true);
+            fillWithBlocks(worldIn, piece, 1, 4, 1, 7, 4, 1, iBlockState4, iBlockState4, false);
+            fillWithBlocks(worldIn, piece, 1, 4, 4, 7, 4, 4, iBlockState4, iBlockState4, false);
+            fillWithBlocks(worldIn, piece, 1, 3, 4, 7, 3, 4, &lce::blocks::BlocksInit::BOOKSHELF, &lce::blocks::BlocksInit::BOOKSHELF, false);
             this->setBlockState(worldIn, iBlockState4, 7, 1, 4, structureBB);
             this->setBlockState(worldIn, iBlockState3, 7, 1, 3, structureBB);
             this->setBlockState(worldIn, iBlockState1, 6, 1, 4, structureBB);
@@ -575,8 +595,8 @@ namespace structure_rolls {
             this->setBlockState(worldIn, &lce::blocks::BlocksInit::AIR, 1, 2, 0, structureBB);
             this->func_189927_a(worldIn, structureBB, rng, 1, 1, 0, FACING::NORTH);
 
-            if (this->getBlockStateFromPos(worldIn, 1, 0, -1, structureBB)->getID() == lce::blocks::ids::AIR_ID &&
-                this->getBlockStateFromPos(worldIn, 1, -1, -1, structureBB)->getID() != lce::blocks::ids::AIR_ID) { // material air
+            if (lce::blocks::ids::isReplaceableBlock(this->getBlockStateFromPos(worldIn, 1, 0, -1, structureBB)->getID()) &&
+                !lce::blocks::ids::isReplaceableBlock(this->getBlockStateFromPos(worldIn, 1, -1, -1, structureBB)->getID())) {
                 this->setBlockState(worldIn, iBlockState5, 1, 0, -1, structureBB);
 
                 if (this->getBlockStateFromPos(worldIn, 1, -1, -1, structureBB) == &lce::blocks::BlocksInit::GRASS_PATH) {
@@ -601,8 +621,9 @@ namespace structure_rolls {
 
         House2() = delete;
 
-        MU explicit House2(generation::Village* villageIn, const Piece& p) : Village(villageIn) {
-            this->piece = p;
+        MU explicit House2(generation::Village* villageIn, const Piece& p, int structureType)
+            : Village(villageIn, structureType) {
+            piece = p;
         }
 
         bool addComponentParts(World& worldIn, RNG& rng, const BoundingBox& structureBB) override {
@@ -611,35 +632,35 @@ namespace structure_rolls {
                 if (this->averageGroundLvl < 0) { return true; }
                 this->piece.offset(0, this->averageGroundLvl - this->piece.maxY + 6 - 1, 0);
             }
-            const lce::blocks::Block* iBlockState = &lce::blocks::BlocksInit::COBBLESTONE;
+            const lce::blocks::Block* iBlockState = getBiomeSpecificBlockState(&lce::blocks::BlocksInit::COBBLESTONE);
             const lce::blocks::Block* iBlockState1 = getBiomeSpecificBlockState(&lce::blocks::BlocksInit::OAK_WOOD_STAIRS); // .withProperty(BlockStairs.FACING, FACING::NORTH));
             const lce::blocks::Block* iBlockState2 = getBiomeSpecificBlockState(&lce::blocks::BlocksInit::OAK_WOOD_STAIRS); // .withProperty(BlockStairs.FACING, FACING::WEST));
             const lce::blocks::Block* iBlockState3 = getBiomeSpecificBlockState(&lce::blocks::BlocksInit::OAK_WOOD_PLANK);
             const lce::blocks::Block* iBlockState4 = getBiomeSpecificBlockState(&lce::blocks::BlocksInit::COBBLESTONE_STAIRS); // .withProperty(BlockStairs.FACING, FACING::NORTH));
             const lce::blocks::Block* iBlockState5 = getBiomeSpecificBlockState(&lce::blocks::BlocksInit::OAK_WOOD);
             const lce::blocks::Block* iBlockState6 = getBiomeSpecificBlockState(&lce::blocks::BlocksInit::OAK_FENCE);
-            fillWithBlocks(worldIn, piece, 0, 1, 0, 9, 4, 6, &lce::blocks::BlocksInit::AIR, &lce::blocks::BlocksInit::AIR, true);
-            fillWithBlocks(worldIn, piece, 0, 0, 0, 9, 0, 6, iBlockState, iBlockState, true);
-            fillWithBlocks(worldIn, piece, 0, 4, 0, 9, 4, 6, iBlockState, iBlockState, true);
-            fillWithBlocks(worldIn, piece, 0, 5, 0, 9, 5, 6, &lce::blocks::BlocksInit::STONE_SLAB, &lce::blocks::BlocksInit::STONE_SLAB, true);
-            fillWithBlocks(worldIn, piece, 1, 5, 1, 8, 5, 5, &lce::blocks::BlocksInit::AIR, &lce::blocks::BlocksInit::AIR, true);
-            fillWithBlocks(worldIn, piece, 1, 1, 0, 2, 3, 0, iBlockState3, iBlockState3, true);
-            fillWithBlocks(worldIn, piece, 0, 1, 0, 0, 4, 0, iBlockState5, iBlockState5, true);
-            fillWithBlocks(worldIn, piece, 3, 1, 0, 3, 4, 0, iBlockState5, iBlockState5, true);
-            fillWithBlocks(worldIn, piece, 0, 1, 6, 0, 4, 6, iBlockState5, iBlockState5, true);
+            fillWithBlocks(worldIn, piece, 0, 1, 0, 9, 4, 6, &lce::blocks::BlocksInit::AIR, &lce::blocks::BlocksInit::AIR, false);
+            fillWithBlocks(worldIn, piece, 0, 0, 0, 9, 0, 6, iBlockState, iBlockState, false);
+            fillWithBlocks(worldIn, piece, 0, 4, 0, 9, 4, 6, iBlockState, iBlockState, false);
+            fillWithBlocks(worldIn, piece, 0, 5, 0, 9, 5, 6, &lce::blocks::BlocksInit::STONE_SLAB, &lce::blocks::BlocksInit::STONE_SLAB, false);
+            fillWithBlocks(worldIn, piece, 1, 5, 1, 8, 5, 5, &lce::blocks::BlocksInit::AIR, &lce::blocks::BlocksInit::AIR, false);
+            fillWithBlocks(worldIn, piece, 1, 1, 0, 2, 3, 0, iBlockState3, iBlockState3, false);
+            fillWithBlocks(worldIn, piece, 0, 1, 0, 0, 4, 0, iBlockState5, iBlockState5, false);
+            fillWithBlocks(worldIn, piece, 3, 1, 0, 3, 4, 0, iBlockState5, iBlockState5, false);
+            fillWithBlocks(worldIn, piece, 0, 1, 6, 0, 4, 6, iBlockState5, iBlockState5, false);
             this->setBlockState(worldIn, iBlockState3, 3, 3, 1, structureBB);
-            fillWithBlocks(worldIn, piece, 3, 1, 2, 3, 3, 2, iBlockState3, iBlockState3, true);
-            fillWithBlocks(worldIn, piece, 4, 1, 3, 5, 3, 3, iBlockState3, iBlockState3, true);
-            fillWithBlocks(worldIn, piece, 0, 1, 1, 0, 3, 5, iBlockState3, iBlockState3, true);
-            fillWithBlocks(worldIn, piece, 1, 1, 6, 5, 3, 6, iBlockState3, iBlockState3, true);
-            fillWithBlocks(worldIn, piece, 5, 1, 0, 5, 3, 0, iBlockState6, iBlockState6, true);
-            fillWithBlocks(worldIn, piece, 9, 1, 0, 9, 3, 0, iBlockState6, iBlockState6, true);
-            fillWithBlocks(worldIn, piece, 6, 1, 4, 9, 4, 6, iBlockState, iBlockState, true);
+            fillWithBlocks(worldIn, piece, 3, 1, 2, 3, 3, 2, iBlockState3, iBlockState3, false);
+            fillWithBlocks(worldIn, piece, 4, 1, 3, 5, 3, 3, iBlockState3, iBlockState3, false);
+            fillWithBlocks(worldIn, piece, 0, 1, 1, 0, 3, 5, iBlockState3, iBlockState3, false);
+            fillWithBlocks(worldIn, piece, 1, 1, 6, 5, 3, 6, iBlockState3, iBlockState3, false);
+            fillWithBlocks(worldIn, piece, 5, 1, 0, 5, 3, 0, iBlockState6, iBlockState6, false);
+            fillWithBlocks(worldIn, piece, 9, 1, 0, 9, 3, 0, iBlockState6, iBlockState6, false);
+            fillWithBlocks(worldIn, piece, 6, 1, 4, 9, 4, 6, iBlockState, iBlockState, false);
             this->setBlockState(worldIn, &lce::blocks::BlocksInit::FLOWING_LAVA, 7, 1, 5, structureBB);
             this->setBlockState(worldIn, &lce::blocks::BlocksInit::FLOWING_LAVA, 8, 1, 5, structureBB);
             this->setBlockState(worldIn, &lce::blocks::BlocksInit::IRON_BARS, 9, 2, 5, structureBB);
             this->setBlockState(worldIn, &lce::blocks::BlocksInit::IRON_BARS, 9, 2, 4, structureBB);
-            fillWithBlocks(worldIn, piece, 7, 2, 4, 8, 2, 5, &lce::blocks::BlocksInit::AIR, &lce::blocks::BlocksInit::AIR, true);
+            fillWithBlocks(worldIn, piece, 7, 2, 4, 8, 2, 5, &lce::blocks::BlocksInit::AIR, &lce::blocks::BlocksInit::AIR, false);
             this->setBlockState(worldIn, iBlockState, 6, 1, 3, structureBB);
             this->setBlockState(worldIn, &lce::blocks::BlocksInit::FURNACE, 6, 2, 3, structureBB);
             this->setBlockState(worldIn, &lce::blocks::BlocksInit::FURNACE, 6, 3, 3, structureBB);
@@ -663,8 +684,8 @@ namespace structure_rolls {
              */
 
             for (int i=6; i <= 8; ++i) {
-                if (this->getBlockStateFromPos(worldIn, i, 0, -1, structureBB)->getID() == lce::blocks::ids::AIR_ID &&
-                    this->getBlockStateFromPos(worldIn, i, -1, -1, structureBB)->getID() != lce::blocks::ids::AIR_ID) { // material air
+                if (lce::blocks::ids::isReplaceableBlock(this->getBlockStateFromPos(worldIn, i, 0, -1, structureBB)->getID()) &&
+                    !lce::blocks::ids::isReplaceableBlock(this->getBlockStateFromPos(worldIn, i, -1, -1, structureBB)->getID())) {
                     this->setBlockState(worldIn, iBlockState4, i, 0, -1, structureBB);
 
                     if (this->getBlockStateFromPos(worldIn, i, -1, -1, structureBB) == &lce::blocks::BlocksInit::GRASS_PATH) {
@@ -690,8 +711,9 @@ namespace structure_rolls {
 
         House3() = delete;
 
-        MU explicit House3(generation::Village* villageIn, const Piece& p) : Village(villageIn) {
-            this->piece = p;
+        MU explicit House3(generation::Village* villageIn, const Piece& p, int structureType)
+            : Village(villageIn, structureType) {
+            piece = p;
         }
 
         bool addComponentParts(World& worldIn, RNG& rng, const BoundingBox& structureBB) override {
@@ -708,21 +730,21 @@ namespace structure_rolls {
             const lce::blocks::Block* iBlockState4 = getBiomeSpecificBlockState(&lce::blocks::BlocksInit::OAK_WOOD_STAIRS); // .withProperty(BlockStairs.FACING, FACING::WEST));
             const lce::blocks::Block* iBlockState5 = getBiomeSpecificBlockState(&lce::blocks::BlocksInit::OAK_WOOD_PLANK);
             const lce::blocks::Block* iBlockState6 = getBiomeSpecificBlockState(&lce::blocks::BlocksInit::OAK_WOOD);
-            fillWithBlocks(worldIn, piece, 1, 1, 1, 7, 4, 4, &lce::blocks::BlocksInit::AIR, &lce::blocks::BlocksInit::AIR, true);
-            fillWithBlocks(worldIn, piece, 2, 1, 6, 8, 4, 10, &lce::blocks::BlocksInit::AIR, &lce::blocks::BlocksInit::AIR, true);
-            fillWithBlocks(worldIn, piece, 2, 0, 5, 8, 0, 10, iBlockState5, iBlockState5, true);
-            fillWithBlocks(worldIn, piece, 1, 0, 1, 7, 0, 4, iBlockState5, iBlockState5, true);
-            fillWithBlocks(worldIn, piece, 0, 0, 0, 0, 3, 5, iBlockState, iBlockState, true);
-            fillWithBlocks(worldIn, piece, 8, 0, 0, 8, 3, 10, iBlockState, iBlockState, true);
-            fillWithBlocks(worldIn, piece, 1, 0, 0, 7, 2, 0, iBlockState, iBlockState, true);
-            fillWithBlocks(worldIn, piece, 1, 0, 5, 2, 1, 5, iBlockState, iBlockState, true);
-            fillWithBlocks(worldIn, piece, 2, 0, 6, 2, 3, 10, iBlockState, iBlockState, true);
-            fillWithBlocks(worldIn, piece, 3, 0, 10, 7, 3, 10, iBlockState, iBlockState, true);
-            fillWithBlocks(worldIn, piece, 1, 2, 0, 7, 3, 0, iBlockState5, iBlockState5, true);
-            fillWithBlocks(worldIn, piece, 1, 2, 5, 2, 3, 5, iBlockState5, iBlockState5, true);
-            fillWithBlocks(worldIn, piece, 0, 4, 1, 8, 4, 1, iBlockState5, iBlockState5, true);
-            fillWithBlocks(worldIn, piece, 0, 4, 4, 3, 4, 4, iBlockState5, iBlockState5, true);
-            fillWithBlocks(worldIn, piece, 0, 5, 2, 8, 5, 3, iBlockState5, iBlockState5, true);
+            fillWithBlocks(worldIn, piece, 1, 1, 1, 7, 4, 4, &lce::blocks::BlocksInit::AIR, &lce::blocks::BlocksInit::AIR, false);
+            fillWithBlocks(worldIn, piece, 2, 1, 6, 8, 4, 10, &lce::blocks::BlocksInit::AIR, &lce::blocks::BlocksInit::AIR, false);
+            fillWithBlocks(worldIn, piece, 2, 0, 5, 8, 0, 10, iBlockState5, iBlockState5, false);
+            fillWithBlocks(worldIn, piece, 1, 0, 1, 7, 0, 4, iBlockState5, iBlockState5, false);
+            fillWithBlocks(worldIn, piece, 0, 0, 0, 0, 3, 5, iBlockState, iBlockState, false);
+            fillWithBlocks(worldIn, piece, 8, 0, 0, 8, 3, 10, iBlockState, iBlockState, false);
+            fillWithBlocks(worldIn, piece, 1, 0, 0, 7, 2, 0, iBlockState, iBlockState, false);
+            fillWithBlocks(worldIn, piece, 1, 0, 5, 2, 1, 5, iBlockState, iBlockState, false);
+            fillWithBlocks(worldIn, piece, 2, 0, 6, 2, 3, 10, iBlockState, iBlockState, false);
+            fillWithBlocks(worldIn, piece, 3, 0, 10, 7, 3, 10, iBlockState, iBlockState, false);
+            fillWithBlocks(worldIn, piece, 1, 2, 0, 7, 3, 0, iBlockState5, iBlockState5, false);
+            fillWithBlocks(worldIn, piece, 1, 2, 5, 2, 3, 5, iBlockState5, iBlockState5, false);
+            fillWithBlocks(worldIn, piece, 0, 4, 1, 8, 4, 1, iBlockState5, iBlockState5, false);
+            fillWithBlocks(worldIn, piece, 0, 4, 4, 3, 4, 4, iBlockState5, iBlockState5, false);
+            fillWithBlocks(worldIn, piece, 0, 5, 2, 8, 5, 3, iBlockState5, iBlockState5, false);
             this->setBlockState(worldIn, iBlockState5, 0, 4, 2, structureBB);
             this->setBlockState(worldIn, iBlockState5, 0, 4, 3, structureBB);
             this->setBlockState(worldIn, iBlockState5, 8, 4, 2, structureBB);
@@ -743,11 +765,11 @@ namespace structure_rolls {
                 }
             }
 
-            fillWithBlocks(worldIn, piece, 3, 4, 5, 3, 4, 10, iBlockState5, iBlockState5, true);
-            fillWithBlocks(worldIn, piece, 7, 4, 2, 7, 4, 10, iBlockState5, iBlockState5, true);
-            fillWithBlocks(worldIn, piece, 4, 5, 4, 4, 5, 10, iBlockState5, iBlockState5, true);
-            fillWithBlocks(worldIn, piece, 6, 5, 4, 6, 5, 10, iBlockState5, iBlockState5, true);
-            fillWithBlocks(worldIn, piece, 5, 6, 3, 5, 6, 10, iBlockState5, iBlockState5, true);
+            fillWithBlocks(worldIn, piece, 3, 4, 5, 3, 4, 10, iBlockState5, iBlockState5, false);
+            fillWithBlocks(worldIn, piece, 7, 4, 2, 7, 4, 10, iBlockState5, iBlockState5, false);
+            fillWithBlocks(worldIn, piece, 4, 5, 4, 4, 5, 10, iBlockState5, iBlockState5, false);
+            fillWithBlocks(worldIn, piece, 6, 5, 4, 6, 5, 10, iBlockState5, iBlockState5, false);
+            fillWithBlocks(worldIn, piece, 5, 6, 3, 5, 6, 10, iBlockState5, iBlockState5, false);
 
             for (int k=4; k >= 1; --k) {
                 this->setBlockState(worldIn, iBlockState5, k, 2 + k, 7 - k, structureBB);
@@ -796,10 +818,10 @@ namespace structure_rolls {
             this->setBlockState(worldIn, &lce::blocks::BlocksInit::AIR, 2, 2, 0, structureBB);
             this->func_189926_a(worldIn, FACING::NORTH, 2, 3, 1, structureBB);
             this->func_189927_a(worldIn, structureBB, rng, 2, 1, 0, FACING::NORTH);
-            fillWithBlocks(worldIn, piece, 1, 0, -1, 3, 2, -1, &lce::blocks::BlocksInit::AIR, &lce::blocks::BlocksInit::AIR, true);
+            fillWithBlocks(worldIn, piece, 1, 0, -1, 3, 2, -1, &lce::blocks::BlocksInit::AIR, &lce::blocks::BlocksInit::AIR, false);
 
-            if (this->getBlockStateFromPos(worldIn, 2, 0, -1, structureBB)->getID() == lce::blocks::ids::AIR_ID &&
-                this->getBlockStateFromPos(worldIn, 2, -1, -1, structureBB)->getID() != lce::blocks::ids::AIR_ID) { // material air
+            if (lce::blocks::ids::isReplaceableBlock(this->getBlockStateFromPos(worldIn, 2, 0, -1, structureBB)->getID()) &&
+                !lce::blocks::ids::isReplaceableBlock(this->getBlockStateFromPos(worldIn, 2, -1, -1, structureBB)->getID())) {
                 this->setBlockState(worldIn, iBlockState7, 2, 0, -1, structureBB);
 
                 if (this->getBlockStateFromPos(worldIn, 2, -1, -1, structureBB) == &lce::blocks::BlocksInit::GRASS_PATH) {
@@ -830,8 +852,9 @@ namespace structure_rolls {
     public:
         House4Garden() = delete;
 
-        MU explicit House4Garden(generation::Village* villageIn, const Piece& p) : Village(villageIn) {
-            this->piece = p;
+        MU explicit House4Garden(generation::Village* villageIn, const Piece& p, int structureType)
+            : Village(villageIn, structureType) {
+            piece = p;
         }
 
         bool addComponentParts(World& worldIn, RNG& rng, const BoundingBox& structureBB) override {
@@ -840,15 +863,15 @@ namespace structure_rolls {
                 if (this->averageGroundLvl < 0) { return true; }
                 this->piece.offset(0, this->averageGroundLvl - this->piece.maxY + 6 - 1, 0);
             }
-            // TODO: where does it set AIR?
+
             const lce::blocks::Block* iBlockState = getBiomeSpecificBlockState(&lce::blocks::BlocksInit::COBBLESTONE);
             const lce::blocks::Block* iBlockState1 = getBiomeSpecificBlockState(&lce::blocks::BlocksInit::OAK_WOOD_PLANK);
             const lce::blocks::Block* iBlockState2 = getBiomeSpecificBlockState(&lce::blocks::BlocksInit::COBBLESTONE_STAIRS); // .withProperty(BlockStairs.FACING, FACING::NORTH));
             const lce::blocks::Block* iBlockState3 = getBiomeSpecificBlockState(&lce::blocks::BlocksInit::OAK_WOOD);
             const lce::blocks::Block* iBlockState4 = getBiomeSpecificBlockState(&lce::blocks::BlocksInit::OAK_FENCE);
-            fillWithBlocks(worldIn, piece, 0, 0, 0, 4, 0, 4, iBlockState, iBlockState, true);
-            fillWithBlocks(worldIn, piece, 0, 4, 0, 4, 4, 4, iBlockState3, iBlockState3, true);
-            fillWithBlocks(worldIn, piece, 1, 4, 1, 3, 4, 3, iBlockState1, iBlockState1, true);
+            fillWithBlocks(worldIn, piece, 0, 0, 0, 4, 0, 4, iBlockState, iBlockState, false);
+            fillWithBlocks(worldIn, piece, 0, 4, 0, 4, 4, 4, iBlockState3, iBlockState3, false);
+            fillWithBlocks(worldIn, piece, 1, 4, 1, 3, 4, 3, iBlockState1, iBlockState1, false);
             this->setBlockState(worldIn, iBlockState, 0, 1, 0, structureBB);
             this->setBlockState(worldIn, iBlockState, 0, 2, 0, structureBB);
             this->setBlockState(worldIn, iBlockState, 0, 3, 0, structureBB);
@@ -861,9 +884,9 @@ namespace structure_rolls {
             this->setBlockState(worldIn, iBlockState, 4, 1, 4, structureBB);
             this->setBlockState(worldIn, iBlockState, 4, 2, 4, structureBB);
             this->setBlockState(worldIn, iBlockState, 4, 3, 4, structureBB);
-            fillWithBlocks(worldIn, piece, 0, 1, 1, 0, 3, 3, iBlockState1, iBlockState1, true);
-            fillWithBlocks(worldIn, piece, 4, 1, 1, 4, 3, 3, iBlockState1, iBlockState1, true);
-            fillWithBlocks(worldIn, piece, 1, 1, 4, 3, 3, 4, iBlockState1, iBlockState1, true);
+            fillWithBlocks(worldIn, piece, 0, 1, 1, 0, 3, 3, iBlockState1, iBlockState1, false);
+            fillWithBlocks(worldIn, piece, 4, 1, 1, 4, 3, 3, iBlockState1, iBlockState1, false);
+            fillWithBlocks(worldIn, piece, 1, 1, 4, 3, 3, 4, iBlockState1, iBlockState1, false);
             const lce::blocks::Block* glassPane = &lce::blocks::BlocksInit::GLASS_PANE;
             this->setBlockState(worldIn, glassPane, 0, 2, 2, structureBB);
             this->setBlockState(worldIn, glassPane, 2, 2, 4, structureBB);
@@ -885,7 +908,7 @@ namespace structure_rolls {
                 }
             }
 
-            fillWithBlocks(worldIn, piece, 1, 1, 1, 3, 3, 3, &lce::blocks::BlocksInit::AIR, &lce::blocks::BlocksInit::AIR, true);
+            fillWithBlocks(worldIn, piece, 1, 1, 1, 3, 3, 3, &lce::blocks::BlocksInit::AIR, &lce::blocks::BlocksInit::AIR, false);
 
             if (this->piece.additionalData & 1) /* isRoofAccessible */ {
                 this->setBlockState(worldIn, iBlockState4, 0, 5, 0, structureBB);
@@ -927,6 +950,231 @@ namespace structure_rolls {
             return true;
         }
     };
+    
+    
+    class MU Path final : public Village {
+    public:
+        Path() = delete;
+        
+        MU explicit Path(generation::Village* villageIn, const Piece& p, int structureType)
+            : Village(villageIn, structureType) {
+            piece = p;
+        }
+        
+        bool addComponentParts(World& worldIn, RNG& rng, const BoundingBox& structureBB) override {
+            const lce::blocks::Block* iblockstate = getBiomeSpecificBlockState(&lce::blocks::BlocksInit::GRASS_PATH);
+            const lce::blocks::Block* iblockstate1 = getBiomeSpecificBlockState(&lce::blocks::BlocksInit::OAK_WOOD_PLANK);
+            const lce::blocks::Block* iblockstate2 = getBiomeSpecificBlockState(&lce::blocks::BlocksInit::GRAVEL);
+            const lce::blocks::Block* iblockstate3 = getBiomeSpecificBlockState(&lce::blocks::BlocksInit::COBBLESTONE);
+
+            for (int i = this->piece.minX; i <= this->piece.maxX; ++i) {
+                for (int j = this->piece.minZ; j <= this->piece.maxZ; ++j) {
+                    Pos3D blockPos(i, 64, j);
+
+                    if (structureBB.isVecInside(blockPos)) {
+                        blockPos =worldIn.getTopSolidOrLiquidBlock(blockPos).down();
+
+                        if (blockPos.getY() < World::getSeaLevel()) {
+                            blockPos = {blockPos.getX(), World::getSeaLevel() - 1, blockPos.getZ()};
+                        }
+
+                        while (blockPos.getY() >= World::getSeaLevel() - 1) {
+                            const lce::blocks::Block* iblockstate4 = worldIn.getBlock(blockPos);
+
+                            if (iblockstate4 == &lce::blocks::BlocksInit::GRASS && worldIn.isAirBlock(blockPos.up())) {
+                                worldIn.setBlock(blockPos, iblockstate); // 2
+                                break;
+                            }
+
+                            if (lce::blocks::ids::isLiquidBlock(iblockstate4->getID())) {
+                                worldIn.setBlock(blockPos, iblockstate1); // 2
+                                break;
+                            }
+
+                            if (iblockstate4 == &lce::blocks::BlocksInit::SAND ||
+                                iblockstate4 == &lce::blocks::BlocksInit::SANDSTONE ||
+                                iblockstate4 == &lce::blocks::BlocksInit::RED_SANDSTONE) {
+                                worldIn.setBlock(blockPos, iblockstate2); // 2
+                                worldIn.setBlock(blockPos.down(), iblockstate3); // 2
+                                break;
+                            }
+
+                            blockPos = blockPos.down();
+                        }
+                    }
+                }
+            }
+
+            return true;
+        }
+    };
+
+    
+    class MU Torch final : public Village {
+    public:
+        Torch() = delete;
+        
+        MU explicit Torch(generation::Village* villageIn, const Piece& p, int structureType)
+            : Village(villageIn, structureType) {
+            piece = p;
+        }
+        
+        bool addComponentParts(World& worldIn, RNG& rng, const BoundingBox& structureBB) override {
+            if (this->averageGroundLvl < 0) {
+                this->averageGroundLvl = getAverageGroundLevel(worldIn, structureBB);
+                if (this->averageGroundLvl < 0) { return true; }
+                this->piece.offset(0, this->averageGroundLvl - this->piece.maxY + 4 - 1, 0);
+            }
+
+            const lce::blocks::Block* oakFence = getBiomeSpecificBlockState(&lce::blocks::BlocksInit::OAK_FENCE);
+            fillWithBlocks(worldIn, piece, 0, 0, 0, 2, 3, 1, &lce::blocks::BlocksInit::AIR, &lce::blocks::BlocksInit::AIR, false);
+            this->setBlockState(worldIn, oakFence, 1, 0, 0, structureBB);
+            this->setBlockState(worldIn, oakFence, 1, 1, 0, structureBB);
+            this->setBlockState(worldIn, oakFence, 1, 2, 0, structureBB);
+            this->setBlockState(worldIn, lce::blocks::BlocksInit::BLACK_WOOL, 1, 3, 0, structureBB); // Blocks.WOOL.getStateFromMeta(EnumDyeColor.WHITE.getDyeDamage())
+            this->func_189926_a(worldIn, FACING::EAST, 2, 3, 0, structureBB);
+            this->func_189926_a(worldIn, FACING::NORTH, 1, 3, 1, structureBB);
+            this->func_189926_a(worldIn, FACING::WEST, 0, 3, 0, structureBB);
+            this->func_189926_a(worldIn, FACING::SOUTH, 1, 3, -1, structureBB);
+            return true;
+        }
+    };
+
+
+
+
+
+    class MU WoodHut final : public Village {
+    public:
+        WoodHut() = delete;
+
+        MU explicit WoodHut(generation::Village* villageIn, const Piece& p, int structureType)
+            : Village(villageIn, structureType) {
+            piece = p;
+        }
+
+        bool addComponentParts(World& worldIn, RNG& rng, const BoundingBox& structureBB) override {
+            if (this->averageGroundLvl < 0) {
+                this->averageGroundLvl = getAverageGroundLevel(worldIn, structureBB);
+                if (this->averageGroundLvl < 0) { return true; }
+                this->piece.offset(0, this->averageGroundLvl - this->piece.maxY + 6 - 1, 0);
+            }
+
+            const lce::blocks::Block* iblockstate = getBiomeSpecificBlockState(&lce::blocks::BlocksInit::COBBLESTONE);
+            const lce::blocks::Block* iblockstate1 = getBiomeSpecificBlockState(&lce::blocks::BlocksInit::OAK_WOOD_PLANK);
+            const lce::blocks::Block* iblockstate2 = getBiomeSpecificBlockState(&lce::blocks::BlocksInit::COBBLESTONE_STAIRS); // .withProperty(BlockStairs.FACING, EnumFacing.NORTH));
+            const lce::blocks::Block* iblockstate3 = getBiomeSpecificBlockState(&lce::blocks::BlocksInit::OAK_WOOD);
+            const lce::blocks::Block* iblockstate4 = getBiomeSpecificBlockState(&lce::blocks::BlocksInit::OAK_FENCE);
+            fillWithBlocks(worldIn, piece, 1, 1, 1, 3, 5, 4, &lce::blocks::BlocksInit::AIR, &lce::blocks::BlocksInit::AIR, false);
+            fillWithBlocks(worldIn, piece, 0, 0, 0, 3, 0, 4, iblockstate, iblockstate, false);
+            fillWithBlocks(worldIn, piece, 1, 0, 1, 2, 0, 3, &lce::blocks::BlocksInit::DIRT, &lce::blocks::BlocksInit::DIRT, false);
+
+            if (this->piece.additionalData >> 8 & 1) { // isTallHouse
+                fillWithBlocks(worldIn, piece, 1, 4, 1, 2, 4, 3, iblockstate3, iblockstate3, false);
+            } else {
+                fillWithBlocks(worldIn, piece, 1, 5, 1, 2, 5, 3, iblockstate3, iblockstate3, false);
+            }
+
+            this->setBlockState(worldIn, iblockstate3, 1, 4, 0,  structureBB);
+            this->setBlockState(worldIn, iblockstate3, 2, 4, 0,  structureBB);
+            this->setBlockState(worldIn, iblockstate3, 1, 4, 4,  structureBB);
+            this->setBlockState(worldIn, iblockstate3, 2, 4, 4,  structureBB);
+            this->setBlockState(worldIn, iblockstate3, 0, 4, 1,  structureBB);
+            this->setBlockState(worldIn, iblockstate3, 0, 4, 2,  structureBB);
+            this->setBlockState(worldIn, iblockstate3, 0, 4, 3,  structureBB);
+            this->setBlockState(worldIn, iblockstate3, 3, 4, 1,  structureBB);
+            this->setBlockState(worldIn, iblockstate3, 3, 4, 2,  structureBB);
+            this->setBlockState(worldIn, iblockstate3, 3, 4, 3,  structureBB);
+            fillWithBlocks(worldIn, piece, 0, 1, 0, 0, 3, 0, iblockstate3, iblockstate3, false);
+            fillWithBlocks(worldIn, piece, 3, 1, 0, 3, 3, 0, iblockstate3, iblockstate3, false);
+            fillWithBlocks(worldIn, piece, 0, 1, 4, 0, 3, 4, iblockstate3, iblockstate3, false);
+            fillWithBlocks(worldIn, piece, 3, 1, 4, 3, 3, 4, iblockstate3, iblockstate3, false);
+            fillWithBlocks(worldIn, piece, 0, 1, 1, 0, 3, 3, iblockstate1, iblockstate1, false);
+            fillWithBlocks(worldIn, piece, 3, 1, 1, 3, 3, 3, iblockstate1, iblockstate1, false);
+            fillWithBlocks(worldIn, piece, 1, 1, 0, 2, 3, 0, iblockstate1, iblockstate1, false);
+            fillWithBlocks(worldIn, piece, 1, 1, 4, 2, 3, 4, iblockstate1, iblockstate1, false);
+            this->setBlockState(worldIn, &lce::blocks::BlocksInit::GLASS_PANE, 0, 2, 2,  structureBB);
+            this->setBlockState(worldIn, &lce::blocks::BlocksInit::GLASS_PANE, 3, 2, 2,  structureBB);
+
+            int tablePosition = piece.additionalData & 3;
+            if (tablePosition > 0) {
+                this->setBlockState(worldIn, iblockstate4, tablePosition, 1, 3,  structureBB);
+                this->setBlockState(worldIn, &lce::blocks::BlocksInit::WOODEN_PRESSURE_PLATE, tablePosition, 2, 3,  structureBB);
+            }
+
+            this->setBlockState(worldIn, &lce::blocks::BlocksInit::AIR, 1, 1, 0,  structureBB);
+            this->setBlockState(worldIn, &lce::blocks::BlocksInit::AIR, 1, 2, 0,  structureBB);
+            this->func_189927_a(worldIn,  structureBB, rng, 1, 1, 0, FACING::NORTH);
+
+            if (lce::blocks::ids::isReplaceableBlock(this->getBlockStateFromPos(worldIn, 1, 0, -1,  structureBB)->getID()) &&
+                !lce::blocks::ids::isReplaceableBlock(this->getBlockStateFromPos(worldIn, 1, -1, -1,  structureBB)->getID())) {
+                this->setBlockState(worldIn, iblockstate2, 1, 0, -1,  structureBB);
+
+                if (this->getBlockStateFromPos(worldIn, 1, -1, -1,  structureBB) == &lce::blocks::BlocksInit::GRASS_PATH) {
+                    this->setBlockState(worldIn, &lce::blocks::BlocksInit::GRASS, 1, -1, -1,  structureBB);
+                }
+            }
+
+            for (int i=0; i < 5; ++i) {
+                for (int j=0; j < 4; ++j) {
+                    this->clearCurrentPositionBlocksUpwards(worldIn, j, 6, i,  structureBB);
+                    this->replaceAirAndLiquidDownwards(worldIn, iblockstate, j, -1, i,  structureBB);
+                }
+            }
+
+            // this->spawnVillagers(worldIn,  structureBB, 1, 1, 2, 1);
+            return true;
+        }
+    };
+    
+    
+    class MU Well final : public Village {
+    public:
+        Well() = delete;
+
+        MU explicit Well(generation::Village* villageIn, const Piece& p, int structureType)
+            : Village(villageIn, structureType) {
+            piece = p;
+        }
+
+        bool addComponentParts(World& worldIn, RNG& rng, const BoundingBox& structureBB) override {
+            if (this->averageGroundLvl < 0) {
+                this->averageGroundLvl = getAverageGroundLevel(worldIn, structureBB);
+                if (this->averageGroundLvl < 0) { return true; }
+                this->piece.offset(0, this->averageGroundLvl - this->piece.maxY + 3, 0);
+            }
+
+            const lce::blocks::Block* iblockstate = this->getBiomeSpecificBlockState(&lce::blocks::BlocksInit::COBBLESTONE);
+            const lce::blocks::Block* iblockstate1 = this->getBiomeSpecificBlockState(&lce::blocks::BlocksInit::OAK_FENCE);
+            fillWithBlocks(worldIn, piece, 1, 0, 1, 4, 12, 4, iblockstate, &lce::blocks::BlocksInit::FLOWING_WATER, false);
+            this->setBlockState(worldIn, lce::blocks::BlocksInit::AIR, 2, 12, 2, structureBB);
+            this->setBlockState(worldIn, lce::blocks::BlocksInit::AIR, 3, 12, 2, structureBB);
+            this->setBlockState(worldIn, lce::blocks::BlocksInit::AIR, 2, 12, 3, structureBB);
+            this->setBlockState(worldIn, lce::blocks::BlocksInit::AIR, 3, 12, 3, structureBB);
+            this->setBlockState(worldIn, iblockstate1, 1, 13, 1, structureBB);
+            this->setBlockState(worldIn, iblockstate1, 1, 14, 1, structureBB);
+            this->setBlockState(worldIn, iblockstate1, 4, 13, 1, structureBB);
+            this->setBlockState(worldIn, iblockstate1, 4, 14, 1, structureBB);
+            this->setBlockState(worldIn, iblockstate1, 1, 13, 4, structureBB);
+            this->setBlockState(worldIn, iblockstate1, 1, 14, 4, structureBB);
+            this->setBlockState(worldIn, iblockstate1, 4, 13, 4, structureBB);
+            this->setBlockState(worldIn, iblockstate1, 4, 14, 4, structureBB);
+            fillWithBlocks(worldIn, piece, 1, 15, 1, 4, 15, 4, iblockstate, iblockstate, false);
+            
+            for (int i=0; i <= 5; ++i) {
+                for (int j=0; j <= 5; ++j) {
+                    if (j == 0 || j == 5 || i == 0 || i == 5) {
+                        this->setBlockState(worldIn, iblockstate, j, 11, i, structureBB);
+                        this->clearCurrentPositionBlocksUpwards(worldIn, j, 12, i, structureBB);
+                    }
+                }
+            }
+
+            return true;
+        }
+    };
+    
+    
 
 
 };

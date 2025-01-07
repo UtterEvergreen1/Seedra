@@ -62,6 +62,8 @@ public:
 
     bool canSnowAt(const Pos3D &pos, bool checkLight);
 
+    static int getSeaLevel() { return 63; }
+
 private:
     Generator *g;
     std::unordered_map<Pos2D, ChunkPrimer *, Pos2D::Hasher> chunks;

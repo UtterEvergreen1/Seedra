@@ -23,6 +23,7 @@ public:
             case EnumType::TALL_GRASS:
                 return &lce::blocks::BlocksInit::DOUBLE_TALLGRASS;
         }
+        return &lce::blocks::BlocksInit::DEAD_BUSH;
     }
 
     static bool canBlockStay(World *worldIn, const Pos3D &pos);
