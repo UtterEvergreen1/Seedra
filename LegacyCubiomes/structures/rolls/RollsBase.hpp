@@ -9,24 +9,19 @@ namespace structure_rolls {
     class RollsBase {
     public:
         static bool isLiquidInStructureBoundingBox(const BoundingBox& chunkBoundingBoxIn,
-                                                   const BoundingBox& pieceBoundingBox, ChunkPrimer* chunk);
+                                                   const BoundingBox& pieceBoundingBox, const ChunkPrimer* chunk);
         static bool intersectsWithBlock(const BoundingBox& chunkBoundingBox, int x, int y, int z);
         MU static bool validToPlace(const BoundingBox& chunkBoundingBox, const BoundingBox& bb, int x, int y, int z);
         static void fillWithRandomizedBlocks(const BoundingBox& chunkBoundingBox, const Piece& piece, int minX,
                                              int minY, int minZ, int maxX, int maxY, int maxZ, RNG& rng,
-                                             ChunkPrimer* chunk);
+                                             const ChunkPrimer* chunk);
         static void generateChest(const BoundingBox& chunkBB, const Piece& piece, RNG& rng, int x, int y, int z);
 
 
         // added for village
-        static void fillWithBlocks(World& worldIn, const BoundingBox& boundingBoxIn,
-                                   int xMin, int yMin, int zMin, int xMax, int yMax, int zMax,
-                                   const lce::blocks::Block* boundaryBlockState,
-                                   const lce::blocks::Block* insideBlockState);
-
-
-
-
+        static void fillWithBlocks(World& worldIn, const Piece& piece, int minX, int minY, int minZ, int maxX,
+                                   int maxY, int maxZ, const lce::blocks::Block* boundaryBlockState,
+                                   const lce::blocks::Block* insideBlockState, bool override);
     };
 
 } // namespace structure_rolls

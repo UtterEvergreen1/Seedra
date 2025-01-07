@@ -15,7 +15,7 @@ namespace structure_rolls {
                                RNG& rng, int chunkX, int chunkZ);
 
         /// Generate all chests for a given mineshaft
-        MU void generateAllChests(generation::Mineshaft* mineshaftGenerator,
+        MU void generateAllChests(const generation::Mineshaft* mineshaftGenerator,
                                   const Generator& g, bool generateFullChunk);
 
         void generateChest(const ChunkPrimer* chunk, const BoundingBox& chunkBB,

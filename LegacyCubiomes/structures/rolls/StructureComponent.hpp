@@ -7,68 +7,19 @@
 
 
 class StructureComponent {
-    FACING coordBaseMode = FACING::NONE;
-    // Mirror mirror;
-    // Rotation rotation;
-
-
 public:
-    BoundingBox boundingBox;
+    virtual ~StructureComponent() = default;
+    Piece piece;
+
+    MU ND virtual bool addComponentParts(World& worldIn, RNG& rng, const BoundingBox& structureBB) = 0;
 
 
-    MU void setCoordBaseMode(FACING facing) { coordBaseMode = facing; }
-    ND FACING getCoordBaseMode() const { return coordBaseMode; }
-
-    MU ND virtual bool addComponentParts(World& worldIn, RNG& rng, BoundingBox structureBB) = 0;
-
-
-    MU ND int getXWithOffset(int x, int z) const {
-        FACING enumFacing = this->getCoordBaseMode();
-
-        if (enumFacing == FACING::NONE) {
-            return x;
-        } else {
-            switch (enumFacing) {
-                case FACING::NORTH:
-                case FACING::SOUTH:
-                    return this->boundingBox.minX + x;
-                case FACING::WEST:
-                    return this->boundingBox.maxX - z;
-                case FACING::EAST:
-                    return this->boundingBox.minX + z;
-                default:
-                    return x;
-            }
-        }
-    }
-
-    MU ND int getYWithOffset(int y) const { return this->getCoordBaseMode() == FACING::NONE ? y : y + this->boundingBox.minY; }
-
-    MU ND int getZWithOffset(int x, int z) const {
-        FACING enumFacing = this->getCoordBaseMode();
-
-        if (enumFacing == FACING::NONE) {
-            return z;
-        } else {
-            switch (enumFacing) {
-                case FACING::NORTH:
-                    return this->boundingBox.maxZ - z;
-                case FACING::SOUTH:
-                    return this->boundingBox.minZ + z;
-                case FACING::WEST:
-                case FACING::EAST:
-                    return this->boundingBox.minZ + x;
-                default:
-                    return z;
-            }
-        }
-    }
-
-
-    MU void setBlockState(World& worldIn, const lce::blocks::Block* blockStateIn, int x, int y, int z,
-                       BoundingBox& structureBB) {
-        Pos3D blockPos = Pos3D(this->getXWithOffset(x, z), this->getYWithOffset(y), this->getZWithOffset(x, z));
-        if (structureBB.isVecInside(blockPos)) {
+    MU void setBlockState(World& worldIn, const lce::blocks::Block* blockStateIn,
+        const int x, const int y, const int z,
+                       const BoundingBox& structureBB) const {
+        if (const auto blockPos =
+                    Pos3D(piece.getWorldX(x, z), piece.getWorldY(y), piece.getWorldZ(x, z));
+            structureBB.isVecInside(blockPos)) {
             /*
                 if (this->mirror != Mirror::NONE) {
                     blockStateIn = blockStateIn.withMirror(this->mirror);
@@ -81,17 +32,19 @@ public:
         }
     }
 
-    void setBlockState(World& worldIn, const lce::blocks::Block& blockStateIn, int x, int y, int z, BoundingBox& structureBB) {
+    void setBlockState(World& worldIn, const lce::blocks::Block& blockStateIn,
+        const int x, const int y, const int z, const BoundingBox& structureBB) const {
         setBlockState(worldIn, &blockStateIn, x, y, z, structureBB);
     }
 
 
 
-    MU ND const lce::blocks::Block* getBlockStateFromPos(World worldIn, int x, int y, int z, const BoundingBox& boundingBoxIn) const {
-        int i = this->getXWithOffset(x, z);
-        int j = this->getYWithOffset(y);
-        int k = this->getZWithOffset(x, z);
-        Pos3D blockPos = {i, j, k};
+    MU ND const lce::blocks::Block* getBlockStateFromPos(World worldIn,
+        const int x, const int y, const int z, const BoundingBox& boundingBoxIn) const {
+        const int i = piece.getWorldX(x, z);
+        const int j = piece.getWorldY(y);
+        const int k = piece.getWorldZ(x, z);
+        const Pos3D blockPos = {i, j, k};
         return !boundingBoxIn.isVecInside(blockPos) ? &lce::blocks::BlocksInit::AIR : worldIn.getBlock(blockPos);
     }
 
@@ -100,10 +53,11 @@ public:
     /**
      * Deletes all continuous blocks from selected position upwards. Stops at hitting air.
      */
-    void clearCurrentPositionBlocksUpwards(World worldIn, int x, int y, int z, BoundingBox& structureBB) const {
-        Pos3D blockPos(this->getXWithOffset(x, z), this->getYWithOffset(y), this->getZWithOffset(x, z));
+    void clearCurrentPositionBlocksUpwards(World worldIn,
+        const int x, const int y, const int z, const BoundingBox& structureBB) const {
 
-        if (structureBB.isVecInside(blockPos)) {
+        if (Pos3D blockPos(this->piece.getWorldX(x, z), this->piece.getWorldY(y), this->piece.getWorldZ(x, z));
+            structureBB.isVecInside(blockPos)) {
             while (!worldIn.isAirBlock(blockPos) && blockPos.getY() < 255) {
                 worldIn.setBlock(blockPos, lce::blocks::ids::AIR_ID); // 2
                 blockPos = blockPos.up();
@@ -115,11 +69,11 @@ public:
     /**
      * Replaces air and liquid from given position downwards. Stops when hitting anything else than air or liquid
      */
-    void replaceAirAndLiquidDownwards(World worldIn, const lce::blocks::Block* blockStateIn, int x, int y, int z,
-                                      BoundingBox boundingBoxIn) const {
-        int i = this->getXWithOffset(x, z);
-        int j = this->getYWithOffset(y);
-        int k = this->getZWithOffset(x, z);
+    void replaceAirAndLiquidDownwards(World& worldIn, const lce::blocks::Block* blockStateIn,
+        const int x, const int y, const int z, const BoundingBox& boundingBoxIn) const {
+        const int i = this->piece.getWorldX(x, z);
+        int j = this->piece.getWorldY(y);
+        const int k = this->piece.getWorldZ(x, z);
 
         if (boundingBoxIn.isVecInside(Pos3D(i, j, k))) {
             while (

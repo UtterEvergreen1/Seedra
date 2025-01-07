@@ -18,7 +18,8 @@ namespace structure_rolls {
                             continue;
 
                         c_int sectionCount =
-                                ((piece.orientation == FACING::NORTH || piece.orientation == FACING::SOUTH)
+                                (piece.orientation == FACING::NORTH ||
+                                    piece.orientation == FACING::SOUTH
                                          ? piece.getZSize()
                                          : piece.getXSize()) / 5;
                         c_int depth = sectionCount * 5;
@@ -97,7 +98,7 @@ namespace structure_rolls {
     }
 
 
-    void Mineshaft::generateAllChests(generation::Mineshaft* mineshaftGenerator,
+    void Mineshaft::generateAllChests(const generation::Mineshaft* mineshaftGenerator,
                                       const Generator& g, c_bool generateFullChunk) {
         c_int xEnd = (mineshaftGenerator->startX >> 4) + 6;
         c_int zEnd = (mineshaftGenerator->startZ >> 4) + 6;

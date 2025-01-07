@@ -114,7 +114,7 @@ void RavineDetector::addTunnel(c_i64 randomSeed, const Pos2D chunk, DoublePos3D 
 
 
 void RavineDetector::addFeature(c_int baseChunkX, c_int baseChunkZ, c_int currentChunkX, c_int currentChunkZ,
-                                bool accurate) {
+                                const bool accurate) {
     if EXPECT_FALSE (myRNG.nextInt(50) == 0) {
         auto tunnelStartX = (double) (baseChunkX * 16 + myRNG.nextInt(16));
         auto tunnelStartY = (double) (myRNG.nextInt(myRNG.nextInt(40) + 8) + 20);

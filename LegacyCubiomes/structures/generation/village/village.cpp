@@ -37,13 +37,13 @@ namespace generation {
         rng.advance();
         startX = (chunkX << 4) + 2;
         startZ = (chunkZ << 4) + 2;
+
         setupPieces();
         rng.nextInt(4); // direction: this.setCoordBaseMode(EnumFacing.Plane.HORIZONTAL.random(rand));
-        isZombieInfested = rng.nextInt(50) == 0; // zombie infested
-        const BoundingBox well = createPieceBoundingBox(PieceType::Start, {startX, 64, startZ}, FACING::NORTH);
+        isZombieInfested = rng.nextInt(50) == 0;
 
-        // start piece
-        c_auto startPiece = Piece(static_cast<i8>(PieceType::Start), 0, well, FACING::NORTH, 0);
+        c_auto startPiece = Piece(Start, 0,
+            createPieceBB(Start, {startX, 64, startZ}, FACING::NORTH), FACING::NORTH, 0);
         pieceArray[pieceArraySize++] = startPiece;
 
         buildComponentStart(startPiece);
@@ -53,34 +53,38 @@ namespace generation {
                 hasMoreThanTwoComponents = true;
                 return;
             }
+
             c_int i = rng.nextInt(pendingRoadArraySize);
             const Piece& piece = pieceArray[pendingRoadArray[i]];
-
             pendingRoadArraySize--;
 
             // possible faster way to shift over
             // size_t bytesToShift = (pendingRoadArraySize - i) * sizeof(pendingRoadArray[0]);
             // memcpy(&pendingRoadArray[i], &pendingRoadArray[i + 1], bytesToShift);
 
-            for (int j = i; j < pendingRoadArraySize; j++) { pendingRoadArray[j] = pendingRoadArray[j + 1]; }
+            for (int j = i; j < pendingRoadArraySize; j++) {
+                pendingRoadArray[j] = pendingRoadArray[j + 1];
+            }
 
             buildComponent(piece);
 
             // stop at blacksmith
-            if (blackSmithPiece != nullptr && generationStep == GenerationStep::BLACKSMITH) return;
+            if (generationStep == GenerationStep::BLACKSMITH && blackSmithPiece != nullptr) return;
         }
 
         if (generationStep == GenerationStep::LAYOUT) return;
 
         int k = 0;
         for (int index = 0; index < pieceArraySize; index++) {
-            if (const Piece& structureComponent = pieceArray[index];
-                (structureComponent.type > static_cast<i8>(PieceType::Road)))
+            if (const Piece& sc = pieceArray[index]; sc.type > static_cast<i8>(Road)) {
                 k++;
+            }
         }
 
         structureBoundingBox = BoundingBox::EMPTY;
-        for (int index = 0; index < pieceArraySize; index++) { structureBoundingBox.encompass(pieceArray[index]); }
+        for (int index = 0; index < pieceArraySize; index++) {
+            structureBoundingBox.encompass(pieceArray[index]);
+        }
 
         hasMoreThanTwoComponents = k > 2;
     }
@@ -97,7 +101,7 @@ namespace generation {
         }
 
         hasMoreThanTwoComponents = false;
-        previousPiece = PieceType::NONE;
+        previousPiece = NONE;
         blackSmithPiece = nullptr;
         numInvalidPieces = 1;
         pieceArraySize = 0;
@@ -105,31 +109,34 @@ namespace generation {
     }
 
 
-    BoundingBox Village::createPieceBoundingBox(const PieceType pieceType, const Pos3D pos, const FACING direction) {
+    BoundingBox Village::createPieceBB(const PieceType pieceType, const Pos3D pos, const FACING direction) {
         switch (pieceType) {
-            case PieceType::House4Garden:
-                return BoundingBox::orientBox(pos, 5, 6, 5, direction);
-            case PieceType::Church:
-                return BoundingBox::orientBox(pos, 5, 12, 9, direction);
-            case PieceType::House1:
-                return BoundingBox::orientBox(pos, 9, 9, 6, direction);
-            case PieceType::WoodHut:
-                return BoundingBox::orientBox(pos, 4, 6, 5, direction);
-            case PieceType::Hall:
-                return BoundingBox::orientBox(pos, 9, 7, 11, direction);
-            case PieceType::Field1:
-                return BoundingBox::orientBox(pos, 13, 4, 9, direction);
-            case PieceType::Field2:
-                return BoundingBox::orientBox(pos, 7, 4, 9, direction);
-            case PieceType::House2:
-                return BoundingBox::orientBox(pos, 10, 6, 7, direction);
-            case PieceType::House3:
-                return BoundingBox::orientBox(pos, 9, 7, 12, direction);
-            case PieceType::Start:
+            case Road:
+                return BoundingBox::EMPTY;
+            case Start:
                 return {pos.getX(), 64, pos.getZ(), pos.getX() + 6 - 1, 78, pos.getZ() + 6 - 1};
-            case PieceType::Torch:
+            case House4Garden:
+                return BoundingBox::orientBox(pos, 5, 6, 5, direction);
+            case Church:
+                return BoundingBox::orientBox(pos, 5, 12, 9, direction);
+            case House1:
+                return BoundingBox::orientBox(pos, 9, 9, 6, direction);
+            case WoodHut:
+                return BoundingBox::orientBox(pos, 4, 6, 5, direction);
+            case Hall:
+                return BoundingBox::orientBox(pos, 9, 7, 11, direction);
+            case Field1:
+                return BoundingBox::orientBox(pos, 13, 4, 9, direction);
+            case Field2:
+                return BoundingBox::orientBox(pos, 7, 4, 9, direction);
+            case House2:
+                return BoundingBox::orientBox(pos, 10, 6, 7, direction);
+            case House3:
+                return BoundingBox::orientBox(pos, 9, 7, 12, direction);
+            case Torch:
                 return BoundingBox::orientBox(pos, 3, 4, 2, direction);
-            default: // PieceType::NONE
+            case NONE:
+            default:
                 return BoundingBox::EMPTY;
         }
     }
@@ -139,12 +146,10 @@ namespace generation {
         if (abs(startX - pos.getX()) > 112 || abs(startZ - pos.getZ()) > 112) return {};
 
         if (const BoundingBox boundingBox = road(pos, facing); boundingBox.maxY != 0) {
-            c_auto piece =
-                    Piece(static_cast<i8>(PieceType::Road), 0, boundingBox, facing, boundingBox.getLength() + 1);
+            c_auto piece = Piece(Road, 0, boundingBox, facing, boundingBox.getLength() + 1);
             addPiece(piece);
             return piece;
         }
-
         return {};
     }
 
@@ -169,34 +174,42 @@ namespace generation {
     }
 
 
-    void Village::additionalRngRolls(const Piece& p) {
+    void Village::additionalRngRolls(Piece& p) {
         switch (static_cast<PieceType>(p.type)) {
-            case PieceType::WoodHut:
-                rng.nextBoolean(); // isTallHouse
-                rng.nextInt(3);    // tablePosition
+            case WoodHut: {
+                c_u8 isTallHouse = rng.nextBoolean() ? 1 : 0;
+                c_u8 tablePosition = rng.nextInt(3);
+                p.additionalData = isTallHouse << 8 | tablePosition;
                 return;
-            case PieceType::House4Garden:
-                rng.nextBoolean(); // isRoofAccessible
+            }
+            case House4Garden: {
+                c_i32 isRoofAccessible = rng.nextBoolean() ? 1 : 0;
+                p.additionalData = isRoofAccessible;
                 return;
-            case PieceType::Field2:
-                rng.nextInt(10); // cropTypeA
-                rng.nextInt(10); // cropTypeB
+            }
+            case Field2: {
+                c_u8 cropTypeA = rng.nextInt(10);
+                c_u8 cropTypeB = rng.nextInt(10);
+                p.additionalData = cropTypeA << 5 | cropTypeB;
                 return;
-            case PieceType::Field1:
-                rng.nextInt(10); // cropTypeA
-                rng.nextInt(10); // cropTypeB
-                rng.nextInt(10); // cropTypeC
-                rng.nextInt(10); // cropTypeD
+            }
+            case Field1: {
+                c_u8 cropTypeA = rng.nextInt(10);
+                c_u8 cropTypeB = rng.nextInt(10);
+                c_u8 cropTypeC = rng.nextInt(10);
+                c_u8 cropTypeD = rng.nextInt(10);
+                p.additionalData = cropTypeA << 15 | cropTypeB << 10 | cropTypeC << 5 | cropTypeD;
                 return;
-            case PieceType::House2:
-            case PieceType::Church:
-            case PieceType::House1:
-            case PieceType::Hall:
-            case PieceType::House3:
-            case PieceType::Torch:
-            case PieceType::Start:
-            case PieceType::Road:
-            case PieceType::NONE:
+            }
+            case House2:
+            case Church:
+            case House1:
+            case Hall:
+            case House3:
+            case Torch:
+            case Start:
+            case Road:
+            case NONE:
             default:;
         }
     }
@@ -224,8 +237,8 @@ namespace generation {
                     }
 
                     if (auto structureVillagePiece =
-                                Piece(static_cast<i8>(pieceWeight.pieceType), depth,
-                                      createPieceBoundingBox(pieceWeight.pieceType, pos, facing), facing, 0);
+                                Piece(pieceWeight.pieceType, depth,
+                                      createPieceBB(pieceWeight.pieceType, pos, facing), facing, 0);
                         !hasCollisionPiece(structureVillagePiece)) {
                         additionalRngRolls(structureVillagePiece);
                         pieceWeight.amountPlaced++;
@@ -238,8 +251,7 @@ namespace generation {
                 }
             }
         }
-        c_auto torch = Piece(static_cast<i8>(PieceType::Torch), 0,
-                                 BoundingBox(createPieceBoundingBox(PieceType::Torch, pos, facing)), facing, 0);
+        c_auto torch = Piece(Torch, 0, BoundingBox(createPieceBB(Torch, pos, facing)), facing, 0);
         if (hasCollisionPiece(torch)) return {};
         return torch;
     }
@@ -263,7 +275,7 @@ namespace generation {
             return structureComponent;
         }
 
-        return {}; // ------------------------ returning null piece
+        return {};
     }
 
 
@@ -279,45 +291,41 @@ namespace generation {
         bool flag = false;
 
         for (int i = rng.nextInt(5); i < piece.additionalData - 8; i += 2 + rng.nextInt(5)) {
-            Piece structureComponent;
+            Piece sc;
             switch (piece.orientation) {
                 case FACING::NORTH:
                 case FACING::SOUTH:
                 default:
-                    structureComponent = genAndAddComponent({piece.minX - 1, piece.minY, piece.minZ + i},
-                                                            FACING::WEST, piece.depth);
+                    sc = genAndAddComponent({piece.minX - 1, piece.minY, piece.minZ + i}, FACING::WEST, piece.depth);
                     break;
                 case FACING::WEST:
                 case FACING::EAST:
-                    structureComponent = genAndAddComponent({piece.minX + i, piece.minY, piece.minZ - 1},
-                                                            FACING::NORTH, piece.depth);
+                    sc = genAndAddComponent({piece.minX + i, piece.minY, piece.minZ - 1}, FACING::NORTH, piece.depth);
                     break;
             }
 
-            if (structureComponent.type != static_cast<i8>(PieceType::NONE)) {
-                i += structureComponent.getLength() + 1;
+            if (sc.type != static_cast<i8>(NONE)) {
+                i += sc.getLength() + 1;
                 flag = true;
             }
         }
 
         for (int j = rng.nextInt(5); j < piece.additionalData - 8; j += 2 + rng.nextInt(5)) {
-            Piece structureComponent1; // = getNextComponentPP(componentIn, rand, 0, j);
+            Piece sc1;
             switch (piece.orientation) {
                 case FACING::NORTH:
                 case FACING::SOUTH:
                 default:
-                    structureComponent1 = genAndAddComponent({piece.maxX + 1, piece.minY, piece.minZ + j},
-                                                             FACING::EAST, piece.depth);
+                    sc1 = genAndAddComponent({piece.maxX + 1, piece.minY, piece.minZ + j}, FACING::EAST, piece.depth);
                     break;
                 case FACING::EAST:
                 case FACING::WEST:
-                    structureComponent1 = genAndAddComponent({piece.minX + j, piece.minY, piece.maxZ + 1},
-                                                             FACING::SOUTH, piece.depth);
+                    sc1 = genAndAddComponent({piece.minX + j, piece.minY, piece.maxZ + 1}, FACING::SOUTH, piece.depth);
                     break;
             }
 
-            if (structureComponent1.type != static_cast<i8>(PieceType::NONE)) {
-                j += structureComponent1.getLength() + 1;
+            if (sc1.type != static_cast<i8>(NONE)) {
+                j += sc1.getLength() + 1;
                 flag = true;
             }
         }
@@ -361,7 +369,7 @@ namespace generation {
     void Village::addPiece(const Piece& piece) {
         pendingRoadArray[pendingRoadArraySize++] = pieceArraySize;
         pieceArray[pieceArraySize++] = piece;
-        if (piece.type == static_cast<i8>(PieceType::Road)) { numInvalidPieces++; }
+        if (piece.type == static_cast<i8>(Road)) { numInvalidPieces++; }
     }
 
 

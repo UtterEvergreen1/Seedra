@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.24)
 project(LegacyCubiomes)
 
 set(CMAKE_CXX_STANDARD 20)
-set(CMAKE_CXX_FLAGS_RELEASE "-O3")
+# set(CMAKE_CXX_FLAGS_RELEASE "-O3")
 
 
 include_directories(${CMAKE_SOURCE_DIR})
@@ -22,6 +22,6 @@ add_compile_options(-mavx2 -mpopcnt)
 add_executable(LegacyCubiomes
         ${LEGACY_CUBIOMES}
         ${LCE_RESOURCES}
-        # programs/gen_chunk.cpp
-        programs/mine_a_chunk_ravines.cpp
+        programs/gen_chunk.cpp
+        # programs/mine_a_chunk_ravines.cpp
 )
