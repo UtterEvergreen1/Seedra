@@ -1,6 +1,10 @@
 #pragma once
+
 #include "WorldGenerator.hpp"
-#include "lce/blocks/block.hpp"
+
+
+namespace lce::blocks { class Block; }
+class World;
 
 class WorldGenBlockBlob final : public WorldGenerator {
 public:

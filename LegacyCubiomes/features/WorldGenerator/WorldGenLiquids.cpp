@@ -1,6 +1,9 @@
 #include "WorldGenLiquids.hpp"
-#include "LegacyCubiomes/chunk_generator/ChunkPrimer.hpp"
+
+#include "LegacyCubiomes/chunk_generator/World.hpp"
 #include "lce/blocks/blocks.hpp"
+#include "lce/blocks/block_ids.hpp"
+
 
 bool WorldGenLiquids::generate(World * worldIn, RNG& rand, const Pos3D& position) const {
     using namespace lce::blocks;

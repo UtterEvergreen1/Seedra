@@ -1,7 +1,10 @@
 #pragma once
+
 #include "WorldGenerator.hpp"
-#include "lce/blocks/block.hpp"
-#include "lce/blocks/blocks.hpp"
+
+
+namespace lce::blocks { class Block; }
+class World;
 
 class WorldGenIcePath final : public WorldGenerator {
 public:
@@ -13,6 +16,6 @@ public:
     bool generate(World * worldIn, RNG &rng, const Pos3D &pos) const override;
 
 private:
-    const lce::blocks::Block* pathBlock = &lce::blocks::BlocksInit::PACKED_ICE;
+    static const lce::blocks::Block* PATH_BLOCK;
     const int pathWidth;
 };

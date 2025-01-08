@@ -1,8 +1,9 @@
 #pragma once
+
 #include "WorldGenerator.hpp"
-#include "lce/blocks/block.hpp"
-#include "LegacyCubiomes/utils/Pos3DTemplate.hpp"
-#include "LegacyCubiomes/utils/rng.hpp"
+
+
+class World;
 
 class WorldGenClay final : public WorldGenerator {
     int numberOfBlocks;
@@ -10,5 +11,5 @@ class WorldGenClay final : public WorldGenerator {
 public:
     explicit WorldGenClay(const int numBlocks) : numberOfBlocks(numBlocks) {}
 
-    bool generate(World * worldIn, RNG& rand, const Pos3D& position) const override;
+    bool generate(World* worldIn, RNG& rand, const Pos3D& position) const override;
 };

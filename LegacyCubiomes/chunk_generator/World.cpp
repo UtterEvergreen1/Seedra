@@ -2,17 +2,18 @@
 
 #include "Chunk.hpp"
 
+
 void World::addChunk(const Pos2D &pos, ChunkPrimer *chunk) {
     chunks[pos] = chunk;
 }
 
 ChunkPrimer *World::getChunk(const Pos2D &pos) const {
-    auto it = chunks.find(pos);
+    const auto it = chunks.find(pos);
     return it != chunks.end() ? it->second : nullptr;
 }
 
 ChunkPrimer *World::getOrCreateChunk(const Pos2D &pos) {
-    auto it = chunks.find(pos);
+    const auto it = chunks.find(pos);
     if (it != chunks.end()) {
         return it->second;
     }
@@ -21,7 +22,7 @@ ChunkPrimer *World::getOrCreateChunk(const Pos2D &pos) {
     return chunk;
 }
 
-void World::decorateChunks(const Pos2D &pos, int radius) {
+void World::decorateChunks(const Pos2D &pos, const int radius) {
     std::cout << "Decorating chunks around " << pos << " with radius " << radius << std::endl;
     for (int dx = -radius; dx <= radius - 1; ++dx) {
         for (int dz = -radius; dz <= radius - 1; ++dz) {
@@ -32,7 +33,7 @@ void World::decorateChunks(const Pos2D &pos, int radius) {
     }
 }
 
-int World::getBlockId(int x, int y, int z) {
+int World::getBlockId(const int x, const int y, const int z) {
     if (const ChunkPrimer *chunk = this->getOrCreateChunk({x >> 4, z >> 4})) {
         return chunk->getBlockId(x & 15, y, z & 15);
     }
@@ -43,8 +44,8 @@ int World::getBlockId(const Pos3D &pos) {
     return this->getBlockId(pos.getX(), pos.getY(), pos.getZ());
 }
 
-const lce::blocks::Block *World::getBlock(int x, int y, int z) {
-    if (ChunkPrimer *chunk = this->getOrCreateChunk({x >> 4, z >> 4})) {
+const lce::blocks::Block *World::getBlock(const int x, const int y, const int z) {
+    if (const ChunkPrimer *chunk = this->getOrCreateChunk({x >> 4, z >> 4})) {
         return chunk->getBlock(x & 15, y, z & 15);
     }
     return nullptr;
@@ -54,34 +55,34 @@ const lce::blocks::Block *World::getBlock(const Pos3D &pos) {
     return this->getBlock(pos.getX(), pos.getY(), pos.getZ());
 }
 
-void World::notifyNeighbors(int x, int y, int z) {
+void World::notifyNeighbors(const int x, const int y, const int z) {
     //mimic notify neighbors to load chunks
-    for (auto faces : FACING_HORIZONTAL) {
+    for (const auto faces : FACING_HORIZONTAL) {
         (void*)this->getBlock(Pos3D(x, y, z).offset(faces));
     }
 }
 
-void World::setBlock(int x, int y, int z, int blockId) {
+void World::setBlock(const int x, const int y, const int z, const int blockId) {
     ChunkPrimer *chunk = this->getOrCreateChunk({x >> 4, z >> 4});
     chunk->setBlockId(x & 15, y, z & 15, blockId);
     notifyNeighbors(x, y, z);
 }
 
-void World::setBlock(const Pos3D &pos, int blockId) {
+void World::setBlock(const Pos3D &pos, const int blockId) {
     this->setBlock(pos.getX(), pos.getY(), pos.getZ(), blockId);
 }
 
-void World::setBlock(int x, int y, int z, int blockId, int meta) {
+void World::setBlock(const int x, const int y, const int z, const int blockId, const int meta) {
     ChunkPrimer *chunk = getOrCreateChunk({x >> 4, z >> 4});
     chunk->setBlockAndData(x & 15, y, z & 15, blockId, meta);
     notifyNeighbors(x, y, z);
 }
 
-void World::setBlock(const Pos3D &pos, int blockId, int meta) {
+void World::setBlock(const Pos3D &pos, const int blockId, const int meta) {
     this->setBlock(pos.getX(), pos.getY(), pos.getZ(), blockId, meta);
 }
 
-void World::setBlock(int x, int y, int z, const lce::blocks::Block *block) {
+void World::setBlock(const int x, const int y, const int z, const lce::blocks::Block *block) {
     this->setBlock(x, y, z, block->getID(), block->getDataTag());
 }
 
@@ -89,8 +90,8 @@ void World::setBlock(const Pos3D &pos, const lce::blocks::Block *block) {
     this->setBlock(pos.getX(), pos.getY(), pos.getZ(), block->getID(), block->getDataTag());
 }
 
-bool World::isAirBlock(int x, int y, int z) {
-    if (ChunkPrimer *chunk = getOrCreateChunk({x >> 4, z >> 4})) {
+bool World::isAirBlock(const int x, const int y, const int z) {
+    if (const ChunkPrimer *chunk = getOrCreateChunk({x >> 4, z >> 4})) {
         return chunk->isAirBlock(x & 15, y, z & 15);
     }
     return false;
@@ -100,9 +101,9 @@ bool World::isAirBlock(const Pos3D &pos) {
     return this->isAirBlock(pos.getX(), pos.getY(), pos.getZ());
 }
 
-int World::getHeight(int x, int z) {
-    Pos2D chunkPos = {x >> 4, z >> 4};
-    ChunkPrimer *chunk = getOrCreateChunk(chunkPos);
+int World::getHeight(const int x, const int z) {
+    const Pos2D chunkPos = {x >> 4, z >> 4};
+    const ChunkPrimer *chunk = getOrCreateChunk(chunkPos);
     if (chunk) {
         return chunk->getHeight(x & 15, z & 15);
     }
@@ -113,9 +114,9 @@ Pos3D World::getHeight(const Pos3D &pos) {
     return {pos.getX(), this->getHeight(pos.getX(), pos.getZ()), pos.getZ()};
 }
 
-int World::getTopSolidOrLiquidBlock(int x, int z) {
-    Pos2D chunkPos = {x >> 4, z >> 4};
-    ChunkPrimer *chunk = getOrCreateChunk(chunkPos);
+int World::getTopSolidOrLiquidBlock(const int x, const int z) {
+    const Pos2D chunkPos = {x >> 4, z >> 4};
+    const ChunkPrimer *chunk = getOrCreateChunk(chunkPos);
     if (chunk) {
         return chunk->getTopSolidOrLiquidBlock(x & 15, z & 15);
     }
@@ -134,19 +135,19 @@ int World::getPrecipitationHeight(c_int x, c_int z) {
     return 0;
 }
 
-bool World::canBlockFreeze(const Pos3D &pos, bool noWaterAdj) {
+bool World::canBlockFreeze(const Pos3D &pos, const bool noWaterAdj) {
     if (Biome::getBiomeForId(g->getBiomeAt(1, pos.getX(), pos.getZ()))->getFloatTemperature(pos) >= 0.15F)
         return false;
 
     if (pos.getY() >= 0 && pos.getY() < 256) {
-        Pos2D chunkPos = {pos.getX() >> 4, pos.getZ() >> 4};
-        ChunkPrimer *chunk = getOrCreateChunk(chunkPos);
+        const Pos2D chunkPos = {pos.getX() >> 4, pos.getZ() >> 4};
+        const ChunkPrimer *chunk = getOrCreateChunk(chunkPos);
         if (chunk) {
-            bool valid = chunk->canBlockFreeze(pos.convertToChunkCords());
+            const bool valid = chunk->canBlockFreeze(pos.convertToChunkCords());
             if (!noWaterAdj) return valid;
 
             if (!valid) return false;
-            for (auto faces : FACING_HORIZONTAL) {
+            for (const auto faces : FACING_HORIZONTAL) {
                 if (chunk->canBlockFreeze(pos.offset(faces).convertToChunkCords())) {
                     return false;
                 }
@@ -161,7 +162,7 @@ ND bool World::canBlockFreezeWater(const Pos3D &pos) {
     return this->canBlockFreeze(pos, false);
 }
 
-bool World::canSnowAt(const Pos3D &pos, bool checkLight) {
+bool World::canSnowAt(const Pos3D &pos, const bool checkLight) {
     if (Biome::getBiomeForId(g->getBiomeAt(1, pos.getX(), pos.getZ()))->getFloatTemperature(pos) >= 0.15F) {
         return false;
     }
@@ -170,8 +171,8 @@ bool World::canSnowAt(const Pos3D &pos, bool checkLight) {
 
     // needs to check block light later on to replacate a perfect chunk
     if (pos.getY() >= 0 && pos.getY() < 256) {
-        Pos2D chunkPos = {pos.getX() >> 4, pos.getZ() >> 4};
-        ChunkPrimer *chunk = getOrCreateChunk(chunkPos);
+        const Pos2D chunkPos = {pos.getX() >> 4, pos.getZ() >> 4};
+        const ChunkPrimer *chunk = getOrCreateChunk(chunkPos);
         if (chunk) {
             return chunk->canSnowAt(pos.convertToChunkCords());
         }

@@ -1,32 +1,33 @@
 #include "WorldGenCanopyTree.hpp"
 
-bool WorldGenCanopyTree::generate(World * worldIn, RNG &rand, const Pos3D &position) const {
-    int height = rand.nextInt(3) + rand.nextInt(2) + 6;
-    int j = position.getX();
-    int k = position.getY();
-    int l = position.getZ();
+#include "LegacyCubiomes/chunk_generator/World.hpp"
+#include "lce/blocks/blocks.hpp"
+#include "lce/blocks/block_ids.hpp"
+
+
+bool WorldGenCanopyTree::generate(World* worldIn, RNG& rand, const Pos3D& position) const {
+    const int height = rand.nextInt(3) + rand.nextInt(2) + 6;
+    const int j = position.getX();
+    const int k = position.getY();
+    const int l = position.getZ();
 
     if (k >= 1 && k + height + 1 < 256) {
-        Pos3D blockPos = position.down();
-        int block = worldIn->getBlockId(blockPos);
+        const Pos3D blockPos = position.down();
+        const int block = worldIn->getBlockId(blockPos);
 
-        if (block != lce::blocks::ids::GRASS_ID && block != lce::blocks::ids::DIRT_ID) {
-            return false;
-        }
-        if (!placeTreeOfHeight(worldIn, position, height)) {
-            return false;
-        }
+        if (block != lce::blocks::ids::GRASS_ID && block != lce::blocks::ids::DIRT_ID) { return false; }
+        if (!placeTreeOfHeight(worldIn, position, height)) { return false; }
 
         setDirtAt(worldIn, blockPos);
         setDirtAt(worldIn, blockPos.east());
         setDirtAt(worldIn, blockPos.south());
         setDirtAt(worldIn, blockPos.south().east());
-        FACING facing = FACING_HORIZONTAL[rand.nextInt(4)];
-        int i1 = height - rand.nextInt(4);
+        const FACING facing = FACING_HORIZONTAL[rand.nextInt(4)];
+        const int i1 = height - rand.nextInt(4);
         int j1 = 2 - rand.nextInt(3);
         int k1 = j;
         int l1 = l;
-        int i2 = k + height - 1;
+        const int i2 = k + height - 1;
 
         for (int j2 = 0; j2 < height; ++j2) {
             if (j2 >= i1 && j1 > 0) {
@@ -35,11 +36,11 @@ bool WorldGenCanopyTree::generate(World * worldIn, RNG &rand, const Pos3D &posit
                 --j1;
             }
 
-            int k2 = k + j2;
+            const int k2 = k + j2;
             Pos3D blockpos1(k1, k2, l1);
-            int material = worldIn->getBlockId(blockpos1);
+            const int material = worldIn->getBlockId(blockpos1);
 
-            if (material == lce::blocks::ids::AIR_ID || lce::blocks::ids::isLeavesBlock(material)) {
+            if (lce::blocks::ids::isAirOrLeavesBlock(material)) {
                 placeLogAt(worldIn, blockpos1);
                 placeLogAt(worldIn, blockpos1.east());
                 placeLogAt(worldIn, blockpos1.south());
@@ -84,16 +85,12 @@ bool WorldGenCanopyTree::generate(World * worldIn, RNG &rand, const Pos3D &posit
         for (int k3 = -1; k3 <= 2; ++k3) {
             for (int j4 = -1; j4 <= 2; ++j4) {
                 if ((k3 < 0 || k3 > 1 || j4 < 0 || j4 > 1) && rand.nextInt(3) <= 0) {
-                    int l4 = rand.nextInt(3) + 2;
+                    const int l4 = rand.nextInt(3) + 2;
 
-                    for (int i5 = 0; i5 < l4; ++i5) {
-                        placeLogAt(worldIn, {j + k3, i2 - i5 - 1, l + j4});
-                    }
+                    for (int i5 = 0; i5 < l4; ++i5) { placeLogAt(worldIn, {j + k3, i2 - i5 - 1, l + j4}); }
 
                     for (int j5 = -1; j5 <= 1; ++j5) {
-                        for (int l2 = -1; l2 <= 1; ++l2) {
-                            placeLeafAt(worldIn, k1 + k3 + j5, i2, l1 + j4 + l2);
-                        }
+                        for (int l2 = -1; l2 <= 1; ++l2) { placeLeafAt(worldIn, k1 + k3 + j5, i2, l1 + j4 + l2); }
                     }
 
                     for (int k5 = -2; k5 <= 2; ++k5) {
@@ -113,7 +110,7 @@ bool WorldGenCanopyTree::generate(World * worldIn, RNG &rand, const Pos3D &posit
     return false;
 }
 
-bool WorldGenCanopyTree::placeTreeOfHeight(World *worldIn, const Pos3D &pos, int height) {
+bool WorldGenCanopyTree::placeTreeOfHeight(World* worldIn, const Pos3D& pos, const int height) {
     c_int x = pos.getX();
     c_int y = pos.getY();
     c_int z = pos.getZ();
@@ -122,20 +119,14 @@ bool WorldGenCanopyTree::placeTreeOfHeight(World *worldIn, const Pos3D &pos, int
     for (int l = 0; l <= height + 1; ++l) {
         int i1 = 1;
 
-        if (l == 0) {
-            i1 = 0;
-        }
+        if (l == 0) { i1 = 0; }
 
-        if (l >= height - 1) {
-            i1 = 2;
-        }
+        if (l >= height - 1) { i1 = 2; }
 
         for (int j1 = -i1; j1 <= i1; ++j1) {
             for (int k1 = -i1; k1 <= i1; ++k1) {
                 mutablePos.setPos(x + j1, y + l, z + k1);
-                if (!canGrowInto(worldIn->getBlockId(mutablePos))) {
-                    return false;
-                }
+                if (!canGrowInto(worldIn->getBlockId(mutablePos))) { return false; }
             }
         }
     }
@@ -143,15 +134,13 @@ bool WorldGenCanopyTree::placeTreeOfHeight(World *worldIn, const Pos3D &pos, int
     return true;
 }
 
-void WorldGenCanopyTree::placeLogAt(World *worldIn, const Pos3D &pos) {
-    if (canGrowInto(worldIn->getBlockId(pos))) {
-        worldIn->setBlock(pos, &lce::blocks::BlocksInit::DARK_OAK_WOOD);
-    }
+void WorldGenCanopyTree::placeLogAt(World* worldIn, const Pos3D& pos) {
+    if (canGrowInto(worldIn->getBlockId(pos))) { worldIn->setBlock(pos, &lce::blocks::BlocksInit::DARK_OAK_WOOD); }
 }
 
-void WorldGenCanopyTree::placeLeafAt(World *worldIn, int x, int y, int z) {
-    Pos3D blockPos(x, y, z);
-    int material = worldIn->getBlockId(blockPos);
+void WorldGenCanopyTree::placeLeafAt(World* worldIn, const int x, const int y, const int z) {
+    const Pos3D blockPos(x, y, z);
+    const int material = worldIn->getBlockId(blockPos);
 
     if (material == lce::blocks::ids::AIR_ID) {
         worldIn->setBlock(blockPos, &lce::blocks::BlocksInit::DARK_OAK_LEAVES);

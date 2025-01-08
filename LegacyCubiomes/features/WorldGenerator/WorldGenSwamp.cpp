@@ -1,35 +1,32 @@
 #include "WorldGenSwamp.hpp"
 
-bool WorldGenSwamp::generate(World * worldIn, RNG &rand, const Pos3D &position) const {
+#include "LegacyCubiomes/chunk_generator/World.hpp"
+#include "lce/blocks/blocks.hpp"
+#include "lce/blocks/block_ids.hpp"
+
+
+bool WorldGenSwamp::generate(World* worldIn, RNG& rand, const Pos3D& position) const {
     const int height = rand.nextInt(4) + 5;
     Pos3D pos = position;
 
-    while (lce::blocks::ids::isWaterMaterial(worldIn->getBlockId(pos.down()))) {
-        pos = pos.down();
-    }
-
-    bool flag = true;
+    while (lce::blocks::ids::isWaterMaterial(worldIn->getBlockId(pos.down()))) { pos = pos.down(); }
 
     if (pos.getY() >= 1 && pos.getY() + height + 1 <= 256) {
+        bool flag = true;
+
         for (int j = pos.getY(); j <= pos.getY() + 1 + height; ++j) {
             int k = 1;
 
-            if (j == pos.getY()) {
-                k = 0;
-            }
+            if (j == pos.getY()) { k = 0; }
 
-            if (j >= pos.getY() + 1 + height - 2) {
-                k = 3;
-            }
+            if (j >= pos.getY() + 1 + height - 2) { k = 3; }
 
             for (int l = pos.getX() - k; l <= pos.getX() + k && flag; ++l) {
                 for (int i1 = pos.getZ() - k; i1 <= pos.getZ() + k && flag; ++i1) {
                     if (j >= 0 && j < 256) {
-                        int blockId = worldIn->getBlockId(Pos3D(l, j, i1));
+                        const int blockId = worldIn->getBlockId(Pos3D(l, j, i1));
                         if (blockId != lce::blocks::ids::AIR_ID && !lce::blocks::ids::isLeavesBlock(blockId)) {
-                            if (!lce::blocks::ids::isWaterMaterial(blockId) || j > pos.getY()) {
-                                flag = false;
-                            }
+                            if (!lce::blocks::ids::isWaterMaterial(blockId) || j > pos.getY()) { flag = false; }
                         }
                     } else {
                         flag = false;
@@ -38,17 +35,15 @@ bool WorldGenSwamp::generate(World * worldIn, RNG &rand, const Pos3D &position) 
             }
         }
 
-        if (!flag) {
-            return false;
-        }
-        int block1 = worldIn->getBlockId(pos.down());
+        if (!flag) { return false; }
+        const int block1 = worldIn->getBlockId(pos.down());
 
-        if ((block1 == lce::blocks::ids::GRASS_ID || block1 == lce::blocks::ids::DIRT_ID) && pos.getY() < 256 - height -
-            1) {
+        if ((block1 == lce::blocks::ids::GRASS_ID || block1 == lce::blocks::ids::DIRT_ID) &&
+            pos.getY() < 256 - height - 1) {
             setDirtAt(worldIn, pos.down());
 
             for (int k1 = pos.getY() - 3 + height; k1 <= pos.getY() + height; ++k1) {
-                int j2 = k1 - (pos.getY() + height);
+                const int j2 = k1 - (pos.getY() + height);
                 int l2 = 2 - j2 / 2;
 
                 for (int j3 = pos.getX() - l2; j3 <= pos.getX() + l2; ++j3) {
@@ -69,39 +64,39 @@ bool WorldGenSwamp::generate(World * worldIn, RNG &rand, const Pos3D &position) 
             }
 
             for (int l1 = 0; l1 < height; ++l1) {
-                int blockId = worldIn->getBlockId(pos.up(l1));
-                if (blockId == lce::blocks::ids::AIR_ID || lce::blocks::ids::isLeavesBlock(blockId) ||
+                const int blockId = worldIn->getBlockId(pos.up(l1));
+                if (lce::blocks::ids::isAirOrLeavesBlock(blockId) ||
                     lce::blocks::ids::isWaterMaterial(blockId)) {
                     worldIn->setBlock(pos.up(l1), &lce::blocks::BlocksInit::OAK_WOOD);
                 }
             }
 
             for (int i2 = pos.getY() - 3 + height; i2 <= pos.getY() + height; ++i2) {
-                int k2 = i2 - (pos.getY() + height);
-                int i3 = 2 - k2 / 2;
+                const int k2 = i2 - (pos.getY() + height);
+                const int i3 = 2 - k2 / 2;
 
                 for (int l3 = pos.getX() - i3; l3 <= pos.getX() + i3; ++l3) {
                     for (int j4 = pos.getZ() - i3; j4 <= pos.getZ() + i3; ++j4) {
                         Pos3D blockpos(l3, i2, j4);
 
                         if (lce::blocks::ids::isLeavesBlock(worldIn->getBlockId(blockpos))) {
-                            if (rand.nextInt(4) == 0 && worldIn->getBlockId(blockpos.west()) ==
-                                lce::blocks::ids::AIR_ID) {
+                            if (rand.nextInt(4) == 0 &&
+                                worldIn->getBlockId(blockpos.west()) == lce::blocks::ids::AIR_ID) {
                                 addVine(worldIn, blockpos.west(), FACING::EAST);
                             }
 
-                            if (rand.nextInt(4) == 0 && worldIn->getBlockId(blockpos.east()) ==
-                                lce::blocks::ids::AIR_ID) {
+                            if (rand.nextInt(4) == 0 &&
+                                worldIn->getBlockId(blockpos.east()) == lce::blocks::ids::AIR_ID) {
                                 addVine(worldIn, blockpos.east(), FACING::WEST);
                             }
 
-                            if (rand.nextInt(4) == 0 && worldIn->getBlockId(blockpos.north()) ==
-                                lce::blocks::ids::AIR_ID) {
+                            if (rand.nextInt(4) == 0 &&
+                                worldIn->getBlockId(blockpos.north()) == lce::blocks::ids::AIR_ID) {
                                 addVine(worldIn, blockpos.north(), FACING::SOUTH);
                             }
 
-                            if (rand.nextInt(4) == 0 && worldIn->getBlockId(blockpos.south()) ==
-                                lce::blocks::ids::AIR_ID) {
+                            if (rand.nextInt(4) == 0 &&
+                                worldIn->getBlockId(blockpos.south()) == lce::blocks::ids::AIR_ID) {
                                 addVine(worldIn, blockpos.south(), FACING::NORTH);
                             }
                         }
@@ -116,7 +111,7 @@ bool WorldGenSwamp::generate(World * worldIn, RNG &rand, const Pos3D &position) 
     return false;
 }
 
-void WorldGenSwamp::addVine(World *worldIn, const Pos3D &pos, const FACING direction) {
+void WorldGenSwamp::addVine(World* worldIn, const Pos3D& pos, const FACING direction) {
     const int vineMetaData = getMetaFromFacingAdditive(direction);
     worldIn->setBlock(pos, lce::blocks::ids::VINES_ID, vineMetaData);
 

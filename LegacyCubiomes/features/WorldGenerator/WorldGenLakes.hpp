@@ -2,13 +2,14 @@
 
 #include "LegacyCubiomes/cubiomes/generator.hpp"
 #include "LegacyCubiomes/cubiomes/BiomeID.hpp"
-#include "LegacyCubiomes/utils/rng.hpp"
-
 #include "LegacyCubiomes/chunk_generator/biome.hpp"
-#include "LegacyCubiomes/utils/Pos3DTemplate.hpp"
 #include "lce/blocks/block.hpp"
 
-class WorldGenLakes : public WorldGenerator {
+
+namespace lce::blocks { class Block; }
+class World;
+
+class WorldGenLakes final : public WorldGenerator {
     Generator const *g;
     lce::blocks::Block const *block;
 
@@ -60,7 +61,7 @@ public:
      */
     ND static Pos3D lavaLake(const Generator *g, const int chunkX, const int chunkZ) {
         RNG rng = RNG::getPopulationSeed(g->getWorldSeed(), chunkX, chunkZ);
-        if (!FeaturePositions::waterLake(g, rng, chunkX, chunkZ).isNull()) return {};
+        if (!waterLake(g, rng, chunkX, chunkZ).isNull()) return {};
 
         return lavaLake(rng, chunkX, chunkZ);
     }
@@ -94,8 +95,8 @@ public:
      */
     ND static Pos3D dungeon(const Generator *g, const int chunkX, const int chunkZ) {
         RNG rng = RNG::getPopulationSeed(g->getWorldSeed(), chunkX, chunkZ);
-        if (!FeaturePositions::waterLake(g, rng, chunkX, chunkZ).isNull()) return {};
-        if (!FeaturePositions::lavaLake(rng, chunkX, chunkZ).isNull()) return {};
+        if (!waterLake(g, rng, chunkX, chunkZ).isNull()) return {};
+        if (!lavaLake(rng, chunkX, chunkZ).isNull()) return {};
 
         return dungeon(rng, chunkX, chunkZ);
     }

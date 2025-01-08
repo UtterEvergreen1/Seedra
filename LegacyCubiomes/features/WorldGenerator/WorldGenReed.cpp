@@ -1,7 +1,9 @@
 #include "WorldGenReed.hpp"
-#include "LegacyCubiomes/chunk_generator/ChunkPrimer.hpp"
-#include "lce/blocks/blocks.hpp"
+
+#include "LegacyCubiomes/chunk_generator/World.hpp"
 #include "lce/blocks/block_ids.hpp"
+#include "LegacyCubiomes/cubiomes/generator.hpp"
+
 
 bool BlockReed::canBlockStay(World *worldIn, const Pos3D &pos) {
     const int blockId = worldIn->getBlockId(pos.down());
@@ -9,8 +11,9 @@ bool BlockReed::canBlockStay(World *worldIn, const Pos3D &pos) {
         return true;
     }
 
-    if (blockId != lce::blocks::ids::GRASS_ID && blockId != lce::blocks::ids::DIRT_ID && blockId !=
-        lce::blocks::ids::SAND_ID) {
+    if (blockId != lce::blocks::ids::GRASS_ID &&
+        blockId != lce::blocks::ids::DIRT_ID &&
+        blockId != lce::blocks::ids::SAND_ID) {
         return false;
     }
 
@@ -47,7 +50,7 @@ bool WorldGenReed::generate(World * worldIn, RNG &rng, const Pos3D &position) co
                 lce::blocks::ids::isWaterMaterial(worldIn->getBlockId(blockPos1.east())) ||
                 lce::blocks::ids::isWaterMaterial(worldIn->getBlockId(blockPos1.north())) ||
                 lce::blocks::ids::isWaterMaterial(worldIn->getBlockId(blockPos1.south()))) {
-                int j = 2 + rng.nextInt(rng.nextInt(3) + 1);
+                const int j = 2 + rng.nextInt(rng.nextInt(3) + 1);
 
                 for (int k = 0; k < j; ++k) {
                     if (BlockReed::canBlockStay(worldIn, blockPos)) {

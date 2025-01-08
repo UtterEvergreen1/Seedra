@@ -1,5 +1,9 @@
 #pragma once
+
 #include "WorldGenerator.hpp"
+
+
+class World;
 
 class BlockCactus {
 public:

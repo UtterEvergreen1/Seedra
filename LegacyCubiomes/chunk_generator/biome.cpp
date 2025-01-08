@@ -1,5 +1,8 @@
 #include "biome.hpp"
+
+
 #include "ChunkPrimer.hpp"
+#include "LegacyCubiomes/chunk_generator/World.hpp"
 #include "LegacyCubiomes/features/BiomeDecorator.hpp"
 #include "LegacyCubiomes/features/WorldGenerator/WorldGenBigMushroom.hpp"
 #include "LegacyCubiomes/features/WorldGenerator/WorldGenBigTree.hpp"
@@ -37,6 +40,7 @@ const WorldGenTaiga1 BiomeTaiga::PINE_GENERATOR;
 const WorldGenTaiga2 BiomeTaiga::SPRUCE_GENERATOR;
 const WorldGenMegaPineTree BiomeTaiga::MEGA_PINE_GENERATOR = WorldGenMegaPineTree(false);
 const WorldGenMegaPineTree BiomeTaiga::MEGA_SPRUCE_GENERATOR = WorldGenMegaPineTree(true);
+
 const WorldGenBlockBlob BiomeTaiga::FOREST_ROCK_GENERATOR = WorldGenBlockBlob(&lce::blocks::BlocksInit::MOSS_STONE, 0);
 
 const WorldGenSwamp BiomeSwamp::SWAMP_FEATURE;
@@ -248,7 +252,7 @@ void BiomeTaiga::genTerrainBlocks(i64 worldSeed, RNG &rng, ChunkPrimer *chunkPri
 
 void BiomeSwamp::genTerrainBlocks(i64 worldSeed, RNG &rng, ChunkPrimer *chunkPrimerIn, c_int x, c_int z,
                                   c_double noiseVal) {
-    c_double d0 = GRASS_COLOR_NOISE.getValue((double) x * 0.25, (double) z * 0.25);
+    c_double d0 = GRASS_COLOR_NOISE.getValue(static_cast<double>(x) * 0.25, static_cast<double>(z) * 0.25);
 
     if (d0 > 0.0) {
         c_int zOff = x & 15;
@@ -288,10 +292,12 @@ void BiomeMesa::genTerrainBlocks(c_i64 worldSeedIn, RNG &rng, ChunkPrimer *chunk
     if (this->brycePillars) {
         c_int i = (x & -16) + (z & 15);
         c_int j = (z & -16) + (x & 15);
-        c_double d0 = std::min(std::abs(noiseVal), this->pillarNoise.getValue((double) i * 0.25, (double) j * 0.25));
+        c_double d0 = std::min(std::abs(noiseVal), this->pillarNoise.getValue(
+            static_cast<double>(i) * 0.25, static_cast<double>(j) * 0.25));
 
         if (d0 > 0.0) {
-            double d2 = std::abs(this->pillarRoofNoise.getValue((double) i * 0.001953125, (double) j * 0.001953125));
+            double d2 = std::abs(this->pillarRoofNoise.getValue(
+                static_cast<double>(i) * 0.001953125, static_cast<double>(j) * 0.001953125));
             d4 = d0 * d0 * 2.5;
             c_double d3 = ceil(d2 * 50.0) + 14.0;
 
@@ -305,14 +311,14 @@ void BiomeMesa::genTerrainBlocks(c_i64 worldSeedIn, RNG &rng, ChunkPrimer *chunk
     c_int l1 = z & 15;
     constexpr int seaLevel = 63; // sea level
     const lce::blocks::Block *filler = this->fillerBlock;
-    c_int k = (int) (noiseVal / 3.0 + 3.0 + rng.nextDouble() * 0.25);
+    c_int k = static_cast<int>(noiseVal / 3.0 + 3.0 + rng.nextDouble() * 0.25);
     c_bool flag = cos(noiseVal / 3.0 * PI) > 0.0;
     int l = -1;
     bool flag1 = false;
     int i1 = 0;
 
     for (int j1 = 255; j1 >= 0; --j1) {
-        if (chunkPrimerIn->getBlockId(l1, j1, k1) == lce::blocks::ids::AIR_ID && j1 < (int) d4) {
+        if (chunkPrimerIn->getBlockId(l1, j1, k1) == lce::blocks::ids::AIR_ID && j1 < static_cast<int>(d4)) {
             chunkPrimerIn->setBlockId(l1, j1, k1, lce::blocks::ids::STONE_ID);
         }
         if (j1 == 0) break;
@@ -460,7 +466,9 @@ void Biome::decorate(World *worldIn, RNG &rng, const Pos2D &pos) {
 }
 
 void BiomePlains::decorate(World *worldIn, RNG &rng, const Pos2D &pos) {
-    c_double d0 = GRASS_COLOR_NOISE.getValue((double) (pos.x + 8) / 200.0, (double) (pos.z + 8) / 200.0);
+    c_double d0 = GRASS_COLOR_NOISE.getValue(
+            static_cast<double>(pos.x + 8) / 200.0,
+            static_cast<double>(pos.z + 8) / 200.0);
 
     const Pos3D blockPos = {pos.x, 0, pos.z};
     if (d0 < -0.8) {
@@ -471,9 +479,9 @@ void BiomePlains::decorate(World *worldIn, RNG &rng, const Pos2D &pos) {
         this->decorator->grassPerChunk = 10;
         DOUBLE_PLANT_GENERATOR.setPlantType(BlockDoublePlant::EnumPlantType::GRASS);
         for (int i = 0; i < 7; ++i) {
-            int x_off = rng.nextInt(16) + 8;
-            int z_off = rng.nextInt(16) + 8;
-            int y_off = rng.nextInt(worldIn->getHeight(blockPos.add(x_off, 0, z_off)).getY() + 32);
+            const int x_off = rng.nextInt(16) + 8;
+            const int z_off = rng.nextInt(16) + 8;
+            const int y_off = rng.nextInt(worldIn->getHeight(blockPos.add(x_off, 0, z_off)).getY() + 32);
             DOUBLE_PLANT_GENERATOR.generate(worldIn, rng, blockPos.add(x_off, y_off, z_off));
         }
     }
@@ -482,9 +490,9 @@ void BiomePlains::decorate(World *worldIn, RNG &rng, const Pos2D &pos) {
         DOUBLE_PLANT_GENERATOR.setPlantType(BlockDoublePlant::EnumPlantType::SUNFLOWER);
 
         for (int i1 = 0; i1 < 10; ++i1) {
-            int x_off = rng.nextInt(16) + 8;
-            int z_off = rng.nextInt(16) + 8;
-            int y_off = rng.nextInt(worldIn->getHeight(blockPos.add(x_off, 0, z_off)).getY() + 32);
+            const int x_off = rng.nextInt(16) + 8;
+            const int z_off = rng.nextInt(16) + 8;
+            const int y_off = rng.nextInt(worldIn->getHeight(blockPos.add(x_off, 0, z_off)).getY() + 32);
             DOUBLE_PLANT_GENERATOR.generate(worldIn, rng, blockPos.add(x_off, y_off, z_off));
         }
     }
@@ -495,16 +503,16 @@ void BiomePlains::decorate(World *worldIn, RNG &rng, const Pos2D &pos) {
 void BiomeDesert::decorate(World *worldIn, RNG &rng, const Pos2D &pos) {
     Biome::decorate(worldIn, rng, pos);
 
-    Pos3D blockPos = {pos.x, 0, pos.z};
+    // const Pos3D blockPos = {pos.x, 0, pos.z};
     if (rng.nextInt(1000) == 0) {
-        int x_off = rng.nextInt(16) + 8;
-        int z_off = rng.nextInt(16) + 8;
-        const Pos3D position = worldIn->getHeight(blockPos.add(x_off, 0, z_off));
-        //(WorldGenDesertWells()).generate(worldIn, rng, position);
+        // const int x_off = rng.nextInt(16) + 8;
+        // const int z_off = rng.nextInt(16) + 8;
+        // const Pos3D position = worldIn->getHeight(blockPos.add(x_off, 0, z_off));
+        // WorldGenDesertWells().generate(worldIn, rng, position);
     }
 
     if (rng.nextInt(64) == 0) {
-        //(WorldGenFossils()).generate(worldIn, rng, blockPos);
+        // WorldGenFossils().generate(worldIn, rng, blockPos);
     }
 }
 
@@ -533,23 +541,23 @@ void BiomeHills::decorate(World *worldIn, RNG &rng, const Pos2D &pos) {
 }
 
 void BiomeForest::decorate(World *worldIn, RNG &rng, const Pos2D &pos) {
-    if (this->type == BiomeForest::Type::ROOFED) {
-        BiomeForest::addMushrooms(worldIn, rng, pos);
+    if (this->type == Type::ROOFED) {
+        addMushrooms(worldIn, rng, pos);
     }
 
     int i = rng.nextInt(5) - 3;
 
-    if (this->type == BiomeForest::Type::FLOWER) {
+    if (this->type == Type::FLOWER) {
         i += 2;
     }
 
-    BiomeForest::addDoublePlants(worldIn, rng, pos, i);
+    addDoublePlants(worldIn, rng, pos, i);
 
     Biome::decorate(worldIn, rng, pos);
 }
 
 void BiomeForest::addMushrooms(World *worldIn, RNG &rng, const Pos2D &pos) const {
-    Pos3D blockPos = {pos.x, 0, pos.z};
+    const Pos3D blockPos = {pos.x, 0, pos.z};
     for (int i = 0; i < 4; ++i) {
         for (int j = 0; j < 4; ++j) {
             c_int x_off = i * 4 + 1 + 8 + rng.nextInt(3);
@@ -571,7 +579,7 @@ void BiomeForest::addMushrooms(World *worldIn, RNG &rng, const Pos2D &pos) const
     }
 }
 
-void BiomeForest::addDoublePlants(World *worldIn, RNG &rng, const Pos2D &pos, int amount) {
+void BiomeForest::addDoublePlants(World *worldIn, RNG &rng, const Pos2D &pos, const int amount) {
     const Pos3D blockPos = {pos.x, 0, pos.z};
     for (int i = 0; i < amount; ++i) {
         const int flowerType = rng.nextInt(3);
@@ -598,7 +606,7 @@ void BiomeForest::addDoublePlants(World *worldIn, RNG &rng, const Pos2D &pos, in
 
 void BiomeTaiga::decorate(World *worldIn, RNG &rng, const Pos2D &pos) {
     const Pos3D blockPos = {pos.x, 0, pos.z};
-    if (this->type == BiomeTaiga::Type::MEGA || this->type == BiomeTaiga::Type::MEGA_SPRUCE) {
+    if (this->type == Type::MEGA || this->type == Type::MEGA_SPRUCE) {
         const int i = rng.nextInt(3);
 
         for (int j = 0; j < i; ++j) {
@@ -625,23 +633,23 @@ void BiomeSwamp::decorate(World *worldIn, RNG &rng, const Pos2D &pos) {
     Biome::decorate(worldIn, rng, pos);
 
     if (rng.nextInt(64) == 0) {
-        const Pos3D blockPos = {pos.x, 0, pos.z};
-        //(WorldGenFossils()).generate(worldIn, rng, blockPos);
+        // const Pos3D blockPos = {pos.x, 0, pos.z};
+        // (WorldGenFossils()).generate(worldIn, rng, blockPos);
     }
 }
 
 void BiomeSnow::decorate(World *worldIn, RNG &rng, const Pos2D &pos) {
     if (this->superIcy) {
-        Pos3D blockPos = {pos.x, 0, pos.z};
+        const Pos3D blockPos = {pos.x, 0, pos.z};
         for (int i = 0; i < 3; ++i) {
-            int x_off = rng.nextInt(16) + 8;
-            int z_off = rng.nextInt(16) + 8;
+            const int x_off = rng.nextInt(16) + 8;
+            const int z_off = rng.nextInt(16) + 8;
             this->iceSpike.generate(worldIn, rng, worldIn->getHeight(blockPos.add(x_off, 0, z_off)));
         }
 
         for (int l = 0; l < 2; ++l) {
-            int x_off = rng.nextInt(16) + 8;
-            int z_off = rng.nextInt(16) + 8;
+            const int x_off = rng.nextInt(16) + 8;
+            const int z_off = rng.nextInt(16) + 8;
             this->icePatch.generate(worldIn, rng, worldIn->getHeight(blockPos.add(x_off, 0, z_off)));
         }
     }
@@ -652,17 +660,17 @@ void BiomeSnow::decorate(World *worldIn, RNG &rng, const Pos2D &pos) {
 void BiomeJungle::decorate(World *worldIn, RNG &rng, const Pos2D &pos) {
     Biome::decorate(worldIn, rng, pos);
 
-    Pos3D blockPos = {pos.x, 0, pos.z};
+    const Pos3D blockPos = {pos.x, 0, pos.z};
     int x_off = rng.nextInt(16) + 8;
     int z_off = rng.nextInt(16) + 8;
-    int y_off = rng.nextInt(worldIn->getHeight(blockPos.add(x_off, 0, z_off)).getY() * 2);
+    const int y_off = rng.nextInt(worldIn->getHeight(blockPos.add(x_off, 0, z_off)).getY() * 2);
     /*if (pos.x >> 4 == 0 && pos.z >> 4 == 10) {
         std::cout << "Generating melon at " << x_off << ", " << y_off << ", " << z_off << std::endl;
         std::cout << rng.nextLong() << std::endl;
     }*/
-    (WorldGenCucurbitsBlock(lce::blocks::ids::MELON_BLOCK_ID, false)).generate(
+    WorldGenCucurbitsBlock(lce::blocks::ids::MELON_BLOCK_ID, false).generate(
         worldIn, rng, blockPos.add(x_off, y_off, z_off));
-    WorldGenVines genVines;
+    const WorldGenVines genVines;
 
     for (int j1 = 0; j1 < 50; ++j1) {
         x_off = rng.nextInt(16) + 8;
@@ -694,7 +702,9 @@ void BiomeSavannaMutated::decorate(World *worldIn, RNG &rng, const Pos2D &pos) {
 #pragma region TreeType
 
 const WorldGenAbstractTree *BiomePlains::genBigTreeChance(RNG &rng) const {
-    return rng.nextInt(3) == 0 ? (WorldGenAbstractTree*)&BIG_TREE_FEATURE : (WorldGenAbstractTree*)&TREE_FEATURE;
+    return rng.nextInt(3) == 0 ?
+        reinterpret_cast<const WorldGenAbstractTree*>(&BIG_TREE_FEATURE) :
+        reinterpret_cast<const WorldGenAbstractTree*>(&TREE_FEATURE);
 }
 
 const WorldGenAbstractTree *BiomeHills::genBigTreeChance(RNG &rng) const {
@@ -702,11 +712,13 @@ const WorldGenAbstractTree *BiomeHills::genBigTreeChance(RNG &rng) const {
 }
 
 const WorldGenAbstractTree *BiomeForest::genBigTreeChance(RNG &rng) const {
-    if (this->type == BiomeForest::Type::ROOFED && 0 < rng.nextInt(3)) {
+    if (this->type == Type::ROOFED && 0 < rng.nextInt(3)) {
         return &ROOF_TREE;
     }
-    if (this->type != BiomeForest::Type::BIRCH && rng.nextInt(5) != 0) {
-        return rng.nextInt(10) == 0 ? (WorldGenAbstractTree*)&BIG_TREE_FEATURE : (WorldGenAbstractTree*)&TREE_FEATURE;
+    if (this->type != Type::BIRCH && rng.nextInt(5) != 0) {
+        return rng.nextInt(10) == 0 ?
+            reinterpret_cast<const WorldGenAbstractTree*>(&BIG_TREE_FEATURE) :
+            reinterpret_cast<const WorldGenAbstractTree*>(&TREE_FEATURE);
     }
     return &BIRCH_TREE;
 }
@@ -716,13 +728,15 @@ const WorldGenAbstractTree *BiomeForestMutated::genBigTreeChance(RNG &rng) const
 }
 
 const WorldGenAbstractTree *BiomeTaiga::genBigTreeChance(RNG &rng) const {
-    if ((this->type == BiomeTaiga::Type::MEGA || this->type == BiomeTaiga::Type::MEGA_SPRUCE) && rng.nextInt(3) == 0) {
-        return this->type != BiomeTaiga::Type::MEGA_SPRUCE && rng.nextInt(13) != 0
+    if ((this->type == Type::MEGA || this->type == Type::MEGA_SPRUCE) && rng.nextInt(3) == 0) {
+        return this->type != Type::MEGA_SPRUCE && rng.nextInt(13) != 0
                    ? &MEGA_PINE_GENERATOR
                    : &MEGA_SPRUCE_GENERATOR;
     }
 
-    return rng.nextInt(3) == 0 ? (WorldGenAbstractTree*)&PINE_GENERATOR : (WorldGenAbstractTree*)&SPRUCE_GENERATOR;
+    return rng.nextInt(3) == 0 ?
+        reinterpret_cast<const WorldGenAbstractTree*>(&PINE_GENERATOR) :
+        reinterpret_cast<const WorldGenAbstractTree*>(&SPRUCE_GENERATOR);
 }
 
 const WorldGenAbstractTree *BiomeSwamp::genBigTreeChance(RNG &rng) const {
@@ -742,12 +756,14 @@ const WorldGenAbstractTree *BiomeJungle::genBigTreeChance(RNG &rng) const {
     }
 
     return !this->isEdge && rng.nextInt(3) == 0
-               ? (WorldGenAbstractTree*)new WorldGenMegaJungle(10, 20, &lce::blocks::BlocksInit::JUNGLE_WOOD, &lce::blocks::BlocksInit::JUNGLE_LEAVES)
-               : (WorldGenAbstractTree*)new WorldGenTrees(4 + rng.nextInt(7), &lce::blocks::BlocksInit::JUNGLE_WOOD, &lce::blocks::BlocksInit::JUNGLE_LEAVES, true);
+               ? reinterpret_cast<const WorldGenAbstractTree*>(new WorldGenMegaJungle(10, 20, &lce::blocks::BlocksInit::JUNGLE_WOOD, &lce::blocks::BlocksInit::JUNGLE_LEAVES))
+               : reinterpret_cast<const WorldGenAbstractTree*>(new WorldGenTrees(4 + rng.nextInt(7), &lce::blocks::BlocksInit::JUNGLE_WOOD, &lce::blocks::BlocksInit::JUNGLE_LEAVES, true));
 }
 
 const WorldGenAbstractTree *BiomeSavanna::genBigTreeChance(RNG &rng) const {
-    return rng.nextInt(5) > 0 ? (WorldGenAbstractTree*)&SAVANNA_TREE : (WorldGenAbstractTree*)&TREE_FEATURE;
+    return rng.nextInt(5) > 0
+        ? reinterpret_cast<const WorldGenAbstractTree*>(&SAVANNA_TREE)
+        : reinterpret_cast<const WorldGenAbstractTree*>(&TREE_FEATURE);
 }
 
 const WorldGenAbstractTree *BiomeMesa::genBigTreeChance(RNG &rng) const {
@@ -775,10 +791,10 @@ const WorldGenerator *BiomeJungle::getRandomWorldGenForGrass(RNG &rng) const {
 #pragma region FlowerType
 
 BlockFlower::EnumFlowerType BiomePlains::pickRandomFlower(RNG &rng, const Pos2D &pos) const {
-    double d0 = GRASS_COLOR_NOISE.getValue((double) pos.x / 200.0, (double) pos.z / 200.0);
+    const double d0 = GRASS_COLOR_NOISE.getValue(static_cast<double>(pos.x) / 200.0, static_cast<double>(pos.z) / 200.0);
 
     if (d0 < -0.8) {
-        int i = rng.nextInt(4);
+        const int i = rng.nextInt(4);
         switch (i) {
             case 0:
                 return BlockFlower::EnumFlowerType::ORANGE_TULIP;
@@ -807,16 +823,16 @@ BlockFlower::EnumFlowerType BiomePlains::pickRandomFlower(RNG &rng, const Pos2D 
 }
 
 BlockFlower::EnumFlowerType BiomeForest::pickRandomFlower(RNG &rng, const Pos2D &pos) const {
-    if (this->type != BiomeForest::Type::FLOWER) {
+    if (this->type != Type::FLOWER) {
         return Biome::pickRandomFlower(rng, pos);
     }
 
-    double d0 = std::clamp(
-        (1.0 + GRASS_COLOR_NOISE.getValue((double) pos.x / 48.0, (double) pos.z / 48.0)) / 2.0,
+    const double d0 = std::clamp(
+        (1.0 + GRASS_COLOR_NOISE.getValue(static_cast<double>(pos.x) / 48.0, static_cast<double>(pos.z) / 48.0)) / 2.0,
         0.0, 0.9999);
 
-    auto flowerType = static_cast<BlockFlower::EnumFlowerType>(
-        (int) (d0 * (double) BlockFlower::EnumFlowerType::NUM_TYPES));
+    const auto flowerType = static_cast<BlockFlower::EnumFlowerType>(
+        static_cast<int>(d0 * static_cast<double>(BlockFlower::EnumFlowerType::NUM_TYPES)));
 
     return flowerType == BlockFlower::EnumFlowerType::BLUE_ORCHID ? BlockFlower::EnumFlowerType::POPPY : flowerType;
 }
@@ -830,7 +846,7 @@ BlockFlower::EnumFlowerType BiomeSwamp::pickRandomFlower(RNG &rng, const Pos2D &
 #pragma region CustomDecorators
 
 BiomeDecorator *BiomeMesa::createBiomeDecorator() const {
-    return new BiomeMesa::Decorator();
+    return new Decorator();
 }
 
 void BiomeMesa::Decorator::generateOres(World *world, RNG &rng) {

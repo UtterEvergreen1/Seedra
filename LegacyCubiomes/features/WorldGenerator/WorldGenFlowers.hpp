@@ -1,9 +1,9 @@
 #pragma once
+
 #include "WorldGenerator.hpp"
-#include "lce/blocks/block.hpp"
-#include "LegacyCubiomes/utils/Pos3DTemplate.hpp"
-#include "LegacyCubiomes/utils/rng.hpp"
-#include <map>
+
+
+class World;
 
 class BlockFlower {
 public:
@@ -27,11 +27,11 @@ class WorldGenFlowers final : public WorldGenerator {
     BlockFlower::EnumFlowerType flowerType;
 
 public:
-    WorldGenFlowers(int flowerId, const BlockFlower::EnumFlowerType type)
+    WorldGenFlowers(const int flowerId, const BlockFlower::EnumFlowerType type)
         : flowerId(flowerId), flowerType(type) {
     }
 
-    void setGeneratedBlock(int flowerId, const BlockFlower::EnumFlowerType typeIn) {
+    void setGeneratedBlock(const int flowerId, const BlockFlower::EnumFlowerType typeIn) {
         this->flowerId = flowerId;
         this->flowerType = typeIn;
     }

@@ -1,6 +1,12 @@
 #include "WorldGenIcePath.hpp"
 
-#include "LegacyCubiomes/chunk_generator/ChunkPrimer.hpp"
+#include "LegacyCubiomes/chunk_generator/World.hpp"
+#include "lce/blocks/blocks.hpp"
+#include "lce/blocks/block_ids.hpp"
+
+
+const lce::blocks::Block* WorldGenIcePath::PATH_BLOCK = &lce::blocks::BlocksInit::PACKED_ICE;
+
 
 bool WorldGenIcePath::generate(World * worldIn, RNG &rng, const Pos3D &pos) const {
     Pos3D position = pos;
@@ -12,22 +18,22 @@ bool WorldGenIcePath::generate(World * worldIn, RNG &rng, const Pos3D &pos) cons
         return false;
     }
 
-    int i = rng.nextInt(this->pathWidth - 2) + 2;
-    int j = 1;
+    const int i = rng.nextInt(this->pathWidth - 2) + 2;
+    // int j = 1;
 
     for (int xPos = position.getX() - i; xPos <= position.getX() + i; ++xPos) {
         for (int zPos = position.getZ() - i; zPos <= position.getZ() + i; ++zPos) {
-            int i1 = xPos - position.getX();
-            int j1 = zPos - position.getZ();
+            const int i1 = xPos - position.getX();
+            const int j1 = zPos - position.getZ();
 
             if (i1 * i1 + j1 * j1 <= i * i) {
                 for (int k1 = position.getY() - 1; k1 <= position.getY() + 1; ++k1) {
                     Pos3D blockPos = {xPos, k1, zPos};
-                    int blockId = worldIn->getBlockId(blockPos);
+                    const int blockId = worldIn->getBlockId(blockPos);
 
                     using namespace lce::blocks;
                     if (blockId == ids::DIRT_ID || blockId == ids::SNOW_BLOCK_ID || blockId == ids::ICE_ID) {
-                        worldIn->setBlock(blockPos, this->pathBlock);
+                        worldIn->setBlock(blockPos, PATH_BLOCK);
                     }
                 }
             }

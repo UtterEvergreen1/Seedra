@@ -1,6 +1,10 @@
 #include "WorldGeneratorBonusChest.hpp"
 
-#include "LegacyCubiomes/chunk_generator/ChunkPrimer.hpp"
+#include "LegacyCubiomes/chunk_generator/World.hpp"
+#include "lce/blocks/blocks.hpp"
+#include "lce/blocks/block_ids.hpp"
+#include "LegacyCubiomes/cubiomes/generator.hpp"
+
 
 bool WorldGeneratorBonusChest::generate(World * worldIn, RNG &rng, const Pos3D &pos) const {
     using namespace lce::blocks;
@@ -40,10 +44,10 @@ bool WorldGeneratorBonusChest::generate(World * worldIn, RNG &rng, const Pos3D &
             //     static_cast<TileEntityChest*>(tileentity)->setLootTable(LootTableList::CHESTS_SPAWN_BONUS_CHEST, rand.nextLong());
             // }
 
-            Pos3D eastBlock = blockPos.east();
-            Pos3D westBlock = blockPos.west();
-            Pos3D northBlock = blockPos.north();
-            Pos3D southBlock = blockPos.south();
+            const Pos3D eastBlock = blockPos.east();
+            const Pos3D westBlock = blockPos.west();
+            const Pos3D northBlock = blockPos.north();
+            const Pos3D southBlock = blockPos.south();
 
             if (worldIn->isAirBlock(eastBlock) && ids::isFullyOpaqueBlock(worldIn->getBlockId(eastBlock.down()))) {
                 worldIn->setBlock(eastBlock, ids::TORCH_ID);

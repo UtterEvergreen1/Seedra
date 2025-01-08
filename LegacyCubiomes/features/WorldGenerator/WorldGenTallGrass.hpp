@@ -1,7 +1,10 @@
 #pragma once
-#include "WorldGenerator.hpp"
+
 #include "WorldGenBush.hpp"
-#include "lce/blocks/blocks.hpp"
+
+
+namespace lce::blocks { class Block; }
+class World;
 
 class BlockTallGrass : public BlockBush {
 public:
@@ -12,25 +15,13 @@ public:
         TALL_GRASS
     };
 
-    static const lce::blocks::Block* getBlockVarientById(EnumType type) {
-        switch (type) {
-            case EnumType::DEAD_BUSH:
-                return &lce::blocks::BlocksInit::DEAD_BUSH;
-            case EnumType::FERN:
-                return &lce::blocks::BlocksInit::TALL_GRASS_FERN;
-            case EnumType::GRASS:
-                return &lce::blocks::BlocksInit::TALL_GRASS_GRASS;
-            case EnumType::TALL_GRASS:
-                return &lce::blocks::BlocksInit::DOUBLE_TALLGRASS;
-        }
-        return &lce::blocks::BlocksInit::DEAD_BUSH;
-    }
+    static const lce::blocks::Block* getBlockVarientById(EnumType type);
 
     static bool canBlockStay(World *worldIn, const Pos3D &pos);
 };
 
 
-class WorldGenTallGrass : public WorldGenerator {
+class WorldGenTallGrass final : public WorldGenerator {
 public:
     explicit WorldGenTallGrass(const BlockTallGrass::EnumType typeIn) : type(typeIn) {
     }

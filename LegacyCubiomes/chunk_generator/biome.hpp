@@ -101,7 +101,7 @@ public:
 
     ND float getFloatTemperature(const Pos3D &pos) const;
 
-    virtual void decorate(World *worldIn, RNG &rand, const Pos2D &pos);
+    virtual void decorate(World *worldIn, RNG &rng, const Pos2D &pos);
 
     void generateBiomeTerrain(RNG &rng, ChunkPrimer *chunkPrimerIn, int x, int z, double noiseVal) const;
 
@@ -457,11 +457,11 @@ public:
 
     lce::blocks::Block const *getClayBand(c_int x, c_int y);
 
-    BiomeDecorator *createBiomeDecorator() const override;
+    ND BiomeDecorator *createBiomeDecorator() const override;
 
     const WorldGenAbstractTree *genBigTreeChance(RNG &rng) const override;
 
-    class Decorator : public BiomeDecorator {
+    class Decorator final : public BiomeDecorator {
     protected:
         void generateOres(World *world, RNG &rng) override;
     };

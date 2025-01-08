@@ -1,9 +1,9 @@
 #pragma once
-#include "WorldGenBush.hpp"
+
 #include "WorldGenerator.hpp"
-#include "LegacyCubiomes/utils/Pos3DTemplate.hpp"
-#include "LegacyCubiomes/utils/rng.hpp"
-class ChunkPrimer;
+
+
+class World;
 
 class BlockDoublePlant {
 public:
@@ -19,6 +19,7 @@ public:
     static bool canPlaceBlockAt(World* chunk, const Pos3D& pos);
     static void placeAt(World *chunk, const Pos3D& lowerPos, EnumPlantType variant);
 };
+
 class WorldGenDoublePlant final : public WorldGenerator {
     mutable BlockDoublePlant::EnumPlantType plantType = BlockDoublePlant::EnumPlantType::SUNFLOWER;
 

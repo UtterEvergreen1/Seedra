@@ -1,8 +1,9 @@
 #pragma once
+
 #include "WorldGenerator.hpp"
-#include "LegacyCubiomes/utils/Pos3DTemplate.hpp"
-#include "LegacyCubiomes/chunk_generator/ChunkPrimer.hpp"
-#include "LegacyCubiomes/utils/rng.hpp"
+
+namespace lce::blocks { class Block; }
+class World;
 
 class BlockHugeMushroom {
 public:
@@ -22,6 +23,7 @@ public:
         ALL_STEM
     };
 };
+
 
 class WorldGenBigMushroom final : public WorldGenerator {
 public:

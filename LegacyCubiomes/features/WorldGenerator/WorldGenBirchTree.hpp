@@ -1,7 +1,9 @@
 #pragma once
+
 #include "WorldGenAbstractTree.hpp"
-#include "LegacyCubiomes/utils/Pos3DTemplate.hpp"
-#include "LegacyCubiomes/utils/rng.hpp"
+
+
+class World;
 
 class WorldGenBirchTree final : public WorldGenAbstractTree {
 public:

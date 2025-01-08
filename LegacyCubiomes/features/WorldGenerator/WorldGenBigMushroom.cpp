@@ -1,10 +1,13 @@
 #include "WorldGenBigMushroom.hpp"
 
+#include "LegacyCubiomes/chunk_generator/World.hpp"
 #include "lce/blocks/blocks.hpp"
+#include "lce/blocks/block_ids.hpp"
 
-bool WorldGenBigMushroom::generate(World * worldIn, RNG &rand, const Pos3D &position) const {
+
+bool WorldGenBigMushroom::generate(World* worldIn, RNG& rand, const Pos3D& position) const {
     using namespace lce::blocks;
-    const Block *block = this->mushroomType;
+    const Block* block = this->mushroomType;
 
     if (block == nullptr) {
         block = rand.nextBoolean() ? &BlocksInit::BROWN_MUSHROOM_BLOCK : &BlocksInit::RED_MUSHROOM_BLOCK;
@@ -12,13 +15,9 @@ bool WorldGenBigMushroom::generate(World * worldIn, RNG &rand, const Pos3D &posi
 
     int height = rand.nextInt(3) + 4;
 
-    if (rand.nextInt(12) == 0) {
-        height *= 2;
-    }
+    if (rand.nextInt(12) == 0) { height *= 2; }
 
-    if (position.getY() < 1 || position.getY() + height >= 255) {
-        return false;
-    }
+    if (position.getY() < 1 || position.getY() + height >= 255) { return false; }
 
     for (int yPos = position.getY(); yPos <= position.getY() + 1 + height; ++yPos) {
         const int radius = (yPos <= position.getY() + 3) ? 0 : 3;
@@ -26,10 +25,8 @@ bool WorldGenBigMushroom::generate(World * worldIn, RNG &rand, const Pos3D &posi
         for (int l = position.getX() - radius; l <= position.getX() + radius; ++l) {
             for (int i1 = position.getZ() - radius; i1 <= position.getZ() + radius; ++i1) {
                 if (yPos >= 0 && yPos < 256) {
-                    int blockId = worldIn->getBlockId(Pos3D(l, yPos, i1));
-                    if (blockId != ids::AIR_ID && !ids::isLeavesBlock(blockId)) {
-                        return false;
-                    }
+                    const int blockId = worldIn->getBlockId(Pos3D(l, yPos, i1));
+                    if (!ids::isAirOrLeavesBlock(blockId)) { return false; }
                 } else {
                     return false;
                 }
@@ -39,9 +36,7 @@ bool WorldGenBigMushroom::generate(World * worldIn, RNG &rand, const Pos3D &posi
 
     const int blockId = worldIn->getBlockId(position.down());
 
-    if (blockId != ids::DIRT_ID && blockId != ids::GRASS_ID && blockId != ids::MYCELIUM_ID) {
-        return false;
-    }
+    if (blockId != ids::DIRT_ID && blockId != ids::GRASS_ID && blockId != ids::MYCELIUM_ID) { return false; }
 
     const int maxY = position.getY() + height;
     const int startY = block == &BlocksInit::RED_MUSHROOM_BLOCK ? maxY - 3 : maxY;
@@ -83,8 +78,7 @@ bool WorldGenBigMushroom::generate(World * worldIn, RNG &rand, const Pos3D &posi
 
                 if (block == &BlocksInit::BROWN_MUSHROOM_BLOCK || yPos < maxY) {
                     // Skip corners
-                    if ((xPos == minX || xPos == maxX) && (zPos == minZ || zPos == maxZ))
-                        continue;
+                    if ((xPos == minX || xPos == maxX) && (zPos == minZ || zPos == maxZ)) continue;
 
                     if ((xPos == edgeMinX && zPos == minZ) || (zPos == edgeMinZ && xPos == minX)) {
                         hugeMushroomMetaData = BlockHugeMushroom::EnumType::NORTH_WEST;
@@ -107,8 +101,7 @@ bool WorldGenBigMushroom::generate(World * worldIn, RNG &rand, const Pos3D &posi
                     hugeMushroomMetaData = BlockHugeMushroom::EnumType::ALL_INSIDE;
                 }
 
-                if (position.getY() >= maxY - 1 || hugeMushroomMetaData !=
-                    BlockHugeMushroom::EnumType::ALL_INSIDE) {
+                if (position.getY() >= maxY - 1 || hugeMushroomMetaData != BlockHugeMushroom::EnumType::ALL_INSIDE) {
                     Pos3D blockPos(xPos, yPos, zPos);
                     if (!ids::isFullBlock(worldIn->getBlockId(blockPos))) {
                         worldIn->setBlock(position.up(yPos), block->getID(), (int) hugeMushroomMetaData);

@@ -1,8 +1,9 @@
 #pragma once
+
 #include "WorldGenerator.hpp"
-#include "lce/blocks/blocks.hpp"
-#include "LegacyCubiomes/utils/Pos3DTemplate.hpp"
-#include "LegacyCubiomes/utils/rng.hpp"
+
+
+class World;
 
 class BlockLilyPad {
 public:

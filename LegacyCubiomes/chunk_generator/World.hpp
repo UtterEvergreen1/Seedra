@@ -1,7 +1,14 @@
 #pragma once
+
 #include <unordered_map>
-#include "LegacyCubiomes/chunk_generator/ChunkPrimer.hpp"
+
 #include "LegacyCubiomes/utils/Pos2DTemplate.hpp"
+#include "LegacyCubiomes/utils/Pos3DTemplate.hpp"
+
+class Generator;
+class ChunkPrimer;
+namespace lce::blocks { class Block; }
+
 
 class World {
 public:

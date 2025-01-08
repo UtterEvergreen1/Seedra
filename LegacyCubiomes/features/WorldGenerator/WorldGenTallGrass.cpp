@@ -1,15 +1,35 @@
 #include "WorldGenTallGrass.hpp"
+
+#include "LegacyCubiomes/chunk_generator/World.hpp"
+#include "lce/blocks/blocks.hpp"
 #include "lce/blocks/block_ids.hpp"
-#include "LegacyCubiomes/chunk_generator/ChunkPrimer.hpp"
+#include "LegacyCubiomes/cubiomes/generator.hpp"
+
+
+const lce::blocks::Block* BlockTallGrass::getBlockVarientById(const EnumType type) {
+    switch (type) {
+        case EnumType::DEAD_BUSH:
+            return &lce::blocks::BlocksInit::DEAD_BUSH;
+        case EnumType::FERN:
+            return &lce::blocks::BlocksInit::TALL_GRASS_FERN;
+        case EnumType::GRASS:
+            return &lce::blocks::BlocksInit::TALL_GRASS_GRASS;
+        case EnumType::TALL_GRASS:
+            return &lce::blocks::BlocksInit::DOUBLE_TALLGRASS;
+    }
+    return &lce::blocks::BlocksInit::DEAD_BUSH;
+}
+
+
 
 bool BlockTallGrass::canBlockStay(World *worldIn, const Pos3D &pos) {
-    return BlockBush::canSustainBush(worldIn->getBlockId(pos.down()));
+    return lce::blocks::ids::isGrassOrDirtOrFarmland(worldIn->getBlockId(pos.down()));
 }
 
 bool WorldGenTallGrass::generate(World * worldIn, RNG &rng, const Pos3D &pos) const {
     Pos3D position = pos;
     for (int blockId = worldIn->getBlockId(position);
-         (blockId == lce::blocks::ids::AIR_ID || lce::blocks::ids::isLeavesBlock(blockId)) && position.getY() > 0;
+         (lce::blocks::ids::isAirOrLeavesBlock(blockId)) && position.getY() > 0;
          blockId = worldIn->getBlockId(position)) {
         position = position.down();
     }

@@ -1,14 +1,15 @@
 #include "WorldGenAbstractTree.hpp"
-#include "LegacyCubiomes/chunk_generator/ChunkPrimer.hpp"
-#include "lce/blocks/blocks.hpp"
 
-void WorldGenAbstractTree::setDirtAt(World *worldIn, const Pos3D &pos) {
-    if (worldIn->getBlockId(pos) != lce::blocks::ids::DIRT_ID) {
-        worldIn->setBlock(pos, lce::blocks::ids::DIRT_ID);
-    }
+#include "LegacyCubiomes/chunk_generator/World.hpp"
+#include "lce/blocks/blocks.hpp"
+#include "lce/blocks/block_ids.hpp"
+
+
+void WorldGenAbstractTree::setDirtAt(World* worldIn, const Pos3D& pos) {
+    if (worldIn->getBlockId(pos) != lce::blocks::ids::DIRT_ID) { worldIn->setBlock(pos, lce::blocks::ids::DIRT_ID); }
 }
 
-bool WorldGenAbstractTree::canGrowInto(int blockId) {
+bool WorldGenAbstractTree::canGrowInto(const int blockId) {
     switch (blockId) {
         case lce::blocks::ids::AIR_ID:
         case lce::blocks::ids::OAK_LEAVES_ID:
@@ -25,17 +26,17 @@ bool WorldGenAbstractTree::canGrowInto(int blockId) {
     }
 }
 
-void WorldGenAbstractTree::addVine(World *worldIn, const Pos3D &pos, const FACING facing) {
+void WorldGenAbstractTree::addVine(World* worldIn, const Pos3D& pos, const FACING facing) {
     worldIn->setBlock(pos, lce::blocks::ids::VINES_ID, getMetaFromFacingAdditive(facing));
 }
 
-void WorldGenAbstractTree::placeFallenTrunk(World *worldIn, RNG &rand, const Pos3D &pos, int height,
-                                            const lce::blocks::Block *woodType) {
-    FACING facing = FACING_HORIZONTAL[rand.nextInt(4)];
-    double vineChance = 0.5;
-    int trunkLength = height - 2;
-    int offset = rand.nextInt(2) + 2;
-    Pos3D blockPos = pos.offset(facing, offset);
+void WorldGenAbstractTree::placeFallenTrunk(World* worldIn, RNG& rand, const Pos3D& pos, const int height,
+                                            const lce::blocks::Block* woodType) {
+    const FACING facing = FACING_HORIZONTAL[rand.nextInt(4)];
+    constexpr double vineChance = 0.5;
+    const int trunkLength = height - 2;
+    const int offset = rand.nextInt(2) + 2;
+    const Pos3D blockPos = pos.offset(facing, offset);
     //int groundHeightPos = worldIn->getHeight(pos.add(blockPos.getX(), 0, blockPos.getZ()));
 
     if (blockPos.getY() <= pos.getY() + 1) {
@@ -45,9 +46,9 @@ void WorldGenAbstractTree::placeFallenTrunk(World *worldIn, RNG &rand, const Pos
 
             for (int i = trunkLength; i > 0; --i) {
                 checkPos = checkPos.offset(facing);
-                int blockId = worldIn->getBlockId(checkPos);
+                const int blockId = worldIn->getBlockId(checkPos);
                 if (blockId != lce::blocks::ids::AIR_ID) return;
-                int belowBlockId = worldIn->getBlockId(checkPos.down());
+                const int belowBlockId = worldIn->getBlockId(checkPos.down());
                 if (belowBlockId == lce::blocks::ids::AIR_ID) {
                     airCount++;
                     if (airCount > 2) return;
@@ -62,9 +63,9 @@ void WorldGenAbstractTree::placeFallenTrunk(World *worldIn, RNG &rand, const Pos
                 worldIn->setBlock(placePos, woodType);
 
                 if (rand.nextInt(10) == 0) {
-                    int aboveBlockId = worldIn->getBlockId(placePos.up());
+                    const int aboveBlockId = worldIn->getBlockId(placePos.up());
                     if (aboveBlockId == lce::blocks::ids::AIR_ID) {
-                        double chance = rand.nextFloat();
+                        const double chance = rand.nextFloat();
                         if (chance < vineChance) {
                             if (facing == FACING::NORTH || facing == FACING::SOUTH) {
                                 addVine(worldIn, placePos.east(), FACING::WEST);
@@ -85,8 +86,8 @@ void WorldGenAbstractTree::placeFallenTrunk(World *worldIn, RNG &rand, const Pos
     }
 }
 
-int WorldGenAbstractTree::placeTrunk(World *worldIn, RNG &rand, const Pos3D &pos, int height,
-                                     const lce::blocks::Block *woodType, const bool vinesGrow) {
+int WorldGenAbstractTree::placeTrunk(World* worldIn, RNG& rand, const Pos3D& pos, int height,
+                                     const lce::blocks::Block* woodType, const bool vinesGrow) {
     const int fallenTrunk = rand.nextInt(80);
     double vineGrowthChance = 0.0;
 
@@ -108,16 +109,16 @@ int WorldGenAbstractTree::placeTrunk(World *worldIn, RNG &rand, const Pos3D &pos
     if (vineGrowthChance == 0.0) {
         for (int j3 = 0; j3 < height; ++j3) {
             const int blockId = worldIn->getBlockId(pos.up(j3));
-            if (blockId == lce::blocks::ids::AIR_ID || lce::blocks::ids::isLeavesBlock(blockId) || blockId ==
-                lce::blocks::ids::VINES_ID) {
+            if (lce::blocks::ids::isAirOrLeavesBlock(blockId) ||
+                blockId == lce::blocks::ids::VINES_ID) {
                 worldIn->setBlock(pos.up(j3), woodType);
             }
         }
     } else {
         for (int j3 = 0; j3 < height; ++j3) {
             const int blockId = worldIn->getBlockId(pos.up(j3));
-            if (blockId == lce::blocks::ids::AIR_ID || lce::blocks::ids::isLeavesBlock(blockId) || blockId ==
-                lce::blocks::ids::VINES_ID) {
+            if (lce::blocks::ids::isAirOrLeavesBlock(blockId) ||
+                blockId == lce::blocks::ids::VINES_ID) {
                 worldIn->setBlock(pos.up(j3), woodType);
 
                 if (rand.nextFloat() < vineGrowthChance && worldIn->isAirBlock(pos.add(-1, j3, 0))) {

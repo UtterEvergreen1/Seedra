@@ -1,18 +1,17 @@
 #pragma once
+
 #include "WorldGenerator.hpp"
-#include "lce/blocks/block.hpp"
-#include "LegacyCubiomes/utils/Pos3DTemplate.hpp"
-#include "LegacyCubiomes/utils/rng.hpp"
 
-class ChunkPrimer;
 
-class WorldGenMinable : public WorldGenerator {
-    lce::blocks::Block const *oreBlock;
+namespace lce::blocks { class Block; }
+class World;
+
+class WorldGenMinable final : public WorldGenerator {
+    lce::blocks::Block const* oreBlock;
     int blockCount;
 
 public:
-    WorldGenMinable(lce::blocks::Block const *block, int blockCount) : oreBlock(block), blockCount(blockCount) {
-    }
+    WorldGenMinable(lce::blocks::Block const* block, const int blockCount) : oreBlock(block), blockCount(blockCount) {}
 
-    bool generate(World *world, RNG &rng, const Pos3D &pos) const override;
+    bool generate(World* world, RNG& rng, const Pos3D& pos) const override;
 };

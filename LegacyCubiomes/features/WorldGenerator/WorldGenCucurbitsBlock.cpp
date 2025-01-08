@@ -1,5 +1,9 @@
 #include "WorldGenCucurbitsBlock.hpp"
-#include "LegacyCubiomes/chunk_generator/ChunkPrimer.hpp"
+
+#include "LegacyCubiomes/chunk_generator/World.hpp"
+#include "LegacyCubiomes/cubiomes/generator.hpp"
+#include "lce/blocks/block_ids.hpp"
+
 
 bool WorldGenCucurbitsBlock::generate(World* worldIn, RNG &rng, const Pos3D &pos) const {
     for (int i = 0; i < 64; ++i) {

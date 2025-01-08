@@ -1,26 +1,23 @@
 #pragma once
-#include "WorldGenerator.hpp"
-#include "lce/blocks/block.hpp"
-#include "LegacyCubiomes/utils/Pos3DTemplate.hpp"
 
-class ChunkPrimer;
+#include "WorldGenerator.hpp"
+
+
+namespace lce::blocks { class Block; }
+class World;
 
 class BlockBush {
 public:
-    static bool canPlaceBlockAt(World *world, const Pos3D &pos);
+    static bool canPlaceBlockAt(World* world, const Pos3D& pos);
 
-    static bool canSustainBush(int blockId);
-
-    static bool canBlockStay(World *world, const Pos3D &pos);
+    static bool canBlockStay(World* world, const Pos3D& pos);
 };
 
 class WorldGenBush final : public WorldGenerator {
-    const lce::blocks::Block *block;
+    const lce::blocks::Block* block;
 
 public:
-    WorldGenBush(const lce::blocks::Block *blockIn) {
-        this->block = blockIn;
-    }
+    explicit WorldGenBush(const lce::blocks::Block* blockIn) { this->block = blockIn; }
 
-    bool generate(World * worldIn, RNG &rng, const Pos3D &pos) const override;
+    bool generate(World* worldIn, RNG& rng, const Pos3D& pos) const override;
 };

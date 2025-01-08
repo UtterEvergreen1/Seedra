@@ -1,9 +1,10 @@
 #pragma once
-#include "LegacyCubiomes/chunk_generator/World.hpp"
+
 #include "LegacyCubiomes/utils/Pos3DTemplate.hpp"
 #include "LegacyCubiomes/utils/rng.hpp"
 
-class ChunkPrimer;
+
+class World;
 
 class WorldGenerator {
 public:

@@ -12,7 +12,6 @@
 
 
 int main() {
-
     // rng tests
     /*RNG rngSeed;
     int64_t testLongSeed = 5093713735541695132LL;
@@ -33,17 +32,19 @@ int main() {
     Generator g(console, version, 27184353441555, lce::WORLDSIZE::CLASSIC, lce::BIOMESCALE::SMALL);
 
     // 3 13 for seed -101, 8 15 for seed 1, 11 16 or 15 5 for seed 27184353441555
-    int WIDTH = 27;
-    int X_OFF = 0;
-    int Z_OFF = 0;
+    int X_WIDTH = 5;
+    int Z_WIDTH = 5;
+    int X_CENTER = 0;
+    int Z_CENTER = 0;
 
 
     auto world = World(&g);
-    world.getOrCreateChunk({X_OFF, Z_OFF});
-    world.decorateChunks({X_OFF, Z_OFF}, WIDTH);
+    world.getOrCreateChunk({X_CENTER, Z_CENTER});
+    world.decorateChunks({X_CENTER, Z_CENTER}, X_WIDTH);
 
 
     auto village_locations = Placement::Village<false>::getAllPositions(&g);
+    village_locations.emplace_back(0, 0);
     std::cout << "Village Positions this seed:\n";
     for (auto& pos : village_locations) {
         std::cout << pos << "\n";
@@ -131,9 +132,8 @@ int main() {
 
 
 
-
-    std::string filename = R"(C:/Users/Jerrin/CLionProjects/LegacyChunkViewer/build/chunks/chunk_data_)"
-                           + std::to_string(WIDTH) + ".bin";
+    std::string DIR_NAME = R"(C:/Users/Jerrin/CLionProjects/LegacyChunkViewer/)";
+    std::string filename = DIR_NAME + R"(build/chunks/chunkdata.bin)";
 
     std::ofstream file(filename, std::ios::binary);
     if (!file) {
@@ -141,16 +141,21 @@ int main() {
         return -1;
     }
 
+    file.write(reinterpret_cast<const char*>(&X_CENTER), sizeof(X_CENTER));
+    file.write(reinterpret_cast<const char*>(&Z_CENTER), sizeof(Z_CENTER));
+    file.write(reinterpret_cast<const char*>(&X_WIDTH), sizeof(X_WIDTH));
+    file.write(reinterpret_cast<const char*>(&Z_WIDTH), sizeof(Z_WIDTH));
 
-    for (int cx = -WIDTH + X_OFF; cx < WIDTH + X_OFF - 1; cx++) {
-        for (int cz = -WIDTH + Z_OFF; cz < WIDTH + Z_OFF - 1; cz++) {
+
+    for (int cx = -X_WIDTH + X_CENTER; cx < X_WIDTH + X_CENTER - 1; cx++) {
+        for (int cz = -Z_WIDTH + Z_CENTER; cz < Z_WIDTH + Z_CENTER - 1; cz++) {
             auto* chunk = world.getChunk({cx, cz});
             if (!chunk) {
                 std::cerr << "Error getting chunk: " << cx << ", " << cz << std::endl;
                 continue;
             }
 
-            //replace all stone with air
+            // replace all stone with air
             /*for (int i = 0; i < 16 * 16 * 256; i++) {
                 if ((chunk->getBlockAtIndex(i) >> 4) == 1 && (chunk->getBlockAtIndex(i) & 15) == 0) {
                     chunk->blocks[i] = 0;

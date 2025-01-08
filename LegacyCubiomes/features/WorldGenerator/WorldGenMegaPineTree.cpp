@@ -1,6 +1,18 @@
 #include "WorldGenMegaPineTree.hpp"
-#include "LegacyCubiomes/chunk_generator/ChunkPrimer.hpp"
+
+#include "LegacyCubiomes/chunk_generator/World.hpp"
+#include "lce/blocks/blocks.hpp"
+#include "lce/blocks/block_ids.hpp"
 #include "LegacyCubiomes/utils/MathHelper.hpp"
+
+
+WorldGenMegaPineTree::WorldGenMegaPineTree(const bool useBaseHeight)
+        : WorldGenHugeTrees(13, 15,
+            &lce::blocks::BlocksInit::SPRUCE_WOOD,
+            &lce::blocks::BlocksInit::SPRUCE_LEAVES),
+          useBaseHeight(useBaseHeight) {}
+
+
 
 bool WorldGenMegaPineTree::generate(World * worldIn, RNG& rand, const Pos3D& position) const {
     using namespace lce::blocks;
@@ -40,13 +52,13 @@ bool WorldGenMegaPineTree::generate(World * worldIn, RNG& rand, const Pos3D& pos
     return true;
 }
 
-void WorldGenMegaPineTree::createCrown(World *worldIn, int x, int z, int y, int p_150541_5_, RNG& rand) const {
-    int i = rand.nextInt(5) + (this->useBaseHeight ? this->baseHeight : 3);
+void WorldGenMegaPineTree::createCrown(World *worldIn, const int x, const int z, const int y, const int p_150541_5_, RNG& rand) const {
+    const int i = rand.nextInt(5) + (this->useBaseHeight ? this->baseHeight : 3);
     int j = 0;
 
     for (int k = y - i; k <= y; ++k) {
-        int l = y - k;
-        int i1 = p_150541_5_ + MathHelper::floor((float)l / (float)i * 3.5F);
+        const int l = y - k;
+        const int i1 = p_150541_5_ + MathHelper::floor((float)l / (float)i * 3.5F);
         this->growLeavesLayerStrict(worldIn, Pos3D(x, k, z), i1 + (l > 0 && i1 == j && (k & 1) == 0 ? 1 : 0));
         j = i1;
     }
@@ -59,9 +71,9 @@ void WorldGenMegaPineTree::generateSaplings(World *worldIn, RNG& random, const P
     placePodzolCircle(worldIn, pos.east(2).south(2));
 
     for (int i = 0; i < 5; ++i) {
-        int j = random.nextInt(64);
-        int k = j % 8;
-        int l = j / 8;
+        const int j = random.nextInt(64);
+        const int k = j % 8;
+        const int l = j / 8;
 
         if (k == 0 || k == 7 || l == 0 || l == 7) {
             placePodzolCircle(worldIn, pos.add(-3 + k, 0, -3 + l));
@@ -82,7 +94,7 @@ void WorldGenMegaPineTree::placePodzolCircle(World *worldIn, const Pos3D& center
 void WorldGenMegaPineTree::placePodzolAt(World *worldIn, const Pos3D& pos) {
     for (int i = 2; i >= -3; --i) {
         Pos3D blockPos = pos.up(i);
-        int blockId = worldIn->getBlockId(blockPos);
+        const int blockId = worldIn->getBlockId(blockPos);
 
         if (blockId == lce::blocks::ids::GRASS_ID || blockId == lce::blocks::ids::DIRT_ID) {
             worldIn->setBlock(blockPos, &lce::blocks::BlocksInit::PODZOL);

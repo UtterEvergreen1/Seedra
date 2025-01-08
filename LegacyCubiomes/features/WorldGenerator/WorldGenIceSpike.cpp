@@ -1,6 +1,9 @@
 #include "WorldGenIceSpike.hpp"
 
-#include "LegacyCubiomes/chunk_generator/ChunkPrimer.hpp"
+#include "LegacyCubiomes/chunk_generator/World.hpp"
+#include "lce/blocks/blocks.hpp"
+#include "lce/blocks/block_ids.hpp"
+
 
 bool WorldGenIceSpike::generate(World * worldIn, RNG &rng, const Pos3D &pos) const {
     Pos3D position = pos;
@@ -13,39 +16,41 @@ bool WorldGenIceSpike::generate(World * worldIn, RNG &rng, const Pos3D &pos) con
     }
 
     position = position.up(rng.nextInt(4));
-    int i = rng.nextInt(4) + 7;
-    int j = i / 4 + rng.nextInt(2);
+    const int i = rng.nextInt(4) + 7;
+    const int j = i / 4 + rng.nextInt(2);
 
     if (j > 1 && rng.nextInt(60) == 0) {
         position = position.up(10 + rng.nextInt(30));
     }
 
     for (int k = 0; k < i; ++k) {
-        float f = (1.0F - (float) k / (float) i) * (float) j;
-        int l = std::ceil(f);
+        const float f = (1.0F - (float) k / (float) i) * (float) j;
+        const int l = std::ceil(f);
 
         for (int i1 = -l; i1 <= l; ++i1) {
-            float f1 = (float) std::abs(i1) - 0.25F;
+            float f1 = static_cast<float>(std::abs(i1)) - 0.25F;
 
             for (int j1 = -l; j1 <= l; ++j1) {
-                float f2 = (float) std::abs(j1) - 0.25F;
+                float f2 = static_cast<float>(std::abs(j1)) - 0.25F;
 
                 if ((i1 == 0 && j1 == 0 || f1 * f1 + f2 * f2 <= f * f) && (
                         i1 != -l && i1 != l && j1 != -l && j1 != l || rng.nextFloat() <= 0.75F)) {
-                    int blockId = worldIn->getBlockId(position.add(i1, k, j1));
+                    const int blockId = worldIn->getBlockId(position.add(i1, k, j1));
 
                     using namespace lce::blocks;
-                    if (blockId == ids::AIR_ID || blockId == ids::DIRT_ID || blockId == ids::SNOW_BLOCK_ID || blockId ==
-                        ids::ICE_ID) {
+                    if (blockId == ids::AIR_ID ||
+                        blockId == ids::DIRT_ID ||
+                        blockId == ids::SNOW_BLOCK_ID || blockId == ids::ICE_ID) {
                         worldIn->setBlock(position.add(i1, k, j1), ids::PACKED_ICE_ID);
                     }
 
                     if (k != 0 && l > 1) {
-                        int blockId1 = worldIn->getBlockId(position.add(i1, -k, j1));
+                        const int blockId1 = worldIn->getBlockId(position.add(i1, -k, j1));
 
-                        if (blockId1 == ids::AIR_ID || blockId1 == ids::DIRT_ID || blockId1 == ids::SNOW_BLOCK_ID ||
-                            blockId1 ==
-                            ids::ICE_ID) {
+                        if (blockId1 == ids::AIR_ID ||
+                            blockId1 == ids::DIRT_ID ||
+                            blockId1 == ids::SNOW_BLOCK_ID ||
+                            blockId1 == ids::ICE_ID) {
                             worldIn->setBlock(position.add(i1, -k, j1), ids::PACKED_ICE_ID);
                         }
                     }
@@ -72,11 +77,14 @@ bool WorldGenIceSpike::generate(World * worldIn, RNG &rng, const Pos3D &pos) con
             }
 
             while (blockPos.getY() > 50) {
-                int blockId = worldIn->getBlockId(blockPos);
+                const int blockId = worldIn->getBlockId(blockPos);
 
                 using namespace lce::blocks;
-                if (blockId != ids::AIR_ID && blockId != ids::DIRT_ID && blockId != ids::SNOW_BLOCK_ID && blockId !=
-                    ids::ICE_ID && blockId != ids::PACKED_ICE_ID) {
+                if (blockId != ids::AIR_ID &&
+                    blockId != ids::DIRT_ID &&
+                    blockId != ids::SNOW_BLOCK_ID &&
+                    blockId != ids::ICE_ID &&
+                    blockId != ids::PACKED_ICE_ID) {
                     break;
                 }
 

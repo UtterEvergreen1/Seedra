@@ -1,4 +1,5 @@
 #pragma once
+
 #include "lce/blocks/blocks.hpp"
 #include "lce/blocks/block_ids.hpp"
 #include "LegacyCubiomes/utils/Pos3DTemplate.hpp"
@@ -14,6 +15,7 @@
 #include "WorldGenerator/WorldGenSand.hpp"
 #include "WorldGenerator/WorldGenWaterlily.hpp"
 
+
 class Biome;
 class ChunkPrimer;
 class WorldGenMinable;
@@ -25,16 +27,16 @@ public:
 protected:
     bool decorating = false;
     Pos3D chunkBlockPos;
-    /** The clay generator. */
+    /// The clay generator.
     WorldGenClay *clayGen = new WorldGenClay(4);
 
-    /** The sand generator. */
+    /// The sand generator.
     WorldGenSand *sandGen = new WorldGenSand(&lce::blocks::BlocksInit::SAND, 7);
 
-    /** The gravel generator. */
+    /// The gravel generator.
     WorldGenSand *gravelAsSandGen = new WorldGenSand(&lce::blocks::BlocksInit::GRAVEL, 6);
 
-    /** The dirt generator. */
+    /// The dirt generator.
     WorldGenMinable *dirtGen{};
     WorldGenMinable *gravelGen{};
     WorldGenMinable *graniteGen{};
@@ -43,32 +45,32 @@ protected:
     WorldGenMinable *coalGen{};
     WorldGenMinable *ironGen{};
 
-    /** Field that holds gold WorldGenMinable */
+    /// Field that holds gold WorldGenMinable
     WorldGenMinable *goldGen{};
     WorldGenMinable *redstoneGen{};
     WorldGenMinable *diamondGen{};
 
-    /** Field that holds Lapis WorldGenMinable */
+    /// Field that holds Lapis WorldGenMinable
     WorldGenMinable *lapisGen{};
 
     WorldGenFlowers* flowerGen = new WorldGenFlowers(lce::blocks::ids::DANDELION_ID, BlockFlower::EnumFlowerType::DANDELION);
 
-    /** Field that holds mushroomBrown WorldGenFlowers */
+    /// Field that holds mushroomBrown WorldGenFlowers
     WorldGenBush* mushroomBrownGen = new WorldGenBush(&lce::blocks::BlocksInit::BROWN_MUSHROOM);
 
-    /** Field that holds mushroomRed WorldGenFlowers */
+    /// Field that holds mushroomRed WorldGenFlowers
     WorldGenBush* mushroomRedGen = new WorldGenBush(&lce::blocks::BlocksInit::RED_MUSHROOM);
 
-    /** Field that holds big mushroom generator */
+    /// Field that holds big mushroom generator
     WorldGenBigMushroom* bigMushroomGen = new WorldGenBigMushroom();
 
-    /** Field that holds WorldGenReed */
+    /// Field that holds WorldGenReed
     WorldGenReed* reedGen = new WorldGenReed();
 
-    /** Field that holds WorldGenCactus */
+    /// Field that holds WorldGenCactus
     WorldGenCactus* cactusGen = new WorldGenCactus();
 
-    /** The water lily generation! */
+    /// The water lily generation!
     WorldGenWaterlily* waterlilyGen = new WorldGenWaterlily();
 
 public:
@@ -87,13 +89,13 @@ public:
     int waterlilyPerChunk = 0;
 
 protected:
-    void genDecorations(World *chunk, Biome* biome, RNG& rng);
-    virtual void generateOres(World *chunk, RNG& rng);
-    void genStandardOre1(World *chunk, RNG& rng, const WorldGenMinable* gen, int count, int minHeight, int maxHeight) const;
-    void genStandardOre2(World *world, RNG &rng, WorldGenMinable *gen, int count, int centerHeight, int spread) const;
+    void genDecorations(World *world, Biome* biome, RNG& rng);
+    virtual void generateOres(World *world, RNG& rng);
+    void genStandardOre1(World *world, RNG& rng, const WorldGenMinable* gen, int count, int minHeight, int maxHeight) const;
+    void genStandardOre2(World *world, RNG &rng, const WorldGenMinable *gen, int count, int centerHeight, int spread) const;
 
 public:
-    void decorate(World *chunk, Biome* biome, RNG& rng, int posX, int posZ);
-    void decorate(World *chunk, Biome* biome, RNG& rng, const Pos2D &pos);
+    void decorate(World *world, Biome* biome, RNG& rng, int posX, int posZ);
+    void decorate(World *world, Biome* biome, RNG& rng, const Pos2D &pos);
 };
 

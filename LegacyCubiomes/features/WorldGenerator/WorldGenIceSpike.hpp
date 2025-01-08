@@ -1,5 +1,9 @@
 #pragma once
+
 #include "WorldGenerator.hpp"
+
+
+class World;
 
 class WorldGenIceSpike final : public WorldGenerator {
 public:

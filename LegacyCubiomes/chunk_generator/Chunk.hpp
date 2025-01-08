@@ -1,5 +1,6 @@
 #pragma once
 
+#include "World.hpp"
 #include "CaveGenerator.hpp"
 #include "ChunkGenerator.hpp"
 #include "ChunkPrimer.hpp"
@@ -14,7 +15,7 @@ namespace Chunk {
         bool generateCaves = true,
         bool generateRavines = true,
         bool generateSkyLight = false>
-    static ChunkPrimer *provideChunk(const Generator &g, c_int chunkX, c_int chunkZ, bool accurate = true) {
+    static ChunkPrimer *provideChunk(const Generator &g, c_int chunkX, c_int chunkZ,  const bool accurate = true) {
         ChunkGeneratorOverWorld chunk(g);
         ChunkPrimer *chunkPrimer = chunk.provideChunk(chunkX, chunkZ);
         // std::cout << "Providing chunk " << chunkX << ", " << chunkZ << std::endl;
@@ -68,13 +69,13 @@ namespace Chunk {
         // std::cout << "Populating chunk " << chunkX << ", " << chunkZ << std::endl;
 
         RNG rng = RNG::getPopulationSeed(g.getWorldSeed(), chunkX, chunkZ);
-        if (Pos3D waterPos = FeaturePositions::waterLake(&g, rng, chunkX, chunkZ); !waterPos.isNull()) {
-            WorldGenLakes waterGen(&g, &lce::blocks::BlocksInit::STILL_WATER);
+        if (const Pos3D waterPos = FeaturePositions::waterLake(&g, rng, chunkX, chunkZ); !waterPos.isNull()) {
+            const WorldGenLakes waterGen(&g, &lce::blocks::BlocksInit::STILL_WATER);
             waterGen.generate(worldIn, rng, waterPos);
         }
 
-        if (Pos3D lavaPos = FeaturePositions::lavaLake(rng, chunkX, chunkZ); !lavaPos.isNull()) {
-            WorldGenLakes lavaGen(&g, &lce::blocks::BlocksInit::STILL_LAVA);
+        if (const Pos3D lavaPos = FeaturePositions::lavaLake(rng, chunkX, chunkZ); !lavaPos.isNull()) {
+            const WorldGenLakes lavaGen(&g, &lce::blocks::BlocksInit::STILL_LAVA);
             lavaGen.generate(worldIn, rng, lavaPos);
         }
 
@@ -113,24 +114,24 @@ namespace Chunk {
     }
 
     MU static void populateChunk(const Generator &g, int chunkX, int chunkZ, World *worldIn) {
-        ChunkPrimer* chunk = worldIn->getChunk({chunkX, chunkZ - 1});
-        ChunkPrimer* chunk1 = worldIn->getChunk({chunkX + 1, chunkZ});
-        ChunkPrimer* chunk2 = worldIn->getChunk({chunkX, chunkZ + 1});
-        ChunkPrimer* chunk3 = worldIn->getChunk({chunkX - 1, chunkZ});
+        const ChunkPrimer* chunk = worldIn->getChunk({chunkX, chunkZ - 1});
+        const ChunkPrimer* chunk1 = worldIn->getChunk({chunkX + 1, chunkZ});
+        const ChunkPrimer* chunk2 = worldIn->getChunk({chunkX, chunkZ + 1});
+        const ChunkPrimer* chunk3 = worldIn->getChunk({chunkX - 1, chunkZ});
         if (chunk1 && chunk2 && worldIn->getChunk({chunkX + 1, chunkZ + 1}) != nullptr) {
-            Chunk::populate(g, chunkX, chunkZ, worldIn);
+            populate(g, chunkX, chunkZ, worldIn);
         }
 
         if (chunk3 && chunk2 && worldIn->getChunk({chunkX - 1, chunkZ + 1}) != nullptr) {
-            Chunk::populate(g, chunkX - 1, chunkZ, worldIn);
+            populate(g, chunkX - 1, chunkZ, worldIn);
         }
 
         if (chunk && chunk1 && worldIn->getChunk({chunkX + 1, chunkZ - 1}) != nullptr) {
-            Chunk::populate(g, chunkX, chunkZ - 1, worldIn);
+            populate(g, chunkX, chunkZ - 1, worldIn);
         }
 
         if (chunk && chunk3 && worldIn->getChunk({chunkX - 1, chunkZ - 1}) != nullptr) {
-            Chunk::populate(g, chunkX - 1, chunkZ - 1, worldIn);
+            populate(g, chunkX - 1, chunkZ - 1, worldIn);
         }
     }
 }
