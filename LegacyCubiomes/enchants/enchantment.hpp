@@ -182,7 +182,7 @@ public:
     EnumName enumID = EnumName::NONE;
     MU bool isTreasure = false;
     c_u8 maxLevel = 1;
-    const eRarity rarity = eRarity::NONE;
+    const eRarity rarity = NONE;
 
 
     Enchantment() = default;

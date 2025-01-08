@@ -4,8 +4,8 @@
 
 
 class EnchantmentArrowKnockback final : public Enchantment {
-    static constexpr inline i8 LEVELS_MIN[2] = {12, 32};
-    static constexpr inline i8 LEVELS_MAX[2] = {37, 57};
+    static constexpr i8 LEVELS_MIN[2] = {12, 32};
+    static constexpr i8 LEVELS_MAX[2] = {37, 57};
 
 public:
     EnchantmentArrowKnockback(std::string name, const eRarity rarity)

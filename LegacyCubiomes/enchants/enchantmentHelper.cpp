@@ -4,7 +4,7 @@
 EnchantedBookEnchantsLookupTable EnchantmentHelper::BOOK_LEVEL_TABLE;
 
 
-void EnchantmentHelper::setConsoleAndVersion(lce::CONSOLE console, LCEVERSION version) {
+void EnchantmentHelper::setConsoleAndVersion(const lce::CONSOLE console, LCEVERSION version) {
     c_auto lceVersion = static_cast<i8>(version);
 
     // error handling

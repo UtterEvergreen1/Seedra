@@ -4,8 +4,8 @@
 
 
 class EnchantmentFrostWalker : public Enchantment {
-    static constexpr inline i8 LEVELS_MIN[2] = {10, 20};
-    static constexpr inline i8 LEVELS_MAX[2] = {25, 35};
+    static constexpr i8 LEVELS_MIN[2] = {10, 20};
+    static constexpr i8 LEVELS_MAX[2] = {25, 35};
 
 public:
     EnchantmentFrostWalker(std::string name, const eRarity rarity)

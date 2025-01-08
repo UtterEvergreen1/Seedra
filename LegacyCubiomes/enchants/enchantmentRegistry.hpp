@@ -17,7 +17,7 @@ class EnchantmentRegistry {
 public:
     EnchantmentRegistry() = default;
 
-    Enchantment* operator[](int index) const { return sortedRegistry[index]; }
+    Enchantment* operator[](const int index) const { return sortedRegistry[index]; }
 
     void registerValue(Enchantment* value) { allValues.emplace_back(value); }
 
@@ -28,10 +28,10 @@ public:
      * @param lookupValues the look up values obtained from the order of items
      */
     MU void orderValues(const std::vector<int>& lookupValues) {
-        size_t lookupSize = lookupValues.size();
+        const size_t lookupSize = lookupValues.size();
         sortedRegistry.resize(lookupSize);
         for (size_t i = 0; i < lookupSize; ++i) {
-            int sortedIndex = lookupValues[i];
+            const int sortedIndex = lookupValues[i];
             sortedRegistry[i] = allValues[sortedIndex];
         }
     }

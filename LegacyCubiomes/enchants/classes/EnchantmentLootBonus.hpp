@@ -3,9 +3,9 @@
 #include "LegacyCubiomes/enchants/enchantment.hpp"
 
 
-class EnchantmentLootBonus : public Enchantment {
-    static constexpr inline i8 LEVELS_MIN[3] = {15, 24, 33};
-    static constexpr inline i8 LEVELS_MAX[3] = {61, 71, 81};
+class EnchantmentLootBonus final : public Enchantment {
+    static constexpr i8 LEVELS_MIN[3] = {15, 24, 33};
+    static constexpr i8 LEVELS_MAX[3] = {61, 71, 81};
 
 public:
     EnchantmentLootBonus(const std::string& name, const eRarity rarity, const Type::Base* type)

@@ -4,7 +4,7 @@
 
 
 class EnchantmentTridentRiptide final : public Enchantment {
-    static constexpr inline i8 LEVELS_MIN[3] = {17, 24, 31};
+    static constexpr i8 LEVELS_MIN[3] = {17, 24, 31};
 
 public:
     EnchantmentTridentRiptide(std::string name, const eRarity rarity) :

@@ -4,8 +4,8 @@
 
 
 class EnchantmentArrowDamage final : public Enchantment {
-    static constexpr inline i8 LEVELS_MIN[5] = {1, 11, 21, 31, 41};
-    static constexpr inline i8 LEVELS_MAX[5] = {16, 26, 36, 46, 56};
+    static constexpr i8 LEVELS_MIN[5] = {1, 11, 21, 31, 41};
+    static constexpr i8 LEVELS_MAX[5] = {16, 26, 36, 46, 56};
 
 public:
     EnchantmentArrowDamage(const std::string& name, const eRarity rarity)

@@ -24,7 +24,7 @@ public:
         return this->getMinCost(enchantmentLevel) + THRESHOLD_ENCHANTABILITY[this->damageType];
     }
 
-    // checkCompatability
+    /// checkCompatability
     ND bool canApplyTogether(const Enchantment* enchantment) const override {
         return enchantment->enumID != EnumName::DAMAGE;
     }

@@ -4,7 +4,7 @@
 
 
 class EnchantmentTridentImpaler final : public Enchantment {
-    static constexpr inline i8 LEVELS_MIN[5] = {17, 24, 31, 38, 45};
+    static constexpr i8 LEVELS_MIN[5] = {17, 24, 31, 38, 45};
 
 public:
     EnchantmentTridentImpaler(std::string name, const eRarity rarity) :

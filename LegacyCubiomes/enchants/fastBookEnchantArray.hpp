@@ -1,8 +1,5 @@
 #pragma once
 
-#include <algorithm>
-#include <exception>
-
 #include "LegacyCubiomes/loot/classes/Loot.hpp"
 #include "enchantment.hpp"
 
@@ -10,7 +7,7 @@
 template<int items>
 class IndexArrayTemplate {
     static constexpr i8 ITEM_COUNT = items;
-    i8 indexes[ITEM_COUNT] = {0};
+    i8 indexes[ITEM_COUNT] = {};
     i8 currentIndex = 0;
 
 public:

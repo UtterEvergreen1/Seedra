@@ -4,8 +4,8 @@
 
 
 class EnchantmentDigging final : public Enchantment {
-    static constexpr inline i8 LEVELS_MIN[5] = {1, 11, 21, 31, 41};
-    static constexpr inline i8 LEVELS_MAX[5] = {61, 71, 81, 91, 101};
+    static constexpr i8 LEVELS_MIN[5] = {1, 11, 21, 31, 41};
+    static constexpr i8 LEVELS_MAX[5] = {61, 71, 81, 91, 101};
 
 public:
     EnchantmentDigging(std::string name, const eRarity rarity)

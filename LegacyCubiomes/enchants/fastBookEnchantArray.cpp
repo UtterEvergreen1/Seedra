@@ -5,7 +5,7 @@
 //==============================================================================
 
 
-void ELDataArray::addData(Enchantment* ench, int id) { data[totalEnchants++] = EnchantmentData(ench, id); }
+void ELDataArray::addData(Enchantment* ench, const int id) { data[totalEnchants++] = EnchantmentData(ench, id); }
 
 
 EnchantmentData* ELDataArray::getIndex(int indexIn) {
@@ -113,8 +113,8 @@ void EnchantedBookEnchantsLookupTable::setup() {
         for (Enchantment* ench_pt: Enchantment::REGISTRY.getRegistry()) {
             if (ench_pt == nullptr) throw std::runtime_error("Enchantment pointer is NULL; the table is incorrect!");
             for (int level = ench_pt->maxLevel; level > 0; --level) {
-                auto minCost = ench_pt->getMinCost(level);
-                auto maxCost = ench_pt->getMaxCost(level);
+                const auto minCost = ench_pt->getMinCost(level);
+                const auto maxCost = ench_pt->getMaxCost(level);
                 if (cost >= minCost && cost <= maxCost) {
                     array->addData(ench_pt, level);
                     array->totalWeight += ench_pt->rarity;

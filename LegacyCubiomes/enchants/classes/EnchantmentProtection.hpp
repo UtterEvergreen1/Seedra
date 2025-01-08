@@ -2,6 +2,7 @@
 
 #include "LegacyCubiomes/enchants/enchantment.hpp"
 
+
 class EnchantmentProtection final : public Enchantment {
 public:
     struct ArmorType {

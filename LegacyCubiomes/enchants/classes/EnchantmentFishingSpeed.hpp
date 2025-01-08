@@ -4,8 +4,8 @@
 
 
 class EnchantmentFishingSpeed final : public Enchantment {
-    static constexpr inline i8 LEVELS_MIN[3] = {15, 24, 33};
-    static constexpr inline i8 LEVELS_MAX[3] = {61, 71, 81};
+    static constexpr i8 LEVELS_MIN[3] = {15, 24, 33};
+    static constexpr i8 LEVELS_MAX[3] = {61, 71, 81};
 
 public:
     EnchantmentFishingSpeed(std::string name, const eRarity rarity)
