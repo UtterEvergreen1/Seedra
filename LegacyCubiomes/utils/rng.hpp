@@ -26,18 +26,18 @@ public:
         return rng;
     }
 
-    static inline RNG ConstructWithoutSetSeed(c_u64 seedIn) {
+    static RNG ConstructWithoutSetSeed(c_u64 seedIn) {
         RNG rng;
         rng.seed = seedIn;
         return rng;
     }
 
-    static inline int64_t getRandomWorldSeed() {
-        RNG rng = RNG::initializeWithRandomSeed();
+    static int64_t getRandomWorldSeed() {
+        RNG rng = initializeWithRandomSeed();
         return rng.nextLongI();
     }
 
-    static inline RNG getLargeFeatureSeed(c_i64 worldSeed, c_int chunkX, c_int chunkZ) {
+    static RNG getLargeFeatureSeed(c_i64 worldSeed, c_int chunkX, c_int chunkZ) {
         RNG rng;
         rng.setSeed(worldSeed);
         c_auto l2 = (i64) rng.nextLong();
@@ -48,19 +48,19 @@ public:
     }
 
 
-    static inline RNG getPopulationSeed(c_i64 worldSeed, c_int chunkX, c_int chunkZ) {
+    static RNG getPopulationSeed(c_i64 worldSeed, c_int chunkX, c_int chunkZ) {
         RNG rng;
         rng.setSeed(worldSeed);
         auto a = (i64) rng.nextLong();
         auto b = (i64) rng.nextLong();
-        a = (i64) (((a / 2) * 2) + 1);
-        b = (i64) (((b / 2) * 2) + 1);
+        a = ((a / 2) * 2) + 1;
+        b = ((b / 2) * 2) + 1;
         c_i64 decoratorSeed = (chunkX * a + chunkZ * b) ^ worldSeed;
         rng.setSeed(decoratorSeed);
         return rng;
     }
 
-    static inline RNG initializeWithRandomSeed() {
+    static RNG initializeWithRandomSeed() {
         RNG rng{};
         rng.setRandomSeed();
         return rng;
@@ -149,7 +149,7 @@ public:
 
     float nextFloat() { return (float) next(24) / (float) 0x1000000; }
 
-    MU float nextFloat(float minimum, float maximum) {
+    MU float nextFloat(const float minimum, const float maximum) {
         return minimum >= maximum ? minimum : nextFloat() * (maximum - minimum) + minimum;
     }
 
@@ -170,8 +170,7 @@ public:
         u64 a = 0;
         u64 im = 0x5deece66d;
         u64 ia = 0xb;
-        u64 k;
-        for (k = n; k; k >>= 1) {
+        for (u64 k = n; k; k >>= 1) {
             if (k & 1) {
                 m *= im;
                 a = im * a + ia;
@@ -183,7 +182,7 @@ public:
         seed &= 0xFFFFFFFFFFFF;
     }
 
-    MU double nextGaussian() {
+    MU static double nextGaussian() {
         /*
           double dVar1;
           double dVar2;

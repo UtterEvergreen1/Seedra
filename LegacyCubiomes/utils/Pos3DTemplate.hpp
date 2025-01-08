@@ -27,13 +27,13 @@ public:
 
     Pos3DTemplate(classType xIn, classType yIn, classType zIn) : x(xIn), y(yIn), z(zIn) {}
 
-    MU ND inline classType getX() const { return x; }
+    MU ND classType getX() const { return x; }
 
-    MU ND inline classType getY() const { return y; }
+    MU ND classType getY() const { return y; }
 
-    MU ND inline classType getZ() const { return z; }
+    MU ND classType getZ() const { return z; }
 
-    MU ND inline bool isNull() const { return x == 0 && y == 0 && z == 0; }
+    MU ND bool isNull() const { return x == 0 && y == 0 && z == 0; }
 
     bool operator==(const Pos3DTemplate &other) const;
 
@@ -119,7 +119,7 @@ public:
 
     ND double distanceSq(c_double toX, c_double toY, c_double toZ) const;
     ND double distanceSq(const Pos3DTemplate &to) const {
-        return distanceSq((double)to.x, (double)to.y, (double)to.z);
+        return distanceSq(static_cast<double>(to.x), static_cast<double>(to.y), static_cast<double>(to.z));
     }
 
     MU ND Pos2DTemplate<classType> convert2D() const;

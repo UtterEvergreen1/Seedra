@@ -45,7 +45,7 @@ template<class classType>
 bool Pos3DTemplate<classType>::operator<=(int value) const { return x <= value && y <= value && z <= value; }
 
 template<class classType>
-Pos3DTemplate<classType> Pos3DTemplate<classType>::offset(FACING facing, int n) const {
+Pos3DTemplate<classType> Pos3DTemplate<classType>::offset(const FACING facing, const int n) const {
     switch (facing) {
         case FACING::NORTH:
             return {x, y, z - n};
@@ -66,9 +66,9 @@ Pos3DTemplate<classType> Pos3DTemplate<classType>::offset(FACING facing, int n) 
 
 template<class classType>
 double Pos3DTemplate<classType>::distanceSq(c_double toX, c_double toY, c_double toZ) const {
-    c_double d0 = (double) x - toX;
-    c_double d1 = (double) y - toY;
-    c_double d2 = (double) z - toZ;
+    c_double d0 = static_cast<double>(x) - toX;
+    c_double d1 = static_cast<double>(y) - toY;
+    c_double d2 = static_cast<double>(z) - toZ;
     return d0 * d0 + d1 * d1 + d2 * d2;
 }
 
@@ -76,7 +76,7 @@ template<class classType>
 Pos2DTemplate<classType> Pos3DTemplate<classType>::convert2D() const { return {x, z}; }
 
 template<class classType>
-template<typename T, typename>
+template<typename, typename>
 Pos3DTemplate<classType> Pos3DTemplate<classType>::convertToChunkCords() const {
     return {x & 15, y & 255, z & 15};
 }

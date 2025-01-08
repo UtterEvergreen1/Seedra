@@ -72,7 +72,7 @@ static int getMetaFromHorizontalFacing(const FACING facing) {
     }
 }
 
-static EnumAxis getAxis(FACING facing) {
+static EnumAxis getAxis(const FACING facing) {
     switch (facing) {
         case FACING::NORTH:
         case FACING::SOUTH:

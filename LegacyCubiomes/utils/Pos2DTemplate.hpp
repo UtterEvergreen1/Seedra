@@ -11,7 +11,7 @@
 
 #include "lce/processor.hpp"
 
-class BoundingBox; // Forward declaration
+class BoundingBox;
 
 template<class classType>
 class Pos2DTemplate {
