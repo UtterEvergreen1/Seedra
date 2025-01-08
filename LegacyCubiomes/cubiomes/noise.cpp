@@ -12,7 +12,7 @@
 double maintainPrecision(c_double x) { return x - floor(x / 33554432.0 + 0.5) * 33554432.0; }
 
 ATTR(hot, const, always_inline, artificial)
-static inline double indexedLerp(c_int idx, c_double a, c_double b, c_double c) {
+static double indexedLerp(c_int idx, c_double a, c_double b, c_double c) {
     switch (idx & 0xf) {
         case 0:
             return a + b;
@@ -132,7 +132,7 @@ double samplePerlin(const Generator* g, const PerlinNoise* noise, double x, doub
 }
 
 
-static double simplexGrad(c_int idx, c_double x, c_double y, c_double z, c_double d) {
+MU static double simplexGrad(c_int idx, c_double x, c_double y, c_double z, c_double d) {
     double con = d - x * x - y * y - z * z;
     if (con < 0) return 0;
     con *= con;

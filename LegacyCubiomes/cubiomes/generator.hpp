@@ -55,7 +55,7 @@ public:
     Generator(lce::CONSOLE console, LCEVERSION version, i64 seed, lce::WORLDSIZE size, lce::BIOMESCALE scale);
 
     /// returns the stored world seed
-    ND inline i64 getWorldSeed() const { return this->worldSeed; }
+    ND i64 getWorldSeed() const { return this->worldSeed; }
 
     /**
      * Initializes the generator for a given world seed in the overworld.
