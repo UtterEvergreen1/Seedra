@@ -4,10 +4,10 @@
 #include "lce/enums.hpp"
 #include "lce/processor.hpp"
 
+
 class Generator;
 struct PerlinNoise;
 struct SurfaceNoise;
-
 
 /// Enumeration of the layer indices in the layer stack.
 enum LayerId {
@@ -68,17 +68,16 @@ enum LayerId {
 
     L_VORONOI_1,
 
-    // LCE
-    L_A_MUSHROOM_32,
-    L_G_MUSHROOM_16,
-    L_OCEAN_EDGE_256,
+    L_A_MUSHROOM_32,  // LCE
+    L_G_MUSHROOM_16,  // LCE
+    L_OCEAN_EDGE_256, // LCE
 
     L_NUM
 };
 
 
 struct Layer;
-typedef int(mapfunc_t)(const struct Layer*, int*, int, int, int, int);
+typedef int(mapfunc_t)(const Layer*, int*, int, int, int, int);
 
 struct Layer {
     mapfunc_t* getMap;
@@ -119,7 +118,6 @@ typedef PerlinNoise EndNoise;
 /// Applies the given world seed to the layer and all dependent layers.
 void setLayerSeed(Layer* layer, u64 worldSeed);
 
-
 //==============================================================================
 // Noise
 //==============================================================================
@@ -134,9 +132,9 @@ int getBiomeDepthAndScale(int id, double* depth, double* scale, int* grass);
 //==============================================================================
 // End (1.9+) Biome Noise Generation
 //==============================================================================
+
 void setEndSeed(EndNoise* en, u64 seed);
 MU int getSurfaceHeightEnd(const Generator* g, MCVERSION mc, u64 seed, int x, int z);
-
 
 //==============================================================================
 // BiomeID Helpers
@@ -158,7 +156,7 @@ int isSnowy(int id);
 // Layers
 //==============================================================================
 
-//                             old names
+//                         old names
 mapfunc_t mapContinent; // mapIsland
 mapfunc_t mapZoomFuzzy;
 mapfunc_t mapZoom;
@@ -182,6 +180,12 @@ mapfunc_t mapShore;
 mapfunc_t mapRiverMix;
 mapfunc_t mapOceanTemp;
 mapfunc_t mapOceanMix;
+/// LCE
+mapfunc_t mapGMushroom;
+/// LCE
+mapfunc_t mapOceanEdge;
+/// final layer 1:1
+mapfunc_t mapVoronoi114;
 
 // stuff moved from generation
 Layer* setupLayer(Layer* l, mapfunc_t* map, MCVERSION theMc, i8 zoom, i8 edge, u64 saltBase, Layer* p,
@@ -191,10 +195,3 @@ int genArea(const Layer* layer, int* out, int areaX, int areaZ, int areaWidth, i
 void setupLayerStack(LayerStack* layerStack, LCEVERSION lceVersion, lce::BIOMESCALE biomeSize);
 void getMaxArea(const Layer* layer, int areaX, int areaZ, int* maxX, int* maxZ, size_t* siz);
 size_t getMinLayerCacheSize(const Layer* layer, int sizeX, int sizeZ);
-
-// LCE
-mapfunc_t mapGMushroom;
-mapfunc_t mapOceanEdge;
-
-// final layer 1:1
-mapfunc_t mapVoronoi114;
