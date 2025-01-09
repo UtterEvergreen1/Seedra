@@ -152,11 +152,15 @@ bool Generator::areBiomesViable(c_int x, c_int z, c_int rad, c_u64 validBiomes,
         return false;
     }
 
+
+
     int* ids = nullptr;
     int x1 = (x - rad) >> 2, x2 = (x + rad) >> 2;
     const int sx = x2 - x1 + 1;
     int z1 = (z - rad) >> 2, z2 = (z + rad) >> 2;
     const int sz = z2 - z1 + 1;
+
+    bool viable;
 
     if (rad > 5) {
         // check corners
@@ -167,7 +171,7 @@ bool Generator::areBiomesViable(c_int x, c_int z, c_int rad, c_u64 validBiomes,
         }
     }
 
-    bool viable = true;
+    viable = true;
     {
         const Range r = {4, x1, z1, sx, sz};
         ids = this->allocCache(r);
@@ -178,7 +182,7 @@ bool Generator::areBiomesViable(c_int x, c_int z, c_int rad, c_u64 validBiomes,
             }
         }
     }
-    if constexpr (false)
+    if (false)
     L_no:
         viable = false;
     if (ids) free(ids);
