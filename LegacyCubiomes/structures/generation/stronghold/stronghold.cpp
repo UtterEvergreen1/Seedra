@@ -4,22 +4,22 @@
 #include "stronghold.hpp"
 
 
-namespace generation {
+namespace gen {
 
-    const std::map<int8_t, std::string> Stronghold::PieceTypeName = {
-            {PieceType::NONE, "NONE -> something went wrong"},
-            {PieceType::STRAIGHT, "STRAIGHT"},
-            {PieceType::PRISON_HALL, "PRISON_HALL"},
-            {PieceType::LEFT_TURN, "LEFT_TURN"},
-            {PieceType::RIGHT_TURN, "RIGHT_TURN"},
-            {PieceType::ROOM_CROSSING, "ROOM_CROSSING"},
-            {PieceType::STRAIGHT_STAIRS_DOWN, "STRAIGHT_STAIRS_DOWN"},
-            {PieceType::STAIRS_DOWN, "STAIRS_DOWN"},
-            {PieceType::FIVE_CROSSING, "FIVE_CROSSING"},
-            {PieceType::CHEST_CORRIDOR, "CHEST_CORRIDOR"},
-            {PieceType::LIBRARY, "LIBRARY"},
-            {PieceType::PORTAL_ROOM, "PORTAL_ROOM"},
-            {PieceType::FILLER_CORRIDOR, "FILLER_CORRIDOR"}};
+    const std::map<PieceType, std::string> Stronghold::PieceTypeName = {
+            {PieceType::Stronghold_NONE, "NONE -> something went wrong"},
+            {PieceType::Stronghold_Straight, "STRAIGHT"},
+            {PieceType::Stronghold_PrisonHall, "PRISON_HALL"},
+            {PieceType::Stronghold_LeftTurn, "LEFT_TURN"},
+            {PieceType::Stronghold_RightTurn, "RIGHT_TURN"},
+            {PieceType::Stronghold_RoomCrossing, "ROOM_CROSSING"},
+            {PieceType::Stronghold_StraightStairsDown, "STRAIGHT_STAIRS_DOWN"},
+            {PieceType::Stronghold_StairsDown, "STAIRS_DOWN"},
+            {PieceType::Stronghold_FiveCrossing, "FIVE_CROSSING"},
+            {PieceType::Stronghold_ChestCorridor, "CHEST_CORRIDOR"},
+            {PieceType::Stronghold_Library, "LIBRARY"},
+            {PieceType::Stronghold_PortalRoom, "PORTAL_ROOM"},
+            {PieceType::Stronghold_FillerCorridor, "FILLER_CORRIDOR"}};
 
     const PieceWeight Stronghold::PIECE_WEIGHTS[12] = {{0, 0, 0}, // none
                                                        {40, 0, 0}, {5, 5, 0},  {20, 0, 0}, {20, 0, 0},
@@ -27,12 +27,12 @@ namespace generation {
                                                        {5, 4, 0},  {10, 2, 5}, {20, 1, 6}};
 
     const Stronghold::PiecePlaceCount Stronghold::PIECE_PLACE_COUNT_DEFAULT[11] = {
-            {Stronghold::PieceType::STRAIGHT, 0},       {Stronghold::PieceType::PRISON_HALL, 0},
-            {Stronghold::PieceType::LEFT_TURN, 0},      {Stronghold::PieceType::RIGHT_TURN, 0},
-            {Stronghold::PieceType::ROOM_CROSSING, 0},  {Stronghold::PieceType::STRAIGHT_STAIRS_DOWN, 0},
-            {Stronghold::PieceType::STAIRS_DOWN, 0},    {Stronghold::PieceType::FIVE_CROSSING, 0},
-            {Stronghold::PieceType::CHEST_CORRIDOR, 0}, {Stronghold::PieceType::LIBRARY, 0},
-            {Stronghold::PieceType::PORTAL_ROOM, 0}};
+            {PieceType::Stronghold_Straight, 0},      {PieceType::Stronghold_PrisonHall, 0},
+            {PieceType::Stronghold_LeftTurn, 0},      {PieceType::Stronghold_RightTurn, 0},
+            {PieceType::Stronghold_RoomCrossing, 0},  {PieceType::Stronghold_StraightStairsDown, 0},
+            {PieceType::Stronghold_StairsDown, 0},    {PieceType::Stronghold_FiveCrossing, 0},
+            {PieceType::Stronghold_ChestCorridor, 0}, {PieceType::Stronghold_Library, 0},
+            {PieceType::Stronghold_PortalRoom, 0}};
 
     Stronghold::Stronghold() { resetPieces(); }
 
@@ -50,8 +50,7 @@ namespace generation {
             FACING direction = FACING_HORIZONTAL[rng.nextInt(4)];
             BoundingBox stairsBoundingBox = Piece::makeBoundingBox(startX, 64, startZ, direction, 5, 11, 5);
 
-            pieceArray[pieceArraySize++] = {static_cast<i8>(PieceType::STAIRS_DOWN), 0, stairsBoundingBox,
-                                            direction, 1};
+            pieceArray[pieceArraySize++] = {PieceType::Stronghold_StairsDown, 0, stairsBoundingBox, direction, 1};
 
             // this only adds the 5-crossing room
             addChildren(pieceArray[0]);
@@ -77,11 +76,6 @@ namespace generation {
                     default:
                         break;
                 }
-
-
-                // bool isNullPtr = portalRoomPiece != nullptr;
-                // if (isNullPtr && generationStep == GenerationStep::PORTAL) return;
-                // if (isNullPtr && generationStopped && generationStep == GenerationStep::LAYOUT) return;
             }
 
             if (portalRoomPiece != nullptr && generationStep == GenerationStep::LAYOUT) { return; }
@@ -107,8 +101,8 @@ namespace generation {
         for (int i = 0; i < 11; i++) { piecePlaceCounts[i] = PIECE_PLACE_COUNT_DEFAULT[i]; }
 
         generationStopped = false;
-        forcedPiece = PieceType::NONE;
-        previousPiece = PieceType::NONE;
+        forcedPiece = PieceType::Stronghold_NONE;
+        previousPiece = PieceType::Stronghold_NONE;
         pieceArraySize = 0;
         pendingPiecesArraySize = 0;
         portalRoomPiece = nullptr;
@@ -116,14 +110,6 @@ namespace generation {
         piecePlaceCountsSize = 11;
         totalWeight = 145;
     }
-
-    /*
-    void Stronghold::addPiece(Piece piece) {
-        // printf("Adding piece at %i with rotation %i and depth %i\n", piece.minX, piece.minZ, piece.orientation, piece.depth);
-        pendingPieceArray[pendingPiecesArraySize++] = pieceArraySize;
-        pieceArray[pieceArraySize++] = piece;
-    }
-     */
 
 
     void Stronghold::onWeightedPiecePlaced(c_int piecePlaceCountIndex) {
@@ -145,7 +131,7 @@ namespace generation {
         for (int index = 0; index < piecePlaceCountsSize; index++) {
             c_auto [pieceType, placeCount] = piecePlaceCounts[index];
 
-            if (c_auto [weight, maxPlaceCount, minDepth] = PIECE_WEIGHTS[static_cast<i8>(pieceType)];
+            if (c_auto [weight, maxPlaceCount, minDepth] = PIECE_WEIGHTS[pieceType];
                 maxPlaceCount > 0 && placeCount < maxPlaceCount)
                 return;
         }
@@ -157,26 +143,26 @@ namespace generation {
     BoundingBox Stronghold::createPieceBoundingBox(const PieceType pieceType, const Pos3D& pos,
                                                    const FACING facing) {
         switch (pieceType) {
-            case PieceType::STRAIGHT:
+            case PieceType::Stronghold_Straight:
                 return BoundingBox::orientBox(pos, -1, -1, 0, 5, 5, 7, facing);
-            case PieceType::PRISON_HALL:
+            case PieceType::Stronghold_PrisonHall:
                 return BoundingBox::orientBox(pos, -1, -1, 0, 9, 5, 11, facing);
-            case PieceType::RIGHT_TURN:
-            case PieceType::LEFT_TURN:
+            case PieceType::Stronghold_RightTurn:
+            case PieceType::Stronghold_LeftTurn:
                 return BoundingBox::orientBox(pos, -1, -1, 0, 5, 5, 5, facing);
-            case PieceType::ROOM_CROSSING:
+            case PieceType::Stronghold_RoomCrossing:
                 return BoundingBox::orientBox(pos, -4, -1, 0, 11, 7, 11, facing);
-            case PieceType::STRAIGHT_STAIRS_DOWN:
+            case PieceType::Stronghold_StraightStairsDown:
                 return BoundingBox::orientBox(pos, -1, -7, 0, 5, 11, 8, facing);
-            case PieceType::STAIRS_DOWN:
+            case PieceType::Stronghold_StairsDown:
                 return BoundingBox::orientBox(pos, -1, -7, 0, 5, 11, 5, facing);
-            case PieceType::FIVE_CROSSING:
+            case PieceType::Stronghold_FiveCrossing:
                 return BoundingBox::orientBox(pos, -4, -3, 0, 10, 9, 11, facing);
-            case PieceType::CHEST_CORRIDOR:
+            case PieceType::Stronghold_ChestCorridor:
                 return BoundingBox::orientBox(pos, -1, -1, 0, 5, 5, 7, facing);
-            case PieceType::LIBRARY:
+            case PieceType::Stronghold_Library:
                 return BoundingBox::orientBox(pos, -4, -1, 0, 14, 11, 15, facing);
-            case PieceType::PORTAL_ROOM:
+            case PieceType::Stronghold_PortalRoom:
                 return BoundingBox::orientBox(pos, -4, -1, 0, 11, 8, 16, facing);
             default:
                 return BoundingBox::EMPTY;
@@ -188,57 +174,58 @@ namespace generation {
         int additionalData = 0;
 
         switch (pieceType) {
-            case PieceType::RIGHT_TURN:
+            case PieceType::Stronghold_RightTurn:
                 rng.nextInt(5);
-                pieceArray[pieceArraySize++] = {static_cast<i8>(PieceType::LEFT_TURN), depth, boundingBox,
+                pieceArray[pieceArraySize++] = {PieceType::Stronghold_LeftTurn,
+                                                depth, boundingBox,
                                                 direction, additionalData};
                 return;
-            case PieceType::STRAIGHT:
+            case PieceType::Stronghold_Straight:
                 // rng.nextInt(5); // this is java
                 additionalData |= (rng.nextInt(2) == 0) << 0;
                 additionalData |= (rng.nextInt(2) == 0) << 1;
                 rng.nextInt(5);
                 break;
-            case PieceType::PRISON_HALL:
+            case PieceType::Stronghold_PrisonHall:
                 rng.nextInt(5);
                 break;
-            case PieceType::LEFT_TURN:
+            case PieceType::Stronghold_LeftTurn:
                 rng.nextInt(5);
                 break;
-            case PieceType::ROOM_CROSSING:
+            case PieceType::Stronghold_RoomCrossing:
                 // rng.nextInt(5); // this is java
                 additionalData = rng.nextInt(5);
                 rng.nextInt(5);
                 break;
-            case PieceType::STRAIGHT_STAIRS_DOWN:
+            case PieceType::Stronghold_StraightStairsDown:
                 rng.nextInt(5);
                 break;
-            case PieceType::STAIRS_DOWN:
+            case PieceType::Stronghold_StairsDown:
                 rng.nextInt(5);
                 break;
-            case PieceType::FIVE_CROSSING:
+            case PieceType::Stronghold_FiveCrossing:
                 rng.nextInt(5);
                 additionalData |= (rng.nextBoolean()) << 0;
                 additionalData |= (rng.nextBoolean()) << 1;
                 additionalData |= (rng.nextBoolean()) << 2;
                 additionalData |= (rng.nextInt(3) > 0) << 3;
                 break;
-            case PieceType::CHEST_CORRIDOR:
+            case PieceType::Stronghold_ChestCorridor:
                 altarChestsArray[altarChestArraySize++] = &pieceArray[pieceArraySize];
                 rng.nextInt(5);
                 break;
-            case PieceType::LIBRARY:
+            case PieceType::Stronghold_Library:
                 rng.nextInt(5);
                 additionalData = boundingBox.maxY > 6;
                 break;
-            case PieceType::PORTAL_ROOM:
+            case PieceType::Stronghold_PortalRoom:
                 portalRoomPiece = &pieceArray[pieceArraySize];
                 break;
             default:
                 break;
         }
 
-        pieceArray[pieceArraySize++] = {static_cast<i8>(pieceType), depth, boundingBox, direction, additionalData};
+        pieceArray[pieceArraySize++] = {pieceType, depth, boundingBox, direction, additionalData};
     }
 
 
@@ -246,7 +233,7 @@ namespace generation {
                                          c_i8 depth) {
         BoundingBox bBox = createPieceBoundingBox(pieceType, pos, direction);
         if (!isOkBox(bBox) || collidesWithPiece(bBox)) {
-            if (pieceType == PieceType::LIBRARY) {
+            if (pieceType == PieceType::Stronghold_Library) {
                 bBox = BoundingBox::orientBox(pos, -4, -1, 0, 14, 6, 15, direction);
                 if (!isOkBox(bBox) || collidesWithPiece(bBox)) return false;
             } else {
@@ -257,7 +244,7 @@ namespace generation {
         pendingPieceArray[pendingPiecesArraySize++] = pieceArraySize;
         createPiece(pieceType, direction, depth, bBox);
 
-        if (pieceType == PieceType::PORTAL_ROOM && generationStep == GenerationStep::PORTAL) generationStopped = true;
+        if (pieceType == PieceType::Stronghold_PortalRoom && generationStep == GenerationStep::PORTAL) generationStopped = true;
 
 
         return true;
@@ -266,9 +253,9 @@ namespace generation {
     bool Stronghold::genPieceFromSmallDoor(const Pos3D& pos, FACING direction, i8 depth) {
         if EXPECT_FALSE (generationStopped) return false;
 
-        if EXPECT_FALSE (forcedPiece != PieceType::NONE) {
+        if EXPECT_FALSE (forcedPiece != PieceType::Stronghold_NONE) {
             c_bool canAdd = tryAddPieceFromType(forcedPiece, pos, direction, depth);
-            forcedPiece = PieceType::NONE;
+            forcedPiece = PieceType::Stronghold_NONE;
             if (canAdd) return true;
         }
 
@@ -313,8 +300,7 @@ namespace generation {
             if (boundingBox.minY <= 1) return false;
 
             pendingPieceArray[pendingPiecesArraySize++] = pieceArraySize;
-            pieceArray[pieceArraySize++] = {static_cast<i8>(PieceType::FILLER_CORRIDOR), depth, boundingBox,
-                                            direction, 0};
+            pieceArray[pieceArraySize++] = {PieceType::Stronghold_FillerCorridor, depth, boundingBox, direction, 0};
 
             return true;
         }
@@ -331,7 +317,7 @@ namespace generation {
         }
 
         for (int index = 0; index < piecePlaceCountsSize; index++) {
-            if (c_auto& [pieceType, placeCount] = piecePlaceCounts[index]; pieceType == PieceType::PORTAL_ROOM) {
+            if (c_auto& [pieceType, placeCount] = piecePlaceCounts[index]; pieceType == PieceType::Stronghold_PortalRoom) {
                 if (const BoundingBox bBox = BoundingBox::orientBox(pos, -4, -1, 0, 11, 8, 16, direction);
                     isOkBox(bBox) && findCollisionPiece(bBox) == nullptr) {
                     onWeightedPiecePlaced(index);
@@ -368,6 +354,10 @@ namespace generation {
                 return genAndAddPiece({piece.minX - 1, piece.minY + n2, piece.minZ + n}, direction, piece.depth);
             case FACING::EAST:
                 return genAndAddPiece({piece.maxX + 1, piece.minY + n2, piece.minZ + n}, direction, piece.depth);
+            case FACING::NONE:
+            case FACING::DOWN:
+            case FACING::UP:
+                break;
         }
     }
 
@@ -382,6 +372,10 @@ namespace generation {
             case FACING::WEST:
                 genAndAddPiece({piece.minX + n2, piece.minY + n, piece.minZ - 1}, FACING::NORTH, piece.depth);
                 break;
+            case FACING::NONE:
+            case FACING::DOWN:
+            case FACING::UP:
+                break;
         }
     }
 
@@ -395,21 +389,25 @@ namespace generation {
             case FACING::WEST:
                 genAndAddPiece({piece.minX + n2, piece.minY + n, piece.maxZ + 1}, FACING::SOUTH, piece.depth);
                 break;
+            case FACING::NONE:
+            case FACING::DOWN:
+            case FACING::UP:
+                break;
         }
     }
 
 
     void Stronghold::addChildren(const Piece& piece) {
-        switch (static_cast<PieceType>(piece.type)) {
-            case PieceType::STRAIGHT:
+        switch (piece.type) {
+            case PieceType::Stronghold_Straight:
                 genSmallDoorChildForward(piece, 1, 1);
                 if ((piece.additionalData & 1) != 0) genSmallDoorChildLeft(piece, 1, 2);
                 if ((piece.additionalData & 2) != 0) genSmallDoorChildRight(piece, 1, 2);
                 break;
-            case PieceType::PRISON_HALL:
+            case PieceType::Stronghold_PrisonHall:
                 genSmallDoorChildForward(piece, 1, 1);
                 break;
-            case PieceType::LEFT_TURN: {
+            case PieceType::Stronghold_LeftTurn: {
                 if (const FACING direction = piece.orientation;
                     direction == FACING::NORTH || direction == FACING::EAST) {
                     genSmallDoorChildLeft(piece, 1, 1);
@@ -418,7 +416,7 @@ namespace generation {
                 }
                 break;
             }
-            case PieceType::RIGHT_TURN: {
+            case PieceType::Stronghold_RightTurn: {
                 if (const FACING direction = piece.orientation;
                     direction == FACING::NORTH || direction == FACING::EAST) {
                     genSmallDoorChildRight(piece, 1, 1);
@@ -427,20 +425,20 @@ namespace generation {
                 }
                 break;
             }
-            case PieceType::ROOM_CROSSING:
+            case PieceType::Stronghold_RoomCrossing:
                 genSmallDoorChildForward(piece, 4, 1);
                 genSmallDoorChildLeft(piece, 1, 4);
                 genSmallDoorChildRight(piece, 1, 4);
                 break;
-            case PieceType::STRAIGHT_STAIRS_DOWN:
+            case PieceType::Stronghold_StraightStairsDown:
                 genSmallDoorChildForward(piece, 1, 1);
                 break;
-            case PieceType::STAIRS_DOWN: {
-                if (piece.additionalData != 0) forcedPiece = PieceType::FIVE_CROSSING;
+            case PieceType::Stronghold_StairsDown: {
+                if (piece.additionalData != 0) forcedPiece = PieceType::Stronghold_FiveCrossing;
                 genSmallDoorChildForward(piece, 1, 1);
                 break;
             }
-            case PieceType::FIVE_CROSSING: {
+            case PieceType::Stronghold_FiveCrossing: {
                 const FACING o = piece.orientation;
                 // 3 and 5 or 5 and 3
                 c_int n = 5 - 2 * (o == FACING::EAST || o == FACING::SOUTH);
@@ -452,13 +450,13 @@ namespace generation {
                 if ((piece.additionalData & 8) != 0) genSmallDoorChildRight(piece, n2, 7);
                 break;
             }
-            case PieceType::CHEST_CORRIDOR:
+            case PieceType::Stronghold_ChestCorridor:
                 genSmallDoorChildForward(piece, 1, 1);
                 break;
-            case PieceType::FILLER_CORRIDOR:
-            case PieceType::PORTAL_ROOM:
-            case PieceType::LIBRARY:
-            case PieceType::NONE:
+            case PieceType::Stronghold_FillerCorridor:
+            case PieceType::Stronghold_PortalRoom:
+            case PieceType::Stronghold_Library:
+            case PieceType::Stronghold_NONE:
                 break;
         }
     }

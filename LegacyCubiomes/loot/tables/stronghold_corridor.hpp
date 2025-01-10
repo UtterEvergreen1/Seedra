@@ -11,11 +11,10 @@ namespace loot {
 
         template<bool checkCaves, bool shuffle, bool checkWaterCaves = false>
         ND static Container getAltarChestLoot(const Generator& g, const Piece& altarChestPiece,
-                                              generation::Stronghold* strongholdGenerator, bool accurate);
+                                              gen::Stronghold* strongholdGenerator, bool accurate);
 
         template<bool checkCaves, bool shuffle, bool checkWaterCaves = false>
-        ND static std::vector<Container> getAllAltarChestLoot(const Generator& g,
-                                                              generation::Stronghold* strongholdGenerator, bool accurate);
+        ND static std::vector<Container> getAllAltarChestLoot(const Generator& g, gen::Stronghold* strongholdGenerator, bool accurate);
     };
 
     template<bool isAquatic>
@@ -54,7 +53,7 @@ namespace loot {
     template<bool isAquatic>
     template<bool checkCaves, bool shuffle, bool checkWaterCaves>
     Container StrongholdCorridor<isAquatic>::getAltarChestLoot(const Generator& g, const Piece& altarChestPiece,
-                                                               generation::Stronghold* strongholdGenerator, bool accurate) {
+                                                               gen::Stronghold* strongholdGenerator, bool accurate) {
         RNG lootSeed = StrongholdLoot<StrongholdCorridor>::template getLootSeed<checkCaves, checkWaterCaves>(
                 g, strongholdGenerator, altarChestPiece, altarChestPiece.getWorldX(3, 3) >> 4,
                 altarChestPiece.getWorldZ(3, 3) >> 4, accurate);
@@ -67,7 +66,7 @@ namespace loot {
     template<bool checkCaves, bool shuffle, bool checkWaterCaves>
     std::vector<Container>
     StrongholdCorridor<isAquatic>::getAllAltarChestLoot(const Generator& g,
-                                                        generation::Stronghold* strongholdGenerator, bool accurate) {
+                                                                               gen::Stronghold* strongholdGenerator, bool accurate) {
         std::vector<Container> altarChests(strongholdGenerator->altarChestArraySize);
         for (int altarChestIndex = 0; altarChestIndex < strongholdGenerator->altarChestArraySize; altarChestIndex++)
             altarChests[altarChestIndex] =

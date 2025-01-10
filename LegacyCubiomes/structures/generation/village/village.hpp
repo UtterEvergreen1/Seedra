@@ -1,6 +1,7 @@
 #pragma once
 
 #include "LegacyCubiomes/building_blocks/Piece.hpp"
+#include "LegacyCubiomes/building_blocks/StructureComponent.hpp"
 #include "LegacyCubiomes/cubiomes/layers.hpp"
 #include "LegacyCubiomes/utils/Pos2DTemplate.hpp"
 #include "LegacyCubiomes/utils/Pos3DTemplate.hpp"
@@ -9,7 +10,7 @@
 #include <vector>
 
 
-namespace generation {
+namespace gen {
 
     class Village {
     public:
@@ -20,30 +21,16 @@ namespace generation {
             FULL,       // Generates full layout and calculates hasMoreThanTwoComponents
         };
 
-        enum PieceType : i8 {
-            NONE,
-            Start,
-            Road,
-            House4Garden,
-            Church,
-            House1,
-            WoodHut,
-            Hall,
-            Field1,
-            Field2,
-            House2,
-            House3,
-            Torch,
-        };
+
 
         struct PieceWeight {
-            PieceType pieceType;
-            int weight;
-            int PlaceCountMin;
-            int PlaceCountMax;
+            MU PieceType pieceType;
+            MU int weight;
+            MU int PlaceCountMin;
+            MU int PlaceCountMax;
         };
 
-        static std::map<int8_t, std::string> pieceTypeNames;
+        static std::map<PieceType, std::string> pieceTypeNames;
         static c_int VILLAGE_SIZE;
         static const PieceWeight PIECE_WEIGHTS[9];
 
@@ -53,8 +40,7 @@ namespace generation {
             int weight;
             int maxPlaceCount;
             int amountPlaced;
-            FinalPieceWeight(const PieceType pieceType, c_int weight, c_int maxPlaceCount,
-                             c_int amountPlaced)
+            FinalPieceWeight(const PieceType pieceType, c_int weight, c_int maxPlaceCount, c_int amountPlaced)
                 : pieceType(pieceType), weight(weight), maxPlaceCount(maxPlaceCount), amountPlaced(amountPlaced) {}
         };
 
@@ -65,23 +51,27 @@ namespace generation {
         const Generator* g;
         RNG rng;
 
-    public:
-        bool isZombieInfested{};
+        int numInvalidPieces = 1;
+        StructureComponent* myBlackSmithPiece{};
+        MU bool myHasMoreThanTwoComponents{};
         GenerationStep generationStep = GenerationStep::FULL;
 
-        BoundingBox structureBoundingBox;
+    public:
+        bool isZombieInfested{};
 
-        Piece pieceArray[512];
+        BoundingBox structureBB;
+
+        StructureComponent pieceArray[512];
         int pieceArraySize{};
 
-        Piece* blackSmithPiece{};
+
 
         int startX{};
         int startZ{};
 
-        int numInvalidPieces = 1;
 
-        bool hasMoreThanTwoComponents{};
+
+
 
         explicit Village(const Generator* generator);
 
@@ -100,18 +90,21 @@ namespace generation {
         */
         void generate(const Pos2D chunk) { generate(chunk.x, chunk.z); }
 
+    MU ND StructureComponent* getBlackSmithPiece() { return myBlackSmithPiece; }
+    MU ND bool hasMoreThanTwoComponents() const { return myHasMoreThanTwoComponents; }
+
     private:
         void setupPieces();
         ND int updatePieceWeight() const;
         static BoundingBox createPieceBB(PieceType pieceType, Pos3D pos, FACING direction);
-        void buildComponentStart(const Piece& piece);
-        void buildComponent(Piece piece);
+        void buildComponentStart(const StructureComponent& piece);
+        void buildComponent(const StructureComponent& scIn);
         BoundingBox road(Pos3D pos, FACING facing);
         void additionalRngRolls(Piece& p);
-        Piece generateComponent(Pos3D pos, FACING facing, i8 depth);
-        Piece genAndAddRoadPiece(Pos3D pos, FACING facing);
-        Piece genAndAddComponent(Pos3D pos, FACING facing, i8 depth);
-        void addPiece(const Piece& piece);
+        StructureComponent generateComponent(Pos3D pos, FACING facing, i8 depth);
+        StructureComponent genAndAddRoadPiece(Pos3D pos, FACING facing);
+        StructureComponent genAndAddComponent(Pos3D pos, FACING facing, i8 depth);
+        void addPiece(const StructureComponent& piece);
         ND bool hasCollisionPiece(const BoundingBox& boundingBox) const;
     };
 } // namespace generation

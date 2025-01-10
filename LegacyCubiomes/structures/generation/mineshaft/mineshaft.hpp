@@ -5,10 +5,11 @@
 #include <string>
 
 #include "LegacyCubiomes/building_blocks/Piece.hpp"
+#include "LegacyCubiomes/building_blocks/StructureComponent.hpp"
 #include "LegacyCubiomes/utils/rng.hpp"
 
 
-namespace generation {
+namespace gen {
 
     class Mineshaft {
     public:
@@ -16,30 +17,23 @@ namespace generation {
         //              sub-structs and sub-classes
         // #######################################################
 
-        enum PieceType {
-            ROOM = 0,
-            CORRIDOR = 1,
-            CROSSING = 2,
-            STAIRS = 3,
-            NONE,
-        };
 
         enum class MineshaftType { NORMAL, MESA };
 
-        static const std::map<int8_t, std::string> PieceTypeName;
+        static std::map<PieceType, std::string> pieceTypeNames;
 
         // #######################################################
         //       class attributes, variables, functions
         // #######################################################
 
-        Piece pieceArray[1024];
+        StructureComponent pieceArray[1024];
         int collisionChecks = 0;
 
         int pieceArraySize = 0;
         int startX = 0;
         int startZ = 0;
         MineshaftType mineShaftType = MineshaftType::NORMAL;
-        BoundingBox structureBoundingBox;
+        BoundingBox structureBB;
 
 
         /**
@@ -60,15 +54,16 @@ namespace generation {
         void generate(c_i64 worldSeed, const Pos2D chunkPos) {
             return generate(worldSeed, chunkPos.x, chunkPos.z);
         }
-        void reset();
+
+        MU void reset();
 
     private:
-        Piece* findCollisionPiece(const BoundingBox& boundingBox);
+        StructureComponent* findCollisionPiece(const BoundingBox& boundingBox);
         void genAndAddPiece(RNG& rng, Pos3D pos, FACING direction, int depth);
 
-        /**
-        */
-        void buildComponent(RNG& rng, PieceType type, int depth, const BoundingBox& boundingBox, FACING direction,
+
+        void buildComponent(RNG& rng, PieceType type, int depth,
+                            const BoundingBox& boundingBox, FACING direction,
                             int additionalData);
     };
 } // namespace generation

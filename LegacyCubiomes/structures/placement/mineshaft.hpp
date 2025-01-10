@@ -30,7 +30,8 @@ namespace Placement {
         }
 
         ND MU static Pos2DVec_t getAllPositions(const Generator& g) {
-            return getPositions(g.getWorldSeed(), -g.getWorldCoordinateBounds() + 1, -g.getWorldCoordinateBounds() + 1,
+            return getPositions(g.getWorldSeed(),
+                                -g.getWorldCoordinateBounds() + 1, -g.getWorldCoordinateBounds() + 1,
                                 g.getWorldCoordinateBounds() - 1, g.getWorldCoordinateBounds() - 1);
         }
     };

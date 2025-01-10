@@ -4,7 +4,7 @@
 #include "lce/processor.hpp"
 
 
-namespace generation {
+namespace gen {
 
     class NetherFortress {
     public:

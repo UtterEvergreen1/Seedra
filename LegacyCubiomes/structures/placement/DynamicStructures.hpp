@@ -30,26 +30,26 @@ namespace Placement {
     class DynamicStructure {
     public:
         static c_u64 MAIN_VALID_BIOMES;
-        static c_u64 SECONDARY_VALID_BIOMES;
-        static c_u64 SECONDARY_VALID_BIOMES_MUTATED;
+        MU static c_u64 SECONDARY_VALID_BIOMES;
+        MU static c_u64 SECONDARY_VALID_BIOMES_MUTATED;
 
         static c_int SALT;
-        static int REGION_SIZE;
+        MU static int REGION_SIZE;
         static int CHUNK_RANGE;
-        static int ATTEMPTS;
+        MU static int ATTEMPTS;
         static c_int MAIN_RADIUS;
         static c_int SECOND_RADIUS;
-        static c_bool HAS_SECOND_BIOME_CHECK;
-        static bool HAS_MAX_ATTEMPTS;
-        static int CHUNK_BOUNDS;
-        static bool REDUCED_SPACING;
+        MU static c_bool HAS_SECOND_BIOME_CHECK;
+        MU static bool HAS_MAX_ATTEMPTS;
+        MU static int CHUNK_BOUNDS;
+        MU static bool REDUCED_SPACING;
 
         static Pos2D getPosition(const Generator* g, int regionX, int regionZ);
         static std::vector<Pos2D> getAllPositions(const Generator* g, std::atomic_bool* terminateFlag = nullptr);
 
         static std::vector<Pos2D>
         getAllPositionsBounded(const Generator *g, int lowerX, int lowerZ, int upperX, int upperZ, std::atomic_bool* terminateFlag = nullptr);
-        static bool canSpawnAtChunk(i64 worldSeed, int chunkX, int chunkZ, int regionX, int regionZ);
+        MU static bool canSpawnAtChunk(i64 worldSeed, int chunkX, int chunkZ, int regionX, int regionZ);
     };
 
     class Mansion : public DynamicStructure<Mansion> {
@@ -65,7 +65,7 @@ namespace Placement {
     class BuriedTreasure : public DynamicStructure<BuriedTreasure> {
     public:
         static void setWorldSize(lce::WORLDSIZE worldSize);
-        static std::vector<Pos2D> getAllPositions(const Generator* g, std::atomic_bool* terminateFlag = nullptr) {
+        MU static std::vector<Pos2D> getAllPositions(const Generator* g, std::atomic_bool* terminateFlag = nullptr) {
             std::vector<Pos2D> positions = DynamicStructure::getAllPositions(g, terminateFlag);
             for (Pos2D& pos : positions) {
                 pos.z += 1;
@@ -73,7 +73,8 @@ namespace Placement {
             return positions;
         }
 
-        static std::vector<Pos2D> getAllPositionsBounded(const Generator *g, int lowerX, int lowerZ, int upperX, int upperZ, std::atomic_bool* terminateFlag = nullptr) {
+        MU static std::vector<Pos2D> getAllPositionsBounded(const Generator *g,
+            int lowerX, int lowerZ, int upperX, int upperZ, std::atomic_bool* terminateFlag = nullptr) {
             std::vector<Pos2D> positions = DynamicStructure::getAllPositionsBounded(g, lowerX, lowerZ, upperX, upperZ, terminateFlag);
             for (Pos2D& pos : positions) {
                 pos.z += 1;

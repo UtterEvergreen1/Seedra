@@ -1,19 +1,15 @@
 #include "mineshaft.hpp"
 
 
-namespace generation {
+namespace gen {
 
-    const std::map<int8_t, std::string> Mineshaft::PieceTypeName = {
-            {PieceType::ROOM, "ROOM"},
-            {PieceType::CORRIDOR, "CORRIDOR"},
-            {PieceType::CROSSING, "CROSSING"},
-            {PieceType::STAIRS, "STAIRS"},
-            {PieceType::NONE, "NONE -> something went wrong"}};
+    std::map<PieceType, std::string> Mineshaft::pieceTypeNames = {
+            {PieceType::NONE, "NONE -> something went wrong"},
+            {PieceType::Mineshaft_Room, "ROOM"},
+            {PieceType::Mineshaft_Corridor, "CORRIDOR"},
+            {PieceType::Mineshaft_Crossing, "CROSSING"},
+            {PieceType::Mineshaft_Stairs, "STAIRS"}};
 
-    void Mineshaft::reset() {
-        pieceArraySize = 0;
-        collisionChecks = 0;
-    }
 
     void Mineshaft::generate(c_i64 worldSeed, c_int chunkX, c_int chunkZ) {
         RNG rng = RNG::getLargeFeatureSeed(worldSeed, chunkX, chunkZ);
@@ -30,30 +26,30 @@ namespace generation {
         const BoundingBox roomBoundingBox(startX, 50, startZ, boundingBoxXUpper, boundingBoxYUpper, boundingBoxZUpper);
 
         // recursive gen
-        buildComponent(rng, PieceType::ROOM, 0, roomBoundingBox, FACING::NORTH, 1);
+        buildComponent(rng, PieceType::Mineshaft_Room, 0, roomBoundingBox, FACING::NORTH, 1);
 
         // get Y level
-        structureBoundingBox = BoundingBox::EMPTY;
-        for (int index = 0; index < pieceArraySize; index++) { structureBoundingBox.encompass(pieceArray[index]); }
+        structureBB = BoundingBox::EMPTY;
+        for (int index = 0; index < pieceArraySize; index++) { structureBB.encompass(pieceArray[index]); }
 
         // specifically mesa
         if (mineShaftType == MineshaftType::MESA) {
-            c_int i = 63 - structureBoundingBox.maxY + structureBoundingBox.getYSize() / 2 + 5;
-            structureBoundingBox.offset(0, i, 0);
+            c_int i = 63 - structureBB.maxY + structureBB.getYSize() / 2 + 5;
+            structureBB.offset(0, i, 0);
             for (int index = 0; index < pieceArraySize; index++) { pieceArray[index].offset(0, i, 0); }
             return;
         }
 
         // non-mesa
         constexpr int i = 63 - 10;
-        int j = structureBoundingBox.getYSize() + 1;
+        int j = structureBB.getYSize() + 1;
         if (j < i) { j += rng.nextInt(i - j); }
-        c_int k = j - structureBoundingBox.maxY;
+        c_int k = j - structureBB.maxY;
         for (int piece = 0; piece < pieceArraySize; piece++) { pieceArray[piece].offset(0, k, 0); }
     }
 
 
-    Piece* Mineshaft::findCollisionPiece(const BoundingBox& boundingBox) {
+    StructureComponent* Mineshaft::findCollisionPiece(const BoundingBox& boundingBox) {
         for (int i = 0; i < pieceArraySize; i++) {
             collisionChecks++;
             if (pieceArray[i].intersects(boundingBox)) { return &pieceArray[i]; }
@@ -64,10 +60,8 @@ namespace generation {
 
     void Mineshaft::genAndAddPiece(RNG& rng, const Pos3D pos, const FACING direction, c_int depth) {
         // step 1: return early
-        if (depth > 8)
-            return;
-        if (abs(pos.getX() - startX) > 80 || abs(pos.getZ() - startZ) > 80)
-            return;
+        if (depth > 8) return;
+        if (abs(pos.getX() - startX) > 80 || abs(pos.getZ() - startZ) > 80) return;
 
         // step 2: create the piece
         c_int randomRoom = rng.nextInt(100);
@@ -81,41 +75,43 @@ namespace generation {
                 boundingBox.maxY += 4;
                 additionalData = 1;
             }
-            if (const Piece* collidingPiece = findCollisionPiece(boundingBox); collidingPiece != nullptr) return;
-            buildComponent(rng, PieceType::CROSSING, depth + 1, boundingBox, direction, additionalData);
+            if (const StructureComponent* collidingPiece = findCollisionPiece(boundingBox); collidingPiece != nullptr) return;
+            buildComponent(rng, PieceType::Mineshaft_Crossing, depth + 1, boundingBox, direction, additionalData);
 
         } else if (randomRoom >= 70) { // CASE STAIRS
             boundingBox = BoundingBox::orientBox(pos, 0, -5, 0, 3, 8, 9, direction);
-            if (const Piece* collidingPiece = findCollisionPiece(boundingBox); collidingPiece != nullptr) return;
-            buildComponent(rng, PieceType::STAIRS, depth + 1, boundingBox, direction, 0);
+            if (const StructureComponent* collidingPiece = findCollisionPiece(boundingBox); collidingPiece != nullptr) return;
+            buildComponent(rng, PieceType::Mineshaft_Stairs, depth + 1, boundingBox, direction, 0);
 
         } else {
             int i; // CASE CORRIDOR
+
             for (i = rng.nextInt(3) + 2; i > 0; --i) {
                 c_int j = i * 5;
                 boundingBox = BoundingBox::orientBox(pos, 0, 0, 0, 3, 3, j, direction);
-                if (const Piece* collidingPiece = findCollisionPiece(boundingBox); collidingPiece == nullptr) break;
+                if (const StructureComponent* collidingPiece = findCollisionPiece(boundingBox);
+                    collidingPiece == nullptr) break;
             }
             if (i == 0) return;
             c_bool hasRails = rng.nextInt(3) == 0;
             c_bool hasSpiders = !hasRails && rng.nextInt(23) == 0;
             additionalData |= hasRails;
             additionalData |= hasSpiders << 1;
-            buildComponent(rng, PieceType::CORRIDOR, depth + 1, boundingBox, direction, additionalData);
+            buildComponent(rng, PieceType::Mineshaft_Corridor, depth + 1, boundingBox, direction, additionalData);
         }
     }
 
 
     void Mineshaft::buildComponent(RNG& rng, const PieceType type, c_int depth, const BoundingBox& boundingBox,
                                    const FACING direction, c_int additionalData) {
-        auto p = Piece(static_cast<i8>(type), static_cast<i8>(depth), boundingBox, direction, additionalData);
+        auto p = StructureComponent(type, static_cast<i8>(depth), boundingBox, direction, additionalData);
         pieceArray[pieceArraySize++] = p;
 
         switch (static_cast<PieceType>(p.type)) {
             default:
                 break;
 
-            case PieceType::ROOM: {
+            case PieceType::Mineshaft_Room: {
                 int k;
                 int j = p.getYSize() - 4;
                 if (j <= 0) j = 1;
@@ -124,31 +120,27 @@ namespace generation {
                 for (k = 0; k < roomXSize; k += 4) {
                     k += rng.nextInt(roomXSize);
                     if (k + 3 > roomXSize) break;
-                    genAndAddPiece(rng, {p.minX + k, p.minY + rng.nextInt(j) + 1, p.minZ - 1}, FACING::NORTH,
-                                   p.depth);
+                    genAndAddPiece(rng, {p.minX + k, p.minY + rng.nextInt(j) + 1, p.minZ - 1}, FACING::NORTH, p.depth);
                 }
                 for (k = 0; k < roomXSize; k += 4) {
                     k += rng.nextInt(roomXSize);
                     if (k + 3 > roomXSize) break;
-                    genAndAddPiece(rng, {p.minX + k, p.minY + rng.nextInt(j) + 1, p.maxZ + 1}, FACING::SOUTH,
-                                   p.depth);
+                    genAndAddPiece(rng, {p.minX + k, p.minY + rng.nextInt(j) + 1, p.maxZ + 1}, FACING::SOUTH, p.depth);
                 }
                 for (k = 0; k < roomZSize; k += 4) {
                     k += rng.nextInt(roomZSize);
                     if (k + 3 > roomZSize) break;
-                    genAndAddPiece(rng, {p.minX - 1, p.minY + rng.nextInt(j) + 1, p.minZ + k}, FACING::WEST,
-                                   p.depth);
+                    genAndAddPiece(rng, {p.minX - 1, p.minY + rng.nextInt(j) + 1, p.minZ + k}, FACING::WEST, p.depth);
                 }
                 for (k = 0; k < roomZSize; k += 4) {
                     k += rng.nextInt(roomZSize);
                     if (k + 3 > roomZSize) break;
-                    genAndAddPiece(rng, {p.maxX + 1, p.minY + rng.nextInt(j) + 1, p.minZ + k}, FACING::EAST,
-                                   p.depth);
+                    genAndAddPiece(rng, {p.maxX + 1, p.minY + rng.nextInt(j) + 1, p.minZ + k}, FACING::EAST, p.depth);
                 }
                 return;
             }
 
-            case PieceType::CORRIDOR: {
+            case PieceType::Mineshaft_Corridor: {
                 c_int corridorType = rng.nextInt(4);
                 c_int yState = p.minY + rng.nextInt(3) - 1;
                 switch (p.orientation) {
@@ -227,11 +219,15 @@ namespace generation {
                                 genAndAddPiece(rng, {k, p.minY, p.maxZ + 1}, FACING::SOUTH, p.depth + 1);
                         }
                         return;
+                    case FACING::NONE:
+                    case FACING::DOWN:
+                    case FACING::UP:
+                        return;
                 }
                 return;
             }
 
-            case PieceType::CROSSING: {
+            case PieceType::Mineshaft_Crossing: {
                 switch (p.orientation) {
                     case FACING::NORTH:
                     default:
@@ -253,7 +249,7 @@ namespace generation {
                         genAndAddPiece(rng, {p.minX + 1, p.minY, p.minZ - 1}, FACING::NORTH, p.depth);
                         genAndAddPiece(rng, {p.minX + 1, p.minY, p.maxZ + 1}, FACING::SOUTH, p.depth);
                         genAndAddPiece(rng, {p.maxX + 1, p.minY, p.minZ + 1}, FACING::EAST, p.depth);
-                    break;
+                        break;
                 }
 
                 if (p.additionalData) {
@@ -269,7 +265,7 @@ namespace generation {
                 return;
             }
 
-            case PieceType::STAIRS: {
+            case PieceType::Mineshaft_Stairs: {
                 switch (p.orientation) {
                     default:
                     case FACING::NORTH:
@@ -285,5 +281,9 @@ namespace generation {
         }
     }
 
+    MU void Mineshaft::reset() {
+        pieceArraySize = 0;
+        collisionChecks = 0;
+    }
 
 } // namespace generation

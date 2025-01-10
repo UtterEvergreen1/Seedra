@@ -5,11 +5,12 @@
 
 #include "LegacyCubiomes/building_blocks/Piece.hpp"
 #include "LegacyCubiomes/building_blocks/PieceWeight.hpp"
+#include "LegacyCubiomes/building_blocks/StructureComponent.hpp"
 #include "LegacyCubiomes/utils/rng.hpp"
 #include "lce/processor.hpp"
 
 
-namespace generation {
+namespace gen {
     class Stronghold {
     public:
         // #######################################################
@@ -22,41 +23,25 @@ namespace generation {
             FULL,   // Generates full layout and calculates Y level for all pieces
         };
 
-        enum PieceType : i8 {
-            NONE,
-            STRAIGHT,
-            PRISON_HALL,
-            LEFT_TURN,
-            RIGHT_TURN,
-            ROOM_CROSSING,
-            STRAIGHT_STAIRS_DOWN,
-            STAIRS_DOWN,
-            FIVE_CROSSING,
-            CHEST_CORRIDOR,
-            LIBRARY,
-            PORTAL_ROOM,
-            FILLER_CORRIDOR,
-        };
-
         struct PiecePlaceCount {
             PieceType pieceType;
             int placeCount;
 
             ND static const PieceWeight* get(const PieceType pieceType) {
-                return &PIECE_WEIGHTS[static_cast<i8>(pieceType)];
+                return &PIECE_WEIGHTS[pieceType];
             }
 
             ND bool isValid() const {
-                c_int maxPlaceCount = PIECE_WEIGHTS[static_cast<i8>(pieceType)].maxPlaceCount;
+                c_int maxPlaceCount = PIECE_WEIGHTS[pieceType].maxPlaceCount;
                 return maxPlaceCount == 0 || placeCount < maxPlaceCount;
             }
 
             ND bool canPlace(c_int depth) const {
-                return isValid() && depth >= PIECE_WEIGHTS[static_cast<i8>(pieceType)].minDepth;
+                return isValid() && depth >= PIECE_WEIGHTS[pieceType].minDepth;
             }
         };
 
-        static const std::map<int8_t, std::string> PieceTypeName;
+        static const std::map<PieceType, std::string> PieceTypeName;
         static const PieceWeight PIECE_WEIGHTS[12];
         static const PiecePlaceCount PIECE_PLACE_COUNT_DEFAULT[11];
 
@@ -67,14 +52,14 @@ namespace generation {
         RNG rng;
 
     public:
-        Piece pieceArray[512]{};
+        StructureComponent pieceArray[512]{};
         int pendingPieceArray[512]{};
         PiecePlaceCount piecePlaceCounts[11]{};
-        Piece* altarChestsArray[4]{};
+        StructureComponent* altarChestsArray[4]{};
 
         BoundingBox structureBoundingBox;
 
-        Piece* portalRoomPiece = nullptr;
+        StructureComponent* portalRoomPiece = nullptr;
         int eyesCount = 0; // number of eyes in portal room (to be populated by the rolls)
 
         int startX = 0;
@@ -86,8 +71,8 @@ namespace generation {
         int piecePlaceCountsSize = 11;
 
         GenerationStep generationStep = GenerationStep::FULL;
-        PieceType forcedPiece = PieceType::NONE;
-        PieceType previousPiece = PieceType::NONE;
+        PieceType forcedPiece = NONE;
+        PieceType previousPiece = NONE;
         bool generationStopped = false;
 
         Stronghold();

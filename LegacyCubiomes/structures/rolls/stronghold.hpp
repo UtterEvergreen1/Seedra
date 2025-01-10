@@ -1,28 +1,26 @@
 #pragma once
 
 #include "LegacyCubiomes/structures/generation/stronghold/stronghold.hpp"
-#include "LegacyCubiomes/structures/rolls/RollsBase.hpp"
 
-namespace structure_rolls {
-    class Stronghold : public RollsBase {
+
+namespace rolls {
+    class Stronghold {
     public:
-
         /// generate certain stronghold rolls in the chunk
         template<bool stopStrongholdChest, bool stopPortal>
-        static bool additionalStrongholdRolls(ChunkPrimer *chunk, generation::Stronghold *strongholdGenerator, RNG &rng,
-                                              c_int xChunk, c_int zChunk, const Piece &pieceStop);
+        static bool additionalStrongholdRolls(ChunkPrimer* chunk, const gen::Stronghold* sg, RNG& rng, c_int xChunk,
+                                              c_int zChunk, const StructureComponent& pieceStop);
 
         template<bool isStrongholdChest>
-        MU static bool
-        generateStructure(ChunkPrimer *chunk, generation::Stronghold *strongholdGenerator, RNG &rng, c_int xChunk,
-                          c_int zChunk, const Piece &pieceStop);
+        MU static bool generateStructure(ChunkPrimer* chunk, gen::Stronghold* sg, RNG& rng, c_int xChunk, c_int zChunk,
+                                         const StructureComponent& pieceStop);
 
-        static void setEye(const BoundingBox &chunkBB, const Piece &piece, int x, int z, RNG &random,
-                           std::vector<bool> &portalRoomEyes, int &success, int index);
+        static void setEye(const BoundingBox& chunkBB, const StructureComponent& piece, int x, int z, RNG& random,
+                           std::vector<bool>& portalRoomEyes, int& success, int index);
 
-        static std::vector<bool> getEyePlacements(generation::Stronghold *strongholdGenerator, const Generator &g);
+        static std::vector<bool> getEyePlacements(gen::Stronghold* sg, const Generator& g);
 
         /// get the number of eyes in the portal room
-        MU static int getEyesCount(generation::Stronghold *strongholdGenerator, const Generator &g);
+        MU static int getEyesCount(gen::Stronghold* sg, const Generator& g);
     };
-} // namespace structure_rolls
+} // namespace rolls

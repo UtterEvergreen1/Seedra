@@ -5,10 +5,12 @@
 #include "LegacyCubiomes/chunk_generator/World.hpp"
 #include "LegacyCubiomes/chunk_generator/biome.hpp"
 #include "LegacyCubiomes/features/WorldGenerator/WorldGenLakes.hpp"
+#include "LegacyCubiomes/structures/build/mineshaft.hpp"
+#include "LegacyCubiomes/structures/build/village.hpp"
 #include "LegacyCubiomes/structures/generation/village/village.hpp"
 #include "LegacyCubiomes/structures/placement/StaticStructures.hpp"
+#include "LegacyCubiomes/structures/placement/mineshaft.hpp"
 #include "LegacyCubiomes/structures/rolls/mineshaft.hpp"
-#include "LegacyCubiomes/structures/rolls/village.hpp"
 
 
 int main() {
@@ -32,15 +34,67 @@ int main() {
     Generator g(console, version, 27184353441555, lce::WORLDSIZE::CLASSIC, lce::BIOMESCALE::SMALL);
 
     // 3 13 for seed -101, 8 15 for seed 1, 11 16 or 15 5 for seed 27184353441555
-    int X_WIDTH = 5;
-    int Z_WIDTH = 5;
+    int X_WIDTH = 8;
+    int Z_WIDTH = 8;
     int X_CENTER = 0;
-    int Z_CENTER = 0;
+    int Z_CENTER = -25;
 
 
     auto world = World(&g);
     world.getOrCreateChunk({X_CENTER, Z_CENTER});
     world.decorateChunks({X_CENTER, Z_CENTER}, X_WIDTH);
+
+    RNG rng;
+
+
+    auto mineshaft_locations = Placement::Mineshaft::getAllPositions(g);
+    // mineshaft_locations.emplace_back(0, 0);
+    std::cout << "Mineshaft Positions this seed: \n";
+    for (auto& pos : mineshaft_locations) {
+        std::cout << pos << "\n";
+    }
+    std::cout << std::flush;
+
+    for (auto& pos : mineshaft_locations) {
+
+        gen::Mineshaft mineshaft_gen = gen::Mineshaft();
+        mineshaft_gen.generate(g.getWorldSeed(), pos.toChunkPos());
+        std::cout << "Start: " << mineshaft_gen.startX << " " << mineshaft_gen.startZ << "\n";
+        std::cout << "Pieces: " << mineshaft_gen.pieceArraySize << "\n";
+
+
+        for (auto piece: mineshaft_gen.pieceArray) {
+            if (piece.type == PieceType::Mineshaft_NONE) break;
+
+            std::cout << "adding: " << gen::Mineshaft::pieceTypeNames[piece.type] << piece << "\n";
+
+            rolls::MineshaftPiece* obj = nullptr;
+            switch (piece.type) {
+                case PieceType::Mineshaft_Crossing:
+                    obj = new rolls::Corridor(0);
+                    break;
+                case PieceType::Mineshaft_Room:
+                    obj = new rolls::Room(0);
+                    break;
+                case PieceType::Mineshaft_Corridor:
+                    obj = new rolls::Corridor(0);
+                    break;
+                case PieceType::Mineshaft_Stairs:
+                    obj = new rolls::Stairs(0);
+                    break;
+                default:;
+            }
+            if (obj != nullptr) {
+                memcpy(&obj->minX, &piece.minX, sizeof(piece));
+                bool result = obj->addComponentParts(world, rng, mineshaft_gen.structureBB);
+                // if (!result) { break; }
+            }
+        }
+    }
+
+
+
+
 
 
     auto village_locations = Placement::Village<false>::getAllPositions(&g);
@@ -51,10 +105,8 @@ int main() {
     }
     std::cout << std::flush;
 
-
-
     for (auto& pos : village_locations) {
-        generation::Village village_gen(&g);
+        gen::Village village_gen(&g);
         village_gen.generate(pos.toChunkPos());
 
         int biomeType = 0;
@@ -73,55 +125,54 @@ int main() {
                 break;
         }
 
-        RNG rng;
-
         for (auto piece : village_gen.pieceArray) {
-            if (piece.type == generation::Village::PieceType::NONE) break;
+            if (piece.type == PieceType::Village_NONE) break;
 
-            std::cout << "adding: " << generation::Village::pieceTypeNames[piece.type] << piece << "\n";
+            std::cout << "adding: " << gen::Village::pieceTypeNames[piece.type] << piece << "\n";
 
-            structure_rolls::Village* obj = nullptr;
+            rolls::VillagePiece* obj = nullptr;
             switch (piece.type) {
-                case generation::Village::PieceType::House4Garden:
-                    obj = new structure_rolls::House4Garden(&village_gen, piece, biomeType);
+                case PieceType::Village_House4Garden:
+                    obj = new rolls::House4Garden(biomeType);
                     break;
-                case generation::Village::PieceType::Church:
-                    obj = new structure_rolls::Church(&village_gen, piece, biomeType);
+                case PieceType::Village_Church:
+                    obj = new rolls::Church(biomeType);
                     break;
-                case generation::Village::PieceType::House1:
-                    obj = new structure_rolls::House1(&village_gen, piece, biomeType);
+                case PieceType::Village_House1:
+                    obj = new rolls::House1(biomeType);
                     break;
-                case generation::Village::PieceType::Hall:
-                    obj = new structure_rolls::Hall(&village_gen, piece, biomeType);
+                case PieceType::Village_Hall:
+                    obj = new rolls::Hall(biomeType);
                     break;
-                case generation::Village::PieceType::Field1:
-                    obj = new structure_rolls::Field1(&village_gen, piece, biomeType);
+                case PieceType::Village_Field1:
+                    obj = new rolls::Field1(biomeType);
                     break;
-                case generation::Village::PieceType::Field2:
-                    obj = new structure_rolls::Field2(&village_gen, piece, biomeType);
+                case PieceType::Village_Field2:
+                    obj = new rolls::Field2(biomeType);
                     break;
-                case generation::Village::PieceType::House2:
-                    obj = new structure_rolls::House2(&village_gen, piece, biomeType);
+                case PieceType::Village_House2:
+                    obj = new rolls::House2(biomeType);
                     break;
-                case generation::Village::PieceType::House3:
-                    obj = new structure_rolls::House3(&village_gen, piece, biomeType);
+                case PieceType::Village_House3:
+                    obj = new rolls::House3(biomeType);
                     break;
-                case generation::Village::PieceType::Torch:
-                    obj = new structure_rolls::Torch(&village_gen, piece, biomeType);
+                case PieceType::Village_Torch:
+                    obj = new rolls::Torch(biomeType);
                     break;
-                case generation::Village::PieceType::WoodHut:
-                    obj = new structure_rolls::WoodHut(&village_gen, piece, biomeType);
+                case PieceType::Village_WoodHut:
+                    obj = new rolls::WoodHut(biomeType);
                     break;
-                case generation::Village::PieceType::Road:
-                    obj = new structure_rolls::Path(&village_gen, piece, biomeType);
+                case PieceType::Village_Road:
+                    obj = new rolls::Path(biomeType);
                     break;
-                case generation::Village::PieceType::Start:
-                    obj = new structure_rolls::Well(&village_gen, piece, biomeType);
+                case PieceType::Village_Start:
+                    obj = new rolls::Well(biomeType);
                     break;
                 default:;
             }
             if (obj != nullptr) {
-                bool result = obj->addComponentParts(world, rng, village_gen.structureBoundingBox);
+                memcpy(&obj->minX, &piece.minX, sizeof(Piece));
+                bool result = obj->addComponentParts(world, rng, village_gen.structureBB);
                 if (!result) {
                     break;
                 }
@@ -156,11 +207,11 @@ int main() {
             }
 
             // replace all stone with air
-            /*for (int i = 0; i < 16 * 16 * 256; i++) {
+            for (int i = 0; i < 16 * 16 * 256; i++) {
                 if ((chunk->getBlockAtIndex(i) >> 4) == 1 && (chunk->getBlockAtIndex(i) & 15) == 0) {
                     chunk->blocks[i] = 0;
                 }
-            }*/
+            }
 
             // useful for set certain blocks in the world
             /*

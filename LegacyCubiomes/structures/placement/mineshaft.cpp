@@ -26,7 +26,9 @@ namespace Placement {
                     if (-xPos > distance) distance = -xPos;
                     if (+zPos > distance) distance = +zPos;
                     if (-zPos > distance) distance = -zPos;
-                    if (distance >= 80 || rng.nextInt(80) < distance) { positions.emplace_back((xPos << 4) + 8, (zPos << 4) + 8); }
+                    if (distance >= 80 || rng.nextInt(80) < distance) {
+                        positions.emplace_back((xPos << 4) + 8, (zPos << 4) + 8);
+                    }
                 }
             }
         }

@@ -1,27 +1,19 @@
-cmake_minimum_required(VERSION 3.24)
-project(LegacyCubiomes)
+cmake_minimum_required(VERSION 3.28.1)
+project(GenChunks)
 
 set(CMAKE_CXX_STANDARD 20)
-# set(CMAKE_CXX_FLAGS_RELEASE "-O3")
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/build)
 
 
-include_directories(${CMAKE_SOURCE_DIR})
+add_executable(GenChunks programs/gen_chunk.cpp)
 
-# used for debugging statements
-add_definitions(-DDEV_MODE)
 
-# this is used for including QT related debug code.
-# add_definitions(-DINCLUDE_QT)
+target_include_directories(GenChunks PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
 
-file(GLOB_RECURSE LEGACY_CUBIOMES LegacyCubiomes/*)
 
-file(GLOB_RECURSE LCE_RESOURCES lce/*)
+add_subdirectory(lce)
+add_subdirectory(LegacyCubiomes)
 
-add_compile_options(-mavx2 -mpopcnt)
 
-add_executable(LegacyCubiomes
-        ${LEGACY_CUBIOMES}
-        ${LCE_RESOURCES}
-        programs/gen_chunk.cpp
-        # programs/mine_a_chunk_ravines.cpp
-)
+target_link_libraries(GenChunks PRIVATE LegacyCubiomesLib)

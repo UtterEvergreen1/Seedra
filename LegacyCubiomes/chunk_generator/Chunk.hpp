@@ -42,8 +42,6 @@ namespace Chunk {
             ravineGenerator.generate(chunkX, chunkZ, chunkPrimer, accurate);
         }
 
-        chunkPrimer->stage = Stage::STAGE_DECORATE;
-
         /*
         structure order after caves:
         mineshaft
@@ -57,6 +55,8 @@ namespace Chunk {
         buried treasure
          */
 
+        chunkPrimer->stage = Stage::STAGE_DECORATE;
+
         if constexpr (generateSkyLight) { chunkPrimer->generateSkylightMap(); }
         return chunkPrimer;
     }
@@ -66,6 +66,8 @@ namespace Chunk {
         if (!chunk || chunk->stage != Stage::STAGE_DECORATE) {
             return;
         }
+
+        return;
         // std::cout << "Populating chunk " << chunkX << ", " << chunkZ << std::endl;
 
         RNG rng = RNG::getPopulationSeed(g.getWorldSeed(), chunkX, chunkZ);

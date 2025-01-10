@@ -82,7 +82,7 @@ namespace Placement {
     }
 
     template<typename Derived>
-    bool DynamicStructure<Derived>::canSpawnAtChunk(c_i64 worldSeed, c_int chunkX, c_int chunkZ, c_int regionX,
+    MU bool DynamicStructure<Derived>::canSpawnAtChunk(c_i64 worldSeed, c_int chunkX, c_int chunkZ, c_int regionX,
                                                     c_int regionZ) {
         RNG rnds;
         c_i64 featureSeed = static_cast<i64>(regionX * REGION_SIZE) * 341873128712ULL +
@@ -113,13 +113,13 @@ namespace Placement {
     template<>
     c_int DynamicStructure<Mansion>::SECOND_RADIUS = 32;
     template<>
-    c_bool DynamicStructure<Mansion>::HAS_SECOND_BIOME_CHECK = false;
+    MU c_bool DynamicStructure<Mansion>::HAS_SECOND_BIOME_CHECK = false;
     template<>
     c_u64 DynamicStructure<Mansion>::MAIN_VALID_BIOMES = (1ULL << dark_forest);
     template<>
-    c_u64 DynamicStructure<Mansion>::SECONDARY_VALID_BIOMES = DEFAULT_SECONDARY_VALID_BIOMES;
+    MU c_u64 DynamicStructure<Mansion>::SECONDARY_VALID_BIOMES = DEFAULT_SECONDARY_VALID_BIOMES;
     template<>
-    c_u64 DynamicStructure<Mansion>::SECONDARY_VALID_BIOMES_MUTATED = DEFAULT_SECONDARY_VALID_BIOMES_MUTATED;
+    MU c_u64 DynamicStructure<Mansion>::SECONDARY_VALID_BIOMES_MUTATED = DEFAULT_SECONDARY_VALID_BIOMES_MUTATED;
 
     void Mansion::setWorldSize(const lce::WORLDSIZE worldSize) {
         CHUNK_BOUNDS = getChunkWorldBounds(worldSize) - 3;
@@ -142,14 +142,14 @@ namespace Placement {
     template<>
     c_int DynamicStructure<Monument>::SECOND_RADIUS = 29;
     template<>
-    c_bool DynamicStructure<Monument>::HAS_SECOND_BIOME_CHECK = true;
+    MU c_bool DynamicStructure<Monument>::HAS_SECOND_BIOME_CHECK = true;
     template<>
     c_u64 DynamicStructure<Monument>::MAIN_VALID_BIOMES =
             1ULL << ocean | 1ULL << river | 1ULL << frozen_river | 1ULL << deep_ocean | 1ULL << warm_ocean |
             1ULL << deep_warm_ocean | 1ULL << lukewarm_ocean | 1ULL << deep_lukewarm_ocean | 1ULL << cold_ocean |
             1ULL << deep_cold_ocean | 1ULL << frozen_ocean | 1ULL << deep_frozen_ocean;
     template<>
-    c_u64 DynamicStructure<Monument>::SECONDARY_VALID_BIOMES =
+    MU c_u64 DynamicStructure<Monument>::SECONDARY_VALID_BIOMES =
             1ULL << deep_ocean | 1ULL << deep_warm_ocean | 1ULL << deep_lukewarm_ocean | 1ULL << deep_cold_ocean |
             1ULL << deep_frozen_ocean;
 
@@ -174,14 +174,14 @@ namespace Placement {
     template<>
     c_int DynamicStructure<BuriedTreasure>::SECOND_RADIUS = 16;
     template<>
-    c_bool DynamicStructure<BuriedTreasure>::HAS_SECOND_BIOME_CHECK = false;
+    MU c_bool DynamicStructure<BuriedTreasure>::HAS_SECOND_BIOME_CHECK = false;
     template<>
     c_u64 DynamicStructure<BuriedTreasure>::MAIN_VALID_BIOMES =
             1ULL << mushroom_island_shore | 1ULL << beach | 1ULL << stone_beach | 1ULL << cold_beach;
     template<>
-    c_u64 DynamicStructure<BuriedTreasure>::SECONDARY_VALID_BIOMES = DEFAULT_SECONDARY_VALID_BIOMES;
+    MU c_u64 DynamicStructure<BuriedTreasure>::SECONDARY_VALID_BIOMES = DEFAULT_SECONDARY_VALID_BIOMES;
     template<>
-    c_u64 DynamicStructure<BuriedTreasure>::SECONDARY_VALID_BIOMES_MUTATED = DEFAULT_SECONDARY_VALID_BIOMES_MUTATED;
+    MU c_u64 DynamicStructure<BuriedTreasure>::SECONDARY_VALID_BIOMES_MUTATED = DEFAULT_SECONDARY_VALID_BIOMES_MUTATED;
 
     void BuriedTreasure::setWorldSize(const lce::WORLDSIZE worldSize) {
         CHUNK_BOUNDS = getChunkWorldBounds(worldSize) - 3;
@@ -204,7 +204,7 @@ namespace Placement {
     template<>
     c_int DynamicStructure<Shipwreck>::SECOND_RADIUS = 0;
     template<>
-    c_bool DynamicStructure<Shipwreck>::HAS_SECOND_BIOME_CHECK = false;
+    MU c_bool DynamicStructure<Shipwreck>::HAS_SECOND_BIOME_CHECK = false;
     template<>
     c_u64 DynamicStructure<Shipwreck>::MAIN_VALID_BIOMES =
             1ULL << ocean | 1ULL << mushroom_island_shore | 1ULL << beach | 1ULL << snowy_beach | 1ULL << deep_ocean |
@@ -232,14 +232,14 @@ namespace Placement {
     template<>
     c_int DynamicStructure<Outpost>::SECOND_RADIUS = 0;
     template<>
-    c_bool DynamicStructure<Outpost>::HAS_SECOND_BIOME_CHECK = false;
+    MU c_bool DynamicStructure<Outpost>::HAS_SECOND_BIOME_CHECK = false;
     template<>
     c_u64 DynamicStructure<Outpost>::MAIN_VALID_BIOMES =
             1ULL << plains | 1ULL << desert | 1ULL << taiga | 1ULL << ice_plains | 1ULL << cold_taiga | 1ULL << savanna;
     template<>
-    c_u64 DynamicStructure<Outpost>::SECONDARY_VALID_BIOMES = DEFAULT_SECONDARY_VALID_BIOMES;
+    MU c_u64 DynamicStructure<Outpost>::SECONDARY_VALID_BIOMES = DEFAULT_SECONDARY_VALID_BIOMES;
     template<>
-    c_u64 DynamicStructure<Outpost>::SECONDARY_VALID_BIOMES_MUTATED = DEFAULT_SECONDARY_VALID_BIOMES_MUTATED;
+    MU c_u64 DynamicStructure<Outpost>::SECONDARY_VALID_BIOMES_MUTATED = DEFAULT_SECONDARY_VALID_BIOMES_MUTATED;
 
     void Outpost::setWorldSize(const lce::WORLDSIZE worldSize) {
         CHUNK_BOUNDS = getChunkWorldBounds(worldSize) - 3;

@@ -2,28 +2,25 @@
 
 #include "LegacyCubiomes/chunk_generator/Chunk.hpp"
 #include "LegacyCubiomes/structures/generation/mineshaft/mineshaft.hpp"
-#include "LegacyCubiomes/structures/rolls/RollsBase.hpp"
 
 
-namespace structure_rolls {
+namespace rolls {
 
 
-    class Mineshaft : public RollsBase {
+    class MU Mineshaft {
     public:
         std::vector<std::pair<Pos3D, i64>> mineshaftChests;
-        void generateStructure(const generation::Mineshaft* mineshaftGenerator, ChunkPrimer* chunk,
-                               RNG& rng, int chunkX, int chunkZ);
+        void generateStructure(const gen::Mineshaft* mg, ChunkPrimer* chunk, RNG& rng, int chunkX, int chunkZ);
 
         /// Generate all chests for a given mineshaft
-        MU void generateAllChests(const generation::Mineshaft* mineshaftGenerator,
-                                  const Generator& g, bool generateFullChunk);
+        MU void generateAllChests(const gen::Mineshaft* mg, const Generator& g, bool generateFullChunk);
 
         void generateChest(const ChunkPrimer* chunk, const BoundingBox& chunkBB,
-                           const Piece& piece, RNG& rng, int x, int y, int z);
+                           const StructureComponent& piece, RNG& rng, int x, int y, int z);
 
     private:
         static void placeCobWeb(const ChunkPrimer* chunk, const BoundingBox& chunkBB,
-                                const Piece& piece, RNG& rng, int x, int z);
+                                const StructureComponent& piece, RNG& rng, int x, int z);
     };
 
 }
