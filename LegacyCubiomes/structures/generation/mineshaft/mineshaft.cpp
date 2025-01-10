@@ -1,5 +1,7 @@
 #include "mineshaft.hpp"
 
+#include "lce/enums.hpp"
+
 
 namespace gen {
 
@@ -11,7 +13,7 @@ namespace gen {
             {PieceType::Mineshaft_Stairs, "STAIRS"}};
 
 
-    void Mineshaft::generate(c_i64 worldSeed, c_int chunkX, c_int chunkZ) {
+    void Mineshaft::generate(lce::CONSOLE console, c_i64 worldSeed, c_int chunkX, c_int chunkZ) {
         RNG rng = RNG::getLargeFeatureSeed(worldSeed, chunkX, chunkZ);
         // 4 rolls (1 for skip, 3 for is feature chunk rolls (2 double, 1 int))
         rng = RNG::ConstructWithoutSetSeed((rng.getSeed() * 0x32EB772C5F11 + 0x2D3873C4CD04) & 0xFFFFFFFFFFFF);
@@ -19,10 +21,19 @@ namespace gen {
         startZ = (chunkZ << 4) + 2;
         pieceArraySize = 0;
 
+        int boundingBoxXUpper;
+        int boundingBoxYUpper;
+        int boundingBoxZUpper;
         // build the entire structure
-        c_int boundingBoxXUpper = startX + rng.nextInt(6) + 7;
-        c_int boundingBoxYUpper = 54 + rng.nextInt(6);
-        c_int boundingBoxZUpper = startZ + rng.nextInt(6) + 7;
+        if (console == lce::CONSOLE::XBOX360 || console == lce::CONSOLE::XBOX1) {
+            boundingBoxZUpper = startZ + rng.nextInt(6) + 7;
+            boundingBoxYUpper = 54 + rng.nextInt(6);
+            boundingBoxXUpper = startX + rng.nextInt(6) + 7;
+        } else {
+            boundingBoxXUpper = startX + rng.nextInt(6) + 7;
+            boundingBoxYUpper = 54 + rng.nextInt(6);
+            boundingBoxZUpper = startZ + rng.nextInt(6) + 7;
+        }
         const BoundingBox roomBoundingBox(startX, 50, startZ, boundingBoxXUpper, boundingBoxYUpper, boundingBoxZUpper);
 
         // recursive gen

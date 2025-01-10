@@ -43,7 +43,7 @@ namespace gen {
         * @param chunkX x coordinate of the chunk
         * @param chunkZ z coordinate of the chunk
         */
-        void generate(i64 worldSeed, int chunkX, int chunkZ);
+        void generate(lce::CONSOLE console, i64 worldSeed, int chunkX, int chunkZ);
 
         /**
         * \n
@@ -51,8 +51,8 @@ namespace gen {
         * @param worldSeed the seed
         * @param chunkPos coordinates of the chunk
         */
-        void generate(c_i64 worldSeed, const Pos2D chunkPos) {
-            return generate(worldSeed, chunkPos.x, chunkPos.z);
+        void generate(lce::CONSOLE console, c_i64 worldSeed, const Pos2D chunkPos) {
+            return generate(console, worldSeed, chunkPos.x, chunkPos.z);
         }
 
         MU void reset();
