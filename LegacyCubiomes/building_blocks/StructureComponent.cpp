@@ -4,6 +4,27 @@
 #include "LegacyCubiomes/chunk_generator/ChunkPrimer.hpp"
 
 
+
+
+MU void StructureComponent::setBlockStateWithoutOffset(World& worldIn, const lce::blocks::Block* blockStateIn,
+                                                       int x, int y, int z,
+                                   const BoundingBox& structureBB) const {
+    if (const auto blockPos = Pos3D(x, y, z);
+        structureBB.isVecInside(blockPos)) {
+        /*
+                if (this->mirror != Mirror::NONE) {
+                    blockStateIn = blockStateIn.withMirror(this->mirror);
+                }
+                if (this->rotation != Rotation::NONE) {
+                    blockStateIn = blockStateIn.withRotation(this->rotation);
+                }
+                 */
+        worldIn.setBlock(blockPos, blockStateIn); // flags = 2
+    }
+}
+
+
+
 MU void StructureComponent::setBlockState(World& worldIn, const lce::blocks::Block* blockStateIn, const int x,
                                           const int y, const int z, const BoundingBox& structureBB) const {
     if (const auto blockPos = Pos3D(getWorldX(x, z), getWorldY(y), getWorldZ(x, z));
@@ -41,7 +62,7 @@ MU ND const lce::blocks::Block* StructureComponent::getBlockStateFromPos(World& 
 /**
  * Deletes all continuous blocks from selected position upwards. Stops at hitting air.
  */
-void StructureComponent::clearCurrentPositionBlocksUpwards(World worldIn, const int x, const int y, const int z,
+void StructureComponent::clearCurrentPositionBlocksUpwards(World& worldIn, const int x, const int y, const int z,
                                                            const BoundingBox& structureBB) const {
 
     if (Pos3D blockPos(getWorldX(x, z), getWorldY(y), getWorldZ(x, z)); structureBB.isVecInside(blockPos)) {
@@ -93,9 +114,9 @@ void StructureComponent::fillWithBlocks(World& worldIn, const BoundingBox& bbIn,
                     // TODO: probably replace with is MATERIAL::AIR? I cannot remember
                     if (!existingOnly || worldIn.getBlock(wX, wY, wZ)->getID() != lce::blocks::ids::AIR_ID) {
                         if (y != minY && y != maxY && x != minX && x != maxX && z != minZ && z != maxZ) {
-                            worldIn.setBlock(wX, wY, wZ, insideBlockState);
+                            setBlockState(worldIn, insideBlockState, x, y, z, bbIn);
                         } else {
-                            worldIn.setBlock(wX, wY, wZ, boundaryBlockState);
+                            setBlockState(worldIn, boundaryBlockState, x, y, z, bbIn);
                         }
                     }
                 }
@@ -248,3 +269,22 @@ bool StructureComponent::isLiquidInStructureBoundingBox(World& worldIn, const Bo
 
     return false;
 }
+
+
+
+
+
+
+
+
+std::ostream& operator<<(std::ostream& out, const StructureComponent& structureComponent) {
+    std::string dir = facingToString(structureComponent.orientation);
+    out << "{" << structureComponent.toString() << ", FACE=" << dir << "}";
+    return out;
+}
+
+
+
+
+
+

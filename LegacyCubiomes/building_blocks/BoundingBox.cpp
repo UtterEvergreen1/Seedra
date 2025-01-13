@@ -130,8 +130,12 @@ BoundingBox BoundingBox::orientBox(c_int x, c_int y, c_int z, c_int offsetWidth,
                     y + height - 1 + offsetHeight,
                     z + depth - 1 + offsetDepth};
         case FACING::WEST:
-            return {x - depth + 1 + offsetDepth,   y + offsetHeight,           z + offsetWidth, x + offsetDepth,
-                    y + height - 1 + offsetHeight, z + width - 1 + offsetWidth};
+            return {x - depth + 1 + offsetDepth,
+                    y + offsetHeight,
+                    z + offsetWidth,
+                    x + offsetDepth,
+                    y + height - 1 + offsetHeight,
+                    z + width - 1 + offsetWidth};
         default:
         case FACING::EAST:
             return {x + offsetDepth,

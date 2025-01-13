@@ -1,10 +1,10 @@
 #pragma once
 
 // generation
-#include "LegacyCubiomes/structures/generation/mineshaft/mineshaft.hpp"
-#include "LegacyCubiomes/structures/generation/netherfortress/netherfortress.hpp"
-#include "LegacyCubiomes/structures/generation/stronghold/stronghold.hpp"
-#include "LegacyCubiomes/structures/generation/village/village.hpp"
+#include "LegacyCubiomes/structures/gen/mineshaft/mineshaft.hpp"
+#include "LegacyCubiomes/structures/gen/netherfortress/netherfortress.hpp"
+#include "LegacyCubiomes/structures/gen/stronghold/stronghold.hpp"
+#include "LegacyCubiomes/structures/gen/village/village.hpp"
 
 
 // placement

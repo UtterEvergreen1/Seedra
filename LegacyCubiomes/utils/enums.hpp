@@ -72,6 +72,25 @@ static int getMetaFromHorizontalFacing(const FACING facing) {
     }
 }
 
+static std::string facingToString(const FACING facing) {
+    switch (facing) {
+        case FACING::NORTH:
+            return "NORTH";
+        case FACING::SOUTH:
+            return "SOUTH";
+        case FACING::EAST:
+            return "EAST";
+        case FACING::WEST:
+            return "WEST";
+        case FACING::UP:
+            return "UP";
+        case FACING::DOWN:
+            return "DOWN";
+        default:
+            return "NONE";
+    }
+}
+
 static EnumAxis getAxis(const FACING facing) {
     switch (facing) {
         case FACING::NORTH:

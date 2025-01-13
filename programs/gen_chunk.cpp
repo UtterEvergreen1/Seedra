@@ -6,11 +6,14 @@
 #include "LegacyCubiomes/chunk_generator/biome.hpp"
 #include "LegacyCubiomes/features/WorldGenerator/WorldGenLakes.hpp"
 #include "LegacyCubiomes/structures/build/mineshaft.hpp"
+#include "LegacyCubiomes/structures/build/stronghold.hpp"
 #include "LegacyCubiomes/structures/build/village.hpp"
-#include "LegacyCubiomes/structures/generation/village/village.hpp"
+#include "LegacyCubiomes/structures/gen/village/village.hpp"
 #include "LegacyCubiomes/structures/placement/StaticStructures.hpp"
 #include "LegacyCubiomes/structures/placement/mineshaft.hpp"
+#include "LegacyCubiomes/structures/placement/stronghold.hpp"
 #include "LegacyCubiomes/structures/rolls/mineshaft.hpp"
+#include "LegacyCubiomes/structures/rolls/stronghold.hpp"
 
 
 int main() {
@@ -29,15 +32,24 @@ int main() {
     }*/
 
     Biome::registerBiomes();
-    auto console = lce::CONSOLE::XBOX360;
+    auto console = lce::CONSOLE::WIIU;
     auto version = LCEVERSION::ELYTRA;
-    Generator g(console, version, 27184353441555, lce::WORLDSIZE::CLASSIC, lce::BIOMESCALE::SMALL);
+    Generator g(console, version, -872420751, lce::WORLDSIZE::CLASSIC, lce::BIOMESCALE::SMALL);
 
     // 3 13 for seed -101, 8 15 for seed 1, 11 16 or 15 5 for seed 27184353441555
-    int X_WIDTH = 8;
-    int Z_WIDTH = 8;
+    int X_WIDTH = 27;
+    int Z_WIDTH = 27;
     int X_CENTER = 0;
-    int Z_CENTER = -25;
+    int Z_CENTER = 0;
+
+    BoundingBox worldBox;
+    worldBox.minX = short(X_CENTER * 16 - X_WIDTH);
+    worldBox.maxX = short(X_CENTER * 16 + X_WIDTH);
+    worldBox.minY = 0;
+    worldBox.minY = 256;
+    worldBox.minZ = short(Z_CENTER * 16 - Z_WIDTH);
+    worldBox.minZ = short(Z_CENTER * 16 + Z_WIDTH);
+
 
 
     auto world = World(&g);
@@ -47,139 +59,150 @@ int main() {
     RNG rng;
 
 
-    auto mineshaft_locations = Placement::Mineshaft::getAllPositions(g);
-    // mineshaft_locations.emplace_back(0, 0);
-    std::cout << "Mineshaft Positions this seed: \n";
-    for (auto& pos : mineshaft_locations) {
-        std::cout << pos << "\n";
-    }
-    std::cout << std::flush;
+    // Mineshaft
+    if (true) {
+        // get positions
+        auto mineshaft_locations = Placement::Mineshaft::getAllPositions(g);
 
-    for (auto& pos : mineshaft_locations) {
-
-        gen::Mineshaft mineshaft_gen = gen::Mineshaft();
-        mineshaft_gen.generate(g.getWorldSeed(), pos.toChunkPos());
-        std::cout << "Start: " << mineshaft_gen.startX << " " << mineshaft_gen.startZ << "\n";
-        std::cout << "Pieces: " << mineshaft_gen.pieceArraySize << "\n";
-
-
-        for (auto piece: mineshaft_gen.pieceArray) {
-            if (piece.type == PieceType::Mineshaft_NONE) break;
-
-            std::cout << "adding: " << gen::Mineshaft::pieceTypeNames[piece.type] << piece << "\n";
-
-            rolls::MineshaftPiece* obj = nullptr;
-            switch (piece.type) {
-                case PieceType::Mineshaft_Crossing:
-                    obj = new rolls::Corridor(0);
-                    break;
-                case PieceType::Mineshaft_Room:
-                    obj = new rolls::Room(0);
-                    break;
-                case PieceType::Mineshaft_Corridor:
-                    obj = new rolls::Corridor(0);
-                    break;
-                case PieceType::Mineshaft_Stairs:
-                    obj = new rolls::Stairs(0);
-                    break;
-                default:;
-            }
-            if (obj != nullptr) {
-                memcpy(&obj->minX, &piece.minX, sizeof(piece));
-                bool result = obj->addComponentParts(world, rng, mineshaft_gen.structureBB);
-                // if (!result) { break; }
-            }
-        }
-    }
-
-
-
-
-
-
-    auto village_locations = Placement::Village<false>::getAllPositions(&g);
-    village_locations.emplace_back(0, 0);
-    std::cout << "Village Positions this seed:\n";
-    for (auto& pos : village_locations) {
-        std::cout << pos << "\n";
-    }
-    std::cout << std::flush;
-
-    for (auto& pos : village_locations) {
-        gen::Village village_gen(&g);
-        village_gen.generate(pos.toChunkPos());
-
-        int biomeType = 0;
-        switch (g.getBiomeAt(1, pos)) {
-            case BiomeID::plains:
-                biomeType = 0;
-                break;
-            case BiomeID::desert:
-                biomeType = 1;
-                break;
-            case BiomeID::savanna:
-                biomeType = 2;
-                break;
-            case BiomeID::taiga:
-                biomeType = 3;
-                break;
+        // create them
+        std::vector<gen::Mineshaft> valid_mineshafts = {};
+        for (auto& pos : mineshaft_locations) {
+            gen::Mineshaft mineshaft_gen = gen::Mineshaft();
+            mineshaft_gen.generate(g.getConsole(), g.getWorldSeed(), pos.toChunkPos());
+            valid_mineshafts.push_back(mineshaft_gen);
         }
 
-        for (auto piece : village_gen.pieceArray) {
-            if (piece.type == PieceType::Village_NONE) break;
+        // build them
+        for (auto& mineshaft_gen : valid_mineshafts) {
 
-            std::cout << "adding: " << gen::Village::pieceTypeNames[piece.type] << piece << "\n";
+            int count = -1;
+            std::cout << "\n\n";
+            std::cout << "Mineshaft" << "\n";
+            std::cout << "    Start: " << mineshaft_gen.startPos << "\n";
+            std::cout << "    Pieces: " << mineshaft_gen.pieceArraySize << "\n\n";
+            for (StructureComponent& piece: mineshaft_gen.pieceArray) {
+                count += 1;
 
-            rolls::VillagePiece* obj = nullptr;
-            switch (piece.type) {
-                case PieceType::Village_House4Garden:
-                    obj = new rolls::House4Garden(biomeType);
-                    break;
-                case PieceType::Village_Church:
-                    obj = new rolls::Church(biomeType);
-                    break;
-                case PieceType::Village_House1:
-                    obj = new rolls::House1(biomeType);
-                    break;
-                case PieceType::Village_Hall:
-                    obj = new rolls::Hall(biomeType);
-                    break;
-                case PieceType::Village_Field1:
-                    obj = new rolls::Field1(biomeType);
-                    break;
-                case PieceType::Village_Field2:
-                    obj = new rolls::Field2(biomeType);
-                    break;
-                case PieceType::Village_House2:
-                    obj = new rolls::House2(biomeType);
-                    break;
-                case PieceType::Village_House3:
-                    obj = new rolls::House3(biomeType);
-                    break;
-                case PieceType::Village_Torch:
-                    obj = new rolls::Torch(biomeType);
-                    break;
-                case PieceType::Village_WoodHut:
-                    obj = new rolls::WoodHut(biomeType);
-                    break;
-                case PieceType::Village_Road:
-                    obj = new rolls::Path(biomeType);
-                    break;
-                case PieceType::Village_Start:
-                    obj = new rolls::Well(biomeType);
-                    break;
-                default:;
-            }
-            if (obj != nullptr) {
-                memcpy(&obj->minX, &piece.minX, sizeof(Piece));
-                bool result = obj->addComponentParts(world, rng, village_gen.structureBB);
+                if (piece.type == PieceType::PT_Mineshaft_NONE) break;
+                std::cout << "    " << count << ". adding: " << gen::Mineshaft::getPieceName(piece.type) << piece;
+
+                piece.structureType = static_cast<int>(mineshaft_gen.mineShaftType);
+                bool result = build::mineshaft::addComponentParts(world, rng, mineshaft_gen.structureBB, piece);
                 if (!result) {
-                    break;
+                    std::cout << "    " << count << ". Piece::addComponentParts() failed.";
+                }
+                std::cout << "\n";
+            }
+        }
+    }
+
+
+
+
+    // Village
+    std::cout << "\n\n";
+    if (true) {
+
+        // get positions
+        auto village_locations = Placement::Village<false>::getAllPositions(&g);
+
+
+        // create them
+        std::vector<std::pair<Pos2D, gen::Village>> valid_villages = {};
+        for (auto& village_pos : village_locations) {
+            gen::Village village_gen(&g);
+            village_gen.generate(village_pos.toChunkPos());
+            valid_villages.emplace_back(village_pos, village_gen);
+        }
+
+        // build them
+        for (auto& [village_pos, village_gen] : valid_villages) {
+            int biomeType = build::village::getVillageBiomeType(g, village_pos);
+
+            int count = -1;
+            std::cout << "\n\n";
+            std::cout << "Village" << "\n";
+            std::cout << "    Start: " << village_pos << "\n";
+            std::cout << "    Pieces: " << village_gen.pieceArraySize << "\n\n";
+            for (auto& piece : village_gen.pieceArray) {
+                count += 1;
+                if (piece.type == PieceType::PT_Village_NONE) break;
+                std::cout << "    " << count << ". adding: " << gen::Village::getPieceName(piece.type) << piece;
+                piece.structureType = biomeType;
+                bool result = build::village::addComponentParts(world, rng, village_gen.structureBB, piece);
+                if (!result) {
+                    std::cout << "    " << count << ". Piece::addComponentParts() failed.";
+                }
+                std::cout << "\n";
+            }
+        }
+    }
+
+
+
+    // Stronghold
+    if (true) {
+        int count;
+
+        Pos2D strongholdPos = Placement::Stronghold::getWorldPosition(g).toChunkPos();
+        auto stronghold_gen = gen::Stronghold();
+        stronghold_gen.generate(g.getWorldSeed(), strongholdPos);
+
+        /*
+        count = 0;
+        for (auto& piece : stronghold_gen.pieceArray) {
+            count += 1;
+            if (piece.type == PieceType::PT_Stronghold_NONE) break;
+
+            Pos3D should_contain(121, 36, 59);
+            if (piece.isVecInside(should_contain)) {
+                std::cout << "    Piece #" << count << ": " << gen::Stronghold::getPieceName(piece.type) << piece << "\n";
+                break;
+            }
+        }
+        std::cout << "\n\n" << std::flush;
+         */
+        /*
+        auto portalPiece = stronghold_gen.portalRoomPiece;
+        Pos2D pos = {portalPiece->getWorldX(0, 0), portalPiece->getWorldZ(0, 0)};
+        pos = pos.toChunkPos();
+        BoundingBox boundingBox = BoundingBox::makeChunkBox(pos.x, pos.z);
+        for (int x = boundingBox.minX; x <= boundingBox.maxX; x++) {
+            for (int y = boundingBox.minY; y <= boundingBox.maxY; y++) {
+                for (int z = boundingBox.minZ; z <= boundingBox.maxZ; z++) {
+                    const auto* block = world.getBlock(x, y, z);
+                    if (block->getID() == lce::blocks::ids::GRASS_ID) {
+                        world.setBlock(x, y, z, lce::blocks::ids::DIAMOND_BLOCK_ID);
+                    }
                 }
             }
         }
+        // BoundingBox areaBB = boundingBox;
+         */
 
+        count = -1;
+        std::cout << "\n\n";
+        std::cout << "Stronghold" << "\n";
+        std::cout << "    Start: " << strongholdPos << "\n";
+        std::cout << "    Pieces: " << stronghold_gen.pieceArraySize << "\n\n";
+        for (auto& piece : stronghold_gen.pieceArray) {
+            count += 1;
+            if (piece.type == PieceType::PT_Stronghold_NONE) break;
+
+            std::cout << "    " << count << ". adding: " << gen::Stronghold::getPieceName(piece.type) << piece;
+            bool result = build::stronghold::addComponentParts(world, rng, stronghold_gen.structureBB, piece);
+            if (!result) {
+                std::cout << "    " << count << ". Piece::addComponentParts() failed.";
+            }
+            std::cout << "\n";
+        }
     }
+
+
+
+
+
+
 
 
 
@@ -207,11 +230,11 @@ int main() {
             }
 
             // replace all stone with air
-            for (int i = 0; i < 16 * 16 * 256; i++) {
-                if ((chunk->getBlockAtIndex(i) >> 4) == 1 && (chunk->getBlockAtIndex(i) & 15) == 0) {
-                    chunk->blocks[i] = 0;
-                }
-            }
+            // for (int i = 0; i < 16 * 16 * 256; i++) {
+            //     if ((chunk->getBlockAtIndex(i) >> 4) == 1 && (chunk->getBlockAtIndex(i) & 15) == 0) {
+            //         chunk->blocks[i] = 0;
+            //     }
+            // }
 
             // useful for set certain blocks in the world
             /*
@@ -251,9 +274,29 @@ int main() {
         }
     }
 
-    std::cout << "finished!\n";
+    // std::cout << "finished!\n";
 
-    file.close();
+    // file.close();
+
+    // const char* cdPath = "cd \"C:\\Users\\jerrin\\CLionProjects\\LegacyChunkViewer\\build\"";
+    // int result1 = system(cdPath);
 
 
+    // const char* exePath = R"("C:\Users\jerrin\CLionProjects\LegacyChunkViewer\build\LegacyChunkViewer.exe")";
+
+    // // Execute the executable
+    // int result2 = system(exePath);
+
+    // if (result2 == -1) {
+    //     // Handle error
+    //     std::cerr << "Failed to execute the program." << std::endl;
+    //     return EXIT_FAILURE;
+    // }
+
+    // // Optional: Check the exit status of the executed program
+    // std::cout << "Executed with return code: " << result2 << std::endl;
+
+    // return EXIT_SUCCESS;
+
+    return 0;
 }

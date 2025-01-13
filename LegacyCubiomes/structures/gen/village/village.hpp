@@ -1,5 +1,6 @@
 #pragma once
 
+#include "LegacyCubiomes/building_blocks/GenerationStep.hpp"
 #include "LegacyCubiomes/building_blocks/Piece.hpp"
 #include "LegacyCubiomes/building_blocks/StructureComponent.hpp"
 #include "LegacyCubiomes/cubiomes/layers.hpp"
@@ -13,13 +14,16 @@
 namespace gen {
 
     class Village {
+        static constexpr u32 ARRAY_SIZE = 512;
+
+
     public:
-        enum class GenerationStep : i8 {
-            VALID,      // Generates the layout up until it makes the village valid
-            BLACKSMITH, // Generates the layout up to the blacksmith
-            LAYOUT,     // Generates full layout
-            FULL,       // Generates full layout and calculates hasMoreThanTwoComponents
-        };
+        // enum class GenerationStep : i8 {
+        //     VALID,      // Generates the layout up until it makes the village valid
+        //     BLACKSMITH, // Generates the layout up to the blacksmith
+        //     LAYOUT,     // Generates full layout
+        //     FULL,       // Generates full layout and calculates hasMoreThanTwoComponents
+        // };
 
 
 
@@ -30,7 +34,8 @@ namespace gen {
             MU int PlaceCountMax;
         };
 
-        static std::map<PieceType, std::string> pieceTypeNames;
+        MU static std::string PIECE_TYPE_NAMES[13];
+        // static std::map<PieceType, std::string> PIECE_TYPE_NAMES;
         static c_int VILLAGE_SIZE;
         static const PieceWeight PIECE_WEIGHTS[9];
 
@@ -45,30 +50,32 @@ namespace gen {
         };
 
         std::vector<FinalPieceWeight> currentVillagePW;
-        PieceType previousPiece{};
-        int pendingRoadArray[512]{};
+
+        int pendingRoadArray[ARRAY_SIZE]{};
         int pendingRoadArraySize{};
+
+
         const Generator* g;
         RNG rng;
 
+        PieceType previousPiece{};
+
+        GenerationStep generationStep = GS_Village_Full;
+
+        /// number of ROADS + WELL
         int numInvalidPieces = 1;
-        StructureComponent* myBlackSmithPiece{};
-        MU bool myHasMoreThanTwoComponents{};
-        GenerationStep generationStep = GenerationStep::FULL;
+        int myBlackSmithPieceIndex = -1;
+
 
     public:
         bool isZombieInfested{};
 
         BoundingBox structureBB;
 
-        StructureComponent pieceArray[512];
+        StructureComponent pieceArray[ARRAY_SIZE];
         int pieceArraySize{};
 
-
-
-        int startX{};
-        int startZ{};
-
+        Pos2D startPos;
 
 
 
@@ -90,8 +97,16 @@ namespace gen {
         */
         void generate(const Pos2D chunk) { generate(chunk.x, chunk.z); }
 
-    MU ND StructureComponent* getBlackSmithPiece() { return myBlackSmithPiece; }
-    MU ND bool hasMoreThanTwoComponents() const { return myHasMoreThanTwoComponents; }
+    MU ND StructureComponent* getBlackSmithPiece() {
+        if (myBlackSmithPieceIndex == -1) {
+            return nullptr;
+        }
+        return &pieceArray[myBlackSmithPieceIndex];
+
+    }
+    MU ND bool hasMoreThanTwoComponents() const { return pieceArraySize - numInvalidPieces > 2; }
+
+    MU static std::string getPieceName(PieceType pieceType);
 
     private:
         void setupPieces();

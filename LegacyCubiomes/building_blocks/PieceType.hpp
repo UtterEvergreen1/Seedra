@@ -4,43 +4,45 @@
 
 
 enum PieceType : i8 {
-    NONE = 0,
-
-    Village_NONE         =   0,
-    Village_Start        =   1,
-    Village_Road         =   2,
-    Village_House4Garden =   3,
-    Village_Church       =   4,
-    Village_House1       =   5,
-    Village_WoodHut      =   6,
-    Village_Hall         =   7,
-    Village_Field1       =   8,
-    Village_Field2       =   9,
-    Village_House2       =  10,
-    Village_House3       =  11,
-    Village_Torch        =  12,
 
 
-    Stronghold_NONE               =  0,
-    Stronghold_Straight           =  1,
-    Stronghold_PrisonHall         =  2,
-    Stronghold_LeftTurn           =  3,
-    Stronghold_RightTurn          =  4,
-    Stronghold_RoomCrossing       =  5,
-    Stronghold_StraightStairsDown =  6,
-    Stronghold_StairsDown         =  7,
-    Stronghold_FiveCrossing       =  8,
-    Stronghold_ChestCorridor      =  9,
-    Stronghold_Library            = 10,
-    Stronghold_PortalRoom         = 11,
-    Stronghold_FillerCorridor     = 12,
+
+    PT_Stronghold_NONE =  0,
+    PT_Stronghold_Straight =  1,
+    PT_Stronghold_PrisonHall =  2,
+    PT_Stronghold_LeftTurn =  3,
+    PT_Stronghold_RightTurn =  4,
+    PT_Stronghold_RoomCrossing =  5,
+    PT_Stronghold_StraightStairsDown =  6,
+    PT_Stronghold_StairsDown =  7,
+    PT_Stronghold_FiveCrossing =  8,
+    PT_Stronghold_ChestCorridor =  9,
+    PT_Stronghold_Library = 10,
+    PT_Stronghold_PortalRoom = 11,
+    PT_Stronghold_FillerCorridor = 12,
 
 
-    Mineshaft_NONE = 0,
-    Mineshaft_Room = 1,
-    Mineshaft_Corridor = 2,
-    Mineshaft_Crossing = 3,
-    Mineshaft_Stairs = 4,
+    PT_Mineshaft_NONE = 0,
+    PT_Mineshaft_Room = 1,
+    PT_Mineshaft_Corridor = 2,
+    PT_Mineshaft_Crossing = 3,
+    PT_Mineshaft_Stairs = 4,
+
+    PT_NONE = 0,
+
+    PT_Village_NONE =   0,
+    PT_Village_Start =   1,
+    PT_Village_Road =   2,
+    PT_Village_House4Garden =   3,
+    PT_Village_Church =   4,
+    PT_Village_House1 =   5,
+    PT_Village_WoodHut =   6,
+    PT_Village_Hall =   7,
+    PT_Village_Field1 =   8,
+    PT_Village_Field2 =   9,
+    PT_Village_House2 =  10,
+    PT_Village_House3 =  11,
+    PT_Village_Torch =  12,
 
 };
 

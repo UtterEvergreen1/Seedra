@@ -15,14 +15,14 @@ public:
 
     i32 additionalData;
 
-    Piece() : orientation(), type(NONE), depth(0), additionalData(0) {}
+    Piece() : orientation(), type(PT_NONE), depth(0), additionalData(0) {}
 
     Piece(const BoundingBox boundingBox, const FACING orientation)
-        : BoundingBox(boundingBox), orientation(orientation), type(NONE), depth(0), additionalData(0) {}
+        : BoundingBox(boundingBox), orientation(orientation), type(PT_NONE), depth(0), additionalData(0) {}
 
     Piece(c_int minX, c_int minY, c_int minZ, c_int maxX, c_int maxY, c_int maxZ,
           const FACING orientation)
-        : BoundingBox(minX, minY, minZ, maxX, maxY, maxZ), orientation(orientation), type(NONE), depth(0),
+        : BoundingBox(minX, minY, minZ, maxX, maxY, maxZ), orientation(orientation), type(PT_NONE), depth(0),
           additionalData(0) {}
 
     Piece(const PieceType type, c_i8 depth, const BoundingBox& boundingBox,
@@ -36,4 +36,6 @@ public:
     ND int getWorldZ(int offsetWidth, int offsetDepth) const;
     ND MU Pos2D getWorldPos(int offsetWidth, int offsetDepth) const;
     MU static BoundingBox makeBoundingBox(int x, int y, int z, FACING direction, int width, int height, int depth);
+
+
 };

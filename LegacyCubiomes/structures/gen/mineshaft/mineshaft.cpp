@@ -5,20 +5,52 @@
 
 namespace gen {
 
-    std::map<PieceType, std::string> Mineshaft::pieceTypeNames = {
-            {PieceType::NONE, "NONE -> something went wrong"},
-            {PieceType::Mineshaft_Room, "ROOM"},
-            {PieceType::Mineshaft_Corridor, "CORRIDOR"},
-            {PieceType::Mineshaft_Crossing, "CROSSING"},
-            {PieceType::Mineshaft_Stairs, "STAIRS"}};
+    MU std::string Mineshaft::PIECE_TYPE_NAMES[5] = {
+            "NONE",     // NONE
+            "ROOM",     // Mineshaft_Room
+            "CORRIDOR", // Mineshaft_Corridor
+            "CROSSING", // Mineshaft_Crossing
+            "STAIRS",   // Mineshaft_Stairs
+    };
+
+    MU std::string Mineshaft::getPieceName(const PieceType pieceType) {
+        if (pieceType < 5) {
+            return PIECE_TYPE_NAMES[pieceType];
+        }
+        return "";
+    }
 
 
+    MU void Mineshaft::reset() {
+        pieceArraySize = 0;
+        collisionChecks = 0;
+    }
+
+
+    /**
+     * \n
+     * Overload function. Generates a mineshaft with the given seed and chunk coordinates.
+     * @param worldSeed the seed
+     * @param chunkPos coordinates of the chunk
+     */
+    void Mineshaft::generate(lce::CONSOLE console, c_i64 worldSeed, const Pos2D chunkPos) {
+        return generate(console, worldSeed, chunkPos.x, chunkPos.z);
+    }
+
+
+    /**
+     * \n
+     * Generates a mineshaft with the given seed and chunk coordinates.
+     * @param worldSeed the seed
+     * @param chunkX x coordinate of the chunk
+     * @param chunkZ z coordinate of the chunk
+     */
     void Mineshaft::generate(lce::CONSOLE console, c_i64 worldSeed, c_int chunkX, c_int chunkZ) {
         RNG rng = RNG::getLargeFeatureSeed(worldSeed, chunkX, chunkZ);
         // 4 rolls (1 for skip, 3 for is feature chunk rolls (2 double, 1 int))
         rng = RNG::ConstructWithoutSetSeed((rng.getSeed() * 0x32EB772C5F11 + 0x2D3873C4CD04) & 0xFFFFFFFFFFFF);
-        startX = (chunkX << 4) + 2;
-        startZ = (chunkZ << 4) + 2;
+        startPos.x = (chunkX << 4) + 2;
+        startPos.z = (chunkZ << 4) + 2;
         pieceArraySize = 0;
 
         int boundingBoxXUpper;
@@ -26,18 +58,18 @@ namespace gen {
         int boundingBoxZUpper;
         // build the entire structure
         if (console == lce::CONSOLE::XBOX360 || console == lce::CONSOLE::XBOX1) {
-            boundingBoxZUpper = startZ + rng.nextInt(6) + 7;
+            boundingBoxZUpper = startPos.z + rng.nextInt(6) + 7;
             boundingBoxYUpper = 54 + rng.nextInt(6);
-            boundingBoxXUpper = startX + rng.nextInt(6) + 7;
+            boundingBoxXUpper = startPos.x + rng.nextInt(6) + 7;
         } else {
-            boundingBoxXUpper = startX + rng.nextInt(6) + 7;
+            boundingBoxXUpper = startPos.x + rng.nextInt(6) + 7;
             boundingBoxYUpper = 54 + rng.nextInt(6);
-            boundingBoxZUpper = startZ + rng.nextInt(6) + 7;
+            boundingBoxZUpper = startPos.z + rng.nextInt(6) + 7;
         }
-        const BoundingBox roomBoundingBox(startX, 50, startZ, boundingBoxXUpper, boundingBoxYUpper, boundingBoxZUpper);
+        const BoundingBox roomBoundingBox(startPos.x, 50, startPos.z, boundingBoxXUpper, boundingBoxYUpper, boundingBoxZUpper);
 
         // recursive gen
-        buildComponent(rng, PieceType::Mineshaft_Room, 0, roomBoundingBox, FACING::NORTH, 1);
+        buildComponent(rng, PieceType::PT_Mineshaft_Room, 0, roomBoundingBox, FACING::NORTH, 1);
 
         // get Y level
         structureBB = BoundingBox::EMPTY;
@@ -46,33 +78,46 @@ namespace gen {
         // specifically mesa
         if (mineShaftType == MineshaftType::MESA) {
             c_int i = 63 - structureBB.maxY + structureBB.getYSize() / 2 + 5;
+            // update structure offset
             structureBB.offset(0, i, 0);
+            // update pieces offset
             for (int index = 0; index < pieceArraySize; index++) { pieceArray[index].offset(0, i, 0); }
             return;
+        } else {
+            // non-mesa
+            constexpr int i = 63 - 10;
+            int j = structureBB.getYSize() + 1;
+            if (j < i) { j += rng.nextInt(i - j); }
+            c_int k = j - structureBB.maxY;
+            // update structure offset
+            structureBB.offset(0, k, 0);
+            // update pieces offset
+            for (int piece = 0; piece < pieceArraySize; piece++) { pieceArray[piece].offset(0, k, 0); }
         }
 
-        // non-mesa
-        constexpr int i = 63 - 10;
-        int j = structureBB.getYSize() + 1;
-        if (j < i) { j += rng.nextInt(i - j); }
-        c_int k = j - structureBB.maxY;
-        for (int piece = 0; piece < pieceArraySize; piece++) { pieceArray[piece].offset(0, k, 0); }
     }
 
 
-    StructureComponent* Mineshaft::findCollisionPiece(const BoundingBox& boundingBox) {
+    StructureComponent* Mineshaft::findCollisionPiece(const BoundingBox& bbIn) {
         for (int i = 0; i < pieceArraySize; i++) {
             collisionChecks++;
-            if (pieceArray[i].intersects(boundingBox)) { return &pieceArray[i]; }
+            if (pieceArray[i].intersects(bbIn)) { return &pieceArray[i]; }
         }
         return nullptr;
     }
 
 
-    void Mineshaft::genAndAddPiece(RNG& rng, const Pos3D pos, const FACING direction, c_int depth) {
+    bool Mineshaft::collides(const BoundingBox& bbIn) {
+        const StructureComponent* collidingPiece = findCollisionPiece(bbIn);
+        return collidingPiece != nullptr;
+    }
+
+
+
+    void Mineshaft::genAndAddPiece(RNG& rng, const Pos3D pos, const FACING facing, c_int depth) {
         // step 1: return early
         if (depth > 8) return;
-        if (abs(pos.getX() - startX) > 80 || abs(pos.getZ() - startZ) > 80) return;
+        if (abs(pos.getX() - startPos.x) > 80 || abs(pos.getZ() - startPos.z) > 80) return;
 
         // step 2: create the piece
         c_int randomRoom = rng.nextInt(100);
@@ -81,48 +126,48 @@ namespace gen {
 
         // step 3: 3 different cases
         if (randomRoom >= 80) { // CASE CROSSING
-            boundingBox = BoundingBox::orientBox(pos, -1, 0, 0, 5, 3, 5, direction);
+            boundingBox = BoundingBox::orientBox(pos, -1, 0, 0, 5, 3, 5, facing);
             if (rng.nextInt(4) == 0) {
                 boundingBox.maxY += 4;
                 additionalData = 1;
             }
-            if (const StructureComponent* collidingPiece = findCollisionPiece(boundingBox); collidingPiece != nullptr) return;
-            buildComponent(rng, PieceType::Mineshaft_Crossing, depth + 1, boundingBox, direction, additionalData);
+            if (collides(boundingBox)) return;
+            buildComponent(rng, PieceType::PT_Mineshaft_Crossing, depth + 1, boundingBox, facing, additionalData);
 
         } else if (randomRoom >= 70) { // CASE STAIRS
-            boundingBox = BoundingBox::orientBox(pos, 0, -5, 0, 3, 8, 9, direction);
-            if (const StructureComponent* collidingPiece = findCollisionPiece(boundingBox); collidingPiece != nullptr) return;
-            buildComponent(rng, PieceType::Mineshaft_Stairs, depth + 1, boundingBox, direction, 0);
+            boundingBox = BoundingBox::orientBox(pos, 0, -5, 0, 3, 8, 9, facing);
+            if (collides(boundingBox)) return;
+            buildComponent(rng, PieceType::PT_Mineshaft_Stairs, depth + 1, boundingBox, facing, 0);
 
         } else {
             int i; // CASE CORRIDOR
 
             for (i = rng.nextInt(3) + 2; i > 0; --i) {
                 c_int j = i * 5;
-                boundingBox = BoundingBox::orientBox(pos, 0, 0, 0, 3, 3, j, direction);
-                if (const StructureComponent* collidingPiece = findCollisionPiece(boundingBox);
-                    collidingPiece == nullptr) break;
+                boundingBox = BoundingBox::orientBox(pos, 0, 0, 0, 3, 3, j, facing);
+                if (!collides(boundingBox)) { break; }
             }
-            if (i == 0) return;
+            if (i == 0) { return; }
             c_bool hasRails = rng.nextInt(3) == 0;
             c_bool hasSpiders = !hasRails && rng.nextInt(23) == 0;
             additionalData |= hasRails;
             additionalData |= hasSpiders << 1;
-            buildComponent(rng, PieceType::Mineshaft_Corridor, depth + 1, boundingBox, direction, additionalData);
+            buildComponent(rng, PieceType::PT_Mineshaft_Corridor, depth + 1, boundingBox, facing, additionalData);
         }
     }
 
 
-    void Mineshaft::buildComponent(RNG& rng, const PieceType type, c_int depth, const BoundingBox& boundingBox,
-                                   const FACING direction, c_int additionalData) {
-        auto p = StructureComponent(type, static_cast<i8>(depth), boundingBox, direction, additionalData);
+    void Mineshaft::buildComponent(RNG& rng, const PieceType type, c_int depth, const BoundingBox& bbIn,
+                                   const FACING facing, c_int additionalData) {
+
+        auto p = StructureComponent(type, static_cast<i8>(depth), bbIn, facing, additionalData);
         pieceArray[pieceArraySize++] = p;
 
-        switch (static_cast<PieceType>(p.type)) {
+        switch (p.type) {
             default:
                 break;
 
-            case PieceType::Mineshaft_Room: {
+            case PieceType::PT_Mineshaft_Room: {
                 int k;
                 int j = p.getYSize() - 4;
                 if (j <= 0) j = 1;
@@ -151,7 +196,7 @@ namespace gen {
                 return;
             }
 
-            case PieceType::Mineshaft_Corridor: {
+            case PieceType::PT_Mineshaft_Corridor: {
                 c_int corridorType = rng.nextInt(4);
                 c_int yState = p.minY + rng.nextInt(3) - 1;
                 switch (p.orientation) {
@@ -238,7 +283,7 @@ namespace gen {
                 return;
             }
 
-            case PieceType::Mineshaft_Crossing: {
+            case PieceType::PT_Mineshaft_Crossing: {
                 switch (p.orientation) {
                     case FACING::NORTH:
                     default:
@@ -276,7 +321,7 @@ namespace gen {
                 return;
             }
 
-            case PieceType::Mineshaft_Stairs: {
+            case PieceType::PT_Mineshaft_Stairs: {
                 switch (p.orientation) {
                     default:
                     case FACING::NORTH:
@@ -290,11 +335,6 @@ namespace gen {
                 }
             }
         }
-    }
-
-    MU void Mineshaft::reset() {
-        pieceArraySize = 0;
-        collisionChecks = 0;
     }
 
 } // namespace generation

@@ -2,6 +2,9 @@
 
 #include <unordered_map>
 
+// #include "LegacyCubiomes/structures/build/village.hpp"
+// #include "LegacyCubiomes/structures/rolls/mineshaft.hpp"
+// #include "LegacyCubiomes/structures/rolls/stronghold.hpp"
 #include "LegacyCubiomes/utils/Pos2DTemplate.hpp"
 #include "LegacyCubiomes/utils/Pos3DTemplate.hpp"
 
@@ -71,7 +74,20 @@ public:
 
     static int getSeaLevel() { return 63; }
 
+
 private:
     Generator *g;
     std::unordered_map<Pos2D, ChunkPrimer *, Pos2D::Hasher> chunks;
+
+    // std::vector<gen::Village> villages;
+    // std::vector<gen::Mineshaft> mineshafts;
+    // gen::Stronghold stronghold;
+
+
+
+
+
+
+
+
 };

@@ -1,6 +1,7 @@
 #include "mineshaft.hpp"
 
 
+
 namespace rolls {
 
 
@@ -10,14 +11,14 @@ namespace rolls {
         for (int pieceIndex = 0; pieceIndex < mg->pieceArraySize; ++pieceIndex) {
             const StructureComponent& piece = mg->pieceArray[pieceIndex];
 
-            if (piece.type == PieceType::Mineshaft_NONE) continue;
+            if (piece.type == PieceType::PT_Mineshaft_NONE) continue;
 
             BoundingBox chunkBoundingBox(chunkX << 4, 0, chunkZ << 4, (chunkX << 4) + 15, 255, (chunkZ << 4) + 15);
 
             if (!piece.intersects(chunkBoundingBox)) continue;
 
 
-            if (piece.type == PieceType::Mineshaft_Corridor) {
+            if (piece.type == PieceType::PT_Mineshaft_Corridor) {
                 if (chunk && StructureComponent::isLiquidInStructureBoundingBox(chunkBoundingBox, piece, chunk))
                     continue;
 
@@ -107,17 +108,17 @@ namespace rolls {
 
     MU void Mineshaft::generateAllChests(const gen::Mineshaft* mg,
                                       const Generator& g, c_bool generateFullChunk) {
-        c_int xEnd = (mg->startX >> 4) + 6;
-        c_int zEnd = (mg->startZ >> 4) + 6;
+        c_int xEnd = (mg->startPos.x >> 4) + 6;
+        c_int zEnd = (mg->startPos.z >> 4) + 6;
         RNG rng;
         rng.setSeed(g.getWorldSeed());
         u64 xModifier = rng.nextLong();
         u64 zModifier = rng.nextLong();
         xModifier = (i64) (((xModifier / 2) * 2) + 1);
         zModifier = (i64) (((zModifier / 2) * 2) + 1);
-        for (int xChunk = (mg->startX >> 4) - 6; xChunk < xEnd; ++xChunk) {
+        for (int xChunk = (mg->startPos.x >> 4) - 6; xChunk < xEnd; ++xChunk) {
             c_u64 aix = xChunk * xModifier;
-            for (int zChunk = (mg->startZ >> 4) - 6; zChunk < zEnd; ++zChunk) {
+            for (int zChunk = (mg->startPos.z >> 4) - 6; zChunk < zEnd; ++zChunk) {
                 rng.setSeed((aix + zChunk * zModifier) ^ g.getWorldSeed());
                 rng.advance(); // advance rng
                 ChunkPrimer* chunk = nullptr;

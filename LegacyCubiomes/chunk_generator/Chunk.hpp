@@ -67,7 +67,7 @@ namespace Chunk {
             return;
         }
 
-        return;
+        // return;
         // std::cout << "Populating chunk " << chunkX << ", " << chunkZ << std::endl;
 
         RNG rng = RNG::getPopulationSeed(g.getWorldSeed(), chunkX, chunkZ);

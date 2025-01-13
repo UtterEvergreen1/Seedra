@@ -16,29 +16,31 @@ namespace rolls {
         for (int pieceIndex = 0; pieceIndex < sg->pieceArraySize; ++pieceIndex) {
             const StructureComponent &piece = sg->pieceArray[pieceIndex];
 
-            if (piece.type == PieceType::Stronghold_NONE) continue;
+            if (piece.type == PieceType::PT_Stronghold_NONE) continue;
 
             if (!piece.intersects(chunkBoundingBox)) continue;
 
-            if (chunk && piece.type != PieceType::Stronghold_PortalRoom &&
+            if (chunk && piece.type != PieceType::PT_Stronghold_PortalRoom &&
                 StructureComponent::isLiquidInStructureBoundingBox(chunkBoundingBox, piece, chunk))
                 continue;
 
             switch (piece.type) {
-                case PieceType::Stronghold_Straight:
+                case PieceType::PT_Stronghold_NONE:
+                    break;
+                case PieceType::PT_Stronghold_Straight:
                     // true means check for air
                     StructureComponent::fillWithRandomizedBlocks(chunkBoundingBox, piece, 0, 0, 0, 4, 4, 6, rng, chunk);
                     rng.advance<4>();
                     break;
-                case PieceType::Stronghold_PrisonHall:
+                case PieceType::PT_Stronghold_PrisonHall:
                     StructureComponent::fillWithRandomizedBlocks(chunkBoundingBox, piece, 0, 0, 0, 8, 4, 10, rng, chunk);
                     rng.advance<12>();
                     break;
-                case PieceType::Stronghold_LeftTurn:
-                case PieceType::Stronghold_RightTurn:
+                case PieceType::PT_Stronghold_LeftTurn:
+                case PieceType::PT_Stronghold_RightTurn:
                     StructureComponent::fillWithRandomizedBlocks(chunkBoundingBox, piece, 0, 0, 0, 4, 4, 4, rng, chunk);
                     break;
-                case PieceType::Stronghold_RoomCrossing:
+                case PieceType::PT_Stronghold_RoomCrossing:
                     StructureComponent::fillWithRandomizedBlocks(chunkBoundingBox, piece, 0, 0, 0, 10, 6, 10, rng, chunk);
                     if constexpr (stopStrongholdChest) {
                         if (piece == pieceStop) return true;
@@ -47,24 +49,24 @@ namespace rolls {
                         StructureComponent::generateChest(chunkBoundingBox, piece, rng, 3, 4, 8);
                     }
                     break;
-                case PieceType::Stronghold_StraightStairsDown:
+                case PieceType::PT_Stronghold_StraightStairsDown:
                     StructureComponent::fillWithRandomizedBlocks(chunkBoundingBox, piece, 0, 0, 0, 4, 10, 7, rng, chunk);
                     break;
-                case PieceType::Stronghold_StairsDown:
+                case PieceType::PT_Stronghold_StairsDown:
                     StructureComponent::fillWithRandomizedBlocks(chunkBoundingBox, piece, 0, 0, 0, 4, 10, 4, rng, chunk);
                     break;
-                case PieceType::Stronghold_FiveCrossing:
+                case PieceType::PT_Stronghold_FiveCrossing:
                     StructureComponent::fillWithRandomizedBlocks(chunkBoundingBox, piece, 0, 0, 0, 9, 8, 10, rng, chunk);
                     rng.advance<109>();
                     break;
-                case PieceType::Stronghold_ChestCorridor:
+                case PieceType::PT_Stronghold_ChestCorridor:
                     StructureComponent::fillWithRandomizedBlocks(chunkBoundingBox, piece, 0, 0, 0, 4, 4, 6, rng, chunk);
                     if constexpr (stopStrongholdChest) {
                         if (piece == pieceStop) return true;
                     }
                     StructureComponent::generateChest(chunkBoundingBox, piece, rng, 3, 2, 3);
                     break;
-                case PieceType::Stronghold_Library:
+                case PieceType::PT_Stronghold_Library:
                     StructureComponent::fillWithRandomizedBlocks(chunkBoundingBox, piece, 0, 0, 0, 13,
                                              piece.additionalData ? 10 : 5, 14, rng, chunk);
                     rng.advance<520>();
@@ -74,7 +76,7 @@ namespace rolls {
                     StructureComponent::generateChest(chunkBoundingBox, piece, rng, 3, 3, 5);
                     if (piece.additionalData == 1) { StructureComponent::generateChest(chunkBoundingBox, piece, rng, 12, 8, 1); }
                     break;
-                case PieceType::Stronghold_PortalRoom:
+                case PieceType::PT_Stronghold_PortalRoom:
                     if constexpr (stopPortal) {
                         rng.advance<760>();
                         return true;
@@ -82,9 +84,9 @@ namespace rolls {
                         rng.advance<772>(); // 760 rolls + 12 eye rolls = 772 rolls
                     }
                     break;
-                case PieceType::Stronghold_FillerCorridor:
-                case PieceType::Stronghold_NONE:
+                case PieceType::PT_Stronghold_FillerCorridor:
                     break;
+
             }
         }
 
@@ -98,8 +100,7 @@ namespace rolls {
                                   c_int zChunk, const StructureComponent &pieceStop) {
 
 
-        return additionalStrongholdRolls<isStrongholdChest, false>(chunk, sg, rng, xChunk, zChunk,
-                                                                   pieceStop);
+        return additionalStrongholdRolls<isStrongholdChest, false>(chunk, sg, rng, xChunk, zChunk, pieceStop);
     }
 
     void Stronghold::setEye(const BoundingBox &chunkBB, const StructureComponent &piece, int x, int z, RNG &random,

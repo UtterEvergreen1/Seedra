@@ -5,17 +5,19 @@
 #include <string>
 #include <vector>
 
-#include "lce/blocks/block.hpp"
+#include "LegacyCubiomes/building_blocks/BoundingBox.hpp"
 #include "LegacyCubiomes/cubiomes/generator.hpp"
 #include "LegacyCubiomes/utils/Pos3DTemplate.hpp"
+#include "lce/blocks/block.hpp"
 #include "lce/blocks/block_ids.hpp"
 #include "lce/registry/blockRegistry.hpp"
 
 enum class Stage : u8 {
     STAGE_TERRAIN = 0,
     STAGE_CAVES = 1,
-    STAGE_DECORATE = 2,
-    STAGE_DONE = 4
+    STAGE_STRUCTURES = 2,
+    STAGE_DECORATE = 4,
+    STAGE_DONE = 8
 };
 
 class ChunkPrimer {
@@ -26,6 +28,7 @@ public:
     std::vector<u8> skyLight;
     std::vector<int> precipitationHeightMap = std::vector(256, -999);
     int highestYBlock = -1;
+
 
     ChunkPrimer() = default;
 

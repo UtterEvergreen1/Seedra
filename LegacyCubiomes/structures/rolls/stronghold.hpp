@@ -1,6 +1,6 @@
 #pragma once
 
-#include "LegacyCubiomes/structures/generation/stronghold/stronghold.hpp"
+#include "LegacyCubiomes/structures/gen/stronghold/stronghold.hpp"
 
 
 namespace rolls {

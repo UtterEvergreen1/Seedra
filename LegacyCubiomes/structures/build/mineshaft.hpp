@@ -2,107 +2,97 @@
 
 
 #include "LegacyCubiomes/building_blocks/StructureComponent.hpp"
-namespace rolls {
+namespace build::mineshaft {
 
 
-    class MineshaftPiece : public StructureComponent {
+
+
+    MU ND static const lce::blocks::Block* getBiomeSpecificPlank(int structureType) {
+        switch (structureType) {
+            case 0: // normal
+            default:
+                return &lce::blocks::BlocksInit::OAK_WOOD_PLANK;
+            case 1: // mesa
+                return &lce::blocks::BlocksInit::DARK_OAK_WOOD_PLANK;
+        }
+    }
+
+
+    MU ND static const lce::blocks::Block* getBiomeSpecificFence(int structureType) {
+        switch (structureType) {
+            case 0: // normal
+            default:
+                return &lce::blocks::BlocksInit::OAK_FENCE;
+            case 1: // mesa
+                return &lce::blocks::BlocksInit::DARK_OAK_FENCE;
+        }
+    }
+
+
+    static bool func_189918_a(World& world, const BoundingBox& structureBB, int p_189918_3_, int p_189918_4_,
+                              int p_189918_5_, int p_189918_6_, StructureComponent& piece) {
+        for (int i = p_189918_3_; i <= p_189918_4_; ++i) {
+            if (lce::blocks::ids::isReplaceableBlock(
+                        piece.getBlockStateFromPos(world, i, p_189918_5_ + 1, p_189918_6_, structureBB)->getID())) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+
+
+    class MU Room final {
     public:
-        int mineshaftType = 0;
+        MU Room() = delete;
 
-        MineshaftPiece() = delete;
-
-        explicit MineshaftPiece(int mineshaftTypeIn) : mineshaftType(mineshaftTypeIn) {}
-
-
-        MU ND const lce::blocks::Block* getBiomeSpecificPlank() const {
-            switch (this->mineshaftType) {
-                case 0: // normal
-                default:
-                    return &lce::blocks::BlocksInit::OAK_WOOD_PLANK;
-                case 1: // mesa
-                    return &lce::blocks::BlocksInit::DARK_OAK_WOOD_PLANK;
-            }
-        }
+        static bool addComponentParts(
+                World& worldIn, RNG& rng, const BoundingBox& structureBB, StructureComponent& piece) {
 
 
-        MU ND const lce::blocks::Block* getBiomeSpecificFence() const {
-            switch (this->mineshaftType) {
-                case 0: // normal
-                default:
-                    return &lce::blocks::BlocksInit::OAK_FENCE;
-
-                case 1: // mesa
-                    return &lce::blocks::BlocksInit::DARK_OAK_FENCE;
-            }
-        }
-
-
-        bool func_189918_a(World& p_189918_1_, const BoundingBox& p_189918_2_, int p_189918_3_, int p_189918_4_,
-                           int p_189918_5_, int p_189918_6_) {
-            for (int i = p_189918_3_; i <= p_189918_4_; ++i) {
-                if (lce::blocks::ids::isReplaceableBlock(
-                            getBlockStateFromPos(p_189918_1_, i, p_189918_5_ + 1, p_189918_6_, p_189918_2_)->getID())) {
-                    return false;
-                }
-            }
-
-            return true;
-        }
-    };
-
-
-    class MU Room final : public MineshaftPiece {
-    public:
-        Room() = delete;
-
-        MU explicit Room(int mineshaftTypeIn) : MineshaftPiece(mineshaftTypeIn) {}
-
-        bool addComponentParts(World& worldIn, RNG& rng, const BoundingBox& structureBB) override {
-
-
-            if (isLiquidInStructureBoundingBox(worldIn, structureBB)) {
+            if (piece.isLiquidInStructureBoundingBox(worldIn, structureBB)) {
                 return false;
             } else {
                 const lce::blocks::Block* air = &lce::blocks::BlocksInit::AIR;
 
-                fillWithBlocks(worldIn, structureBB, minX, minY, minZ, maxX, minY, maxZ, &lce::blocks::BlocksInit::DIRT,
-                               air, false);
-                fillWithBlocks(worldIn, structureBB, minX, minY + 1, minZ, maxX, std::min((int) minY + 3, (int) maxY),
-                               maxZ, air, air, false);
+                piece.fillWithBlocks(worldIn, structureBB, 0, 0, 0, piece.maxX - piece.minX, 0, piece.maxZ - piece.minZ,
+                                     &lce::blocks::BlocksInit::DIRT, air, false);
+                piece.fillWithBlocks(worldIn, structureBB, 0, 1, 0, piece.maxX - piece.minX, std::min((int) 3, (int) piece.maxY - piece.minY),
+                                     piece.maxZ - piece.minZ, air, air, false);
 
                 // for (const BoundingBox& structureboundingbox: roomsLinkedToTheRoom) {
-                //     fillWithBlocks(worldIn, structureBB, structureboundingbox.minX, structureboundingbox.maxY - 2,
-                //                    structureboundingbox.minZ, structureboundingbox.maxX, structureboundingbox.maxY,
-                //                    structureboundingbox.maxZ, air, air, false);
+                //     piece.fillWithBlocks(worldIn, structureBB, structureboundingbox.piece.minX, structureboundingbox.piece.maxY - 2,
+                //                    structureboundingbox.piece.minZ, structureboundingbox.piece.maxX, structureboundingbox.piece.maxY,
+                //                    structureboundingbox.piece.maxZ, air, air, false);
                 // }
 
-                randomlyRareFillWithBlocks(worldIn, structureBB, minX, minY + 4, minZ, maxX, maxY, maxZ, air, false);
+                piece.randomlyRareFillWithBlocks(worldIn, structureBB, 0, 4, 0, piece.maxX - piece.minX, piece.maxY - piece.minY, piece.maxZ - piece.minZ, air,
+                                           false);
                 return true;
             }
         }
     };
 
 
-    class MU Corridor final : public MineshaftPiece {
+    class MU Corridor final {
     public:
-        Corridor() = delete;
+        MU Corridor() = delete;
 
-        MU explicit Corridor(int mineshaftTypeIn) : MineshaftPiece(mineshaftTypeIn) {}
-
-
-        bool addComponentParts(World& worldIn, RNG& rng, const BoundingBox& structureBB) override {
-            bool hasRails = additionalData | 1;
-            bool hasSpiders = (additionalData >> 1) | 1;
+        static bool addComponentParts(
+                World& worldIn, RNG& rng, const BoundingBox& structureBB, StructureComponent& piece) {
+            bool hasRails = piece.additionalData & 1;
+            bool hasSpiders = (piece.additionalData >> 1) & 1;
             bool spawnerPlaced = false;
             int sectionCount;
-            if (getAxis(orientation) == EnumAxis::Z) {
-                sectionCount = getZSize() / 5;
+            if (getAxis(piece.orientation) == EnumAxis::Z) {
+                sectionCount = piece.getZSize() / 5;
             } else {
-                sectionCount = getZSize() / 5;
+                sectionCount = piece.getXSize() / 5;
             }
 
 
-            if (isLiquidInStructureBoundingBox(worldIn, structureBB)) {
+            if (piece.isLiquidInStructureBoundingBox(worldIn, structureBB)) {
                 return false;
             } else {
                 int i = 0;
@@ -113,25 +103,25 @@ namespace rolls {
 
                 const lce::blocks::Block* air = &lce::blocks::BlocksInit::AIR;
 
-                const lce::blocks::Block* iblockstate = getBiomeSpecificPlank();
-                fillWithBlocks(worldIn, structureBB, 0, 0, 0, 2, 1, i1, air, air, false);
-                func_189914_a(worldIn, structureBB, rng, 0.8F, 0, 2, 0, 2, 2, i1, air, air, false, 0);
+                const lce::blocks::Block* iblockstate = getBiomeSpecificPlank(piece.structureType);
+                piece.fillWithBlocks(worldIn, structureBB, 0, 0, 0, 2, 1, i1, air, air, false);
+                piece.func_189914_a(worldIn, structureBB, rng, 0.8F, 0, 2, 0, 2, 2, i1, air, air, false, 0);
 
                 if (hasSpiders) {
-                    func_189914_a(worldIn, structureBB, rng, 0.6F, 0, 0, 0, 2, 1, i1, air, air, false, 8);
+                    piece.func_189914_a(worldIn, structureBB, rng, 0.6F, 0, 0, 0, 2, 1, i1, air, air, false, 8);
                 }
 
                 for (int j1 = 0; j1 < sectionCount; ++j1) {
                     int k1 = 2 + j1 * 5;
-                    func_189921_a(worldIn, structureBB, 0, 0, k1, 2, 2, rng);
-                    func_189922_a(worldIn, structureBB, rng, 0.1F, 0, 2, k1 - 1);
-                    func_189922_a(worldIn, structureBB, rng, 0.1F, 2, 2, k1 - 1);
-                    func_189922_a(worldIn, structureBB, rng, 0.1F, 0, 2, k1 + 1);
-                    func_189922_a(worldIn, structureBB, rng, 0.1F, 2, 2, k1 + 1);
-                    func_189922_a(worldIn, structureBB, rng, 0.05F, 0, 2, k1 - 2);
-                    func_189922_a(worldIn, structureBB, rng, 0.05F, 2, 2, k1 - 2);
-                    func_189922_a(worldIn, structureBB, rng, 0.05F, 0, 2, k1 + 2);
-                    func_189922_a(worldIn, structureBB, rng, 0.05F, 2, 2, k1 + 2);
+                    func_189921_a(worldIn, structureBB, 0, 0, k1, 2, 2, rng, piece);
+                    func_189922_a(worldIn, structureBB, rng, 0.1F, 0, 2, k1 - 1, piece);
+                    func_189922_a(worldIn, structureBB, rng, 0.1F, 2, 2, k1 - 1, piece);
+                    func_189922_a(worldIn, structureBB, rng, 0.1F, 0, 2, k1 + 1, piece);
+                    func_189922_a(worldIn, structureBB, rng, 0.1F, 2, 2, k1 + 1, piece);
+                    func_189922_a(worldIn, structureBB, rng, 0.05F, 0, 2, k1 - 2, piece);
+                    func_189922_a(worldIn, structureBB, rng, 0.05F, 2, 2, k1 - 2, piece);
+                    func_189922_a(worldIn, structureBB, rng, 0.05F, 0, 2, k1 + 2, piece);
+                    func_189922_a(worldIn, structureBB, rng, 0.05F, 2, 2, k1 + 2, piece);
 
                     // if (rng.nextInt(100) == 0) {
                     //     generateChest(worldIn, structureBB, rng, 2, 0, k1 - 1,
@@ -144,16 +134,19 @@ namespace rolls {
                     // }
 
                     if (hasSpiders && !spawnerPlaced) {
-                        int l1 = getWorldY(0);
+                        int l1 = piece.getWorldY(0);
                         int i2 = k1 - 1 + rng.nextInt(3);
-                        int j2 = getWorldX(1, i2);
-                        int k2 = getWorldZ(1, i2);
+                        int j2 = piece.getWorldX(1, i2);
+                        int k2 = piece.getWorldZ(1, i2);
 
                         Pos3D blockPos(j2, l1, k2);
 
-                        if (structureBB.isVecInside(blockPos) && func_189916_b(worldIn, 1, 0, i2, structureBB) < 8) {
+                        if (structureBB.isVecInside(blockPos) &&
+                            piece.getLightLevelAtBlock(worldIn, 1, 0, i2, structureBB) < 8) {
                             spawnerPlaced = true;
-                            worldIn.setBlock(blockPos, &lce::blocks::BlocksInit::MONSTER_SPAWNER); // 2
+                            piece.setBlockStateWithoutOffset(worldIn, &lce::blocks::BlocksInit::MONSTER_SPAWNER,
+                                                             j2, l1, k2, structureBB);
+                            // worldIn.setBlock(blockPos, &lce::blocks::BlocksInit::MONSTER_SPAWNER); // 2
                             // TileEntity tileentity = worldIn.getTileEntity(blockpos);
                             // if (tileentity instanceof TileEntityMobSpawner) {
                             //     ((TileEntityMobSpawner) tileentity)
@@ -167,27 +160,26 @@ namespace rolls {
                 for (int l2 = 0; l2 <= 2; ++l2) {
                     for (int i3 = 0; i3 <= i1; ++i3) {
                         int k3 = -1;
-                        const lce::blocks::Block* iblockstate3 = getBlockStateFromPos(worldIn, l2, -1, i3, structureBB);
+                        const lce::blocks::Block* iblockstate3 = piece.getBlockStateFromPos(worldIn, l2, -1, i3, structureBB);
 
                         if (lce::blocks::ids::isReplaceableBlock(iblockstate3->getID()) &&
-                            func_189916_b(worldIn, l2, -1, i3, structureBB) < 8) {
+                            piece.getLightLevelAtBlock(worldIn, l2, -1, i3, structureBB) < 8) {
                             int l3 = -1;
-                            setBlockState(worldIn, iblockstate, l2, -1, i3, structureBB);
+                            piece.setBlockState(worldIn, iblockstate, l2, -1, i3, structureBB);
                         }
                     }
                 }
 
                 if (hasRails) {
-                    const lce::blocks::Block* iblockstate1 =
-                            &lce::blocks::BlocksInit::
-                                    RAIL; // .withProperty(BlockRail.SHAPE, BlockRailBase.EnumRailDirection.NORTH_SOUTH);
+                    // .withProperty(BlockRail.SHAPE, BlockRailBase.EnumRailDirection.NORTH_SOUTH);
+                    const lce::blocks::Block* iblockstate1 = &lce::blocks::BlocksInit::RAIL;
 
                     for (int j3 = 0; j3 <= i1; ++j3) {
-                        const lce::blocks::Block* iblockstate2 = getBlockStateFromPos(worldIn, 1, -1, j3, structureBB);
+                        const lce::blocks::Block* iblockstate2 = piece.getBlockStateFromPos(worldIn, 1, -1, j3, structureBB);
                         if (lce::blocks::ids::isReplaceableBlock(iblockstate2->getID()) &&
                             lce::blocks::ids::isFullBlock(iblockstate1->getID())) {
-                            float f = func_189916_b(worldIn, 1, 0, j3, structureBB) > 8 ? 0.9F : 0.7F;
-                            randomlyPlaceBlock(worldIn, structureBB, rng, f, 1, 0, j3, iblockstate1);
+                            float f = piece.getLightLevelAtBlock(worldIn, 1, 0, j3, structureBB) > 8 ? 0.9F : 0.7F;
+                            piece.randomlyPlaceBlock(worldIn, structureBB, rng, f, 1, 0, j3, iblockstate1);
                         }
                     }
                 }
@@ -197,89 +189,82 @@ namespace rolls {
         }
 
 
-        void func_189921_a(World& world, const BoundingBox& p_189921_2_, int p_189921_3_, int p_189921_4_,
-                           int p_189921_5_, int p_189921_6_, int p_189921_7_, RNG& rng) {
-            if (func_189918_a(world, p_189921_2_, p_189921_3_, p_189921_7_, p_189921_6_, p_189921_5_)) {
-                const lce::blocks::Block* iblockstate = getBiomeSpecificPlank();
-                const lce::blocks::Block* iblockstate1 = getBiomeSpecificFence();
+        static void func_189921_a(World& world, const BoundingBox& structureBB, int p_189921_3_, int p_189921_4_,
+                                  int p_189921_5_, int p_189921_6_, int p_189921_7_, RNG& rng, StructureComponent& piece) {
+            if (func_189918_a(world, structureBB, p_189921_3_, p_189921_7_, p_189921_6_, p_189921_5_, piece)) {
+                const lce::blocks::Block* iblockstate = getBiomeSpecificPlank(piece.structureType);
+                const lce::blocks::Block* iblockstate1 = getBiomeSpecificFence(piece.structureType);
                 const lce::blocks::Block* iblockstate2 = &lce::blocks::BlocksInit::AIR;
-                fillWithBlocks(world, p_189921_2_, p_189921_3_, p_189921_4_, p_189921_5_, p_189921_3_,
-                                    p_189921_6_ - 1, p_189921_5_, iblockstate1, iblockstate2, false);
-                fillWithBlocks(world, p_189921_2_, p_189921_7_, p_189921_4_, p_189921_5_, p_189921_7_,
-                                    p_189921_6_ - 1, p_189921_5_, iblockstate1, iblockstate2, false);
+                piece.fillWithBlocks(world, structureBB, p_189921_3_, p_189921_4_, p_189921_5_, p_189921_3_, p_189921_6_ - 1,
+                                     p_189921_5_, iblockstate1, iblockstate2, false);
+                piece.fillWithBlocks(world, structureBB, p_189921_7_, p_189921_4_, p_189921_5_, p_189921_7_, p_189921_6_ - 1,
+                                     p_189921_5_, iblockstate1, iblockstate2, false);
 
                 if (rng.nextInt(4) == 0) {
-                    fillWithBlocks(world, p_189921_2_, p_189921_3_, p_189921_6_, p_189921_5_, p_189921_3_,
-                                        p_189921_6_, p_189921_5_, iblockstate, iblockstate2, false);
-                    fillWithBlocks(world, p_189921_2_, p_189921_7_, p_189921_6_, p_189921_5_, p_189921_7_,
-                                        p_189921_6_, p_189921_5_, iblockstate, iblockstate2, false);
+                    piece.fillWithBlocks(world, structureBB, p_189921_3_, p_189921_6_, p_189921_5_, p_189921_3_, p_189921_6_,
+                                         p_189921_5_, iblockstate, iblockstate2, false);
+                    piece.fillWithBlocks(world, structureBB, p_189921_7_, p_189921_6_, p_189921_5_, p_189921_7_, p_189921_6_,
+                                         p_189921_5_, iblockstate, iblockstate2, false);
                 } else {
-                    fillWithBlocks(world, p_189921_2_, p_189921_3_, p_189921_6_, p_189921_5_, p_189921_7_,
-                                        p_189921_6_, p_189921_5_, iblockstate, iblockstate2, false);
-                    randomlyPlaceBlock(
-                            world, p_189921_2_, rng, 0.05F, p_189921_3_ + 1, p_189921_6_, p_189921_5_ - 1,
+                    piece.fillWithBlocks(world, structureBB, p_189921_3_, p_189921_6_, p_189921_5_, p_189921_7_, p_189921_6_,
+                                         p_189921_5_, iblockstate, iblockstate2, false);
+                    piece.randomlyPlaceBlock(
+                            world, structureBB, rng, 0.05F, p_189921_3_ + 1, p_189921_6_, p_189921_5_ - 1,
                             &lce::blocks::BlocksInit::TORCH); // .withProperty(BlockTorch.FACING, EnumFacing.NORTH));
-                    randomlyPlaceBlock(
-                            world, p_189921_2_, rng, 0.05F, p_189921_3_ + 1, p_189921_6_, p_189921_5_ + 1,
+                    piece.randomlyPlaceBlock(
+                            world, structureBB, rng, 0.05F, p_189921_3_ + 1, p_189921_6_, p_189921_5_ + 1,
                             &lce::blocks::BlocksInit::TORCH); // .withProperty(BlockTorch.FACING, EnumFacing.SOUTH));
                 }
             }
         }
 
-        void func_189922_a(World& world, const BoundingBox& p_189922_2_, RNG& rng, float p_189922_4_,
-                           int p_189922_5_, int p_189922_6_, int p_189922_7_) {
-            if (func_189916_b(world, p_189922_5_, p_189922_6_, p_189922_7_, p_189922_2_) < 8) {
-                randomlyPlaceBlock(world, p_189922_2_, rng, p_189922_4_, p_189922_5_, p_189922_6_,
-                                        p_189922_7_, &lce::blocks::BlocksInit::COBWEB);
+        static void func_189922_a(World& world, const BoundingBox& structureBB, RNG& rng, float chance, int x, int y, int z, StructureComponent& piece) {
+            if (piece.getLightLevelAtBlock(world, x, y, z, structureBB) < 8) {
+                piece.randomlyPlaceBlock(world, structureBB, rng, chance, x, y, z, &lce::blocks::BlocksInit::COBWEB);
             }
         }
     };
 
 
-    class MU Crossing final : public MineshaftPiece {
+    class MU Crossing final {
     public:
-        Crossing() = delete;
+        MU Crossing() = delete;
+        
+        static bool addComponentParts(
+                World& worldIn, RNG& rng, const BoundingBox& structureBB, StructureComponent& piece) {
+            bool isMultipleFloors = piece.additionalData & 1;
 
-        MU explicit Crossing(int mineshaftTypeIn) : MineshaftPiece(mineshaftTypeIn) {}
 
-        bool addComponentParts(World& worldIn, RNG& rng, const BoundingBox& structureBB) override {
-            bool isMultipleFloors;
-
-
-            if (isLiquidInStructureBoundingBox(worldIn, structureBB)) {
+            if (piece.isLiquidInStructureBoundingBox(worldIn, structureBB)) {
                 return false;
             } else {
-                const lce::blocks::Block* iblockstate = getBiomeSpecificPlank();
+
+                const lce::blocks::Block* iblockstate = getBiomeSpecificPlank(piece.structureType);
 
                 const lce::blocks::Block* air = &lce::blocks::BlocksInit::AIR;
 
                 if (isMultipleFloors) {
-                    fillWithBlocks(worldIn, structureBB, minX + 1, minY, minZ, maxX - 1, minY + 3 - 1, maxZ, air, air,
-                                   false);
-                    fillWithBlocks(worldIn, structureBB, minX, minY, minZ + 1, maxX, minY + 3 - 1, maxZ - 1, air, air,
-                                   false);
-                    fillWithBlocks(worldIn, structureBB, minX + 1, maxY - 2, minZ, maxX - 1, maxY, maxZ, air, air,
-                                   false);
-                    fillWithBlocks(worldIn, structureBB, minX, maxY - 2, minZ + 1, maxX, maxY, maxZ - 1, air, air,
-                                   false);
-                    fillWithBlocks(worldIn, structureBB, minX + 1, minY + 3, minZ + 1, maxX - 1, minY + 3, maxZ - 1,
-                                   air, air, false);
+                    piece.fillWithBlocks(worldIn, structureBB, 1, 0, 0, piece.maxX - piece.minX - 1, 3 - 1, piece.maxZ - piece.minZ, air, air, false);
+                    piece.fillWithBlocks(worldIn, structureBB, 0, 0, 1, piece.maxX - piece.minX, 3 - 1, piece.maxZ - piece.minZ - 1, air, air, false);
+                    piece.fillWithBlocks(worldIn, structureBB, 1, -2, 0, piece.maxX - piece.minX - 1, piece.maxY - piece.minY, piece.maxZ - piece.minZ, air, air, false);
+                    piece.fillWithBlocks(worldIn, structureBB, 0, -2, 1, piece.maxX - piece.minX, piece.maxY - piece.minY, piece.maxZ - piece.minZ - 1, air, air, false);
+                    piece.fillWithBlocks(worldIn, structureBB, 1, 3, 1, piece.maxX - piece.minX - 1, 3, piece.maxZ - piece.minZ - 1, air, air, false);
                 } else {
-                    fillWithBlocks(worldIn, structureBB, minX + 1, minY, minZ, maxX - 1, maxY, maxZ, air, air, false);
-                    fillWithBlocks(worldIn, structureBB, minX, minY, minZ + 1, maxX, maxY, maxZ - 1, air, air, false);
+                    piece.fillWithBlocks(worldIn, structureBB, 1, 0, 0, piece.maxX - piece.minX - 1, piece.maxY - piece.minY, piece.maxZ - piece.minZ, air, air, false);
+                    piece.fillWithBlocks(worldIn, structureBB, 0, 0, 1, piece.maxX - piece.minX, piece.maxY - piece.minY, piece.maxZ - piece.minZ - 1, air, air, false);
                 }
 
-                func_189923_b(worldIn, structureBB, minX + 1, minY, minZ + 1, maxY);
-                func_189923_b(worldIn, structureBB, minX + 1, minY, maxZ - 1, maxY);
-                func_189923_b(worldIn, structureBB, maxX - 1, minY, minZ + 1, maxY);
-                func_189923_b(worldIn, structureBB, maxX - 1, minY, maxZ - 1, maxY);
+                placePlankPillar(worldIn, structureBB, 1, 0, 1, piece.maxY - piece.minY, piece);
+                placePlankPillar(worldIn, structureBB, 1, 0, piece.maxZ - piece.minZ - 1, piece.maxY - piece.minY, piece);
+                placePlankPillar(worldIn, structureBB, piece.maxX - piece.minX - 1, 0, 1, piece.maxY - piece.minY, piece);
+                placePlankPillar(worldIn, structureBB, piece.maxX - piece.minX - 1, 0, piece.maxZ - piece.minZ - 1, piece.maxY - piece.minY, piece);
 
-                for (int i = minX; i <= maxX; ++i) {
-                    for (int j = minZ; j <= maxZ; ++j) {
+                for (int i = 0; i <= piece.maxX - piece.minX; ++i) {
+                    for (int j = 0; j <= piece.maxZ - piece.minZ; ++j) {
                         if (lce::blocks::ids::isReplaceableBlock(
-                                    getBlockStateFromPos(worldIn, i, minY - 1, j, structureBB)->getID()) &&
-                            func_189916_b(worldIn, i, minY - 1, j, structureBB) < 8) {
-                            setBlockState(worldIn, iblockstate, i, minY - 1, j, structureBB);
+                                    piece.getBlockStateFromPos(worldIn, i, -1, j, structureBB)->getID()) &&
+                            piece.getLightLevelAtBlock(worldIn, i, -1, j, structureBB) < 8) {
+                            piece.setBlockState(worldIn, iblockstate, i, -1, j, structureBB);
                         }
                     }
                 }
@@ -289,41 +274,91 @@ namespace rolls {
         }
 
 
-        void func_189923_b(World& world, const BoundingBox& p_189923_2_, int p_189923_3_, int p_189923_4_,
-                           int p_189923_5_, int p_189923_6_) {
-
-            if (!lce::blocks::ids::isReplaceableBlock(
-                        getBlockStateFromPos(world, p_189923_3_, p_189923_6_ + 1, p_189923_5_, p_189923_2_)
-                                ->getID())) {
-                fillWithBlocks(world, p_189923_2_, p_189923_3_, p_189923_4_, p_189923_5_, p_189923_3_,
-                               p_189923_6_, p_189923_5_, getBiomeSpecificPlank(), &lce::blocks::BlocksInit::AIR, false);
+        static void placePlankPillar(World& world, const BoundingBox& structureBB, int x, int minY, int z, int maxY, StructureComponent& piece) {
+            auto block = piece.getBlockStateFromPos(world, x, piece.maxY + 1, z, structureBB);
+            if (!lce::blocks::ids::isReplaceableBlock(block->getID())) {
+                piece.fillWithBlocks(world, structureBB, x, piece.minY, z, x, piece.maxY, z, getBiomeSpecificPlank(piece.structureType),
+                                     &lce::blocks::BlocksInit::AIR, false);
             }
         }
     };
 
 
-    class MU Stairs final : public MineshaftPiece {
+    class MU Stairs final {
     public:
-        Stairs() = delete;
+        MU Stairs() = delete;
 
-        MU explicit Stairs(int mineshaftTypeIn) : MineshaftPiece(mineshaftTypeIn) {}
-
-        bool addComponentParts(World& worldIn, RNG& rng, const BoundingBox& structureBB) override {
-            if (isLiquidInStructureBoundingBox(worldIn, structureBB)) {
+        static bool addComponentParts(
+                World& worldIn, RNG& rng, const BoundingBox& structureBB, StructureComponent& piece) {
+            if (piece.isLiquidInStructureBoundingBox(worldIn, structureBB)) {
                 return false;
             } else {
                 const lce::blocks::Block* air = &lce::blocks::BlocksInit::AIR;
 
-                fillWithBlocks(worldIn, structureBB, 0, 5, 0, 2, 7, 1, air, air, false);
-                fillWithBlocks(worldIn, structureBB, 0, 0, 7, 2, 2, 8, air, air, false);
+                piece.fillWithBlocks(worldIn, structureBB, 0, 5, 0, 2, 7, 1, air, air, false);
+                piece.fillWithBlocks(worldIn, structureBB, 0, 0, 7, 2, 2, 8, air, air, false);
 
                 for (int i = 0; i < 5; ++i) {
-                    fillWithBlocks(worldIn, structureBB, 0, 5 - i - (i < 4 ? 1 : 0), 2 + i, 2, 7 - i, 2 + i, air, air,
-                                   false);
+                    piece.fillWithBlocks(worldIn, structureBB, 0, 5 - i - (i < 4 ? 1 : 0), 2 + i, 2, 7 - i, 2 + i, air, air,
+                                         false);
                 }
 
                 return true;
             }
         }
     };
-} // namespace rolls
+
+
+    /*
+    /// user must manually free
+    MineshaftPiece* getMineshaftPiece(const PieceType pieceType) {
+        build::MineshaftPiece* piecePtr = nullptr;
+        switch (pieceType) {
+            case PieceType::PT_Mineshaft_Crossing:
+                piecePtr = new build::Crossing();
+                break;
+            case PieceType::PT_Mineshaft_Room:
+                piecePtr = new build::Room();
+                break;
+            case PieceType::PT_Mineshaft_Corridor:
+                piecePtr = new build::Corridor();
+                break;
+            case PieceType::PT_Mineshaft_Stairs:
+                piecePtr = new build::Stairs(0);
+                break;
+            default:;
+        }
+        return piecePtr;
+    }
+     */
+
+
+
+    MU static bool addComponentParts(
+            World& worldIn, RNG& rng, const BoundingBox& structureBB, StructureComponent& piece) {
+
+        bool result = false;
+
+        switch (piece.type) {
+            case PieceType::PT_Mineshaft_Crossing:
+                result = Crossing::addComponentParts(worldIn, rng, structureBB, piece);
+                break;
+            case PieceType::PT_Mineshaft_Room:
+                result = Room::addComponentParts(worldIn, rng, structureBB, piece);
+                break;
+            case PieceType::PT_Mineshaft_Corridor:
+                result = Corridor::addComponentParts(worldIn, rng, structureBB, piece);
+                break;
+            case PieceType::PT_Mineshaft_Stairs:
+                result = Stairs::addComponentParts(worldIn, rng, structureBB, piece);
+                break;
+            default:;
+        }
+        return result;
+    }
+
+
+
+
+
+} // namespace build::mineshaft
