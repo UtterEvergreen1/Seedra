@@ -21,7 +21,7 @@ namespace Placement {
                 rng.advance();
                 if EXPECT_FALSE (rng.nextInt(50) == 0) {
                     auto tunnelStartX = (double) (xPos * 16 + rng.nextInt(16));
-                    auto tunnelStartY = (double) (rng.nextInt(rng.nextInt(40) + 8) + 20);
+                    MU auto tunnelStartY = (double) (rng.nextInt(rng.nextInt(40) + 8) + 20);
                     auto tunnelStartZ = (double) (zPos * 16 + rng.nextInt(16));
                     positions.emplace_back(tunnelStartX, tunnelStartZ);
                 }

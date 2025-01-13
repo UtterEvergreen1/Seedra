@@ -1,7 +1,7 @@
 #include "Piece.hpp"
 
 
-Pos2D Piece::getBoundingBoxCenter() const {
+MU Pos2D Piece::getBoundingBoxCenter() const {
     Pos2D pos{};
     pos.x = minX + maxX / 2;
     pos.z = minZ + maxZ / 2;
@@ -10,7 +10,7 @@ Pos2D Piece::getBoundingBoxCenter() const {
 
 
 int Piece::getWorldX(c_int offsetWidth, c_int offsetDepth) const {
-    switch (orientation) {
+    switch (facing) {
         case FACING::NORTH:
         case FACING::SOUTH:
             return minX + offsetWidth;
@@ -24,7 +24,7 @@ int Piece::getWorldX(c_int offsetWidth, c_int offsetDepth) const {
 
 
 int Piece::getWorldZ(c_int offsetWidth, c_int offsetDepth) const {
-    switch (orientation) {
+    switch (facing) {
         case FACING::NORTH:
             return maxZ - offsetDepth;
         case FACING::SOUTH:
@@ -34,6 +34,11 @@ int Piece::getWorldZ(c_int offsetWidth, c_int offsetDepth) const {
         case FACING::EAST:
             return minZ + offsetWidth;
     }
+}
+
+
+MU ND Pos3D Piece::getWorldXYZ(int offsetWidth, int offsetHeight, int offsetDepth) const {
+    return {getWorldX(offsetWidth, offsetDepth), getWorldY(offsetHeight), getWorldZ(offsetWidth, offsetDepth)};
 }
 
 

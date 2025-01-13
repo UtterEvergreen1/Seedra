@@ -4,13 +4,9 @@
 #include "LegacyCubiomes/chunk_generator/ChunkPrimer.hpp"
 
 
-
-
-MU void StructureComponent::setBlockStateWithoutOffset(World& worldIn, const lce::blocks::Block* blockStateIn,
-                                                       int x, int y, int z,
-                                   const BoundingBox& structureBB) const {
-    if (const auto blockPos = Pos3D(x, y, z);
-        structureBB.isVecInside(blockPos)) {
+MU void StructureComponent::setBlockStateWithoutOffset(World& worldIn, const lce::blocks::Block* blockStateIn, int x,
+                                                       int y, int z, const BoundingBox& structureBB) {
+    if (const auto blockPos = Pos3D(x, y, z); structureBB.isVecInside(blockPos)) {
         /*
                 if (this->mirror != Mirror::NONE) {
                     blockStateIn = blockStateIn.withMirror(this->mirror);
@@ -24,9 +20,8 @@ MU void StructureComponent::setBlockStateWithoutOffset(World& worldIn, const lce
 }
 
 
-
-MU void StructureComponent::setBlockState(World& worldIn, const lce::blocks::Block* blockStateIn, const int x,
-                                          const int y, const int z, const BoundingBox& structureBB) const {
+MU void StructureComponent::setBlockState(World& worldIn, const lce::blocks::Block* blockStateIn, c_int x, c_int y,
+                                          c_int z, const BoundingBox& structureBB) const {
     if (const auto blockPos = Pos3D(getWorldX(x, z), getWorldY(y), getWorldZ(x, z));
         structureBB.isVecInside(blockPos)) {
         /*
@@ -42,18 +37,17 @@ MU void StructureComponent::setBlockState(World& worldIn, const lce::blocks::Blo
 }
 
 
-void StructureComponent::setBlockState(World& worldIn, const lce::blocks::Block& blockStateIn, const int x, const int y,
-                                       const int z, const BoundingBox& structureBB) const {
+void StructureComponent::setBlockState(World& worldIn, const lce::blocks::Block& blockStateIn, c_int x, c_int y,
+                                       c_int z, const BoundingBox& structureBB) const {
     setBlockState(worldIn, &blockStateIn, x, y, z, structureBB);
 }
 
 
-MU ND const lce::blocks::Block* StructureComponent::getBlockStateFromPos(World& worldIn, const int x, const int y,
-                                                                         const int z,
+MU ND const lce::blocks::Block* StructureComponent::getBlockStateFromPos(World& worldIn, c_int x, c_int y, c_int z,
                                                                          const BoundingBox& boundingBoxIn) const {
-    const int i = getWorldX(x, z);
-    const int j = getWorldY(y);
-    const int k = getWorldZ(x, z);
+    c_int i = getWorldX(x, z);
+    c_int j = getWorldY(y);
+    c_int k = getWorldZ(x, z);
     const Pos3D blockPos = {i, j, k};
     return !boundingBoxIn.isVecInside(blockPos) ? &lce::blocks::BlocksInit::AIR : worldIn.getBlock(blockPos);
 }
@@ -62,7 +56,7 @@ MU ND const lce::blocks::Block* StructureComponent::getBlockStateFromPos(World& 
 /**
  * Deletes all continuous blocks from selected position upwards. Stops at hitting air.
  */
-void StructureComponent::clearCurrentPositionBlocksUpwards(World& worldIn, const int x, const int y, const int z,
+void StructureComponent::clearCurrentPositionBlocksUpwards(World& worldIn, c_int x, c_int y, c_int z,
                                                            const BoundingBox& structureBB) const {
 
     if (Pos3D blockPos(getWorldX(x, z), getWorldY(y), getWorldZ(x, z)); structureBB.isVecInside(blockPos)) {
@@ -77,12 +71,11 @@ void StructureComponent::clearCurrentPositionBlocksUpwards(World& worldIn, const
 /**
  * Replaces air and liquid from given position downwards. Stops when hitting anything else than air or liquid
  */
-void StructureComponent::replaceAirAndLiquidDownwards(World& worldIn, const lce::blocks::Block* blockStateIn,
-                                                      const int x, const int y, const int z,
-                                                      const BoundingBox& boundingBoxIn) const {
-    const int i = getWorldX(x, z);
+void StructureComponent::replaceAirAndLiquidDownwards(World& worldIn, const lce::blocks::Block* blockStateIn, c_int x,
+                                                      c_int y, c_int z, const BoundingBox& boundingBoxIn) const {
+    c_int i = getWorldX(x, z);
     int j = getWorldY(y);
-    const int k = getWorldZ(x, z);
+    c_int k = getWorldZ(x, z);
 
     if (boundingBoxIn.isVecInside(Pos3D(i, j, k))) {
         while ((worldIn.isAirBlock(Pos3D(i, j, k)) ||
@@ -95,8 +88,8 @@ void StructureComponent::replaceAirAndLiquidDownwards(World& worldIn, const lce:
 }
 
 
-void StructureComponent::fillWithBlocks(World& worldIn, const BoundingBox& bbIn, const int minX, const int minY,
-                                        const int minZ, const int maxX, const int maxY, const int maxZ,
+void StructureComponent::fillWithBlocks(World& worldIn, const BoundingBox& bbIn, c_int minX, c_int minY, c_int minZ,
+                                        c_int maxX, c_int maxY, c_int maxZ,
                                         const lce::blocks::Block* boundaryBlockState,
                                         const lce::blocks::Block* insideBlockState, const bool existingOnly) {
 
@@ -105,9 +98,9 @@ void StructureComponent::fillWithBlocks(World& worldIn, const BoundingBox& bbIn,
         for (int x = minX; x <= maxX; x++) {
             for (int z = minZ; z <= maxZ; z++) {
 
-                const int wX = getWorldX(x, z);
-                const int wY = getWorldY(y);
-                const int wZ = getWorldZ(x, z);
+                c_int wX = getWorldX(x, z);
+                c_int wY = getWorldY(y);
+                c_int wZ = getWorldZ(x, z);
 
                 if (bbIn.isVecInside({wX, wY, wZ})) {
 
@@ -137,37 +130,22 @@ bool StructureComponent::isLiquidInStructureBoundingBox(const BoundingBox& chunk
     c_int maxZ = std::min(pieceBoundingBox.maxZ + 1, (int) chunkBoundingBoxIn.maxZ) & 15;
     for (int x = minX; x <= maxX; ++x) {
         for (int z = minZ; z <= maxZ; ++z) {
-            c_u16 block = chunk->getBlockId(x, minY, z);
-
-            if (lce::blocks::ids::isLiquidBlock(block)) return true;
-
-            c_u16 block1 = chunk->getBlockId(x, maxY, z);
-            if (lce::blocks::ids::isLiquidBlock(block1)) return true;
+            if (lce::blocks::ids::isLiquidBlock(chunk->getBlockId(x, minY, z))) return true;
+            if (lce::blocks::ids::isLiquidBlock(chunk->getBlockId(x, maxY, z))) return true;
         }
     }
-
-
     for (int x = minX; x <= maxX; ++x) {
         for (int y = minY; y <= maxY; ++y) {
-            c_u16 block = chunk->getBlockId(x, y, minZ);
-            if (lce::blocks::ids::isLiquidBlock(block)) return true;
-
-            c_u16 block1 = chunk->getBlockId(x, y, maxZ);
-            if (lce::blocks::ids::isLiquidBlock(block1)) return true;
+            if (lce::blocks::ids::isLiquidBlock(chunk->getBlockId(x, y, minZ))) return true;
+            if (lce::blocks::ids::isLiquidBlock(chunk->getBlockId(x, y, maxZ))) return true;
         }
     }
-
-
     for (int z = minZ; z <= maxZ; ++z) {
         for (int y = minY; y <= maxY; ++y) {
-            c_u16 block = chunk->getBlockId(minX, y, z);
-            if (lce::blocks::ids::isLiquidBlock(block)) return true;
-
-            c_u16 block1 = chunk->getBlockId(maxX, y, z);
-            if (lce::blocks::ids::isLiquidBlock(block1)) return true;
+            if (lce::blocks::ids::isLiquidBlock(chunk->getBlockId(minX, y, z))) return true;
+            if (lce::blocks::ids::isLiquidBlock(chunk->getBlockId(maxX, y, z))) return true;
         }
     }
-
     return false;
 }
 
@@ -188,17 +166,17 @@ MU bool StructureComponent::validToPlace(const BoundingBox& chunkBoundingBox, co
 }
 
 
-void StructureComponent::fillWithRandomizedBlocks(const BoundingBox& chunkBoundingBox, const Piece& piece,
-                                                  const int minX, const int minY, const int minZ, const int maxX,
-                                                  const int maxY, const int maxZ, RNG& rng, const ChunkPrimer* chunk) {
+void StructureComponent::fillWithRandomizedBlocks(const BoundingBox& chunkBoundingBox, const Piece& piece, c_int minX,
+                                                  c_int minY, c_int minZ, c_int maxX, c_int maxY, c_int maxZ, RNG& rng,
+                                                  const ChunkPrimer* chunk) {
 
     for (int y = minY; y <= maxY; y++) {
         for (int x = minX; x <= maxX; x++) {
             for (int z = minZ; z <= maxZ; z++) {
                 if (y == minY || y == maxY || x == minX || x == maxX || z == minZ || z == maxZ) {
-                    const int worldX = piece.getWorldX(x, z);
-                    const int worldY = piece.getWorldY(y);
-                    const int worldZ = piece.getWorldZ(x, z);
+                    c_int worldX = piece.getWorldX(x, z);
+                    c_int worldY = piece.getWorldY(y);
+                    c_int worldZ = piece.getWorldZ(x, z);
 
                     if (intersectsWithBlock(chunkBoundingBox, worldX, worldY, worldZ) &&
                         (chunk == nullptr || chunk->getBlockId(worldX & 15, worldY, worldZ & 15))) {
@@ -212,11 +190,11 @@ void StructureComponent::fillWithRandomizedBlocks(const BoundingBox& chunkBoundi
 
 
 // TODO: generate legacy chest where the loot is generated with the seed and doesn't use the loot table seed
-void StructureComponent::generateChest(const BoundingBox& chunkBB, const Piece& piece, RNG& rng, const int x,
-                                       const int y, const int z) {
-    const int xPos = piece.getWorldX(x, z);
-    const int yPos = piece.getWorldY(y);
-    const int zPos = piece.getWorldZ(x, z);
+void StructureComponent::generateChest(const BoundingBox& chunkBB, const Piece& piece, RNG& rng, c_int x, c_int y,
+                                       c_int z) {
+    c_int xPos = piece.getWorldX(x, z);
+    c_int yPos = piece.getWorldY(y);
+    c_int zPos = piece.getWorldZ(x, z);
     if (intersectsWithBlock(chunkBB, xPos & 15, yPos, zPos & 15)) {
         rng.advance<2>(); // nextLong for loot table seed
     }
@@ -224,46 +202,29 @@ void StructureComponent::generateChest(const BoundingBox& chunkBB, const Piece& 
 
 
 bool StructureComponent::isLiquidInStructureBoundingBox(World& worldIn, const BoundingBox& bbIn) {
-    int i = std::max(minX - 1, (int)bbIn.minX);
-    int j = std::max(minY - 1, (int)bbIn.minY);
-    int k = std::max(minZ - 1, (int)bbIn.minZ);
-    int l = std::min(maxX + 1, (int)bbIn.maxX);
-    int i1 = std::min(maxY + 1, (int)bbIn.maxY);
-    int j1 = std::min(maxZ + 1, (int)bbIn.maxZ);
+    int i = std::max(minX - 1, (int) bbIn.minX);
+    int j = std::max(minY - 1, (int) bbIn.minY);
+    int k = std::max(minZ - 1, (int) bbIn.minZ);
+    int l = std::min(maxX + 1, (int) bbIn.maxX);
+    int i1 = std::min(maxY + 1, (int) bbIn.maxY);
+    int j1 = std::min(maxZ + 1, (int) bbIn.maxZ);
 
     for (int k1 = i; k1 <= l; ++k1) {
         for (int l1 = k; l1 <= j1; ++l1) {
-            if (lce::blocks::ids::isLiquidBlock(worldIn.getBlockId(k1, j, l1))) {
-                return true;
-            }
-
-            if (lce::blocks::ids::isLiquidBlock(worldIn.getBlockId(k1, i1, l1))) {
-                return true;
-            }
+            if (lce::blocks::ids::isLiquidBlock(worldIn.getBlockId(k1, j, l1))) return true;
+            if (lce::blocks::ids::isLiquidBlock(worldIn.getBlockId(k1, i1, l1))) return true;
         }
     }
-
     for (int i2 = i; i2 <= l; ++i2) {
         for (int k2 = j; k2 <= i1; ++k2) {
-            if (lce::blocks::ids::isLiquidBlock(worldIn.getBlockId(i2, k2, k))) {
-                return true;
-            }
-
-            if (lce::blocks::ids::isLiquidBlock(worldIn.getBlockId(i2, k2, j1))) {
-                return true;
-            }
+            if (lce::blocks::ids::isLiquidBlock(worldIn.getBlockId(i2, k2, k))) return true;
+            if (lce::blocks::ids::isLiquidBlock(worldIn.getBlockId(i2, k2, j1))) return true;
         }
     }
-
     for (int j2 = k; j2 <= j1; ++j2) {
         for (int l2 = j; l2 <= i1; ++l2) {
-            if (lce::blocks::ids::isLiquidBlock(worldIn.getBlockId(i, l2, j2))) {
-                return true;
-            }
-
-            if (lce::blocks::ids::isLiquidBlock(worldIn.getBlockId(l, l2, j2))) {
-                return true;
-            }
+            if (lce::blocks::ids::isLiquidBlock(worldIn.getBlockId(i, l2, j2))) return true;
+            if (lce::blocks::ids::isLiquidBlock(worldIn.getBlockId(l, l2, j2))) return true;
         }
     }
 
@@ -271,20 +232,8 @@ bool StructureComponent::isLiquidInStructureBoundingBox(World& worldIn, const Bo
 }
 
 
-
-
-
-
-
-
 std::ostream& operator<<(std::ostream& out, const StructureComponent& structureComponent) {
-    std::string dir = facingToString(structureComponent.orientation);
+    std::string dir = facingToString(structureComponent.facing);
     out << "{" << structureComponent.toString() << ", FACE=" << dir << "}";
     return out;
 }
-
-
-
-
-
-

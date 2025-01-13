@@ -43,8 +43,7 @@ namespace gen {
         bool collides(const BoundingBox& bbIn);
         StructureComponent* findCollisionPiece(const BoundingBox& bbIn);
         void genAndAddPiece(RNG& rng, Pos3D pos, FACING facing, int depth);
-        void buildComponent(RNG& rng, PieceType type, int depth, const BoundingBox& bbIn, FACING facing,
-                            int additionalData);
+        void buildComponent(RNG& rng, StructureComponent p);
     };
 
 } // namespace gen

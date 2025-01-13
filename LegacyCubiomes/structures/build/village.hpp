@@ -171,10 +171,10 @@ namespace build::village {
             piece.fillWithBlocks(worldIn, structureBB, 3, 0, 1, 3, 0, 7, &lce::blocks::BlocksInit::FLOWING_WATER, &lce::blocks::BlocksInit::FLOWING_WATER, false);
             piece.fillWithBlocks(worldIn, structureBB, 9, 0, 1, 9, 0, 7, &lce::blocks::BlocksInit::STILL_WATER, &lce::blocks::BlocksInit::FLOWING_WATER, false);
 
-            const lce::blocks::Block* cropTypeA = getRandomCropType(piece.additionalData >> 15 & 0xF);
-            const lce::blocks::Block* cropTypeB = getRandomCropType(piece.additionalData >> 10 & 0xF);
-            const lce::blocks::Block* cropTypeC = getRandomCropType(piece.additionalData >> 5 & 0xF);
-            const lce::blocks::Block* cropTypeD = getRandomCropType(piece.additionalData & 0xF);
+            const lce::blocks::Block* cropTypeA = getRandomCropType(piece.data >> 12 & 0xF);
+            const lce::blocks::Block* cropTypeB = getRandomCropType(piece.data >> 8 & 0xF);
+            const lce::blocks::Block* cropTypeC = getRandomCropType(piece.data >> 4 & 0xF);
+            const lce::blocks::Block* cropTypeD = getRandomCropType(piece.data & 0xF);
             for (int i = 1; i <= 7; ++i) {
                 int j = getMaxAgeFromCrop(cropTypeA->getID());
                 int k = j / 3;
@@ -254,8 +254,8 @@ namespace build::village {
             piece.fillWithBlocks(worldIn, structureBB, 1, 0, 8, 5, 0, 8, iBlockState, iBlockState, false);
             piece.fillWithBlocks(worldIn, structureBB, 3, 0, 1, 3, 0, 7, stillWater, stillWater, false);
 
-            const lce::blocks::Block* cropTypeA = getRandomCropType(piece.additionalData >> 5 & 0xF);
-            const lce::blocks::Block* cropTypeB = getRandomCropType(piece.additionalData & 0xF);
+            const lce::blocks::Block* cropTypeA = getRandomCropType(piece.data >> 4 & 0xF);
+            const lce::blocks::Block* cropTypeB = getRandomCropType(piece.data & 0xF);
             for (int i = 1; i <= 7; ++i) {
                 int j = getMaxAgeFromCrop(cropTypeA->getID());
                 int k = j / 3;
@@ -753,7 +753,7 @@ namespace build::village {
 
             piece.fillWithBlocks(worldIn, structureBB, 1, 1, 1, 3, 3, 3, &lce::blocks::BlocksInit::AIR, &lce::blocks::BlocksInit::AIR, false);
 
-            if (piece.additionalData & 1) /* isRoofAccessible */ {
+            if (piece.data & 1) /* isRoofAccessible */ {
                 piece.setBlockState(worldIn, iBlockState4, 0, 5, 0, structureBB);
                 piece.setBlockState(worldIn, iBlockState4, 1, 5, 0, structureBB);
                 piece.setBlockState(worldIn, iBlockState4, 2, 5, 0, structureBB);
@@ -772,7 +772,7 @@ namespace build::village {
                 piece.setBlockState(worldIn, iBlockState4, 0, 5, 3, structureBB);
             }
 
-            if (piece.additionalData & 1) /* isRoofAccessible */ {
+            if (piece.data & 1) /* isRoofAccessible */ {
                 const lce::blocks::Block* iBlockState5 = &lce::blocks::BlocksInit::LADDER; // .withProperty(BlockLadder.FACING, FACING::SOUTH);
                 piece.setBlockState(worldIn, iBlockState5, 3, 1, 3, structureBB);
                 piece.setBlockState(worldIn, iBlockState5, 3, 2, 3, structureBB);
@@ -896,7 +896,7 @@ namespace build::village {
             piece.fillWithBlocks(worldIn, structureBB, 0, 0, 0, 3, 0, 4, iblockstate, iblockstate, false);
             piece.fillWithBlocks(worldIn, structureBB, 1, 0, 1, 2, 0, 3, &lce::blocks::BlocksInit::DIRT, &lce::blocks::BlocksInit::DIRT, false);
 
-            if (piece.additionalData >> 8 & 1) { // isTallHouse
+            if (piece.data >> 8 & 1) { // isTallHouse
                 piece.fillWithBlocks(worldIn, structureBB, 1, 4, 1, 2, 4, 3, iblockstate3, iblockstate3, false);
             } else {
                 piece.fillWithBlocks(worldIn, structureBB, 1, 5, 1, 2, 5, 3, iblockstate3, iblockstate3, false);
@@ -923,7 +923,7 @@ namespace build::village {
             piece.setBlockState(worldIn, &lce::blocks::BlocksInit::GLASS_PANE, 0, 2, 2,  structureBB);
             piece.setBlockState(worldIn, &lce::blocks::BlocksInit::GLASS_PANE, 3, 2, 2,  structureBB);
 
-            int tablePosition = piece.additionalData & 3;
+            int tablePosition = piece.data & 3;
             if (tablePosition > 0) {
                 piece.setBlockState(worldIn, iblockstate4, tablePosition, 1, 3,  structureBB);
                 piece.setBlockState(worldIn, &lce::blocks::BlocksInit::WOODEN_PRESSURE_PLATE, tablePosition, 2, 3,  structureBB);

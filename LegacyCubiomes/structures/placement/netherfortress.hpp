@@ -5,9 +5,9 @@
 namespace Placement {
 
 
-    class NetherFortress {
+    class MU NetherFortress {
     public:
-        ND static Pos2D getWorldPosition(i64 worldSeed);
+        MU ND static Pos2D getWorldPosition(i64 worldSeed);
     };
 
 

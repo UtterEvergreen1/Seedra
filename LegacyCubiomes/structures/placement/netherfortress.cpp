@@ -3,7 +3,7 @@
 namespace Placement {
 
 
-    Pos2D NetherFortress::getWorldPosition(c_i64 worldSeed) {
+    MU Pos2D NetherFortress::getWorldPosition(c_i64 worldSeed) {
         RNG rng;
         rng.setSeed(worldSeed);
         rng.next(32);

@@ -18,11 +18,6 @@ namespace gen {
         //              sub-structs and sub-classes
         // #######################################################
 
-        // enum class GenerationStep : i8 {
-        //     PORTAL, // Generates the layout up to the portal room, Y level will be inaccurate
-        //     LAYOUT, // Generates full layout, Y level will be inaccurate
-        //     FULL,   // Generates full layout and calculates Y level for all pieces
-        // };
 
         struct PiecePlaceCount {
             PieceType pieceType;

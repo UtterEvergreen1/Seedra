@@ -30,10 +30,10 @@ namespace build::mineshaft {
 
 
     static bool func_189918_a(World& world, const BoundingBox& structureBB, int p_189918_3_, int p_189918_4_,
-                              int p_189918_5_, int p_189918_6_, StructureComponent& piece) {
+                              int p_189918_5_, int z, StructureComponent& piece) {
         for (int i = p_189918_3_; i <= p_189918_4_; ++i) {
             if (lce::blocks::ids::isReplaceableBlock(
-                        piece.getBlockStateFromPos(world, i, p_189918_5_ + 1, p_189918_6_, structureBB)->getID())) {
+                        piece.getBlockStateFromPos(world, i, p_189918_5_ + 1, z, structureBB)->getID())) {
                 return false;
             }
         }
@@ -48,7 +48,7 @@ namespace build::mineshaft {
         MU Room() = delete;
 
         static bool addComponentParts(
-                World& worldIn, RNG& rng, const BoundingBox& structureBB, StructureComponent& piece) {
+                World& worldIn, MU RNG& rng, const BoundingBox& structureBB, StructureComponent& piece) {
 
 
             if (piece.isLiquidInStructureBoundingBox(worldIn, structureBB)) {
@@ -61,10 +61,10 @@ namespace build::mineshaft {
                 piece.fillWithBlocks(worldIn, structureBB, 0, 1, 0, piece.maxX - piece.minX, std::min((int) 3, (int) piece.maxY - piece.minY),
                                      piece.maxZ - piece.minZ, air, air, false);
 
-                // for (const BoundingBox& structureboundingbox: roomsLinkedToTheRoom) {
-                //     piece.fillWithBlocks(worldIn, structureBB, structureboundingbox.piece.minX, structureboundingbox.piece.maxY - 2,
-                //                    structureboundingbox.piece.minZ, structureboundingbox.piece.maxX, structureboundingbox.piece.maxY,
-                //                    structureboundingbox.piece.maxZ, air, air, false);
+                // for (const BoundingBox& sbb: roomsLinkedToTheRoom) {
+                //     piece.fillWithBlocks(worldIn, structureBB, sbb.piece.minX, sbb.piece.maxY - 2,
+                //                    sbb.piece.minZ, sbb.piece.maxX, sbb.piece.maxY,
+                //                    sbb.piece.maxZ, air, air, false);
                 // }
 
                 piece.randomlyRareFillWithBlocks(worldIn, structureBB, 0, 4, 0, piece.maxX - piece.minX, piece.maxY - piece.minY, piece.maxZ - piece.minZ, air,
@@ -81,11 +81,11 @@ namespace build::mineshaft {
 
         static bool addComponentParts(
                 World& worldIn, RNG& rng, const BoundingBox& structureBB, StructureComponent& piece) {
-            bool hasRails = piece.additionalData & 1;
-            bool hasSpiders = (piece.additionalData >> 1) & 1;
+            bool hasRails = piece.data & 1;
+            bool hasSpiders = (piece.data >> 1) & 1;
             bool spawnerPlaced = false;
             int sectionCount;
-            if (getAxis(piece.orientation) == EnumAxis::Z) {
+            if (getAxis(piece.facing) == EnumAxis::Z) {
                 sectionCount = piece.getZSize() / 5;
             } else {
                 sectionCount = piece.getXSize() / 5;
@@ -95,10 +95,10 @@ namespace build::mineshaft {
             if (piece.isLiquidInStructureBoundingBox(worldIn, structureBB)) {
                 return false;
             } else {
-                int i = 0;
-                int j = 2;
-                int k = 0;
-                int l = 2;
+                // int i = 0;
+                // int j = 2;
+                // int k = 0;
+                // int l = 2;
                 int i1 = sectionCount * 5 - 1;
 
                 const lce::blocks::Block* air = &lce::blocks::BlocksInit::AIR;
@@ -146,7 +146,6 @@ namespace build::mineshaft {
                             spawnerPlaced = true;
                             piece.setBlockStateWithoutOffset(worldIn, &lce::blocks::BlocksInit::MONSTER_SPAWNER,
                                                              j2, l1, k2, structureBB);
-                            // worldIn.setBlock(blockPos, &lce::blocks::BlocksInit::MONSTER_SPAWNER); // 2
                             // TileEntity tileentity = worldIn.getTileEntity(blockpos);
                             // if (tileentity instanceof TileEntityMobSpawner) {
                             //     ((TileEntityMobSpawner) tileentity)
@@ -159,12 +158,12 @@ namespace build::mineshaft {
 
                 for (int l2 = 0; l2 <= 2; ++l2) {
                     for (int i3 = 0; i3 <= i1; ++i3) {
-                        int k3 = -1;
+                        MU int k3 = -1;
                         const lce::blocks::Block* iblockstate3 = piece.getBlockStateFromPos(worldIn, l2, -1, i3, structureBB);
 
                         if (lce::blocks::ids::isReplaceableBlock(iblockstate3->getID()) &&
                             piece.getLightLevelAtBlock(worldIn, l2, -1, i3, structureBB) < 8) {
-                            int l3 = -1;
+                            MU int l3 = -1;
                             piece.setBlockState(worldIn, iblockstate, l2, -1, i3, structureBB);
                         }
                     }
@@ -231,8 +230,8 @@ namespace build::mineshaft {
         MU Crossing() = delete;
         
         static bool addComponentParts(
-                World& worldIn, RNG& rng, const BoundingBox& structureBB, StructureComponent& piece) {
-            bool isMultipleFloors = piece.additionalData & 1;
+                World& worldIn, MU RNG& rng, const BoundingBox& structureBB, StructureComponent& piece) {
+            bool isMultipleFloors = piece.data & 1;
 
 
             if (piece.isLiquidInStructureBoundingBox(worldIn, structureBB)) {
@@ -274,10 +273,11 @@ namespace build::mineshaft {
         }
 
 
-        static void placePlankPillar(World& world, const BoundingBox& structureBB, int x, int minY, int z, int maxY, StructureComponent& piece) {
-            auto block = piece.getBlockStateFromPos(world, x, piece.maxY + 1, z, structureBB);
+        static void placePlankPillar(World& world, const BoundingBox& structureBB, int x, int minY, int z, int maxY,
+                                     StructureComponent& piece) {
+            auto block = piece.getBlockStateFromPos(world, x, maxY + 1, z, structureBB);
             if (!lce::blocks::ids::isReplaceableBlock(block->getID())) {
-                piece.fillWithBlocks(world, structureBB, x, piece.minY, z, x, piece.maxY, z, getBiomeSpecificPlank(piece.structureType),
+                piece.fillWithBlocks(world, structureBB, x, minY, z, x, maxY, z, getBiomeSpecificPlank(piece.structureType),
                                      &lce::blocks::BlocksInit::AIR, false);
             }
         }
@@ -289,7 +289,7 @@ namespace build::mineshaft {
         MU Stairs() = delete;
 
         static bool addComponentParts(
-                World& worldIn, RNG& rng, const BoundingBox& structureBB, StructureComponent& piece) {
+                World& worldIn, MU RNG& rng, const BoundingBox& structureBB, StructureComponent& piece) {
             if (piece.isLiquidInStructureBoundingBox(worldIn, structureBB)) {
                 return false;
             } else {
@@ -299,7 +299,8 @@ namespace build::mineshaft {
                 piece.fillWithBlocks(worldIn, structureBB, 0, 0, 7, 2, 2, 8, air, air, false);
 
                 for (int i = 0; i < 5; ++i) {
-                    piece.fillWithBlocks(worldIn, structureBB, 0, 5 - i - (i < 4 ? 1 : 0), 2 + i, 2, 7 - i, 2 + i, air, air,
+                    piece.fillWithBlocks(worldIn, structureBB,
+                                         0, 5 - i - (i < 4 ? 1 : 0), 2 + i, 2, 7 - i, 2 + i, air, air,
                                          false);
                 }
 

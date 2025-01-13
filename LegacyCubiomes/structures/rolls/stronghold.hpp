@@ -18,9 +18,10 @@ namespace rolls {
         static void setEye(const BoundingBox& chunkBB, const StructureComponent& piece, int x, int z, RNG& random,
                            std::vector<bool>& portalRoomEyes, int& success, int index);
 
-        static std::vector<bool> getEyePlacements(gen::Stronghold* sg, const Generator& g);
+        static std::vector<bool> getEyePlacements(World& worldIn, gen::Stronghold* sg, const Generator& g);
 
         /// get the number of eyes in the portal room
-        MU static int getEyesCount(gen::Stronghold* sg, const Generator& g);
+        MU static int getEyesCount(World& worldIn, gen::Stronghold* sg, const Generator& g);
     };
+
 } // namespace rolls

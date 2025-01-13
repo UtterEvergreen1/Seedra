@@ -16,17 +16,6 @@ namespace gen {
     class Village {
         static constexpr u32 ARRAY_SIZE = 512;
 
-
-    public:
-        // enum class GenerationStep : i8 {
-        //     VALID,      // Generates the layout up until it makes the village valid
-        //     BLACKSMITH, // Generates the layout up to the blacksmith
-        //     LAYOUT,     // Generates full layout
-        //     FULL,       // Generates full layout and calculates hasMoreThanTwoComponents
-        // };
-
-
-
         struct PieceWeight {
             MU PieceType pieceType;
             MU int weight;
@@ -35,7 +24,7 @@ namespace gen {
         };
 
         MU static std::string PIECE_TYPE_NAMES[13];
-        // static std::map<PieceType, std::string> PIECE_TYPE_NAMES;
+
         static c_int VILLAGE_SIZE;
         static const PieceWeight PIECE_WEIGHTS[9];
 
@@ -77,33 +66,16 @@ namespace gen {
 
         Pos2D startPos;
 
-
-
-
+        Village() = delete;
         explicit Village(const Generator* generator);
 
-        /**
-        * \n
-        * Generates a mineshaft with the given chunk coordinates and stored generator.
-        * @param chunkX x coordinate of the chunk
-        * @param chunkZ z coordinate of the chunk
-        */
         void generate(int chunkX, int chunkZ);
+        void generate(Pos2D chunk);
 
-        /**
-        * \n
-        * Overload function. Generates a mineshaft with the given chunk coordinates and stored generator.
-        * @param chunk coordinates of the chunk
-        */
-        void generate(const Pos2D chunk) { generate(chunk.x, chunk.z); }
 
-    MU ND StructureComponent* getBlackSmithPiece() {
-        if (myBlackSmithPieceIndex == -1) {
-            return nullptr;
-        }
-        return &pieceArray[myBlackSmithPieceIndex];
 
-    }
+    MU ND StructureComponent* getBlackSmithPiece();
+
     MU ND bool hasMoreThanTwoComponents() const { return pieceArraySize - numInvalidPieces > 2; }
 
     MU static std::string getPieceName(PieceType pieceType);
@@ -122,4 +94,5 @@ namespace gen {
         void addPiece(const StructureComponent& piece);
         ND bool hasCollisionPiece(const BoundingBox& boundingBox) const;
     };
-} // namespace generation
+
+} // namespace gen

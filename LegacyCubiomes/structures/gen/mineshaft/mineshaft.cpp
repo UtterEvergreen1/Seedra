@@ -69,11 +69,13 @@ namespace gen {
         const BoundingBox roomBoundingBox(startPos.x, 50, startPos.z, boundingBoxXUpper, boundingBoxYUpper, boundingBoxZUpper);
 
         // recursive gen
-        buildComponent(rng, PieceType::PT_Mineshaft_Room, 0, roomBoundingBox, FACING::NORTH, 1);
+        buildComponent(rng, {PieceType::PT_Mineshaft_Room, 0, roomBoundingBox, FACING::NORTH, 1});
 
         // get Y level
         structureBB = BoundingBox::EMPTY;
-        for (int index = 0; index < pieceArraySize; index++) { structureBB.encompass(pieceArray[index]); }
+        for (int index = 0; index < pieceArraySize; index++) {
+            structureBB.encompass(pieceArray[index]);
+        }
 
         // specifically mesa
         if (mineShaftType == MineshaftType::MESA) {
@@ -81,7 +83,10 @@ namespace gen {
             // update structure offset
             structureBB.offset(0, i, 0);
             // update pieces offset
-            for (int index = 0; index < pieceArraySize; index++) { pieceArray[index].offset(0, i, 0); }
+            for (int index = 0; index < pieceArraySize; index++) {
+                pieceArray[index].structureType = 1;
+                pieceArray[index].offset(0, i, 0);
+            }
             return;
         } else {
             // non-mesa
@@ -132,15 +137,15 @@ namespace gen {
                 additionalData = 1;
             }
             if (collides(boundingBox)) return;
-            buildComponent(rng, PieceType::PT_Mineshaft_Crossing, depth + 1, boundingBox, facing, additionalData);
+            buildComponent(rng, {PieceType::PT_Mineshaft_Crossing, static_cast<int8_t>(depth + 1), boundingBox, facing, additionalData});
 
         } else if (randomRoom >= 70) { // CASE STAIRS
             boundingBox = BoundingBox::orientBox(pos, 0, -5, 0, 3, 8, 9, facing);
             if (collides(boundingBox)) return;
-            buildComponent(rng, PieceType::PT_Mineshaft_Stairs, depth + 1, boundingBox, facing, 0);
+            buildComponent(rng, {PieceType::PT_Mineshaft_Stairs, static_cast<int8_t>(depth + 1), boundingBox, facing, 0});
 
-        } else {
-            int i; // CASE CORRIDOR
+        } else { // CASE CORRIDOR
+            int i;
 
             for (i = rng.nextInt(3) + 2; i > 0; --i) {
                 c_int j = i * 5;
@@ -152,15 +157,12 @@ namespace gen {
             c_bool hasSpiders = !hasRails && rng.nextInt(23) == 0;
             additionalData |= hasRails;
             additionalData |= hasSpiders << 1;
-            buildComponent(rng, PieceType::PT_Mineshaft_Corridor, depth + 1, boundingBox, facing, additionalData);
+            buildComponent(rng, {PieceType::PT_Mineshaft_Corridor, static_cast<int8_t>(depth + 1), boundingBox, facing, additionalData});
         }
     }
 
 
-    void Mineshaft::buildComponent(RNG& rng, const PieceType type, c_int depth, const BoundingBox& bbIn,
-                                   const FACING facing, c_int additionalData) {
-
-        auto p = StructureComponent(type, static_cast<i8>(depth), bbIn, facing, additionalData);
+    void Mineshaft::buildComponent(RNG& rng, StructureComponent p) {
         pieceArray[pieceArraySize++] = p;
 
         switch (p.type) {
@@ -199,12 +201,12 @@ namespace gen {
             case PieceType::PT_Mineshaft_Corridor: {
                 c_int corridorType = rng.nextInt(4);
                 c_int yState = p.minY + rng.nextInt(3) - 1;
-                switch (p.orientation) {
+                switch (p.facing) {
                     case FACING::NORTH:
                     default:
                         switch (corridorType) {
                             default:
-                                genAndAddPiece(rng, {p.minX, yState, p.minZ - 1}, p.orientation, p.depth);
+                                genAndAddPiece(rng, {p.minX, yState, p.minZ - 1}, p.facing, p.depth);
                                 break;
                             case 2:
                                 genAndAddPiece(rng, {p.minX - 1, yState, p.minZ}, FACING::WEST, p.depth);
@@ -217,7 +219,7 @@ namespace gen {
                     case FACING::SOUTH:
                         switch (corridorType) {
                             default:
-                                genAndAddPiece(rng, {p.minX, yState, p.maxZ + 1}, p.orientation, p.depth);
+                                genAndAddPiece(rng, {p.minX, yState, p.maxZ + 1}, p.facing, p.depth);
                                 break;
                             case 2:
                                 genAndAddPiece(rng, {p.minX - 1, yState, p.maxZ - 3}, FACING::WEST, p.depth);
@@ -230,7 +232,7 @@ namespace gen {
                     case FACING::WEST:
                         switch (corridorType) {
                             default:
-                                genAndAddPiece(rng, {p.minX - 1, yState, p.minZ}, p.orientation, p.depth);
+                                genAndAddPiece(rng, {p.minX - 1, yState, p.minZ}, p.facing, p.depth);
                                 break;
                             case 2:
                                 genAndAddPiece(rng, {p.minX, yState, p.minZ - 1}, FACING::NORTH, p.depth);
@@ -243,7 +245,7 @@ namespace gen {
                     case FACING::EAST:
                         switch (corridorType) {
                             default:
-                                genAndAddPiece(rng, {p.maxX + 1, yState, p.minZ}, p.orientation, p.depth);
+                                genAndAddPiece(rng, {p.maxX + 1, yState, p.minZ}, p.facing, p.depth);
                                 break;
                             case 2:
                                 genAndAddPiece(rng, {p.maxX - 3, yState, p.minZ - 1}, FACING::NORTH, p.depth);
@@ -256,7 +258,7 @@ namespace gen {
 
                 if (p.depth >= 8) return;
 
-                switch (p.orientation) {
+                switch (p.facing) {
                     case FACING::NORTH:
                     case FACING::SOUTH:
                         for (int k = p.minZ + 3; k + 3 <= p.maxZ; k += 5) {
@@ -284,7 +286,7 @@ namespace gen {
             }
 
             case PieceType::PT_Mineshaft_Crossing: {
-                switch (p.orientation) {
+                switch (p.facing) {
                     case FACING::NORTH:
                     default:
                         genAndAddPiece(rng, {p.minX + 1, p.minY, p.minZ - 1}, FACING::NORTH, p.depth);
@@ -308,7 +310,7 @@ namespace gen {
                         break;
                 }
 
-                if (p.additionalData) {
+                if (p.data) {
                     if (rng.nextBoolean())
                         genAndAddPiece(rng, {p.minX + 1, p.minY + 4, p.minZ - 1}, FACING::NORTH, p.depth);
                     if (rng.nextBoolean())
@@ -322,7 +324,7 @@ namespace gen {
             }
 
             case PieceType::PT_Mineshaft_Stairs: {
-                switch (p.orientation) {
+                switch (p.facing) {
                     default:
                     case FACING::NORTH:
                         return genAndAddPiece(rng, {p.minX, p.minY, p.minZ - 1}, FACING::NORTH, p.depth);
@@ -337,4 +339,4 @@ namespace gen {
         }
     }
 
-} // namespace generation
+} // namespace gen

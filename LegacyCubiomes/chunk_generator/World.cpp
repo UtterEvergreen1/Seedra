@@ -17,7 +17,7 @@ ChunkPrimer *World::getOrCreateChunk(const Pos2D &pos) {
     if (it != chunks.end()) {
         return it->second;
     }
-    auto *chunk = Chunk::provideChunk(*this->g, pos.x, pos.z);
+    auto *chunk = Chunk::provideChunk(*this, *this->g, pos.x, pos.z);
     addChunk(pos, chunk);
     return chunk;
 }
@@ -169,7 +169,7 @@ bool World::canSnowAt(const Pos3D &pos, const bool checkLight) {
 
     if (!checkLight) { return true; }
 
-    // needs to check block light later on to replacate a perfect chunk
+    // TODO: needs to check block light later on to replacate a perfect chunk
     if (pos.getY() >= 0 && pos.getY() < 256) {
         const Pos2D chunkPos = {pos.getX() >> 4, pos.getZ() >> 4};
         const ChunkPrimer *chunk = getOrCreateChunk(chunkPos);

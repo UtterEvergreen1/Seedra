@@ -91,7 +91,7 @@ namespace build::stronghold {
             if (piece.isLiquidInStructureBoundingBox(worldIn, structureBB)) {
                 return false;
             } else {
-                Door entryDoor = getRandomDoor((piece.additionalData >> 16) & 7);
+                Door entryDoor = getRandomDoor((piece.data >> 16) & 7);
                 bool hasMadeChest = false;
 
 
@@ -135,7 +135,7 @@ namespace build::stronghold {
             if (piece.isLiquidInStructureBoundingBox(worldIn, structureBB)) {
                 return false;
             } else {
-                int steps = piece.orientation != FACING::NORTH && piece.orientation != FACING::SOUTH ? piece.getXSize() : piece.getZSize();
+                int steps = piece.facing != FACING::NORTH && piece.facing != FACING::SOUTH ? piece.getXSize() : piece.getZSize();
 
                 for (int i = 0; i < steps; ++i) {
                     piece.setBlockState(worldIn, &lce::blocks::BlocksInit::STONE_BRICKS, 0, 0, i, structureBB);
@@ -173,11 +173,11 @@ namespace build::stronghold {
             if (piece.isLiquidInStructureBoundingBox(worldIn, structureBB)) {
                 return false;
             } else {
-                Door entryDoor = getRandomDoor((piece.additionalData >> 16) & 7);
-                bool leftLow = piece.additionalData & 1;
-                bool leftHigh = piece.additionalData & 2;
-                bool rightLow = piece.additionalData & 4;
-                bool rightHigh = piece.additionalData & 8;
+                Door entryDoor = getRandomDoor((piece.data >> 16) & 7);
+                bool leftLow = piece.data & 1;
+                bool leftHigh = piece.data & 2;
+                bool rightLow = piece.data & 4;
+                bool rightHigh = piece.data & 8;
 
                 piece.fillWithRandomizedStones(worldIn, structureBB, 0, 0, 0, 9, 8, 10, true, rng, STRONGHOLD_STONES);
                 placeDoor(worldIn, rng, structureBB, piece, entryDoor, 4, 3, 0);
@@ -226,14 +226,14 @@ namespace build::stronghold {
             if (piece.isLiquidInStructureBoundingBox(worldIn, structureBB)) {
                 return false;
             } else {
-                Door entryDoor = getRandomDoor((piece.additionalData >> 16) & 7);
+                Door entryDoor = getRandomDoor((piece.data >> 16) & 7);
 
                 piece.fillWithRandomizedStones(worldIn, structureBB, 0, 0, 0, 4, 4, 4, true, rng, STRONGHOLD_STONES);
                 placeDoor(worldIn, rng, structureBB, piece, entryDoor, 1, 1, 0);
 
                 const lce::blocks::Block* air = &lce::blocks::BlocksInit::AIR;
 
-                if (piece.orientation != FACING::NORTH && piece.orientation != FACING::EAST) {
+                if (piece.facing != FACING::NORTH && piece.facing != FACING::EAST) {
                     piece.fillWithBlocks(worldIn, structureBB, 4, 1, 1, 4, 3, 3, air, air, false);
                 } else {
                     piece.fillWithBlocks(worldIn, structureBB, 0, 1, 1, 0, 3, 3, air, air, false);
@@ -254,8 +254,8 @@ namespace build::stronghold {
             if (piece.isLiquidInStructureBoundingBox(worldIn, structureBB)) {
                 return false;
             } else {
-                Door entryDoor = getRandomDoor((piece.additionalData >> 16) & 7);
-                bool isLargeRoom = piece.additionalData & 1;
+                Door entryDoor = getRandomDoor((piece.data >> 16) & 7);
+                bool isLargeRoom = piece.data & 1;
 
                 int i = 11;
 
@@ -497,7 +497,7 @@ namespace build::stronghold {
             if (piece.isLiquidInStructureBoundingBox(worldIn, structureBB)) {
                 return false;
             } else {
-                Door entryDoor = getRandomDoor((piece.additionalData >> 16) & 7);
+                Door entryDoor = getRandomDoor((piece.data >> 16) & 7);
 
                 piece.fillWithRandomizedStones(worldIn, structureBB, 0, 0, 0, 8, 4, 10, true, rng, STRONGHOLD_STONES);
                 placeDoor(worldIn, rng, structureBB, piece, entryDoor, 1, 1, 0);
@@ -535,13 +535,13 @@ namespace build::stronghold {
             if (piece.isLiquidInStructureBoundingBox(worldIn, structureBB)) {
                 return false;
             } else {
-                Door entryDoor = getRandomDoor((piece.additionalData >> 16) & 7);
+                Door entryDoor = getRandomDoor((piece.data >> 16) & 7);
 
                 piece.fillWithRandomizedStones(worldIn, structureBB, 0, 0, 0, 4, 4, 4, true, rng, STRONGHOLD_STONES);
                 placeDoor(worldIn, rng, structureBB, piece, entryDoor, 1, 1, 0);
 
                 const lce::blocks::Block* air = &lce::blocks::BlocksInit::AIR;
-                if (piece.orientation != FACING::NORTH && piece.orientation != FACING::EAST) {
+                if (piece.facing != FACING::NORTH && piece.facing != FACING::EAST) {
                     piece.fillWithBlocks(worldIn, structureBB, 0, 1, 1, 0, 3, 3, air, air, false);
                 } else {
                     piece.fillWithBlocks(worldIn, structureBB, 4, 1, 1, 4, 3, 3, air, air, false);
@@ -562,8 +562,8 @@ namespace build::stronghold {
                 return false;
             } else {
                 // TODO: these might need swapped
-                Door entryDoor = getRandomDoor((piece.additionalData >> 16) & 7);
-                int roomType = piece.additionalData & 7;
+                Door entryDoor = getRandomDoor((piece.data >> 16) & 7);
+                int roomType = piece.data & 7;
 
                 const lce::blocks::Block* air = &lce::blocks::BlocksInit::AIR;
 
@@ -678,7 +678,7 @@ namespace build::stronghold {
             if (piece.isLiquidInStructureBoundingBox(worldIn, structureBB)) {
                 return false;
             } else {
-                Door entryDoor = getRandomDoor((piece.additionalData >> 16) & 7);
+                Door entryDoor = getRandomDoor((piece.data >> 16) & 7);
 
                 piece.fillWithRandomizedStones(worldIn, structureBB, 0, 0, 0, 4, 10, 4, true, rng, STRONGHOLD_STONES);
                 placeDoor(worldIn, rng, structureBB, piece, entryDoor, 1, 7, 0);
@@ -721,7 +721,7 @@ namespace build::stronghold {
             if (piece.isLiquidInStructureBoundingBox(worldIn, structureBB)) {
                 return false;
             } else {
-                Door entryDoor = getRandomDoor((piece.additionalData >> 16) & 7);
+                Door entryDoor = getRandomDoor((piece.data >> 16) & 7);
 
                 piece.fillWithRandomizedStones(worldIn, structureBB, 0, 0, 0, 4, 10, 7, true, rng, STRONGHOLD_STONES);
                 placeDoor(worldIn, rng, structureBB, piece, entryDoor, 1, 7, 0);
@@ -755,7 +755,7 @@ namespace build::stronghold {
             if (piece.isLiquidInStructureBoundingBox(worldIn, structureBB)) {
                 return false;
             } else {
-                Door entryDoor = getRandomDoor((piece.additionalData >> 16) & 7);
+                Door entryDoor = getRandomDoor((piece.data >> 16) & 7);
 
                 piece.fillWithRandomizedStones(worldIn, structureBB, 0, 0, 0, 4, 4, 6, true, rng, STRONGHOLD_STONES);
                 placeDoor(worldIn, rng, structureBB, piece, entryDoor, 1, 1, 0);
@@ -769,8 +769,8 @@ namespace build::stronghold {
                 piece.randomlyPlaceBlock(worldIn, structureBB, rng, 0.1F, 1, 2, 5, iblockstate);
                 piece.randomlyPlaceBlock(worldIn, structureBB, rng, 0.1F, 3, 2, 5, iblockstate1);
 
-                bool expandsX = piece.additionalData & 1;
-                bool expandsZ = piece.additionalData & 2;
+                bool expandsX = piece.data & 1;
+                bool expandsZ = piece.data & 2;
 
                 const lce::blocks::Block* air = &lce::blocks::BlocksInit::AIR;
 

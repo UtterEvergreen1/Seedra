@@ -73,7 +73,7 @@ namespace Placement {
 
 
     template<>
-    c_int StaticStructure<Feature>::SALT = 14357617;
+    MU c_int StaticStructure<Feature>::SALT = 14357617;
 
     void Feature::setWorldSize(const lce::WORLDSIZE worldSize) {
         CHUNK_BOUNDS = getChunkWorldBounds(worldSize);
@@ -122,7 +122,7 @@ namespace Placement {
     }
 
 
-    std::vector<std::vector<Pos2D>> Feature::getAllFeaturePositionsSeparated(const Generator *g) {
+    MU std::vector<std::vector<Pos2D>> Feature::getAllFeaturePositionsSeparated(const Generator *g) {
         auto features = getAllFeaturePositions(g);
         std::vector<std::vector<Pos2D>> separatedFeatures((size_t) StructureType::FEATURE_NUM);
         for (const auto &feature : features) {
@@ -154,15 +154,15 @@ namespace Placement {
 
 
     template<>
-    c_int StaticStructure<Village<false>>::SALT = 10387312;
+    MU c_int StaticStructure<Village<false>>::SALT = 10387312;
     template<>
     c_u64 StaticStructure<Village<false>>::VALID_BIOMES =
             1ULL << plains | 1ULL << desert | 1ULL << taiga | 1ULL << ice_plains | 1ULL << cold_taiga | 1ULL << savanna;
 
     template<>
-    c_int StaticStructure<Village<true>>::SALT = 10387312;
+    MU c_int StaticStructure<Village<true>>::SALT = 10387312;
     template<>
-    int StaticStructure<Village<true>>::CHUNK_RANGE = 7;
+    MU int StaticStructure<Village<true>>::CHUNK_RANGE = 7;
     template<>
     c_u64 StaticStructure<Village<true>>::VALID_BIOMES =
             1ULL << plains | 1ULL << desert | 1ULL << taiga | 1ULL << ice_plains | 1ULL << cold_taiga | 1ULL << savanna;
@@ -183,11 +183,11 @@ namespace Placement {
     // #######################################################
 
     template<>
-    c_int StaticStructure<OceanRuin>::SALT = 14357617;
+    MU c_int StaticStructure<OceanRuin>::SALT = 14357617;
     template<>
-    int StaticStructure<OceanRuin>::REGION_SIZE = 8;
+    MU int StaticStructure<OceanRuin>::REGION_SIZE = 8;
     template<>
-    int StaticStructure<OceanRuin>::CHUNK_RANGE = 6;
+    MU int StaticStructure<OceanRuin>::CHUNK_RANGE = 6;
     template<>
     c_u64 StaticStructure<OceanRuin>::VALID_BIOMES =
             1ULL << ocean | 1ULL << deep_ocean | 1ULL << warm_ocean | 1ULL << deep_warm_ocean |

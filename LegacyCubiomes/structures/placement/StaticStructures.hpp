@@ -11,16 +11,16 @@ namespace Placement {
     public:
         static c_u64 VALID_BIOMES;
         static c_int SALT;
-        static int REGION_SIZE;
-        static int CHUNK_RANGE;
-        static int CHUNK_BOUNDS;
-        static bool REDUCED_SPACING;
+        MU static int REGION_SIZE;
+        MU static int CHUNK_RANGE;
+        MU static int CHUNK_BOUNDS;
+        MU static bool REDUCED_SPACING;
 
         static Pos2D getRegionChunkPosition(i64 worldSeed, int regionX, int regionZ);
 
         static Pos2D getRegionBlockPosition(i64 worldSeed, int regionX, int regionZ);
 
-        static std::vector<Pos2D> getAllPositions(const Generator *g);
+        MU static std::vector<Pos2D> getAllPositions(const Generator *g);
 
         static std::vector<Pos2D>
         getAllPositionsBounded(const Generator *g, int lowerX, int lowerZ, int upperX, int upperZ);
@@ -32,11 +32,11 @@ namespace Placement {
             return verifyChunkPosition(g, chunkPos.x, chunkPos.z);
         }
 
-        static bool verifyBlockPosition(const Generator *g, c_int blockX, c_int blockZ) {
+        MU static bool verifyBlockPosition(const Generator *g, c_int blockX, c_int blockZ) {
             return verifyChunkPosition(g, blockX >> 4, blockZ >> 4);
         }
 
-        static bool verifyBlockPosition(const Generator *g, const Pos2D blockPos) {
+        MU static bool verifyBlockPosition(const Generator *g, const Pos2D blockPos) {
             return verifyChunkPosition(g, blockPos.x >> 4, blockPos.z >> 4);
         }
     };
@@ -58,12 +58,10 @@ namespace Placement {
         }
 
 #ifdef INCLUDE_QT
-
         friend QDebug operator<<(QDebug out, const Pos2D &pos_d) {
             out.nospace() << "(" << pos_d.x << ", " << pos_d.z << ")";
             return out.space();
         }
-
 #endif
     };
 
@@ -79,7 +77,7 @@ namespace Placement {
 
         static std::vector<FeatureStructurePair> getAllFeaturePositions(const Generator *g);
 
-        static std::vector<std::vector<Pos2D>> getAllFeaturePositionsSeparated(const Generator *g);
+        MU static std::vector<std::vector<Pos2D>> getAllFeaturePositionsSeparated(const Generator *g);
 
         static std::vector<FeatureStructurePair>
         getAllFeaturePositionsBounded(const Generator *g, int lowerX, int lowerZ, int upperX, int upperZ);

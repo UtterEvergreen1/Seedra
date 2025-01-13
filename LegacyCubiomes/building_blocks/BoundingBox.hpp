@@ -18,7 +18,7 @@ struct BoundingBox {
     bool operator==(const BoundingBox& other) const;
 
     ND bool intersects(const BoundingBox& other) const;
-    ND bool contains(const BoundingBox& other) const;
+    MU ND bool contains(const BoundingBox& other) const;
     MU void encompass(const BoundingBox& other);
 
     MU ND bool isVecInside(Pos3D pos) const;
@@ -37,9 +37,9 @@ struct BoundingBox {
     static BoundingBox orientBox(int x, int y, int z, int offsetWidth, int offsetHeight, int offsetDepth, int width,
                                  int height, int depth, FACING direction);
 
-    static BoundingBox orientBox(int x, int y, int z, int width, int height, int depth, FACING direction);
+    MU static BoundingBox orientBox(int x, int y, int z, int width, int height, int depth, FACING direction);
     static BoundingBox orientBox(const Pos3D& xyz, int width, int height, int depth, FACING direction);
-    static BoundingBox orientBox(const Pos3D& posXYZ, const Pos3D& posOffset, const Pos3D& size, FACING direction);
+    MU static BoundingBox orientBox(const Pos3D& posXYZ, const Pos3D& posOffset, const Pos3D& size, FACING direction);
     static BoundingBox orientBox(const Pos3D& posXYZ, int offsetWidth, int offsetHeight, int offsetDepth, int width,
                                  int height, int depth, FACING direction);
 

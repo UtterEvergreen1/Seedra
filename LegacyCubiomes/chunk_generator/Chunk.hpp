@@ -14,8 +14,11 @@ namespace Chunk {
     template<bool checkWaterCaves = false,
         bool generateCaves = true,
         bool generateRavines = true,
-        bool generateSkyLight = false>
-    static ChunkPrimer *provideChunk(const Generator &g, c_int chunkX, c_int chunkZ,  const bool accurate = true) {
+        bool generateSkyLight = false,
+        bool generateVillages = false,
+        bool generateMineshafts = false,
+        bool generateStronghold = false>
+    static ChunkPrimer *provideChunk(World& world, const Generator &g, c_int chunkX, c_int chunkZ,  const bool accurate = true) {
         ChunkGeneratorOverWorld chunk(g);
         ChunkPrimer *chunkPrimer = chunk.provideChunk(chunkX, chunkZ);
         // std::cout << "Providing chunk " << chunkX << ", " << chunkZ << std::endl;
@@ -42,6 +45,21 @@ namespace Chunk {
             ravineGenerator.generate(chunkX, chunkZ, chunkPrimer, accurate);
         }
 
+
+        chunkPrimer->stage = Stage::STAGE_STRUCTURES;
+
+        if constexpr (generateVillages) {
+
+        }
+
+        if constexpr (generateMineshafts) {
+
+        }
+
+        if constexpr (generateStronghold) {
+
+        }
+
         /*
         structure order after caves:
         mineshaft
@@ -57,7 +75,9 @@ namespace Chunk {
 
         chunkPrimer->stage = Stage::STAGE_DECORATE;
 
-        if constexpr (generateSkyLight) { chunkPrimer->generateSkylightMap(); }
+        if constexpr (generateSkyLight) {
+            chunkPrimer->generateSkylightMap();
+        }
         return chunkPrimer;
     }
 

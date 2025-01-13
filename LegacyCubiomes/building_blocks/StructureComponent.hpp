@@ -14,7 +14,7 @@
 
 class StructureComponent : public Piece {
 public:
-    int structureType;
+    int structureType{};
 
     StructureComponent() = default;
 
@@ -40,8 +40,8 @@ public:
         minZ = scIn.minZ;
         maxZ = scIn.maxZ;
         type = scIn.type;
-        orientation = scIn.orientation;
-        additionalData = scIn.additionalData;
+        facing = scIn.facing;
+        data = scIn.data;
         depth = scIn.depth;
         structureType = scIn.structureType;
     }
@@ -51,8 +51,8 @@ public:
     //     return false;
     // }
 
-    MU void setBlockStateWithoutOffset(World& worldIn, const lce::blocks::Block* blockStateIn, int x, int y, int z,
-                                       const BoundingBox& structureBB) const;
+    MU static void setBlockStateWithoutOffset(World& worldIn, const lce::blocks::Block* blockStateIn, int x, int y, int z,
+                                       const BoundingBox& structureBB) ;
 
     MU void setBlockState(World& worldIn, const lce::blocks::Block* blockStateIn, int x, int y, int z,
                           const BoundingBox& structureBB) const;
@@ -126,7 +126,7 @@ public:
     }
 
 
-    int getLightLevelAtBlock(World& world, int x, int y, int z, const BoundingBox& structureBB) {
+    int getLightLevelAtBlock(MU World& world, MU int x, MU int y, MU int z, MU const BoundingBox& structureBB) {
         return 0;
         // int i = this->getWorldX(x, z);
         // int j = this->getWorldY(y + 1);
@@ -142,25 +142,6 @@ public:
         if (rand.nextFloat() < chance) { setBlockState(worldIn, blockStateIn, x, y, z, bbIn); }
     }
 
-
-    MU void fillWithRandomizedBlocks(World& worldIn, const BoundingBox& bbIn, int minX, int minY, int minZ, int maxX,
-                                     int maxY, int maxZ, bool alwaysReplace, RNG& rand
-                                     /*, StructureComponentBlockSelector blockselector*/) const {
-        for (int i = minY; i <= maxY; ++i) {
-            for (int j = minX; j <= maxX; ++j) {
-                for (int k = minZ; k <= maxZ; ++k) {
-                    if (!alwaysReplace ||
-                        lce::blocks::ids::isReplaceableBlock(getBlockStateFromPos(worldIn, j, i, k, bbIn)->getID())) {
-                        // blockselector.selectBlocks(rand, j, i, k,
-                        //                            i == minY || i == maxY || j == minX || j == maxX || k == minZ ||
-                        //                                    k == maxZ);
-                        const lce::blocks::Block* block = &lce::blocks::BlocksInit::BEDROCK;
-                        setBlockState(worldIn, block /*blockselector.getBlockState()*/, j, i, k, bbIn);
-                    }
-                }
-            }
-        }
-    }
 
 
     void func_189914_a(World& world, const BoundingBox& structureBB, RNG& rng, float chance, int p_189914_5_,
@@ -190,14 +171,14 @@ public:
 
     void fillWithRandomizedStones(World& worldIn, const BoundingBox& structureBB, int minX, int minY, int minZ,
                                   int maxX, int maxY, int maxZ, bool alwaysReplace, RNG& rng,
-                                  Stones& stones) {
+                                  Stones& stones) const {
         for (int i = minY; i <= maxY; ++i) {
             for (int j = minX; j <= maxX; ++j) {
                 for (int k = minZ; k <= maxZ; ++k) {
                     if (!alwaysReplace ||
                         !lce::blocks::ids::isReplaceableBlock(getBlockStateFromPos(worldIn, j, i, k, structureBB)->getID())) {
-                        const lce::blocks::Block* block = stones.selectBlocks(rng,
-                            i == minY || i == maxY || j == minX || j == maxX || k == minZ || k == maxZ);
+                        const lce::blocks::Block* block = stones.selectBlocks(
+                                rng, i == minY || i == maxY || j == minX || j == maxX || k == minZ || k == maxZ);
                         setBlockState(worldIn, block, j, i, k, structureBB);
                     }
                 }

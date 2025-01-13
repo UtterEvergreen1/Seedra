@@ -45,7 +45,7 @@ namespace rolls {
                     if constexpr (stopStrongholdChest) {
                         if (piece == pieceStop) return true;
                     }
-                    if (piece.additionalData == 2) { // rolling for the chest seed if in chunk
+                    if (piece.data == 2) { // rolling for the chest seed if in chunk
                         StructureComponent::generateChest(chunkBoundingBox, piece, rng, 3, 4, 8);
                     }
                     break;
@@ -68,13 +68,13 @@ namespace rolls {
                     break;
                 case PieceType::PT_Stronghold_Library:
                     StructureComponent::fillWithRandomizedBlocks(chunkBoundingBox, piece, 0, 0, 0, 13,
-                                             piece.additionalData ? 10 : 5, 14, rng, chunk);
+                                             piece.data ? 10 : 5, 14, rng, chunk);
                     rng.advance<520>();
                     if constexpr (stopStrongholdChest) {
                         if (piece == pieceStop) return true;
                     }
                     StructureComponent::generateChest(chunkBoundingBox, piece, rng, 3, 3, 5);
-                    if (piece.additionalData == 1) { StructureComponent::generateChest(chunkBoundingBox, piece, rng, 12, 8, 1); }
+                    if (piece.data == 1) { StructureComponent::generateChest(chunkBoundingBox, piece, rng, 12, 8, 1); }
                     break;
                 case PieceType::PT_Stronghold_PortalRoom:
                     if constexpr (stopPortal) {
@@ -113,7 +113,7 @@ namespace rolls {
         }
     }
 
-    [[gnu::noinline]] std::vector<bool> Stronghold::getEyePlacements(gen::Stronghold * sg, const Generator &g) {
+    [[gnu::noinline]] std::vector<bool> Stronghold::getEyePlacements(World& worldIn, gen::Stronghold * sg, const Generator &g) {
         std::vector<bool> eyes(12, false);
         const Pos2D portalRoomPos = sg->portalRoomPiece->getWorldPos(5, 10);
         const BoundingBox portalRoomBoundingBox = BoundingBox(portalRoomPos.x - 5, 0, portalRoomPos.z - 5,
@@ -128,7 +128,7 @@ namespace rolls {
                 if (!portalRoomBoundingBox.intersects(chunkBoundingBox))
                     continue;
 
-                ChunkPrimer *chunk = Chunk::provideChunk<true>(g, checkChunkX, checkChunkZ, true);
+                ChunkPrimer *chunk = Chunk::provideChunk<true>(worldIn, g, checkChunkX, checkChunkZ, true);
                 RNG random = RNG::getPopulationSeed(g.getWorldSeed(), portalRoomChunkPos.x + x,
                                                     portalRoomChunkPos.z + z);
                 additionalStrongholdRolls<false, true>(chunk, sg, random,
@@ -158,8 +158,8 @@ namespace rolls {
         return eyes;
     }
 
-    MU int Stronghold::getEyesCount(gen::Stronghold * sg, const Generator &g) {
-        std::vector<bool> eyes = getEyePlacements(sg, g);
+    MU int Stronghold::getEyesCount(World& worldIn, gen::Stronghold * sg, const Generator &g) {
+        std::vector<bool> eyes = getEyePlacements(worldIn, sg, g);
         int count = 0;
         for (bool eye : eyes) {
             if (eye) count++;
@@ -186,4 +186,5 @@ namespace rolls {
     template bool
     Stronghold::generateStructure<true>
             (ChunkPrimer *, gen::Stronghold *, RNG &, c_int, c_int, const StructureComponent &);
-} // namespace structure_rolls
+
+} // namespace rolls

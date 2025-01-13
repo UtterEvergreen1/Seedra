@@ -44,8 +44,23 @@ namespace gen {
             {PieceType::PT_Village_House2, 15, 0, 1 + VILLAGE_SIZE},
             {PieceType::PT_Village_House3, 8, 0 + VILLAGE_SIZE, 3 + VILLAGE_SIZE * 2}};
 
+
+
     Village::Village(const Generator* generator) { g = generator; }
 
+    /**
+      * \n
+      * Overload function. Generates a mineshaft with the given chunk coordinates and stored generator.
+      * @param chunk coordinates of the chunk
+      */
+    void Village::generate(const Pos2D chunk) { generate(chunk.x, chunk.z); }
+
+    /**
+     * \n
+     * Generates a mineshaft with the given chunk coordinates and stored generator.
+     * @param chunkX x coordinate of the chunk
+     * @param chunkZ z coordinate of the chunk
+     */
     void Village::generate(c_int chunkX, c_int chunkZ) {
         rng = RNG::getLargeFeatureSeed(g->getWorldSeed(), chunkX, chunkZ);
         rng.advance();
@@ -195,18 +210,18 @@ namespace gen {
             case PieceType::PT_Village_WoodHut: {
                 c_u8 isTallHouse = rng.nextBoolean() ? 1 : 0;
                 c_u8 tablePosition = rng.nextInt(3);
-                p.additionalData = isTallHouse << 8 | tablePosition;
+                p.data = isTallHouse << 8 | tablePosition;
                 return;
             }
             case PieceType::PT_Village_House4Garden: {
                 c_i32 isRoofAccessible = rng.nextBoolean() ? 1 : 0;
-                p.additionalData = isRoofAccessible;
+                p.data = isRoofAccessible;
                 return;
             }
             case PieceType::PT_Village_Field2: {
                 c_u8 cropTypeA = rng.nextInt(10);
                 c_u8 cropTypeB = rng.nextInt(10);
-                p.additionalData = cropTypeA << 5 | cropTypeB;
+                p.data = cropTypeA << 4 | cropTypeB;
                 return;
             }
             case PieceType::PT_Village_Field1: {
@@ -214,7 +229,7 @@ namespace gen {
                 c_u8 cropTypeB = rng.nextInt(10);
                 c_u8 cropTypeC = rng.nextInt(10);
                 c_u8 cropTypeD = rng.nextInt(10);
-                p.additionalData = cropTypeA << 15 | cropTypeB << 10 | cropTypeC << 5 | cropTypeD;
+                p.data = cropTypeA << 12 | cropTypeB << 8 | cropTypeC << 4 | cropTypeD;
                 return;
             }
             case PieceType::PT_Village_House2:
@@ -304,9 +319,9 @@ namespace gen {
     void Village::buildComponent(const StructureComponent& scIn) {
         bool flag = false;
 
-        for (int i = rng.nextInt(5); i < scIn.additionalData - 8; i += 2 + rng.nextInt(5)) {
+        for (int i = rng.nextInt(5); i < scIn.data - 8; i += 2 + rng.nextInt(5)) {
             StructureComponent sc;
-            switch (scIn.orientation) {
+            switch (scIn.facing) {
                 case FACING::NORTH:
                 case FACING::SOUTH:
                 default:
@@ -324,9 +339,9 @@ namespace gen {
             }
         }
 
-        for (int j = rng.nextInt(5); j < scIn.additionalData - 8; j += 2 + rng.nextInt(5)) {
+        for (int j = rng.nextInt(5); j < scIn.data - 8; j += 2 + rng.nextInt(5)) {
             StructureComponent sc1;
-            switch (scIn.orientation) {
+            switch (scIn.facing) {
                 case FACING::NORTH:
                 case FACING::SOUTH:
                 default:
@@ -345,7 +360,7 @@ namespace gen {
         }
 
         if (flag && rng.nextInt(3) > 0) {
-            switch (scIn.orientation) {
+            switch (scIn.facing) {
                 case FACING::NORTH:
                 default:
                     genAndAddRoadPiece({scIn.minX - 1, scIn.minY, scIn.minZ}, FACING::WEST);
@@ -362,7 +377,7 @@ namespace gen {
         }
 
         if (flag && rng.nextInt(3) > 0) {
-            switch (scIn.orientation) {
+            switch (scIn.facing) {
                 case FACING::NORTH:
                 default:
                     genAndAddRoadPiece({scIn.maxX + 1, scIn.minY, scIn.minZ}, FACING::EAST);
@@ -393,5 +408,22 @@ namespace gen {
         }
         return false;
     }
+
+
+
+
+
+    MU ND StructureComponent* Village::getBlackSmithPiece() {
+        if (myBlackSmithPieceIndex == -1) {
+            return nullptr;
+        }
+        return &pieceArray[myBlackSmithPieceIndex];
+
+    }
+
+
+
+
+
 
 } // namespace gen

@@ -394,7 +394,7 @@ namespace gen {
 
 
     void Stronghold::genSmallDoorChildForward(const Piece& piece, c_int n, c_int n2) {
-        switch (piece.orientation) {
+        switch (piece.facing) {
             case FACING::NONE:
             case FACING::DOWN:
             case FACING::UP:
@@ -412,7 +412,7 @@ namespace gen {
 
 
     void Stronghold::genSmallDoorChildLeft(const Piece& piece, c_int n, c_int n2) {
-        switch (piece.orientation) {
+        switch (piece.facing) {
             case FACING::NONE:
             case FACING::DOWN:
             case FACING::UP:
@@ -429,7 +429,7 @@ namespace gen {
     }
 
     void Stronghold::genSmallDoorChildRight(const Piece& piece, c_int n, c_int n2) {
-        switch (piece.orientation) {
+        switch (piece.facing) {
             case FACING::NONE:
             case FACING::DOWN:
             case FACING::UP:
@@ -452,14 +452,14 @@ namespace gen {
                 break;
             case PT_Stronghold_Straight:
                 genSmallDoorChildForward(piece, 1, 1);
-                if ((piece.additionalData & 1) != 0) genSmallDoorChildLeft(piece, 1, 2);
-                if ((piece.additionalData & 2) != 0) genSmallDoorChildRight(piece, 1, 2);
+                if ((piece.data & 1) != 0) genSmallDoorChildLeft(piece, 1, 2);
+                if ((piece.data & 2) != 0) genSmallDoorChildRight(piece, 1, 2);
                 break;
             case PT_Stronghold_PrisonHall:
                 genSmallDoorChildForward(piece, 1, 1);
                 break;
             case PT_Stronghold_LeftTurn: {
-                if (const FACING direction = piece.orientation;
+                if (const FACING direction = piece.facing;
                     direction == FACING::NORTH || direction == FACING::EAST) {
                     genSmallDoorChildLeft(piece, 1, 1);
                 } else {
@@ -468,7 +468,7 @@ namespace gen {
                 break;
             }
             case PT_Stronghold_RightTurn: {
-                if (const FACING direction = piece.orientation;
+                if (const FACING direction = piece.facing;
                     direction == FACING::NORTH || direction == FACING::EAST) {
                     genSmallDoorChildRight(piece, 1, 1);
                 } else {
@@ -485,20 +485,20 @@ namespace gen {
                 genSmallDoorChildForward(piece, 1, 1);
                 break;
             case PT_Stronghold_StairsDown: {
-                if ((piece.additionalData & 7) != 0) { forcedPiece = PT_Stronghold_FiveCrossing; }
+                if ((piece.data & 7) != 0) { forcedPiece = PT_Stronghold_FiveCrossing; }
                 genSmallDoorChildForward(piece, 1, 1);
                 break;
             }
             case PT_Stronghold_FiveCrossing: {
-                const FACING o = piece.orientation;
+                const FACING o = piece.facing;
                 // 3 and 5 or 5 and 3
                 c_int n = 5 - 2 * (o == FACING::EAST || o == FACING::SOUTH);
                 c_int n2 = 8 - n;
                 genSmallDoorChildForward(piece, 5, 1);
-                if ((piece.additionalData & 1) != 0) { genSmallDoorChildLeft(piece, n, 1); }
-                if ((piece.additionalData & 2) != 0) { genSmallDoorChildLeft(piece, n2, 7); }
-                if ((piece.additionalData & 4) != 0) { genSmallDoorChildRight(piece, n, 1); }
-                if ((piece.additionalData & 8) != 0) { genSmallDoorChildRight(piece, n2, 7); }
+                if ((piece.data & 1) != 0) { genSmallDoorChildLeft(piece, n, 1); }
+                if ((piece.data & 2) != 0) { genSmallDoorChildLeft(piece, n2, 7); }
+                if ((piece.data & 4) != 0) { genSmallDoorChildRight(piece, n, 1); }
+                if ((piece.data & 8) != 0) { genSmallDoorChildRight(piece, n2, 7); }
                 break;
             }
             case PT_Stronghold_ChestCorridor:

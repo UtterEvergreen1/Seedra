@@ -23,14 +23,14 @@ namespace rolls {
                     continue;
 
                 c_int sectionCount =
-                        (piece.orientation == FACING::NORTH ||
-                            piece.orientation == FACING::SOUTH
+                        (piece.facing == FACING::NORTH ||
+                            piece.facing == FACING::SOUTH
                                  ? piece.getZSize()
                                  : piece.getXSize()) / 5;
                 c_int depth = sectionCount * 5;
 
                 rng.skipNextN(3 * depth);
-                if (piece.additionalData & 2) rng.skipNextN(6 * depth);
+                if (piece.data & 2) rng.skipNextN(6 * depth);
 
 
                 for (int i = 0; i < sectionCount; ++i) {
@@ -81,13 +81,13 @@ namespace rolls {
                         generateChest(chunk, chunkBoundingBox, piece, rng, 0, 0, currentDepth + 1);
                     }
                     //if it has spawner
-                    if (piece.additionalData & 2) {
+                    if (piece.data & 2) {
                         // advance rng for placement on the depth axis
                         rng.advance();
                     }
 
                     // if it has rails
-                    if (piece.additionalData & 1) {
+                    if (piece.data & 1) {
                         for (int railPos = 0; railPos < depth; ++railPos) {
                             c_int xPos = piece.getWorldX(1, railPos);
                             c_int yPos = piece.getWorldY(-1);
@@ -106,7 +106,7 @@ namespace rolls {
     }
 
 
-    MU void Mineshaft::generateAllChests(const gen::Mineshaft* mg,
+    MU void Mineshaft::generateAllChests(World& worldIn, const gen::Mineshaft* mg,
                                       const Generator& g, c_bool generateFullChunk) {
         c_int xEnd = (mg->startPos.x >> 4) + 6;
         c_int zEnd = (mg->startPos.z >> 4) + 6;
@@ -122,7 +122,7 @@ namespace rolls {
                 rng.setSeed((aix + zChunk * zModifier) ^ g.getWorldSeed());
                 rng.advance(); // advance rng
                 ChunkPrimer* chunk = nullptr;
-                if (generateFullChunk) { chunk = Chunk::provideChunk(g, xChunk, zChunk); }
+                if (generateFullChunk) { chunk = Chunk::provideChunk(worldIn, g, xChunk, zChunk); }
                 generateStructure(mg, chunk, rng, xChunk, zChunk);
                 if (generateFullChunk) { delete chunk; }
             }

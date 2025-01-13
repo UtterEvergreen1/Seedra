@@ -66,4 +66,4 @@ namespace gen {
         // ...
     };
 
-} // namespace generation
+} // namespace gen

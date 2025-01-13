@@ -34,11 +34,13 @@ namespace build::village {
             }
 
             if (blockPtr == &lce::blocks::BlocksInit::OAK_WOOD_STAIRS) {
-                return &lce::blocks::BlocksInit::SANDSTONE_STAIRS; // .withProperty(BlockStairs.FACING, blockstateIn.getValue(BlockStairs.FACING));
+                // .withProperty(BlockStairs.FACING, blockstateIn.getValue(BlockStairs.FACING));
+                return &lce::blocks::BlocksInit::SANDSTONE_STAIRS;
             }
 
             if (blockPtr == &lce::blocks::BlocksInit::COBBLESTONE_STAIRS) {
-                return &lce::blocks::BlocksInit::SANDSTONE_STAIRS; // .withProperty(BlockStairs.FACING, blockstateIn.getValue(BlockStairs.FACING));
+                // .withProperty(BlockStairs.FACING, blockstateIn.getValue(BlockStairs.FACING));
+                return &lce::blocks::BlocksInit::SANDSTONE_STAIRS;
             }
 
             if (blockPtr == &lce::blocks::BlocksInit::GRAVEL) {
@@ -46,7 +48,8 @@ namespace build::village {
             }
         } else if (structureType == 3) {
             if (blockPtr == &lce::blocks::BlocksInit::OAK_WOOD) {
-                return &lce::blocks::BlocksInit::SPRUCE_WOOD; // .withProperty(BlockLog.LOG_AXIS, blockstateIn.getValue(BlockLog.LOG_AXIS));
+                // .withProperty(BlockLog.LOG_AXIS, blockstateIn.getValue(BlockLog.LOG_AXIS));
+                return &lce::blocks::BlocksInit::SPRUCE_WOOD;
             }
 
             if (blockPtr == &lce::blocks::BlocksInit::OAK_WOOD_PLANK) {
@@ -54,7 +57,8 @@ namespace build::village {
             }
 
             if (blockPtr == &lce::blocks::BlocksInit::OAK_WOOD_STAIRS) {
-                return &lce::blocks::BlocksInit::SPRUCE_WOOD_STAIRS; // .withProperty(BlockStairs.FACING, blockstateIn.getValue(BlockStairs.FACING));
+                // .withProperty(BlockStairs.FACING, blockstateIn.getValue(BlockStairs.FACING));
+                return &lce::blocks::BlocksInit::SPRUCE_WOOD_STAIRS;
             }
 
             if (blockPtr == &lce::blocks::BlocksInit::OAK_FENCE) {
@@ -62,7 +66,8 @@ namespace build::village {
             }
         } else if (structureType == 2) {
             if (blockPtr == &lce::blocks::BlocksInit::OAK_WOOD) {
-                return &lce::blocks::BlocksInit::ACACIA_WOOD; // .withProperty(BlockLog.LOG_AXIS, blockstateIn.getValue(BlockLog.LOG_AXIS));
+                // .withProperty(BlockLog.LOG_AXIS, blockstateIn.getValue(BlockLog.LOG_AXIS));
+                return &lce::blocks::BlocksInit::ACACIA_WOOD;
             }
 
             if (blockPtr == &lce::blocks::BlocksInit::OAK_WOOD_PLANK) {
@@ -70,11 +75,13 @@ namespace build::village {
             }
 
             if (blockPtr == &lce::blocks::BlocksInit::OAK_WOOD_STAIRS) {
-                return &lce::blocks::BlocksInit::ACACIA_WOOD_STAIRS; // .withProperty(BlockStairs.FACING, blockstateIn.getValue(BlockStairs.FACING));
+                // .withProperty(BlockStairs.FACING, blockstateIn.getValue(BlockStairs.FACING));
+                return &lce::blocks::BlocksInit::ACACIA_WOOD_STAIRS;
             }
 
             if (blockPtr == &lce::blocks::BlocksInit::COBBLESTONE) {
-                return &lce::blocks::BlocksInit::ACACIA_WOOD; // .withProperty(BlockLog.LOG_AXIS, BlockLog.EnumAxis.Y);
+                // .withProperty(BlockLog.LOG_AXIS, BlockLog.EnumAxis.Y);
+                return &lce::blocks::BlocksInit::ACACIA_WOOD;
             }
 
             if (blockPtr == &lce::blocks::BlocksInit::OAK_FENCE) {
@@ -117,6 +124,3 @@ namespace build::village {
 
 
 }
-
-
-#include "village.hpp"

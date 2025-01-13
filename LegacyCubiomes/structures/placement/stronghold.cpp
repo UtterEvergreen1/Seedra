@@ -50,7 +50,7 @@ namespace Placement {
      * @param xboxStronghold whether or not the console is Xbox.
      * @return stronghold position.
      */
-    Pos2D Stronghold::getRawWorldPosition(i64 worldSeed, bool xboxStronghold) {
+    MU Pos2D Stronghold::getRawWorldPosition(i64 worldSeed, bool xboxStronghold) {
         RNG rng;
         rng.setSeed(worldSeed);
         c_double angle = 2.0 * PI * rng.nextDouble();
