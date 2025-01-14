@@ -1,6 +1,7 @@
+#pragma once
+
 #pragma clang diagnostic push
 #pragma ide diagnostic ignored "ConstantFunctionResult"
-#pragma once
 
 #include "LegacyCubiomes/building_blocks/BoundingBox.hpp"
 #include "LegacyCubiomes/chunk_generator/ChunkPrimer.hpp"
@@ -18,7 +19,8 @@ namespace build::village {
 
     extern const lce::blocks::Block* getBiomeSpecificBlockState(const lce::blocks::Block* blockPtr, int structureType);
 
-    MU ND extern int getAverageGroundLevel(World& worldIn, const BoundingBox& structureBB, StructureComponent& piece);
+    MU ND extern int getAverageGroundLevel(World& worldIn, const BoundingBox& structureBB,
+                                           const StructureComponent& piece);
 
     MU extern void func_189927_a(MU const World& p_189927_1_, gen::Village* villageIn, MU BoundingBox p_189927_2_, MU RNG& p_189927_3_, MU int p_189927_4_, MU int p_189927_5_, MU int p_189927_6_, MU FACING p_189927_7_);
 
@@ -32,7 +34,7 @@ namespace build::village {
 
         static bool addComponentParts(
                 World& worldIn, MU RNG& rng, const BoundingBox& structureBB, StructureComponent& piece) {
-            int averageGroundLvl = getAverageGroundLevel(worldIn, structureBB, piece);
+            c_int averageGroundLvl = getAverageGroundLevel(worldIn, structureBB, piece);
             if (averageGroundLvl < 0) { return true; }
             piece.offset(0, averageGroundLvl - piece.maxY + 12 - 1, 0);
 
@@ -40,19 +42,19 @@ namespace build::village {
             const lce::blocks::Block* iBlockState1 = getBiomeSpecificBlockState(&lce::blocks::BlocksInit::COBBLESTONE_STAIRS, piece.structureType); // .withProperty(BlockStairs.FACING, FACING::NORTH));
             const lce::blocks::Block* iBlockState2 = getBiomeSpecificBlockState(&lce::blocks::BlocksInit::COBBLESTONE_STAIRS, piece.structureType); // .withProperty(BlockStairs.FACING, FACING::WEST));
             const lce::blocks::Block* iBlockState3 = getBiomeSpecificBlockState(&lce::blocks::BlocksInit::COBBLESTONE_STAIRS, piece.structureType); // .withProperty(BlockStairs.FACING, FACING::EAST));
-            piece.fillWithBlocks(worldIn, structureBB, 1, 1, 1, 3, 3, 7, &lce::blocks::BlocksInit::AIR, &lce::blocks::BlocksInit::AIR, false);
-            piece.fillWithBlocks(worldIn, structureBB, 1, 5, 1, 3, 9, 3, &lce::blocks::BlocksInit::AIR, &lce::blocks::BlocksInit::AIR, false);
-            piece.fillWithBlocks(worldIn, structureBB, 1, 0, 0, 3, 0, 8, cobblestone, cobblestone, false);
-            piece.fillWithBlocks(worldIn, structureBB, 1, 1, 0, 3, 10, 0, cobblestone, cobblestone, false);
-            piece.fillWithBlocks(worldIn, structureBB, 0, 1, 1, 0, 10, 3, cobblestone, cobblestone, false);
-            piece.fillWithBlocks(worldIn, structureBB, 4, 1, 1, 4, 10, 3, cobblestone, cobblestone, false);
-            piece.fillWithBlocks(worldIn, structureBB, 0, 0, 4, 0, 4, 7, cobblestone, cobblestone, false);
-            piece.fillWithBlocks(worldIn, structureBB, 4, 0, 4, 4, 4, 7, cobblestone, cobblestone, false);
-            piece.fillWithBlocks(worldIn, structureBB, 1, 1, 8, 3, 4, 8, cobblestone, cobblestone, false);
-            piece.fillWithBlocks(worldIn, structureBB, 1, 5, 4, 3, 10, 4, cobblestone, cobblestone, false);
-            piece.fillWithBlocks(worldIn, structureBB, 1, 5, 5, 3, 5, 7, cobblestone, cobblestone, false);
-            piece.fillWithBlocks(worldIn, structureBB, 0, 9, 0, 4, 9, 4, cobblestone, cobblestone, false);
-            piece.fillWithBlocks(worldIn, structureBB, 0, 4, 0, 4, 4, 4, cobblestone, cobblestone, false);
+            piece.fillWithAir(worldIn, structureBB, 1, 1, 1, 3, 3, 7);
+            piece.fillWithAir(worldIn, structureBB, 1, 5, 1, 3, 9, 3);
+            piece.fillWithBlocks(worldIn, structureBB, 1, 0, 0, 3, 0, 8, cobblestone, false);
+            piece.fillWithBlocks(worldIn, structureBB, 1, 1, 0, 3, 10, 0, cobblestone, false);
+            piece.fillWithBlocks(worldIn, structureBB, 0, 1, 1, 0, 10, 3, cobblestone, false);
+            piece.fillWithBlocks(worldIn, structureBB, 4, 1, 1, 4, 10, 3, cobblestone, false);
+            piece.fillWithBlocks(worldIn, structureBB, 0, 0, 4, 0, 4, 7, cobblestone, false);
+            piece.fillWithBlocks(worldIn, structureBB, 4, 0, 4, 4, 4, 7, cobblestone, false);
+            piece.fillWithBlocks(worldIn, structureBB, 1, 1, 8, 3, 4, 8, cobblestone, false);
+            piece.fillWithBlocks(worldIn, structureBB, 1, 5, 4, 3, 10, 4, cobblestone, false);
+            piece.fillWithBlocks(worldIn, structureBB, 1, 5, 5, 3, 5, 7, cobblestone, false);
+            piece.fillWithBlocks(worldIn, structureBB, 0, 9, 0, 4, 9, 4, cobblestone, false);
+            piece.fillWithBlocks(worldIn, structureBB, 0, 4, 0, 4, 4, 4, cobblestone, false);
             piece.setBlockState(worldIn, cobblestone, 0, 11, 2, structureBB);
             piece.setBlockState(worldIn, cobblestone, 4, 11, 2, structureBB);
             piece.setBlockState(worldIn, cobblestone, 2, 11, 0, structureBB);
@@ -67,6 +69,7 @@ namespace build::village {
             piece.setBlockState(worldIn, iBlockState1, 3, 1, 5, structureBB);
             piece.setBlockState(worldIn, iBlockState2, 1, 2, 7, structureBB);
             piece.setBlockState(worldIn, iBlockState3, 3, 2, 7, structureBB);
+
             const lce::blocks::Block* glassPane = &lce::blocks::BlocksInit::GLASS_PANE;
             piece.setBlockState(worldIn, glassPane, 0, 2, 2, structureBB);
             piece.setBlockState(worldIn, glassPane, 0, 3, 2, structureBB);
@@ -87,7 +90,9 @@ namespace build::village {
             // func_189926_a(worldIn, villageIn, FACING::EAST, 1, 4, 6, structureBB);
             // func_189926_a(worldIn, villageIn, FACING::WEST, 3, 4, 6, structureBB);
             // func_189926_a(worldIn, villageIn, FACING::NORTH, 2, 4, 5, structureBB);
-            const lce::blocks::Block* iBlockState4 = &lce::blocks::BlocksInit::LADDER; // .withProperty(BlockLadder.FACING, FACING::WEST);
+
+            // .withProperty(BlockLadder.FACING, FACING::WEST);
+            const lce::blocks::Block* iBlockState4 = &lce::blocks::BlocksInit::LADDER;
 
             for (int i=1; i <= 9; ++i) {
                 piece.setBlockState(worldIn, iBlockState4, 3, i, 3, structureBB);
@@ -153,22 +158,22 @@ namespace build::village {
 
         static bool addComponentParts(
                 World& worldIn, RNG& rng, const BoundingBox& structureBB, StructureComponent& piece) {
-            int averageGroundLvl = getAverageGroundLevel(worldIn, structureBB, piece);
+            c_int averageGroundLvl = getAverageGroundLevel(worldIn, structureBB, piece);
             if (averageGroundLvl < 0) { return true; }
             piece.offset(0, averageGroundLvl - piece.maxY + 4 - 1, 0);
 
             const lce::blocks::Block* iBlockState = getBiomeSpecificBlockState(&lce::blocks::BlocksInit::OAK_WOOD, piece.structureType);
-            piece.fillWithBlocks(worldIn, structureBB, 0, 1, 0, 12, 4, 8, &lce::blocks::BlocksInit::AIR, &lce::blocks::BlocksInit::AIR, false);
-            piece.fillWithBlocks(worldIn, structureBB, 1, 0, 1, 2, 0, 7, &lce::blocks::BlocksInit::FARMLAND, &lce::blocks::BlocksInit::FARMLAND, false);
-            piece.fillWithBlocks(worldIn, structureBB, 4, 0, 1, 5, 0, 7, &lce::blocks::BlocksInit::FARMLAND, &lce::blocks::BlocksInit::FARMLAND, false);
-            piece.fillWithBlocks(worldIn, structureBB, 7, 0, 1, 8, 0, 7, &lce::blocks::BlocksInit::FARMLAND, &lce::blocks::BlocksInit::FARMLAND, false);
-            piece.fillWithBlocks(worldIn, structureBB, 10, 0, 1, 11, 0, 7, &lce::blocks::BlocksInit::FARMLAND, &lce::blocks::BlocksInit::FARMLAND, false);
+            piece.fillWithAir(worldIn, structureBB, 0, 1, 0, 12, 4, 8);
+            piece.fillWithBlocks(worldIn, structureBB, 1, 0, 1, 2, 0, 7, &lce::blocks::BlocksInit::FARMLAND, false);
+            piece.fillWithBlocks(worldIn, structureBB, 4, 0, 1, 5, 0, 7, &lce::blocks::BlocksInit::FARMLAND, false);
+            piece.fillWithBlocks(worldIn, structureBB, 7, 0, 1, 8, 0, 7, &lce::blocks::BlocksInit::FARMLAND, false);
+            piece.fillWithBlocks(worldIn, structureBB, 10, 0, 1, 11, 0, 7, &lce::blocks::BlocksInit::FARMLAND, false);
             piece.fillWithBlocks(worldIn, structureBB, 0, 0, 0, 0, 0, 8, iBlockState, iBlockState, false);
             piece.fillWithBlocks(worldIn, structureBB, 6, 0, 0, 6, 0, 8, iBlockState, iBlockState, false);
             piece.fillWithBlocks(worldIn, structureBB, 12, 0, 0, 12, 0, 8, iBlockState, iBlockState, false);
             piece.fillWithBlocks(worldIn, structureBB, 1, 0, 0, 11, 0, 0, iBlockState, iBlockState, false);
             piece.fillWithBlocks(worldIn, structureBB, 1, 0, 8, 11, 0, 8, iBlockState, iBlockState, false);
-            piece.fillWithBlocks(worldIn, structureBB, 3, 0, 1, 3, 0, 7, &lce::blocks::BlocksInit::FLOWING_WATER, &lce::blocks::BlocksInit::FLOWING_WATER, false);
+            piece.fillWithBlocks(worldIn, structureBB, 3, 0, 1, 3, 0, 7, &lce::blocks::BlocksInit::FLOWING_WATER, false);
             piece.fillWithBlocks(worldIn, structureBB, 9, 0, 1, 9, 0, 7, &lce::blocks::BlocksInit::STILL_WATER, &lce::blocks::BlocksInit::FLOWING_WATER, false);
 
             const lce::blocks::Block* cropTypeA = getRandomCropType(piece.data >> 12 & 0xF);
@@ -176,20 +181,20 @@ namespace build::village {
             const lce::blocks::Block* cropTypeC = getRandomCropType(piece.data >> 4 & 0xF);
             const lce::blocks::Block* cropTypeD = getRandomCropType(piece.data & 0xF);
             for (int i = 1; i <= 7; ++i) {
-                int j = getMaxAgeFromCrop(cropTypeA->getID());
-                int k = j / 3;
+                c_int j = getMaxAgeFromCrop(cropTypeA->getID());
+                c_int k = j / 3;
                 piece.setBlockState(worldIn, cropTypeA->getStateFromMeta(rng.nextInt(k, j)), 1, 1, i, structureBB);
                 piece.setBlockState(worldIn, cropTypeA->getStateFromMeta(rng.nextInt(k, j)), 2, 1, i, structureBB);
-                const int l = getMaxAgeFromCrop(cropTypeB->getID());
-                const int i1 = l / 3;
+                c_int l = getMaxAgeFromCrop(cropTypeB->getID());
+                c_int i1 = l / 3;
                 piece.setBlockState(worldIn, cropTypeB->getStateFromMeta(rng.nextInt(i1, l)), 4, 1, i, structureBB);
                 piece.setBlockState(worldIn, cropTypeB->getStateFromMeta(rng.nextInt(i1, l)), 5, 1, i, structureBB);
-                const int j1 = 0; getMaxAgeFromCrop(cropTypeC->getID());
-                const int k1 = j1 / 3;
+                c_int j1 = getMaxAgeFromCrop(cropTypeC->getID());
+                c_int k1 = j1 / 3;
                 piece.setBlockState(worldIn, cropTypeC->getStateFromMeta(rng.nextInt(k1, j1)), 7, 1, i, structureBB);
                 piece.setBlockState(worldIn, cropTypeC->getStateFromMeta(rng.nextInt(k1, j1)), 8, 1, i, structureBB);
-                const int l1 = 0; getMaxAgeFromCrop(cropTypeD->getID());
-                const int i2 = l1 / 3;
+                c_int l1 = getMaxAgeFromCrop(cropTypeD->getID());
+                c_int i2 = l1 / 3;
                 piece.setBlockState(worldIn, cropTypeD->getStateFromMeta(rng.nextInt(i2, l1)), 10, 1, i, structureBB);
                 piece.setBlockState(worldIn, cropTypeD->getStateFromMeta(rng.nextInt(i2, l1)), 11, 1, i, structureBB);
             }
@@ -224,7 +229,7 @@ namespace build::village {
             }
         }
 
-        MU static int getMaxAgeFromCrop(int id) {
+        MU static int getMaxAgeFromCrop(c_int id) {
             switch (id) {
                 case lce::blocks::ids::CARROTS_ID:
                 case lce::blocks::ids::POTATOES_ID:
@@ -238,31 +243,31 @@ namespace build::village {
 
         static bool addComponentParts(
                 World& worldIn, RNG& rng, const BoundingBox& structureBB, StructureComponent& piece) {
-            int averageGroundLvl = getAverageGroundLevel(worldIn, structureBB, piece);
+            c_int averageGroundLvl = getAverageGroundLevel(worldIn, structureBB, piece);
             if (averageGroundLvl < 0) { return true; }
             piece.offset(0, averageGroundLvl - piece.maxY + 4 - 1, 0);
 
             const lce::blocks::Block* iBlockState = getBiomeSpecificBlockState(&lce::blocks::BlocksInit::OAK_WOOD, piece.structureType);
             const lce::blocks::Block* farmLand = &lce::blocks::BlocksInit::FARMLAND;
             const lce::blocks::Block* stillWater = &lce::blocks::BlocksInit::STILL_WATER;
-            piece.fillWithBlocks(worldIn, structureBB, 0, 1, 0, 6, 4, 8, &lce::blocks::BlocksInit::AIR, &lce::blocks::BlocksInit::AIR, false);
-            piece.fillWithBlocks(worldIn, structureBB, 1, 0, 1, 2, 0, 7, farmLand, farmLand, false);
-            piece.fillWithBlocks(worldIn, structureBB, 4, 0, 1, 5, 0, 7, farmLand, farmLand, false);
-            piece.fillWithBlocks(worldIn, structureBB, 0, 0, 0, 0, 0, 8, iBlockState, iBlockState, false);
-            piece.fillWithBlocks(worldIn, structureBB, 6, 0, 0, 6, 0, 8, iBlockState, iBlockState, false);
-            piece.fillWithBlocks(worldIn, structureBB, 1, 0, 0, 5, 0, 0, iBlockState, iBlockState, false);
-            piece.fillWithBlocks(worldIn, structureBB, 1, 0, 8, 5, 0, 8, iBlockState, iBlockState, false);
-            piece.fillWithBlocks(worldIn, structureBB, 3, 0, 1, 3, 0, 7, stillWater, stillWater, false);
+            piece.fillWithAir(worldIn, structureBB, 0, 1, 0, 6, 4, 8);
+            piece.fillWithBlocks(worldIn, structureBB, 1, 0, 1, 2, 0, 7, farmLand, false);
+            piece.fillWithBlocks(worldIn, structureBB, 4, 0, 1, 5, 0, 7, farmLand, false);
+            piece.fillWithBlocks(worldIn, structureBB, 0, 0, 0, 0, 0, 8, iBlockState, false);
+            piece.fillWithBlocks(worldIn, structureBB, 6, 0, 0, 6, 0, 8, iBlockState, false);
+            piece.fillWithBlocks(worldIn, structureBB, 1, 0, 0, 5, 0, 0, iBlockState, false);
+            piece.fillWithBlocks(worldIn, structureBB, 1, 0, 8, 5, 0, 8, iBlockState, false);
+            piece.fillWithBlocks(worldIn, structureBB, 3, 0, 1, 3, 0, 7, stillWater, false);
 
             const lce::blocks::Block* cropTypeA = getRandomCropType(piece.data >> 4 & 0xF);
             const lce::blocks::Block* cropTypeB = getRandomCropType(piece.data & 0xF);
             for (int i = 1; i <= 7; ++i) {
-                int j = getMaxAgeFromCrop(cropTypeA->getID());
-                int k = j / 3;
+                c_int j = getMaxAgeFromCrop(cropTypeA->getID());
+                c_int k = j / 3;
                 piece.setBlockState(worldIn, cropTypeA->getStateFromMeta(rng.nextInt(k, j)), 1, 1, i, structureBB);
                 piece.setBlockState(worldIn, cropTypeA->getStateFromMeta(rng.nextInt(k, j)), 2, 1, i, structureBB);
-                int l = getMaxAgeFromCrop(cropTypeB->getID());
-                int i1=l / 3;
+                c_int l = getMaxAgeFromCrop(cropTypeB->getID());
+                c_int i1 = l / 3;
                 piece.setBlockState(worldIn, cropTypeB->getStateFromMeta(rng.nextInt(i1, l)), 4, 1, i, structureBB);
                 piece.setBlockState(worldIn, cropTypeB->getStateFromMeta(rng.nextInt(i1, l)), 5, 1, i, structureBB);
             }
@@ -284,7 +289,7 @@ namespace build::village {
 
         static bool addComponentParts(
                 World& worldIn, MU RNG& rng, const BoundingBox& structureBB, StructureComponent& piece) {
-            int averageGroundLvl = getAverageGroundLevel(worldIn, structureBB, piece);
+            c_int averageGroundLvl = getAverageGroundLevel(worldIn, structureBB, piece);
             if (averageGroundLvl < 0) { return true; }
             piece.offset(0, averageGroundLvl - piece.maxY + 7 - 1, 0);
 
@@ -295,23 +300,24 @@ namespace build::village {
             const lce::blocks::Block* iBlockState4 = getBiomeSpecificBlockState(&lce::blocks::BlocksInit::OAK_WOOD_PLANK, piece.structureType);
             const lce::blocks::Block* iBlockState5 = getBiomeSpecificBlockState(&lce::blocks::BlocksInit::OAK_WOOD, piece.structureType);
             const lce::blocks::Block* iBlockState6 = getBiomeSpecificBlockState(&lce::blocks::BlocksInit::OAK_FENCE, piece.structureType);
-            piece.fillWithBlocks(worldIn, structureBB, 1, 1, 1, 7, 4, 4, &lce::blocks::BlocksInit::AIR, &lce::blocks::BlocksInit::AIR, false);
-            piece.fillWithBlocks(worldIn, structureBB, 2, 1, 6, 8, 4, 10, &lce::blocks::BlocksInit::AIR, &lce::blocks::BlocksInit::AIR, false);
-            piece.fillWithBlocks(worldIn, structureBB, 2, 0, 6, 8, 0, 10, &lce::blocks::BlocksInit::DIRT, &lce::blocks::BlocksInit::DIRT, false);
+
+            piece.fillWithAir(worldIn, structureBB, 1, 1, 1, 7, 4, 4);
+            piece.fillWithAir(worldIn, structureBB, 2, 1, 6, 8, 4, 10);
+            piece.fillWithBlocks(worldIn, structureBB, 2, 0, 6, 8, 0, 10, &lce::blocks::BlocksInit::DIRT, false);
             piece.setBlockState(worldIn, iBlockState, 6, 0, 6, structureBB);
-            piece.fillWithBlocks(worldIn, structureBB, 2, 1, 6, 2, 1, 10, iBlockState6, iBlockState6, false);
-            piece.fillWithBlocks(worldIn, structureBB, 8, 1, 6, 8, 1, 10, iBlockState6, iBlockState6, false);
-            piece.fillWithBlocks(worldIn, structureBB, 3, 1, 10, 7, 1, 10, iBlockState6, iBlockState6, false);
-            piece.fillWithBlocks(worldIn, structureBB, 1, 0, 1, 7, 0, 4, iBlockState4, iBlockState4, false);
-            piece.fillWithBlocks(worldIn, structureBB, 0, 0, 0, 0, 3, 5, iBlockState, iBlockState, false);
-            piece.fillWithBlocks(worldIn, structureBB, 8, 0, 0, 8, 3, 5, iBlockState, iBlockState, false);
-            piece.fillWithBlocks(worldIn, structureBB, 1, 0, 0, 7, 1, 0, iBlockState, iBlockState, false);
-            piece.fillWithBlocks(worldIn, structureBB, 1, 0, 5, 7, 1, 5, iBlockState, iBlockState, false);
-            piece.fillWithBlocks(worldIn, structureBB, 1, 2, 0, 7, 3, 0, iBlockState4, iBlockState4, false);
-            piece.fillWithBlocks(worldIn, structureBB, 1, 2, 5, 7, 3, 5, iBlockState4, iBlockState4, false);
-            piece.fillWithBlocks(worldIn, structureBB, 0, 4, 1, 8, 4, 1, iBlockState4, iBlockState4, false);
-            piece.fillWithBlocks(worldIn, structureBB, 0, 4, 4, 8, 4, 4, iBlockState4, iBlockState4, false);
-            piece.fillWithBlocks(worldIn, structureBB, 0, 5, 2, 8, 5, 3, iBlockState4, iBlockState4, false);
+            piece.fillWithBlocks(worldIn, structureBB, 2, 1, 6, 2, 1, 10, iBlockState6, false);
+            piece.fillWithBlocks(worldIn, structureBB, 8, 1, 6, 8, 1, 10, iBlockState6, false);
+            piece.fillWithBlocks(worldIn, structureBB, 3, 1, 10, 7, 1, 10, iBlockState6, false);
+            piece.fillWithBlocks(worldIn, structureBB, 1, 0, 1, 7, 0, 4, iBlockState4, false);
+            piece.fillWithBlocks(worldIn, structureBB, 0, 0, 0, 0, 3, 5, iBlockState, false);
+            piece.fillWithBlocks(worldIn, structureBB, 8, 0, 0, 8, 3, 5, iBlockState, false);
+            piece.fillWithBlocks(worldIn, structureBB, 1, 0, 0, 7, 1, 0, iBlockState, false);
+            piece.fillWithBlocks(worldIn, structureBB, 1, 0, 5, 7, 1, 5, iBlockState, false);
+            piece.fillWithBlocks(worldIn, structureBB, 1, 2, 0, 7, 3, 0, iBlockState4, false);
+            piece.fillWithBlocks(worldIn, structureBB, 1, 2, 5, 7, 3, 5, iBlockState4, false);
+            piece.fillWithBlocks(worldIn, structureBB, 0, 4, 1, 8, 4, 1, iBlockState4, false);
+            piece.fillWithBlocks(worldIn, structureBB, 0, 4, 4, 8, 4, 4, iBlockState4, false);
+            piece.fillWithBlocks(worldIn, structureBB, 0, 5, 2, 8, 5, 3, iBlockState4, false);
             piece.setBlockState(worldIn, iBlockState4, 0, 4, 2, structureBB);
             piece.setBlockState(worldIn, iBlockState4, 0, 4, 3, structureBB);
             piece.setBlockState(worldIn, iBlockState4, 8, 4, 2, structureBB);
@@ -344,7 +350,7 @@ namespace build::village {
             piece.setBlockState(worldIn, iBlockState4, 1, 1, 4, structureBB);
             piece.setBlockState(worldIn, iBlockState7, 2, 1, 4, structureBB);
             piece.setBlockState(worldIn, iBlockState3, 1, 1, 3, structureBB);
-            piece.fillWithBlocks(worldIn, structureBB, 5, 0, 1, 7, 0, 3, &lce::blocks::BlocksInit::DOUBLE_STONE_SLAB, &lce::blocks::BlocksInit::DOUBLE_STONE_SLAB, false);
+            piece.fillWithBlocks(worldIn, structureBB, 5, 0, 1, 7, 0, 3, &lce::blocks::BlocksInit::DOUBLE_STONE_SLAB, false);
             piece.setBlockState(worldIn, &lce::blocks::BlocksInit::DOUBLE_STONE_SLAB, 6, 1, 1, structureBB);
             piece.setBlockState(worldIn, &lce::blocks::BlocksInit::DOUBLE_STONE_SLAB, 6, 1, 2, structureBB);
             piece.setBlockState(worldIn, &lce::blocks::BlocksInit::AIR, 2, 1, 0, structureBB);
@@ -384,7 +390,7 @@ namespace build::village {
 
         static bool addComponentParts(
                 World& worldIn, MU RNG& rng, const BoundingBox& structureBB, StructureComponent& piece) {
-            int averageGroundLvl = getAverageGroundLevel(worldIn, structureBB, piece);
+            c_int averageGroundLvl = getAverageGroundLevel(worldIn, structureBB, piece);
             if (averageGroundLvl < 0) { return true; }
             piece.offset(0, averageGroundLvl - piece.maxY + 9 - 1, 0);
 
@@ -395,11 +401,11 @@ namespace build::village {
             const lce::blocks::Block* iBlockState4 = getBiomeSpecificBlockState(&lce::blocks::BlocksInit::OAK_WOOD_PLANK, piece.structureType);
             const lce::blocks::Block* iBlockState5 = getBiomeSpecificBlockState(&lce::blocks::BlocksInit::COBBLESTONE_STAIRS, piece.structureType); // .withProperty(BlockStairs.FACING, FACING::NORTH));
             const lce::blocks::Block* iBlockState6 = getBiomeSpecificBlockState(&lce::blocks::BlocksInit::OAK_FENCE, piece.structureType);
-            piece.fillWithBlocks(worldIn, structureBB, 1, 1, 1, 7, 5, 4, &lce::blocks::BlocksInit::AIR, &lce::blocks::BlocksInit::AIR, false);
-            piece.fillWithBlocks(worldIn, structureBB, 0, 0, 0, 8, 0, 5, iBlockState, iBlockState, false);
-            piece.fillWithBlocks(worldIn, structureBB, 0, 5, 0, 8, 5, 5, iBlockState, iBlockState, false);
-            piece.fillWithBlocks(worldIn, structureBB, 0, 6, 1, 8, 6, 4, iBlockState, iBlockState, false);
-            piece.fillWithBlocks(worldIn, structureBB, 0, 7, 2, 8, 7, 3, iBlockState, iBlockState, false);
+            piece.fillWithAir(worldIn, structureBB, 1, 1, 1, 7, 5, 4);
+            piece.fillWithBlocks(worldIn, structureBB, 0, 0, 0, 8, 0, 5, iBlockState, false);
+            piece.fillWithBlocks(worldIn, structureBB, 0, 5, 0, 8, 5, 5, iBlockState, false);
+            piece.fillWithBlocks(worldIn, structureBB, 0, 6, 1, 8, 6, 4, iBlockState, false);
+            piece.fillWithBlocks(worldIn, structureBB, 0, 7, 2, 8, 7, 3, iBlockState, false);
 
             for (int i=-1; i <= 2; ++i) {
                 for (int j=0; j <= 8; ++j) {
@@ -408,18 +414,18 @@ namespace build::village {
                 }
             }
 
-            piece.fillWithBlocks(worldIn, structureBB, 0, 1, 0, 0, 1, 5, iBlockState, iBlockState, false);
-            piece.fillWithBlocks(worldIn, structureBB, 1, 1, 5, 8, 1, 5, iBlockState, iBlockState, false);
-            piece.fillWithBlocks(worldIn, structureBB, 8, 1, 0, 8, 1, 4, iBlockState, iBlockState, false);
-            piece.fillWithBlocks(worldIn, structureBB, 2, 1, 0, 7, 1, 0, iBlockState, iBlockState, false);
-            piece.fillWithBlocks(worldIn, structureBB, 0, 2, 0, 0, 4, 0, iBlockState, iBlockState, false);
-            piece.fillWithBlocks(worldIn, structureBB, 0, 2, 5, 0, 4, 5, iBlockState, iBlockState, false);
-            piece.fillWithBlocks(worldIn, structureBB, 8, 2, 5, 8, 4, 5, iBlockState, iBlockState, false);
-            piece.fillWithBlocks(worldIn, structureBB, 8, 2, 0, 8, 4, 0, iBlockState, iBlockState, false);
-            piece.fillWithBlocks(worldIn, structureBB, 0, 2, 1, 0, 4, 4, iBlockState4, iBlockState4, false);
-            piece.fillWithBlocks(worldIn, structureBB, 1, 2, 5, 7, 4, 5, iBlockState4, iBlockState4, false);
-            piece.fillWithBlocks(worldIn, structureBB, 8, 2, 1, 8, 4, 4, iBlockState4, iBlockState4, false);
-            piece.fillWithBlocks(worldIn, structureBB, 1, 2, 0, 7, 4, 0, iBlockState4, iBlockState4, false);
+            piece.fillWithBlocks(worldIn, structureBB, 0, 1, 0, 0, 1, 5, iBlockState, false);
+            piece.fillWithBlocks(worldIn, structureBB, 1, 1, 5, 8, 1, 5, iBlockState, false);
+            piece.fillWithBlocks(worldIn, structureBB, 8, 1, 0, 8, 1, 4, iBlockState, false);
+            piece.fillWithBlocks(worldIn, structureBB, 2, 1, 0, 7, 1, 0, iBlockState, false);
+            piece.fillWithBlocks(worldIn, structureBB, 0, 2, 0, 0, 4, 0, iBlockState, false);
+            piece.fillWithBlocks(worldIn, structureBB, 0, 2, 5, 0, 4, 5, iBlockState, false);
+            piece.fillWithBlocks(worldIn, structureBB, 8, 2, 5, 8, 4, 5, iBlockState, false);
+            piece.fillWithBlocks(worldIn, structureBB, 8, 2, 0, 8, 4, 0, iBlockState, false);
+            piece.fillWithBlocks(worldIn, structureBB, 0, 2, 1, 0, 4, 4, iBlockState4, false);
+            piece.fillWithBlocks(worldIn, structureBB, 1, 2, 5, 7, 4, 5, iBlockState4, false);
+            piece.fillWithBlocks(worldIn, structureBB, 8, 2, 1, 8, 4, 4, iBlockState4, false);
+            piece.fillWithBlocks(worldIn, structureBB, 1, 2, 0, 7, 4, 0, iBlockState4, false);
             const lce::blocks::Block* glassPane = &lce::blocks::BlocksInit::GLASS_PANE;
             piece.setBlockState(worldIn, glassPane, 4, 2, 0, structureBB);
             piece.setBlockState(worldIn, glassPane, 5, 2, 0, structureBB);
@@ -439,9 +445,9 @@ namespace build::village {
             piece.setBlockState(worldIn, glassPane, 3, 2, 5, structureBB);
             piece.setBlockState(worldIn, glassPane, 5, 2, 5, structureBB);
             piece.setBlockState(worldIn, glassPane, 6, 2, 5, structureBB);
-            piece.fillWithBlocks(worldIn, structureBB, 1, 4, 1, 7, 4, 1, iBlockState4, iBlockState4, false);
-            piece.fillWithBlocks(worldIn, structureBB, 1, 4, 4, 7, 4, 4, iBlockState4, iBlockState4, false);
-            piece.fillWithBlocks(worldIn, structureBB, 1, 3, 4, 7, 3, 4, &lce::blocks::BlocksInit::BOOKSHELF, &lce::blocks::BlocksInit::BOOKSHELF, false);
+            piece.fillWithBlocks(worldIn, structureBB, 1, 4, 1, 7, 4, 1, iBlockState4, false);
+            piece.fillWithBlocks(worldIn, structureBB, 1, 4, 4, 7, 4, 4, iBlockState4, false);
+            piece.fillWithBlocks(worldIn, structureBB, 1, 3, 4, 7, 3, 4, &lce::blocks::BlocksInit::BOOKSHELF, false);
             piece.setBlockState(worldIn, iBlockState4, 7, 1, 4, structureBB);
             piece.setBlockState(worldIn, iBlockState3, 7, 1, 3, structureBB);
             piece.setBlockState(worldIn, iBlockState1, 6, 1, 4, structureBB);
@@ -484,7 +490,7 @@ namespace build::village {
 
         static bool addComponentParts(
                 World& worldIn, MU RNG& rng, const BoundingBox& structureBB, StructureComponent& piece) {
-            int averageGroundLvl = getAverageGroundLevel(worldIn, structureBB, piece);
+            c_int averageGroundLvl = getAverageGroundLevel(worldIn, structureBB, piece);
             if (averageGroundLvl < 0) { return true; }
             piece.offset(0, averageGroundLvl - piece.maxY + 6 - 1, 0);
 
@@ -495,28 +501,29 @@ namespace build::village {
             const lce::blocks::Block* iBlockState4 = getBiomeSpecificBlockState(&lce::blocks::BlocksInit::COBBLESTONE_STAIRS, piece.structureType); // .withProperty(BlockStairs.FACING, FACING::NORTH));
             const lce::blocks::Block* iBlockState5 = getBiomeSpecificBlockState(&lce::blocks::BlocksInit::OAK_WOOD, piece.structureType);
             const lce::blocks::Block* iBlockState6 = getBiomeSpecificBlockState(&lce::blocks::BlocksInit::OAK_FENCE, piece.structureType);
-            piece.fillWithBlocks(worldIn, structureBB, 0, 1, 0, 9, 4, 6, &lce::blocks::BlocksInit::AIR, &lce::blocks::BlocksInit::AIR, false);
-            piece.fillWithBlocks(worldIn, structureBB, 0, 0, 0, 9, 0, 6, iBlockState, iBlockState, false);
-            piece.fillWithBlocks(worldIn, structureBB, 0, 4, 0, 9, 4, 6, iBlockState, iBlockState, false);
-            piece.fillWithBlocks(worldIn, structureBB, 0, 5, 0, 9, 5, 6, &lce::blocks::BlocksInit::STONE_SLAB, &lce::blocks::BlocksInit::STONE_SLAB, false);
-            piece.fillWithBlocks(worldIn, structureBB, 1, 5, 1, 8, 5, 5, &lce::blocks::BlocksInit::AIR, &lce::blocks::BlocksInit::AIR, false);
-            piece.fillWithBlocks(worldIn, structureBB, 1, 1, 0, 2, 3, 0, iBlockState3, iBlockState3, false);
-            piece.fillWithBlocks(worldIn, structureBB, 0, 1, 0, 0, 4, 0, iBlockState5, iBlockState5, false);
-            piece.fillWithBlocks(worldIn, structureBB, 3, 1, 0, 3, 4, 0, iBlockState5, iBlockState5, false);
-            piece.fillWithBlocks(worldIn, structureBB, 0, 1, 6, 0, 4, 6, iBlockState5, iBlockState5, false);
+
+            piece.fillWithAir(worldIn, structureBB, 0, 1, 0, 9, 4, 6);
+            piece.fillWithBlocks(worldIn, structureBB, 0, 0, 0, 9, 0, 6, iBlockState, false);
+            piece.fillWithBlocks(worldIn, structureBB, 0, 4, 0, 9, 4, 6, iBlockState, false);
+            piece.fillWithBlocks(worldIn, structureBB, 0, 5, 0, 9, 5, 6, &lce::blocks::BlocksInit::STONE_SLAB, false);
+            piece.fillWithAir(worldIn, structureBB, 1, 5, 1, 8, 5, 5);
+            piece.fillWithBlocks(worldIn, structureBB, 1, 1, 0, 2, 3, 0, iBlockState3, false);
+            piece.fillWithBlocks(worldIn, structureBB, 0, 1, 0, 0, 4, 0, iBlockState5, false);
+            piece.fillWithBlocks(worldIn, structureBB, 3, 1, 0, 3, 4, 0, iBlockState5, false);
+            piece.fillWithBlocks(worldIn, structureBB, 0, 1, 6, 0, 4, 6, iBlockState5, false);
             piece.setBlockState(worldIn, iBlockState3, 3, 3, 1, structureBB);
-            piece.fillWithBlocks(worldIn, structureBB, 3, 1, 2, 3, 3, 2, iBlockState3, iBlockState3, false);
-            piece.fillWithBlocks(worldIn, structureBB, 4, 1, 3, 5, 3, 3, iBlockState3, iBlockState3, false);
-            piece.fillWithBlocks(worldIn, structureBB, 0, 1, 1, 0, 3, 5, iBlockState3, iBlockState3, false);
-            piece.fillWithBlocks(worldIn, structureBB, 1, 1, 6, 5, 3, 6, iBlockState3, iBlockState3, false);
-            piece.fillWithBlocks(worldIn, structureBB, 5, 1, 0, 5, 3, 0, iBlockState6, iBlockState6, false);
-            piece.fillWithBlocks(worldIn, structureBB, 9, 1, 0, 9, 3, 0, iBlockState6, iBlockState6, false);
-            piece.fillWithBlocks(worldIn, structureBB, 6, 1, 4, 9, 4, 6, iBlockState, iBlockState, false);
+            piece.fillWithBlocks(worldIn, structureBB, 3, 1, 2, 3, 3, 2, iBlockState3, false);
+            piece.fillWithBlocks(worldIn, structureBB, 4, 1, 3, 5, 3, 3, iBlockState3, false);
+            piece.fillWithBlocks(worldIn, structureBB, 0, 1, 1, 0, 3, 5, iBlockState3, false);
+            piece.fillWithBlocks(worldIn, structureBB, 1, 1, 6, 5, 3, 6, iBlockState3, false);
+            piece.fillWithBlocks(worldIn, structureBB, 5, 1, 0, 5, 3, 0, iBlockState6, false);
+            piece.fillWithBlocks(worldIn, structureBB, 9, 1, 0, 9, 3, 0, iBlockState6, false);
+            piece.fillWithBlocks(worldIn, structureBB, 6, 1, 4, 9, 4, 6, iBlockState, false);
             piece.setBlockState(worldIn, &lce::blocks::BlocksInit::FLOWING_LAVA, 7, 1, 5, structureBB);
             piece.setBlockState(worldIn, &lce::blocks::BlocksInit::FLOWING_LAVA, 8, 1, 5, structureBB);
             piece.setBlockState(worldIn, &lce::blocks::BlocksInit::IRON_BARS, 9, 2, 5, structureBB);
             piece.setBlockState(worldIn, &lce::blocks::BlocksInit::IRON_BARS, 9, 2, 4, structureBB);
-            piece.fillWithBlocks(worldIn, structureBB, 7, 2, 4, 8, 2, 5, &lce::blocks::BlocksInit::AIR, &lce::blocks::BlocksInit::AIR, false);
+            piece.fillWithAir(worldIn, structureBB, 7, 2, 4, 8, 2, 5);
             piece.setBlockState(worldIn, iBlockState, 6, 1, 3, structureBB);
             piece.setBlockState(worldIn, &lce::blocks::BlocksInit::FURNACE, 6, 2, 3, structureBB);
             piece.setBlockState(worldIn, &lce::blocks::BlocksInit::FURNACE, 6, 3, 3, structureBB);
@@ -532,12 +539,14 @@ namespace build::village {
             piece.setBlockState(worldIn, iBlockState1, 2, 1, 5, structureBB);
             piece.setBlockState(worldIn, iBlockState2, 1, 1, 4, structureBB);
 
-            /*
-            if (!hasMadeChest && structureBB.isVecInside(new BlockPos(getXWithOffset(5, 5), getYWithOffset(1), getZWithOffset(5, 5)))) {
-                hasMadeChest = true;
-                generateChest(worldIn, structureBB, rng, 5, 1, 5, LootTableList.CHESTS_VILLAGE_BLACKSMITH);
+            bool hasMadeChest = false;
+            Pos3D chestPos = piece.getWorldXYZ(5, 1, 5);
+            if (!hasMadeChest && structureBB.isVecInside(chestPos)) {
+                piece.setBlockState(worldIn, lce::blocks::BlocksInit::CHEST, 3, 3, 5, structureBB);
+                rng.nextLong();
+                // generateChest(worldIn, structureBB, rng, 5, 1, 5, LootTableList.CHESTS_VILLAGE_BLACKSMITH);
             }
-             */
+
 
             for (int i=6; i <= 8; ++i) {
                 if (lce::blocks::ids::isReplaceableBlock(piece.getBlockStateFromPos(worldIn, i, 0, -1, structureBB)->getID()) &&
@@ -568,7 +577,7 @@ namespace build::village {
 
         static bool addComponentParts(
                 World& worldIn, MU RNG& rng, const BoundingBox& structureBB, StructureComponent& piece) {
-            int averageGroundLvl = getAverageGroundLevel(worldIn, structureBB, piece);
+            c_int averageGroundLvl = getAverageGroundLevel(worldIn, structureBB, piece);
             if (averageGroundLvl < 0) { return true; }
             piece.offset(0, averageGroundLvl - piece.maxY + 7 - 1, 0);
 
@@ -579,21 +588,22 @@ namespace build::village {
             const lce::blocks::Block* iBlockState4 = getBiomeSpecificBlockState(&lce::blocks::BlocksInit::OAK_WOOD_STAIRS, piece.structureType); // .withProperty(BlockStairs.FACING, FACING::WEST));
             const lce::blocks::Block* iBlockState5 = getBiomeSpecificBlockState(&lce::blocks::BlocksInit::OAK_WOOD_PLANK, piece.structureType);
             const lce::blocks::Block* iBlockState6 = getBiomeSpecificBlockState(&lce::blocks::BlocksInit::OAK_WOOD, piece.structureType);
-            piece.fillWithBlocks(worldIn, structureBB, 1, 1, 1, 7, 4, 4, &lce::blocks::BlocksInit::AIR, &lce::blocks::BlocksInit::AIR, false);
-            piece.fillWithBlocks(worldIn, structureBB, 2, 1, 6, 8, 4, 10, &lce::blocks::BlocksInit::AIR, &lce::blocks::BlocksInit::AIR, false);
-            piece.fillWithBlocks(worldIn, structureBB, 2, 0, 5, 8, 0, 10, iBlockState5, iBlockState5, false);
-            piece.fillWithBlocks(worldIn, structureBB, 1, 0, 1, 7, 0, 4, iBlockState5, iBlockState5, false);
-            piece.fillWithBlocks(worldIn, structureBB, 0, 0, 0, 0, 3, 5, iBlockState, iBlockState, false);
-            piece.fillWithBlocks(worldIn, structureBB, 8, 0, 0, 8, 3, 10, iBlockState, iBlockState, false);
-            piece.fillWithBlocks(worldIn, structureBB, 1, 0, 0, 7, 2, 0, iBlockState, iBlockState, false);
-            piece.fillWithBlocks(worldIn, structureBB, 1, 0, 5, 2, 1, 5, iBlockState, iBlockState, false);
-            piece.fillWithBlocks(worldIn, structureBB, 2, 0, 6, 2, 3, 10, iBlockState, iBlockState, false);
-            piece.fillWithBlocks(worldIn, structureBB, 3, 0, 10, 7, 3, 10, iBlockState, iBlockState, false);
-            piece.fillWithBlocks(worldIn, structureBB, 1, 2, 0, 7, 3, 0, iBlockState5, iBlockState5, false);
-            piece.fillWithBlocks(worldIn, structureBB, 1, 2, 5, 2, 3, 5, iBlockState5, iBlockState5, false);
-            piece.fillWithBlocks(worldIn, structureBB, 0, 4, 1, 8, 4, 1, iBlockState5, iBlockState5, false);
-            piece.fillWithBlocks(worldIn, structureBB, 0, 4, 4, 3, 4, 4, iBlockState5, iBlockState5, false);
-            piece.fillWithBlocks(worldIn, structureBB, 0, 5, 2, 8, 5, 3, iBlockState5, iBlockState5, false);
+
+            piece.fillWithAir(worldIn, structureBB, 1, 1, 1, 7, 4, 4);
+            piece.fillWithAir(worldIn, structureBB, 2, 1, 6, 8, 4, 10);
+            piece.fillWithBlocks(worldIn, structureBB, 2, 0, 5, 8, 0, 10, iBlockState5, false);
+            piece.fillWithBlocks(worldIn, structureBB, 1, 0, 1, 7, 0, 4, iBlockState5, false);
+            piece.fillWithBlocks(worldIn, structureBB, 0, 0, 0, 0, 3, 5, iBlockState, false);
+            piece.fillWithBlocks(worldIn, structureBB, 8, 0, 0, 8, 3, 10, iBlockState, false);
+            piece.fillWithBlocks(worldIn, structureBB, 1, 0, 0, 7, 2, 0, iBlockState, false);
+            piece.fillWithBlocks(worldIn, structureBB, 1, 0, 5, 2, 1, 5, iBlockState, false);
+            piece.fillWithBlocks(worldIn, structureBB, 2, 0, 6, 2, 3, 10, iBlockState, false);
+            piece.fillWithBlocks(worldIn, structureBB, 3, 0, 10, 7, 3, 10, iBlockState, false);
+            piece.fillWithBlocks(worldIn, structureBB, 1, 2, 0, 7, 3, 0, iBlockState5, false);
+            piece.fillWithBlocks(worldIn, structureBB, 1, 2, 5, 2, 3, 5, iBlockState5, false);
+            piece.fillWithBlocks(worldIn, structureBB, 0, 4, 1, 8, 4, 1, iBlockState5, false);
+            piece.fillWithBlocks(worldIn, structureBB, 0, 4, 4, 3, 4, 4, iBlockState5, false);
+            piece.fillWithBlocks(worldIn, structureBB, 0, 5, 2, 8, 5, 3, iBlockState5, false);
             piece.setBlockState(worldIn, iBlockState5, 0, 4, 2, structureBB);
             piece.setBlockState(worldIn, iBlockState5, 0, 4, 3, structureBB);
             piece.setBlockState(worldIn, iBlockState5, 8, 4, 2, structureBB);
@@ -614,11 +624,11 @@ namespace build::village {
                 }
             }
 
-            piece.fillWithBlocks(worldIn, structureBB, 3, 4, 5, 3, 4, 10, iBlockState5, iBlockState5, false);
-            piece.fillWithBlocks(worldIn, structureBB, 7, 4, 2, 7, 4, 10, iBlockState5, iBlockState5, false);
-            piece.fillWithBlocks(worldIn, structureBB, 4, 5, 4, 4, 5, 10, iBlockState5, iBlockState5, false);
-            piece.fillWithBlocks(worldIn, structureBB, 6, 5, 4, 6, 5, 10, iBlockState5, iBlockState5, false);
-            piece.fillWithBlocks(worldIn, structureBB, 5, 6, 3, 5, 6, 10, iBlockState5, iBlockState5, false);
+            piece.fillWithBlocks(worldIn, structureBB, 3, 4, 5, 3, 4, 10, iBlockState5, false);
+            piece.fillWithBlocks(worldIn, structureBB, 7, 4, 2, 7, 4, 10, iBlockState5, false);
+            piece.fillWithBlocks(worldIn, structureBB, 4, 5, 4, 4, 5, 10, iBlockState5, false);
+            piece.fillWithBlocks(worldIn, structureBB, 6, 5, 4, 6, 5, 10, iBlockState5, false);
+            piece.fillWithBlocks(worldIn, structureBB, 5, 6, 3, 5, 6, 10, iBlockState5, false);
 
             for (int k=4; k >= 1; --k) {
                 piece.setBlockState(worldIn, iBlockState5, k, 2 + k, 7 - k, structureBB);
@@ -667,7 +677,7 @@ namespace build::village {
             piece.setBlockState(worldIn, &lce::blocks::BlocksInit::AIR, 2, 2, 0, structureBB);
             // func_189926_a(worldIn, villageIn, FACING::NORTH, 2, 3, 1, structureBB);
             // func_189927_a(worldIn, villageIn, structureBB, rng, 2, 1, 0, FACING::NORTH);
-            piece.fillWithBlocks(worldIn, structureBB, 1, 0, -1, 3, 2, -1, &lce::blocks::BlocksInit::AIR, &lce::blocks::BlocksInit::AIR, false);
+            piece.fillWithAir(worldIn, structureBB, 1, 0, -1, 3, 2, -1);
 
             if (lce::blocks::ids::isReplaceableBlock(piece.getBlockStateFromPos(worldIn, 2, 0, -1, structureBB)->getID()) &&
                 !lce::blocks::ids::isReplaceableBlock(piece.getBlockStateFromPos(worldIn, 2, -1, -1, structureBB)->getID())) {
@@ -703,7 +713,7 @@ namespace build::village {
 
         static bool addComponentParts(
                 World& worldIn, MU RNG& rng, const BoundingBox& structureBB, StructureComponent& piece) {
-            int averageGroundLvl = getAverageGroundLevel(worldIn, structureBB, piece);
+            c_int averageGroundLvl = getAverageGroundLevel(worldIn, structureBB, piece);
             if (averageGroundLvl < 0) { return true; }
             piece.offset(0, averageGroundLvl - piece.maxY + 6 - 1, 0);
 
@@ -712,9 +722,10 @@ namespace build::village {
             const lce::blocks::Block* iBlockState2 = getBiomeSpecificBlockState(&lce::blocks::BlocksInit::COBBLESTONE_STAIRS, piece.structureType); // .withProperty(BlockStairs.FACING, FACING::NORTH));
             const lce::blocks::Block* iBlockState3 = getBiomeSpecificBlockState(&lce::blocks::BlocksInit::OAK_WOOD, piece.structureType);
             const lce::blocks::Block* iBlockState4 = getBiomeSpecificBlockState(&lce::blocks::BlocksInit::OAK_FENCE, piece.structureType);
-            piece.fillWithBlocks(worldIn, structureBB, 0, 0, 0, 4, 0, 4, iBlockState, iBlockState, false);
-            piece.fillWithBlocks(worldIn, structureBB, 0, 4, 0, 4, 4, 4, iBlockState3, iBlockState3, false);
-            piece.fillWithBlocks(worldIn, structureBB, 1, 4, 1, 3, 4, 3, iBlockState1, iBlockState1, false);
+
+            piece.fillWithBlocks(worldIn, structureBB, 0, 0, 0, 4, 0, 4, iBlockState, false);
+            piece.fillWithBlocks(worldIn, structureBB, 0, 4, 0, 4, 4, 4, iBlockState3, false);
+            piece.fillWithBlocks(worldIn, structureBB, 1, 4, 1, 3, 4, 3, iBlockState1, false);
             piece.setBlockState(worldIn, iBlockState, 0, 1, 0, structureBB);
             piece.setBlockState(worldIn, iBlockState, 0, 2, 0, structureBB);
             piece.setBlockState(worldIn, iBlockState, 0, 3, 0, structureBB);
@@ -727,9 +738,9 @@ namespace build::village {
             piece.setBlockState(worldIn, iBlockState, 4, 1, 4, structureBB);
             piece.setBlockState(worldIn, iBlockState, 4, 2, 4, structureBB);
             piece.setBlockState(worldIn, iBlockState, 4, 3, 4, structureBB);
-            piece.fillWithBlocks(worldIn, structureBB, 0, 1, 1, 0, 3, 3, iBlockState1, iBlockState1, false);
-            piece.fillWithBlocks(worldIn, structureBB, 4, 1, 1, 4, 3, 3, iBlockState1, iBlockState1, false);
-            piece.fillWithBlocks(worldIn, structureBB, 1, 1, 4, 3, 3, 4, iBlockState1, iBlockState1, false);
+            piece.fillWithBlocks(worldIn, structureBB, 0, 1, 1, 0, 3, 3, iBlockState1, false);
+            piece.fillWithBlocks(worldIn, structureBB, 4, 1, 1, 4, 3, 3, iBlockState1, false);
+            piece.fillWithBlocks(worldIn, structureBB, 1, 1, 4, 3, 3, 4, iBlockState1, false);
             const lce::blocks::Block* glassPane = &lce::blocks::BlocksInit::GLASS_PANE;
             piece.setBlockState(worldIn, glassPane, 0, 2, 2, structureBB);
             piece.setBlockState(worldIn, glassPane, 2, 2, 4, structureBB);
@@ -751,7 +762,7 @@ namespace build::village {
                 }
             }
 
-            piece.fillWithBlocks(worldIn, structureBB, 1, 1, 1, 3, 3, 3, &lce::blocks::BlocksInit::AIR, &lce::blocks::BlocksInit::AIR, false);
+            piece.fillWithAir(worldIn, structureBB, 1, 1, 1, 3, 3, 3);
 
             if (piece.data & 1) /* isRoofAccessible */ {
                 piece.setBlockState(worldIn, iBlockState4, 0, 5, 0, structureBB);
@@ -800,7 +811,8 @@ namespace build::village {
         Path() = delete;
 
         static bool addComponentParts(
-                World& worldIn, MU RNG& rng, const BoundingBox& structureBB, StructureComponent& piece) {
+                World& worldIn, MU RNG& rng, const BoundingBox& structureBB, const StructureComponent& piece) {
+
             const lce::blocks::Block* iblockstate = getBiomeSpecificBlockState(&lce::blocks::BlocksInit::GRASS_PATH, piece.structureType);
             const lce::blocks::Block* iblockstate1 = getBiomeSpecificBlockState(&lce::blocks::BlocksInit::OAK_WOOD_PLANK, piece.structureType);
             const lce::blocks::Block* iblockstate2 = getBiomeSpecificBlockState(&lce::blocks::BlocksInit::GRAVEL, piece.structureType);
@@ -855,16 +867,17 @@ namespace build::village {
 
         static bool addComponentParts(
                 World& worldIn, MU RNG& rng, const BoundingBox& structureBB, StructureComponent& piece) {
-            int averageGroundLvl = getAverageGroundLevel(worldIn, structureBB, piece);
+            c_int averageGroundLvl = getAverageGroundLevel(worldIn, structureBB, piece);
             if (averageGroundLvl < 0) { return true; }
             piece.offset(0, averageGroundLvl - piece.maxY + 4 - 1, 0);
 
             const lce::blocks::Block* oakFence = getBiomeSpecificBlockState(&lce::blocks::BlocksInit::OAK_FENCE, piece.structureType);
-            piece.fillWithBlocks(worldIn, structureBB, 0, 0, 0, 2, 3, 1, &lce::blocks::BlocksInit::AIR, &lce::blocks::BlocksInit::AIR, false);
+
+            piece.fillWithAir(worldIn, structureBB, 0, 0, 0, 2, 3, 1);
             piece.setBlockState(worldIn, oakFence, 1, 0, 0, structureBB);
             piece.setBlockState(worldIn, oakFence, 1, 1, 0, structureBB);
             piece.setBlockState(worldIn, oakFence, 1, 2, 0, structureBB);
-            piece.setBlockState(worldIn, lce::blocks::BlocksInit::BLACK_WOOL, 1, 3, 0, structureBB); // Blocks.WOOL.getStateFromMeta(EnumDyeColor.WHITE.getDyeDamage())
+            piece.setBlockState(worldIn, lce::blocks::BlocksInit::BLACK_WOOL, 1, 3, 0, structureBB);
             // func_189926_a(worldIn, villageIn, FACING::EAST, 2, 3, 0, structureBB);
             // func_189926_a(worldIn, villageIn, FACING::NORTH, 1, 3, 1, structureBB);
             // func_189926_a(worldIn, villageIn, FACING::WEST, 0, 3, 0, structureBB);
@@ -883,7 +896,7 @@ namespace build::village {
 
         static bool addComponentParts(
                 World& worldIn, MU RNG& rng, const BoundingBox& structureBB, StructureComponent& piece)  {
-            int averageGroundLvl = getAverageGroundLevel(worldIn, structureBB, piece);
+            c_int averageGroundLvl = getAverageGroundLevel(worldIn, structureBB, piece);
             if (averageGroundLvl < 0) { return true; }
             piece.offset(0, averageGroundLvl - piece.maxY + 6 - 1, 0);
 
@@ -892,14 +905,15 @@ namespace build::village {
             const lce::blocks::Block* iblockstate2 = getBiomeSpecificBlockState(&lce::blocks::BlocksInit::COBBLESTONE_STAIRS, piece.structureType); // .withProperty(BlockStairs.FACING, EnumFacing.NORTH));
             const lce::blocks::Block* iblockstate3 = getBiomeSpecificBlockState(&lce::blocks::BlocksInit::OAK_WOOD, piece.structureType);
             const lce::blocks::Block* iblockstate4 = getBiomeSpecificBlockState(&lce::blocks::BlocksInit::OAK_FENCE, piece.structureType);
-            piece.fillWithBlocks(worldIn, structureBB, 1, 1, 1, 3, 5, 4, &lce::blocks::BlocksInit::AIR, &lce::blocks::BlocksInit::AIR, false);
+
+            piece.fillWithAir(worldIn, structureBB, 1, 1, 1, 3, 5, 4);
             piece.fillWithBlocks(worldIn, structureBB, 0, 0, 0, 3, 0, 4, iblockstate, iblockstate, false);
-            piece.fillWithBlocks(worldIn, structureBB, 1, 0, 1, 2, 0, 3, &lce::blocks::BlocksInit::DIRT, &lce::blocks::BlocksInit::DIRT, false);
+            piece.fillWithBlocks(worldIn, structureBB, 1, 0, 1, 2, 0, 3, &lce::blocks::BlocksInit::DIRT, false);
 
             if (piece.data >> 8 & 1) { // isTallHouse
-                piece.fillWithBlocks(worldIn, structureBB, 1, 4, 1, 2, 4, 3, iblockstate3, iblockstate3, false);
+                piece.fillWithBlocks(worldIn, structureBB, 1, 4, 1, 2, 4, 3, iblockstate3, false);
             } else {
-                piece.fillWithBlocks(worldIn, structureBB, 1, 5, 1, 2, 5, 3, iblockstate3, iblockstate3, false);
+                piece.fillWithBlocks(worldIn, structureBB, 1, 5, 1, 2, 5, 3, iblockstate3, false);
             }
 
             piece.setBlockState(worldIn, iblockstate3, 1, 4, 0,  structureBB);
@@ -912,14 +926,14 @@ namespace build::village {
             piece.setBlockState(worldIn, iblockstate3, 3, 4, 1,  structureBB);
             piece.setBlockState(worldIn, iblockstate3, 3, 4, 2,  structureBB);
             piece.setBlockState(worldIn, iblockstate3, 3, 4, 3,  structureBB);
-            piece.fillWithBlocks(worldIn, structureBB, 0, 1, 0, 0, 3, 0, iblockstate3, iblockstate3, false);
-            piece.fillWithBlocks(worldIn, structureBB, 3, 1, 0, 3, 3, 0, iblockstate3, iblockstate3, false);
-            piece.fillWithBlocks(worldIn, structureBB, 0, 1, 4, 0, 3, 4, iblockstate3, iblockstate3, false);
-            piece.fillWithBlocks(worldIn, structureBB, 3, 1, 4, 3, 3, 4, iblockstate3, iblockstate3, false);
-            piece.fillWithBlocks(worldIn, structureBB, 0, 1, 1, 0, 3, 3, iblockstate1, iblockstate1, false);
-            piece.fillWithBlocks(worldIn, structureBB, 3, 1, 1, 3, 3, 3, iblockstate1, iblockstate1, false);
-            piece.fillWithBlocks(worldIn, structureBB, 1, 1, 0, 2, 3, 0, iblockstate1, iblockstate1, false);
-            piece.fillWithBlocks(worldIn, structureBB, 1, 1, 4, 2, 3, 4, iblockstate1, iblockstate1, false);
+            piece.fillWithBlocks(worldIn, structureBB, 0, 1, 0, 0, 3, 0, iblockstate3, false);
+            piece.fillWithBlocks(worldIn, structureBB, 3, 1, 0, 3, 3, 0, iblockstate3, false);
+            piece.fillWithBlocks(worldIn, structureBB, 0, 1, 4, 0, 3, 4, iblockstate3, false);
+            piece.fillWithBlocks(worldIn, structureBB, 3, 1, 4, 3, 3, 4, iblockstate3, false);
+            piece.fillWithBlocks(worldIn, structureBB, 0, 1, 1, 0, 3, 3, iblockstate1, false);
+            piece.fillWithBlocks(worldIn, structureBB, 3, 1, 1, 3, 3, 3, iblockstate1, false);
+            piece.fillWithBlocks(worldIn, structureBB, 1, 1, 0, 2, 3, 0, iblockstate1, false);
+            piece.fillWithBlocks(worldIn, structureBB, 1, 1, 4, 2, 3, 4, iblockstate1, false);
             piece.setBlockState(worldIn, &lce::blocks::BlocksInit::GLASS_PANE, 0, 2, 2,  structureBB);
             piece.setBlockState(worldIn, &lce::blocks::BlocksInit::GLASS_PANE, 3, 2, 2,  structureBB);
 
@@ -961,12 +975,13 @@ namespace build::village {
 
         static bool addComponentParts(
                 World& worldIn, MU RNG& rng, const BoundingBox& structureBB, StructureComponent& piece) {
-            int averageGroundLvl = getAverageGroundLevel(worldIn, structureBB, piece);
+            c_int averageGroundLvl = getAverageGroundLevel(worldIn, structureBB, piece);
             if (averageGroundLvl < 0) { return true; }
             piece.offset(0, averageGroundLvl - piece.maxY + 3, 0);
 
             const lce::blocks::Block* iblockstate = getBiomeSpecificBlockState(&lce::blocks::BlocksInit::COBBLESTONE, piece.structureType);
             const lce::blocks::Block* iblockstate1 = getBiomeSpecificBlockState(&lce::blocks::BlocksInit::OAK_FENCE, piece.structureType);
+
             piece.fillWithBlocks(worldIn, structureBB, 1, 0, 1, 4, 12, 4, iblockstate, &lce::blocks::BlocksInit::FLOWING_WATER, false);
             piece.setBlockState(worldIn, lce::blocks::BlocksInit::AIR, 2, 12, 2, structureBB);
             piece.setBlockState(worldIn, lce::blocks::BlocksInit::AIR, 3, 12, 2, structureBB);
@@ -980,7 +995,7 @@ namespace build::village {
             piece.setBlockState(worldIn, iblockstate1, 1, 14, 4, structureBB);
             piece.setBlockState(worldIn, iblockstate1, 4, 13, 4, structureBB);
             piece.setBlockState(worldIn, iblockstate1, 4, 14, 4, structureBB);
-            piece.fillWithBlocks(worldIn, structureBB, 1, 15, 1, 4, 15, 4, iblockstate, iblockstate, false);
+            piece.fillWithBlocks(worldIn, structureBB, 1, 15, 1, 4, 15, 4, iblockstate, false);
 
             for (int i=0; i <= 5; ++i) {
                 for (int j=0; j <= 5; ++j) {
@@ -1025,40 +1040,40 @@ namespace build::village {
         bool result = false;
 
         switch (piece.type) {
-            case PieceType::PT_Village_House4Garden:
+            case PT_Village_House4Garden:
                 result = House4Garden::addComponentParts(worldIn, rng, structureBB, piece);
                 break;
-            case PieceType::PT_Village_Church:
+            case PT_Village_Church:
                 result = Church::addComponentParts(worldIn, rng, structureBB, piece);
                 break;
-            case PieceType::PT_Village_House1:
+            case PT_Village_House1:
                 result = House1::addComponentParts(worldIn, rng, structureBB, piece);
                 break;
-            case PieceType::PT_Village_Hall:
+            case PT_Village_Hall:
                 result = Hall::addComponentParts(worldIn, rng, structureBB, piece);
                 break;
-            case PieceType::PT_Village_Field1:
+            case PT_Village_Field1:
                 result = Field1::addComponentParts(worldIn, rng, structureBB, piece);
                 break;
-            case PieceType::PT_Village_Field2:
+            case PT_Village_Field2:
                 result = Field2::addComponentParts(worldIn, rng, structureBB, piece);
                 break;
-            case PieceType::PT_Village_House2:
+            case PT_Village_House2:
                 result = House2::addComponentParts(worldIn, rng, structureBB, piece);
                 break;
-            case PieceType::PT_Village_House3:
+            case PT_Village_House3:
                 result = House3::addComponentParts(worldIn, rng, structureBB, piece);
                 break;
-            case PieceType::PT_Village_Torch:
+            case PT_Village_Torch:
                 result = Torch::addComponentParts(worldIn, rng, structureBB, piece);
                 break;
-            case PieceType::PT_Village_WoodHut:
+            case PT_Village_WoodHut:
                 result = WoodHut::addComponentParts(worldIn, rng, structureBB, piece);
                 break;
-            case PieceType::PT_Village_Road:
+            case PT_Village_Road:
                 result = Path::addComponentParts(worldIn, rng, structureBB, piece);
                 break;
-            case PieceType::PT_Village_Start:
+            case PT_Village_Start:
                 result = Well::addComponentParts(worldIn, rng, structureBB, piece);
                 break;
             default:;

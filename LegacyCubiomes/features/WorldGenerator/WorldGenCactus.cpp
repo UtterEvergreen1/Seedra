@@ -9,7 +9,9 @@ bool BlockCactus::canBlockStay(World* worldIn, const Pos3D& pos) {
     using namespace lce::blocks;
     for (const FACING enumFacing: FACING_HORIZONTAL) {
         const int blockId = worldIn->getBlockId(pos.offset(enumFacing));
-        if (ids::isSolidBlock(blockId) || ids::isLavaMaterial(blockId)) { return false; }
+        if (ids::isSolidBlock(blockId) || ids::isLavaMaterial(blockId)) {
+            return false;
+        }
     }
 
     const int blockId = worldIn->getBlockId(pos.down());
@@ -33,6 +35,7 @@ bool WorldGenCactus::generate(World* worldIn, RNG& rng, const Pos3D& pos) const 
             x_off = rng.nextInt(8) - rng.nextInt(8);
         }
         Pos3D blockPos = position.add(x_off, y_off, z_off);
+
 
         if (worldIn->isAirBlock(blockPos)) {
             int cactusYPos = 0;

@@ -16,7 +16,7 @@ class Container {
 public:
     size_t numSlots{};
     std::vector<ItemStack> inventorySlots;
-    static inline constexpr i8 CHEST_SIZE = 27;
+    static constexpr i8 CHEST_SIZE = 27;
 
     Container() : numSlots(CHEST_SIZE), inventorySlots(CHEST_SIZE) {}
 

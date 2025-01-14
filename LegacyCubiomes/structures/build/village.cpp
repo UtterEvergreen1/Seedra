@@ -18,7 +18,8 @@ namespace build::village {
 
 
 
-    MU const lce::blocks::Block* getBiomeSpecificBlockState(const lce::blocks::Block* blockPtr, int structureType) {
+    MU const lce::blocks::Block* getBiomeSpecificBlockState(const lce::blocks::Block* blockPtr,
+                                                            const int structureType) {
 
         if (structureType == 1) {
             if (blockPtr == &lce::blocks::BlocksInit::OAK_WOOD) {
@@ -92,7 +93,7 @@ namespace build::village {
         return blockPtr;
     }
 
-    MU ND int getAverageGroundLevel(World& worldIn, const BoundingBox& structureBB, StructureComponent& piece) {
+    MU ND int getAverageGroundLevel(World& worldIn, const BoundingBox& structureBB, const StructureComponent& piece) {
         int i = 0;
         int j = 0;
         Pos3D blockPos;
@@ -110,9 +111,8 @@ namespace build::village {
 
         if (j == 0) {
             return -1;
-        } else {
-            return i / j;
         }
+        return i / j;
     }
 
 

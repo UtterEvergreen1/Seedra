@@ -6,19 +6,19 @@ namespace rolls {
 
 
     ///TODO: MAKE SURE IT WORKS!!!
-    void Mineshaft::generateStructure(const gen::Mineshaft* mg,
-                                      ChunkPrimer* chunk, RNG& rng, c_int chunkX, c_int chunkZ) {
+    void Mineshaft::generateStructure(World& worldIn, const ChunkPrimer* chunk, const gen::Mineshaft* mg,
+            RNG& rng, c_int chunkX, c_int chunkZ) {
         for (int pieceIndex = 0; pieceIndex < mg->pieceArraySize; ++pieceIndex) {
             const StructureComponent& piece = mg->pieceArray[pieceIndex];
 
-            if (piece.type == PieceType::PT_Mineshaft_NONE) continue;
+            if (piece.type == PT_Mineshaft_NONE) continue;
 
             BoundingBox chunkBoundingBox(chunkX << 4, 0, chunkZ << 4, (chunkX << 4) + 15, 255, (chunkZ << 4) + 15);
 
             if (!piece.intersects(chunkBoundingBox)) continue;
 
 
-            if (piece.type == PieceType::PT_Mineshaft_Corridor) {
+            if (piece.type == PT_Mineshaft_Corridor) {
                 if (chunk && StructureComponent::isLiquidInStructureBoundingBox(chunkBoundingBox, piece, chunk))
                     continue;
 
@@ -121,9 +121,9 @@ namespace rolls {
             for (int zChunk = (mg->startPos.z >> 4) - 6; zChunk < zEnd; ++zChunk) {
                 rng.setSeed((aix + zChunk * zModifier) ^ g.getWorldSeed());
                 rng.advance(); // advance rng
-                ChunkPrimer* chunk = nullptr;
+                const ChunkPrimer* chunk = nullptr;
                 if (generateFullChunk) { chunk = Chunk::provideChunk(worldIn, g, xChunk, zChunk); }
-                generateStructure(mg, chunk, rng, xChunk, zChunk);
+                generateStructure(worldIn, chunk, mg, rng, xChunk, zChunk);
                 if (generateFullChunk) { delete chunk; }
             }
         }

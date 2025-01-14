@@ -10,10 +10,12 @@ namespace rolls {
     class MU Mineshaft {
     public:
         std::vector<std::pair<Pos3D, i64>> mineshaftChests{};
-        void generateStructure(const gen::Mineshaft* mg, ChunkPrimer* chunk, RNG& rng, int chunkX, int chunkZ);
+
+        void generateStructure(World& worldIn, const ChunkPrimer* chunk, const gen::Mineshaft* mg,
+            RNG& rng, int chunkX, int chunkZ);
 
         /// Generate all chests for a given mineshaft
-        MU void generateAllChests(World& world, const gen::Mineshaft* mg, const Generator& g, bool generateFullChunk);
+        MU void generateAllChests(World& worldIn, const gen::Mineshaft* mg, const Generator& g, bool generateFullChunk);
 
         void generateChest(const ChunkPrimer* chunk, const BoundingBox& chunkBB,
                            const StructureComponent& piece, RNG& rng, int x, int y, int z);

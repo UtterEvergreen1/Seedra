@@ -127,22 +127,22 @@ namespace gen {
         // step 2: create the piece
         c_int randomRoom = rng.nextInt(100);
         BoundingBox boundingBox;
-        int additionalData = 0;
+        int data = 0;
 
         // step 3: 3 different cases
         if (randomRoom >= 80) { // CASE CROSSING
             boundingBox = BoundingBox::orientBox(pos, -1, 0, 0, 5, 3, 5, facing);
             if (rng.nextInt(4) == 0) {
                 boundingBox.maxY += 4;
-                additionalData = 1;
+                data = 1;
             }
             if (collides(boundingBox)) return;
-            buildComponent(rng, {PieceType::PT_Mineshaft_Crossing, static_cast<int8_t>(depth + 1), boundingBox, facing, additionalData});
+            buildComponent(rng, {PT_Mineshaft_Crossing, static_cast<int8_t>(depth + 1), boundingBox, facing, data});
 
         } else if (randomRoom >= 70) { // CASE STAIRS
             boundingBox = BoundingBox::orientBox(pos, 0, -5, 0, 3, 8, 9, facing);
             if (collides(boundingBox)) return;
-            buildComponent(rng, {PieceType::PT_Mineshaft_Stairs, static_cast<int8_t>(depth + 1), boundingBox, facing, 0});
+            buildComponent(rng, {PT_Mineshaft_Stairs, static_cast<int8_t>(depth + 1), boundingBox, facing, 0});
 
         } else { // CASE CORRIDOR
             int i;
@@ -155,21 +155,21 @@ namespace gen {
             if (i == 0) { return; }
             c_bool hasRails = rng.nextInt(3) == 0;
             c_bool hasSpiders = !hasRails && rng.nextInt(23) == 0;
-            additionalData |= hasRails;
-            additionalData |= hasSpiders << 1;
-            buildComponent(rng, {PieceType::PT_Mineshaft_Corridor, static_cast<int8_t>(depth + 1), boundingBox, facing, additionalData});
+            data |= hasRails;
+            data |= hasSpiders << 1;
+            buildComponent(rng, {PT_Mineshaft_Corridor, static_cast<int8_t>(depth + 1), boundingBox, facing, data});
         }
     }
 
 
-    void Mineshaft::buildComponent(RNG& rng, StructureComponent p) {
+    void Mineshaft::buildComponent(RNG& rng, const StructureComponent& p) {
         pieceArray[pieceArraySize++] = p;
 
         switch (p.type) {
             default:
                 break;
 
-            case PieceType::PT_Mineshaft_Room: {
+            case PT_Mineshaft_Room: {
                 int k;
                 int j = p.getYSize() - 4;
                 if (j <= 0) j = 1;
@@ -198,7 +198,7 @@ namespace gen {
                 return;
             }
 
-            case PieceType::PT_Mineshaft_Corridor: {
+            case PT_Mineshaft_Corridor: {
                 c_int corridorType = rng.nextInt(4);
                 c_int yState = p.minY + rng.nextInt(3) - 1;
                 switch (p.facing) {
@@ -285,7 +285,7 @@ namespace gen {
                 return;
             }
 
-            case PieceType::PT_Mineshaft_Crossing: {
+            case PT_Mineshaft_Crossing: {
                 switch (p.facing) {
                     case FACING::NORTH:
                     default:
@@ -323,7 +323,7 @@ namespace gen {
                 return;
             }
 
-            case PieceType::PT_Mineshaft_Stairs: {
+            case PT_Mineshaft_Stairs: {
                 switch (p.facing) {
                     default:
                     case FACING::NORTH:

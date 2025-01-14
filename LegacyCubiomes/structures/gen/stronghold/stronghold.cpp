@@ -83,7 +83,7 @@ namespace gen {
 
             // creates starting staircase
             FACING direction = FACING_HORIZONTAL[rng.nextInt(4)];
-            BoundingBox stairsBoundingBox = Piece::makeBoundingBox(startPos.x, 64, startPos.z, direction, 5, 11, 5);
+            BoundingBox stairsBoundingBox = StructureComponent::makeBoundingBox(startPos.x, 64, startPos.z, direction, 5, 11, 5);
 
             pieceArray[pieceArraySize++] = {PT_Stronghold_StairsDown, 0, stairsBoundingBox, direction, 1};
 
@@ -92,7 +92,7 @@ namespace gen {
 
             while (pendingPiecesArraySize != 0) {
                 c_int i = rng.nextInt(pendingPiecesArraySize);
-                Piece& piece = pieceArray[pendingPieceArray[i]];
+                StructureComponent& piece = pieceArray[pendingPieceArray[i]];
                 pendingPiecesArraySize--;
 
                 // shift all the pieces over
@@ -253,9 +253,9 @@ namespace gen {
                 break;
             case PT_Stronghold_FiveCrossing:
                 additionalData |= rng.nextInt(5) << 16;
-                additionalData |= (rng.nextBoolean()) << 0;
-                additionalData |= (rng.nextBoolean()) << 1;
-                additionalData |= (rng.nextBoolean()) << 2;
+                additionalData |= rng.nextBoolean() << 0;
+                additionalData |= rng.nextBoolean() << 1;
+                additionalData |= rng.nextBoolean() << 2;
                 additionalData |= (rng.nextInt(3) > 0) << 3;
                 break;
             case PT_Stronghold_ChestCorridor:
@@ -377,7 +377,7 @@ namespace gen {
     }
 
 
-    Piece* Stronghold::findCollisionPiece(const BoundingBox& boundingBox) {
+    StructureComponent* Stronghold::findCollisionPiece(const BoundingBox& boundingBox) {
         for (int i = 0; i < pieceArraySize; i++) {
             if (pieceArray[i].intersects(boundingBox)) { return &pieceArray[i]; }
         }
@@ -393,7 +393,7 @@ namespace gen {
     bool inline Stronghold::isOkBox(const BoundingBox& boundingBox) { return boundingBox.minY > 10; }
 
 
-    void Stronghold::genSmallDoorChildForward(const Piece& piece, c_int n, c_int n2) {
+    void Stronghold::genSmallDoorChildForward(const StructureComponent& piece, c_int n, c_int n2) {
         switch (piece.facing) {
             case FACING::NONE:
             case FACING::DOWN:
@@ -411,7 +411,7 @@ namespace gen {
     }
 
 
-    void Stronghold::genSmallDoorChildLeft(const Piece& piece, c_int n, c_int n2) {
+    void Stronghold::genSmallDoorChildLeft(const StructureComponent& piece, c_int n, c_int n2) {
         switch (piece.facing) {
             case FACING::NONE:
             case FACING::DOWN:
@@ -428,7 +428,7 @@ namespace gen {
         }
     }
 
-    void Stronghold::genSmallDoorChildRight(const Piece& piece, c_int n, c_int n2) {
+    void Stronghold::genSmallDoorChildRight(const StructureComponent& piece, c_int n, c_int n2) {
         switch (piece.facing) {
             case FACING::NONE:
             case FACING::DOWN:
@@ -446,7 +446,7 @@ namespace gen {
     }
 
 
-    void Stronghold::addChildren(const Piece& piece) {
+    void Stronghold::addChildren(const StructureComponent& piece) {
         switch (piece.type) {
             case PT_Stronghold_NONE:
                 break;

@@ -4,7 +4,6 @@
 
 #include "ItemEntry.hpp"
 #include "LegacyCubiomes/enchants/enchantment.hpp"
-#include "LegacyCubiomes/enchants/enchantmentData.hpp"
 #include "LegacyCubiomes/loot/classes/ItemStack.hpp"
 #include "LegacyCubiomes/utils/rng.hpp"
 #include "UniformRoll.hpp"
@@ -44,12 +43,11 @@ public:
     template<bool legacy>
     ND ItemStack createLootRoll(RNG& rng) const {
         c_int randomWeight = rng.nextInt(totalWeight);
-        // std::cout << randomWeight << " " << totalWeight << std::endl;
 
         size_t high = cumulativeWeights.size();
         size_t low = 0;
         while (low < high) {
-            size_t mid = (low + high) >> 1;
+            const size_t mid = (low + high) >> 1;
             if (cumulativeWeights[mid] > randomWeight) {
                 high = mid;
             } else {
@@ -60,7 +58,7 @@ public:
         const ItemEntry& selectedItem = items[low];
         ItemStack itemStack = {selectedItem.item,
                                LootTable::getInt<legacy>(rng, selectedItem.getMin(), selectedItem.getMax())};
-        size_t functionsSize = selectedItem.functions.size();
+        const size_t functionsSize = selectedItem.functions.size();
         if EXPECT_FALSE (functionsSize) {
             for (size_t index = 0; index < functionsSize; index++) {
                 selectedItem.functions[index]->apply(itemStack, rng);

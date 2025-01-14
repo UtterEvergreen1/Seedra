@@ -16,32 +16,32 @@ namespace rolls {
         for (int pieceIndex = 0; pieceIndex < sg->pieceArraySize; ++pieceIndex) {
             const StructureComponent &piece = sg->pieceArray[pieceIndex];
 
-            if (piece.type == PieceType::PT_Stronghold_NONE) continue;
+            if (piece.type == PT_Stronghold_NONE) continue;
 
             if (!piece.intersects(chunkBoundingBox)) continue;
 
-            if (chunk && piece.type != PieceType::PT_Stronghold_PortalRoom &&
+            if (chunk && piece.type != PT_Stronghold_PortalRoom &&
                 StructureComponent::isLiquidInStructureBoundingBox(chunkBoundingBox, piece, chunk))
                 continue;
 
             switch (piece.type) {
-                case PieceType::PT_Stronghold_NONE:
+                case PT_Stronghold_NONE:
                     break;
-                case PieceType::PT_Stronghold_Straight:
+                case PT_Stronghold_Straight:
                     // true means check for air
-                    StructureComponent::fillWithRandomizedBlocks(chunkBoundingBox, piece, 0, 0, 0, 4, 4, 6, rng, chunk);
+                    StructureComponent::fillWithRandomizedBlocksRNGOnly(chunkBoundingBox, piece, 0, 0, 0, 4, 4, 6, rng, chunk);
                     rng.advance<4>();
                     break;
-                case PieceType::PT_Stronghold_PrisonHall:
-                    StructureComponent::fillWithRandomizedBlocks(chunkBoundingBox, piece, 0, 0, 0, 8, 4, 10, rng, chunk);
+                case PT_Stronghold_PrisonHall:
+                    StructureComponent::fillWithRandomizedBlocksRNGOnly(chunkBoundingBox, piece, 0, 0, 0, 8, 4, 10, rng, chunk);
                     rng.advance<12>();
                     break;
-                case PieceType::PT_Stronghold_LeftTurn:
-                case PieceType::PT_Stronghold_RightTurn:
-                    StructureComponent::fillWithRandomizedBlocks(chunkBoundingBox, piece, 0, 0, 0, 4, 4, 4, rng, chunk);
+                case PT_Stronghold_LeftTurn:
+                case PT_Stronghold_RightTurn:
+                    StructureComponent::fillWithRandomizedBlocksRNGOnly(chunkBoundingBox, piece, 0, 0, 0, 4, 4, 4, rng, chunk);
                     break;
-                case PieceType::PT_Stronghold_RoomCrossing:
-                    StructureComponent::fillWithRandomizedBlocks(chunkBoundingBox, piece, 0, 0, 0, 10, 6, 10, rng, chunk);
+                case PT_Stronghold_RoomCrossing:
+                    StructureComponent::fillWithRandomizedBlocksRNGOnly(chunkBoundingBox, piece, 0, 0, 0, 10, 6, 10, rng, chunk);
                     if constexpr (stopStrongholdChest) {
                         if (piece == pieceStop) return true;
                     }
@@ -49,25 +49,25 @@ namespace rolls {
                         StructureComponent::generateChest(chunkBoundingBox, piece, rng, 3, 4, 8);
                     }
                     break;
-                case PieceType::PT_Stronghold_StraightStairsDown:
-                    StructureComponent::fillWithRandomizedBlocks(chunkBoundingBox, piece, 0, 0, 0, 4, 10, 7, rng, chunk);
+                case PT_Stronghold_StraightStairsDown:
+                    StructureComponent::fillWithRandomizedBlocksRNGOnly(chunkBoundingBox, piece, 0, 0, 0, 4, 10, 7, rng, chunk);
                     break;
-                case PieceType::PT_Stronghold_StairsDown:
-                    StructureComponent::fillWithRandomizedBlocks(chunkBoundingBox, piece, 0, 0, 0, 4, 10, 4, rng, chunk);
+                case PT_Stronghold_StairsDown:
+                    StructureComponent::fillWithRandomizedBlocksRNGOnly(chunkBoundingBox, piece, 0, 0, 0, 4, 10, 4, rng, chunk);
                     break;
-                case PieceType::PT_Stronghold_FiveCrossing:
-                    StructureComponent::fillWithRandomizedBlocks(chunkBoundingBox, piece, 0, 0, 0, 9, 8, 10, rng, chunk);
+                case PT_Stronghold_FiveCrossing:
+                    StructureComponent::fillWithRandomizedBlocksRNGOnly(chunkBoundingBox, piece, 0, 0, 0, 9, 8, 10, rng, chunk);
                     rng.advance<109>();
                     break;
-                case PieceType::PT_Stronghold_ChestCorridor:
-                    StructureComponent::fillWithRandomizedBlocks(chunkBoundingBox, piece, 0, 0, 0, 4, 4, 6, rng, chunk);
+                case PT_Stronghold_ChestCorridor:
+                    StructureComponent::fillWithRandomizedBlocksRNGOnly(chunkBoundingBox, piece, 0, 0, 0, 4, 4, 6, rng, chunk);
                     if constexpr (stopStrongholdChest) {
                         if (piece == pieceStop) return true;
                     }
                     StructureComponent::generateChest(chunkBoundingBox, piece, rng, 3, 2, 3);
                     break;
-                case PieceType::PT_Stronghold_Library:
-                    StructureComponent::fillWithRandomizedBlocks(chunkBoundingBox, piece, 0, 0, 0, 13,
+                case PT_Stronghold_Library:
+                    StructureComponent::fillWithRandomizedBlocksRNGOnly(chunkBoundingBox, piece, 0, 0, 0, 13,
                                              piece.data ? 10 : 5, 14, rng, chunk);
                     rng.advance<520>();
                     if constexpr (stopStrongholdChest) {
@@ -76,7 +76,7 @@ namespace rolls {
                     StructureComponent::generateChest(chunkBoundingBox, piece, rng, 3, 3, 5);
                     if (piece.data == 1) { StructureComponent::generateChest(chunkBoundingBox, piece, rng, 12, 8, 1); }
                     break;
-                case PieceType::PT_Stronghold_PortalRoom:
+                case PT_Stronghold_PortalRoom:
                     if constexpr (stopPortal) {
                         rng.advance<760>();
                         return true;
@@ -84,7 +84,7 @@ namespace rolls {
                         rng.advance<772>(); // 760 rolls + 12 eye rolls = 772 rolls
                     }
                     break;
-                case PieceType::PT_Stronghold_FillerCorridor:
+                case PT_Stronghold_FillerCorridor:
                     break;
 
             }
@@ -103,27 +103,27 @@ namespace rolls {
         return additionalStrongholdRolls<isStrongholdChest, false>(chunk, sg, rng, xChunk, zChunk, pieceStop);
     }
 
-    void Stronghold::setEye(const BoundingBox &chunkBB, const StructureComponent &piece, int x, int z, RNG &random,
-                            std::vector<bool> &portalRoomEyes, int &success, int index) {
-        bool hasEye = random.nextFloat() > 0.9F;
-        Pos2D pos = piece.getWorldPos(x, z);
+    void Stronghold::setEye(const BoundingBox &chunkBB, const StructureComponent &piece, c_int x, c_int z, RNG &random,
+                            std::vector<bool> &portalRoomEyes, int &success, c_int index) {
+        c_bool hasEye = random.nextFloat() > 0.9F;
+        const Pos2D pos = piece.getWorldPos(x, z);
         if (pos.insideBounds(chunkBB) && pos.insideBounds(piece)) {
             portalRoomEyes[index] = hasEye;
             success++;
         }
     }
 
-    [[gnu::noinline]] std::vector<bool> Stronghold::getEyePlacements(World& worldIn, gen::Stronghold * sg, const Generator &g) {
+    [[gnu::noinline]] std::vector<bool> Stronghold::getEyePlacements(World& worldIn, const gen::Stronghold * sg, const Generator &g) {
         std::vector<bool> eyes(12, false);
         const Pos2D portalRoomPos = sg->portalRoomPiece->getWorldPos(5, 10);
-        const BoundingBox portalRoomBoundingBox = BoundingBox(portalRoomPos.x - 5, 0, portalRoomPos.z - 5,
-                                                              portalRoomPos.x + 5, 255, portalRoomPos.z + 5);
-        Pos2D portalRoomChunkPos = portalRoomPos.toChunkPos();
+        const auto portalRoomBoundingBox = BoundingBox(portalRoomPos.x - 5, 0, portalRoomPos.z - 5,
+                                                       portalRoomPos.x + 5, 255, portalRoomPos.z + 5);
+        const Pos2D portalRoomChunkPos = portalRoomPos.toChunkPos();
         int eyesPlaced = 0;
         for (int x = -1; x <= 1; ++x) {
             for (int z = -1; z <= 1; ++z) {
-                int checkChunkX = portalRoomChunkPos.x + x;
-                int checkChunkZ = portalRoomChunkPos.z + z;
+                c_int checkChunkX = portalRoomChunkPos.x + x;
+                c_int checkChunkZ = portalRoomChunkPos.z + z;
                 const BoundingBox chunkBoundingBox = BoundingBox::makeChunkBox(checkChunkX, checkChunkZ);
                 if (!portalRoomBoundingBox.intersects(chunkBoundingBox))
                     continue;
@@ -158,10 +158,10 @@ namespace rolls {
         return eyes;
     }
 
-    MU int Stronghold::getEyesCount(World& worldIn, gen::Stronghold * sg, const Generator &g) {
+    MU int Stronghold::getEyesCount(World& worldIn, const gen::Stronghold * sg, const Generator &g) {
         std::vector<bool> eyes = getEyePlacements(worldIn, sg, g);
         int count = 0;
-        for (bool eye : eyes) {
+        for (c_bool eye : eyes) {
             if (eye) count++;
         }
         return count;

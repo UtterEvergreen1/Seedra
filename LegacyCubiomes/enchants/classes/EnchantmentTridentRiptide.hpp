@@ -9,7 +9,7 @@ class EnchantmentTridentRiptide final : public Enchantment {
 public:
     EnchantmentTridentRiptide(std::string name, const eRarity rarity) :
             Enchantment(std::move(name), rarity, &Type::TRIDENT,
-                        EnumName::TRIDENT_RIPTIDE, 3) {};
+                        EnumName::TRIDENT_RIPTIDE, 3) {}
 
     int getMinCost(c_int enchantmentLevel) override { return LEVELS_MIN[enchantmentLevel - 1]; }
 

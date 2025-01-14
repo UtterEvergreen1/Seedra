@@ -33,8 +33,9 @@ ELDataArray* EnchantWithLevelsBook::buildEnchantmentList(const ItemStack& itemSt
     c_int cost = (item->getCost() >> 2) + 1;
 
     level += 1 + rng.nextInt(cost) + rng.nextInt(cost);
+    const float levelf = static_cast<float>(level);
     c_float f = (rng.nextFloat() + rng.nextFloat() - 1.0F) * 0.15F;
-    level = MathHelper::clamp((int) std::round((float) level + (float) level * f), 1, 0x7fffffff);
+    level = MathHelper::clamp(static_cast<int>(std::round(levelf + levelf * f)), 1, 0x7fffffff);
 
     ELDataArray* enchants = EnchantmentHelper::BOOK_LEVEL_TABLE.get(level);
     enchants->addRandomItem(rng);
@@ -69,8 +70,9 @@ EnchDataVec_t EnchantWithLevelsItem::buildEnchantmentList(const ItemStack& itemS
     if (i == 0) return list;
 
     level = level + 1 + rng.nextInt(i / 4 + 1) + rng.nextInt(i / 4 + 1);
-    float f = (rng.nextFloat() + rng.nextFloat() - 1.0F) * 0.15F;
-    level = MathHelper::clamp((int) std::round((float) level + (float) level * f), 1,
+    const float levelf = static_cast<float>(level);
+    const float f = (rng.nextFloat() + rng.nextFloat() - 1.0F) * 0.15F;
+    level = MathHelper::clamp(static_cast<int>(std::round(levelf + levelf * f)), 1,
                               std::numeric_limits<int>::max()); // 0x7fffffff
 
     std::vector<EnchantmentData> list1 = getEnchantmentDataList(level, itemStackIn);
@@ -98,7 +100,8 @@ EnchDataVec_t EnchantWithLevelsItem::getEnchantmentDataList(c_int enchantmentLev
 
         if (!pointer->type->canEnchantItem(ItemStackIn.getItem())) { continue; }
 
-        for (i8 i = pointer->maxLevel; i > 0; --i) { // maxLevel to minLevel - 1 (always 0)
+        // maxLevel to minLevel - 1 (always 0)
+        for (u8 i = pointer->maxLevel; i > 0; --i) {
 
             if (enchantmentLevelIn >= pointer->getMinCost(i) && enchantmentLevelIn <= pointer->getMaxCost(i)) {
                 list.emplace_back(pointer, i);
@@ -117,11 +120,8 @@ EnchDataVec_t EnchantWithLevelsItem::getEnchantmentDataList(c_int enchantmentLev
 
 
 void EnchantWithLevelsItem::removeIncompatible(EnchDataVec_t& enchDataList, const EnchantmentData enchData) {
-    // std::cout << "REMOVE_INCOMPATIBLE" << std::endl;
-
     for (auto it = enchDataList.begin(); it != enchDataList.end();) {
         if (!enchData.obj->isCompatibleWith(it->obj)) {
-            // std::cout << it->obj->name << " removed" << std::endl;
             it = enchDataList.erase(it);
         } else {
             ++it;

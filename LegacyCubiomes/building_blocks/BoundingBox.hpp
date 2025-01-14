@@ -20,6 +20,7 @@ struct BoundingBox {
     ND bool intersects(const BoundingBox& other) const;
     MU ND bool contains(const BoundingBox& other) const;
     MU void encompass(const BoundingBox& other);
+    MU void shrinkToFit(const BoundingBox& other);
 
     MU ND bool isVecInside(Pos3D pos) const;
 

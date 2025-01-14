@@ -109,8 +109,7 @@ int WorldGenAbstractTree::placeTrunk(World* worldIn, RNG& rand, const Pos3D& pos
     if (vineGrowthChance == 0.0) {
         for (int j3 = 0; j3 < height; ++j3) {
             const int blockId = worldIn->getBlockId(pos.up(j3));
-            if (lce::blocks::ids::isAirOrLeavesBlock(blockId) ||
-                blockId == lce::blocks::ids::VINES_ID) {
+            if (lce::blocks::ids::isAirOrLeavesBlock(blockId) || blockId == lce::blocks::ids::VINES_ID) {
                 worldIn->setBlock(pos.up(j3), woodType);
             }
         }
