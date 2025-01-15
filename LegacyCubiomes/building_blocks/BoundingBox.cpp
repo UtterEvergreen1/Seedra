@@ -47,6 +47,13 @@ void BoundingBox::encompass(const BoundingBox& other) {
 }
 
 
+/// makes "*this" expand such that it contains "other". Only y-coords.
+MU void BoundingBox::encompassY(const BoundingBox& other) {
+    if (other.minY < minY) minY = other.minY;
+    if (other.maxY > maxY) maxY = other.maxY;
+}
+
+
 /// makes "*this" shrink such that "other" contains it.
 MU void BoundingBox::shrinkToFit(const BoundingBox& other) {
     if (minX < other.minX) minX = other.minX;

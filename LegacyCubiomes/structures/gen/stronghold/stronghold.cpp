@@ -264,7 +264,7 @@ namespace gen {
                 break;
             case PT_Stronghold_Library:
                 additionalData |= rng.nextInt(5) << 16;
-                additionalData |= (boundingBox.maxY > 6);
+                additionalData |= boundingBox.maxY > 6 ? 1 : 0;
                 break;
             case PT_Stronghold_PortalRoom:
                 portalRoomPiece = &pieceArray[pieceArraySize];

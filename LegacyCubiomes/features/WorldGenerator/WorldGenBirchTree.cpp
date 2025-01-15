@@ -47,7 +47,7 @@ bool WorldGenBirchTree::generate(World* worldIn, RNG& rng, const Pos3D& pos) con
                             rng.nextInt(2) != 0 && yOffset != 0) {
                             c_int blockId = worldIn->getBlockId(x, y, z);
                             if (lce::blocks::ids::isAirOrLeavesBlock(blockId) || blockId == lce::blocks::ids::VINES_ID) {
-                                worldIn->setBlock(x, y, z, &lce::blocks::BlocksInit::JUNGLE_LEAVES);
+                                worldIn->setBlock(x, y, z, &lce::blocks::BlocksInit::BIRCH_LEAVES);
                             }
                         }
                     }

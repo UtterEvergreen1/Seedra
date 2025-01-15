@@ -19,7 +19,7 @@ namespace build::village {
 
     extern const lce::blocks::Block* getBiomeSpecificBlockState(const lce::blocks::Block* blockPtr, int structureType);
 
-    MU ND extern int getAverageGroundLevel(World& worldIn, const BoundingBox& structureBB,
+    MU ND extern int getAverageGroundLevel(World& worldIn, BoundingBox& structureBB,
                                            const StructureComponent& piece);
 
     MU extern void func_189927_a(MU const World& p_189927_1_, gen::Village* villageIn, MU BoundingBox p_189927_2_, MU RNG& p_189927_3_, MU int p_189927_4_, MU int p_189927_5_, MU int p_189927_6_, MU FACING p_189927_7_);
@@ -33,10 +33,11 @@ namespace build::village {
         Church() = delete;
 
         static bool addComponentParts(
-                World& worldIn, MU RNG& rng, const BoundingBox& structureBB, StructureComponent& piece) {
+                World& worldIn, MU RNG& rng, BoundingBox& structureBB, StructureComponent& piece) {
             c_int averageGroundLvl = getAverageGroundLevel(worldIn, structureBB, piece);
             if (averageGroundLvl < 0) { return true; }
             piece.offset(0, averageGroundLvl - piece.maxY + 12 - 1, 0);
+            structureBB.encompassY(piece);
 
             const lce::blocks::Block* cobblestone = getBiomeSpecificBlockState(&lce::blocks::BlocksInit::COBBLESTONE, piece.structureType);
             const lce::blocks::Block* iBlockState1 = getBiomeSpecificBlockState(&lce::blocks::BlocksInit::COBBLESTONE_STAIRS, piece.structureType); // .withProperty(BlockStairs.FACING, FACING::NORTH));
@@ -157,10 +158,11 @@ namespace build::village {
         }
 
         static bool addComponentParts(
-                World& worldIn, RNG& rng, const BoundingBox& structureBB, StructureComponent& piece) {
+                World& worldIn, RNG& rng, BoundingBox& structureBB, StructureComponent& piece) {
             c_int averageGroundLvl = getAverageGroundLevel(worldIn, structureBB, piece);
             if (averageGroundLvl < 0) { return true; }
             piece.offset(0, averageGroundLvl - piece.maxY + 4 - 1, 0);
+            structureBB.encompassY(piece);
 
             const lce::blocks::Block* iBlockState = getBiomeSpecificBlockState(&lce::blocks::BlocksInit::OAK_WOOD, piece.structureType);
             piece.fillWithAir(worldIn, structureBB, 0, 1, 0, 12, 4, 8);
@@ -242,10 +244,11 @@ namespace build::village {
         }
 
         static bool addComponentParts(
-                World& worldIn, RNG& rng, const BoundingBox& structureBB, StructureComponent& piece) {
+                World& worldIn, RNG& rng, BoundingBox& structureBB, StructureComponent& piece) {
             c_int averageGroundLvl = getAverageGroundLevel(worldIn, structureBB, piece);
             if (averageGroundLvl < 0) { return true; }
             piece.offset(0, averageGroundLvl - piece.maxY + 4 - 1, 0);
+            structureBB.encompassY(piece);
 
             const lce::blocks::Block* iBlockState = getBiomeSpecificBlockState(&lce::blocks::BlocksInit::OAK_WOOD, piece.structureType);
             const lce::blocks::Block* farmLand = &lce::blocks::BlocksInit::FARMLAND;
@@ -288,10 +291,11 @@ namespace build::village {
         Hall() = delete;
 
         static bool addComponentParts(
-                World& worldIn, MU RNG& rng, const BoundingBox& structureBB, StructureComponent& piece) {
+                World& worldIn, MU RNG& rng, BoundingBox& structureBB, StructureComponent& piece) {
             c_int averageGroundLvl = getAverageGroundLevel(worldIn, structureBB, piece);
             if (averageGroundLvl < 0) { return true; }
             piece.offset(0, averageGroundLvl - piece.maxY + 7 - 1, 0);
+            structureBB.encompassY(piece);
 
             const lce::blocks::Block* iBlockState = getBiomeSpecificBlockState(&lce::blocks::BlocksInit::COBBLESTONE, piece.structureType);
             const lce::blocks::Block* iBlockState1 = getBiomeSpecificBlockState(&lce::blocks::BlocksInit::OAK_WOOD_STAIRS, piece.structureType); // .withProperty(BlockStairs.FACING, FACING::NORTH));
@@ -389,10 +393,11 @@ namespace build::village {
         House1() = delete;
 
         static bool addComponentParts(
-                World& worldIn, MU RNG& rng, const BoundingBox& structureBB, StructureComponent& piece) {
+                World& worldIn, MU RNG& rng, BoundingBox& structureBB, StructureComponent& piece) {
             c_int averageGroundLvl = getAverageGroundLevel(worldIn, structureBB, piece);
             if (averageGroundLvl < 0) { return true; }
             piece.offset(0, averageGroundLvl - piece.maxY + 9 - 1, 0);
+            structureBB.encompassY(piece);
 
             const lce::blocks::Block* iBlockState = getBiomeSpecificBlockState(&lce::blocks::BlocksInit::COBBLESTONE, piece.structureType);
             const lce::blocks::Block* iBlockState1 = getBiomeSpecificBlockState(&lce::blocks::BlocksInit::OAK_WOOD_STAIRS, piece.structureType); // .withProperty(BlockStairs.FACING, FACING::NORTH));
@@ -489,10 +494,11 @@ namespace build::village {
         House2() = delete;
 
         static bool addComponentParts(
-                World& worldIn, MU RNG& rng, const BoundingBox& structureBB, StructureComponent& piece) {
+                World& worldIn, MU RNG& rng, BoundingBox& structureBB, StructureComponent& piece) {
             c_int averageGroundLvl = getAverageGroundLevel(worldIn, structureBB, piece);
             if (averageGroundLvl < 0) { return true; }
             piece.offset(0, averageGroundLvl - piece.maxY + 6 - 1, 0);
+            structureBB.encompassY(piece);
 
             const lce::blocks::Block* iBlockState = getBiomeSpecificBlockState(&lce::blocks::BlocksInit::COBBLESTONE, piece.structureType);
             const lce::blocks::Block* iBlockState1 = getBiomeSpecificBlockState(&lce::blocks::BlocksInit::OAK_WOOD_STAIRS, piece.structureType); // .withProperty(BlockStairs.FACING, FACING::NORTH));
@@ -576,10 +582,11 @@ namespace build::village {
         House3() = delete;
 
         static bool addComponentParts(
-                World& worldIn, MU RNG& rng, const BoundingBox& structureBB, StructureComponent& piece) {
+                World& worldIn, MU RNG& rng, BoundingBox& structureBB, StructureComponent& piece) {
             c_int averageGroundLvl = getAverageGroundLevel(worldIn, structureBB, piece);
             if (averageGroundLvl < 0) { return true; }
             piece.offset(0, averageGroundLvl - piece.maxY + 7 - 1, 0);
+            structureBB.encompassY(piece);
 
             const lce::blocks::Block* iBlockState = getBiomeSpecificBlockState(&lce::blocks::BlocksInit::COBBLESTONE, piece.structureType);
             const lce::blocks::Block* iBlockState1 = getBiomeSpecificBlockState(&lce::blocks::BlocksInit::OAK_WOOD_STAIRS, piece.structureType); // .withProperty(BlockStairs.FACING, FACING::NORTH));
@@ -712,10 +719,11 @@ namespace build::village {
         House4Garden() = delete;
 
         static bool addComponentParts(
-                World& worldIn, MU RNG& rng, const BoundingBox& structureBB, StructureComponent& piece) {
+                World& worldIn, MU RNG& rng, BoundingBox& structureBB, StructureComponent& piece) {
             c_int averageGroundLvl = getAverageGroundLevel(worldIn, structureBB, piece);
             if (averageGroundLvl < 0) { return true; }
             piece.offset(0, averageGroundLvl - piece.maxY + 6 - 1, 0);
+            structureBB.encompassY(piece);
 
             const lce::blocks::Block* iBlockState = getBiomeSpecificBlockState(&lce::blocks::BlocksInit::COBBLESTONE, piece.structureType);
             const lce::blocks::Block* iBlockState1 = getBiomeSpecificBlockState(&lce::blocks::BlocksInit::OAK_WOOD_PLANK, piece.structureType);
@@ -811,7 +819,7 @@ namespace build::village {
         Path() = delete;
 
         static bool addComponentParts(
-                World& worldIn, MU RNG& rng, const BoundingBox& structureBB, const StructureComponent& piece) {
+                World& worldIn, MU RNG& rng, BoundingBox& structureBB, const StructureComponent& piece) {
 
             const lce::blocks::Block* iblockstate = getBiomeSpecificBlockState(&lce::blocks::BlocksInit::GRASS_PATH, piece.structureType);
             const lce::blocks::Block* iblockstate1 = getBiomeSpecificBlockState(&lce::blocks::BlocksInit::OAK_WOOD_PLANK, piece.structureType);
@@ -866,10 +874,11 @@ namespace build::village {
         Torch() = delete;
 
         static bool addComponentParts(
-                World& worldIn, MU RNG& rng, const BoundingBox& structureBB, StructureComponent& piece) {
+                World& worldIn, MU RNG& rng, BoundingBox& structureBB, StructureComponent& piece) {
             c_int averageGroundLvl = getAverageGroundLevel(worldIn, structureBB, piece);
             if (averageGroundLvl < 0) { return true; }
             piece.offset(0, averageGroundLvl - piece.maxY + 4 - 1, 0);
+            structureBB.encompassY(piece);
 
             const lce::blocks::Block* oakFence = getBiomeSpecificBlockState(&lce::blocks::BlocksInit::OAK_FENCE, piece.structureType);
 
@@ -895,10 +904,11 @@ namespace build::village {
         WoodHut() = delete;
 
         static bool addComponentParts(
-                World& worldIn, MU RNG& rng, const BoundingBox& structureBB, StructureComponent& piece)  {
+                World& worldIn, MU RNG& rng, BoundingBox& structureBB, StructureComponent& piece)  {
             c_int averageGroundLvl = getAverageGroundLevel(worldIn, structureBB, piece);
             if (averageGroundLvl < 0) { return true; }
             piece.offset(0, averageGroundLvl - piece.maxY + 6 - 1, 0);
+            structureBB.encompassY(piece);
 
             const lce::blocks::Block* iblockstate = getBiomeSpecificBlockState(&lce::blocks::BlocksInit::COBBLESTONE, piece.structureType);
             const lce::blocks::Block* iblockstate1 = getBiomeSpecificBlockState(&lce::blocks::BlocksInit::OAK_WOOD_PLANK, piece.structureType);
@@ -974,10 +984,11 @@ namespace build::village {
         Well() = delete;
 
         static bool addComponentParts(
-                World& worldIn, MU RNG& rng, const BoundingBox& structureBB, StructureComponent& piece) {
+                World& worldIn, MU RNG& rng, BoundingBox& structureBB, StructureComponent& piece) {
             c_int averageGroundLvl = getAverageGroundLevel(worldIn, structureBB, piece);
             if (averageGroundLvl < 0) { return true; }
             piece.offset(0, averageGroundLvl - piece.maxY + 3, 0);
+            structureBB.encompassY(piece);
 
             const lce::blocks::Block* iblockstate = getBiomeSpecificBlockState(&lce::blocks::BlocksInit::COBBLESTONE, piece.structureType);
             const lce::blocks::Block* iblockstate1 = getBiomeSpecificBlockState(&lce::blocks::BlocksInit::OAK_FENCE, piece.structureType);
@@ -1036,7 +1047,7 @@ namespace build::village {
 
 
     MU static bool addComponentParts(
-            World& worldIn, RNG& rng, const BoundingBox& structureBB, StructureComponent& piece) {
+            World& worldIn, RNG& rng, BoundingBox& structureBB, StructureComponent& piece) {
         bool result = false;
 
         switch (piece.type) {
