@@ -8,13 +8,13 @@ MU Pos2D Piece::getBoundingBoxCenter() const {
 
 int Piece::getWorldX(c_int offsetWidth, c_int offsetDepth) const {
     switch (facing) {
-        case FACING::NORTH:
-        case FACING::SOUTH:
+        case enumFacing::NORTH:
+        case enumFacing::SOUTH:
             return minX + offsetWidth;
-        case FACING::WEST:
+        case enumFacing::WEST:
             return maxX - offsetDepth;
         default:
-        case FACING::EAST:
+        case enumFacing::EAST:
             return minX + offsetDepth;
     }
 }
@@ -27,13 +27,13 @@ ND int Piece::getWorldY(c_int offsetHeight) const {
 
 int Piece::getWorldZ(c_int offsetWidth, c_int offsetDepth) const {
     switch (facing) {
-        case FACING::NORTH:
+        case enumFacing::NORTH:
             return maxZ - offsetDepth;
-        case FACING::SOUTH:
+        case enumFacing::SOUTH:
             return minZ + offsetDepth;
         default:
-        case FACING::WEST:
-        case FACING::EAST:
+        case enumFacing::WEST:
+        case enumFacing::EAST:
             return minZ + offsetWidth;
     }
 }
@@ -49,9 +49,9 @@ Pos2D Piece::getWorldPos(c_int offsetWidth, c_int offsetDepth) const {
 }
 
 
-BoundingBox Piece::makeBoundingBox(c_int x, c_int y, c_int z, const FACING direction,
+BoundingBox Piece::makeBoundingBox(c_int x, c_int y, c_int z, const enumFacing direction,
                                    c_int width, c_int height, c_int depth) {
-    if (direction == FACING::NORTH || direction == FACING::SOUTH) {
+    if (direction == enumFacing::NORTH || direction == enumFacing::SOUTH) {
         return {x, y, z, x + width - 1, y + height - 1, z + depth - 1};
     }
     return {x, y, z, x + depth - 1, y + height - 1, z + width - 1};

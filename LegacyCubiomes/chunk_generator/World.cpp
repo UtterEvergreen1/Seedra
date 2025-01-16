@@ -90,6 +90,14 @@ void World::setBlock(const Pos3D &pos, const lce::blocks::Block *block) {
     this->setBlock(pos.getX(), pos.getY(), pos.getZ(), block->getID(), block->getDataTag());
 }
 
+void World::setBlock(const int x, const int y, const int z, const lce::blocks::Block& block) {
+    this->setBlock(x, y, z, block.getID(), block.getDataTag());
+}
+
+void World::setBlock(const Pos3D &pos, const lce::blocks::Block& block) {
+    this->setBlock(pos.getX(), pos.getY(), pos.getZ(), block.getID(), block.getDataTag());
+}
+
 bool World::isAirBlock(const int x, const int y, const int z) {
     if (const ChunkPrimer *chunk = getOrCreateChunk({x >> 4, z >> 4})) {
         return chunk->isAirBlock(x & 15, y, z & 15);

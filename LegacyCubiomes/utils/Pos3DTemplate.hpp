@@ -115,7 +115,7 @@ public:
         return {x, y, z + zOff};
     }
 
-    Pos3DTemplate offset(FACING facing, int n = 1) const;
+    Pos3DTemplate offset(enumFacing facing, int n = 1) const;
 
     ND double distanceSq(c_double toX, c_double toY, c_double toZ) const;
     ND double distanceSq(const Pos3DTemplate &to) const {

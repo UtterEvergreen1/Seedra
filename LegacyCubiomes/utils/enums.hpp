@@ -39,14 +39,12 @@ enum MCVERSION : i8 {
 };
 
 enum class EnumAxis : i8 {
-    NONE = -1,
     X = 0,
     Y = 1,
     Z = 2,
 };
 
-enum class FACING : i8 {
-    NONE = -1,
+enum class enumFacing : i8 {
     DOWN = 0,
     UP = 1,
     NORTH = 2,
@@ -55,117 +53,99 @@ enum class FACING : i8 {
     EAST = 5,
 };
 
-static constexpr FACING FACING_HORIZONTAL[4] = {FACING::NORTH, FACING::EAST, FACING::SOUTH, FACING::WEST};
-static constexpr FACING FACING_VERTICAL[2] = {FACING::UP, FACING::DOWN};
+static constexpr enumFacing FACING_HORIZONTAL[4] = {
+    enumFacing::NORTH,
+    enumFacing::EAST,
+    enumFacing::SOUTH,
+    enumFacing::WEST,
+};
 
-static int getMetaFromHorizontalFacing(const FACING facing) {
-    switch (facing) {
-        default:
-        case FACING::SOUTH:
-            return 0;
-        case FACING::WEST:
-            return 1;
-        case FACING::NORTH:
-            return 2;
-        case FACING::EAST:
-            return 3;
-    }
-}
+static constexpr enumFacing FACING_VERTICAL[2] = {
+    enumFacing::UP,
+    enumFacing::DOWN,
+};
 
-static std::string facingToString(const FACING facing) {
+
+static std::string facingToString(const enumFacing facing) {
     switch (facing) {
-        case FACING::NORTH:
+        case enumFacing::NORTH:
             return "NORTH";
-        case FACING::SOUTH:
+        case enumFacing::SOUTH:
             return "SOUTH";
-        case FACING::EAST:
+        case enumFacing::EAST:
             return "EAST";
-        case FACING::WEST:
+        case enumFacing::WEST:
             return "WEST";
-        case FACING::UP:
+        case enumFacing::UP:
             return "UP";
-        case FACING::DOWN:
+        case enumFacing::DOWN:
             return "DOWN";
         default:
             return "NONE";
     }
 }
 
-static EnumAxis getAxis(const FACING facing) {
+static EnumAxis getAxis(const enumFacing facing) {
     switch (facing) {
-        case FACING::NORTH:
-        case FACING::SOUTH:
+        case enumFacing::NORTH:
+        case enumFacing::SOUTH:
             return EnumAxis::Z;
-        case FACING::EAST:
-        case FACING::WEST:
+        case enumFacing::EAST:
+        case enumFacing::WEST:
             return EnumAxis::X;
-        case FACING::UP:
-        case FACING::DOWN:
+        case enumFacing::UP:
+        case enumFacing::DOWN:
         default:
             return EnumAxis::Y;
     }
 }
 
-static int getMetaFromFacingAdditive(const FACING facing) {
+
+static enumFacing getOppositeFacing(const enumFacing facing) {
     switch (facing) {
-        case FACING::SOUTH:
-            return 1;
-        case FACING::WEST:
-            return 2;
-        case FACING::NORTH:
-            return 4;
-        case FACING::EAST:
-            return 8;
         default:
-            return 0;
+        case enumFacing::DOWN:
+            return enumFacing::UP;
+        case enumFacing::UP:
+            return enumFacing::DOWN;
+        case enumFacing::NORTH:
+            return enumFacing::SOUTH;
+        case enumFacing::SOUTH:
+            return enumFacing::NORTH;
+        case enumFacing::WEST:
+            return enumFacing::EAST;
+        case enumFacing::EAST:
+            return enumFacing::WEST;
     }
 }
 
-static FACING getOppositeFacing(const FACING facing) {
+static int getFrontOffsetX(const enumFacing facing) {
     switch (facing) {
-        default:
-        case FACING::DOWN:
-            return FACING::UP;
-        case FACING::UP:
-            return FACING::DOWN;
-        case FACING::NORTH:
-            return FACING::SOUTH;
-        case FACING::SOUTH:
-            return FACING::NORTH;
-        case FACING::WEST:
-            return FACING::EAST;
-        case FACING::EAST:
-            return FACING::WEST;
-    }
-}
-
-static int getFrontOffsetX(const FACING facing) {
-    switch (facing) {
-        case FACING::WEST:
+        case enumFacing::WEST:
             return -1;
-        case FACING::EAST:
+        case enumFacing::EAST:
             return 1;
         default:
             return 0;
     }
 }
 
-static int getFrontOffsetY(const FACING facing) {
+static int getFrontOffsetY(const enumFacing facing) {
     switch (facing) {
-        case FACING::DOWN:
+        case enumFacing::DOWN:
             return -1;
-        case FACING::UP:
+        case enumFacing::UP:
             return 1;
         default:
             return 0;
     }
 }
 
-static int getFrontOffsetZ(const FACING facing) {
+static int getFrontOffsetZ(const enumFacing facing) {
     switch (facing) {
-        case FACING::NORTH:
+        case enumFacing::NORTH:
             return -1;
-        case FACING::SOUTH:
+        case enumFacing::SOUTH:
             return 1;
         default:
             return 0;

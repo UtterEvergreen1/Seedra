@@ -72,7 +72,7 @@ namespace gen {
         isZombieInfested = rng.nextInt(50) == 0;
 
         c_auto startPiece = StructureComponent(PieceType::PT_Village_Start, 0,
-            createPieceBB(PieceType::PT_Village_Start, {startPos.x, 64, startPos.z}, FACING::NORTH), FACING::NORTH, 0);
+            createPieceBB(PieceType::PT_Village_Start, {startPos.x, 64, startPos.z}, enumFacing::NORTH), enumFacing::NORTH, 0);
         pieceArray[pieceArraySize++] = startPiece;
 
         buildComponentStart(startPiece);
@@ -132,14 +132,14 @@ namespace gen {
 
 
     void Village::buildComponentStart(const StructureComponent& piece) {
-        genAndAddRoadPiece({piece.minX - 1, piece.maxY - 4, piece.minZ + 1}, FACING::WEST);
-        genAndAddRoadPiece({piece.maxX + 1, piece.maxY - 4, piece.minZ + 1}, FACING::EAST);
-        genAndAddRoadPiece({piece.minX + 1, piece.maxY - 4, piece.minZ - 1}, FACING::NORTH);
-        genAndAddRoadPiece({piece.minX + 1, piece.maxY - 4, piece.maxZ + 1}, FACING::SOUTH);
+        genAndAddRoadPiece({piece.minX - 1, piece.maxY - 4, piece.minZ + 1}, enumFacing::WEST);
+        genAndAddRoadPiece({piece.maxX + 1, piece.maxY - 4, piece.minZ + 1}, enumFacing::EAST);
+        genAndAddRoadPiece({piece.minX + 1, piece.maxY - 4, piece.minZ - 1}, enumFacing::NORTH);
+        genAndAddRoadPiece({piece.minX + 1, piece.maxY - 4, piece.maxZ + 1}, enumFacing::SOUTH);
     }
 
 
-    BoundingBox Village::createPieceBB(const PieceType pieceType, const Pos3D pos, const FACING direction) {
+    BoundingBox Village::createPieceBB(const PieceType pieceType, const Pos3D pos, const enumFacing direction) {
         switch (pieceType) {
             case PieceType::PT_Village_Road:
                 return BoundingBox::EMPTY;
@@ -172,7 +172,7 @@ namespace gen {
     }
 
 
-    StructureComponent Village::genAndAddRoadPiece(const Pos3D pos, const FACING facing) {
+    StructureComponent Village::genAndAddRoadPiece(const Pos3D pos, const enumFacing facing) {
         if (abs(startPos.x - pos.getX()) > 112 || abs(startPos.z - pos.getZ()) > 112) return {};
 
         if (const BoundingBox boundingBox = road(pos, facing); boundingBox.maxY != 0) {
@@ -195,7 +195,7 @@ namespace gen {
     }
 
 
-    BoundingBox Village::road(const Pos3D pos, const FACING facing) {
+    BoundingBox Village::road(const Pos3D pos, const enumFacing facing) {
         for (int i = 7 * rng.nextInt(3, 5); i >= 7; i -= 7) {
             if (BoundingBox structure = BoundingBox::orientBox(pos, 3, 3, i, facing);
                 !hasCollisionPiece(structure))
@@ -246,7 +246,7 @@ namespace gen {
     }
 
 
-    StructureComponent Village::generateComponent(const Pos3D pos, const FACING facing, c_i8 depth) {
+    StructureComponent Village::generateComponent(const Pos3D pos, const enumFacing facing, c_i8 depth) {
         c_int i = updatePieceWeight();
         if (i <= 0) return {};
 
@@ -289,7 +289,7 @@ namespace gen {
     }
 
 
-    StructureComponent Village::genAndAddComponent(const Pos3D pos, const FACING facing, c_i8 depth) {
+    StructureComponent Village::genAndAddComponent(const Pos3D pos, const enumFacing facing, c_i8 depth) {
         // don't do this for elytra???
         if (depth > 50) return {};
         // 48 for elytra???
@@ -322,14 +322,14 @@ namespace gen {
         for (int i = rng.nextInt(5); i < scIn.data - 8; i += 2 + rng.nextInt(5)) {
             StructureComponent sc;
             switch (scIn.facing) {
-                case FACING::NORTH:
-                case FACING::SOUTH:
+                case enumFacing::NORTH:
+                case enumFacing::SOUTH:
                 default:
-                    sc = genAndAddComponent({scIn.minX - 1, scIn.minY, scIn.minZ + i}, FACING::WEST, scIn.depth);
+                    sc = genAndAddComponent({scIn.minX - 1, scIn.minY, scIn.minZ + i}, enumFacing::WEST, scIn.depth);
                     break;
-                case FACING::WEST:
-                case FACING::EAST:
-                    sc = genAndAddComponent({scIn.minX + i, scIn.minY, scIn.minZ - 1}, FACING::NORTH, scIn.depth);
+                case enumFacing::WEST:
+                case enumFacing::EAST:
+                    sc = genAndAddComponent({scIn.minX + i, scIn.minY, scIn.minZ - 1}, enumFacing::NORTH, scIn.depth);
                     break;
             }
 
@@ -342,14 +342,14 @@ namespace gen {
         for (int j = rng.nextInt(5); j < scIn.data - 8; j += 2 + rng.nextInt(5)) {
             StructureComponent sc1;
             switch (scIn.facing) {
-                case FACING::NORTH:
-                case FACING::SOUTH:
+                case enumFacing::NORTH:
+                case enumFacing::SOUTH:
                 default:
-                    sc1 = genAndAddComponent({scIn.maxX + 1, scIn.minY, scIn.minZ + j}, FACING::EAST, scIn.depth);
+                    sc1 = genAndAddComponent({scIn.maxX + 1, scIn.minY, scIn.minZ + j}, enumFacing::EAST, scIn.depth);
                     break;
-                case FACING::EAST:
-                case FACING::WEST:
-                    sc1 = genAndAddComponent({scIn.minX + j, scIn.minY, scIn.maxZ + 1}, FACING::SOUTH, scIn.depth);
+                case enumFacing::EAST:
+                case enumFacing::WEST:
+                    sc1 = genAndAddComponent({scIn.minX + j, scIn.minY, scIn.maxZ + 1}, enumFacing::SOUTH, scIn.depth);
                     break;
             }
 
@@ -361,35 +361,35 @@ namespace gen {
 
         if (flag && rng.nextInt(3) > 0) {
             switch (scIn.facing) {
-                case FACING::NORTH:
+                case enumFacing::NORTH:
                 default:
-                    genAndAddRoadPiece({scIn.minX - 1, scIn.minY, scIn.minZ}, FACING::WEST);
+                    genAndAddRoadPiece({scIn.minX - 1, scIn.minY, scIn.minZ}, enumFacing::WEST);
                     break;
-                case FACING::SOUTH:
-                    genAndAddRoadPiece({scIn.minX - 1, scIn.minY, scIn.maxZ - 2}, FACING::WEST);
+                case enumFacing::SOUTH:
+                    genAndAddRoadPiece({scIn.minX - 1, scIn.minY, scIn.maxZ - 2}, enumFacing::WEST);
                     break;
-                case FACING::WEST:
-                    genAndAddRoadPiece({scIn.minX, scIn.minY, scIn.minZ - 1}, FACING::NORTH);
+                case enumFacing::WEST:
+                    genAndAddRoadPiece({scIn.minX, scIn.minY, scIn.minZ - 1}, enumFacing::NORTH);
                     break;
-                case FACING::EAST:
-                    genAndAddRoadPiece({scIn.maxX - 2, scIn.minY, scIn.minZ - 1}, FACING::NORTH);
+                case enumFacing::EAST:
+                    genAndAddRoadPiece({scIn.maxX - 2, scIn.minY, scIn.minZ - 1}, enumFacing::NORTH);
             }
         }
 
         if (flag && rng.nextInt(3) > 0) {
             switch (scIn.facing) {
-                case FACING::NORTH:
+                case enumFacing::NORTH:
                 default:
-                    genAndAddRoadPiece({scIn.maxX + 1, scIn.minY, scIn.minZ}, FACING::EAST);
+                    genAndAddRoadPiece({scIn.maxX + 1, scIn.minY, scIn.minZ}, enumFacing::EAST);
                     break;
-                case FACING::SOUTH:
-                    genAndAddRoadPiece({scIn.maxX + 1, scIn.minY, scIn.maxZ - 2}, FACING::EAST);
+                case enumFacing::SOUTH:
+                    genAndAddRoadPiece({scIn.maxX + 1, scIn.minY, scIn.maxZ - 2}, enumFacing::EAST);
                     break;
-                case FACING::WEST:
-                    genAndAddRoadPiece({scIn.minX, scIn.minY, scIn.maxZ + 1}, FACING::SOUTH);
+                case enumFacing::WEST:
+                    genAndAddRoadPiece({scIn.minX, scIn.minY, scIn.maxZ + 1}, enumFacing::SOUTH);
                     break;
-                case FACING::EAST:
-                    genAndAddRoadPiece({scIn.maxX - 2, scIn.minY, scIn.maxZ + 1}, FACING::SOUTH);
+                case enumFacing::EAST:
+                    genAndAddRoadPiece({scIn.maxX - 2, scIn.minY, scIn.maxZ + 1}, enumFacing::SOUTH);
             }
         }
     }

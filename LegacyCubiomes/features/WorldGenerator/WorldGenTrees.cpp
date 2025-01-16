@@ -81,19 +81,19 @@ bool WorldGenTrees::generate(World* worldIn, RNG& rng, const Pos3D& pos) const {
                                 Pos3D blockPos1 = mutablePosition1.south();
 
                                 if (rng.nextInt(4) == 0 && worldIn->isAirBlock(blockPos2)) {
-                                    addHangingVine(worldIn, blockPos2, FACING::EAST);
+                                    addHangingVine(worldIn, blockPos2, enumFacing::EAST);
                                 }
 
                                 if (rng.nextInt(4) == 0 && worldIn->isAirBlock(blockPos3)) {
-                                    addHangingVine(worldIn, blockPos3, FACING::WEST);
+                                    addHangingVine(worldIn, blockPos3, enumFacing::WEST);
                                 }
 
                                 if (rng.nextInt(4) == 0 && worldIn->isAirBlock(blockPos4)) {
-                                    addHangingVine(worldIn, blockPos4, FACING::SOUTH);
+                                    addHangingVine(worldIn, blockPos4, enumFacing::SOUTH);
                                 }
 
                                 if (rng.nextInt(4) == 0 && worldIn->isAirBlock(blockPos1)) {
-                                    addHangingVine(worldIn, blockPos1, FACING::NORTH);
+                                    addHangingVine(worldIn, blockPos1, enumFacing::NORTH);
                                 }
                             }
                         }
@@ -102,13 +102,13 @@ bool WorldGenTrees::generate(World* worldIn, RNG& rng, const Pos3D& pos) const {
 
                 if (rng.nextInt(5) == 0 && height > 5) {
                     for (int l3 = 0; l3 < 2; ++l3) {
-                        for (const FACING enumFacing: FACING_HORIZONTAL) {
+                        for (const enumFacing enumFacing0: FACING_HORIZONTAL) {
                             if (rng.nextInt(4 - l3) == 0) {
-                                const FACING enumFacing1 = getOppositeFacing(enumFacing);
+                                const enumFacing enumFacing1 = getOppositeFacing(enumFacing0);
                                 placeCocoa(worldIn,
                                            pos.add(getFrontOffsetX(enumFacing1), height - 5 + l3,
                                                    getFrontOffsetZ(enumFacing1)),
-                                           enumFacing, rng.nextInt(3));
+                                           enumFacing0, rng.nextInt(3));
                             }
                         }
                     }
@@ -120,16 +120,16 @@ bool WorldGenTrees::generate(World* worldIn, RNG& rng, const Pos3D& pos) const {
     return false;
 }
 
-void WorldGenTrees::placeCocoa(World* worldIn, const Pos3D& pos, FACING side, int age) {
+void WorldGenTrees::placeCocoa(World* worldIn, const Pos3D& pos, enumFacing side, int age) {
     worldIn->setBlock(pos, lce::blocks::ids::VINES_ID); //TODO: set rotation data and age data
 }
 
-void WorldGenTrees::addHangingVine(World* worldIn, const Pos3D& pos, const FACING direction) {
-    addVine(worldIn, pos, direction);
+void WorldGenTrees::addHangingVine(World* worldIn, const Pos3D& pos, const enumFacing facing) {
+    addVine(worldIn, pos, facing);
     int i = 4;
 
     for (Pos3D blockPos = pos.down(); worldIn->getBlockId(blockPos) == lce::blocks::ids::AIR_ID && i > 0; --i) {
-        addVine(worldIn, blockPos, direction);
+        addVine(worldIn, blockPos, facing);
         blockPos = blockPos.down();
     }
 }

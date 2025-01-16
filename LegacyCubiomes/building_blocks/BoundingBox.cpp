@@ -95,38 +95,38 @@ BoundingBox BoundingBox::makeChunkBox(c_int xChunk, c_int zChunk) {
 
 BoundingBox BoundingBox::orientBox(c_int x, c_int y, c_int z,
                                    c_int width, c_int height,
-                                   c_int depth, const FACING direction) {
+                                   c_int depth, const enumFacing direction) {
     switch (direction) {
-        case FACING::NORTH:
+        case enumFacing::NORTH:
             return {x, y, z - depth + 1, x + width - 1, y + height - 1, z};
-        case FACING::SOUTH:
+        case enumFacing::SOUTH:
             return {x, y, z, x + width - 1, y + height - 1, z + depth - 1};
-        case FACING::WEST:
+        case enumFacing::WEST:
             return {x - depth + 1, y, z, x, y + height - 1, z + width - 1};
         default:
-        case FACING::EAST:
+        case enumFacing::EAST:
             return {x, y, z, x + depth - 1, y + height - 1, z + width - 1};
     }
 }
 
 
-BoundingBox BoundingBox::orientBox(const Pos3D& xyz, c_int width, c_int height, c_int depth, const FACING direction) {
+BoundingBox BoundingBox::orientBox(const Pos3D& xyz, c_int width, c_int height, c_int depth, const enumFacing direction) {
     switch (direction) {
-        case FACING::NORTH:
+        case enumFacing::NORTH:
             return {xyz.getX(),
                     xyz.getY(),
                     xyz.getZ() - depth + 1,
                     xyz.getX() + width - 1,
                     xyz.getY() + height - 1,
                     xyz.getZ()};
-        case FACING::SOUTH:
+        case enumFacing::SOUTH:
             return {xyz.getX(),
                     xyz.getY(),
                     xyz.getZ(),
                     xyz.getX() + width - 1,
                     xyz.getY() + height - 1,
                     xyz.getZ() + depth - 1};
-        case FACING::WEST:
+        case enumFacing::WEST:
             return {xyz.getX() - depth + 1,
                     xyz.getY(),
                     xyz.getZ(),
@@ -134,7 +134,7 @@ BoundingBox BoundingBox::orientBox(const Pos3D& xyz, c_int width, c_int height, 
                     xyz.getY() + height - 1,
                     xyz.getZ() + width - 1};
         default:
-        case FACING::EAST:
+        case enumFacing::EAST:
             return {xyz.getX(),
                     xyz.getY(),
                     xyz.getZ(),
@@ -147,23 +147,23 @@ BoundingBox BoundingBox::orientBox(const Pos3D& xyz, c_int width, c_int height, 
 
 BoundingBox BoundingBox::orientBox(c_int x, c_int y, c_int z, c_int offsetWidth, c_int offsetHeight,
                                    c_int offsetDepth, c_int width,
-                                   c_int height, c_int depth, const FACING direction) {
+                                   c_int height, c_int depth, const enumFacing direction) {
     switch (direction) {
-        case FACING::NORTH:
+        case enumFacing::NORTH:
             return {x + offsetWidth,
                     y + offsetHeight,
                     z - depth + 1 + offsetDepth,
                     x + width - 1 + offsetWidth,
                     y + height - 1 + offsetHeight,
                     z + offsetDepth};
-        case FACING::SOUTH:
+        case enumFacing::SOUTH:
             return {x + offsetWidth,
                     y + offsetHeight,
                     z + offsetDepth,
                     x + width - 1 + offsetWidth,
                     y + height - 1 + offsetHeight,
                     z + depth - 1 + offsetDepth};
-        case FACING::WEST:
+        case enumFacing::WEST:
             return {x - depth + 1 + offsetDepth,
                     y + offsetHeight,
                     z + offsetWidth,
@@ -171,7 +171,7 @@ BoundingBox BoundingBox::orientBox(c_int x, c_int y, c_int z, c_int offsetWidth,
                     y + height - 1 + offsetHeight,
                     z + width - 1 + offsetWidth};
         default:
-        case FACING::EAST:
+        case enumFacing::EAST:
             return {x + offsetDepth,
                     y + offsetHeight,
                     z + offsetWidth,
@@ -183,13 +183,13 @@ BoundingBox BoundingBox::orientBox(c_int x, c_int y, c_int z, c_int offsetWidth,
 
 
 BoundingBox BoundingBox::orientBox(const Pos3D& posXYZ, const Pos3D& posOffset, const Pos3D& size,
-                                   const FACING direction) {
+                                   const enumFacing direction) {
     return orientBox(posXYZ.getX(), posXYZ.getY(), posXYZ.getZ(), posOffset.getX(), posOffset.getY(), posOffset.getZ(),
                      size.getX(), size.getY(), size.getZ(), direction);
 }
 
 BoundingBox BoundingBox::orientBox(const Pos3D& posXYZ, c_int offsetWidth, c_int offsetHeight,
-    c_int offsetDepth, c_int width, c_int height, c_int depth, const FACING direction) {
+    c_int offsetDepth, c_int width, c_int height, c_int depth, const enumFacing direction) {
     return orientBox(posXYZ.getX(), posXYZ.getY(), posXYZ.getZ(), offsetWidth, offsetHeight, offsetDepth, width, height,
                      depth, direction);
 }

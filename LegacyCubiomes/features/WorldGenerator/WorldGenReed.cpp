@@ -19,7 +19,7 @@ bool BlockReed::canBlockStay(World *worldIn, const Pos3D &pos) {
 
     const Pos3D blockPos = pos.down();
 
-    for (const FACING facing: FACING_HORIZONTAL) {
+    for (const enumFacing facing: FACING_HORIZONTAL) {
         const int id = worldIn->getBlockId(blockPos.offset(facing));
         if (lce::blocks::ids::isWaterMaterial(id) || id == lce::blocks::ids::FROSTED_ICE_ID) {
             return true;
@@ -33,7 +33,8 @@ bool WorldGenReed::generate(World * worldIn, RNG &rng, const Pos3D &position) co
     for (int i = 0; i < 20; ++i) {
         int x_off;
         int z_off;
-        if (worldIn->getGenerator()->getConsole() != lce::CONSOLE::XBOX360 && worldIn->getGenerator()->getConsole() != lce::CONSOLE::XBOX1) {
+        if (worldIn->getGenerator()->getConsole() != lce::CONSOLE::XBOX360
+            && worldIn->getGenerator()->getConsole() != lce::CONSOLE::XBOX1) {
             x_off = rng.nextInt(4) - rng.nextInt(4);
             z_off = rng.nextInt(4) - rng.nextInt(4);
         }

@@ -6,7 +6,6 @@
 
 namespace gen {
 
-    // const std::map<PieceType, std::string> Stronghold::PieceTypeName = {
     MU std::string Stronghold::PIECE_TYPE_NAMES[13] = {
             "NONE",                 // Stronghold_NONE
             "STRAIGHT",             // Stronghold_Straight
@@ -82,7 +81,7 @@ namespace gen {
             reset();
 
             // creates starting staircase
-            FACING direction = FACING_HORIZONTAL[rng.nextInt(4)];
+            enumFacing direction = FACING_HORIZONTAL[rng.nextInt(4)];
             BoundingBox stairsBoundingBox = StructureComponent::makeBoundingBox(startPos.x, 64, startPos.z, direction, 5, 11, 5);
 
             pieceArray[pieceArraySize++] = {PT_Stronghold_StairsDown, 0, stairsBoundingBox, direction, 1};
@@ -189,7 +188,7 @@ namespace gen {
 
 
     BoundingBox Stronghold::createPieceBoundingBox(const PieceType pieceType, const Pos3D& pos,
-                                                   const FACING facing) {
+                                                   const enumFacing facing) {
         switch (pieceType) {
             case PT_Stronghold_NONE:
                 return BoundingBox::EMPTY;
@@ -220,7 +219,7 @@ namespace gen {
     }
 
 
-    void Stronghold::createPiece(PieceType pieceType, const FACING facing, i8 depth, BoundingBox boundingBox) {
+    void Stronghold::createPiece(PieceType pieceType, const enumFacing facing, i8 depth, BoundingBox boundingBox) {
         int additionalData = 0;
 
         switch (pieceType) {
@@ -277,7 +276,7 @@ namespace gen {
     }
 
 
-    bool Stronghold::tryAddPieceFromType(const PieceType pieceType, const Pos3D& pos, const FACING facing, c_i8 depth) {
+    bool Stronghold::tryAddPieceFromType(const PieceType pieceType, const Pos3D& pos, const enumFacing facing, c_i8 depth) {
         BoundingBox bBox = createPieceBoundingBox(pieceType, pos, facing);
         if (!isOkBox(bBox) || collidesWithPiece(bBox)) {
             if (pieceType == PT_Stronghold_Library) {
@@ -298,7 +297,7 @@ namespace gen {
         return true;
     }
 
-    bool Stronghold::genPieceFromSmallDoor(const Pos3D& pos, const FACING facing, const i8 depth) {
+    bool Stronghold::genPieceFromSmallDoor(const Pos3D& pos, const enumFacing facing, const i8 depth) {
         if EXPECT_FALSE (generationStopped) return false;
 
         if EXPECT_FALSE (forcedPiece != PT_Stronghold_NONE) {
@@ -356,7 +355,7 @@ namespace gen {
         return false;
     }
 
-    void Stronghold::genAndAddPiece(const Pos3D& pos, const FACING facing, c_i8 depth) {
+    void Stronghold::genAndAddPiece(const Pos3D& pos, const enumFacing facing, c_i8 depth) {
         if (depth > 50) return;
 
         if (abs(pos.getX() - startPos.x) <= 48 && abs(pos.getZ() - startPos.z) <= 48) {
@@ -395,52 +394,49 @@ namespace gen {
 
     void Stronghold::genSmallDoorChildForward(const StructureComponent& piece, c_int n, c_int n2) {
         switch (piece.facing) {
-            case FACING::NONE:
-            case FACING::DOWN:
-            case FACING::UP:
+            case enumFacing::DOWN:
+            case enumFacing::UP:
                 break;
-            case FACING::NORTH:
-                return genAndAddPiece({piece.minX + n, piece.minY + n2, piece.minZ - 1}, FACING::NORTH, piece.depth);
-            case FACING::SOUTH:
-                return genAndAddPiece({piece.minX + n, piece.minY + n2, piece.maxZ + 1}, FACING::SOUTH, piece.depth);
-            case FACING::WEST:
-                return genAndAddPiece({piece.minX - 1, piece.minY + n2, piece.minZ + n}, FACING::WEST, piece.depth);
-            case FACING::EAST:
-                return genAndAddPiece({piece.maxX + 1, piece.minY + n2, piece.minZ + n}, FACING::EAST, piece.depth);
+            case enumFacing::NORTH:
+                return genAndAddPiece({piece.minX + n, piece.minY + n2, piece.minZ - 1}, enumFacing::NORTH, piece.depth);
+            case enumFacing::SOUTH:
+                return genAndAddPiece({piece.minX + n, piece.minY + n2, piece.maxZ + 1}, enumFacing::SOUTH, piece.depth);
+            case enumFacing::WEST:
+                return genAndAddPiece({piece.minX - 1, piece.minY + n2, piece.minZ + n}, enumFacing::WEST, piece.depth);
+            case enumFacing::EAST:
+                return genAndAddPiece({piece.maxX + 1, piece.minY + n2, piece.minZ + n}, enumFacing::EAST, piece.depth);
         }
     }
 
 
     void Stronghold::genSmallDoorChildLeft(const StructureComponent& piece, c_int n, c_int n2) {
         switch (piece.facing) {
-            case FACING::NONE:
-            case FACING::DOWN:
-            case FACING::UP:
+            case enumFacing::DOWN:
+            case enumFacing::UP:
                 break;
-            case FACING::SOUTH:
-            case FACING::NORTH:
-                genAndAddPiece({piece.minX - 1, piece.minY + n, piece.minZ + n2}, FACING::WEST, piece.depth);
+            case enumFacing::SOUTH:
+            case enumFacing::NORTH:
+                genAndAddPiece({piece.minX - 1, piece.minY + n, piece.minZ + n2}, enumFacing::WEST, piece.depth);
                 break;
-            case FACING::EAST:
-            case FACING::WEST:
-                genAndAddPiece({piece.minX + n2, piece.minY + n, piece.minZ - 1}, FACING::NORTH, piece.depth);
+            case enumFacing::EAST:
+            case enumFacing::WEST:
+                genAndAddPiece({piece.minX + n2, piece.minY + n, piece.minZ - 1}, enumFacing::NORTH, piece.depth);
                 break;
         }
     }
 
     void Stronghold::genSmallDoorChildRight(const StructureComponent& piece, c_int n, c_int n2) {
         switch (piece.facing) {
-            case FACING::NONE:
-            case FACING::DOWN:
-            case FACING::UP:
+            case enumFacing::DOWN:
+            case enumFacing::UP:
                 break;
-            case FACING::SOUTH:
-            case FACING::NORTH:
-                genAndAddPiece({piece.maxX + 1, piece.minY + n, piece.minZ + n2}, FACING::EAST, piece.depth);
+            case enumFacing::SOUTH:
+            case enumFacing::NORTH:
+                genAndAddPiece({piece.maxX + 1, piece.minY + n, piece.minZ + n2}, enumFacing::EAST, piece.depth);
                 break;
-            case FACING::EAST:
-            case FACING::WEST:
-                genAndAddPiece({piece.minX + n2, piece.minY + n, piece.maxZ + 1}, FACING::SOUTH, piece.depth);
+            case enumFacing::EAST:
+            case enumFacing::WEST:
+                genAndAddPiece({piece.minX + n2, piece.minY + n, piece.maxZ + 1}, enumFacing::SOUTH, piece.depth);
                 break;
         }
     }
@@ -459,8 +455,8 @@ namespace gen {
                 genSmallDoorChildForward(piece, 1, 1);
                 break;
             case PT_Stronghold_LeftTurn: {
-                if (const FACING direction = piece.facing;
-                    direction == FACING::NORTH || direction == FACING::EAST) {
+                if (const enumFacing direction = piece.facing;
+                    direction == enumFacing::NORTH || direction == enumFacing::EAST) {
                     genSmallDoorChildLeft(piece, 1, 1);
                 } else {
                     genSmallDoorChildRight(piece, 1, 1);
@@ -468,8 +464,8 @@ namespace gen {
                 break;
             }
             case PT_Stronghold_RightTurn: {
-                if (const FACING direction = piece.facing;
-                    direction == FACING::NORTH || direction == FACING::EAST) {
+                if (const enumFacing direction = piece.facing;
+                    direction == enumFacing::NORTH || direction == enumFacing::EAST) {
                     genSmallDoorChildRight(piece, 1, 1);
                 } else {
                     genSmallDoorChildLeft(piece, 1, 1);
@@ -490,9 +486,9 @@ namespace gen {
                 break;
             }
             case PT_Stronghold_FiveCrossing: {
-                const FACING o = piece.facing;
+                const enumFacing o = piece.facing;
                 // 3 and 5 or 5 and 3
-                c_int n = 5 - 2 * (o == FACING::EAST || o == FACING::SOUTH);
+                c_int n = 5 - 2 * (o == enumFacing::EAST || o == enumFacing::SOUTH);
                 c_int n2 = 8 - n;
                 genSmallDoorChildForward(piece, 5, 1);
                 if ((piece.data & 1) != 0) { genSmallDoorChildLeft(piece, n, 1); }

@@ -7,7 +7,7 @@ class World;
 
 class BlockVine {
 public:
-    static bool canPlaceBlockOnSide(World* worldIn, const Pos3D& pos, const FACING& facing);
+    static bool canPlaceBlockOnSide(World* worldIn, const Pos3D& pos, const enumFacing& facing);
 
 private:
     static bool canBlockStay(int blockId);

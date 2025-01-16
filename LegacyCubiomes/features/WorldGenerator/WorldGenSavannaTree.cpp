@@ -38,7 +38,7 @@ bool WorldGenSavannaTree::generate(World* worldIn, RNG& rand, const Pos3D& posit
         if ((block == lce::blocks::ids::GRASS_ID || block == lce::blocks::ids::DIRT_ID) &&
             position.getY() + height < 255) {
             setDirtAt(worldIn, position.down());
-            const FACING enumFacing = FACING_HORIZONTAL[rand.nextInt(4)];
+            const enumFacing enumFacing0 = FACING_HORIZONTAL[rand.nextInt(4)];
             const int k2 = height - rand.nextInt(4) - 1;
             int l2 = 3 - rand.nextInt(3);
             int i3 = position.getX();
@@ -50,15 +50,15 @@ bool WorldGenSavannaTree::generate(World* worldIn, RNG& rand, const Pos3D& posit
                 const int i2 = position.getY() + l1;
 
                 if (l1 >= k2 && l2 > 0) {
-                    i3 += getFrontOffsetX(enumFacing);
-                    j1 += getFrontOffsetZ(enumFacing);
+                    i3 += getFrontOffsetX(enumFacing0);
+                    j1 += getFrontOffsetZ(enumFacing0);
                     --l2;
                 }
 
                 Pos3D blockPos(i3, i2, j1);
                 const int material = worldIn->getBlockId(blockPos);
 
-                if (material == lce::blocks::ids::AIR_ID || lce::blocks::ids::isLeavesBlock(material)) {
+                if (lce::blocks::ids::isAirOrLeavesBlock(material)) {
                     placeLogAt(worldIn, blockPos);
                     k1 = i2;
                 }
@@ -84,9 +84,9 @@ bool WorldGenSavannaTree::generate(World* worldIn, RNG& rand, const Pos3D& posit
             placeLeafAt(worldIn, blockPos2.north(2));
             i3 = position.getX();
             j1 = position.getZ();
-            const FACING enumFacing1 = FACING_HORIZONTAL[rand.nextInt(4)];
+            const enumFacing enumFacing1 = FACING_HORIZONTAL[rand.nextInt(4)];
 
-            if (enumFacing1 != enumFacing) {
+            if (enumFacing1 != enumFacing0) {
                 const int l3 = k2 - rand.nextInt(2) - 1;
                 int k4 = 1 + rand.nextInt(3);
                 k1 = 0;
@@ -99,7 +99,7 @@ bool WorldGenSavannaTree::generate(World* worldIn, RNG& rand, const Pos3D& posit
                         Pos3D blockPos1(i3, j2, j1);
                         const int material1 = worldIn->getBlockId(blockPos1);
 
-                        if (material1 == lce::blocks::ids::AIR_ID || lce::blocks::ids::isLeavesBlock(material1)) {
+                        if (lce::blocks::ids::isAirOrLeavesBlock(material1)) {
                             placeLogAt(worldIn, blockPos1);
                             k1 = j2;
                         }

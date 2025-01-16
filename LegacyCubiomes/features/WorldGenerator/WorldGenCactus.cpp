@@ -7,7 +7,7 @@
 
 bool BlockCactus::canBlockStay(World* worldIn, const Pos3D& pos) {
     using namespace lce::blocks;
-    for (const FACING enumFacing: FACING_HORIZONTAL) {
+    for (const enumFacing enumFacing: FACING_HORIZONTAL) {
         const int blockId = worldIn->getBlockId(pos.offset(enumFacing));
         if (ids::isSolidBlock(blockId) || ids::isLavaMaterial(blockId)) {
             return false;

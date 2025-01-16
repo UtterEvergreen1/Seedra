@@ -1,8 +1,9 @@
 #include "WorldGenSwamp.hpp"
 
 #include "LegacyCubiomes/chunk_generator/World.hpp"
-#include "lce/blocks/blocks.hpp"
 #include "lce/blocks/block_ids.hpp"
+#include "lce/blocks/block_states.hpp"
+#include "lce/blocks/blocks.hpp"
 
 
 bool WorldGenSwamp::generate(World* worldIn, RNG& rand, const Pos3D& position) const {
@@ -82,22 +83,22 @@ bool WorldGenSwamp::generate(World* worldIn, RNG& rand, const Pos3D& position) c
                         if (lce::blocks::ids::isLeavesBlock(worldIn->getBlockId(blockpos))) {
                             if (rand.nextInt(4) == 0 &&
                                 worldIn->getBlockId(blockpos.west()) == lce::blocks::ids::AIR_ID) {
-                                addVine(worldIn, blockpos.west(), FACING::EAST);
+                                addVine(worldIn, blockpos.west(), enumFacing::EAST);
                             }
 
                             if (rand.nextInt(4) == 0 &&
                                 worldIn->getBlockId(blockpos.east()) == lce::blocks::ids::AIR_ID) {
-                                addVine(worldIn, blockpos.east(), FACING::WEST);
+                                addVine(worldIn, blockpos.east(), enumFacing::WEST);
                             }
 
                             if (rand.nextInt(4) == 0 &&
                                 worldIn->getBlockId(blockpos.north()) == lce::blocks::ids::AIR_ID) {
-                                addVine(worldIn, blockpos.north(), FACING::SOUTH);
+                                addVine(worldIn, blockpos.north(), enumFacing::SOUTH);
                             }
 
                             if (rand.nextInt(4) == 0 &&
                                 worldIn->getBlockId(blockpos.south()) == lce::blocks::ids::AIR_ID) {
-                                addVine(worldIn, blockpos.south(), FACING::NORTH);
+                                addVine(worldIn, blockpos.south(), enumFacing::NORTH);
                             }
                         }
                     }
@@ -111,8 +112,8 @@ bool WorldGenSwamp::generate(World* worldIn, RNG& rand, const Pos3D& position) c
     return false;
 }
 
-void WorldGenSwamp::addVine(World* worldIn, const Pos3D& pos, const FACING direction) {
-    const int vineMetaData = getMetaFromFacingAdditive(direction);
+void WorldGenSwamp::addVine(World* worldIn, const Pos3D& pos, const enumFacing facing) {
+    const int vineMetaData = lce::blocks::states::Vine::withProperty(facing);
     worldIn->setBlock(pos, lce::blocks::ids::VINES_ID, vineMetaData);
 
     int i = 4;

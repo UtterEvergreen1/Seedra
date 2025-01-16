@@ -1,6 +1,7 @@
 #pragma once
 
 #include "LegacyCubiomes/building_blocks/StructureComponent.hpp"
+#include "lce/blocks/block_states.hpp"
 #include "lce/blocks/blocks.hpp"
 
 
@@ -39,7 +40,7 @@ namespace build::stronghold {
                 piece.fillWithAir(worldIn, structureBB, x, y, z, x + 3 - 1, y + 3 - 1, z);
                 break;
 
-            case Door::WOOD_DOOR:
+            case Door::WOOD_DOOR: {
                 piece.setBlockState(worldIn, &lce::blocks::BlocksInit::STONE_BRICKS, x, y, z, structureBB);
                 piece.setBlockState(worldIn, &lce::blocks::BlocksInit::STONE_BRICKS, x, y + 1, z, structureBB);
                 piece.setBlockState(worldIn, &lce::blocks::BlocksInit::STONE_BRICKS, x, y + 2, z, structureBB);
@@ -47,10 +48,16 @@ namespace build::stronghold {
                 piece.setBlockState(worldIn, &lce::blocks::BlocksInit::STONE_BRICKS, x + 2, y + 2, z, structureBB);
                 piece.setBlockState(worldIn, &lce::blocks::BlocksInit::STONE_BRICKS, x + 2, y + 1, z, structureBB);
                 piece.setBlockState(worldIn, &lce::blocks::BlocksInit::STONE_BRICKS, x + 2, y, z, structureBB);
-                piece.setBlockState(worldIn, &lce::blocks::BlocksInit::OAK_DOOR_BLOCK, x + 1, y, z, structureBB);
-                // .withProperty(BlockDoor.HALF, BlockDoor.EnumDoorHalf.UPPER)
-                piece.setBlockState(worldIn, &lce::blocks::BlocksInit::OAK_DOOR_BLOCK, x + 1, y + 1, z, structureBB);
+
+                const auto door_base = &lce::blocks::BlocksInit::OAK_DOOR_BLOCK;
+
+                c_auto door_bottom = door_base->getStateFromMeta(lce::blocks::states::DoorLower::withProperty());
+                piece.setBlockState(worldIn, door_bottom, x + 1, y, z, structureBB);
+
+                c_auto door_top = door_base->getStateFromMeta(lce::blocks::states::DoorUpper::withProperty());
+                piece.setBlockState(worldIn, door_top, x + 1, y + 1, z, structureBB);
                 break;
+            }
 
             case Door::GRATES:
                 piece.setBlockState(worldIn, &lce::blocks::BlocksInit::AIR, x + 1, y, z, structureBB);
@@ -64,7 +71,7 @@ namespace build::stronghold {
                 piece.setBlockState(worldIn, &lce::blocks::BlocksInit::IRON_BARS, x + 2, y, z, structureBB);
                 break;
 
-            case Door::IRON_DOOR:
+            case Door::IRON_DOOR: {
                 piece.setBlockState(worldIn, &lce::blocks::BlocksInit::STONE_BRICKS, x, y, z, structureBB);
                 piece.setBlockState(worldIn, &lce::blocks::BlocksInit::STONE_BRICKS, x, y + 1, z, structureBB);
                 piece.setBlockState(worldIn, &lce::blocks::BlocksInit::STONE_BRICKS, x, y + 2, z, structureBB);
@@ -72,13 +79,23 @@ namespace build::stronghold {
                 piece.setBlockState(worldIn, &lce::blocks::BlocksInit::STONE_BRICKS, x + 2, y + 2, z, structureBB);
                 piece.setBlockState(worldIn, &lce::blocks::BlocksInit::STONE_BRICKS, x + 2, y + 1, z, structureBB);
                 piece.setBlockState(worldIn, &lce::blocks::BlocksInit::STONE_BRICKS, x + 2, y, z, structureBB);
-                piece.setBlockState(worldIn, &lce::blocks::BlocksInit::IRON_DOOR_BLOCK, x + 1, y, z, structureBB);
-                // .withProperty(BlockDoor.HALF, BlockDoor.EnumDoorHalf.UPPER)
-                piece.setBlockState(worldIn, &lce::blocks::BlocksInit::IRON_DOOR_BLOCK, x + 1, y + 1, z, structureBB);
-                // .withProperty(BlockButton.FACING, FACING::NORTH)
-                piece.setBlockState(worldIn, &lce::blocks::BlocksInit::STONE_BUTTON, x + 2, y + 1, z + 1, structureBB);
-                // .withProperty(BlockButton.FACING, FACING::SOUTH)
-                piece.setBlockState(worldIn, &lce::blocks::BlocksInit::STONE_BUTTON, x + 2, y + 1, z - 1, structureBB);
+
+                const lce::blocks::Block doorBlockLower = lce::blocks::BlocksInit::IRON_DOOR_BLOCK.getStateFromMeta(
+                    lce::blocks::states::DoorLower::withProperty());
+                piece.setBlockState(worldIn, doorBlockLower, x + 1, y, z, structureBB);
+
+                const lce::blocks::Block doorBlockUpper = lce::blocks::BlocksInit::IRON_DOOR_BLOCK.getStateFromMeta(
+                    lce::blocks::states::DoorUpper::withProperty());
+                piece.setBlockState(worldIn, doorBlockUpper, x + 1, y + 1, z, structureBB);
+
+                const lce::blocks::Block buttonBlock1 = lce::blocks::BlocksInit::STONE_BUTTON.getStateFromMeta(
+                    lce::blocks::states::Button::withProperty(enumFacing::NORTH));
+                piece.setBlockState(worldIn, &buttonBlock1, x + 2, y + 1, z + 1, structureBB);
+
+                const lce::blocks::Block buttonBlock2 = lce::blocks::BlocksInit::STONE_BUTTON.getStateFromMeta(
+                    lce::blocks::states::Button::withProperty(enumFacing::SOUTH));
+                piece.setBlockState(worldIn, &buttonBlock2, x + 2, y + 1, z - 1, structureBB);
+            }
         }
     }
 
@@ -94,7 +111,7 @@ namespace build::stronghold {
                 World& worldIn, RNG& rng, const BoundingBox& structureBB, const StructureComponent& piece) {
             if (piece.isLiquidInStructureBoundingBox(worldIn, structureBB)) { return false; }
 
-            Door entryDoor = getRandomDoor((piece.data >> 16) & 7);
+            const Door entryDoor = getRandomDoor(piece.data >> 16 & 7);
             bool hasMadeChest = false;
 
 
@@ -103,23 +120,22 @@ namespace build::stronghold {
             placeDoor(worldIn, rng, structureBB, piece, Door::OPENING, 1, 1, 6);
             piece.fillWithBlocks(worldIn, structureBB, 3, 1, 2, 3, 1, 4, &lce::blocks::BlocksInit::STONE_BRICKS, false);
             // .getStateFromMeta(BlockStoneSlab.EnumType.SMOOTHBRICK.getMetadata())
-            piece.setBlockState(worldIn, &lce::blocks::BlocksInit::STONE_SLAB, 3, 1, 1, structureBB);
+            piece.setBlockState(worldIn, &lce::blocks::BlocksInit::STONE_BRICK_SLAB, 3, 1, 1, structureBB);
             // .getStateFromMeta(BlockStoneSlab.EnumType.SMOOTHBRICK.getMetadata())
-            piece.setBlockState(worldIn, &lce::blocks::BlocksInit::STONE_SLAB, 3, 1, 5, structureBB);
+            piece.setBlockState(worldIn, &lce::blocks::BlocksInit::STONE_BRICK_SLAB, 3, 1, 5, structureBB);
             // .getStateFromMeta(BlockStoneSlab.EnumType.SMOOTHBRICK.getMetadata())
-            piece.setBlockState(worldIn, &lce::blocks::BlocksInit::STONE_SLAB, 3, 2, 2, structureBB);
+            piece.setBlockState(worldIn, &lce::blocks::BlocksInit::STONE_BRICK_SLAB, 3, 2, 2, structureBB);
             // .getStateFromMeta(BlockStoneSlab.EnumType.SMOOTHBRICK.getMetadata())
-            piece.setBlockState(worldIn, &lce::blocks::BlocksInit::STONE_SLAB, 3, 2, 4, structureBB);
+            piece.setBlockState(worldIn, &lce::blocks::BlocksInit::STONE_BRICK_SLAB, 3, 2, 4, structureBB);
 
             for (int i = 2; i <= 4; ++i) {
                 // .getStateFromMeta(BlockStoneSlab.EnumType.SMOOTHBRICK.getMetadata())
-                piece.setBlockState(worldIn, &lce::blocks::BlocksInit::STONE_SLAB, 2, 1, i, structureBB);
+                piece.setBlockState(worldIn, &lce::blocks::BlocksInit::STONE_BRICK_SLAB, 2, 1, i, structureBB);
             }
 
             Pos3D chestPos = piece.getWorldXYZ(3, 2, 3);
             if (!hasMadeChest && structureBB.isVecInside(chestPos)) {
                 hasMadeChest = true;
-
                 // generateChest(worldIn, structureBB, rng, 3, 2, 3, LootTableList.CHESTS_STRONGHOLD_CORRIDOR);
                 piece.setBlockState(worldIn, &lce::blocks::BlocksInit::CHEST,  3, 2, 3, structureBB);
                 rng.nextLong();
@@ -137,7 +153,7 @@ namespace build::stronghold {
                 World& worldIn, MU RNG& rng, const BoundingBox& structureBB, const StructureComponent& piece) {
             if (piece.isLiquidInStructureBoundingBox(worldIn, structureBB)) { return false; }
 
-            c_int steps = piece.facing != FACING::NORTH && piece.facing != FACING::SOUTH ? piece.getXSize() : piece.getZSize();
+            c_int steps = piece.facing != enumFacing::NORTH && piece.facing != enumFacing::SOUTH ? piece.getXSize() : piece.getZSize();
 
             for (int i = 0; i < steps; ++i) {
                 piece.setBlockState(worldIn, &lce::blocks::BlocksInit::STONE_BRICKS, 0, 0, i, structureBB);
@@ -202,8 +218,10 @@ namespace build::stronghold {
             piece.fillWithBlocks(worldIn, structureBB, 4, 5, 7, 4, 5, 9, &lce::blocks::BlocksInit::STONE_SLAB, false);
             piece.fillWithBlocks(worldIn, structureBB, 8, 5, 7, 8, 5, 9, &lce::blocks::BlocksInit::STONE_SLAB, false);
             piece.fillWithBlocks(worldIn, structureBB, 5, 5, 7, 7, 5, 9, &lce::blocks::BlocksInit::DOUBLE_STONE_SLAB, false);
-            // .withProperty(BlockTorch.FACING, FACING::SOUTH)
-            piece.setBlockState(worldIn, &lce::blocks::BlocksInit::TORCH, 6, 5, 6, structureBB);
+
+            const lce::blocks::Block torchSouth = lce::blocks::BlocksInit::TORCH.getStateFromMeta(
+                    lce::blocks::states::Torch::withProperty(enumFacing::SOUTH));
+            piece.setBlockState(worldIn, torchSouth, 6, 5, 6, structureBB);
             return true;
         }
     };
@@ -221,9 +239,7 @@ namespace build::stronghold {
             piece.fillWithRandomizedStrongholdStones(worldIn, structureBB, 0, 0, 0, 4, 4, 4, true, rng);
             placeDoor(worldIn, rng, structureBB, piece, entryDoor, 1, 1, 0);
 
-            const lce::blocks::Block* air = &lce::blocks::BlocksInit::AIR;
-
-            if (piece.facing != FACING::NORTH && piece.facing != FACING::EAST) {
+            if (piece.facing != enumFacing::NORTH && piece.facing != enumFacing::EAST) {
                 piece.fillWithAir(worldIn, structureBB, 4, 1, 1, 4, 3, 3);
             } else {
                 piece.fillWithAir(worldIn, structureBB, 0, 1, 1, 0, 3, 3);
@@ -250,8 +266,8 @@ namespace build::stronghold {
 
             piece.fillWithRandomizedStrongholdStones(worldIn, structureBB, 0, 0, 0, 13, i - 1, 14, true, rng);
             placeDoor(worldIn, rng, structureBB, piece, entryDoor, 4, 1, 0);
-            piece.fillWithBlocksRandomLightCheck(worldIn, structureBB, rng, 0.07F, 2, 1, 1, 11, 4, 13, &lce::blocks::BlocksInit::COBWEB,
-                          &lce::blocks::BlocksInit::COBWEB, false, 0);
+            piece.fillWithBlocksRandomLightCheck(worldIn, structureBB, rng, 0.07F, 2, 1, 1, 11, 4, 13,
+                &lce::blocks::BlocksInit::COBWEB, &lce::blocks::BlocksInit::COBWEB, false, 0);
             // int j = 1;
             // int k = 12;
 
@@ -265,10 +281,12 @@ namespace build::stronghold {
                 if ((l - 1) % 4 == 0) {
                     piece.fillWithBlocks(worldIn, structureBB, 1, 1, l, 1, 4, l, plank, false);
                     piece.fillWithBlocks(worldIn, structureBB, 12, 1, l, 12, 4, l, plank, false);
-                    // .withProperty(BlockTorch.FACING, FACING::EAST)
-                    piece.setBlockState(worldIn, torch, 2, 3, l, structureBB);
-                    // .withProperty(BlockTorch.FACING, FACING::WEST)
-                    piece.setBlockState(worldIn, torch, 11, 3, l, structureBB);
+
+                    auto torchEast = torch->getStateFromMeta(lce::blocks::states::Torch::withProperty(enumFacing::EAST));
+                    piece.setBlockState(worldIn, torchEast, 2, 3, l, structureBB);
+
+                    auto torchWest = torch->getStateFromMeta(lce::blocks::states::Torch::withProperty(enumFacing::WEST));
+                    piece.setBlockState(worldIn, torchWest, 11, 3, l, structureBB);
 
                     if (isLargeRoom) {
                         piece.fillWithBlocks(worldIn, structureBB, 1, 6, l, 1, 9, l, plank, false);
@@ -306,15 +324,19 @@ namespace build::stronghold {
                 piece.setBlockState(worldIn, fence, 9, 6, 11, structureBB);
                 piece.setBlockState(worldIn, fence, 8, 6, 11, structureBB);
                 piece.setBlockState(worldIn, fence, 9, 6, 10, structureBB);
+
                 // .withProperty(BlockLadder.FACING, FACING::SOUTH);
-                const lce::blocks::Block* iblockstate1 = &lce::blocks::BlocksInit::LADDER;
-                piece.setBlockState(worldIn, iblockstate1, 10, 1, 13, structureBB);
-                piece.setBlockState(worldIn, iblockstate1, 10, 2, 13, structureBB);
-                piece.setBlockState(worldIn, iblockstate1, 10, 3, 13, structureBB);
-                piece.setBlockState(worldIn, iblockstate1, 10, 4, 13, structureBB);
-                piece.setBlockState(worldIn, iblockstate1, 10, 5, 13, structureBB);
-                piece.setBlockState(worldIn, iblockstate1, 10, 6, 13, structureBB);
-                piece.setBlockState(worldIn, iblockstate1, 10, 7, 13, structureBB);
+
+                c_auto ladderSouth = lce::blocks::BlocksInit::LADDER.getStateFromMeta(
+                    lce::blocks::states::Ladder::withProperty(enumFacing::SOUTH));
+
+                piece.setBlockState(worldIn, ladderSouth, 10, 1, 13, structureBB);
+                piece.setBlockState(worldIn, ladderSouth, 10, 2, 13, structureBB);
+                piece.setBlockState(worldIn, ladderSouth, 10, 3, 13, structureBB);
+                piece.setBlockState(worldIn, ladderSouth, 10, 4, 13, structureBB);
+                piece.setBlockState(worldIn, ladderSouth, 10, 5, 13, structureBB);
+                piece.setBlockState(worldIn, ladderSouth, 10, 6, 13, structureBB);
+                piece.setBlockState(worldIn, ladderSouth, 10, 7, 13, structureBB);
                 // int i1 = 7;
                 // int j1 = 7;
                 piece.setBlockState(worldIn, fence, 6, 9, 7, structureBB);
@@ -329,14 +351,14 @@ namespace build::stronghold {
                 piece.setBlockState(worldIn, fence, 6, 7, 8, structureBB);
                 piece.setBlockState(worldIn, fence, 7, 7, 6, structureBB);
                 piece.setBlockState(worldIn, fence, 7, 7, 8, structureBB);
-                // .withProperty(BlockTorch.FACING, FACING::UP)
-                const lce::blocks::Block* iblockstate = torch;
-                piece.setBlockState(worldIn, iblockstate, 5, 8, 7, structureBB);
-                piece.setBlockState(worldIn, iblockstate, 8, 8, 7, structureBB);
-                piece.setBlockState(worldIn, iblockstate, 6, 8, 6, structureBB);
-                piece.setBlockState(worldIn, iblockstate, 6, 8, 8, structureBB);
-                piece.setBlockState(worldIn, iblockstate, 7, 8, 6, structureBB);
-                piece.setBlockState(worldIn, iblockstate, 7, 8, 8, structureBB);
+
+                c_auto torchUp = torch->getStateFromMeta(lce::blocks::states::Torch::withProperty(enumFacing::UP));
+                piece.setBlockState(worldIn, torchUp, 5, 8, 7, structureBB);
+                piece.setBlockState(worldIn, torchUp, 8, 8, 7, structureBB);
+                piece.setBlockState(worldIn, torchUp, 6, 8, 6, structureBB);
+                piece.setBlockState(worldIn, torchUp, 6, 8, 8, structureBB);
+                piece.setBlockState(worldIn, torchUp, 7, 8, 6, structureBB);
+                piece.setBlockState(worldIn, torchUp, 7, 8, 8, structureBB);
             }
 
             // generateChest(worldIn, structureBB, rng, 3, 3, 5, LootTableList.CHESTS_STRONGHOLD_LIBRARY);
@@ -384,16 +406,17 @@ namespace build::stronghold {
                 piece.fillWithBlocks(worldIn, structureBB, i1, 3, 15, i1, 4, 15, &lce::blocks::BlocksInit::IRON_BARS, false);
             }
 
-            // .withProperty(BlockStairs.FACING, FACING::NORTH)
-            const lce::blocks::Block* iblockstate3 = &lce::blocks::BlocksInit::STONE_BRICK_STAIRS;
             piece.fillWithRandomizedStrongholdStones(worldIn, structureBB, 4, 1, 5, 6, 1, 7, false, rng);
             piece.fillWithRandomizedStrongholdStones(worldIn, structureBB, 4, 2, 6, 6, 2, 7, false, rng);
             piece.fillWithRandomizedStrongholdStones(worldIn, structureBB, 4, 3, 7, 6, 3, 7, false, rng);
 
+            const lce::blocks::Block cobbleStairNorth = lce::blocks::BlocksInit::STONE_BRICK_STAIRS
+                .getStateFromMeta(lce::blocks::states::Stairs::withProperty(enumFacing::NORTH));
+
             for (int k = 4; k <= 6; ++k) {
-                piece.setBlockState(worldIn, iblockstate3, k, 1, 4, structureBB);
-                piece.setBlockState(worldIn, iblockstate3, k, 2, 5, structureBB);
-                piece.setBlockState(worldIn, iblockstate3, k, 3, 6, structureBB);
+                piece.setBlockState(worldIn, cobbleStairNorth, k, 1, 4, structureBB);
+                piece.setBlockState(worldIn, cobbleStairNorth, k, 2, 5, structureBB);
+                piece.setBlockState(worldIn, cobbleStairNorth, k, 3, 6, structureBB);
             }
 
             // .withProperty(BlockEndPortalFrame.FACING, FACING::NORTH);
@@ -491,10 +514,17 @@ namespace build::stronghold {
             piece.fillWithBlocks(worldIn, structureBB, 5, 1, 5, 7, 3, 5, &lce::blocks::BlocksInit::IRON_BARS, false);
             piece.setBlockState(worldIn, &lce::blocks::BlocksInit::IRON_BARS, 4, 3, 2, structureBB);
             piece.setBlockState(worldIn, &lce::blocks::BlocksInit::IRON_BARS, 4, 3, 8, structureBB);
+
+
             // .withProperty(BlockDoor.FACING, FACING::WEST)
-            const lce::blocks::Block* iblockstate = &lce::blocks::BlocksInit::IRON_DOOR_BLOCK;
+            const lce::blocks::Block iblockstate = lce::blocks::BlocksInit::IRON_DOOR_BLOCK.getStateFromMeta(
+                lce::blocks::states::DoorLower::withProperty(enumFacing::WEST));
+
             // .withProperty(BlockDoor.FACING, FACING::WEST).withProperty(BlockDoor.HALF, BlockDoor.EnumDoorHalf.UPPER)
-            const lce::blocks::Block* iblockstate1 = &lce::blocks::BlocksInit::IRON_DOOR_BLOCK;
+            const lce::blocks::Block iblockstate1 = lce::blocks::BlocksInit::IRON_DOOR_BLOCK.getStateFromMeta(
+                lce::blocks::states::DoorUpper::withProperty());
+
+
             piece.setBlockState(worldIn, iblockstate, 4, 1, 2, structureBB);
             piece.setBlockState(worldIn, iblockstate1, 4, 2, 2, structureBB);
             piece.setBlockState(worldIn, iblockstate, 4, 1, 8, structureBB);
@@ -516,7 +546,7 @@ namespace build::stronghold {
             piece.fillWithRandomizedStrongholdStones(worldIn, structureBB, 0, 0, 0, 4, 4, 4, true, rng);
             placeDoor(worldIn, rng, structureBB, piece, entryDoor, 1, 1, 0);
 
-            if (piece.facing != FACING::NORTH && piece.facing != FACING::EAST) {
+            if (piece.facing != enumFacing::NORTH && piece.facing != enumFacing::EAST) {
                 piece.fillWithAir(worldIn, structureBB, 0, 1, 1, 0, 3, 3);
             } else {
                 piece.fillWithAir(worldIn, structureBB, 4, 1, 1, 4, 3, 3);
@@ -551,14 +581,21 @@ namespace build::stronghold {
                     piece.setBlockState(worldIn, &lce::blocks::BlocksInit::STONE_BRICKS, 5, 1, 5, structureBB);
                     piece.setBlockState(worldIn, &lce::blocks::BlocksInit::STONE_BRICKS, 5, 2, 5, structureBB);
                     piece.setBlockState(worldIn, &lce::blocks::BlocksInit::STONE_BRICKS, 5, 3, 5, structureBB);
+
                     // .withProperty(BlockTorch.FACING, FACING::WEST)
-                    piece.setBlockState(worldIn, &lce::blocks::BlocksInit::TORCH, 4, 3, 5, structureBB);
+                    piece.setBlockState(worldIn, lce::blocks::BlocksInit::TORCH.getStateFromMeta(
+                        lce::blocks::states::Torch::withProperty(enumFacing::WEST)), 4, 3, 5, structureBB);
                     // .withProperty(BlockTorch.FACING, FACING::EAST)
-                    piece.setBlockState(worldIn, &lce::blocks::BlocksInit::TORCH, 6, 3, 5, structureBB);
+                    piece.setBlockState(worldIn, lce::blocks::BlocksInit::TORCH.getStateFromMeta(
+                        lce::blocks::states::Torch::withProperty(enumFacing::EAST)), 6, 3, 5, structureBB);
                     // .withProperty(BlockTorch.FACING, FACING::SOUTH)
-                    piece.setBlockState(worldIn, &lce::blocks::BlocksInit::TORCH, 5, 3, 4, structureBB);
+                    piece.setBlockState(worldIn, lce::blocks::BlocksInit::TORCH.getStateFromMeta(
+                        lce::blocks::states::Torch::withProperty(enumFacing::SOUTH)), 5, 3, 4, structureBB);
                     // .withProperty(BlockTorch.FACING, FACING::NORTH)
-                    piece.setBlockState(worldIn, &lce::blocks::BlocksInit::TORCH, 5, 3, 6, structureBB);
+                    piece.setBlockState(worldIn, lce::blocks::BlocksInit::TORCH.getStateFromMeta(
+                        lce::blocks::states::Torch::withProperty(enumFacing::NORTH)), 5, 3, 6, structureBB);
+
+
                     piece.setBlockState(worldIn, &lce::blocks::BlocksInit::STONE_SLAB, 4, 1, 4, structureBB);
                     piece.setBlockState(worldIn, &lce::blocks::BlocksInit::STONE_SLAB, 4, 1, 5, structureBB);
                     piece.setBlockState(worldIn, &lce::blocks::BlocksInit::STONE_SLAB, 4, 1, 6, structureBB);
@@ -627,12 +664,16 @@ namespace build::stronghold {
                     }
 
                     // .withProperty(BlockLadder.FACING, FACING::WEST)
-                    const lce::blocks::Block* iblockstate = &lce::blocks::BlocksInit::LADDER;
-                    piece.setBlockState(worldIn, iblockstate, 9, 1, 3, structureBB);
-                    piece.setBlockState(worldIn, iblockstate, 9, 2, 3, structureBB);
-                    piece.setBlockState(worldIn, iblockstate, 9, 3, 3, structureBB);
+                    const lce::blocks::Block ladderWest = lce::blocks::BlocksInit::LADDER.getStateFromMeta(
+                        lce::blocks::states::Ladder::withProperty(enumFacing::WEST));
+                    piece.setBlockState(worldIn, ladderWest, 9, 1, 3, structureBB);
+                    piece.setBlockState(worldIn, ladderWest, 9, 2, 3, structureBB);
+                    piece.setBlockState(worldIn, ladderWest, 9, 3, 3, structureBB);
+
                     // LootTableList.CHESTS_STRONGHOLD_CROSSING
                     // generateChest(worldIn, structureBB, rng, 3, 4, 8);
+                    piece.setBlockState(worldIn, lce::blocks::BlocksInit::CHEST, 3, 4, 8, structureBB);
+                    rng.nextLong();
             }
 
             return true;
@@ -654,27 +695,21 @@ namespace build::stronghold {
             placeDoor(worldIn, rng, structureBB, piece, Door::OPENING, 1, 1, 4);
             piece.setBlockState(worldIn, &lce::blocks::BlocksInit::STONE_BRICKS, 2, 6, 1, structureBB);
             piece.setBlockState(worldIn, &lce::blocks::BlocksInit::STONE_BRICKS, 1, 5, 1, structureBB);
-            // .getStateFromMeta(BlockStoneSlab.EnumType.STONE.getMetadata())
-            piece.setBlockState(worldIn, &lce::blocks::BlocksInit::STONE_SLAB, 1, 6, 1, structureBB);
+            piece.setBlockState(worldIn, &lce::blocks::BlocksInit::STONE_BRICK_SLAB, 1, 6, 1, structureBB);
             piece.setBlockState(worldIn, &lce::blocks::BlocksInit::STONE_BRICKS, 1, 5, 2, structureBB);
             piece.setBlockState(worldIn, &lce::blocks::BlocksInit::STONE_BRICKS, 1, 4, 3, structureBB);
-            // .getStateFromMeta(BlockStoneSlab.EnumType.STONE.getMetadata())
-            piece.setBlockState(worldIn, &lce::blocks::BlocksInit::STONE_SLAB, 1, 5, 3, structureBB);
+            piece.setBlockState(worldIn, &lce::blocks::BlocksInit::STONE_BRICK_SLAB, 1, 5, 3, structureBB);
             piece.setBlockState(worldIn, &lce::blocks::BlocksInit::STONE_BRICKS, 2, 4, 3, structureBB);
             piece.setBlockState(worldIn, &lce::blocks::BlocksInit::STONE_BRICKS, 3, 3, 3, structureBB);
-            // .getStateFromMeta(BlockStoneSlab.EnumType.STONE.getMetadata())
-            piece.setBlockState(worldIn, &lce::blocks::BlocksInit::STONE_SLAB, 3, 4, 3, structureBB);
+            piece.setBlockState(worldIn, &lce::blocks::BlocksInit::STONE_BRICK_SLAB, 3, 4, 3, structureBB);
             piece.setBlockState(worldIn, &lce::blocks::BlocksInit::STONE_BRICKS, 3, 3, 2, structureBB);
             piece.setBlockState(worldIn, &lce::blocks::BlocksInit::STONE_BRICKS, 3, 2, 1, structureBB);
-            // .getStateFromMeta(BlockStoneSlab.EnumType.STONE.getMetadata())
-            piece.setBlockState(worldIn, &lce::blocks::BlocksInit::STONE_SLAB, 3, 3, 1, structureBB);
+            piece.setBlockState(worldIn, &lce::blocks::BlocksInit::STONE_BRICK_SLAB, 3, 3, 1, structureBB);
             piece.setBlockState(worldIn, &lce::blocks::BlocksInit::STONE_BRICKS, 2, 2, 1, structureBB);
             piece.setBlockState(worldIn, &lce::blocks::BlocksInit::STONE_BRICKS, 1, 1, 1, structureBB);
-            // .getStateFromMeta(BlockStoneSlab.EnumType.STONE.getMetadata())
-            piece.setBlockState(worldIn, &lce::blocks::BlocksInit::STONE_SLAB, 1, 2, 1, structureBB);
+            piece.setBlockState(worldIn, &lce::blocks::BlocksInit::STONE_BRICK_SLAB, 1, 2, 1, structureBB);
             piece.setBlockState(worldIn, &lce::blocks::BlocksInit::STONE_BRICKS, 1, 1, 2, structureBB);
-            // .getStateFromMeta(BlockStoneSlab.EnumType.STONE.getMetadata())
-            piece.setBlockState(worldIn, &lce::blocks::BlocksInit::STONE_SLAB, 1, 1, 3, structureBB);
+            piece.setBlockState(worldIn, &lce::blocks::BlocksInit::STONE_BRICK_SLAB, 1, 1, 3, structureBB);
             return true;
         }
     };
@@ -695,12 +730,13 @@ namespace build::stronghold {
             placeDoor(worldIn, rng, structureBB, piece, Door::OPENING, 1, 1, 7);
 
             // .withProperty(BlockStairs.FACING, FACING::SOUTH)
-            const lce::blocks::Block* iblockstate = &lce::blocks::BlocksInit::COBBLESTONE_STAIRS;
+            const lce::blocks::Block cobblestoneStairs = lce::blocks::BlocksInit::COBBLESTONE_STAIRS.getStateFromMeta(
+                lce::blocks::states::Stairs::withProperty(enumFacing::SOUTH));
 
             for (int i = 0; i < 6; ++i) {
-                piece.setBlockState(worldIn, iblockstate, 1, 6 - i, 1 + i, structureBB);
-                piece.setBlockState(worldIn, iblockstate, 2, 6 - i, 1 + i, structureBB);
-                piece.setBlockState(worldIn, iblockstate, 3, 6 - i, 1 + i, structureBB);
+                piece.setBlockState(worldIn, cobblestoneStairs, 1, 6 - i, 1 + i, structureBB);
+                piece.setBlockState(worldIn, cobblestoneStairs, 2, 6 - i, 1 + i, structureBB);
+                piece.setBlockState(worldIn, cobblestoneStairs, 3, 6 - i, 1 + i, structureBB);
 
                 if (i < 5) {
                     piece.setBlockState(worldIn, &lce::blocks::BlocksInit::STONE_BRICKS, 1, 5 - i, 1 + i, structureBB);
@@ -728,14 +764,18 @@ namespace build::stronghold {
             piece.fillWithRandomizedStrongholdStones(worldIn, structureBB, 0, 0, 0, 4, 4, 6, true, rng);
             placeDoor(worldIn, rng, structureBB, piece, entryDoor, 1, 1, 0);
             placeDoor(worldIn, rng, structureBB, piece, Door::OPENING, 1, 1, 6);
+
             // .withProperty(BlockTorch.FACING, FACING::EAST)
-            const lce::blocks::Block* iblockstate = &lce::blocks::BlocksInit::TORCH;
+            const lce::blocks::Block iblockstate = lce::blocks::BlocksInit::TORCH.getStateFromMeta(
+                lce::blocks::states::Torch::withProperty(enumFacing::EAST));
             // .withProperty(BlockTorch.FACING, FACING::WEST)
-            const lce::blocks::Block* iblockstate1 = &lce::blocks::BlocksInit::TORCH;
-            piece.randomlyPlaceBlock(worldIn, structureBB, rng, 0.1F, 1, 2, 1, iblockstate);
-            piece.randomlyPlaceBlock(worldIn, structureBB, rng, 0.1F, 3, 2, 1, iblockstate1);
-            piece.randomlyPlaceBlock(worldIn, structureBB, rng, 0.1F, 1, 2, 5, iblockstate);
-            piece.randomlyPlaceBlock(worldIn, structureBB, rng, 0.1F, 3, 2, 5, iblockstate1);
+            const lce::blocks::Block iblockstate1 = lce::blocks::BlocksInit::TORCH.getStateFromMeta(
+                lce::blocks::states::Torch::withProperty(enumFacing::WEST));
+
+            piece.randomlyPlaceBlock(worldIn, structureBB, rng, 0.1F, 1, 2, 1, &iblockstate);
+            piece.randomlyPlaceBlock(worldIn, structureBB, rng, 0.1F, 3, 2, 1, &iblockstate1);
+            piece.randomlyPlaceBlock(worldIn, structureBB, rng, 0.1F, 1, 2, 5, &iblockstate);
+            piece.randomlyPlaceBlock(worldIn, structureBB, rng, 0.1F, 3, 2, 5, &iblockstate1);
 
             if (expandsX) {
                 piece.fillWithAir(worldIn, structureBB, 0, 1, 2, 0, 3, 4);
@@ -756,56 +796,46 @@ namespace build::stronghold {
         bool result = false;
 
         switch (piece.type) {
-            case PieceType::PT_Stronghold_Straight:
+            case PT_Stronghold_Straight:
                 result = Straight::addComponentParts(worldIn, rng, structureBB, piece);
                 break;
-            case PieceType::PT_Stronghold_PrisonHall:
+            case PT_Stronghold_PrisonHall:
                 result = Prison::addComponentParts(worldIn, rng, structureBB, piece);
                 break;
-            case PieceType::PT_Stronghold_LeftTurn:
+            case PT_Stronghold_LeftTurn:
                 result = LeftTurn::addComponentParts(worldIn, rng, structureBB, piece);
                 break;
-            case PieceType::PT_Stronghold_RightTurn:
+            case PT_Stronghold_RightTurn:
                 result = RightTurn::addComponentParts(worldIn, rng, structureBB, piece);
                 break;
-            case PieceType::PT_Stronghold_RoomCrossing:
+            case PT_Stronghold_RoomCrossing:
                 result = RoomCrossing::addComponentParts(worldIn, rng, structureBB, piece);
                 break;
-            case PieceType::PT_Stronghold_StraightStairsDown:
+            case PT_Stronghold_StraightStairsDown:
                 result = StairsStraight::addComponentParts(worldIn, rng, structureBB, piece);
                 break;
-            case PieceType::PT_Stronghold_StairsDown:
+            case PT_Stronghold_StairsDown:
                 result = Stairs::addComponentParts(worldIn, rng, structureBB, piece);
                 break;
-            case PieceType::PT_Stronghold_FiveCrossing:
+            case PT_Stronghold_FiveCrossing:
                 result = Crossing::addComponentParts(worldIn, rng, structureBB, piece);
                 break;
-            case PieceType::PT_Stronghold_ChestCorridor:
+            case PT_Stronghold_ChestCorridor:
                 result = ChestCorridor::addComponentParts(worldIn, rng, structureBB, piece);
                 break;
-            case PieceType::PT_Stronghold_Library:
+            case PT_Stronghold_Library:
                 result = Library::addComponentParts(worldIn, rng, structureBB, piece);
                 break;
-            case PieceType::PT_Stronghold_PortalRoom:
+            case PT_Stronghold_PortalRoom:
                 result = PortalRoom::addComponentParts(worldIn, rng, structureBB, piece);
                 break;
-            case PieceType::PT_Stronghold_FillerCorridor:
+            case PT_Stronghold_FillerCorridor:
                 result = Corridor::addComponentParts(worldIn, rng, structureBB, piece);
                 break;
             default:;
         }
         return result;
     }
-
-
-
-
-
-
-
-
-
-
 
 
 } // namespace build::stronghold

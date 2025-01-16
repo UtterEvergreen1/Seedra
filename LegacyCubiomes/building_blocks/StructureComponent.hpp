@@ -17,13 +17,13 @@ public:
 
     StructureComponent() = default;
 
-    MU StructureComponent(const BoundingBox bb, const FACING facing)
+    MU StructureComponent(const BoundingBox bb, const enumFacing facing)
         : Piece(bb, facing) {}
 
-    MU StructureComponent(c_int minX, c_int minY, c_int minZ, c_int maxX, c_int maxY, c_int maxZ, const FACING facing)
+    MU StructureComponent(c_int minX, c_int minY, c_int minZ, c_int maxX, c_int maxY, c_int maxZ, const enumFacing facing)
         : Piece(minX, minY, minZ, maxX, maxY, maxZ, facing) {}
 
-    MU StructureComponent(const PieceType type, c_i8 depth, const BoundingBox& bb, const FACING facing, c_int data)
+    MU StructureComponent(const PieceType type, c_i8 depth, const BoundingBox& bb, const enumFacing facing, c_int data)
         : Piece(type, depth, bb, facing, data) {}
 
     MU void usingPiece(const StructureComponent& scIn) {

@@ -83,14 +83,14 @@ namespace gen {
     private:
         void setupPieces();
         ND int updatePieceWeight() const;
-        static BoundingBox createPieceBB(PieceType pieceType, Pos3D pos, FACING direction);
+        static BoundingBox createPieceBB(PieceType pieceType, Pos3D pos, enumFacing direction);
         void buildComponentStart(const StructureComponent& piece);
         void buildComponent(const StructureComponent& scIn);
-        BoundingBox road(Pos3D pos, FACING facing);
+        BoundingBox road(Pos3D pos, enumFacing facing);
         void additionalRngRolls(Piece& p);
-        StructureComponent generateComponent(Pos3D pos, FACING facing, i8 depth);
-        StructureComponent genAndAddRoadPiece(Pos3D pos, FACING facing);
-        StructureComponent genAndAddComponent(Pos3D pos, FACING facing, i8 depth);
+        StructureComponent generateComponent(Pos3D pos, enumFacing facing, i8 depth);
+        StructureComponent genAndAddRoadPiece(Pos3D pos, enumFacing facing);
+        StructureComponent genAndAddComponent(Pos3D pos, enumFacing facing, i8 depth);
         void addPiece(const StructureComponent& piece);
         ND bool hasCollisionPiece(const BoundingBox& boundingBox) const;
     };

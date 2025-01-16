@@ -43,8 +43,8 @@ bool WorldGenMegaJungle::generate(World *worldIn, RNG &rng, const Pos3D &pos) co
             worldIn->setBlock(blockpos, this->woodMetadata);
 
             if (i2 > 0) {
-                placeVine(worldIn, rng, blockpos.west(), FACING::EAST);
-                placeVine(worldIn, rng, blockpos.north(), FACING::SOUTH);
+                placeVine(worldIn, rng, blockpos.west(), enumFacing::EAST);
+                placeVine(worldIn, rng, blockpos.north(), enumFacing::SOUTH);
             }
         }
 
@@ -55,8 +55,8 @@ bool WorldGenMegaJungle::generate(World *worldIn, RNG &rng, const Pos3D &pos) co
                 worldIn->setBlock(blockpos1, this->woodMetadata);
 
                 if (i2 > 0) {
-                    placeVine(worldIn, rng, blockpos1.east(), FACING::WEST);
-                    placeVine(worldIn, rng, blockpos1.north(), FACING::SOUTH);
+                    placeVine(worldIn, rng, blockpos1.east(), enumFacing::WEST);
+                    placeVine(worldIn, rng, blockpos1.north(), enumFacing::SOUTH);
                 }
             }
 
@@ -66,8 +66,8 @@ bool WorldGenMegaJungle::generate(World *worldIn, RNG &rng, const Pos3D &pos) co
                 worldIn->setBlock(blockpos2, this->woodMetadata);
 
                 if (i2 > 0) {
-                    placeVine(worldIn, rng, blockpos2.east(), FACING::WEST);
-                    placeVine(worldIn, rng, blockpos2.south(), FACING::NORTH);
+                    placeVine(worldIn, rng, blockpos2.east(), enumFacing::WEST);
+                    placeVine(worldIn, rng, blockpos2.south(), enumFacing::NORTH);
                 }
             }
 
@@ -77,8 +77,8 @@ bool WorldGenMegaJungle::generate(World *worldIn, RNG &rng, const Pos3D &pos) co
                 worldIn->setBlock(blockpos3, this->woodMetadata);
 
                 if (i2 > 0) {
-                    placeVine(worldIn, rng, blockpos3.west(), FACING::EAST);
-                    placeVine(worldIn, rng, blockpos3.south(), FACING::NORTH);
+                    placeVine(worldIn, rng, blockpos3.west(), enumFacing::EAST);
+                    placeVine(worldIn, rng, blockpos3.south(), enumFacing::NORTH);
                 }
             }
         }
@@ -87,7 +87,7 @@ bool WorldGenMegaJungle::generate(World *worldIn, RNG &rng, const Pos3D &pos) co
     return true;
 }
 
-void WorldGenMegaJungle::placeVine(World *worldIn, RNG &rand, const Pos3D &pos, FACING direction) {
+void WorldGenMegaJungle::placeVine(World *worldIn, RNG &rand, const Pos3D &pos, enumFacing direction) {
     if (rand.nextInt(3) > 0 && worldIn->isAirBlock(pos)) {
         worldIn->setBlock(pos, &lce::blocks::BlocksInit::VINES);
     }

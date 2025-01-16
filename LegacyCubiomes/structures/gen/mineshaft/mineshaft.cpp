@@ -69,7 +69,7 @@ namespace gen {
         const BoundingBox roomBoundingBox(startPos.x, 50, startPos.z, boundingBoxXUpper, boundingBoxYUpper, boundingBoxZUpper);
 
         // recursive gen
-        buildComponent(rng, {PieceType::PT_Mineshaft_Room, 0, roomBoundingBox, FACING::NORTH, 1});
+        buildComponent(rng, {PieceType::PT_Mineshaft_Room, 0, roomBoundingBox, enumFacing::NORTH, 1});
 
         // get Y level
         structureBB = BoundingBox::EMPTY;
@@ -119,7 +119,7 @@ namespace gen {
 
 
 
-    void Mineshaft::genAndAddPiece(RNG& rng, const Pos3D pos, const FACING facing, c_int depth) {
+    void Mineshaft::genAndAddPiece(RNG& rng, const Pos3D pos, const enumFacing facing, c_int depth) {
         // step 1: return early
         if (depth > 8) return;
         if (abs(pos.getX() - startPos.x) > 80 || abs(pos.getZ() - startPos.z) > 80) return;
@@ -178,22 +178,22 @@ namespace gen {
                 for (k = 0; k < roomXSize; k += 4) {
                     k += rng.nextInt(roomXSize);
                     if (k + 3 > roomXSize) break;
-                    genAndAddPiece(rng, {p.minX + k, p.minY + rng.nextInt(j) + 1, p.minZ - 1}, FACING::NORTH, p.depth);
+                    genAndAddPiece(rng, {p.minX + k, p.minY + rng.nextInt(j) + 1, p.minZ - 1}, enumFacing::NORTH, p.depth);
                 }
                 for (k = 0; k < roomXSize; k += 4) {
                     k += rng.nextInt(roomXSize);
                     if (k + 3 > roomXSize) break;
-                    genAndAddPiece(rng, {p.minX + k, p.minY + rng.nextInt(j) + 1, p.maxZ + 1}, FACING::SOUTH, p.depth);
+                    genAndAddPiece(rng, {p.minX + k, p.minY + rng.nextInt(j) + 1, p.maxZ + 1}, enumFacing::SOUTH, p.depth);
                 }
                 for (k = 0; k < roomZSize; k += 4) {
                     k += rng.nextInt(roomZSize);
                     if (k + 3 > roomZSize) break;
-                    genAndAddPiece(rng, {p.minX - 1, p.minY + rng.nextInt(j) + 1, p.minZ + k}, FACING::WEST, p.depth);
+                    genAndAddPiece(rng, {p.minX - 1, p.minY + rng.nextInt(j) + 1, p.minZ + k}, enumFacing::WEST, p.depth);
                 }
                 for (k = 0; k < roomZSize; k += 4) {
                     k += rng.nextInt(roomZSize);
                     if (k + 3 > roomZSize) break;
-                    genAndAddPiece(rng, {p.maxX + 1, p.minY + rng.nextInt(j) + 1, p.minZ + k}, FACING::EAST, p.depth);
+                    genAndAddPiece(rng, {p.maxX + 1, p.minY + rng.nextInt(j) + 1, p.minZ + k}, enumFacing::EAST, p.depth);
                 }
                 return;
             }
@@ -202,56 +202,56 @@ namespace gen {
                 c_int corridorType = rng.nextInt(4);
                 c_int yState = p.minY + rng.nextInt(3) - 1;
                 switch (p.facing) {
-                    case FACING::NORTH:
+                    case enumFacing::NORTH:
                     default:
                         switch (corridorType) {
                             default:
                                 genAndAddPiece(rng, {p.minX, yState, p.minZ - 1}, p.facing, p.depth);
                                 break;
                             case 2:
-                                genAndAddPiece(rng, {p.minX - 1, yState, p.minZ}, FACING::WEST, p.depth);
+                                genAndAddPiece(rng, {p.minX - 1, yState, p.minZ}, enumFacing::WEST, p.depth);
                                 break;
                             case 3:
-                                genAndAddPiece(rng, {p.maxX + 1, yState, p.minZ}, FACING::EAST, p.depth);
+                                genAndAddPiece(rng, {p.maxX + 1, yState, p.minZ}, enumFacing::EAST, p.depth);
                         }
                         break;
 
-                    case FACING::SOUTH:
+                    case enumFacing::SOUTH:
                         switch (corridorType) {
                             default:
                                 genAndAddPiece(rng, {p.minX, yState, p.maxZ + 1}, p.facing, p.depth);
                                 break;
                             case 2:
-                                genAndAddPiece(rng, {p.minX - 1, yState, p.maxZ - 3}, FACING::WEST, p.depth);
+                                genAndAddPiece(rng, {p.minX - 1, yState, p.maxZ - 3}, enumFacing::WEST, p.depth);
                                 break;
                             case 3:
-                                genAndAddPiece(rng, {p.maxX + 1, yState, p.maxZ - 3}, FACING::EAST, p.depth);
+                                genAndAddPiece(rng, {p.maxX + 1, yState, p.maxZ - 3}, enumFacing::EAST, p.depth);
                         }
                         break;
 
-                    case FACING::WEST:
+                    case enumFacing::WEST:
                         switch (corridorType) {
                             default:
                                 genAndAddPiece(rng, {p.minX - 1, yState, p.minZ}, p.facing, p.depth);
                                 break;
                             case 2:
-                                genAndAddPiece(rng, {p.minX, yState, p.minZ - 1}, FACING::NORTH, p.depth);
+                                genAndAddPiece(rng, {p.minX, yState, p.minZ - 1}, enumFacing::NORTH, p.depth);
                                 break;
                             case 3:
-                                genAndAddPiece(rng, {p.minX, yState, p.maxZ + 1}, FACING::SOUTH, p.depth);
+                                genAndAddPiece(rng, {p.minX, yState, p.maxZ + 1}, enumFacing::SOUTH, p.depth);
                         }
                         break;
 
-                    case FACING::EAST:
+                    case enumFacing::EAST:
                         switch (corridorType) {
                             default:
                                 genAndAddPiece(rng, {p.maxX + 1, yState, p.minZ}, p.facing, p.depth);
                                 break;
                             case 2:
-                                genAndAddPiece(rng, {p.maxX - 3, yState, p.minZ - 1}, FACING::NORTH, p.depth);
+                                genAndAddPiece(rng, {p.maxX - 3, yState, p.minZ - 1}, enumFacing::NORTH, p.depth);
                                 break;
                             case 3:
-                                genAndAddPiece(rng, {p.maxX - 3, yState, p.maxZ + 1}, FACING::SOUTH, p.depth);
+                                genAndAddPiece(rng, {p.maxX - 3, yState, p.maxZ + 1}, enumFacing::SOUTH, p.depth);
                         }
                         break;
                 }
@@ -259,27 +259,26 @@ namespace gen {
                 if (p.depth >= 8) return;
 
                 switch (p.facing) {
-                    case FACING::NORTH:
-                    case FACING::SOUTH:
+                    case enumFacing::NORTH:
+                    case enumFacing::SOUTH:
                         for (int k = p.minZ + 3; k + 3 <= p.maxZ; k += 5) {
                             if (c_int l = rng.nextInt(5); l == 0)
-                                genAndAddPiece(rng, {p.minX - 1, p.minY, k}, FACING::WEST, p.depth + 1);
+                                genAndAddPiece(rng, {p.minX - 1, p.minY, k}, enumFacing::WEST, p.depth + 1);
                             else if (l == 1)
-                                genAndAddPiece(rng, {p.maxX + 1, p.minY, k}, FACING::EAST, p.depth + 1);
+                                genAndAddPiece(rng, {p.maxX + 1, p.minY, k}, enumFacing::EAST, p.depth + 1);
                         }
                         return;
-                    case FACING::WEST:
-                    case FACING::EAST:
+                    case enumFacing::WEST:
+                    case enumFacing::EAST:
                         for (int k = p.minX + 3; k + 3 <= p.maxX; k += 5) {
                             if (c_int l = rng.nextInt(5); l == 0)
-                                genAndAddPiece(rng, {k, p.minY, p.minZ - 1}, FACING::NORTH, p.depth + 1);
+                                genAndAddPiece(rng, {k, p.minY, p.minZ - 1}, enumFacing::NORTH, p.depth + 1);
                             else if (l == 1)
-                                genAndAddPiece(rng, {k, p.minY, p.maxZ + 1}, FACING::SOUTH, p.depth + 1);
+                                genAndAddPiece(rng, {k, p.minY, p.maxZ + 1}, enumFacing::SOUTH, p.depth + 1);
                         }
                         return;
-                    case FACING::NONE:
-                    case FACING::DOWN:
-                    case FACING::UP:
+                    case enumFacing::DOWN:
+                    case enumFacing::UP:
                         return;
                 }
                 return;
@@ -287,38 +286,38 @@ namespace gen {
 
             case PT_Mineshaft_Crossing: {
                 switch (p.facing) {
-                    case FACING::NORTH:
+                    case enumFacing::NORTH:
                     default:
-                        genAndAddPiece(rng, {p.minX + 1, p.minY, p.minZ - 1}, FACING::NORTH, p.depth);
-                        genAndAddPiece(rng, {p.minX - 1, p.minY, p.minZ + 1}, FACING::WEST, p.depth);
-                        genAndAddPiece(rng, {p.maxX + 1, p.minY, p.minZ + 1}, FACING::EAST, p.depth);
+                        genAndAddPiece(rng, {p.minX + 1, p.minY, p.minZ - 1}, enumFacing::NORTH, p.depth);
+                        genAndAddPiece(rng, {p.minX - 1, p.minY, p.minZ + 1}, enumFacing::WEST, p.depth);
+                        genAndAddPiece(rng, {p.maxX + 1, p.minY, p.minZ + 1}, enumFacing::EAST, p.depth);
                         break;
-                    case FACING::SOUTH:
-                        genAndAddPiece(rng, {p.minX + 1, p.minY, p.maxZ + 1}, FACING::SOUTH, p.depth);
-                        genAndAddPiece(rng, {p.minX - 1, p.minY, p.minZ + 1}, FACING::WEST, p.depth);
-                        genAndAddPiece(rng, {p.maxX + 1, p.minY, p.minZ + 1}, FACING::EAST, p.depth);
+                    case enumFacing::SOUTH:
+                        genAndAddPiece(rng, {p.minX + 1, p.minY, p.maxZ + 1}, enumFacing::SOUTH, p.depth);
+                        genAndAddPiece(rng, {p.minX - 1, p.minY, p.minZ + 1}, enumFacing::WEST, p.depth);
+                        genAndAddPiece(rng, {p.maxX + 1, p.minY, p.minZ + 1}, enumFacing::EAST, p.depth);
                         break;
-                    case FACING::WEST:
-                        genAndAddPiece(rng, {p.minX + 1, p.minY, p.minZ - 1}, FACING::NORTH, p.depth);
-                        genAndAddPiece(rng, {p.minX + 1, p.minY, p.maxZ + 1}, FACING::SOUTH, p.depth);
-                        genAndAddPiece(rng, {p.minX - 1, p.minY, p.minZ + 1}, FACING::WEST, p.depth);
+                    case enumFacing::WEST:
+                        genAndAddPiece(rng, {p.minX + 1, p.minY, p.minZ - 1}, enumFacing::NORTH, p.depth);
+                        genAndAddPiece(rng, {p.minX + 1, p.minY, p.maxZ + 1}, enumFacing::SOUTH, p.depth);
+                        genAndAddPiece(rng, {p.minX - 1, p.minY, p.minZ + 1}, enumFacing::WEST, p.depth);
                         break;
-                    case FACING::EAST:
-                        genAndAddPiece(rng, {p.minX + 1, p.minY, p.minZ - 1}, FACING::NORTH, p.depth);
-                        genAndAddPiece(rng, {p.minX + 1, p.minY, p.maxZ + 1}, FACING::SOUTH, p.depth);
-                        genAndAddPiece(rng, {p.maxX + 1, p.minY, p.minZ + 1}, FACING::EAST, p.depth);
+                    case enumFacing::EAST:
+                        genAndAddPiece(rng, {p.minX + 1, p.minY, p.minZ - 1}, enumFacing::NORTH, p.depth);
+                        genAndAddPiece(rng, {p.minX + 1, p.minY, p.maxZ + 1}, enumFacing::SOUTH, p.depth);
+                        genAndAddPiece(rng, {p.maxX + 1, p.minY, p.minZ + 1}, enumFacing::EAST, p.depth);
                         break;
                 }
 
                 if (p.data) {
                     if (rng.nextBoolean())
-                        genAndAddPiece(rng, {p.minX + 1, p.minY + 4, p.minZ - 1}, FACING::NORTH, p.depth);
+                        genAndAddPiece(rng, {p.minX + 1, p.minY + 4, p.minZ - 1}, enumFacing::NORTH, p.depth);
                     if (rng.nextBoolean())
-                        genAndAddPiece(rng, {p.minX - 1, p.minY + 4, p.minZ + 1}, FACING::WEST, p.depth);
+                        genAndAddPiece(rng, {p.minX - 1, p.minY + 4, p.minZ + 1}, enumFacing::WEST, p.depth);
                     if (rng.nextBoolean())
-                        genAndAddPiece(rng, {p.maxX + 1, p.minY + 4, p.minZ + 1}, FACING::EAST, p.depth);
+                        genAndAddPiece(rng, {p.maxX + 1, p.minY + 4, p.minZ + 1}, enumFacing::EAST, p.depth);
                     if (rng.nextBoolean())
-                        genAndAddPiece(rng, {p.minX + 1, p.minY + 4, p.maxZ + 1}, FACING::SOUTH, p.depth);
+                        genAndAddPiece(rng, {p.minX + 1, p.minY + 4, p.maxZ + 1}, enumFacing::SOUTH, p.depth);
                 }
                 return;
             }
@@ -326,14 +325,14 @@ namespace gen {
             case PT_Mineshaft_Stairs: {
                 switch (p.facing) {
                     default:
-                    case FACING::NORTH:
-                        return genAndAddPiece(rng, {p.minX, p.minY, p.minZ - 1}, FACING::NORTH, p.depth);
-                    case FACING::SOUTH:
-                        return genAndAddPiece(rng, {p.minX, p.minY, p.maxZ + 1}, FACING::SOUTH, p.depth);
-                    case FACING::WEST:
-                        return genAndAddPiece(rng, {p.minX - 1, p.minY, p.minZ}, FACING::WEST, p.depth);
-                    case FACING::EAST:
-                        return genAndAddPiece(rng, {p.maxX + 1, p.minY, p.minZ}, FACING::EAST, p.depth);
+                    case enumFacing::NORTH:
+                        return genAndAddPiece(rng, {p.minX, p.minY, p.minZ - 1}, enumFacing::NORTH, p.depth);
+                    case enumFacing::SOUTH:
+                        return genAndAddPiece(rng, {p.minX, p.minY, p.maxZ + 1}, enumFacing::SOUTH, p.depth);
+                    case enumFacing::WEST:
+                        return genAndAddPiece(rng, {p.minX - 1, p.minY, p.minZ}, enumFacing::WEST, p.depth);
+                    case enumFacing::EAST:
+                        return genAndAddPiece(rng, {p.maxX + 1, p.minY, p.minZ}, enumFacing::EAST, p.depth);
                 }
             }
         }

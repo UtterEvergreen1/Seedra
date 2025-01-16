@@ -45,19 +45,19 @@ template<class classType>
 bool Pos3DTemplate<classType>::operator<=(int value) const { return x <= value && y <= value && z <= value; }
 
 template<class classType>
-Pos3DTemplate<classType> Pos3DTemplate<classType>::offset(const FACING facing, const int n) const {
+Pos3DTemplate<classType> Pos3DTemplate<classType>::offset(const enumFacing facing, const int n) const {
     switch (facing) {
-        case FACING::NORTH:
+        case enumFacing::NORTH:
             return {x, y, z - n};
-        case FACING::SOUTH:
+        case enumFacing::SOUTH:
             return {x, y, z + n};
-        case FACING::WEST:
+        case enumFacing::WEST:
             return {x - n, y, z};
-        case FACING::EAST:
+        case enumFacing::EAST:
             return {x + n, y, z};
-        case FACING::UP:
+        case enumFacing::UP:
             return {x, y + n, z};
-        case FACING::DOWN:
+        case enumFacing::DOWN:
             return {x, y - n, z};
         default:
             return *this;

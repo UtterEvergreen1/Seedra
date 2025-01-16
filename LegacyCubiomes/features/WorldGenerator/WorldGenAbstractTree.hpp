@@ -24,7 +24,7 @@ protected:
      */
     static bool canGrowInto(int blockId);
 
-    static void addVine(World* worldIn, const Pos3D& pos, FACING facing);
+    static void addVine(World* worldIn, const Pos3D& pos, enumFacing facing);
 
     static int placeTrunk(World* worldIn, RNG& rand, const Pos3D& pos, int height, const lce::blocks::Block* woodType,
                           bool vinesGrow);

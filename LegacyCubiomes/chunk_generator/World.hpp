@@ -52,6 +52,10 @@ public:
 
     void setBlock(const Pos3D &pos, const lce::blocks::Block *block);
 
+    void setBlock(int x, int y, int z, const lce::blocks::Block& block);
+
+    void setBlock(const Pos3D &pos, const lce::blocks::Block& block);
+
     bool isAirBlock(int x, int y, int z);
 
     bool isAirBlock(const Pos3D &pos);

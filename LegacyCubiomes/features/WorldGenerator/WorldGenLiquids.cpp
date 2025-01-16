@@ -21,7 +21,7 @@ bool WorldGenLiquids::generate(World * worldIn, RNG& rand, const Pos3D& position
 
     int numStoneBlocks = 0;
     int numAirBlocks = 0;
-    for (const FACING facing : FACING_HORIZONTAL) {
+    for (const enumFacing facing : FACING_HORIZONTAL) {
         if (worldIn->getBlockId(position.offset(facing)) == ids::STONE_ID) {
             ++numStoneBlocks;
         }

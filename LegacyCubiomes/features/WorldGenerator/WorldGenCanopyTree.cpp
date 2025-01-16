@@ -22,7 +22,7 @@ bool WorldGenCanopyTree::generate(World* worldIn, RNG& rand, const Pos3D& positi
         setDirtAt(worldIn, blockPos.east());
         setDirtAt(worldIn, blockPos.south());
         setDirtAt(worldIn, blockPos.south().east());
-        const FACING facing = FACING_HORIZONTAL[rand.nextInt(4)];
+        const enumFacing facing = FACING_HORIZONTAL[rand.nextInt(4)];
         const int i1 = height - rand.nextInt(4);
         int j1 = 2 - rand.nextInt(3);
         int k1 = j;

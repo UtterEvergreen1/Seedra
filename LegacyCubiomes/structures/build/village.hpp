@@ -10,8 +10,9 @@
 #include "LegacyCubiomes/structures/gen/village/village.hpp"
 #include "lce/blocks/blocks.hpp"
 
-#include "LegacyCubiomes/cubiomes/BiomeID.hpp"
 #include "LegacyCubiomes/chunk_generator/World.hpp"
+#include "LegacyCubiomes/cubiomes/BiomeID.hpp"
+#include "lce/blocks/block_states.hpp"
 
 
 namespace build::village {
@@ -19,12 +20,11 @@ namespace build::village {
 
     extern const lce::blocks::Block* getBiomeSpecificBlockState(const lce::blocks::Block* blockPtr, int structureType);
 
-    MU ND extern int getAverageGroundLevel(World& worldIn, BoundingBox& structureBB,
-                                           const StructureComponent& piece);
+    MU ND extern int getAverageGroundLevel(World& worldIn, const BoundingBox& structureBB, const StructureComponent& piece);
 
-    MU extern void func_189927_a(MU const World& p_189927_1_, gen::Village* villageIn, MU BoundingBox p_189927_2_, MU RNG& p_189927_3_, MU int p_189927_4_, MU int p_189927_5_, MU int p_189927_6_, MU FACING p_189927_7_);
+    MU extern void func_189927_a(MU const World& p_189927_1_, gen::Village* villageIn, MU BoundingBox p_189927_2_, MU RNG& p_189927_3_, MU int p_189927_4_, MU int p_189927_5_, MU int p_189927_6_, MU enumFacing p_189927_7_);
 
-    MU extern void func_189926_a(MU const World& p_189926_1_, gen::Village* villageIn, MU FACING p_189926_2_, MU int p_189926_3_, MU int p_189926_4_, MU int p_189926_5_, MU BoundingBox p_189926_6_);
+    MU extern void func_189926_a(MU const World& p_189926_1_, gen::Village* villageIn, MU enumFacing p_189926_2_, MU int p_189926_3_, MU int p_189926_4_, MU int p_189926_5_, MU BoundingBox p_189926_6_);
 
 
 
@@ -40,9 +40,11 @@ namespace build::village {
             structureBB.encompassY(piece);
 
             const lce::blocks::Block* cobblestone = getBiomeSpecificBlockState(&lce::blocks::BlocksInit::COBBLESTONE, piece.structureType);
-            const lce::blocks::Block* iBlockState1 = getBiomeSpecificBlockState(&lce::blocks::BlocksInit::COBBLESTONE_STAIRS, piece.structureType); // .withProperty(BlockStairs.FACING, FACING::NORTH));
-            const lce::blocks::Block* iBlockState2 = getBiomeSpecificBlockState(&lce::blocks::BlocksInit::COBBLESTONE_STAIRS, piece.structureType); // .withProperty(BlockStairs.FACING, FACING::WEST));
-            const lce::blocks::Block* iBlockState3 = getBiomeSpecificBlockState(&lce::blocks::BlocksInit::COBBLESTONE_STAIRS, piece.structureType); // .withProperty(BlockStairs.FACING, FACING::EAST));
+
+            c_auto cobbleStairsSouth = getBiomeSpecificBlockState(&lce::blocks::BlocksInit::COBBLESTONE_STAIRS, piece.structureType);
+            const auto cobbleStairsNorth = cobbleStairsSouth->getStateFromMeta(lce::blocks::states::Stairs::withProperty(enumFacing::NORTH));
+            const auto cobbleStairsWest = cobbleStairsSouth->getStateFromMeta(lce::blocks::states::Stairs::withProperty(enumFacing::WEST));
+            const auto cobbleStairsEast = cobbleStairsSouth->getStateFromMeta(lce::blocks::states::Stairs::withProperty(enumFacing::EAST));
             piece.fillWithAir(worldIn, structureBB, 1, 1, 1, 3, 3, 7);
             piece.fillWithAir(worldIn, structureBB, 1, 5, 1, 3, 9, 3);
             piece.fillWithBlocks(worldIn, structureBB, 1, 0, 0, 3, 0, 8, cobblestone, false);
@@ -65,11 +67,11 @@ namespace build::village {
             piece.setBlockState(worldIn, cobblestone, 2, 1, 7, structureBB);
             piece.setBlockState(worldIn, cobblestone, 3, 1, 6, structureBB);
             piece.setBlockState(worldIn, cobblestone, 3, 1, 7, structureBB);
-            piece.setBlockState(worldIn, iBlockState1, 1, 1, 5, structureBB);
-            piece.setBlockState(worldIn, iBlockState1, 2, 1, 6, structureBB);
-            piece.setBlockState(worldIn, iBlockState1, 3, 1, 5, structureBB);
-            piece.setBlockState(worldIn, iBlockState2, 1, 2, 7, structureBB);
-            piece.setBlockState(worldIn, iBlockState3, 3, 2, 7, structureBB);
+            piece.setBlockState(worldIn, cobbleStairsNorth, 1, 1, 5, structureBB);
+            piece.setBlockState(worldIn, cobbleStairsNorth, 2, 1, 6, structureBB);
+            piece.setBlockState(worldIn, cobbleStairsNorth, 3, 1, 5, structureBB);
+            piece.setBlockState(worldIn, cobbleStairsWest, 1, 2, 7, structureBB);
+            piece.setBlockState(worldIn, cobbleStairsEast, 3, 2, 7, structureBB);
 
             const lce::blocks::Block* glassPane = &lce::blocks::BlocksInit::GLASS_PANE;
             piece.setBlockState(worldIn, glassPane, 0, 2, 2, structureBB);
@@ -93,10 +95,11 @@ namespace build::village {
             // func_189926_a(worldIn, villageIn, FACING::NORTH, 2, 4, 5, structureBB);
 
             // .withProperty(BlockLadder.FACING, FACING::WEST);
-            const lce::blocks::Block* iBlockState4 = &lce::blocks::BlocksInit::LADDER;
+            const lce::blocks::Block ladderWest = lce::blocks::BlocksInit::LADDER.getStateFromMeta(
+                lce::blocks::states::Ladder::withProperty(enumFacing::WEST));
 
             for (int i=1; i <= 9; ++i) {
-                piece.setBlockState(worldIn, iBlockState4, 3, i, 3, structureBB);
+                piece.setBlockState(worldIn, ladderWest, 3, i, 3, structureBB);
             }
 
             piece.setBlockState(worldIn, &lce::blocks::BlocksInit::AIR, 2, 1, 0, structureBB);
@@ -105,7 +108,7 @@ namespace build::village {
 
             if (lce::blocks::ids::isReplaceableBlock(piece.getBlockStateFromPos(worldIn, 2, 0, -1, structureBB)->getID()) &&
                 !lce::blocks::ids::isReplaceableBlock(piece.getBlockStateFromPos(worldIn, 2, -1, -1, structureBB)->getID())) {
-                piece.setBlockState(worldIn, iBlockState1, 2, 0, -1, structureBB);
+                piece.setBlockState(worldIn, cobbleStairsNorth, 2, 0, -1, structureBB);
 
                 if (piece.getBlockStateFromPos(worldIn, 2, -1, -1, structureBB) == &lce::blocks::BlocksInit::GRASS_PATH) {
                     piece.setBlockState(worldIn, &lce::blocks::BlocksInit::GRASS, 2, -1, -1, structureBB);
@@ -129,7 +132,7 @@ namespace build::village {
     public:
         Field1() = delete;
 
-        MU static const lce::blocks::Block* getRandomCropType(const int data) {
+        MU static const lce::blocks::Block* getRandomCropType(c_int data) {
             switch (data) {
                 case 0:
                 case 1:
@@ -145,7 +148,7 @@ namespace build::village {
         }
 
 
-        MU static int getMaxAgeFromCrop(int id) {
+        MU static int getMaxAgeFromCrop(c_int id) {
             switch (id) {
                 case lce::blocks::ids::CARROTS_ID:
                 case lce::blocks::ids::POTATOES_ID:
@@ -298,9 +301,12 @@ namespace build::village {
             structureBB.encompassY(piece);
 
             const lce::blocks::Block* iBlockState = getBiomeSpecificBlockState(&lce::blocks::BlocksInit::COBBLESTONE, piece.structureType);
-            const lce::blocks::Block* iBlockState1 = getBiomeSpecificBlockState(&lce::blocks::BlocksInit::OAK_WOOD_STAIRS, piece.structureType); // .withProperty(BlockStairs.FACING, FACING::NORTH));
-            const lce::blocks::Block* iBlockState2 = getBiomeSpecificBlockState(&lce::blocks::BlocksInit::OAK_WOOD_STAIRS, piece.structureType); // .withProperty(BlockStairs.FACING, FACING::SOUTH));
-            const lce::blocks::Block* iBlockState3 = getBiomeSpecificBlockState(&lce::blocks::BlocksInit::OAK_WOOD_STAIRS, piece.structureType); // .withProperty(BlockStairs.FACING, FACING::WEST));
+
+            c_auto woodStairs = getBiomeSpecificBlockState(&lce::blocks::BlocksInit::OAK_WOOD_STAIRS, piece.structureType);
+            c_auto iBlockState1 = woodStairs->getStateFromMeta(lce::blocks::states::Stairs::withProperty(enumFacing::NORTH));
+            c_auto iBlockState2 = woodStairs->getStateFromMeta(lce::blocks::states::Stairs::withProperty(enumFacing::SOUTH));
+            c_auto iBlockState3 = woodStairs->getStateFromMeta(lce::blocks::states::Stairs::withProperty(enumFacing::WEST));
+
             const lce::blocks::Block* iBlockState4 = getBiomeSpecificBlockState(&lce::blocks::BlocksInit::OAK_WOOD_PLANK, piece.structureType);
             const lce::blocks::Block* iBlockState5 = getBiomeSpecificBlockState(&lce::blocks::BlocksInit::OAK_WOOD, piece.structureType);
             const lce::blocks::Block* iBlockState6 = getBiomeSpecificBlockState(&lce::blocks::BlocksInit::OAK_FENCE, piece.structureType);
@@ -326,8 +332,8 @@ namespace build::village {
             piece.setBlockState(worldIn, iBlockState4, 0, 4, 3, structureBB);
             piece.setBlockState(worldIn, iBlockState4, 8, 4, 2, structureBB);
             piece.setBlockState(worldIn, iBlockState4, 8, 4, 3, structureBB);
-            const lce::blocks::Block* iBlockState7 = iBlockState1;
-            const lce::blocks::Block* iBlockState8 = iBlockState2;
+            const lce::blocks::Block iBlockState7 = iBlockState1;
+            const lce::blocks::Block iBlockState8 = iBlockState2;
 
             for (int i=-1; i <= 2; ++i) {
                 for (int j=0; j <= 8; ++j) {
@@ -359,6 +365,7 @@ namespace build::village {
             piece.setBlockState(worldIn, &lce::blocks::BlocksInit::DOUBLE_STONE_SLAB, 6, 1, 2, structureBB);
             piece.setBlockState(worldIn, &lce::blocks::BlocksInit::AIR, 2, 1, 0, structureBB);
             piece.setBlockState(worldIn, &lce::blocks::BlocksInit::AIR, 2, 2, 0, structureBB);
+
             // func_189926_a(worldIn, villageIn, FACING::NORTH, 2, 3, 1, structureBB);
             // func_189927_a(worldIn, villageIn, structureBB, rng, 2, 1, 0, FACING::NORTH);
 
@@ -400,11 +407,17 @@ namespace build::village {
             structureBB.encompassY(piece);
 
             const lce::blocks::Block* iBlockState = getBiomeSpecificBlockState(&lce::blocks::BlocksInit::COBBLESTONE, piece.structureType);
-            const lce::blocks::Block* iBlockState1 = getBiomeSpecificBlockState(&lce::blocks::BlocksInit::OAK_WOOD_STAIRS, piece.structureType); // .withProperty(BlockStairs.FACING, FACING::NORTH));
-            const lce::blocks::Block* iBlockState2 = getBiomeSpecificBlockState(&lce::blocks::BlocksInit::OAK_WOOD_STAIRS, piece.structureType); // .withProperty(BlockStairs.FACING, FACING::SOUTH));
-            const lce::blocks::Block* iBlockState3 = getBiomeSpecificBlockState(&lce::blocks::BlocksInit::OAK_WOOD_STAIRS, piece.structureType); // .withProperty(BlockStairs.FACING, FACING::EAST));
+
+            const auto wood_stairs = getBiomeSpecificBlockState(&lce::blocks::BlocksInit::OAK_WOOD_STAIRS, piece.structureType);
+            const lce::blocks::Block iBlockState1 = wood_stairs->getStateFromMeta(lce::blocks::states::Stairs::withProperty(enumFacing::NORTH));
+            const lce::blocks::Block iBlockState2 = wood_stairs->getStateFromMeta(lce::blocks::states::Stairs::withProperty(enumFacing::SOUTH));
+            const lce::blocks::Block iBlockState3 = wood_stairs->getStateFromMeta(lce::blocks::states::Stairs::withProperty(enumFacing::EAST));
+
             const lce::blocks::Block* iBlockState4 = getBiomeSpecificBlockState(&lce::blocks::BlocksInit::OAK_WOOD_PLANK, piece.structureType);
-            const lce::blocks::Block* iBlockState5 = getBiomeSpecificBlockState(&lce::blocks::BlocksInit::COBBLESTONE_STAIRS, piece.structureType); // .withProperty(BlockStairs.FACING, FACING::NORTH));
+
+
+            const lce::blocks::Block iBlockState5 = getBiomeSpecificBlockState(&lce::blocks::BlocksInit::COBBLESTONE_STAIRS, piece.structureType)
+                ->getStateFromMeta(lce::blocks::states::Stairs::withProperty(enumFacing::NORTH));
             const lce::blocks::Block* iBlockState6 = getBiomeSpecificBlockState(&lce::blocks::BlocksInit::OAK_FENCE, piece.structureType);
             piece.fillWithAir(worldIn, structureBB, 1, 1, 1, 7, 5, 4);
             piece.fillWithBlocks(worldIn, structureBB, 0, 0, 0, 8, 0, 5, iBlockState, false);
@@ -501,10 +514,13 @@ namespace build::village {
             structureBB.encompassY(piece);
 
             const lce::blocks::Block* iBlockState = getBiomeSpecificBlockState(&lce::blocks::BlocksInit::COBBLESTONE, piece.structureType);
-            const lce::blocks::Block* iBlockState1 = getBiomeSpecificBlockState(&lce::blocks::BlocksInit::OAK_WOOD_STAIRS, piece.structureType); // .withProperty(BlockStairs.FACING, FACING::NORTH));
-            const lce::blocks::Block* iBlockState2 = getBiomeSpecificBlockState(&lce::blocks::BlocksInit::OAK_WOOD_STAIRS, piece.structureType); // .withProperty(BlockStairs.FACING, FACING::WEST));
+            const lce::blocks::Block iBlockState1 = getBiomeSpecificBlockState(&lce::blocks::BlocksInit::OAK_WOOD_STAIRS, piece.structureType)
+                ->getStateFromMeta(lce::blocks::states::Stairs::withProperty(enumFacing::NORTH));
+            const lce::blocks::Block iBlockState2 = getBiomeSpecificBlockState(&lce::blocks::BlocksInit::OAK_WOOD_STAIRS, piece.structureType)
+                ->getStateFromMeta(lce::blocks::states::Stairs::withProperty(enumFacing::WEST));
             const lce::blocks::Block* iBlockState3 = getBiomeSpecificBlockState(&lce::blocks::BlocksInit::OAK_WOOD_PLANK, piece.structureType);
-            const lce::blocks::Block* iBlockState4 = getBiomeSpecificBlockState(&lce::blocks::BlocksInit::COBBLESTONE_STAIRS, piece.structureType); // .withProperty(BlockStairs.FACING, FACING::NORTH));
+            const lce::blocks::Block iBlockState4 = getBiomeSpecificBlockState(&lce::blocks::BlocksInit::COBBLESTONE_STAIRS, piece.structureType)
+                ->getStateFromMeta(lce::blocks::states::Stairs::withProperty(enumFacing::NORTH));
             const lce::blocks::Block* iBlockState5 = getBiomeSpecificBlockState(&lce::blocks::BlocksInit::OAK_WOOD, piece.structureType);
             const lce::blocks::Block* iBlockState6 = getBiomeSpecificBlockState(&lce::blocks::BlocksInit::OAK_FENCE, piece.structureType);
 
@@ -589,10 +605,14 @@ namespace build::village {
             structureBB.encompassY(piece);
 
             const lce::blocks::Block* iBlockState = getBiomeSpecificBlockState(&lce::blocks::BlocksInit::COBBLESTONE, piece.structureType);
-            const lce::blocks::Block* iBlockState1 = getBiomeSpecificBlockState(&lce::blocks::BlocksInit::OAK_WOOD_STAIRS, piece.structureType); // .withProperty(BlockStairs.FACING, FACING::NORTH));
-            const lce::blocks::Block* iBlockState2 = getBiomeSpecificBlockState(&lce::blocks::BlocksInit::OAK_WOOD_STAIRS, piece.structureType); // .withProperty(BlockStairs.FACING, FACING::SOUTH));
-            const lce::blocks::Block* iBlockState3 = getBiomeSpecificBlockState(&lce::blocks::BlocksInit::OAK_WOOD_STAIRS, piece.structureType); // .withProperty(BlockStairs.FACING, FACING::EAST));
-            const lce::blocks::Block* iBlockState4 = getBiomeSpecificBlockState(&lce::blocks::BlocksInit::OAK_WOOD_STAIRS, piece.structureType); // .withProperty(BlockStairs.FACING, FACING::WEST));
+            const lce::blocks::Block iBlockState1 = getBiomeSpecificBlockState(&lce::blocks::BlocksInit::OAK_WOOD_STAIRS, piece.structureType)
+                ->getStateFromMeta(lce::blocks::states::Stairs::withProperty(enumFacing::NORTH)); // .withProperty(BlockStairs.FACING, FACING::NORTH));
+            const lce::blocks::Block iBlockState2 = getBiomeSpecificBlockState(&lce::blocks::BlocksInit::OAK_WOOD_STAIRS, piece.structureType)
+                ->getStateFromMeta(lce::blocks::states::Stairs::withProperty(enumFacing::SOUTH)); // .withProperty(BlockStairs.FACING, FACING::SOUTH));
+            const lce::blocks::Block iBlockState3 = getBiomeSpecificBlockState(&lce::blocks::BlocksInit::OAK_WOOD_STAIRS, piece.structureType)
+                ->getStateFromMeta(lce::blocks::states::Stairs::withProperty(enumFacing::EAST)); // .withProperty(BlockStairs.FACING, FACING::EAST));
+            const lce::blocks::Block iBlockState4 = getBiomeSpecificBlockState(&lce::blocks::BlocksInit::OAK_WOOD_STAIRS, piece.structureType)
+                ->getStateFromMeta(lce::blocks::states::Stairs::withProperty(enumFacing::WEST)); // .withProperty(BlockStairs.FACING, FACING::WEST));
             const lce::blocks::Block* iBlockState5 = getBiomeSpecificBlockState(&lce::blocks::BlocksInit::OAK_WOOD_PLANK, piece.structureType);
             const lce::blocks::Block* iBlockState6 = getBiomeSpecificBlockState(&lce::blocks::BlocksInit::OAK_WOOD, piece.structureType);
 
@@ -616,10 +636,10 @@ namespace build::village {
             piece.setBlockState(worldIn, iBlockState5, 8, 4, 2, structureBB);
             piece.setBlockState(worldIn, iBlockState5, 8, 4, 3, structureBB);
             piece.setBlockState(worldIn, iBlockState5, 8, 4, 4, structureBB);
-            const lce::blocks::Block* iBlockState7 = iBlockState1;
-            const lce::blocks::Block* iBlockState8 = iBlockState2;
-            const lce::blocks::Block* iBlockState9 = iBlockState4;
-            const lce::blocks::Block* iBlockState10 = iBlockState3;
+            const lce::blocks::Block& iBlockState7 = iBlockState1;
+            const lce::blocks::Block& iBlockState8 = iBlockState2;
+            const lce::blocks::Block& iBlockState9 = iBlockState4;
+            const lce::blocks::Block& iBlockState10 = iBlockState3;
 
             for (int i=-1; i <= 2; ++i) {
                 for (int j=0; j <= 8; ++j) {
@@ -727,7 +747,8 @@ namespace build::village {
 
             const lce::blocks::Block* iBlockState = getBiomeSpecificBlockState(&lce::blocks::BlocksInit::COBBLESTONE, piece.structureType);
             const lce::blocks::Block* iBlockState1 = getBiomeSpecificBlockState(&lce::blocks::BlocksInit::OAK_WOOD_PLANK, piece.structureType);
-            const lce::blocks::Block* iBlockState2 = getBiomeSpecificBlockState(&lce::blocks::BlocksInit::COBBLESTONE_STAIRS, piece.structureType); // .withProperty(BlockStairs.FACING, FACING::NORTH));
+            const lce::blocks::Block iBlockState2 = getBiomeSpecificBlockState(&lce::blocks::BlocksInit::COBBLESTONE_STAIRS, piece.structureType)
+                ->getStateFromMeta(lce::blocks::states::Stairs::withProperty(enumFacing::NORTH));
             const lce::blocks::Block* iBlockState3 = getBiomeSpecificBlockState(&lce::blocks::BlocksInit::OAK_WOOD, piece.structureType);
             const lce::blocks::Block* iBlockState4 = getBiomeSpecificBlockState(&lce::blocks::BlocksInit::OAK_FENCE, piece.structureType);
 
@@ -792,11 +813,13 @@ namespace build::village {
             }
 
             if (piece.data & 1) /* isRoofAccessible */ {
-                const lce::blocks::Block* iBlockState5 = &lce::blocks::BlocksInit::LADDER; // .withProperty(BlockLadder.FACING, FACING::SOUTH);
-                piece.setBlockState(worldIn, iBlockState5, 3, 1, 3, structureBB);
-                piece.setBlockState(worldIn, iBlockState5, 3, 2, 3, structureBB);
-                piece.setBlockState(worldIn, iBlockState5, 3, 3, 3, structureBB);
-                piece.setBlockState(worldIn, iBlockState5, 3, 4, 3, structureBB);
+                // .withProperty(BlockLadder.FACING, FACING::SOUTH);
+                c_auto ladderSouth = lce::blocks::BlocksInit::LADDER.getStateFromMeta(
+                    lce::blocks::states::Ladder::withProperty(enumFacing::SOUTH));
+                piece.setBlockState(worldIn, ladderSouth, 3, 1, 3, structureBB);
+                piece.setBlockState(worldIn, ladderSouth, 3, 2, 3, structureBB);
+                piece.setBlockState(worldIn, ladderSouth, 3, 3, 3, structureBB);
+                piece.setBlockState(worldIn, ladderSouth, 3, 4, 3, structureBB);
             }
 
             // func_189926_a(worldIn, villageIn, FACING::NORTH, 2, 3, 1, structureBB);
@@ -819,7 +842,7 @@ namespace build::village {
         Path() = delete;
 
         static bool addComponentParts(
-                World& worldIn, MU RNG& rng, BoundingBox& structureBB, const StructureComponent& piece) {
+                World& worldIn, MU RNG& rng, const BoundingBox& structureBB, const StructureComponent& piece) {
 
             const lce::blocks::Block* iblockstate = getBiomeSpecificBlockState(&lce::blocks::BlocksInit::GRASS_PATH, piece.structureType);
             const lce::blocks::Block* iblockstate1 = getBiomeSpecificBlockState(&lce::blocks::BlocksInit::OAK_WOOD_PLANK, piece.structureType);
@@ -912,7 +935,8 @@ namespace build::village {
 
             const lce::blocks::Block* iblockstate = getBiomeSpecificBlockState(&lce::blocks::BlocksInit::COBBLESTONE, piece.structureType);
             const lce::blocks::Block* iblockstate1 = getBiomeSpecificBlockState(&lce::blocks::BlocksInit::OAK_WOOD_PLANK, piece.structureType);
-            const lce::blocks::Block* iblockstate2 = getBiomeSpecificBlockState(&lce::blocks::BlocksInit::COBBLESTONE_STAIRS, piece.structureType); // .withProperty(BlockStairs.FACING, EnumFacing.NORTH));
+            const lce::blocks::Block iblockstate2 = getBiomeSpecificBlockState(&lce::blocks::BlocksInit::COBBLESTONE_STAIRS, piece.structureType)
+                ->getStateFromMeta(lce::blocks::states::Stairs::withProperty(enumFacing::NORTH));
             const lce::blocks::Block* iblockstate3 = getBiomeSpecificBlockState(&lce::blocks::BlocksInit::OAK_WOOD, piece.structureType);
             const lce::blocks::Block* iblockstate4 = getBiomeSpecificBlockState(&lce::blocks::BlocksInit::OAK_FENCE, piece.structureType);
 

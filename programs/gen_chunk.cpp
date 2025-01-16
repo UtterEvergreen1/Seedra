@@ -67,7 +67,7 @@ int main() {
         // create them
         std::vector<gen::Mineshaft> valid_mineshafts = {};
         for (auto& pos : mineshaft_locations) {
-            gen::Mineshaft mineshaft_gen = gen::Mineshaft();
+            auto mineshaft_gen = gen::Mineshaft();
             mineshaft_gen.generate(g.getConsole(), g.getWorldSeed(), pos.toChunkPos());
             valid_mineshafts.push_back(mineshaft_gen);
         }

@@ -15,6 +15,6 @@ public:
     bool generate(World* worldIn, RNG& rng, const Pos3D& pos) const override;
 
 private:
-    static void placeVine(World* worldIn, RNG& rand, const Pos3D& pos, FACING direction);
+    static void placeVine(World* worldIn, RNG& rand, const Pos3D& pos, enumFacing direction);
     void createCrown(World* worldIn, const Pos3D& pos, int width) const;
 };

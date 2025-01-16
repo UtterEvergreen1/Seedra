@@ -23,8 +23,8 @@ namespace rolls {
                     continue;
 
                 c_int sectionCount =
-                        (piece.facing == FACING::NORTH ||
-                            piece.facing == FACING::SOUTH
+                        (piece.facing == enumFacing::NORTH ||
+                            piece.facing == enumFacing::SOUTH
                                  ? piece.getZSize()
                                  : piece.getXSize()) / 5;
                 c_int depth = sectionCount * 5;

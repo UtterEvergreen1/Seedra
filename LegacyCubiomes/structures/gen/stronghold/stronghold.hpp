@@ -94,13 +94,13 @@ namespace gen {
     private:
 
         void onWeightedPiecePlaced(int piecePlaceCountIndex);
-        void createPiece(PieceType pieceType, FACING facing, i8 depth, BoundingBox boundingBox);
+        void createPiece(PieceType pieceType, enumFacing facing, i8 depth, BoundingBox boundingBox);
 
-        bool tryAddPieceFromType(PieceType pieceType, const Pos3D& pos, FACING facing, i8 depth);
-        void genAndAddPiece(const Pos3D& pos, FACING facing, i8 depth);
+        bool tryAddPieceFromType(PieceType pieceType, const Pos3D& pos, enumFacing facing, i8 depth);
+        void genAndAddPiece(const Pos3D& pos, enumFacing facing, i8 depth);
 
         /// piece gen
-        bool genPieceFromSmallDoor(const Pos3D& pos, FACING facing, i8 depth);
+        bool genPieceFromSmallDoor(const Pos3D& pos, enumFacing facing, i8 depth);
         void genSmallDoorChildForward(const StructureComponent& piece, int n, int n2);
         void genSmallDoorChildLeft(const StructureComponent& piece, int n, int n2);
         void genSmallDoorChildRight(const StructureComponent& piece, int n, int n2);
@@ -110,7 +110,7 @@ namespace gen {
         StructureComponent* findCollisionPiece(const BoundingBox& boundingBox);
         bool collidesWithPiece(const BoundingBox& boundingBox);
 
-        static BoundingBox createPieceBoundingBox(PieceType pieceType, const Pos3D& pos, FACING facing);
+        static BoundingBox createPieceBoundingBox(PieceType pieceType, const Pos3D& pos, enumFacing facing);
         static bool isOkBox(const BoundingBox& boundingBox);
     };
 } // namespace gen

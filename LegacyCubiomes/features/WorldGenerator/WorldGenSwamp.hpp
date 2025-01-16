@@ -10,5 +10,5 @@ public:
     bool generate(World * worldIn, RNG &rand, const Pos3D &position) const override;
 
 private:
-    static void addVine(World *worldIn, const Pos3D &pos, FACING direction);
+    static void addVine(World *worldIn, const Pos3D &pos, enumFacing facing);
 };

@@ -32,6 +32,6 @@ public:
     bool generate(World* worldIn, RNG& rng, const Pos3D& pos) const override;
 
 private:
-    static void placeCocoa(World* worldIn, const Pos3D& pos, FACING side, int age);
-    static void addHangingVine(World* worldIn, const Pos3D& pos, FACING direction);
+    static void placeCocoa(World* worldIn, const Pos3D& pos, enumFacing side, int age);
+    static void addHangingVine(World* worldIn, const Pos3D& pos, enumFacing facing);
 };

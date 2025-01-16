@@ -1,12 +1,13 @@
 #include "WorldGenVines.hpp"
 
 #include "LegacyCubiomes/chunk_generator/World.hpp"
-#include "lce/blocks/blocks.hpp"
 #include "lce/blocks/block_ids.hpp"
+#include "lce/blocks/block_states.hpp"
+#include "lce/blocks/blocks.hpp"
 
 
-bool BlockVine::canPlaceBlockOnSide(World* worldIn, const Pos3D& pos, const FACING& facing) {
-    if (facing == FACING::UP || facing == FACING::DOWN) { return false; }
+bool BlockVine::canPlaceBlockOnSide(World* worldIn, const Pos3D& pos, const enumFacing& facing) {
+    if (facing == enumFacing::UP || facing == enumFacing::DOWN) { return false; }
 
     if (!canBlockStay(worldIn->getBlockId(pos.offset(getOppositeFacing(facing))))) { return false; }
 
@@ -33,9 +34,9 @@ bool WorldGenVines::generate(World* worldIn, RNG& rng, const Pos3D& position) co
 
     while (pos.getY() < 128) {
         if (worldIn->isAirBlock(pos)) {
-            for (const FACING& facing: FACING_HORIZONTAL) {
+            for (const enumFacing& facing: FACING_HORIZONTAL) {
                 if (BlockVine::canPlaceBlockOnSide(worldIn, pos, facing)) {
-                    worldIn->setBlock(pos, lce::blocks::ids::VINES_ID, getMetaFromFacingAdditive(facing));
+                    worldIn->setBlock(pos, lce::blocks::ids::VINES_ID, lce::blocks::states::Vine::withProperty(facing));
                     break;
                 }
             }

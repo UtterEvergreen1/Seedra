@@ -1,8 +1,9 @@
 #include "WorldGenAbstractTree.hpp"
 
 #include "LegacyCubiomes/chunk_generator/World.hpp"
-#include "lce/blocks/blocks.hpp"
 #include "lce/blocks/block_ids.hpp"
+#include "lce/blocks/block_states.hpp"
+#include "lce/blocks/blocks.hpp"
 
 
 void WorldGenAbstractTree::setDirtAt(World* worldIn, const Pos3D& pos) {
@@ -26,13 +27,14 @@ bool WorldGenAbstractTree::canGrowInto(const int blockId) {
     }
 }
 
-void WorldGenAbstractTree::addVine(World* worldIn, const Pos3D& pos, const FACING facing) {
-    worldIn->setBlock(pos, lce::blocks::ids::VINES_ID, getMetaFromFacingAdditive(facing));
+void WorldGenAbstractTree::addVine(World* worldIn, const Pos3D& pos, const enumFacing facing) {
+    worldIn->setBlock(pos, lce::blocks::ids::VINES_ID,
+        lce::blocks::states::Vine::withProperty(facing));
 }
 
 void WorldGenAbstractTree::placeFallenTrunk(World* worldIn, RNG& rand, const Pos3D& pos, const int height,
                                             const lce::blocks::Block* woodType) {
-    const FACING facing = FACING_HORIZONTAL[rand.nextInt(4)];
+    const enumFacing facing = FACING_HORIZONTAL[rand.nextInt(4)];
     constexpr double vineChance = 0.5;
     const int trunkLength = height - 2;
     const int offset = rand.nextInt(2) + 2;
@@ -67,16 +69,16 @@ void WorldGenAbstractTree::placeFallenTrunk(World* worldIn, RNG& rand, const Pos
                     if (aboveBlockId == lce::blocks::ids::AIR_ID) {
                         const double chance = rand.nextFloat();
                         if (chance < vineChance) {
-                            if (facing == FACING::NORTH || facing == FACING::SOUTH) {
-                                addVine(worldIn, placePos.east(), FACING::WEST);
+                            if (facing == enumFacing::NORTH || facing == enumFacing::SOUTH) {
+                                addVine(worldIn, placePos.east(), enumFacing::WEST);
                             } else {
-                                addVine(worldIn, placePos.north(), FACING::SOUTH);
+                                addVine(worldIn, placePos.north(), enumFacing::SOUTH);
                             }
                         } else {
-                            if (facing == FACING::NORTH || facing == FACING::SOUTH) {
-                                addVine(worldIn, placePos.west(), FACING::EAST);
+                            if (facing == enumFacing::NORTH || facing == enumFacing::SOUTH) {
+                                addVine(worldIn, placePos.west(), enumFacing::EAST);
                             } else {
-                                addVine(worldIn, placePos.south(), FACING::NORTH);
+                                addVine(worldIn, placePos.south(), enumFacing::NORTH);
                             }
                         }
                     }
@@ -121,19 +123,19 @@ int WorldGenAbstractTree::placeTrunk(World* worldIn, RNG& rand, const Pos3D& pos
                 worldIn->setBlock(pos.up(j3), woodType);
 
                 if (rand.nextFloat() < vineGrowthChance && worldIn->isAirBlock(pos.add(-1, j3, 0))) {
-                    addVine(worldIn, pos.add(-1, j3, 0), FACING::EAST);
+                    addVine(worldIn, pos.add(-1, j3, 0), enumFacing::EAST);
                 }
 
                 if (rand.nextFloat() < vineGrowthChance && worldIn->isAirBlock(pos.add(1, j3, 0))) {
-                    addVine(worldIn, pos.add(1, j3, 0), FACING::WEST);
+                    addVine(worldIn, pos.add(1, j3, 0), enumFacing::WEST);
                 }
 
                 if (rand.nextFloat() < vineGrowthChance && worldIn->isAirBlock(pos.add(0, j3, -1))) {
-                    addVine(worldIn, pos.add(0, j3, -1), FACING::SOUTH);
+                    addVine(worldIn, pos.add(0, j3, -1), enumFacing::SOUTH);
                 }
 
                 if (rand.nextFloat() < vineGrowthChance && worldIn->isAirBlock(pos.add(0, j3, 1))) {
-                    addVine(worldIn, pos.add(0, j3, 1), FACING::NORTH);
+                    addVine(worldIn, pos.add(0, j3, 1), enumFacing::NORTH);
                 }
             }
         }
