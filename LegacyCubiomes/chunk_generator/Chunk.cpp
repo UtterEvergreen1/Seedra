@@ -8,6 +8,8 @@ namespace Chunk {
     ChunkPrimer* provideChunk(const Generator& g, const int chunkX, const int chunkZ, const bool accurate) {
         ChunkGeneratorOverWorld chunk(g);
         ChunkPrimer *chunkPrimer = chunk.provideChunk(chunkX, chunkZ);
+        chunkPrimer->decorateRng = RNG::getPopulationSeed(g.getWorldSeed(), chunkX, chunkZ);
+
         // std::cout << "Providing chunk " << chunkX << ", " << chunkZ << std::endl;
         chunkPrimer->stage = Stage::STAGE_CAVES;
         if constexpr (generateCaves && checkWaterCaves) {
@@ -52,22 +54,22 @@ namespace Chunk {
 
         if (chunk1 && chunk2 && worldIn->getChunk({chunkX + 1, chunkZ + 1}) != nullptr) {
             populateStructures(world, g, chunkX, chunkZ, worldIn);
-            // populateDecorations(world, g, chunkX, chunkZ, worldIn);
+            populateDecorations(world, g, chunkX, chunkZ, worldIn);
         }
 
         if (chunk3 && chunk2 && worldIn->getChunk({chunkX - 1, chunkZ + 1}) != nullptr) {
             populateStructures(world, g, chunkX - 1, chunkZ, worldIn);
-            // populateDecorations(world, g, chunkX - 1, chunkZ, worldIn);
+            populateDecorations(world, g, chunkX - 1, chunkZ, worldIn);
         }
 
         if (chunk && chunk1 && worldIn->getChunk({chunkX + 1, chunkZ - 1}) != nullptr) {
             populateStructures(world, g, chunkX, chunkZ - 1, worldIn);
-            // populateDecorations(world, g, chunkX, chunkZ - 1, worldIn);
+            populateDecorations(world, g, chunkX, chunkZ - 1, worldIn);
         }
 
         if (chunk && chunk3 && worldIn->getChunk({chunkX - 1, chunkZ - 1}) != nullptr) {
             populateStructures(world, g, chunkX - 1, chunkZ - 1, worldIn);
-            // populateDecorations(world, g, chunkX - 1, chunkZ - 1, worldIn);
+            populateDecorations(world, g, chunkX - 1, chunkZ - 1, worldIn);
         }
     }
 
@@ -94,18 +96,6 @@ namespace Chunk {
         constexpr bool generateVillages = true;
         constexpr bool generateStrongholds = true;
 
-        RNG rngStructure;
-        rngStructure.setSeed(g.getWorldSeed());
-        u64 xModifier = rngStructure.nextLong();
-        u64 zModifier = rngStructure.nextLong();
-        xModifier = (i64) (((xModifier / 2) * 2) + 1);
-        zModifier = (i64) (((zModifier / 2) * 2) + 1);
-        c_u64 aix = chunkX * xModifier;
-        rngStructure.setSeed((aix + chunkZ * zModifier) ^ g.getWorldSeed());
-        rngStructure.advance();
-
-
-
         auto chunkBB = BoundingBox::makeChunkBox(chunkX, chunkZ);
 
         if constexpr (generateMineshafts) {
@@ -114,7 +104,7 @@ namespace Chunk {
                     for (int ip = 0; ip < mineshaft.pieceArraySize; ip++) {
                         StructureComponent& piece = mineshaft.pieceArray[ip];
                         if (chunkBB.intersects(piece)) {
-                            build::mineshaft::addComponentParts(world, rngStructure, chunkBB, piece);
+                            build::mineshaft::addComponentParts(world, chunk->decorateRng, chunkBB, piece);
                         }
                     }
                 }
@@ -128,7 +118,7 @@ namespace Chunk {
                         StructureComponent& piece = village.pieceArray[ip];
                         if (chunkBB.intersects(piece)) {
                             piece.structureType = village.biomeType;
-                            build::village::addComponentParts(world, rngStructure, chunkBB, piece);
+                            build::village::addComponentParts(world, chunk->decorateRng, chunkBB, piece);
                         }
                     }
                 }
@@ -141,7 +131,7 @@ namespace Chunk {
                     for (int ip = 0; ip < stronghold.pieceArraySize; ip++) {
                         StructureComponent& piece = stronghold.pieceArray[ip];
                         if (chunkBB.intersects(piece)) {
-                            build::stronghold::addComponentParts(world, rngStructure, chunkBB, piece);
+                            build::stronghold::addComponentParts(world, chunk->decorateRng, chunkBB, piece);
                         }
                     }
                 }
@@ -162,28 +152,28 @@ namespace Chunk {
 
         // return;
         // std::cout << "Populating chunk " << chunkX << ", " << chunkZ << std::endl;
-        RNG rngPopulate = RNG::getPopulationSeed(g.getWorldSeed(), chunkX, chunkZ);
+        // RNG rngPopulate = RNG::getPopulationSeed(g.getWorldSeed(), chunkX, chunkZ);
 
 
-        if (const Pos3D waterPos = FeaturePositions::waterLake(&g, rngPopulate, chunkX, chunkZ); !waterPos.isNull()) {
+        if (const Pos3D waterPos = FeaturePositions::waterLake(&g, chunk->decorateRng, chunkX, chunkZ); !waterPos.isNull()) {
             const WorldGenLakes waterGen(&g, &lce::blocks::BlocksInit::STILL_WATER);
-            waterGen.generate(worldIn, rngPopulate, waterPos);
+            waterGen.generate(worldIn, chunk->decorateRng, waterPos);
         }
 
-        if (const Pos3D lavaPos = FeaturePositions::lavaLake(rngPopulate, chunkX, chunkZ); !lavaPos.isNull()) {
+        if (const Pos3D lavaPos = FeaturePositions::lavaLake(chunk->decorateRng, chunkX, chunkZ); !lavaPos.isNull()) {
             const WorldGenLakes lavaGen(&g, &lce::blocks::BlocksInit::STILL_LAVA);
-            lavaGen.generate(worldIn, rngPopulate, lavaPos);
+            lavaGen.generate(worldIn, chunk->decorateRng, lavaPos);
         }
 
         for (int i = 0; i < 8; i++) {
-            if (Pos3D pos = FeaturePositions::dungeon(rngPopulate, chunkX, chunkZ); !pos.isNull()) {
+            if (Pos3D pos = FeaturePositions::dungeon(chunk->decorateRng, chunkX, chunkZ); !pos.isNull()) {
                 WorldGenDungeons dungeonGen;
-                dungeonGen.generate(worldIn, rngPopulate, pos);
+                dungeonGen.generate(worldIn, chunk->decorateRng, pos);
             }
         }
 
         Biome::registry[g.getBiomeAt(1, (chunkX << 4) + 16, (chunkZ << 4) + 16)]->decorate(
-                worldIn, rngPopulate, {chunkX << 4, chunkZ << 4});
+                worldIn, chunk->decorateRng, {chunkX << 4, chunkZ << 4});
 
 
         c_int xStart = chunkX * 16 + 8;

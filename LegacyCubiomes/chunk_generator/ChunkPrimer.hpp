@@ -28,6 +28,7 @@ public:
     std::vector<u8> skyLight;
     std::vector<int> precipitationHeightMap = std::vector(256, -999);
     int highestYBlock = -1;
+    RNG decorateRng;
 
 
     ChunkPrimer() = default;
