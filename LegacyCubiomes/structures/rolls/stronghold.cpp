@@ -128,7 +128,7 @@ namespace rolls {
                 if (!portalRoomBoundingBox.intersects(chunkBoundingBox))
                     continue;
 
-                ChunkPrimer *chunk = Chunk::provideChunk<true>(worldIn, g, checkChunkX, checkChunkZ, true);
+                ChunkPrimer *chunk = Chunk::provideChunk<true>(g, checkChunkX, checkChunkZ, true);
                 RNG random = RNG::getPopulationSeed(g.getWorldSeed(), portalRoomChunkPos.x + x,
                                                     portalRoomChunkPos.z + z);
                 additionalStrongholdRolls<false, true>(chunk, sg, random,

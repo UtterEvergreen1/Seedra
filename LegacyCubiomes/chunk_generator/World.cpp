@@ -1,6 +1,9 @@
 #include "World.hpp"
 
 #include "Chunk.hpp"
+#include "LegacyCubiomes/structures/placement/StaticStructures.hpp"
+#include "LegacyCubiomes/structures/placement/mineshaft.hpp"
+#include "LegacyCubiomes/structures/placement/stronghold.hpp"
 
 
 void World::addChunk(const Pos2D &pos, ChunkPrimer *chunk) {
@@ -17,7 +20,7 @@ ChunkPrimer *World::getOrCreateChunk(const Pos2D &pos) {
     if (it != chunks.end()) {
         return it->second;
     }
-    auto *chunk = Chunk::provideChunk(*this, *this->g, pos.x, pos.z);
+    auto *chunk = Chunk::provideChunk(*this->g, pos.x, pos.z);
     addChunk(pos, chunk);
     return chunk;
 }
@@ -28,7 +31,7 @@ void World::decorateChunks(const Pos2D &pos, const int radius) {
         for (int dz = -radius; dz <= radius - 1; ++dz) {
             Pos2D chunkPos = pos + Pos2D(dx, dz);
             this->getOrCreateChunk(chunkPos);
-            Chunk::populateChunk(*g, chunkPos.x, chunkPos.z, this);
+            Chunk::populateChunk(*this, *g, chunkPos.x, chunkPos.z, this);
         }
     }
 }
@@ -187,3 +190,52 @@ bool World::canSnowAt(const Pos3D &pos, const bool checkLight) {
     }
     return false;
 }
+
+
+void World::generateMineshafts() {
+    auto mineshaft_locations = Placement::Mineshaft::getAllPositions(*g);
+
+    for (auto& pos : mineshaft_locations) {
+        gen::Mineshaft mineshaft_gen = gen::Mineshaft();
+        mineshaft_gen.generate(g->getConsole(), g->getWorldSeed(), pos.toChunkPos());
+        mineshafts.push_back(mineshaft_gen);
+    }
+}
+
+
+void World::generateVillages() {
+    auto village_locations = Placement::Village<false>::getAllPositions(g);
+
+    for (auto& village_pos : village_locations) {
+        gen::Village village_gen(g);
+        village_gen.generate(village_pos.toChunkPos());
+        villages.emplace_back(village_gen);
+    }
+
+}
+
+
+void World::generateStrongholds() {
+    Pos2D strongholdPos = Placement::Stronghold::getWorldPosition(*g).toChunkPos();
+    strongholds.emplace_back();
+    strongholds[0].generate(g->getWorldSeed(), strongholdPos);
+
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

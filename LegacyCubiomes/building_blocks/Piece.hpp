@@ -34,7 +34,7 @@ public:
     ND MU Pos2D getWorldPos(int offsetWidth, int offsetDepth) const;
     MU static BoundingBox makeBoundingBox(int x, int y, int z, enumFacing direction, int width, int height, int depth);
 
-
+    MU ND bool isTypeNone() { return type == PT_NONE; }
 
 
 

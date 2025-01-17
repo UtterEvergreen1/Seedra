@@ -1,5 +1,6 @@
 #include <algorithm>
 
+#include "LegacyCubiomes/cubiomes/biomeID.hpp"
 #include "LegacyCubiomes/structures/placement/StaticStructures.hpp"
 #include "village.hpp"
 
@@ -67,6 +68,8 @@ namespace gen {
         startPos.x = (chunkX << 4) + 2;
         startPos.z = (chunkZ << 4) + 2;
 
+        setVillageBiomeType();
+
         setupPieces();
         rng.nextInt(4); // direction: this.setCoordBaseMode(EnumFacing.Plane.HORIZONTAL.random(rand));
         isZombieInfested = rng.nextInt(50) == 0;
@@ -107,6 +110,7 @@ namespace gen {
         structureBB = BoundingBox::EMPTY;
         for (int index = 0; index < pieceArraySize; index++) {
             structureBB.encompass(pieceArray[index]);
+            pieceArray[index].structureType = biomeType;
         }
 
     }
@@ -421,6 +425,25 @@ namespace gen {
 
     }
 
+
+    MU void Village::setVillageBiomeType() {
+        switch (g->getBiomeAt(1, startPos)) {
+            case BiomeID::plains:
+                biomeType = 0;
+                break;
+            case BiomeID::desert:
+                biomeType = 1;
+                break;
+            case BiomeID::savanna:
+                biomeType = 2;
+                break;
+            case BiomeID::taiga:
+            case BiomeID::ice_plains:
+            case BiomeID::cold_taiga:
+                biomeType = 3;
+                break;
+        }
+    }
 
 
 

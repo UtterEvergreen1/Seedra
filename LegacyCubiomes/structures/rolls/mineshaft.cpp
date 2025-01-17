@@ -122,7 +122,7 @@ namespace rolls {
                 rng.setSeed((aix + zChunk * zModifier) ^ g.getWorldSeed());
                 rng.advance(); // advance rng
                 const ChunkPrimer* chunk = nullptr;
-                if (generateFullChunk) { chunk = Chunk::provideChunk(worldIn, g, xChunk, zChunk); }
+                if (generateFullChunk) { chunk = Chunk::provideChunk(g, xChunk, zChunk); }
                 generateStructure(worldIn, chunk, mg, rng, xChunk, zChunk);
                 if (generateFullChunk) { delete chunk; }
             }

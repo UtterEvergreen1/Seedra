@@ -1,10 +1,14 @@
 #include "StructureComponent.hpp"
 
 
+#include "LegacyCubiomes/chunk_generator/World.hpp"
 #include "LegacyCubiomes/chunk_generator/ChunkPrimer.hpp"
+
 #include "StrongholdStones.hpp"
 
 #include <ranges>
+
+
 
 
 MU void StructureComponent::setBlockStateWithoutOffset(World& worldIn, const lce::blocks::Block* blockStateIn, c_int x,

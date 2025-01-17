@@ -7,7 +7,8 @@
 #include "lce/blocks/block.hpp"
 
 
-#include "LegacyCubiomes/chunk_generator/World.hpp"
+class World;
+class ChunkPrimer;
 
 
 

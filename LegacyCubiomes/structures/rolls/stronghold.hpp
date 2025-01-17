@@ -2,6 +2,8 @@
 
 #include "LegacyCubiomes/structures/gen/stronghold/stronghold.hpp"
 
+class Generator;
+
 
 namespace rolls {
     class Stronghold {
