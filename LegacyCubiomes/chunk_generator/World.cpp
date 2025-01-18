@@ -236,7 +236,6 @@ void World::generateVillages() {
         village_gen->generate(village_pos.toChunkPos());
         villages.emplace_back(village_gen);
     }
-
 }
 
 

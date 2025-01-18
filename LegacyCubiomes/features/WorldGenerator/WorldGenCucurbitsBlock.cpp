@@ -7,21 +7,7 @@
 
 bool WorldGenCucurbitsBlock::generate(World* worldIn, RNG &rng, const Pos3D &pos) const {
     for (int i = 0; i < 64; ++i) {
-        int x_off;
-        int y_off;
-        int z_off;
-        if (worldIn->getGenerator()->getConsole() != lce::CONSOLE::XBOX360 && worldIn->getGenerator()->getConsole() != lce::CONSOLE::XBOX1) {
-            x_off = rng.nextInt(8) - rng.nextInt(8);
-            y_off = rng.nextInt(4) - rng.nextInt(4);
-            z_off = rng.nextInt(8) - rng.nextInt(8);
-        }
-        else {
-            z_off = rng.nextInt(8) - rng.nextInt(8);
-            y_off = rng.nextInt(4) - rng.nextInt(4);
-            x_off = rng.nextInt(8) - rng.nextInt(8);
-        }
-
-        Pos3D blockPos = pos.add(x_off, y_off, z_off);
+        Pos3D blockPos = pos + getWorldGenPos3D<8, 4, 8>(worldIn, rng);
 
         if (lce::blocks::ids::isReplaceableBlock(worldIn->getBlockId(blockPos)) &&
             worldIn->getBlockId(blockPos.down()) == lce::blocks::ids::GRASS_ID) {

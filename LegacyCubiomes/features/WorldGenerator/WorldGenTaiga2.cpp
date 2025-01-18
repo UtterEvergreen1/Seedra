@@ -1,11 +1,13 @@
 #include "WorldGenTaiga2.hpp"
 
 #include "LegacyCubiomes/chunk_generator/World.hpp"
-#include "lce/blocks/blocks.hpp"
 #include "lce/blocks/block_ids.hpp"
+#include "lce/blocks/blocks.hpp"
+
+using namespace lce::blocks;
 
 
-bool WorldGenTaiga2::generate(World * worldIn, RNG &rng, const Pos3D &pos) const {
+bool WorldGenTaiga2::generate(World* worldIn, RNG& rng, const Pos3D& pos) const {
     const int height = rng.nextInt(4) + 6;
     const int j = 1 + rng.nextInt(2);
     const int k = height - j;
@@ -26,11 +28,7 @@ bool WorldGenTaiga2::generate(World * worldIn, RNG &rng, const Pos3D &pos) const
                 for (int l1 = pos.getZ() - j1; l1 <= pos.getZ() + j1 && flag; ++l1) {
                     if (i1 >= 0 && i1 < 256) {
                         const int blockId = worldIn->getBlockId(Pos3D(k1, i1, l1));
-
-                        using namespace lce::blocks;
-                        if (blockId != ids::AIR_ID && !ids::isLeavesBlock(blockId)) {
-                            flag = false;
-                        }
+                        if (!ids::isAirOrLeavesBlock(blockId)) { flag = false; }
                     } else {
                         flag = false;
                     }
@@ -38,15 +36,12 @@ bool WorldGenTaiga2::generate(World * worldIn, RNG &rng, const Pos3D &pos) const
             }
         }
 
-        if (!flag) {
-            return false;
-        }
+        if (!flag) { return false; }
 
         const int block = worldIn->getBlockId(pos.down());
 
-        using namespace lce::blocks;
-        if ((block == ids::GRASS_ID || block == ids::DIRT_ID || block == ids::FARMLAND_ID) && pos.getY() < 255 -
-            height) {
+        if ((block == ids::GRASS_ID || block == ids::DIRT_ID || block == ids::FARMLAND_ID) &&
+            pos.getY() < 255 - height) {
             setDirtAt(worldIn, pos.down());
             const int i4 = rng.nextInt(3);
             const int fallen = placeTrunk(worldIn, rng, pos, height - i4, &BlocksInit::SPRUCE_WOOD, false);
@@ -80,9 +75,7 @@ bool WorldGenTaiga2::generate(World * worldIn, RNG &rng, const Pos3D &pos) const
                         k3 = 1;
                         ++j3;
 
-                        if (j3 > l) {
-                            j3 = l;
-                        }
+                        if (j3 > l) { j3 = l; }
                     } else {
                         ++i3;
                     }

@@ -23,7 +23,7 @@ class WorldGenBigTree final : public WorldGenAbstractTree {
     mutable std::vector<FoliageCoordinates> foliageCoords;
 
 public:
-    bool generate(World* worldIn, RNG& rand, const Pos3D& position) const override;
+    bool generate(World* worldIn, RNG& rng, const Pos3D& position) const override;
 
     void setDecorationDefaults() const override { this->leafDistanceLimit = 5; }
 

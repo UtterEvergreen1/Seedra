@@ -4,6 +4,8 @@
 #include "lce/blocks/blocks.hpp"
 #include "lce/blocks/block_ids.hpp"
 
+using namespace lce::blocks;
+
 
 const lce::blocks::Block* WorldGenIcePath::PATH_BLOCK = &lce::blocks::BlocksInit::PACKED_ICE;
 
@@ -14,7 +16,7 @@ bool WorldGenIcePath::generate(World * worldIn, RNG &rng, const Pos3D &pos) cons
         position = position.down();
     }
 
-    if (worldIn->getBlockId(position) != lce::blocks::ids::SNOW_BLOCK_ID) {
+    if (worldIn->getBlockId(position) != ids::SNOW_BLOCK_ID) {
         return false;
     }
 
@@ -31,7 +33,6 @@ bool WorldGenIcePath::generate(World * worldIn, RNG &rng, const Pos3D &pos) cons
                     Pos3D blockPos = {xPos, k1, zPos};
                     const int blockId = worldIn->getBlockId(blockPos);
 
-                    using namespace lce::blocks;
                     if (blockId == ids::DIRT_ID || blockId == ids::SNOW_BLOCK_ID || blockId == ids::ICE_ID) {
                         worldIn->setBlock(blockPos, PATH_BLOCK);
                     }

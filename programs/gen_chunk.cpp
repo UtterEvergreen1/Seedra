@@ -22,7 +22,7 @@ int main() {
     auto console = lce::CONSOLE::WIIU;
     auto version = LCEVERSION::ELYTRA;
     // -6651998285536156346
-    Generator g(console, version, -872420751, lce::WORLDSIZE::CLASSIC, lce::BIOMESCALE::SMALL);
+    Generator g(console, version, 12345, lce::WORLDSIZE::CLASSIC, lce::BIOMESCALE::SMALL);
 
     // 3 13 for seed -101, 8 15 for seed 1, 11 16 or 15 5 for seed 27184353441555
     int X_WIDTH = 27;

@@ -5,22 +5,24 @@
 #include "lce/blocks/block_states.hpp"
 #include "lce/blocks/blocks.hpp"
 
+using namespace lce::blocks;
+
 
 void WorldGenAbstractTree::setDirtAt(World* worldIn, const Pos3D& pos) {
-    if (worldIn->getBlockId(pos) != lce::blocks::ids::DIRT_ID) { worldIn->setBlock(pos, lce::blocks::ids::DIRT_ID); }
+    if (worldIn->getBlockId(pos) != ids::DIRT_ID) { worldIn->setBlock(pos, ids::DIRT_ID); }
 }
 
 bool WorldGenAbstractTree::canGrowInto(const int blockId) {
     switch (blockId) {
-        case lce::blocks::ids::AIR_ID:
-        case lce::blocks::ids::OAK_LEAVES_ID:
-        case lce::blocks::ids::ACACIA_LEAVES_ID:
-        case lce::blocks::ids::GRASS_ID:
-        case lce::blocks::ids::DIRT_ID:
-        case lce::blocks::ids::OAK_WOOD_ID:
-        case lce::blocks::ids::ACACIA_WOOD_ID:
-        case lce::blocks::ids::OAK_SAPLING_ID:
-        case lce::blocks::ids::VINES_ID:
+        case ids::AIR_ID:
+        case ids::OAK_LEAVES_ID:
+        case ids::ACACIA_LEAVES_ID:
+        case ids::GRASS_ID:
+        case ids::DIRT_ID:
+        case ids::OAK_WOOD_ID:
+        case ids::ACACIA_WOOD_ID:
+        case ids::OAK_SAPLING_ID:
+        case ids::VINES_ID:
             return true;
         default:
             return false;
@@ -28,12 +30,12 @@ bool WorldGenAbstractTree::canGrowInto(const int blockId) {
 }
 
 void WorldGenAbstractTree::addVine(World* worldIn, const Pos3D& pos, const enumFacing facing) {
-    worldIn->setBlock(pos, lce::blocks::ids::VINES_ID,
-        lce::blocks::states::Vine::withProperty(facing));
+    worldIn->setBlock(pos, ids::VINES_ID,
+        states::Vine::withProperty(facing));
 }
 
 void WorldGenAbstractTree::placeFallenTrunk(World* worldIn, RNG& rand, const Pos3D& pos, const int height,
-                                            const lce::blocks::Block* woodType) {
+                                            const Block* woodType) {
     const enumFacing facing = FACING_HORIZONTAL[rand.nextInt(4)];
     constexpr double vineChance = 0.5;
     const int trunkLength = height - 2;
@@ -49,9 +51,9 @@ void WorldGenAbstractTree::placeFallenTrunk(World* worldIn, RNG& rand, const Pos
             for (int i = trunkLength; i > 0; --i) {
                 checkPos = checkPos.offset(facing);
                 const int blockId = worldIn->getBlockId(checkPos);
-                if (blockId != lce::blocks::ids::AIR_ID) return;
+                if (blockId != ids::AIR_ID) return;
                 const int belowBlockId = worldIn->getBlockId(checkPos.down());
-                if (belowBlockId == lce::blocks::ids::AIR_ID) {
+                if (belowBlockId == ids::AIR_ID) {
                     airCount++;
                     if (airCount > 2) return;
                 } else {
@@ -66,7 +68,7 @@ void WorldGenAbstractTree::placeFallenTrunk(World* worldIn, RNG& rand, const Pos
 
                 if (rand.nextInt(10) == 0) {
                     const int aboveBlockId = worldIn->getBlockId(placePos.up());
-                    if (aboveBlockId == lce::blocks::ids::AIR_ID) {
+                    if (aboveBlockId == ids::AIR_ID) {
                         const double chance = rand.nextFloat();
                         if (chance < vineChance) {
                             if (facing == enumFacing::NORTH || facing == enumFacing::SOUTH) {
@@ -89,11 +91,11 @@ void WorldGenAbstractTree::placeFallenTrunk(World* worldIn, RNG& rand, const Pos
 }
 
 int WorldGenAbstractTree::placeTrunk(World* worldIn, RNG& rand, const Pos3D& pos, int height,
-                                     const lce::blocks::Block* woodType, const bool vinesGrow) {
+                                     const Block* woodType, c_bool vinesGrow) {
     const int fallenTrunk = rand.nextInt(80);
     double vineGrowthChance = 0.0;
 
-    if (woodType != &lce::blocks::BlocksInit::BIRCH_WOOD) {
+    if (woodType != &BlocksInit::BIRCH_WOOD) {
         if (fallenTrunk == 0) {
             vineGrowthChance = 0.75;
         } else if (vinesGrow) {
@@ -111,15 +113,14 @@ int WorldGenAbstractTree::placeTrunk(World* worldIn, RNG& rand, const Pos3D& pos
     if (vineGrowthChance == 0.0) {
         for (int j3 = 0; j3 < height; ++j3) {
             const int blockId = worldIn->getBlockId(pos.up(j3));
-            if (lce::blocks::ids::isAirOrLeavesBlock(blockId) || blockId == lce::blocks::ids::VINES_ID) {
+            if (ids::isAirOrLeavesBlock(blockId) || blockId == ids::VINES_ID) {
                 worldIn->setBlock(pos.up(j3), woodType);
             }
         }
     } else {
         for (int j3 = 0; j3 < height; ++j3) {
             const int blockId = worldIn->getBlockId(pos.up(j3));
-            if (lce::blocks::ids::isAirOrLeavesBlock(blockId) ||
-                blockId == lce::blocks::ids::VINES_ID) {
+            if (ids::isAirOrLeavesBlock(blockId) || blockId == ids::VINES_ID) {
                 worldIn->setBlock(pos.up(j3), woodType);
 
                 if (rand.nextFloat() < vineGrowthChance && worldIn->isAirBlock(pos.add(-1, j3, 0))) {

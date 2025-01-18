@@ -1,12 +1,14 @@
 #include "WorldGenSavannaTree.hpp"
 
 #include "LegacyCubiomes/chunk_generator/World.hpp"
-#include "lce/blocks/blocks.hpp"
 #include "lce/blocks/block_ids.hpp"
+#include "lce/blocks/blocks.hpp"
+
+using namespace lce::blocks;
 
 
 bool WorldGenSavannaTree::generate(World* worldIn, RNG& rand, const Pos3D& position) const {
-    const int height = rand.nextInt(3) + rand.nextInt(3) + 5;
+    c_int height = rand.nextInt(3) + rand.nextInt(3) + 5;
 
     if (position.getY() >= 1 && position.getY() + height <= 255) {
         bool flag = true;
@@ -33,13 +35,12 @@ bool WorldGenSavannaTree::generate(World* worldIn, RNG& rand, const Pos3D& posit
 
         if (!flag) { return false; }
 
-        const int block = worldIn->getBlockId(position.down());
+        c_int block = worldIn->getBlockId(position.down());
 
-        if ((block == lce::blocks::ids::GRASS_ID || block == lce::blocks::ids::DIRT_ID) &&
-            position.getY() + height < 255) {
+        if ((block == ids::GRASS_ID || block == ids::DIRT_ID) && position.getY() + height < 255) {
             setDirtAt(worldIn, position.down());
             const enumFacing enumFacing0 = FACING_HORIZONTAL[rand.nextInt(4)];
-            const int k2 = height - rand.nextInt(4) - 1;
+            c_int k2 = height - rand.nextInt(4) - 1;
             int l2 = 3 - rand.nextInt(3);
             int i3 = position.getX();
 
@@ -47,7 +48,7 @@ bool WorldGenSavannaTree::generate(World* worldIn, RNG& rand, const Pos3D& posit
             int k1 = 0;
 
             for (int l1 = 0; l1 < height; ++l1) {
-                const int i2 = position.getY() + l1;
+                c_int i2 = position.getY() + l1;
 
                 if (l1 >= k2 && l2 > 0) {
                     i3 += getFrontOffsetX(enumFacing0);
@@ -56,9 +57,9 @@ bool WorldGenSavannaTree::generate(World* worldIn, RNG& rand, const Pos3D& posit
                 }
 
                 Pos3D blockPos(i3, i2, j1);
-                const int material = worldIn->getBlockId(blockPos);
+                c_int material = worldIn->getBlockId(blockPos);
 
-                if (lce::blocks::ids::isAirOrLeavesBlock(material)) {
+                if (ids::isAirOrLeavesBlock(material)) {
                     placeLogAt(worldIn, blockPos);
                     k1 = i2;
                 }
@@ -87,19 +88,19 @@ bool WorldGenSavannaTree::generate(World* worldIn, RNG& rand, const Pos3D& posit
             const enumFacing enumFacing1 = FACING_HORIZONTAL[rand.nextInt(4)];
 
             if (enumFacing1 != enumFacing0) {
-                const int l3 = k2 - rand.nextInt(2) - 1;
+                c_int l3 = k2 - rand.nextInt(2) - 1;
                 int k4 = 1 + rand.nextInt(3);
                 k1 = 0;
 
                 for (int l4 = l3; l4 < height && k4 > 0; --k4) {
                     if (l4 >= 1) {
-                        const int j2 = position.getY() + l4;
+                        c_int j2 = position.getY() + l4;
                         i3 += getFrontOffsetX(enumFacing1);
                         j1 += getFrontOffsetZ(enumFacing1);
                         Pos3D blockPos1(i3, j2, j1);
-                        const int material1 = worldIn->getBlockId(blockPos1);
+                        c_int material1 = worldIn->getBlockId(blockPos1);
 
-                        if (lce::blocks::ids::isAirOrLeavesBlock(material1)) {
+                        if (ids::isAirOrLeavesBlock(material1)) {
                             placeLogAt(worldIn, blockPos1);
                             k1 = j2;
                         }
@@ -135,13 +136,9 @@ bool WorldGenSavannaTree::generate(World* worldIn, RNG& rand, const Pos3D& posit
 }
 
 void WorldGenSavannaTree::placeLogAt(World* worldIn, const Pos3D& pos) {
-    worldIn->setBlock(pos, &lce::blocks::BlocksInit::ACACIA_WOOD);
+    worldIn->setBlock(pos, &BlocksInit::ACACIA_WOOD);
 }
 
 void WorldGenSavannaTree::placeLeafAt(World* worldIn, const Pos3D& pos) {
-    const int material = worldIn->getBlockId(pos);
-
-    if (material == lce::blocks::ids::AIR_ID || lce::blocks::ids::isLeavesBlock(material)) {
-        worldIn->setBlock(pos, &lce::blocks::BlocksInit::ACACIA_LEAVES);
-    }
+    if (ids::isAirOrLeavesBlock(worldIn->getBlockId(pos))) { worldIn->setBlock(pos, &BlocksInit::ACACIA_LEAVES); }
 }

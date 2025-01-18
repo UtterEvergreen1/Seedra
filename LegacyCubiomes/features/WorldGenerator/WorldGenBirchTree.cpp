@@ -4,6 +4,8 @@
 #include "lce/blocks/blocks.hpp"
 #include "lce/blocks/block_ids.hpp"
 
+using namespace lce::blocks;
+
 
 bool WorldGenBirchTree::generate(World* worldIn, RNG& rng, const Pos3D& pos) const {
     int height = rng.nextInt(3) + 5;
@@ -30,10 +32,10 @@ bool WorldGenBirchTree::generate(World* worldIn, RNG& rng, const Pos3D& pos) con
         if (!flag) { return false; }
 
         const int belowBlockId = worldIn->getBlockId(pos.down());
-        if (lce::blocks::ids::isGrassOrDirtOrFarmland(belowBlockId) && pos.getY() + height < 255) {
+        if (ids::isGrassOrDirtOrFarmland(belowBlockId) && pos.getY() + height < 255) {
             setDirtAt(worldIn, pos.down());
 
-            if (!placeTrunk(worldIn, rng, pos, height, &lce::blocks::BlocksInit::BIRCH_WOOD, false)) return true;
+            if (!placeTrunk(worldIn, rng, pos, height, &BlocksInit::BIRCH_WOOD, false)) return true;
 
             for (int y = pos.getY() - 3 + height; y <= pos.getY() + height; ++y) {
                 c_int yOffset = y - (pos.getY() + height);
@@ -46,8 +48,8 @@ bool WorldGenBirchTree::generate(World* worldIn, RNG& rng, const Pos3D& pos) con
                         if (std::abs(xOffset) != radius || std::abs(zOffset) != radius ||
                             rng.nextInt(2) != 0 && yOffset != 0) {
                             c_int blockId = worldIn->getBlockId(x, y, z);
-                            if (lce::blocks::ids::isAirOrLeavesBlock(blockId) || blockId == lce::blocks::ids::VINES_ID) {
-                                worldIn->setBlock(x, y, z, &lce::blocks::BlocksInit::BIRCH_LEAVES);
+                            if (ids::isAirOrLeavesBlock(blockId) || blockId == ids::VINES_ID) {
+                                worldIn->setBlock(x, y, z, &BlocksInit::BIRCH_LEAVES);
                             }
                         }
                     }

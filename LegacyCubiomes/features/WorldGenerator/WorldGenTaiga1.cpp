@@ -1,8 +1,10 @@
 #include "WorldGenTaiga1.hpp"
 
 #include "LegacyCubiomes/chunk_generator/World.hpp"
-#include "lce/blocks/blocks.hpp"
 #include "lce/blocks/block_ids.hpp"
+#include "lce/blocks/blocks.hpp"
+
+using namespace lce::blocks;
 
 
 bool WorldGenTaiga1::generate(World* worldIn, RNG& rng, const Pos3D& pos) const {
@@ -32,8 +34,7 @@ bool WorldGenTaiga1::generate(World* worldIn, RNG& rng, const Pos3D& pos) const 
 
         const int block = worldIn->getBlockId(pos.down());
 
-        if ((block == lce::blocks::ids::GRASS_ID || block == lce::blocks::ids::DIRT_ID) &&
-            pos.getY() + height < 255) {
+        if ((block == ids::GRASS_ID || block == ids::DIRT_ID) && pos.getY() + height < 255) {
             setDirtAt(worldIn, pos.down());
             int k2 = 0;
 
@@ -47,8 +48,8 @@ bool WorldGenTaiga1::generate(World* worldIn, RNG& rng, const Pos3D& pos) const 
                         if (std::abs(k3) != k2 || std::abs(j2) != k2 || k2 <= 0) {
                             Pos3D blockpos(j3, l2, i2);
 
-                            if (!lce::blocks::ids::isFullBlock(worldIn->getBlockId(blockpos))) {
-                                worldIn->setBlock(blockpos, &lce::blocks::BlocksInit::SPRUCE_LEAVES);
+                            if (!ids::isFullBlock(worldIn->getBlockId(blockpos))) {
+                                worldIn->setBlock(blockpos, &BlocksInit::SPRUCE_LEAVES);
                             }
                         }
                     }
@@ -63,8 +64,8 @@ bool WorldGenTaiga1::generate(World* worldIn, RNG& rng, const Pos3D& pos) const 
 
             for (int i3 = 0; i3 < height - 1; ++i3) {
                 if (worldIn->isAirBlock(pos.up(i3)) ||
-                    lce::blocks::ids::isLeavesBlock(worldIn->getBlockId(pos.up(i3)))) {
-                    worldIn->setBlock(pos.up(i3), &lce::blocks::BlocksInit::SPRUCE_WOOD);
+                    ids::isLeavesBlock(worldIn->getBlockId(pos.up(i3)))) {
+                    worldIn->setBlock(pos.up(i3), &BlocksInit::SPRUCE_WOOD);
                 }
             }
 

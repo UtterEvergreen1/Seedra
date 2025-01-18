@@ -1,12 +1,14 @@
 #include "WorldGenTrees.hpp"
 
 #include "LegacyCubiomes/chunk_generator/World.hpp"
-#include "lce/blocks/blocks.hpp"
 #include "lce/blocks/block_ids.hpp"
+#include "lce/blocks/blocks.hpp"
+
+using namespace lce::blocks;
 
 
-const lce::blocks::Block* WorldGenTrees::DEFAULT_TRUNK = &lce::blocks::BlocksInit::OAK_WOOD;
-const lce::blocks::Block* WorldGenTrees::DEFAULT_LEAF = &lce::blocks::BlocksInit::OAK_LEAVES;
+const Block* WorldGenTrees::DEFAULT_TRUNK = &BlocksInit::OAK_WOOD;
+const Block* WorldGenTrees::DEFAULT_LEAF = &BlocksInit::OAK_LEAVES;
 
 bool WorldGenTrees::generate(World* worldIn, RNG& rng, const Pos3D& pos) const {
     const int height = rng.nextInt(3) + this->minTreeHeight;
@@ -74,7 +76,8 @@ bool WorldGenTrees::generate(World* worldIn, RNG& rng, const Pos3D& pos) const {
                         for (int i5 = pos.getZ() - k4; i5 <= pos.getZ() + k4; ++i5) {
                             mutablePosition1.setPos(l4, k3, i5);
 
-                            if (const int blockId = worldIn->getBlockId(mutablePosition1); ids::isLeavesBlock(blockId)) {
+                            if (const int blockId = worldIn->getBlockId(mutablePosition1);
+                                ids::isLeavesBlock(blockId)) {
                                 Pos3D blockPos2 = mutablePosition1.west();
                                 Pos3D blockPos3 = mutablePosition1.east();
                                 Pos3D blockPos4 = mutablePosition1.north();
@@ -120,15 +123,15 @@ bool WorldGenTrees::generate(World* worldIn, RNG& rng, const Pos3D& pos) const {
     return false;
 }
 
-void WorldGenTrees::placeCocoa(World* worldIn, const Pos3D& pos, enumFacing side, int age) {
-    worldIn->setBlock(pos, lce::blocks::ids::VINES_ID); //TODO: set rotation data and age data
+void WorldGenTrees::placeCocoa(World* worldIn, const Pos3D& pos, MU enumFacing side, MU int age) {
+    worldIn->setBlock(pos, ids::VINES_ID); //TODO: set rotation data and age data
 }
 
 void WorldGenTrees::addHangingVine(World* worldIn, const Pos3D& pos, const enumFacing facing) {
     addVine(worldIn, pos, facing);
     int i = 4;
 
-    for (Pos3D blockPos = pos.down(); worldIn->getBlockId(blockPos) == lce::blocks::ids::AIR_ID && i > 0; --i) {
+    for (Pos3D blockPos = pos.down(); worldIn->getBlockId(blockPos) == ids::AIR_ID && i > 0; --i) {
         addVine(worldIn, blockPos, facing);
         blockPos = blockPos.down();
     }

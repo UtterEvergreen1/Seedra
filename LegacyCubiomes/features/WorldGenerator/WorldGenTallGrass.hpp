@@ -15,7 +15,7 @@ public:
         TALL_GRASS
     };
 
-    static const lce::blocks::Block* getBlockVarientById(EnumType type);
+    static const lce::blocks::Block* getBlockVariantById(const EnumType type);
 
     static bool canBlockStay(World *worldIn, const Pos3D &pos);
 };

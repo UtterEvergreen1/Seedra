@@ -4,9 +4,10 @@
 #include "lce/blocks/blocks.hpp"
 #include "lce/blocks/block_ids.hpp"
 
+using namespace lce::blocks;
+
 
 bool WorldGenBigMushroom::generate(World* worldIn, RNG& rand, const Pos3D& position) const {
-    using namespace lce::blocks;
     const Block* block = this->mushroomType;
 
     if (block == nullptr) {

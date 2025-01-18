@@ -4,6 +4,8 @@
 #include "lce/blocks/blocks.hpp"
 #include "lce/blocks/block_ids.hpp"
 
+using namespace lce::blocks;
+
 
 int WorldGenHugeTrees::getHeight(RNG &rand) const {
     int height = rand.nextInt(3) + this->baseHeight;
@@ -33,14 +35,14 @@ bool WorldGenHugeTrees::isSpaceAt(World *worldIn, const Pos3D &leavesPos, const 
 }
 
 bool WorldGenHugeTrees::ensureDirtsUnderneath(const Pos3D &pos, World *worldIn) {
-    const Pos3D blockpos = pos.down();
-    const int block = worldIn->getBlockId(blockpos);
+    const Pos3D blockPos = pos.down();
+    const int block = worldIn->getBlockId(blockPos);
 
-    if ((block == lce::blocks::ids::GRASS_ID || block == lce::blocks::ids::DIRT_ID) && pos.getY() >= 2) {
-        setDirtAt(worldIn, blockpos);
-        setDirtAt(worldIn, blockpos.east());
-        setDirtAt(worldIn, blockpos.south());
-        setDirtAt(worldIn, blockpos.south().east());
+    if ((block == ids::GRASS_ID || block == ids::DIRT_ID) && pos.getY() >= 2) {
+        setDirtAt(worldIn, blockPos);
+        setDirtAt(worldIn, blockPos.east());
+        setDirtAt(worldIn, blockPos.south());
+        setDirtAt(worldIn, blockPos.south().east());
         return true;
     }
     return false;
@@ -59,7 +61,7 @@ void WorldGenHugeTrees::growLeavesLayerStrict(World *worldIn, const Pos3D &layer
             if (j * j + k * k <= i || l * l + i1 * i1 <= i || j * j + i1 * i1 <= i || l * l + k * k <= i) {
                 Pos3D blockpos = layerCenter.add(j, 0, k);
                 const int material = worldIn->getBlockId(blockpos);
-                if (lce::blocks::ids::isAirOrLeavesBlock(material)) {
+                if (ids::isAirOrLeavesBlock(material)) {
                     worldIn->setBlock(blockpos, leavesMetadata);
                 }
             }
@@ -72,10 +74,10 @@ void WorldGenHugeTrees::growLeavesLayer(World *worldIn, const Pos3D &layerCenter
     for (int j = -width; j <= width; ++j) {
         for (int k = -width; k <= width; ++k) {
             if (j * j + k * k <= i) {
-                Pos3D blockpos = layerCenter.add(j, 0, k);
-                const int material = worldIn->getBlockId(blockpos);
-                if (lce::blocks::ids::isAirOrLeavesBlock(material)) {
-                    worldIn->setBlock(blockpos, leavesMetadata);
+                Pos3D blockPos = layerCenter.add(j, 0, k);
+                const int material = worldIn->getBlockId(blockPos);
+                if (ids::isAirOrLeavesBlock(material)) {
+                    worldIn->setBlock(blockPos, leavesMetadata);
                 }
             }
         }

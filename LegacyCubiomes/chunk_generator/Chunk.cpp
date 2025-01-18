@@ -47,7 +47,6 @@ namespace Chunk {
     }
 
 
-
     void populateChunk(World& world, const Generator& g, int chunkX, int chunkZ, World* worldIn) {
         const ChunkPrimer* chunk = worldIn->getChunk({chunkX, chunkZ - 1});
         const ChunkPrimer* chunk1 = worldIn->getChunk({chunkX + 1, chunkZ});
@@ -151,11 +150,6 @@ namespace Chunk {
         if (!chunk || chunk->stage != Stage::STAGE_DECORATE) {
             return;
         }
-
-        // return;
-        // std::cout << "Populating chunk " << chunkX << ", " << chunkZ << std::endl;
-        // RNG rngPopulate = RNG::getPopulationSeed(g.getWorldSeed(), chunkX, chunkZ);
-
 
         if (const Pos3D waterPos = FeaturePositions::waterLake(&g, chunk->decorateRng, chunkX, chunkZ); !waterPos.isNull()) {
             const WorldGenLakes waterGen(&g, &lce::blocks::BlocksInit::STILL_WATER);

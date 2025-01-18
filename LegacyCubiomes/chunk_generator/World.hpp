@@ -100,9 +100,8 @@ public:
     std::vector<gen::Village*> villages;
     std::vector<gen::Mineshaft*> mineshafts;
     std::vector<gen::Stronghold*> strongholds;
-
+    std::unordered_map<Pos2D, ChunkPrimer *, Pos2D::Hasher> chunks;
 private:
     Generator *g;
-    std::unordered_map<Pos2D, ChunkPrimer *, Pos2D::Hasher> chunks;
 
 };

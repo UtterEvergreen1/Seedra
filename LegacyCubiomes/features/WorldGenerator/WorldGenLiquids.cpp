@@ -14,9 +14,9 @@ bool WorldGenLiquids::generate(World * worldIn, RNG& rand, const Pos3D& position
     if (worldIn->getBlockId(position.down()) != ids::STONE_ID)
         return false;
 
-    const int blockId = worldIn->getBlockId(position);
+    const int tempBlockId = worldIn->getBlockId(position);
 
-    if (blockId != ids::AIR_ID && blockId != ids::STONE_ID)
+    if (tempBlockId != ids::AIR_ID && tempBlockId != ids::STONE_ID)
         return false;
 
     int numStoneBlocks = 0;
@@ -25,7 +25,7 @@ bool WorldGenLiquids::generate(World * worldIn, RNG& rand, const Pos3D& position
         if (worldIn->getBlockId(position.offset(facing)) == ids::STONE_ID) {
             ++numStoneBlocks;
         }
-        else if (worldIn->getBlockId(position.offset(facing)) == ids::AIR_ID) {
+        else if (worldIn->isAirBlock(position.offset(facing))) {
             ++numAirBlocks;
         }
     }
