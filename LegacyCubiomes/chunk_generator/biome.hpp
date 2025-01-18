@@ -16,6 +16,8 @@
 #include "LegacyCubiomes/features/WorldGenerator/WorldGenIceSpike.hpp"
 #include "LegacyCubiomes/features/WorldGenerator/WorldGenTaiga2.hpp"
 #include "LegacyCubiomes/features/WorldGenerator/WorldGenFlowers.hpp"
+#include "LegacyCubiomes/features/WorldGenerator/WorldGenMegaJungle.hpp"
+#include "LegacyCubiomes/features/WorldGenerator/WorldGenTallGrass.hpp"
 
 #include "LegacyCubiomes/utils/Pos3DTemplate.hpp"
 #include "LegacyCubiomes/utils/constants.hpp"
@@ -280,9 +282,11 @@ public:
 
     const WorldGenerator *getRandomWorldGenForGrass(RNG &rng) const override;
 
+    static const WorldGenTaiga2 SPRUCE_GENERATOR;
+    static const WorldGenTallGrass FERN_GENERATOR;
+    static const WorldGenTallGrass GRASS_GENERATOR;
 private:
     static const WorldGenTaiga1 PINE_GENERATOR;
-    static const WorldGenTaiga2 SPRUCE_GENERATOR;
     static const WorldGenMegaPineTree MEGA_PINE_GENERATOR;
     static const WorldGenMegaPineTree MEGA_SPRUCE_GENERATOR;
     static const WorldGenBlockBlob FOREST_ROCK_GENERATOR;
@@ -390,8 +394,11 @@ public:
 
     const WorldGenerator *getRandomWorldGenForGrass(RNG &rng) const override;
 
+    static constexpr int JUNGLE_TREE_HEIGHT_VARIATION = 7;
 private:
     bool isEdge;
+    static const WorldGenMegaJungle MEGA_JUNGLE_FEATURE;
+    static const WorldGenTrees JUNGLE_TREES[JUNGLE_TREE_HEIGHT_VARIATION];
 };
 
 class BiomeStoneBeach final : public Biome {

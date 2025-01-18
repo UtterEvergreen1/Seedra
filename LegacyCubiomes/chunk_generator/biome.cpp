@@ -38,12 +38,26 @@ const WorldGenCanopyTree BiomeForest::ROOF_TREE;
 
 const WorldGenTaiga1 BiomeTaiga::PINE_GENERATOR;
 const WorldGenTaiga2 BiomeTaiga::SPRUCE_GENERATOR;
+const WorldGenTallGrass BiomeTaiga::FERN_GENERATOR = WorldGenTallGrass(BlockTallGrass::EnumType::FERN);
+const WorldGenTallGrass BiomeTaiga::GRASS_GENERATOR = WorldGenTallGrass(BlockTallGrass::EnumType::GRASS);
 const WorldGenMegaPineTree BiomeTaiga::MEGA_PINE_GENERATOR = WorldGenMegaPineTree(false);
 const WorldGenMegaPineTree BiomeTaiga::MEGA_SPRUCE_GENERATOR = WorldGenMegaPineTree(true);
 
 const WorldGenBlockBlob BiomeTaiga::FOREST_ROCK_GENERATOR = WorldGenBlockBlob(&lce::blocks::BlocksInit::MOSS_STONE, 0);
 
 const WorldGenSwamp BiomeSwamp::SWAMP_FEATURE;
+
+const WorldGenMegaJungle BiomeJungle::MEGA_JUNGLE_FEATURE = WorldGenMegaJungle(
+    10, 20, &lce::blocks::BlocksInit::JUNGLE_WOOD, &lce::blocks::BlocksInit::JUNGLE_LEAVES);
+const WorldGenTrees BiomeJungle::JUNGLE_TREES[BiomeJungle::JUNGLE_TREE_HEIGHT_VARIATION] = {
+    WorldGenTrees(4, &lce::blocks::BlocksInit::JUNGLE_WOOD, &lce::blocks::BlocksInit::JUNGLE_LEAVES, true),
+    WorldGenTrees(5, &lce::blocks::BlocksInit::JUNGLE_WOOD, &lce::blocks::BlocksInit::JUNGLE_LEAVES, true),
+    WorldGenTrees(6, &lce::blocks::BlocksInit::JUNGLE_WOOD, &lce::blocks::BlocksInit::JUNGLE_LEAVES, false),
+    WorldGenTrees(7, &lce::blocks::BlocksInit::JUNGLE_WOOD, &lce::blocks::BlocksInit::JUNGLE_LEAVES, false),
+    WorldGenTrees(8, &lce::blocks::BlocksInit::JUNGLE_WOOD, &lce::blocks::BlocksInit::JUNGLE_LEAVES, false),
+    WorldGenTrees(9, &lce::blocks::BlocksInit::JUNGLE_WOOD, &lce::blocks::BlocksInit::JUNGLE_LEAVES, false),
+    WorldGenTrees(10, &lce::blocks::BlocksInit::JUNGLE_WOOD, &lce::blocks::BlocksInit::JUNGLE_LEAVES, false)
+};
 
 const WorldGenSavannaTree BiomeSavanna::SAVANNA_TREE;
 
@@ -135,7 +149,7 @@ void Biome::registerBiomes() {
 }
 
 const WorldGenAbstractTree *Biome::genBigTreeChance(RNG &rng) const {
-    return (rng.nextInt(10) == 0 ? (WorldGenAbstractTree*)&BIG_TREE_FEATURE : (WorldGenAbstractTree*)&TREE_FEATURE);
+    return (rng.nextInt(10) == 0 ? (WorldGenAbstractTree *) &BIG_TREE_FEATURE : (WorldGenAbstractTree *) &TREE_FEATURE);
 }
 
 const WorldGenerator *Biome::getRandomWorldGenForGrass(RNG &rng) const {
@@ -205,7 +219,9 @@ void Biome::generateBiomeTerrain(RNG &rng, ChunkPrimer *chunkPrimerIn, int x, in
 
                     if (j == 0 && filler->getID() == lce::blocks::ids::SAND_ID && k > 1) {
                         j = rng.nextInt(4) + std::max(0, j1 - 63);
-                        filler = filler->getDataTag() == 1 ? &lce::blocks::BlocksInit::RED_SANDSTONE : &lce::blocks::BlocksInit::SANDSTONE;
+                        filler = filler->getDataTag() == 1
+                                     ? &lce::blocks::BlocksInit::RED_SANDSTONE
+                                     : &lce::blocks::BlocksInit::SANDSTONE;
                     }
                 }
             }
@@ -293,7 +309,7 @@ void BiomeMesa::genTerrainBlocks(c_i64 worldSeedIn, RNG &rng, ChunkPrimer *chunk
         c_int i = (x & -16) + (z & 15);
         c_int j = (z & -16) + (x & 15);
         c_double d0 = std::min(std::abs(noiseVal), this->pillarNoise.getValue(
-            static_cast<double>(i) * 0.25, static_cast<double>(j) * 0.25));
+                                   static_cast<double>(i) * 0.25, static_cast<double>(j) * 0.25));
 
         if (d0 > 0.0) {
             double d2 = std::abs(this->pillarRoofNoise.getValue(
@@ -467,8 +483,8 @@ void Biome::decorate(World *worldIn, RNG &rng, const Pos2D &pos) {
 
 void BiomePlains::decorate(World *worldIn, RNG &rng, const Pos2D &pos) {
     c_double d0 = GRASS_COLOR_NOISE.getValue(
-            static_cast<double>(pos.x + 8) / 200.0,
-            static_cast<double>(pos.z + 8) / 200.0);
+        static_cast<double>(pos.x + 8) / 200.0,
+        static_cast<double>(pos.z + 8) / 200.0);
 
     const Pos3D blockPos = {pos.x, 0, pos.z};
     if (d0 < -0.8) {
@@ -702,9 +718,9 @@ void BiomeSavannaMutated::decorate(World *worldIn, RNG &rng, const Pos2D &pos) {
 #pragma region TreeType
 
 const WorldGenAbstractTree *BiomePlains::genBigTreeChance(RNG &rng) const {
-    return rng.nextInt(3) == 0 ?
-        reinterpret_cast<const WorldGenAbstractTree*>(&BIG_TREE_FEATURE) :
-        reinterpret_cast<const WorldGenAbstractTree*>(&TREE_FEATURE);
+    return rng.nextInt(3) == 0
+               ? reinterpret_cast<const WorldGenAbstractTree *>(&BIG_TREE_FEATURE)
+               : reinterpret_cast<const WorldGenAbstractTree *>(&TREE_FEATURE);
 }
 
 const WorldGenAbstractTree *BiomeHills::genBigTreeChance(RNG &rng) const {
@@ -716,9 +732,9 @@ const WorldGenAbstractTree *BiomeForest::genBigTreeChance(RNG &rng) const {
         return &ROOF_TREE;
     }
     if (this->type != Type::BIRCH && rng.nextInt(5) != 0) {
-        return rng.nextInt(10) == 0 ?
-            reinterpret_cast<const WorldGenAbstractTree*>(&BIG_TREE_FEATURE) :
-            reinterpret_cast<const WorldGenAbstractTree*>(&TREE_FEATURE);
+        return rng.nextInt(10) == 0
+                   ? reinterpret_cast<const WorldGenAbstractTree *>(&BIG_TREE_FEATURE)
+                   : reinterpret_cast<const WorldGenAbstractTree *>(&TREE_FEATURE);
     }
     return &BIRCH_TREE;
 }
@@ -734,9 +750,9 @@ const WorldGenAbstractTree *BiomeTaiga::genBigTreeChance(RNG &rng) const {
                    : &MEGA_SPRUCE_GENERATOR;
     }
 
-    return rng.nextInt(3) == 0 ?
-        reinterpret_cast<const WorldGenAbstractTree*>(&PINE_GENERATOR) :
-        reinterpret_cast<const WorldGenAbstractTree*>(&SPRUCE_GENERATOR);
+    return rng.nextInt(3) == 0
+               ? reinterpret_cast<const WorldGenAbstractTree *>(&PINE_GENERATOR)
+               : reinterpret_cast<const WorldGenAbstractTree *>(&SPRUCE_GENERATOR);
 }
 
 const WorldGenAbstractTree *BiomeSwamp::genBigTreeChance(RNG &rng) const {
@@ -744,7 +760,7 @@ const WorldGenAbstractTree *BiomeSwamp::genBigTreeChance(RNG &rng) const {
 }
 
 const WorldGenAbstractTree *BiomeSnow::genBigTreeChance(RNG &rng) const {
-    return new WorldGenTaiga2();
+    return &BiomeTaiga::SPRUCE_GENERATOR;
 }
 
 const WorldGenAbstractTree *BiomeJungle::genBigTreeChance(RNG &rng) const {
@@ -756,14 +772,15 @@ const WorldGenAbstractTree *BiomeJungle::genBigTreeChance(RNG &rng) const {
     }
 
     return !this->isEdge && rng.nextInt(3) == 0
-               ? reinterpret_cast<const WorldGenAbstractTree*>(new WorldGenMegaJungle(10, 20, &lce::blocks::BlocksInit::JUNGLE_WOOD, &lce::blocks::BlocksInit::JUNGLE_LEAVES))
-               : reinterpret_cast<const WorldGenAbstractTree*>(new WorldGenTrees(4 + rng.nextInt(7), &lce::blocks::BlocksInit::JUNGLE_WOOD, &lce::blocks::BlocksInit::JUNGLE_LEAVES, true));
+               ? reinterpret_cast<const WorldGenAbstractTree *>(&MEGA_JUNGLE_FEATURE)
+               : reinterpret_cast<const WorldGenAbstractTree *>(&JUNGLE_TREES
+                   [rng.nextInt(JUNGLE_TREE_HEIGHT_VARIATION)]);
 }
 
 const WorldGenAbstractTree *BiomeSavanna::genBigTreeChance(RNG &rng) const {
     return rng.nextInt(5) > 0
-        ? reinterpret_cast<const WorldGenAbstractTree*>(&SAVANNA_TREE)
-        : reinterpret_cast<const WorldGenAbstractTree*>(&TREE_FEATURE);
+               ? reinterpret_cast<const WorldGenAbstractTree *>(&SAVANNA_TREE)
+               : reinterpret_cast<const WorldGenAbstractTree *>(&TREE_FEATURE);
 }
 
 const WorldGenAbstractTree *BiomeMesa::genBigTreeChance(RNG &rng) const {
@@ -775,15 +792,11 @@ const WorldGenAbstractTree *BiomeMesa::genBigTreeChance(RNG &rng) const {
 #pragma region GrassType
 
 const WorldGenerator *BiomeTaiga::getRandomWorldGenForGrass(RNG &rng) const {
-    return rng.nextInt(5) > 0
-               ? new WorldGenTallGrass(BlockTallGrass::EnumType::FERN)
-               : new WorldGenTallGrass(BlockTallGrass::EnumType::GRASS);
+    return rng.nextInt(5) > 0 ? &FERN_GENERATOR : &GRASS_GENERATOR;
 }
 
 const WorldGenerator *BiomeJungle::getRandomWorldGenForGrass(RNG &rng) const {
-    return rng.nextInt(4) == 0
-               ? new WorldGenTallGrass(BlockTallGrass::EnumType::FERN)
-               : new WorldGenTallGrass(BlockTallGrass::EnumType::GRASS);
+    return rng.nextInt(4) == 0 ? &BiomeTaiga::FERN_GENERATOR : &BiomeTaiga::GRASS_GENERATOR;
 }
 
 #pragma endregion
@@ -791,7 +804,8 @@ const WorldGenerator *BiomeJungle::getRandomWorldGenForGrass(RNG &rng) const {
 #pragma region FlowerType
 
 BlockFlower::EnumFlowerType BiomePlains::pickRandomFlower(RNG &rng, const Pos2D &pos) const {
-    const double d0 = GRASS_COLOR_NOISE.getValue(static_cast<double>(pos.x) / 200.0, static_cast<double>(pos.z) / 200.0);
+    const double d0 = GRASS_COLOR_NOISE.
+            getValue(static_cast<double>(pos.x) / 200.0, static_cast<double>(pos.z) / 200.0);
 
     if (d0 < -0.8) {
         const int i = rng.nextInt(4);

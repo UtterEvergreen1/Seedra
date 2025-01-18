@@ -60,8 +60,8 @@ namespace build::village {
                        StructureComponent& piece,
                        MU int x, MU int y, MU int z, MU BoundingBox chunkBB) {
         // if (!villageIn->isZombieInfested) {
-        auto Torch = BlocksInit::TORCH.getStateFromMeta(states::Torch::withProperty(piece.rotation.apply(piece.mirror, facing)));
-        piece.setBlockState(world, BlocksInit::TORCH, x, y, z, chunkBB);
+        auto torch = BlocksInit::TORCH.getStateFromMeta(states::Torch::withProperty(piece.rotation.apply(piece.mirror, facing)));
+        piece.setBlockState(world, torch, x, y, z, chunkBB);
         // }
     }
 

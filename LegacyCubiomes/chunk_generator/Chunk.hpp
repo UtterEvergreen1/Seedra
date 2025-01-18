@@ -18,11 +18,11 @@ namespace Chunk {
         bool generateSkyLight = false>
     ChunkPrimer *provideChunk(const Generator &g, c_int chunkX, c_int chunkZ,  bool accurate = true);
 
-    MU extern void populateChunk(World& world, const Generator &g, int chunkX, int chunkZ, World *worldIn);
+    MU extern void populateChunk(World& world, const Generator &g, int chunkX, int chunkZ);
 
-    MU extern void populateStructures(World& world, const Generator& g, int chunkX, int chunkZ, World* worldIn);
+    MU extern void populateStructures(World& world, const Generator& g, int chunkX, int chunkZ);
 
-    MU extern void populateDecorations(World& world, const Generator &g, int chunkX, int chunkZ, World *worldIn);
+    MU extern void populateDecorations(World& world, const Generator &g, int chunkX, int chunkZ);
 
 }
 

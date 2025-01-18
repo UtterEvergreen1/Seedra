@@ -47,30 +47,30 @@ namespace Chunk {
     }
 
 
-    void populateChunk(World& world, const Generator& g, int chunkX, int chunkZ, World* worldIn) {
-        const ChunkPrimer* chunk = worldIn->getChunk({chunkX, chunkZ - 1});
-        const ChunkPrimer* chunk1 = worldIn->getChunk({chunkX + 1, chunkZ});
-        const ChunkPrimer* chunk2 = worldIn->getChunk({chunkX, chunkZ + 1});
-        const ChunkPrimer* chunk3 = worldIn->getChunk({chunkX - 1, chunkZ});
+    void populateChunk(World& world, const Generator& g, int chunkX, int chunkZ) {
+        const ChunkPrimer* chunk = world.getChunk({chunkX, chunkZ - 1});
+        const ChunkPrimer* chunk1 = world.getChunk({chunkX + 1, chunkZ});
+        const ChunkPrimer* chunk2 = world.getChunk({chunkX, chunkZ + 1});
+        const ChunkPrimer* chunk3 = world.getChunk({chunkX - 1, chunkZ});
 
-        if (chunk1 && chunk2 && worldIn->getChunk({chunkX + 1, chunkZ + 1}) != nullptr) {
-            populateStructures(world, g, chunkX, chunkZ, worldIn);
-            populateDecorations(world, g, chunkX, chunkZ, worldIn);
+        if (chunk1 && chunk2 && world.getChunk({chunkX + 1, chunkZ + 1}) != nullptr) {
+            populateStructures(world, g, chunkX, chunkZ);
+            populateDecorations(world, g, chunkX, chunkZ);
         }
 
-        if (chunk3 && chunk2 && worldIn->getChunk({chunkX - 1, chunkZ + 1}) != nullptr) {
-            populateStructures(world, g, chunkX - 1, chunkZ, worldIn);
-            populateDecorations(world, g, chunkX - 1, chunkZ, worldIn);
+        if (chunk3 && chunk2 && world.getChunk({chunkX - 1, chunkZ + 1}) != nullptr) {
+            populateStructures(world, g, chunkX - 1, chunkZ);
+            populateDecorations(world, g, chunkX - 1, chunkZ);
         }
 
-        if (chunk && chunk1 && worldIn->getChunk({chunkX + 1, chunkZ - 1}) != nullptr) {
-            populateStructures(world, g, chunkX, chunkZ - 1, worldIn);
-            populateDecorations(world, g, chunkX, chunkZ - 1, worldIn);
+        if (chunk && chunk1 && world.getChunk({chunkX + 1, chunkZ - 1}) != nullptr) {
+            populateStructures(world, g, chunkX, chunkZ - 1);
+            populateDecorations(world, g, chunkX, chunkZ - 1);
         }
 
-        if (chunk && chunk3 && worldIn->getChunk({chunkX - 1, chunkZ - 1}) != nullptr) {
-            populateStructures(world, g, chunkX - 1, chunkZ - 1, worldIn);
-            populateDecorations(world, g, chunkX - 1, chunkZ - 1, worldIn);
+        if (chunk && chunk3 && world.getChunk({chunkX - 1, chunkZ - 1}) != nullptr) {
+            populateStructures(world, g, chunkX - 1, chunkZ - 1);
+            populateDecorations(world, g, chunkX - 1, chunkZ - 1);
         }
     }
 
@@ -87,8 +87,8 @@ namespace Chunk {
      shipwreck
      buried treasure
      */
-    void populateStructures(World& world, const Generator& g, int chunkX, int chunkZ, World* worldIn) {
-        ChunkPrimer* chunk = worldIn->getChunk({chunkX, chunkZ});
+    void populateStructures(World& world, const Generator& g, int chunkX, int chunkZ) {
+        ChunkPrimer* chunk = world.getChunk({chunkX, chunkZ});
         if (!chunk || chunk->stage != Stage::STAGE_STRUCTURE) {
             return;
         }
@@ -145,31 +145,31 @@ namespace Chunk {
 
 
 
-    void populateDecorations(World& world, const Generator& g, int chunkX, int chunkZ, World* worldIn) {
-        ChunkPrimer* chunk = worldIn->getChunk({chunkX, chunkZ});
+    void populateDecorations(World& world, const Generator& g, int chunkX, int chunkZ) {
+        ChunkPrimer* chunk = world.getChunk({chunkX, chunkZ});
         if (!chunk || chunk->stage != Stage::STAGE_DECORATE) {
             return;
         }
 
         if (const Pos3D waterPos = FeaturePositions::waterLake(&g, chunk->decorateRng, chunkX, chunkZ); !waterPos.isNull()) {
             const WorldGenLakes waterGen(&g, &lce::blocks::BlocksInit::STILL_WATER);
-            waterGen.generate(worldIn, chunk->decorateRng, waterPos);
+            waterGen.generate(&world, chunk->decorateRng, waterPos);
         }
 
         if (const Pos3D lavaPos = FeaturePositions::lavaLake(chunk->decorateRng, chunkX, chunkZ); !lavaPos.isNull()) {
             const WorldGenLakes lavaGen(&g, &lce::blocks::BlocksInit::STILL_LAVA);
-            lavaGen.generate(worldIn, chunk->decorateRng, lavaPos);
+            lavaGen.generate(&world, chunk->decorateRng, lavaPos);
         }
 
         for (int i = 0; i < 8; i++) {
             if (Pos3D pos = FeaturePositions::dungeon(chunk->decorateRng, chunkX, chunkZ); !pos.isNull()) {
                 WorldGenDungeons dungeonGen;
-                dungeonGen.generate(worldIn, chunk->decorateRng, pos);
+                dungeonGen.generate(&world, chunk->decorateRng, pos);
             }
         }
 
         Biome::registry[g.getBiomeAt(1, (chunkX << 4) + 16, (chunkZ << 4) + 16)]->decorate(
-                worldIn, chunk->decorateRng, {chunkX << 4, chunkZ << 4});
+                &world, chunk->decorateRng, {chunkX << 4, chunkZ << 4});
 
 
         c_int xStart = chunkX * 16 + 8;
@@ -179,16 +179,16 @@ namespace Chunk {
                 c_int x = xStart + xPos;
                 c_int z = zStart + zPos;
 
-                c_int precipitationHeight = worldIn->getPrecipitationHeight(x, z);
+                c_int precipitationHeight = world.getPrecipitationHeight(x, z);
                 const Pos3D snowPos = Pos3D(x, precipitationHeight, z);
                 const Pos3D waterPos = Pos3D(x, precipitationHeight - 1, z);
 
-                if (worldIn->canBlockFreezeWater(waterPos)) {
-                    worldIn->setBlock(waterPos, lce::blocks::ids::ICE_ID);
+                if (world.canBlockFreezeWater(waterPos)) {
+                    world.setBlock(waterPos, lce::blocks::ids::ICE_ID);
                 }
 
-                if (worldIn->canSnowAt(snowPos, false)) { // TODO: check light
-                    worldIn->setBlock(snowPos, lce::blocks::ids::SNOW_ID);
+                if (world.canSnowAt(snowPos, false)) { // TODO: check light
+                    world.setBlock(snowPos, lce::blocks::ids::SNOW_ID);
                 }
             }
         }

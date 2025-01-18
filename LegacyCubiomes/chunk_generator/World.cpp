@@ -56,7 +56,7 @@ void World::decorateChunks(const Pos2D &pos, const int radius) {
         for (int dz = -radius; dz <= radius - 1; ++dz) {
             Pos2D chunkPos = pos + Pos2D(dx, dz);
             this->getOrCreateChunk(chunkPos);
-            Chunk::populateChunk(*this, *g, chunkPos.x, chunkPos.z, this);
+            Chunk::populateChunk(*this, *g, chunkPos.x, chunkPos.z);
         }
     }
 }

@@ -19,10 +19,10 @@ int main() {
 
 
     Biome::registerBiomes();
-    auto console = lce::CONSOLE::WIIU;
+    auto console = lce::CONSOLE::XBOX360;
     auto version = LCEVERSION::ELYTRA;
     // -6651998285536156346
-    Generator g(console, version, 12345, lce::WORLDSIZE::CLASSIC, lce::BIOMESCALE::SMALL);
+    Generator g(console, version, -6588388363107578604, lce::WORLDSIZE::CLASSIC, lce::BIOMESCALE::LARGE);
 
     // 3 13 for seed -101, 8 15 for seed 1, 11 16 or 15 5 for seed 27184353441555
     int X_WIDTH = 27;
@@ -40,7 +40,7 @@ int main() {
     const lce::blocks::Block* block = world.getBlock({-215, 69, 118});
     std::cout << block->getID() << " " << block->getDataTag() << "\n";
 
-    std::string DIR_NAME = R"(C:/Users/Jerrin/CLionProjects/LegacyChunkViewer/)";
+    std::string DIR_NAME = R"(C:/Users/Daniel/CLionProjects/LegacyChunkViewer/)";
     std::string filename = DIR_NAME + R"(build/chunks/chunkdata.bin)";
 
     std::ofstream file(filename, std::ios::binary);
@@ -49,6 +49,9 @@ int main() {
         return -1;
     }
 
+    int64_t worldSeed = g.getWorldSeed();
+
+    file.write(reinterpret_cast<const char*>(&worldSeed), sizeof(worldSeed));
     file.write(reinterpret_cast<const char*>(&X_CENTER), sizeof(X_CENTER));
     file.write(reinterpret_cast<const char*>(&Z_CENTER), sizeof(Z_CENTER));
     file.write(reinterpret_cast<const char*>(&X_WIDTH), sizeof(X_WIDTH));
