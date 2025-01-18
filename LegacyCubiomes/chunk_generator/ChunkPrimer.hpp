@@ -15,7 +15,7 @@
 enum class Stage : u8 {
     STAGE_TERRAIN = 0,
     STAGE_CAVES = 1,
-    STAGE_STRUCTURES = 2,
+    STAGE_STRUCTURE = 2,
     STAGE_DECORATE = 4,
     STAGE_DONE = 8
 };
@@ -28,6 +28,7 @@ public:
     std::vector<u8> skyLight;
     std::vector<int> precipitationHeightMap = std::vector(256, -999);
     int highestYBlock = -1;
+    RNG decorateRng;
 
 
     ChunkPrimer() = default;

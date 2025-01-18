@@ -6,6 +6,8 @@
 
 
 namespace build::stronghold {
+
+
     enum class Door {
         OPENING = 1,
         WOOD_DOOR = 2,
@@ -30,8 +32,10 @@ namespace build::stronghold {
     }
 
 
-    static void placeDoor(World &worldIn, MU RNG &rng, const BoundingBox &structureBB,
-                          const StructureComponent &piece, const Door door, c_int x, c_int y, c_int z);
+
+    static void placeDoor(World& worldIn, MU RNG& rng, const BoundingBox& chunkBB,
+                          const StructureComponent& piece, Door door, c_int x, c_int y, c_int z);
+
 
 
     class MU ChestCorridor final {
@@ -39,7 +43,7 @@ namespace build::stronghold {
         MU ChestCorridor() = delete;
 
         static bool addComponentParts(
-            World &worldIn, RNG &rng, const BoundingBox &structureBB, const StructureComponent &piece);
+                World& worldIn, RNG& rng, const BoundingBox& chunkBB, const StructureComponent& piece);
     };
 
     class Corridor final {
@@ -47,7 +51,7 @@ namespace build::stronghold {
         MU Corridor() = delete;
 
         static bool addComponentParts(
-            World &worldIn, MU RNG &rng, const BoundingBox &structureBB, const StructureComponent &piece);
+                World& worldIn, MU RNG& rng, const BoundingBox& chunkBB, const StructureComponent& piece);
     };
 
     class Crossing final {
@@ -55,7 +59,7 @@ namespace build::stronghold {
         MU Crossing() = delete;
 
         static bool addComponentParts(
-            World &worldIn, RNG &rng, const BoundingBox &structureBB, const StructureComponent &piece);
+                World& worldIn, RNG& rng, const BoundingBox& chunkBB, const StructureComponent& piece);
     };
 
     class MU LeftTurn final {
@@ -63,7 +67,7 @@ namespace build::stronghold {
         MU LeftTurn() = delete;
 
         static bool addComponentParts(
-            World &worldIn, RNG &rng, const BoundingBox &structureBB, const StructureComponent &piece);
+                World& worldIn, RNG& rng, const BoundingBox& chunkBB, const StructureComponent& piece);
     };
 
     class MU Library final {
@@ -71,7 +75,7 @@ namespace build::stronghold {
         MU Library() = delete;
 
         static bool addComponentParts(
-            World &worldIn, RNG &rng, const BoundingBox &structureBB, const StructureComponent &piece);
+                World& worldIn, RNG& rng, const BoundingBox& chunkBB, const StructureComponent& piece);
     };
 
     class MU PortalRoom final {
@@ -79,7 +83,7 @@ namespace build::stronghold {
         MU PortalRoom() = delete;
 
         static bool addComponentParts(
-            World &worldIn, RNG &rng, const BoundingBox &structureBB, const StructureComponent &piece);
+                World& worldIn, RNG& rng, const BoundingBox& chunkBB, const StructureComponent& piece);
     };
 
     class MU Prison final {
@@ -88,7 +92,7 @@ namespace build::stronghold {
 
 
         static bool addComponentParts(
-            World &worldIn, RNG &rng, const BoundingBox &structureBB, const StructureComponent &piece);
+                World& worldIn, RNG& rng, const BoundingBox& chunkBB, const StructureComponent& piece);
     };
 
     class MU RightTurn final {
@@ -96,7 +100,7 @@ namespace build::stronghold {
         MU RightTurn() = delete;
 
         static bool addComponentParts(
-            World &worldIn, RNG &rng, const BoundingBox &structureBB, const StructureComponent &piece);
+                World& worldIn, RNG& rng, const BoundingBox& chunkBB, const StructureComponent& piece);
     };
 
     class MU RoomCrossing final {
@@ -104,7 +108,7 @@ namespace build::stronghold {
         MU RoomCrossing() = delete;
 
         static bool addComponentParts(
-            World &worldIn, RNG &rng, const BoundingBox &structureBB, const StructureComponent &piece);
+                World& worldIn, RNG& rng, const BoundingBox& chunkBB, const StructureComponent& piece);
     };
 
     class MU Stairs final {
@@ -112,7 +116,7 @@ namespace build::stronghold {
         MU Stairs() = delete;
 
         static bool addComponentParts(
-            World &worldIn, RNG &rng, const BoundingBox &structureBB, const StructureComponent &piece);
+                World& worldIn, RNG& rng, const BoundingBox& chunkBB, const StructureComponent& piece);
     };
 
 
@@ -121,7 +125,7 @@ namespace build::stronghold {
         MU StairsStraight() = delete;
 
         static bool addComponentParts(
-            World &worldIn, RNG &rng, const BoundingBox &structureBB, const StructureComponent &piece);
+                World& worldIn, RNG& rng, const BoundingBox& chunkBB, const StructureComponent& piece);
     };
 
     class MU Straight final {
@@ -129,53 +133,13 @@ namespace build::stronghold {
         MU Straight() = delete;
 
         static bool addComponentParts(
-            World &worldIn, RNG &rng, const BoundingBox &structureBB, const StructureComponent &piece);
+                World& worldIn, RNG& rng, const BoundingBox& chunkBB, const StructureComponent& piece);
     };
 
 
-    MU static bool addComponentParts(
-        World &worldIn, RNG &rng, const BoundingBox &structureBB, const StructureComponent &piece) {
-        bool result = false;
 
-        switch (piece.type) {
-            case PT_Stronghold_Straight:
-                result = Straight::addComponentParts(worldIn, rng, structureBB, piece);
-                break;
-            case PT_Stronghold_PrisonHall:
-                result = Prison::addComponentParts(worldIn, rng, structureBB, piece);
-                break;
-            case PT_Stronghold_LeftTurn:
-                result = LeftTurn::addComponentParts(worldIn, rng, structureBB, piece);
-                break;
-            case PT_Stronghold_RightTurn:
-                result = RightTurn::addComponentParts(worldIn, rng, structureBB, piece);
-                break;
-            case PT_Stronghold_RoomCrossing:
-                result = RoomCrossing::addComponentParts(worldIn, rng, structureBB, piece);
-                break;
-            case PT_Stronghold_StraightStairsDown:
-                result = StairsStraight::addComponentParts(worldIn, rng, structureBB, piece);
-                break;
-            case PT_Stronghold_StairsDown:
-                result = Stairs::addComponentParts(worldIn, rng, structureBB, piece);
-                break;
-            case PT_Stronghold_FiveCrossing:
-                result = Crossing::addComponentParts(worldIn, rng, structureBB, piece);
-                break;
-            case PT_Stronghold_ChestCorridor:
-                result = ChestCorridor::addComponentParts(worldIn, rng, structureBB, piece);
-                break;
-            case PT_Stronghold_Library:
-                result = Library::addComponentParts(worldIn, rng, structureBB, piece);
-                break;
-            case PT_Stronghold_PortalRoom:
-                result = PortalRoom::addComponentParts(worldIn, rng, structureBB, piece);
-                break;
-            case PT_Stronghold_FillerCorridor:
-                result = Corridor::addComponentParts(worldIn, rng, structureBB, piece);
-                break;
-            default: ;
-        }
-        return result;
-    }
+    MU extern bool addComponentParts(
+            World& worldIn, RNG& rng, const BoundingBox& chunkBB, const StructureComponent& piece);
+
+
 } // namespace build::stronghold

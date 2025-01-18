@@ -7,6 +7,9 @@
 #include "lce/blocks/block.hpp"
 
 
+class World;
+class ChunkPrimer;
+
 #include "LegacyCubiomes/chunk_generator/World.hpp"
 #include "LegacyCubiomes/utils/RotationAndMirror.hpp"
 

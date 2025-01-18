@@ -59,6 +59,8 @@ namespace gen {
     public:
         bool isZombieInfested{};
 
+        int biomeType{};
+
         BoundingBox structureBB;
 
         StructureComponent pieceArray[ARRAY_SIZE];
@@ -81,6 +83,9 @@ namespace gen {
     MU static std::string getPieceName(PieceType pieceType);
 
     private:
+
+        MU void setVillageBiomeType();
+
         void setupPieces();
         ND int updatePieceWeight() const;
         static BoundingBox createPieceBB(PieceType pieceType, Pos3D pos, enumFacing direction);

@@ -2,9 +2,16 @@
 
 #include <unordered_map>
 
-// #include "LegacyCubiomes/structures/build/village.hpp"
-// #include "LegacyCubiomes/structures/rolls/mineshaft.hpp"
-// #include "LegacyCubiomes/structures/rolls/stronghold.hpp"
+// #include "LegacyCubiomes/structures/gen/village/village.hpp"
+// #include "LegacyCubiomes/structures/gen/mineshaft/mineshaft.hpp"
+// #include "LegacyCubiomes/structures/gen/stronghold/stronghold.hpp"
+
+
+#include "LegacyCubiomes/structures/build/mineshaft.hpp"
+#include "LegacyCubiomes/structures/build/stronghold.hpp"
+#include "LegacyCubiomes/structures/build/village.hpp"
+#include "LegacyCubiomes/structures/gen/mineshaft/mineshaft.hpp"
+#include "LegacyCubiomes/structures/gen/stronghold/stronghold.hpp"
 #include "LegacyCubiomes/utils/Pos2DTemplate.hpp"
 #include "LegacyCubiomes/utils/Pos3DTemplate.hpp"
 
@@ -78,20 +85,16 @@ public:
 
     static int getSeaLevel() { return 63; }
 
+    void generateMineshafts();
+    void generateVillages();
+    void generateStrongholds();
+
+    std::vector<gen::Village> villages;
+    std::vector<gen::Mineshaft> mineshafts;
+    std::vector<gen::Stronghold> strongholds;
 
 private:
     Generator *g;
     std::unordered_map<Pos2D, ChunkPrimer *, Pos2D::Hasher> chunks;
-
-    // std::vector<gen::Village> villages;
-    // std::vector<gen::Mineshaft> mineshafts;
-    // gen::Stronghold stronghold;
-
-
-
-
-
-
-
 
 };
