@@ -27,7 +27,7 @@ namespace build::stronghold {
 
                 const auto door_base = &BlocksInit::OAK_DOOR_BLOCK;
 
-                c_auto door_bottom = door_base->getStateFromMeta(states::DoorLower::withProperty());
+                c_auto door_bottom = door_base->getStateFromMeta(states::DoorLower::withProperty(piece.rotation.apply(piece.mirror, enumFacing::NORTH)));
                 piece.setBlockState(worldIn, door_bottom, x + 1, y, z, chunkBB);
 
                 c_auto door_top = door_base->getStateFromMeta(states::DoorUpper::withProperty());
@@ -57,7 +57,7 @@ namespace build::stronghold {
                 piece.setBlockState(worldIn, &BlocksInit::STONE_BRICKS, x + 2, y, z, chunkBB);
 
                 c_auto doorBlockLower = BlocksInit::IRON_DOOR_BLOCK.getStateFromMeta(
-                        states::DoorLower::withProperty());
+                        states::DoorLower::withProperty(piece.rotation.apply(piece.mirror, enumFacing::NORTH)));
                 piece.setBlockState(worldIn, doorBlockLower, x + 1, y, z, chunkBB);
 
                 c_auto doorBlockUpper = BlocksInit::IRON_DOOR_BLOCK.getStateFromMeta(
@@ -65,11 +65,11 @@ namespace build::stronghold {
                 piece.setBlockState(worldIn, doorBlockUpper, x + 1, y + 1, z, chunkBB);
 
                 c_auto buttonBlock1 = BlocksInit::STONE_BUTTON.getStateFromMeta(
-                        states::Button::withProperty(enumFacing::NORTH));
+                        states::Button::withProperty(piece.rotation.apply(piece.mirror, enumFacing::NORTH)));
                 piece.setBlockState(worldIn, &buttonBlock1, x + 2, y + 1, z + 1, chunkBB);
 
                 c_auto buttonBlock2 = BlocksInit::STONE_BUTTON.getStateFromMeta(
-                        states::Button::withProperty(enumFacing::SOUTH));
+                        states::Button::withProperty(piece.rotation.apply(piece.mirror, enumFacing::SOUTH)));
                 piece.setBlockState(worldIn, &buttonBlock2, x + 2, y + 1, z - 1, chunkBB);
             }
         }
@@ -177,7 +177,7 @@ namespace build::stronghold {
         piece.fillWithBlocks(worldIn, chunkBB, 5, 5, 7, 7, 5, 9, &BlocksInit::DOUBLE_STONE_SLAB, false);
 
         const Block torchSouth = BlocksInit::TORCH.getStateFromMeta(
-                states::Torch::withProperty(enumFacing::SOUTH));
+                states::Torch::withProperty(piece.rotation.apply(piece.mirror, enumFacing::SOUTH)));
         piece.setBlockState(worldIn, torchSouth, 6, 5, 6, chunkBB);
         return true;
     }
@@ -231,10 +231,10 @@ namespace build::stronghold {
                 piece.fillWithBlocks(worldIn, chunkBB, 1, 1, l, 1, 4, l, plank, false);
                 piece.fillWithBlocks(worldIn, chunkBB, 12, 1, l, 12, 4, l, plank, false);
 
-                auto torchEast = torch->getStateFromMeta(states::Torch::withProperty(enumFacing::EAST));
+                auto torchEast = torch->getStateFromMeta(states::Torch::withProperty(piece.rotation.apply(piece.mirror, enumFacing::EAST)));
                 piece.setBlockState(worldIn, torchEast, 2, 3, l, chunkBB);
 
-                auto torchWest = torch->getStateFromMeta(states::Torch::withProperty(enumFacing::WEST));
+                auto torchWest = torch->getStateFromMeta(states::Torch::withProperty(piece.rotation.apply(piece.mirror, enumFacing::WEST)));
                 piece.setBlockState(worldIn, torchWest, 11, 3, l, chunkBB);
 
                 if (isLargeRoom) {
@@ -277,7 +277,7 @@ namespace build::stronghold {
             // .withProperty(BlockLadder.FACING, FACING::SOUTH);
 
             c_auto ladderSouth = BlocksInit::LADDER.getStateFromMeta(
-                    states::Ladder::withProperty(enumFacing::SOUTH));
+                    states::Ladder::withProperty(piece.rotation.apply(piece.mirror, enumFacing::SOUTH)));
 
             piece.setBlockState(worldIn, ladderSouth, 10, 1, 13, chunkBB);
             piece.setBlockState(worldIn, ladderSouth, 10, 2, 13, chunkBB);
@@ -301,7 +301,7 @@ namespace build::stronghold {
             piece.setBlockState(worldIn, fence, 7, 7, 6, chunkBB);
             piece.setBlockState(worldIn, fence, 7, 7, 8, chunkBB);
 
-            c_auto torchUp = torch->getStateFromMeta(states::Torch::withProperty(enumFacing::UP));
+            c_auto torchUp = torch->getStateFromMeta(states::Torch::withProperty(piece.rotation.apply(piece.mirror, enumFacing::UP)));
             piece.setBlockState(worldIn, torchUp, 5, 8, 7, chunkBB);
             piece.setBlockState(worldIn, torchUp, 8, 8, 7, chunkBB);
             piece.setBlockState(worldIn, torchUp, 6, 8, 6, chunkBB);
@@ -356,7 +356,7 @@ namespace build::stronghold {
         piece.fillWithRandomizedStrongholdStones(worldIn, chunkBB, 4, 3, 7, 6, 3, 7, false, rng);
 
         const Block cobbleStairNorth = BlocksInit::STONE_BRICK_STAIRS
-                .getStateFromMeta(states::Stairs::withProperty(enumFacing::NORTH));
+                .getStateFromMeta(states::Stairs::withProperty(piece.rotation.apply(piece.mirror, enumFacing::NORTH)));
 
         for (int k = 4; k <= 6; ++k) {
             piece.setBlockState(worldIn, cobbleStairNorth, k, 1, 4, chunkBB);
@@ -457,7 +457,7 @@ namespace build::stronghold {
 
 
         const Block iblockstate = BlocksInit::IRON_DOOR_BLOCK.getStateFromMeta(
-                states::DoorLower::withProperty(enumFacing::WEST));
+                states::DoorLower::withProperty(piece.rotation.apply(piece.mirror, enumFacing::WEST)));
 
         const Block iblockstate1 = BlocksInit::IRON_DOOR_BLOCK.getStateFromMeta(
                 states::DoorUpper::withProperty());
@@ -513,13 +513,13 @@ namespace build::stronghold {
                 piece.setBlockState(worldIn, &BlocksInit::STONE_BRICKS, 5, 3, 5, chunkBB);
 
                 piece.setBlockState(worldIn, BlocksInit::TORCH.getStateFromMeta(
-                        states::Torch::withProperty(enumFacing::WEST)), 4, 3, 5, chunkBB);
+                        states::Torch::withProperty(piece.rotation.apply(piece.mirror, enumFacing::WEST))), 4, 3, 5, chunkBB);
                 piece.setBlockState(worldIn, BlocksInit::TORCH.getStateFromMeta(
-                        states::Torch::withProperty(enumFacing::EAST)), 6, 3, 5, chunkBB);
+                        states::Torch::withProperty(piece.rotation.apply(piece.mirror, enumFacing::EAST))), 6, 3, 5, chunkBB);
                 piece.setBlockState(worldIn, BlocksInit::TORCH.getStateFromMeta(
-                        states::Torch::withProperty(enumFacing::SOUTH)), 5, 3, 4, chunkBB);
+                        states::Torch::withProperty(piece.rotation.apply(piece.mirror, enumFacing::SOUTH))), 5, 3, 4, chunkBB);
                 piece.setBlockState(worldIn, BlocksInit::TORCH.getStateFromMeta(
-                        states::Torch::withProperty(enumFacing::NORTH)), 5, 3, 6, chunkBB);
+                        states::Torch::withProperty(piece.rotation.apply(piece.mirror, enumFacing::NORTH))), 5, 3, 6, chunkBB);
 
 
                 piece.setBlockState(worldIn, &BlocksInit::STONE_SLAB, 4, 1, 4, chunkBB);
@@ -590,7 +590,7 @@ namespace build::stronghold {
                 }
 
                 const Block ladderWest = BlocksInit::LADDER.getStateFromMeta(
-                        states::Ladder::withProperty(enumFacing::WEST));
+                        states::Ladder::withProperty(piece.rotation.apply(piece.mirror, enumFacing::WEST)));
                 piece.setBlockState(worldIn, ladderWest, 9, 1, 3, chunkBB);
                 piece.setBlockState(worldIn, ladderWest, 9, 2, 3, chunkBB);
                 piece.setBlockState(worldIn, ladderWest, 9, 3, 3, chunkBB);
@@ -646,7 +646,7 @@ namespace build::stronghold {
         placeDoor(worldIn, chunkBB, piece, Door::OPENING, 1, 1, 7);
 
         const Block cobblestoneStairs = BlocksInit::COBBLESTONE_STAIRS.getStateFromMeta(
-                states::Stairs::withProperty(enumFacing::SOUTH));
+                states::Stairs::withProperty(piece.rotation.apply(piece.mirror, enumFacing::SOUTH)));
 
         for (int i = 0; i < 6; ++i) {
             piece.setBlockState(worldIn, cobblestoneStairs, 1, 6 - i, 1 + i, chunkBB);
@@ -675,9 +675,9 @@ namespace build::stronghold {
         placeDoor(worldIn, chunkBB, piece, Door::OPENING, 1, 1, 6);
 
         const Block iblockstate = BlocksInit::TORCH.getStateFromMeta(
-                states::Torch::withProperty(enumFacing::EAST));
+                states::Torch::withProperty(piece.rotation.apply(piece.mirror, enumFacing::EAST)));
         const Block iblockstate1 = BlocksInit::TORCH.getStateFromMeta(
-                states::Torch::withProperty(enumFacing::WEST));
+                states::Torch::withProperty(piece.rotation.apply(piece.mirror, enumFacing::WEST)));
 
         piece.randomlyPlaceBlock(worldIn, chunkBB, rng, 0.1F, 1, 2, 1, &iblockstate);
         piece.randomlyPlaceBlock(worldIn, chunkBB, rng, 0.1F, 3, 2, 1, &iblockstate1);

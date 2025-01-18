@@ -10,13 +10,17 @@
 #include "LegacyCubiomes/structures/build/mineshaft.hpp"
 #include "LegacyCubiomes/structures/build/stronghold.hpp"
 #include "LegacyCubiomes/structures/build/village.hpp"
-#include "LegacyCubiomes/structures/gen/mineshaft/mineshaft.hpp"
-#include "LegacyCubiomes/structures/gen/stronghold/stronghold.hpp"
 #include "LegacyCubiomes/utils/Pos2DTemplate.hpp"
 #include "LegacyCubiomes/utils/Pos3DTemplate.hpp"
 
 class Generator;
 class ChunkPrimer;
+namespace gen {
+    class Village;
+    class Mineshaft;
+    class Stronghold;
+}
+
 namespace lce::blocks { class Block; }
 
 
@@ -24,6 +28,10 @@ class World {
 public:
     explicit World(Generator *g) : g(g) {
     }
+
+    ~World();
+
+    void deleteWorld();
 
     Generator *getGenerator() const {
         return g;
@@ -89,9 +97,9 @@ public:
     void generateVillages();
     void generateStrongholds();
 
-    std::vector<gen::Village> villages;
-    std::vector<gen::Mineshaft> mineshafts;
-    std::vector<gen::Stronghold> strongholds;
+    std::vector<gen::Village*> villages;
+    std::vector<gen::Mineshaft*> mineshafts;
+    std::vector<gen::Stronghold*> strongholds;
 
 private:
     Generator *g;

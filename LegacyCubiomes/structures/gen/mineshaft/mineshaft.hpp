@@ -5,12 +5,11 @@
 #include <string>
 
 #include "LegacyCubiomes/building_blocks/Piece.hpp"
-#include "LegacyCubiomes/building_blocks/StructureComponent.hpp"
 #include "LegacyCubiomes/utils/rng.hpp"
 
 
 #include "lce/enums.hpp"
-
+class StructureComponent;
 namespace gen {
 
     enum class MineshaftType { NORMAL, MESA };
@@ -21,7 +20,7 @@ namespace gen {
 
 
     public:
-        StructureComponent pieceArray[ARRAY_SIZE];
+        StructureComponent* pieceArray[ARRAY_SIZE]{};
         MU int pieceArraySize = 0;
         Pos2D startPos;
         MineshaftType mineShaftType = MineshaftType::NORMAL;
@@ -30,9 +29,7 @@ namespace gen {
         /// debugging purposes
         int collisionChecks = 0;
 
-
-
-
+        ~Mineshaft();
 
         void generate(lce::CONSOLE console, i64 worldSeed, int chunkX, int chunkZ);
         void generate(lce::CONSOLE console, i64 worldSeed, Pos2D chunkPos);
@@ -43,7 +40,7 @@ namespace gen {
         bool collides(const BoundingBox& bbIn);
         StructureComponent* findCollisionPiece(const BoundingBox& bbIn);
         void genAndAddPiece(RNG& rng, Pos3D pos, enumFacing facing, int depth);
-        void buildComponent(RNG& rng, const StructureComponent& p);
+        void buildComponent(RNG& rng, StructureComponent *p);
     };
 
 } // namespace gen

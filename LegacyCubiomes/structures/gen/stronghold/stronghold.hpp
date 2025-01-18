@@ -54,7 +54,7 @@ namespace gen {
         bool generatedPortalRoomSpawner{};
 
     public:
-        StructureComponent pieceArray[ARRAY_SIZE]{};
+        StructureComponent* pieceArray[ARRAY_SIZE]{};
         int pendingPieceArray[ARRAY_SIZE]{};
         PiecePlaceCount piecePlaceCounts[11]{};
         StructureComponent* altarChestsArray[4]{};
@@ -79,6 +79,8 @@ namespace gen {
         bool generationStopped = false;
 
         Stronghold();
+        ~Stronghold();
+        void deletePieces();
 
         void reset();
 
@@ -101,11 +103,11 @@ namespace gen {
 
         /// piece gen
         bool genPieceFromSmallDoor(const Pos3D& pos, enumFacing facing, i8 depth);
-        void genSmallDoorChildForward(const StructureComponent& piece, int n, int n2);
-        void genSmallDoorChildLeft(const StructureComponent& piece, int n, int n2);
-        void genSmallDoorChildRight(const StructureComponent& piece, int n, int n2);
+        void genSmallDoorChildForward(const StructureComponent *piece, int n, int n2);
+        void genSmallDoorChildLeft(const StructureComponent *piece, int n, int n2);
+        void genSmallDoorChildRight(const StructureComponent *piece, int n, int n2);
 
-        void addChildren(const StructureComponent& piece);
+        void addChildren(const StructureComponent *piece);
 
         StructureComponent* findCollisionPiece(const BoundingBox& boundingBox);
         bool collidesWithPiece(const BoundingBox& boundingBox);

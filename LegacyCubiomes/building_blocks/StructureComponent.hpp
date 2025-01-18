@@ -5,18 +5,16 @@
 #include "LegacyCubiomes/utils/Pos3DTemplate.hpp"
 #include "LegacyCubiomes/utils/rng.hpp"
 #include "lce/blocks/block.hpp"
+#include "LegacyCubiomes/chunk_generator/World.hpp"
+#include "LegacyCubiomes/utils/RotationAndMirror.hpp"
 
 
 class World;
 class ChunkPrimer;
 
-#include "LegacyCubiomes/chunk_generator/World.hpp"
-#include "LegacyCubiomes/utils/RotationAndMirror.hpp"
-
-
 class StructureComponent final : public Piece {
 public:
-    int structureType{};
+    mutable int structureType{};
     Rotation rotation = Rotation::NONE;
     Mirror mirror = Mirror::NONE;
 

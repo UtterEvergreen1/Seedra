@@ -1,7 +1,7 @@
 #include "mineshaft.hpp"
 
 #include "lce/enums.hpp"
-
+#include "LegacyCubiomes/building_blocks/StructureComponent.hpp"
 
 namespace gen {
 
@@ -20,8 +20,15 @@ namespace gen {
         return "";
     }
 
+    Mineshaft::~Mineshaft() {
+        this->reset();
+    }
+
 
     MU void Mineshaft::reset() {
+        for (int i = 0; i < pieceArraySize; i++) {
+            delete pieceArray[i];
+        }
         pieceArraySize = 0;
         collisionChecks = 0;
     }
@@ -37,7 +44,6 @@ namespace gen {
         return generate(console, worldSeed, chunkPos.x, chunkPos.z);
     }
 
-
     /**
      * \n
      * Generates a mineshaft with the given seed and chunk coordinates.
@@ -51,7 +57,8 @@ namespace gen {
         rng = RNG::ConstructWithoutSetSeed((rng.getSeed() * 0x32EB772C5F11 + 0x2D3873C4CD04) & 0xFFFFFFFFFFFF);
         startPos.x = (chunkX << 4) + 2;
         startPos.z = (chunkZ << 4) + 2;
-        pieceArraySize = 0;
+        this->reset();
+
 
         int boundingBoxXUpper;
         int boundingBoxYUpper;
@@ -69,12 +76,12 @@ namespace gen {
         const BoundingBox roomBoundingBox(startPos.x, 50, startPos.z, boundingBoxXUpper, boundingBoxYUpper, boundingBoxZUpper);
 
         // recursive gen
-        buildComponent(rng, {PieceType::PT_Mineshaft_Room, 0, roomBoundingBox, enumFacing::NORTH, 1});
+        buildComponent(rng, new StructureComponent(PieceType::PT_Mineshaft_Room, 0, roomBoundingBox, enumFacing::NORTH, 1));
 
         // get Y level
         structureBB = BoundingBox::EMPTY;
         for (int index = 0; index < pieceArraySize; index++) {
-            structureBB.encompass(pieceArray[index]);
+            structureBB.encompass(*pieceArray[index]);
         }
 
         // specifically mesa
@@ -84,8 +91,8 @@ namespace gen {
             structureBB.offset(0, i, 0);
             // update pieces offset
             for (int index = 0; index < pieceArraySize; index++) {
-                pieceArray[index].structureType = 1;
-                pieceArray[index].offset(0, i, 0);
+                pieceArray[index]->structureType = 1;
+                pieceArray[index]->offset(0, i, 0);
             }
             return;
         } else {
@@ -97,7 +104,7 @@ namespace gen {
             // update structure offset
             structureBB.offset(0, k, 0);
             // update pieces offset
-            for (int piece = 0; piece < pieceArraySize; piece++) { pieceArray[piece].offset(0, k, 0); }
+            for (int piece = 0; piece < pieceArraySize; piece++) { pieceArray[piece]->offset(0, k, 0); }
         }
 
     }
@@ -106,7 +113,7 @@ namespace gen {
     StructureComponent* Mineshaft::findCollisionPiece(const BoundingBox& bbIn) {
         for (int i = 0; i < pieceArraySize; i++) {
             collisionChecks++;
-            if (pieceArray[i].intersects(bbIn)) { return &pieceArray[i]; }
+            if (pieceArray[i]->intersects(bbIn)) { return pieceArray[i]; }
         }
         return nullptr;
     }
@@ -137,12 +144,12 @@ namespace gen {
                 data = 1;
             }
             if (collides(boundingBox)) return;
-            buildComponent(rng, {PT_Mineshaft_Crossing, static_cast<int8_t>(depth + 1), boundingBox, facing, data});
+            buildComponent(rng, new StructureComponent(PT_Mineshaft_Crossing, static_cast<int8_t>(depth + 1), boundingBox, facing, data));
 
         } else if (randomRoom >= 70) { // CASE STAIRS
             boundingBox = BoundingBox::orientBox(pos, 0, -5, 0, 3, 8, 9, facing);
             if (collides(boundingBox)) return;
-            buildComponent(rng, {PT_Mineshaft_Stairs, static_cast<int8_t>(depth + 1), boundingBox, facing, 0});
+            buildComponent(rng, new StructureComponent(PT_Mineshaft_Stairs, static_cast<int8_t>(depth + 1), boundingBox, facing, 0));
 
         } else { // CASE CORRIDOR
             int i;
@@ -157,124 +164,124 @@ namespace gen {
             c_bool hasSpiders = !hasRails && rng.nextInt(23) == 0;
             data |= hasRails;
             data |= hasSpiders << 1;
-            buildComponent(rng, {PT_Mineshaft_Corridor, static_cast<int8_t>(depth + 1), boundingBox, facing, data});
+            buildComponent(rng, new StructureComponent(PT_Mineshaft_Corridor, static_cast<int8_t>(depth + 1), boundingBox, facing, data));
         }
     }
 
 
-    void Mineshaft::buildComponent(RNG& rng, const StructureComponent& p) {
+    void Mineshaft::buildComponent(RNG& rng, StructureComponent *p) {
         pieceArray[pieceArraySize++] = p;
 
-        switch (p.type) {
+        switch (p->type) {
             default:
                 break;
 
             case PT_Mineshaft_Room: {
                 int k;
-                int j = p.getYSize() - 4;
+                int j = p->getYSize() - 4;
                 if (j <= 0) j = 1;
-                c_int roomXSize = p.getXSize();
-                c_int roomZSize = p.getZSize();
+                c_int roomXSize = p->getXSize();
+                c_int roomZSize = p->getZSize();
                 for (k = 0; k < roomXSize; k += 4) {
                     k += rng.nextInt(roomXSize);
                     if (k + 3 > roomXSize) break;
-                    genAndAddPiece(rng, {p.minX + k, p.minY + rng.nextInt(j) + 1, p.minZ - 1}, enumFacing::NORTH, p.depth);
+                    genAndAddPiece(rng, {p->minX + k, p->minY + rng.nextInt(j) + 1, p->minZ - 1}, enumFacing::NORTH, p->depth);
                 }
                 for (k = 0; k < roomXSize; k += 4) {
                     k += rng.nextInt(roomXSize);
                     if (k + 3 > roomXSize) break;
-                    genAndAddPiece(rng, {p.minX + k, p.minY + rng.nextInt(j) + 1, p.maxZ + 1}, enumFacing::SOUTH, p.depth);
+                    genAndAddPiece(rng, {p->minX + k, p->minY + rng.nextInt(j) + 1, p->maxZ + 1}, enumFacing::SOUTH, p->depth);
                 }
                 for (k = 0; k < roomZSize; k += 4) {
                     k += rng.nextInt(roomZSize);
                     if (k + 3 > roomZSize) break;
-                    genAndAddPiece(rng, {p.minX - 1, p.minY + rng.nextInt(j) + 1, p.minZ + k}, enumFacing::WEST, p.depth);
+                    genAndAddPiece(rng, {p->minX - 1, p->minY + rng.nextInt(j) + 1, p->minZ + k}, enumFacing::WEST, p->depth);
                 }
                 for (k = 0; k < roomZSize; k += 4) {
                     k += rng.nextInt(roomZSize);
                     if (k + 3 > roomZSize) break;
-                    genAndAddPiece(rng, {p.maxX + 1, p.minY + rng.nextInt(j) + 1, p.minZ + k}, enumFacing::EAST, p.depth);
+                    genAndAddPiece(rng, {p->maxX + 1, p->minY + rng.nextInt(j) + 1, p->minZ + k}, enumFacing::EAST, p->depth);
                 }
                 return;
             }
 
             case PT_Mineshaft_Corridor: {
                 c_int corridorType = rng.nextInt(4);
-                c_int yState = p.minY + rng.nextInt(3) - 1;
-                switch (p.facing) {
+                c_int yState = p->minY + rng.nextInt(3) - 1;
+                switch (p->facing) {
                     case enumFacing::NORTH:
                     default:
                         switch (corridorType) {
                             default:
-                                genAndAddPiece(rng, {p.minX, yState, p.minZ - 1}, p.facing, p.depth);
+                                genAndAddPiece(rng, {p->minX, yState, p->minZ - 1}, p->facing, p->depth);
                                 break;
                             case 2:
-                                genAndAddPiece(rng, {p.minX - 1, yState, p.minZ}, enumFacing::WEST, p.depth);
+                                genAndAddPiece(rng, {p->minX - 1, yState, p->minZ}, enumFacing::WEST, p->depth);
                                 break;
                             case 3:
-                                genAndAddPiece(rng, {p.maxX + 1, yState, p.minZ}, enumFacing::EAST, p.depth);
+                                genAndAddPiece(rng, {p->maxX + 1, yState, p->minZ}, enumFacing::EAST, p->depth);
                         }
                         break;
 
                     case enumFacing::SOUTH:
                         switch (corridorType) {
                             default:
-                                genAndAddPiece(rng, {p.minX, yState, p.maxZ + 1}, p.facing, p.depth);
+                                genAndAddPiece(rng, {p->minX, yState, p->maxZ + 1}, p->facing, p->depth);
                                 break;
                             case 2:
-                                genAndAddPiece(rng, {p.minX - 1, yState, p.maxZ - 3}, enumFacing::WEST, p.depth);
+                                genAndAddPiece(rng, {p->minX - 1, yState, p->maxZ - 3}, enumFacing::WEST, p->depth);
                                 break;
                             case 3:
-                                genAndAddPiece(rng, {p.maxX + 1, yState, p.maxZ - 3}, enumFacing::EAST, p.depth);
+                                genAndAddPiece(rng, {p->maxX + 1, yState, p->maxZ - 3}, enumFacing::EAST, p->depth);
                         }
                         break;
 
                     case enumFacing::WEST:
                         switch (corridorType) {
                             default:
-                                genAndAddPiece(rng, {p.minX - 1, yState, p.minZ}, p.facing, p.depth);
+                                genAndAddPiece(rng, {p->minX - 1, yState, p->minZ}, p->facing, p->depth);
                                 break;
                             case 2:
-                                genAndAddPiece(rng, {p.minX, yState, p.minZ - 1}, enumFacing::NORTH, p.depth);
+                                genAndAddPiece(rng, {p->minX, yState, p->minZ - 1}, enumFacing::NORTH, p->depth);
                                 break;
                             case 3:
-                                genAndAddPiece(rng, {p.minX, yState, p.maxZ + 1}, enumFacing::SOUTH, p.depth);
+                                genAndAddPiece(rng, {p->minX, yState, p->maxZ + 1}, enumFacing::SOUTH, p->depth);
                         }
                         break;
 
                     case enumFacing::EAST:
                         switch (corridorType) {
                             default:
-                                genAndAddPiece(rng, {p.maxX + 1, yState, p.minZ}, p.facing, p.depth);
+                                genAndAddPiece(rng, {p->maxX + 1, yState, p->minZ}, p->facing, p->depth);
                                 break;
                             case 2:
-                                genAndAddPiece(rng, {p.maxX - 3, yState, p.minZ - 1}, enumFacing::NORTH, p.depth);
+                                genAndAddPiece(rng, {p->maxX - 3, yState, p->minZ - 1}, enumFacing::NORTH, p->depth);
                                 break;
                             case 3:
-                                genAndAddPiece(rng, {p.maxX - 3, yState, p.maxZ + 1}, enumFacing::SOUTH, p.depth);
+                                genAndAddPiece(rng, {p->maxX - 3, yState, p->maxZ + 1}, enumFacing::SOUTH, p->depth);
                         }
                         break;
                 }
 
-                if (p.depth >= 8) return;
+                if (p->depth >= 8) return;
 
-                switch (p.facing) {
+                switch (p->facing) {
                     case enumFacing::NORTH:
                     case enumFacing::SOUTH:
-                        for (int k = p.minZ + 3; k + 3 <= p.maxZ; k += 5) {
+                        for (int k = p->minZ + 3; k + 3 <= p->maxZ; k += 5) {
                             if (c_int l = rng.nextInt(5); l == 0)
-                                genAndAddPiece(rng, {p.minX - 1, p.minY, k}, enumFacing::WEST, p.depth + 1);
+                                genAndAddPiece(rng, {p->minX - 1, p->minY, k}, enumFacing::WEST, p->depth + 1);
                             else if (l == 1)
-                                genAndAddPiece(rng, {p.maxX + 1, p.minY, k}, enumFacing::EAST, p.depth + 1);
+                                genAndAddPiece(rng, {p->maxX + 1, p->minY, k}, enumFacing::EAST, p->depth + 1);
                         }
                         return;
                     case enumFacing::WEST:
                     case enumFacing::EAST:
-                        for (int k = p.minX + 3; k + 3 <= p.maxX; k += 5) {
+                        for (int k = p->minX + 3; k + 3 <= p->maxX; k += 5) {
                             if (c_int l = rng.nextInt(5); l == 0)
-                                genAndAddPiece(rng, {k, p.minY, p.minZ - 1}, enumFacing::NORTH, p.depth + 1);
+                                genAndAddPiece(rng, {k, p->minY, p->minZ - 1}, enumFacing::NORTH, p->depth + 1);
                             else if (l == 1)
-                                genAndAddPiece(rng, {k, p.minY, p.maxZ + 1}, enumFacing::SOUTH, p.depth + 1);
+                                genAndAddPiece(rng, {k, p->minY, p->maxZ + 1}, enumFacing::SOUTH, p->depth + 1);
                         }
                         return;
                     case enumFacing::DOWN:
@@ -285,54 +292,54 @@ namespace gen {
             }
 
             case PT_Mineshaft_Crossing: {
-                switch (p.facing) {
+                switch (p->facing) {
                     case enumFacing::NORTH:
                     default:
-                        genAndAddPiece(rng, {p.minX + 1, p.minY, p.minZ - 1}, enumFacing::NORTH, p.depth);
-                        genAndAddPiece(rng, {p.minX - 1, p.minY, p.minZ + 1}, enumFacing::WEST, p.depth);
-                        genAndAddPiece(rng, {p.maxX + 1, p.minY, p.minZ + 1}, enumFacing::EAST, p.depth);
+                        genAndAddPiece(rng, {p->minX + 1, p->minY, p->minZ - 1}, enumFacing::NORTH, p->depth);
+                        genAndAddPiece(rng, {p->minX - 1, p->minY, p->minZ + 1}, enumFacing::WEST, p->depth);
+                        genAndAddPiece(rng, {p->maxX + 1, p->minY, p->minZ + 1}, enumFacing::EAST, p->depth);
                         break;
                     case enumFacing::SOUTH:
-                        genAndAddPiece(rng, {p.minX + 1, p.minY, p.maxZ + 1}, enumFacing::SOUTH, p.depth);
-                        genAndAddPiece(rng, {p.minX - 1, p.minY, p.minZ + 1}, enumFacing::WEST, p.depth);
-                        genAndAddPiece(rng, {p.maxX + 1, p.minY, p.minZ + 1}, enumFacing::EAST, p.depth);
+                        genAndAddPiece(rng, {p->minX + 1, p->minY, p->maxZ + 1}, enumFacing::SOUTH, p->depth);
+                        genAndAddPiece(rng, {p->minX - 1, p->minY, p->minZ + 1}, enumFacing::WEST, p->depth);
+                        genAndAddPiece(rng, {p->maxX + 1, p->minY, p->minZ + 1}, enumFacing::EAST, p->depth);
                         break;
                     case enumFacing::WEST:
-                        genAndAddPiece(rng, {p.minX + 1, p.minY, p.minZ - 1}, enumFacing::NORTH, p.depth);
-                        genAndAddPiece(rng, {p.minX + 1, p.minY, p.maxZ + 1}, enumFacing::SOUTH, p.depth);
-                        genAndAddPiece(rng, {p.minX - 1, p.minY, p.minZ + 1}, enumFacing::WEST, p.depth);
+                        genAndAddPiece(rng, {p->minX + 1, p->minY, p->minZ - 1}, enumFacing::NORTH, p->depth);
+                        genAndAddPiece(rng, {p->minX + 1, p->minY, p->maxZ + 1}, enumFacing::SOUTH, p->depth);
+                        genAndAddPiece(rng, {p->minX - 1, p->minY, p->minZ + 1}, enumFacing::WEST, p->depth);
                         break;
                     case enumFacing::EAST:
-                        genAndAddPiece(rng, {p.minX + 1, p.minY, p.minZ - 1}, enumFacing::NORTH, p.depth);
-                        genAndAddPiece(rng, {p.minX + 1, p.minY, p.maxZ + 1}, enumFacing::SOUTH, p.depth);
-                        genAndAddPiece(rng, {p.maxX + 1, p.minY, p.minZ + 1}, enumFacing::EAST, p.depth);
+                        genAndAddPiece(rng, {p->minX + 1, p->minY, p->minZ - 1}, enumFacing::NORTH, p->depth);
+                        genAndAddPiece(rng, {p->minX + 1, p->minY, p->maxZ + 1}, enumFacing::SOUTH, p->depth);
+                        genAndAddPiece(rng, {p->maxX + 1, p->minY, p->minZ + 1}, enumFacing::EAST, p->depth);
                         break;
                 }
 
-                if (p.data) {
+                if (p->data) {
                     if (rng.nextBoolean())
-                        genAndAddPiece(rng, {p.minX + 1, p.minY + 4, p.minZ - 1}, enumFacing::NORTH, p.depth);
+                        genAndAddPiece(rng, {p->minX + 1, p->minY + 4, p->minZ - 1}, enumFacing::NORTH, p->depth);
                     if (rng.nextBoolean())
-                        genAndAddPiece(rng, {p.minX - 1, p.minY + 4, p.minZ + 1}, enumFacing::WEST, p.depth);
+                        genAndAddPiece(rng, {p->minX - 1, p->minY + 4, p->minZ + 1}, enumFacing::WEST, p->depth);
                     if (rng.nextBoolean())
-                        genAndAddPiece(rng, {p.maxX + 1, p.minY + 4, p.minZ + 1}, enumFacing::EAST, p.depth);
+                        genAndAddPiece(rng, {p->maxX + 1, p->minY + 4, p->minZ + 1}, enumFacing::EAST, p->depth);
                     if (rng.nextBoolean())
-                        genAndAddPiece(rng, {p.minX + 1, p.minY + 4, p.maxZ + 1}, enumFacing::SOUTH, p.depth);
+                        genAndAddPiece(rng, {p->minX + 1, p->minY + 4, p->maxZ + 1}, enumFacing::SOUTH, p->depth);
                 }
                 return;
             }
 
             case PT_Mineshaft_Stairs: {
-                switch (p.facing) {
+                switch (p->facing) {
                     default:
                     case enumFacing::NORTH:
-                        return genAndAddPiece(rng, {p.minX, p.minY, p.minZ - 1}, enumFacing::NORTH, p.depth);
+                        return genAndAddPiece(rng, {p->minX, p->minY, p->minZ - 1}, enumFacing::NORTH, p->depth);
                     case enumFacing::SOUTH:
-                        return genAndAddPiece(rng, {p.minX, p.minY, p.maxZ + 1}, enumFacing::SOUTH, p.depth);
+                        return genAndAddPiece(rng, {p->minX, p->minY, p->maxZ + 1}, enumFacing::SOUTH, p->depth);
                     case enumFacing::WEST:
-                        return genAndAddPiece(rng, {p.minX - 1, p.minY, p.minZ}, enumFacing::WEST, p.depth);
+                        return genAndAddPiece(rng, {p->minX - 1, p->minY, p->minZ}, enumFacing::WEST, p->depth);
                     case enumFacing::EAST:
-                        return genAndAddPiece(rng, {p.maxX + 1, p.minY, p.minZ}, enumFacing::EAST, p.depth);
+                        return genAndAddPiece(rng, {p->maxX + 1, p->minY, p->minZ}, enumFacing::EAST, p->depth);
                 }
             }
         }

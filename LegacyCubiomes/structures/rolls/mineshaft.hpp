@@ -18,11 +18,11 @@ namespace rolls {
         MU void generateAllChests(World& worldIn, const gen::Mineshaft* mg, const Generator& g, bool generateFullChunk);
 
         void generateChest(const ChunkPrimer* chunk, const BoundingBox& chunkBB,
-                           const StructureComponent& piece, RNG& rng, int x, int y, int z);
+                           const StructureComponent *piece, RNG& rng, int x, int y, int z);
 
     private:
         static void placeCobWeb(const ChunkPrimer* chunk, const BoundingBox& chunkBB,
-                                const StructureComponent& piece, RNG& rng, int x, int z);
+                                const StructureComponent *piece, RNG& rng, int x, int z);
     };
 
 }

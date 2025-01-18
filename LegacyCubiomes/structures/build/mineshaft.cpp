@@ -1,7 +1,7 @@
 #include "mineshaft.hpp"
 
 #include "LegacyCubiomes/chunk_generator/World.hpp"
-
+#include "LegacyCubiomes/building_blocks/StructureComponent.hpp"
 
 namespace build::mineshaft {
     

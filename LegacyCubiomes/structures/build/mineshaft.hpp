@@ -1,10 +1,12 @@
 #pragma once
 
-#include "LegacyCubiomes/building_blocks/StructureComponent.hpp"
 #include "lce/blocks/block_ids.hpp"
 #include "lce/blocks/block_states.hpp"
 #include "lce/blocks/blocks.hpp"
-
+#include "LegacyCubiomes/utils/rng.hpp"
+class StructureComponent;
+class World;
+class BoundingBox;
 
 namespace build::mineshaft {
 

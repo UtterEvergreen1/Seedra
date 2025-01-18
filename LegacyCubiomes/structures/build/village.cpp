@@ -38,7 +38,7 @@ namespace build::village {
                         int x, int y, int z,
                         enumFacing facing, const Block* doorBlock) {
 
-        auto doorBlockLower = doorBlock->getStateFromMeta(states::DoorLower::withProperty(facing));
+        auto doorBlockLower = doorBlock->getStateFromMeta(states::DoorLower::withProperty(piece.rotation.apply(piece.mirror, facing)));
         piece.setBlockState(world, doorBlockLower, x, y, z, chunkBB);
 
         auto doorBlockUpper = doorBlock->getStateFromMeta(states::DoorUpper::withProperty());
@@ -60,7 +60,7 @@ namespace build::village {
                        StructureComponent& piece,
                        MU int x, MU int y, MU int z, MU BoundingBox chunkBB) {
         // if (!villageIn->isZombieInfested) {
-        auto Torch = BlocksInit::TORCH.getStateFromMeta(states::Torch::withProperty(facing));
+        auto Torch = BlocksInit::TORCH.getStateFromMeta(states::Torch::withProperty(piece.rotation.apply(piece.mirror, facing)));
         piece.setBlockState(world, BlocksInit::TORCH, x, y, z, chunkBB);
         // }
     }
@@ -180,9 +180,9 @@ namespace build::village {
         const Block* cobblestone = getBiomeSpecificBlockState(&BlocksInit::COBBLESTONE, piece.structureType);
 
         c_auto cobbleStairsSouth = getBiomeSpecificBlockState(&BlocksInit::COBBLESTONE_STAIRS, piece.structureType);
-        const auto cobbleStairsNorth = cobbleStairsSouth->getStateFromMeta(states::Stairs::withProperty(enumFacing::NORTH));
-        const auto cobbleStairsWest = cobbleStairsSouth->getStateFromMeta(states::Stairs::withProperty(enumFacing::WEST));
-        const auto cobbleStairsEast = cobbleStairsSouth->getStateFromMeta(states::Stairs::withProperty(enumFacing::EAST));
+        const auto cobbleStairsNorth = cobbleStairsSouth->getStateFromMeta(states::Stairs::withProperty(piece.rotation.apply(piece.mirror, enumFacing::NORTH)));
+        const auto cobbleStairsWest = cobbleStairsSouth->getStateFromMeta(states::Stairs::withProperty(piece.rotation.apply(piece.mirror, enumFacing::WEST)));
+        const auto cobbleStairsEast = cobbleStairsSouth->getStateFromMeta(states::Stairs::withProperty(piece.rotation.apply(piece.mirror, enumFacing::EAST)));
         piece.fillWithAir(worldIn, chunkBB, 1, 1, 1, 3, 3, 7);
         piece.fillWithAir(worldIn, chunkBB, 1, 5, 1, 3, 9, 3);
         piece.fillWithBlocks(worldIn, chunkBB, 1, 0, 0, 3, 0, 8, cobblestone, false);
@@ -235,7 +235,7 @@ namespace build::village {
 
         // .withProperty(BlockLadder.FACING, FACING::WEST);
         const Block ladderWest = BlocksInit::LADDER.getStateFromMeta(
-                states::Ladder::withProperty(enumFacing::WEST));
+                states::Ladder::withProperty(piece.rotation.apply(piece.mirror, enumFacing::WEST)));
 
         for (int i=1; i <= 9; ++i) {
             piece.setBlockState(worldIn, ladderWest, 3, i, 3, chunkBB);
@@ -407,9 +407,9 @@ namespace build::village {
         const Block* iBlockState = getBiomeSpecificBlockState(&BlocksInit::COBBLESTONE, piece.structureType);
 
         c_auto woodStairs = getBiomeSpecificBlockState(&BlocksInit::OAK_WOOD_STAIRS, piece.structureType);
-        c_auto iBlockState1 = woodStairs->getStateFromMeta(states::Stairs::withProperty(enumFacing::NORTH));
-        c_auto iBlockState2 = woodStairs->getStateFromMeta(states::Stairs::withProperty(enumFacing::SOUTH));
-        c_auto iBlockState3 = woodStairs->getStateFromMeta(states::Stairs::withProperty(enumFacing::WEST));
+        c_auto iBlockState1 = woodStairs->getStateFromMeta(states::Stairs::withProperty(piece.rotation.apply(piece.mirror, enumFacing::NORTH)));
+        c_auto iBlockState2 = woodStairs->getStateFromMeta(states::Stairs::withProperty(piece.rotation.apply(piece.mirror, enumFacing::SOUTH)));
+        c_auto iBlockState3 = woodStairs->getStateFromMeta(states::Stairs::withProperty(piece.rotation.apply(piece.mirror, enumFacing::WEST)));
 
         const Block* iBlockState4 = getBiomeSpecificBlockState(&BlocksInit::OAK_WOOD_PLANK, piece.structureType);
         const Block* iBlockState5 = getBiomeSpecificBlockState(&BlocksInit::OAK_WOOD, piece.structureType);
@@ -511,15 +511,15 @@ namespace build::village {
         const Block* iBlockState = getBiomeSpecificBlockState(&BlocksInit::COBBLESTONE, piece.structureType);
 
         const auto wood_stairs = getBiomeSpecificBlockState(&BlocksInit::OAK_WOOD_STAIRS, piece.structureType);
-        const Block iBlockState1 = wood_stairs->getStateFromMeta(states::Stairs::withProperty(enumFacing::NORTH));
-        const Block iBlockState2 = wood_stairs->getStateFromMeta(states::Stairs::withProperty(enumFacing::SOUTH));
-        const Block iBlockState3 = wood_stairs->getStateFromMeta(states::Stairs::withProperty(enumFacing::EAST));
+        const Block iBlockState1 = wood_stairs->getStateFromMeta(states::Stairs::withProperty(piece.rotation.apply(piece.mirror, enumFacing::NORTH)));
+        const Block iBlockState2 = wood_stairs->getStateFromMeta(states::Stairs::withProperty(piece.rotation.apply(piece.mirror, enumFacing::SOUTH)));
+        const Block iBlockState3 = wood_stairs->getStateFromMeta(states::Stairs::withProperty(piece.rotation.apply(piece.mirror, enumFacing::EAST)));
 
         const Block* iBlockState4 = getBiomeSpecificBlockState(&BlocksInit::OAK_WOOD_PLANK, piece.structureType);
 
 
         const Block iBlockState5 = getBiomeSpecificBlockState(&BlocksInit::COBBLESTONE_STAIRS, piece.structureType)
-                                           ->getStateFromMeta(states::Stairs::withProperty(enumFacing::NORTH));
+                                           ->getStateFromMeta(states::Stairs::withProperty(piece.rotation.apply(piece.mirror, enumFacing::NORTH)));
         const Block* iBlockState6 = getBiomeSpecificBlockState(&BlocksInit::OAK_FENCE, piece.structureType);
         piece.fillWithAir(worldIn, chunkBB, 1, 1, 1, 7, 5, 4);
         piece.fillWithBlocks(worldIn, chunkBB, 0, 0, 0, 8, 0, 5, iBlockState, false);
@@ -614,12 +614,12 @@ namespace build::village {
 
         const Block* iBlockState = getBiomeSpecificBlockState(&BlocksInit::COBBLESTONE, piece.structureType);
         const Block iBlockState1 = getBiomeSpecificBlockState(&BlocksInit::OAK_WOOD_STAIRS, piece.structureType)
-                                           ->getStateFromMeta(states::Stairs::withProperty(enumFacing::NORTH));
+                                           ->getStateFromMeta(states::Stairs::withProperty(piece.rotation.apply(piece.mirror, enumFacing::NORTH)));
         const Block iBlockState2 = getBiomeSpecificBlockState(&BlocksInit::OAK_WOOD_STAIRS, piece.structureType)
-                                           ->getStateFromMeta(states::Stairs::withProperty(enumFacing::WEST));
+                                           ->getStateFromMeta(states::Stairs::withProperty(piece.rotation.apply(piece.mirror, enumFacing::WEST)));
         const Block* iBlockState3 = getBiomeSpecificBlockState(&BlocksInit::OAK_WOOD_PLANK, piece.structureType);
         const Block iBlockState4 = getBiomeSpecificBlockState(&BlocksInit::COBBLESTONE_STAIRS, piece.structureType)
-                                           ->getStateFromMeta(states::Stairs::withProperty(enumFacing::NORTH));
+                                           ->getStateFromMeta(states::Stairs::withProperty(piece.rotation.apply(piece.mirror, enumFacing::NORTH)));
         const Block* iBlockState5 = getBiomeSpecificBlockState(&BlocksInit::OAK_WOOD, piece.structureType);
         const Block* iBlockState6 = getBiomeSpecificBlockState(&BlocksInit::OAK_FENCE, piece.structureType);
 
@@ -702,13 +702,13 @@ namespace build::village {
 
         const Block* iBlockState = getBiomeSpecificBlockState(&BlocksInit::COBBLESTONE, piece.structureType);
         const Block iBlockState1 = getBiomeSpecificBlockState(&BlocksInit::OAK_WOOD_STAIRS, piece.structureType)
-                                           ->getStateFromMeta(states::Stairs::withProperty(enumFacing::NORTH)); // .withProperty(BlockStairs.FACING, FACING::NORTH));
+                                           ->getStateFromMeta(states::Stairs::withProperty(piece.rotation.apply(piece.mirror, enumFacing::NORTH)));
         const Block iBlockState2 = getBiomeSpecificBlockState(&BlocksInit::OAK_WOOD_STAIRS, piece.structureType)
-                                           ->getStateFromMeta(states::Stairs::withProperty(enumFacing::SOUTH)); // .withProperty(BlockStairs.FACING, FACING::SOUTH));
+                                           ->getStateFromMeta(states::Stairs::withProperty(piece.rotation.apply(piece.mirror, enumFacing::SOUTH)));
         const Block iBlockState3 = getBiomeSpecificBlockState(&BlocksInit::OAK_WOOD_STAIRS, piece.structureType)
-                                           ->getStateFromMeta(states::Stairs::withProperty(enumFacing::EAST)); // .withProperty(BlockStairs.FACING, FACING::EAST));
+                                           ->getStateFromMeta(states::Stairs::withProperty(piece.rotation.apply(piece.mirror, enumFacing::EAST)));
         const Block iBlockState4 = getBiomeSpecificBlockState(&BlocksInit::OAK_WOOD_STAIRS, piece.structureType)
-                                           ->getStateFromMeta(states::Stairs::withProperty(enumFacing::WEST)); // .withProperty(BlockStairs.FACING, FACING::WEST));
+                                           ->getStateFromMeta(states::Stairs::withProperty(piece.rotation.apply(piece.mirror, enumFacing::WEST)));
         const Block* iBlockState5 = getBiomeSpecificBlockState(&BlocksInit::OAK_WOOD_PLANK, piece.structureType);
         const Block* iBlockState6 = getBiomeSpecificBlockState(&BlocksInit::OAK_WOOD, piece.structureType);
 
@@ -914,7 +914,7 @@ namespace build::village {
         const Block* iblockstate = getBiomeSpecificBlockState(&BlocksInit::COBBLESTONE, piece.structureType);
         const Block* iblockstate1 = getBiomeSpecificBlockState(&BlocksInit::OAK_WOOD_PLANK, piece.structureType);
         const Block iblockstate2 = getBiomeSpecificBlockState(&BlocksInit::COBBLESTONE_STAIRS, piece.structureType)
-                                           ->getStateFromMeta(states::Stairs::withProperty(enumFacing::NORTH));
+                                           ->getStateFromMeta(states::Stairs::withProperty(piece.rotation.apply(piece.mirror, enumFacing::NORTH)));
         const Block* iblockstate3 = getBiomeSpecificBlockState(&BlocksInit::OAK_WOOD, piece.structureType);
         const Block* iblockstate4 = getBiomeSpecificBlockState(&BlocksInit::OAK_FENCE, piece.structureType);
 
@@ -1031,7 +1031,7 @@ namespace build::village {
         const Block* iBlockState = getBiomeSpecificBlockState(&BlocksInit::COBBLESTONE, piece.structureType);
         const Block* iBlockState1 = getBiomeSpecificBlockState(&BlocksInit::OAK_WOOD_PLANK, piece.structureType);
         const Block iBlockState2 = getBiomeSpecificBlockState(&BlocksInit::COBBLESTONE_STAIRS, piece.structureType)
-                                           ->getStateFromMeta(states::Stairs::withProperty(enumFacing::NORTH));
+                                           ->getStateFromMeta(states::Stairs::withProperty(piece.rotation.apply(piece.mirror, enumFacing::NORTH)));
         const Block* iBlockState3 = getBiomeSpecificBlockState(&BlocksInit::OAK_WOOD, piece.structureType);
         const Block* iBlockState4 = getBiomeSpecificBlockState(&BlocksInit::OAK_FENCE, piece.structureType);
 
@@ -1098,7 +1098,7 @@ namespace build::village {
         if (piece.data & 1) /* isRoofAccessible */ {
             // .withProperty(BlockLadder.FACING, FACING::SOUTH);
             c_auto ladderSouth = BlocksInit::LADDER.getStateFromMeta(
-                    states::Ladder::withProperty(enumFacing::SOUTH));
+                    states::Ladder::withProperty(piece.rotation.apply(piece.mirror, enumFacing::SOUTH)));
             piece.setBlockState(worldIn, ladderSouth, 3, 1, 3, chunkBB);
             piece.setBlockState(worldIn, ladderSouth, 3, 2, 3, chunkBB);
             piece.setBlockState(worldIn, ladderSouth, 3, 3, 3, chunkBB);

@@ -1,5 +1,7 @@
 #include "Chunk.hpp"
-
+#include "LegacyCubiomes/structures/gen/mineshaft/mineshaft.hpp"
+#include "LegacyCubiomes/structures/gen/stronghold/stronghold.hpp"
+#include "LegacyCubiomes/structures/gen/village/village.hpp"
 
 namespace Chunk {
 
@@ -100,11 +102,11 @@ namespace Chunk {
 
         if constexpr (generateMineshafts) {
             for (auto& mineshaft : world.mineshafts) {
-                if (chunkBB.intersects(mineshaft.structureBB)) {
-                    for (int ip = 0; ip < mineshaft.pieceArraySize; ip++) {
-                        StructureComponent& piece = mineshaft.pieceArray[ip];
-                        if (chunkBB.intersects(piece)) {
-                            build::mineshaft::addComponentParts(world, chunk->decorateRng, chunkBB, piece);
+                if (chunkBB.intersects(mineshaft->structureBB)) {
+                    for (int ip = 0; ip < mineshaft->pieceArraySize; ip++) {
+                        StructureComponent* piece = mineshaft->pieceArray[ip];
+                        if (chunkBB.intersects(*piece)) {
+                            build::mineshaft::addComponentParts(world, chunk->decorateRng, chunkBB, *piece);
                         }
                     }
                 }
@@ -113,12 +115,12 @@ namespace Chunk {
 
         if constexpr (generateVillages) {
             for (auto& village : world.villages) {
-                if (chunkBB.intersects(village.structureBB)) {
-                    for (int ip = 0; ip < village.pieceArraySize; ip++) {
-                        StructureComponent& piece = village.pieceArray[ip];
-                        if (chunkBB.intersects(piece)) {
-                            piece.structureType = village.biomeType;
-                            build::village::addComponentParts(world, chunk->decorateRng, chunkBB, piece);
+                if (chunkBB.intersects(village->structureBB)) {
+                    for (int ip = 0; ip < village->pieceArraySize; ip++) {
+                        auto piece = village->pieceArray[ip];
+                        if (chunkBB.intersects(*piece)) {
+                            piece->structureType = village->biomeType;
+                            build::village::addComponentParts(world, chunk->decorateRng, chunkBB, *piece);
                         }
                     }
                 }
@@ -127,11 +129,11 @@ namespace Chunk {
 
         if constexpr (generateStrongholds) {
             for (auto& stronghold : world.strongholds) {
-                if (chunkBB.intersects(stronghold.structureBB)) {
-                    for (int ip = 0; ip < stronghold.pieceArraySize; ip++) {
-                        StructureComponent& piece = stronghold.pieceArray[ip];
-                        if (chunkBB.intersects(piece)) {
-                            build::stronghold::addComponentParts(world, chunk->decorateRng, chunkBB, piece);
+                if (chunkBB.intersects(stronghold->structureBB)) {
+                    for (int ip = 0; ip < stronghold->pieceArraySize; ip++) {
+                        StructureComponent* piece = stronghold->pieceArray[ip];
+                        if (chunkBB.intersects(*piece)) {
+                            build::stronghold::addComponentParts(world, chunk->decorateRng, chunkBB, *piece);
                         }
                     }
                 }
@@ -199,9 +201,8 @@ namespace Chunk {
         chunk->stage = Stage::STAGE_DONE;
     }
 
-
-    template ChunkPrimer* provideChunk<true, true, true, false>(const Generator &, c_int, c_int, bool);
-    template ChunkPrimer* provideChunk<false, true, true, false>(const Generator &, c_int, c_int, bool);
-
-
 }
+
+
+template ChunkPrimer* Chunk::provideChunk<true, true, true, false>(const Generator &, c_int, c_int, bool);
+template ChunkPrimer* Chunk::provideChunk<false, true, true, false>(const Generator &, c_int, c_int, bool);

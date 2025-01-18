@@ -2,7 +2,6 @@
 
 #include "LegacyCubiomes/building_blocks/GenerationStep.hpp"
 #include "LegacyCubiomes/building_blocks/Piece.hpp"
-#include "LegacyCubiomes/building_blocks/StructureComponent.hpp"
 #include "LegacyCubiomes/cubiomes/layers.hpp"
 #include "LegacyCubiomes/utils/Pos2DTemplate.hpp"
 #include "LegacyCubiomes/utils/Pos3DTemplate.hpp"
@@ -10,7 +9,7 @@
 #include <map>
 #include <vector>
 
-
+class StructureComponent;
 namespace gen {
 
     class Village {
@@ -63,7 +62,7 @@ namespace gen {
 
         BoundingBox structureBB;
 
-        StructureComponent pieceArray[ARRAY_SIZE];
+        StructureComponent* pieceArray[ARRAY_SIZE]{};
         int pieceArraySize{};
 
         Pos2D startPos;
@@ -71,12 +70,15 @@ namespace gen {
         Village() = delete;
         explicit Village(const Generator* generator);
 
+        ~Village();
+        void reset();
+
         void generate(int chunkX, int chunkZ);
         void generate(Pos2D chunk);
 
 
 
-    MU ND StructureComponent* getBlackSmithPiece();
+    MU ND const StructureComponent *getBlackSmithPiece();
 
     MU ND bool hasMoreThanTwoComponents() const { return pieceArraySize - numInvalidPieces > 2; }
 
@@ -89,14 +91,17 @@ namespace gen {
         void setupPieces();
         ND int updatePieceWeight() const;
         static BoundingBox createPieceBB(PieceType pieceType, Pos3D pos, enumFacing direction);
-        void buildComponentStart(const StructureComponent& piece);
-        void buildComponent(const StructureComponent& scIn);
+        void buildComponentStart(const StructureComponent *piece);
+        void buildComponent(const StructureComponent *scIn);
         BoundingBox road(Pos3D pos, enumFacing facing);
         void additionalRngRolls(Piece& p);
-        StructureComponent generateComponent(Pos3D pos, enumFacing facing, i8 depth);
-        StructureComponent genAndAddRoadPiece(Pos3D pos, enumFacing facing);
-        StructureComponent genAndAddComponent(Pos3D pos, enumFacing facing, i8 depth);
-        void addPiece(const StructureComponent& piece);
+
+        StructureComponent *generateComponent(Pos3D pos, enumFacing facing, i8 depth);
+
+        void genAndAddRoadPiece(Pos3D pos, enumFacing facing);
+
+        StructureComponent *genAndAddComponent(Pos3D pos, enumFacing facing, i8 depth);
+        void addPiece(StructureComponent *piece);
         ND bool hasCollisionPiece(const BoundingBox& boundingBox) const;
     };
 

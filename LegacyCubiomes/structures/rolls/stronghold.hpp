@@ -17,7 +17,7 @@ namespace rolls {
         MU static bool generateStructure(ChunkPrimer* chunk, gen::Stronghold* sg, RNG& rng, c_int xChunk, c_int zChunk,
                                          const StructureComponent& pieceStop);
 
-        static void setEye(const BoundingBox& chunkBB, const StructureComponent& piece, int x, int z, RNG& random,
+        static void setEye(const BoundingBox& chunkBB, const StructureComponent *piece, int x, int z, RNG& random,
                            std::vector<bool>& portalRoomEyes, int& success, int index);
 
         static std::vector<bool> getEyePlacements(World& worldIn, const gen::Stronghold* sg, const Generator& g);
