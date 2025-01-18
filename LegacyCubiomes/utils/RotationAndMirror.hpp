@@ -13,6 +13,7 @@ enum class RotationEnum {
     COUNTERCLOCKWISE_90
 };
 
+class Mirror;
 class Rotation {
 public:
     enum class Type {
@@ -22,18 +23,14 @@ public:
         COUNTERCLOCKWISE_90
     };
 
-private:
     Type type;
-    std::string name;
-    static const std::array<std::string, 4> rotationNames;
 
-public:
     static const Rotation NONE;
     static const Rotation CLOCKWISE_90;
     static const Rotation CLOCKWISE_180;
     static const Rotation COUNTERCLOCKWISE_90;
 
-    Rotation(const Type typeIn, std::string nameIn) : type(typeIn), name(std::move(nameIn)) {}
+    explicit Rotation(const Type typeIn) : type(typeIn) {}
 
     [[nodiscard]] Rotation add(const Rotation& rotation) const {
         switch (rotation.type) {
@@ -84,6 +81,12 @@ public:
         }
     }
 
+    bool operator==(const Rotation & other) const {
+        return this->type == other.type;
+    }
+
+    [[nodiscard]] enumFacing apply(const Mirror& mirror, enumFacing facing) const;
+
     [[nodiscard]] RotationEnum toRotationEnum(const enumFacing facing) const {
         const EnumAxis axis = getAxis(facing);
         const bool isLeftRightZ = (this->type == Type::CLOCKWISE_180) && (axis == EnumAxis::Y);
@@ -123,10 +126,6 @@ public:
             default:
                 return index;
         }
-    }
-
-    [[nodiscard]] const std::string& getName() const {
-        return name;
     }
 
     static std::array<const Rotation*, 4> values() {
@@ -184,13 +183,6 @@ private:
     }
 };
 
-const std::array<std::string, 4> Rotation::rotationNames = { "rotate_0", "rotate_90", "rotate_180", "rotate_270" };
-
-const Rotation Rotation::NONE(Type::NONE, "rotate_0");
-const Rotation Rotation::CLOCKWISE_90(Type::CLOCKWISE_90, "rotate_90");
-const Rotation Rotation::CLOCKWISE_180(Type::CLOCKWISE_180, "rotate_180");
-const Rotation Rotation::COUNTERCLOCKWISE_90(Type::COUNTERCLOCKWISE_90, "rotate_270");
-
 
 class Mirror {
 public:
@@ -200,17 +192,13 @@ public:
         FRONT_BACK
     };
 
-private:
     Type type;
-    std::string name;
-    static const std::array<std::string, 3> mirrorNames;
 
-public:
     static const Mirror NONE;
     static const Mirror LEFT_RIGHT;
     static const Mirror FRONT_BACK;
 
-    Mirror(const Type typeIn, std::string  nameIn) : type(typeIn), name(std::move(nameIn)) {}
+    explicit Mirror(const Type typeIn) : type(typeIn) {}
 
     [[nodiscard]] int mirrorRotation(const int rotationIn, const int rotationCount) const {
         const int halfRotation = rotationCount / 2;
@@ -261,18 +249,12 @@ public:
         return facing;
     }
 
-    [[nodiscard]] const std::string& getName() const {
-        return name;
+    bool operator==(const Mirror & other) const {
+        return this->type == other.type;
     }
 
     static std::array<Mirror, 3> values() {
         return { NONE, LEFT_RIGHT, FRONT_BACK };
     }
 };
-
-const std::array<std::string, 3> Mirror::mirrorNames = { "no_mirror", "mirror_left_right", "mirror_front_back" };
-
-const Mirror Mirror::NONE(Type::NONE, "no_mirror");
-const Mirror Mirror::LEFT_RIGHT(Type::LEFT_RIGHT, "mirror_left_right");
-const Mirror Mirror::FRONT_BACK(Type::FRONT_BACK, "mirror_front_back");
 

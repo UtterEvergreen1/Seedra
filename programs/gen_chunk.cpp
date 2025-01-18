@@ -17,6 +17,7 @@
 
 
 int main() {
+
     // rng tests
     /*RNG rngSeed;
     int64_t testLongSeed = 5093713735541695132LL;
@@ -32,15 +33,15 @@ int main() {
     }*/
 
     Biome::registerBiomes();
-    auto console = lce::CONSOLE::WIIU;
+    auto console = lce::CONSOLE::XBOX360;
     auto version = LCEVERSION::ELYTRA;
-    Generator g(console, version, -872420751, lce::WORLDSIZE::CLASSIC, lce::BIOMESCALE::SMALL);
+    Generator g(console, version, 27184353441555, lce::WORLDSIZE::CLASSIC, lce::BIOMESCALE::SMALL);
 
     // 3 13 for seed -101, 8 15 for seed 1, 11 16 or 15 5 for seed 27184353441555
-    int X_WIDTH = 27;
-    int Z_WIDTH = 27;
-    int X_CENTER = 0;
-    int Z_CENTER = 0;
+    int X_WIDTH = 20;
+    int Z_WIDTH = 20;
+    int X_CENTER = 11;
+    int Z_CENTER = 16;
 
     BoundingBox worldBox;
     worldBox.minX = short(X_CENTER * 16 - X_WIDTH);
@@ -206,7 +207,7 @@ int main() {
 
 
 
-    std::string DIR_NAME = R"(C:/Users/Jerrin/CLionProjects/LegacyChunkViewer/)";
+    std::string DIR_NAME = R"(C:/Users/Daniel/CLionProjects/LegacyChunkViewer/)";
     std::string filename = DIR_NAME + R"(build/chunks/chunkdata.bin)";
 
     std::ofstream file(filename, std::ios::binary);

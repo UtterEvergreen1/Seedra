@@ -6,14 +6,16 @@
 
 #include <ranges>
 
+#include "LegacyCubiomes/utils/RotationAndMirror.hpp"
+
 
 MU void StructureComponent::setBlockStateWithoutOffset(World& worldIn, const lce::blocks::Block* blockStateIn, c_int x,
                                                        c_int y, c_int z, const BoundingBox& structureBB) {
     if (const auto blockPos = Pos3D(x, y, z); structureBB.isVecInside(blockPos)) {
-        // if (this->mirror != Mirror::NONE)
-        //     blockStateIn = blockStateIn.withMirror(this->mirror);
-        // if (this->rotation != Rotation::NONE)
-        //     blockStateIn = blockStateIn.withRotation(this->rotation);
+        /*if (this->mirror != Mirror::NONE)
+            blockStateIn = blockStateIn.withMirror(this->mirror);
+        if (this->rotation != Rotation::NONE)
+            blockStateIn = blockStateIn.withRotation(this->rotation);*/
         worldIn.setBlock(blockPos, blockStateIn); // flags = 2
     }
 }
@@ -23,10 +25,10 @@ MU void StructureComponent::setBlockState(World& worldIn, const lce::blocks::Blo
                                           c_int z, const BoundingBox& structureBB) const {
     if (const auto blockPos = Pos3D(getWorldX(x, z), getWorldY(y), getWorldZ(x, z));
         structureBB.isVecInside(blockPos)) {
-        // if (this->mirror != Mirror::NONE)
-        //     blockStateIn = blockStateIn.withMirror(this->mirror);
-        // if (this->rotation != Rotation::NONE)
-        //     blockStateIn = blockStateIn.withRotation(this->rotation);
+        /*if (this->mirror != Mirror::NONE)
+            blockStateIn = blockStateIn.withMirror(this->mirror);
+        if (this->rotation != Rotation::NONE)
+            blockStateIn = blockStateIn.withRotation(this->rotation);*/
         worldIn.setBlock(blockPos, blockStateIn); // flags = 2
     }
 }
