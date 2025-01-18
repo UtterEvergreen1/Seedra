@@ -2,7 +2,6 @@
 
 #include "LegacyCubiomes/chunk_generator/World.hpp"
 #include "lce/blocks/blocks.hpp"
-#include "lce/blocks/block_ids.hpp"
 #include "LegacyCubiomes/utils/constants.hpp"
 #include "LegacyCubiomes/utils/MathHelper.hpp"
 
@@ -43,13 +42,13 @@ bool WorldGenMinable::generate(World *world, RNG &rng, const Pos3D &pos) const {
                             const double d14 = (static_cast<double>(j2) + 0.5 - d8) / d10;
 
                             if (d12 * d12 + d13 * d13 + d14 * d14 < 1.0) {
-                                Pos3D blockpos(l1, i2, j2);
-                                const lce::blocks::Block *block = world->getBlock(blockpos);
+                                Pos3D blockPos(l1, i2, j2);
+                                const lce::blocks::Block *block = world->getBlock(blockPos);
                                 if (block == &lce::blocks::BlocksInit::STONE ||
                                     block == &lce::blocks::BlocksInit::GRANITE ||
                                     block == &lce::blocks::BlocksInit::DIORITE ||
                                     block == &lce::blocks::BlocksInit::ANDESITE) {
-                                    world->setBlock(blockpos, this->oreBlock);
+                                    world->setBlock(blockPos, this->oreBlock);
                                 }
                             }
                         }

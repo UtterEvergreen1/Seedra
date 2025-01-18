@@ -6,7 +6,7 @@
 class World;
 
 class WorldGenDungeons final : public WorldGenerator {
-    static std::string SPAWNERTYPES[];
+    static std::string SPAWNER_TYPES[];
     static void pickMobSpawner(RNG& rng);
 
 public:

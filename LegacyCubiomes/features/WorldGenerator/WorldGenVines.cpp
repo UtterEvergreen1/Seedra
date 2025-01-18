@@ -5,6 +5,9 @@
 #include "lce/blocks/block_states.hpp"
 #include "lce/blocks/blocks.hpp"
 
+using namespace lce::blocks;
+using namespace lce::blocks::ids;
+
 
 bool BlockVine::canPlaceBlockOnSide(World* worldIn, const Pos3D& pos, const enumFacing& facing) {
     if (facing == enumFacing::UP || facing == enumFacing::DOWN) { return false; }
@@ -19,14 +22,13 @@ bool BlockVine::canPlaceBlockOnSide(World* worldIn, const Pos3D& pos, const enum
 }
 
 bool BlockVine::canBlockStay(const int blockId) {
-    using namespace lce::blocks::ids;
     if ((blockId >= WHITE_SHULKER_BOX_ID && blockId <= BLACK_GLAZED_TERRACOTTA_ID) || blockId == BEACON_ID ||
         blockId == CAULDRON_ID || blockId == GLASS_ID || blockId == STAINED_GLASS_ID || blockId == PISTON_ID ||
         blockId == STICKY_PISTON_ID || blockId == PISTON_HEAD_ID || blockId == WOODEN_TRAPDOOR_ID) {
         return false;
     }
-
-    return isSolidBlock(blockId); // only that face needs to be solid, but we'll just check if the block is solid
+    // only that face needs to be solid, but we'll just check if the block is solid
+    return isSolidBlock(blockId);
 }
 
 bool WorldGenVines::generate(World* worldIn, RNG& rng, const Pos3D& position) const {
@@ -36,7 +38,7 @@ bool WorldGenVines::generate(World* worldIn, RNG& rng, const Pos3D& position) co
         if (worldIn->isAirBlock(pos)) {
             for (const enumFacing& facing: FACING_HORIZONTAL) {
                 if (BlockVine::canPlaceBlockOnSide(worldIn, pos, facing)) {
-                    worldIn->setBlock(pos, lce::blocks::ids::VINES_ID, lce::blocks::states::Vine::withProperty(facing));
+                    worldIn->setBlock(pos, VINES_ID, states::Vine::withProperty(facing));
                     break;
                 }
             }

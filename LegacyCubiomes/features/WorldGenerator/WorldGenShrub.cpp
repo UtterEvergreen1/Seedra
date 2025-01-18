@@ -4,20 +4,22 @@
 #include "lce/blocks/blocks.hpp"
 #include "lce/blocks/block_ids.hpp"
 
+using namespace lce::blocks;
+
 
 bool WorldGenShrub::generate(World* worldIn, RNG& rng, const Pos3D& position) const {
     Pos3D pos = position;
-    while (lce::blocks::ids::isAirOrLeavesBlock(worldIn->getBlockId(pos)) && pos.getY() > 0) {
+    while (ids::isAirOrLeavesBlock(worldIn->getBlockId(pos)) && pos.getY() > 0) {
         pos = pos.down();
     }
 
-    const int block = worldIn->getBlockId(pos);
-    if (block == lce::blocks::ids::DIRT_ID || block == lce::blocks::ids::GRASS_ID) {
+    c_int block = worldIn->getBlockId(pos);
+    if (block == ids::DIRT_ID || block == ids::GRASS_ID) {
         pos = pos.up();
         worldIn->setBlock(pos, this->woodMetadata);
 
         for (int y = pos.getY(); y <= pos.getY() + 2; ++y) {
-            const int y_off = y - pos.getY();
+            c_int y_off = y - pos.getY();
             int radius = 2 - y_off;
 
             for (int x = pos.getX() - radius; x <= pos.getX() + radius; ++x) {
@@ -27,11 +29,11 @@ bool WorldGenShrub::generate(World* worldIn, RNG& rng, const Pos3D& position) co
                     int z_off = z - pos.getZ();
 
                     if (std::abs(x_off) != radius || std::abs(z_off) != radius || rng.nextInt(2) != 0) {
-                        Pos3D blockpos(x, y, z);
-                        const int material = worldIn->getBlockId(blockpos);
+                        Pos3D blockPos(x, y, z);
+                        c_int material = worldIn->getBlockId(blockPos);
 
-                        if (lce::blocks::ids::isAirOrLeavesBlock(material)) {
-                            worldIn->setBlock(blockpos, this->leavesMetadata);
+                        if (ids::isAirOrLeavesBlock(material)) {
+                            worldIn->setBlock(blockPos, this->leavesMetadata);
                         }
                     }
                 }

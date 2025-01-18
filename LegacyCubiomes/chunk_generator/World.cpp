@@ -211,7 +211,6 @@ void World::generateVillages() {
         village_gen.generate(village_pos.toChunkPos());
         villages.emplace_back(village_gen);
     }
-
 }
 
 
@@ -219,8 +218,6 @@ void World::generateStrongholds() {
     Pos2D strongholdPos = Placement::Stronghold::getWorldPosition(*g).toChunkPos();
     strongholds.emplace_back();
     strongholds[0].generate(g->getWorldSeed(), strongholdPos);
-
-
 }
 
 

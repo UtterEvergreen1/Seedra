@@ -16,7 +16,7 @@ public:
     void generateSaplings(World* worldIn, RNG& random, const Pos3D& pos) const override;
 
 private:
-    void createCrown(World* worldIn, int x, int z, int y, int p_150541_5_, RNG& rand) const;
+    void createCrown(World* worldIn, int x, int z, int y, int val, RNG& rand) const;
 
     static void placePodzolCircle(World* worldIn, const Pos3D& center);
 

@@ -4,9 +4,11 @@
 #include "lce/blocks/blocks.hpp"
 #include "lce/blocks/block_ids.hpp"
 
+using namespace lce::blocks;
+
 
 bool WorldGenClay::generate(World* worldIn, RNG& rand, const Pos3D& position) const {
-    if (!lce::blocks::ids::isWaterMaterial(worldIn->getBlockId(position))) { return false; }
+    if (!ids::isWaterMaterial(worldIn->getBlockId(position))) { return false; }
 
     const int radius = rand.nextInt(this->numberOfBlocks - 2) + 2;
 
@@ -20,8 +22,8 @@ bool WorldGenClay::generate(World* worldIn, RNG& rand, const Pos3D& position) co
                     Pos3D blockPos(k, k1, l);
                     const int blockId = worldIn->getBlockId(blockPos);
 
-                    if (blockId == lce::blocks::ids::DIRT_ID || blockId == lce::blocks::ids::CLAY_BLOCK_ID) {
-                        worldIn->setBlock(blockPos, &lce::blocks::BlocksInit::CLAY_BLOCK);
+                    if (blockId == ids::DIRT_ID || blockId == ids::CLAY_BLOCK_ID) {
+                        worldIn->setBlock(blockPos, &BlocksInit::CLAY_BLOCK);
                     }
                 }
             }

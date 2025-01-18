@@ -8,7 +8,7 @@
 
 
 bool WorldGenMegaJungle::generate(World *worldIn, RNG &rng, const Pos3D &pos) const {
-    const int height = this->getHeight(rng);
+    c_int height = this->getHeight(rng);
 
     if (!ensureGrowable(worldIn, rng, pos, height)) {
         return false;
@@ -27,58 +27,58 @@ bool WorldGenMegaJungle::generate(World *worldIn, RNG &rng, const Pos3D &pos) co
             worldIn->setBlock(k, j - 3 + i1 / 2, l, this->woodMetadata);
         }
 
-        const int j2 = 1 + rng.nextInt(2);
-        const int j1 = j;
+        c_int j2 = 1 + rng.nextInt(2);
+        c_int j1 = j;
 
         for (int k1 = j - j2; k1 <= j1; ++k1) {
-            const int l1 = k1 - j1;
+            c_int l1 = k1 - j1;
             this->growLeavesLayer(worldIn, Pos3D(k, k1, l), 1 - l1);
         }
     }
 
     for (int i2 = 0; i2 < height; ++i2) {
-        Pos3D blockpos = pos.up(i2);
+        Pos3D blockPos = pos.up(i2);
 
-        if (canGrowInto(worldIn->getBlockId(blockpos))) {
-            worldIn->setBlock(blockpos, this->woodMetadata);
+        if (canGrowInto(worldIn->getBlockId(blockPos))) {
+            worldIn->setBlock(blockPos, this->woodMetadata);
 
             if (i2 > 0) {
-                placeVine(worldIn, rng, blockpos.west(), enumFacing::EAST);
-                placeVine(worldIn, rng, blockpos.north(), enumFacing::SOUTH);
+                placeVine(worldIn, rng, blockPos.west(), enumFacing::EAST);
+                placeVine(worldIn, rng, blockPos.north(), enumFacing::SOUTH);
             }
         }
 
         if (i2 < height - 1) {
-            Pos3D blockpos1 = blockpos.east();
+            Pos3D blockPos1 = blockPos.east();
 
-            if (canGrowInto(worldIn->getBlockId(blockpos1))) {
-                worldIn->setBlock(blockpos1, this->woodMetadata);
+            if (canGrowInto(worldIn->getBlockId(blockPos1))) {
+                worldIn->setBlock(blockPos1, this->woodMetadata);
 
                 if (i2 > 0) {
-                    placeVine(worldIn, rng, blockpos1.east(), enumFacing::WEST);
-                    placeVine(worldIn, rng, blockpos1.north(), enumFacing::SOUTH);
+                    placeVine(worldIn, rng, blockPos1.east(), enumFacing::WEST);
+                    placeVine(worldIn, rng, blockPos1.north(), enumFacing::SOUTH);
                 }
             }
 
-            Pos3D blockpos2 = blockpos.south().east();
+            Pos3D blockPos2 = blockPos.south().east();
 
-            if (canGrowInto(worldIn->getBlockId(blockpos2))) {
-                worldIn->setBlock(blockpos2, this->woodMetadata);
+            if (canGrowInto(worldIn->getBlockId(blockPos2))) {
+                worldIn->setBlock(blockPos2, this->woodMetadata);
 
                 if (i2 > 0) {
-                    placeVine(worldIn, rng, blockpos2.east(), enumFacing::WEST);
-                    placeVine(worldIn, rng, blockpos2.south(), enumFacing::NORTH);
+                    placeVine(worldIn, rng, blockPos2.east(), enumFacing::WEST);
+                    placeVine(worldIn, rng, blockPos2.south(), enumFacing::NORTH);
                 }
             }
 
-            Pos3D blockpos3 = blockpos.south();
+            Pos3D blockPos3 = blockPos.south();
 
-            if (canGrowInto(worldIn->getBlockId(blockpos3))) {
-                worldIn->setBlock(blockpos3, this->woodMetadata);
+            if (canGrowInto(worldIn->getBlockId(blockPos3))) {
+                worldIn->setBlock(blockPos3, this->woodMetadata);
 
                 if (i2 > 0) {
-                    placeVine(worldIn, rng, blockpos3.west(), enumFacing::EAST);
-                    placeVine(worldIn, rng, blockpos3.south(), enumFacing::NORTH);
+                    placeVine(worldIn, rng, blockPos3.west(), enumFacing::EAST);
+                    placeVine(worldIn, rng, blockPos3.south(), enumFacing::NORTH);
                 }
             }
         }
@@ -87,13 +87,13 @@ bool WorldGenMegaJungle::generate(World *worldIn, RNG &rng, const Pos3D &pos) co
     return true;
 }
 
-void WorldGenMegaJungle::placeVine(World *worldIn, RNG &rand, const Pos3D &pos, enumFacing direction) {
+void WorldGenMegaJungle::placeVine(World *worldIn, RNG &rand, const Pos3D &pos, MU enumFacing facing) {
     if (rand.nextInt(3) > 0 && worldIn->isAirBlock(pos)) {
         worldIn->setBlock(pos, &lce::blocks::BlocksInit::VINES);
     }
 }
 
-void WorldGenMegaJungle::createCrown(World *worldIn, const Pos3D &pos, const int width) const {
+void WorldGenMegaJungle::createCrown(World *worldIn, const Pos3D &pos, c_int width) const {
     for (int j = -2; j <= 0; ++j) {
         this->growLeavesLayerStrict(worldIn, pos.up(j), width + 1 - j);
     }

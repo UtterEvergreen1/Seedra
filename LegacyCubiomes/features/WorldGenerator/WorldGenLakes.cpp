@@ -4,6 +4,8 @@
 #include "lce/blocks/blocks.hpp"
 #include "lce/blocks/block_ids.hpp"
 
+using namespace lce::blocks;
+
 
 bool WorldGenLakes::generate(World* worldIn, RNG& rng, const Pos3D& pos) const {
     Pos3D position = pos;
@@ -19,20 +21,20 @@ bool WorldGenLakes::generate(World* worldIn, RNG& rng, const Pos3D& pos) const {
     const int i = rng.nextInt(4) + 4;
 
     for (int j = 0; j < i; ++j) {
-        const double d0 = rng.nextDouble() * 6.0 + 3.0;
-        const double d1 = rng.nextDouble() * 4.0 + 2.0;
-        const double d2 = rng.nextDouble() * 6.0 + 3.0;
-        const double d3 = rng.nextDouble() * (14.0 - d0) + 1.0 + d0 / 2.0;
-        const double d4 = rng.nextDouble() * (4.0 - d1) + 2.0 + d1 / 2.0;
-        const double d5 = rng.nextDouble() * (14.0 - d2) + 1.0 + d2 / 2.0;
+        c_double d0 = rng.nextDouble() * 6.0 + 3.0;
+        c_double d1 = rng.nextDouble() * 4.0 + 2.0;
+        c_double d2 = rng.nextDouble() * 6.0 + 3.0;
+        c_double d3 = rng.nextDouble() * (14.0 - d0) + 1.0 + d0 / 2.0;
+        c_double d4 = rng.nextDouble() * (4.0 - d1) + 2.0 + d1 / 2.0;
+        c_double d5 = rng.nextDouble() * (14.0 - d2) + 1.0 + d2 / 2.0;
 
         for (int l = 1; l < 15; ++l) {
             for (int i1 = 1; i1 < 15; ++i1) {
                 for (int j1 = 1; j1 < 7; ++j1) {
-                    const double d6 = (static_cast<double>(l) - d3) / (d0 / 2.0);
-                    const double d7 = (static_cast<double>(j1) - d4) / (d1 / 2.0);
-                    const double d8 = (static_cast<double>(i1) - d5) / (d2 / 2.0);
-                    const double d9 = d6 * d6 + d7 * d7 + d8 * d8;
+                    c_double d6 = (static_cast<double>(l) - d3) / (d0 / 2.0);
+                    c_double d7 = (static_cast<double>(j1) - d4) / (d1 / 2.0);
+                    c_double d8 = (static_cast<double>(i1) - d5) / (d2 / 2.0);
+                    c_double d9 = d6 * d6 + d7 * d7 + d8 * d8;
 
                     if (d9 < 1.0) { aboolean[(l * 16 + i1) * 8 + j1] = true; }
                 }
@@ -54,9 +56,9 @@ bool WorldGenLakes::generate(World* worldIn, RNG& rng, const Pos3D& pos) const {
                 if (flag) {
                     Pos3D materialPos = position.add(k1, k, l2);
 
-                    if (k >= 4 && lce::blocks::ids::isLiquidBlock(worldIn->getBlockId(materialPos))) { return false; }
+                    if (k >= 4 && ids::isLiquidBlock(worldIn->getBlockId(materialPos))) { return false; }
 
-                    if (k < 4 && !lce::blocks::ids::isSolidBlock(worldIn->getBlockId(materialPos)) &&
+                    if (k < 4 && !ids::isSolidBlock(worldIn->getBlockId(materialPos)) &&
                         worldIn->getBlockId(position.add(k1, k, l2)) != this->block->getID()) {
                         return false;
                     }
@@ -69,7 +71,7 @@ bool WorldGenLakes::generate(World* worldIn, RNG& rng, const Pos3D& pos) const {
         for (int i3 = 0; i3 < 16; ++i3) {
             for (int i4 = 0; i4 < 8; ++i4) {
                 if (aboolean[(l1 * 16 + i3) * 8 + i4]) {
-                    worldIn->setBlock(position.add(l1, i4, i3), i4 >= 4 ? &lce::blocks::BlocksInit::AIR : this->block);
+                    worldIn->setBlock(position.add(l1, i4, i3), i4 >= 4 ? &BlocksInit::AIR : this->block);
                 }
             }
         }
@@ -81,14 +83,14 @@ bool WorldGenLakes::generate(World* worldIn, RNG& rng, const Pos3D& pos) const {
                 if (aboolean[(i2 * 16 + j3) * 8 + j4]) {
                     Pos3D blockPos = position.add(i2, j4 - 1, j3);
 
-                    if (worldIn->getBlockId(blockPos) == lce::blocks::ids::DIRT_ID &&
-                        !lce::blocks::ids::isFullyOpaqueBlock(worldIn->getBlockId(blockPos.up()))) {
+                    if (worldIn->getBlockId(blockPos) == ids::DIRT_ID &&
+                        !ids::isFullyOpaqueBlock(worldIn->getBlockId(blockPos.up()))) {
                         const Biome* biome = Biome::getBiomeForId(g->getBiomeAt(1, blockPos.convert2D()));
 
-                        if (biome->topBlock == &lce::blocks::BlocksInit::MYCELIUM) {
-                            worldIn->setBlock(blockPos, lce::blocks::ids::MYCELIUM_ID);
+                        if (biome->topBlock == &BlocksInit::MYCELIUM) {
+                            worldIn->setBlock(blockPos, ids::MYCELIUM_ID);
                         } else {
-                            worldIn->setBlock(blockPos, lce::blocks::ids::GRASS_ID);
+                            worldIn->setBlock(blockPos, ids::GRASS_ID);
                         }
                     }
                 }
@@ -96,7 +98,7 @@ bool WorldGenLakes::generate(World* worldIn, RNG& rng, const Pos3D& pos) const {
         }
     }
 
-    if (this->block == &lce::blocks::BlocksInit::STILL_LAVA) {
+    if (this->block == &BlocksInit::STILL_LAVA) {
         for (int j2 = 0; j2 < 16; ++j2) {
             for (int k3 = 0; k3 < 16; ++k3) {
                 for (int k4 = 0; k4 < 8; ++k4) {
@@ -109,19 +111,19 @@ bool WorldGenLakes::generate(World* worldIn, RNG& rng, const Pos3D& pos) const {
                                                                    k4 > 0 && aboolean[(j2 * 16 + k3) * 8 + (k4 - 1)]);
 
                     if (flag1 && (k4 < 4 || rng.nextInt(2) != 0) &&
-                        lce::blocks::ids::isSolidBlock(worldIn->getBlockId(position.add(j2, k4, k3)))) {
-                        worldIn->setBlock(position.add(j2, k4, k3), lce::blocks::ids::STONE_ID);
+                        ids::isSolidBlock(worldIn->getBlockId(position.add(j2, k4, k3)))) {
+                        worldIn->setBlock(position.add(j2, k4, k3), ids::STONE_ID);
                     }
                 }
             }
         }
     }
 
-    if (this->block == &lce::blocks::BlocksInit::STILL_WATER) {
+    if (this->block == &BlocksInit::STILL_WATER) {
         for (int k2 = 0; k2 < 16; ++k2) {
             for (int l3 = 0; l3 < 16; ++l3) {
                 if (worldIn->canBlockFreezeWater(position.add(k2, 4, l3))) {
-                    worldIn->setBlock(position.add(k2, 4, l3), lce::blocks::ids::ICE_ID);
+                    worldIn->setBlock(position.add(k2, 4, l3), ids::ICE_ID);
                 }
             }
         }

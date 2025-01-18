@@ -4,6 +4,8 @@
 #include "lce/blocks/blocks.hpp"
 #include "lce/blocks/block_ids.hpp"
 
+using namespace lce::blocks;
+
 
 bool WorldGenBlockBlob::generate(World* worldIn, RNG& rng, const Pos3D& pos) const {
     Pos3D position = pos;
@@ -14,7 +16,6 @@ bool WorldGenBlockBlob::generate(World* worldIn, RNG& rng, const Pos3D& pos) con
 
             const int blockId = worldIn->getBlockId(position.down());
 
-            using namespace lce::blocks;
             if (blockId != ids::GRASS_ID && blockId != ids::DIRT_ID && blockId != ids::STONE_ID) { goto label50; }
         }
 
@@ -23,17 +24,17 @@ bool WorldGenBlockBlob::generate(World* worldIn, RNG& rng, const Pos3D& pos) con
         if (rad < 0) { return false; }
 
         for (int i = 0; i < 3; ++i) {
-            const int j = rad + rng.nextInt(2);
-            const int k = rad + rng.nextInt(2);
-            const int l = rad + rng.nextInt(2);
-            const float f = (float) (j + k + l) * 0.333F + 0.5F;
 
-            for (const Pos3D& blockPos: Pos3D::getAllInBox(position.add(-j, -k, -l), position.add(j, k, l))) {
+            const Pos3D jkl = getWorldGenPos3D<2, 2, 2>(worldIn, rng) + rad;
+
+            const float f = (float) (jkl.x + jkl.y + jkl.z) * 0.333F + 0.5F;
+
+            for (const Pos3D& blockPos: Pos3D::getAllInBox(position - jkl, position + jkl)) {
                 if (blockPos.distanceSq(position) <= (double) (f * f)) { worldIn->setBlock(blockPos, this->block); }
             }
 
-            position = position.add(-(rad + 1) + rng.nextInt(2 + rad * 2), 0 - rng.nextInt(2),
-                                    -(rad + 1) + rng.nextInt(2 + rad * 2));
+            const Pos3D offset = getWorldGenPos3D(worldIn, rng, 2 + rad * 2, 2, 2 + rad * 2);
+            position = position.add(-(rad + 1) + offset.x, 0 - offset.y, -(rad + 1) + offset.z);
         }
 
         return true;

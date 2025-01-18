@@ -16,10 +16,7 @@ bool BlockBush::canBlockStay(World* world, const Pos3D& pos) {
 
 bool WorldGenBush::generate(World* worldIn, RNG& rng, const Pos3D& pos) const {
     for (int i = 0; i < 64; ++i) {
-        const int x_off = rng.nextInt(8) - rng.nextInt(8);
-        const int y_off = rng.nextInt(4) - rng.nextInt(4);
-        const int z_off = rng.nextInt(8) - rng.nextInt(8);
-        Pos3D blockPos = pos.add(x_off, y_off, z_off);
+        Pos3D blockPos = pos + getWorldGenPos3D<8, 4, 8>(worldIn, rng);
 
         if (worldIn->isAirBlock(blockPos) && BlockBush::canBlockStay(worldIn, blockPos)) {
             worldIn->setBlock(blockPos, this->block);

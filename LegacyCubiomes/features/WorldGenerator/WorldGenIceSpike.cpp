@@ -4,6 +4,8 @@
 #include "lce/blocks/blocks.hpp"
 #include "lce/blocks/block_ids.hpp"
 
+using namespace lce::blocks;
+
 
 bool WorldGenIceSpike::generate(World * worldIn, RNG &rng, const Pos3D &pos) const {
     Pos3D position = pos;
@@ -11,7 +13,7 @@ bool WorldGenIceSpike::generate(World * worldIn, RNG &rng, const Pos3D &pos) con
         position = position.down();
     }
 
-    if (worldIn->getBlockId(position) != lce::blocks::ids::SNOW_BLOCK_ID) {
+    if (worldIn->getBlockId(position) != ids::SNOW_BLOCK_ID) {
         return false;
     }
 
@@ -37,7 +39,6 @@ bool WorldGenIceSpike::generate(World * worldIn, RNG &rng, const Pos3D &pos) con
                         i1 != -l && i1 != l && j1 != -l && j1 != l || rng.nextFloat() <= 0.75F)) {
                     const int blockId = worldIn->getBlockId(position.add(i1, k, j1));
 
-                    using namespace lce::blocks;
                     if (blockId == ids::AIR_ID ||
                         blockId == ids::DIRT_ID ||
                         blockId == ids::SNOW_BLOCK_ID || blockId == ids::ICE_ID) {
