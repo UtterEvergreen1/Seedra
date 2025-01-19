@@ -7,8 +7,8 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/build)
 
 
 add_executable(GenChunks
-        # programs/gen_chunk.cpp
-        programs/test_village_gen_speed.cpp
+        programs/gen_chunk.cpp
+        # programs/test_village_gen_speed.cpp
 )
 
 

@@ -22,7 +22,7 @@ int main() {
                        / "LegacyChunkViewer";
     std::string dirName = dirPath.string();
     std::cout << "Using \"" + dirName + "\"...\n\n";
-    fs::path filePath = dirPath / R"(build/chunks/chunkdata.bin)";
+    fs::path filePath = dirPath / "build" / "chunks" / "chunkdata.bin";
 
 
     Biome::registerBiomes();
