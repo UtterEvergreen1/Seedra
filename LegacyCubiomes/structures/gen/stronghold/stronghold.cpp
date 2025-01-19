@@ -6,6 +6,7 @@
 #include "LegacyCubiomes/chunk_generator/Chunk.hpp"
 #include "LegacyCubiomes/chunk_generator/World.hpp"
 #include "lce/include.hpp"
+#include "lce/blocks/block_states.hpp"
 
 
 using namespace lce::blocks;
