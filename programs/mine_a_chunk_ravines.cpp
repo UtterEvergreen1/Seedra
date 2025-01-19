@@ -8,7 +8,7 @@
 #include "LegacyCubiomes/chunk_detector/RavineDetector.hpp"
 #include "LegacyCubiomes/chunk_generator/World.hpp"
 #include "LegacyCubiomes/chunk_generator/biome.hpp"
-#include "LegacyCubiomes/structures/rolls/mineshaft.hpp"
+#include "LegacyCubiomes/structures/gen/mineshaft/rolls.hpp"
 #include "LegacyCubiomes/utils/timer.hpp"
 
 

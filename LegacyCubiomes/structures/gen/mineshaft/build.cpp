@@ -1,12 +1,16 @@
 #include "mineshaft.hpp"
 
-#include "LegacyCubiomes/chunk_generator/World.hpp"
 #include "LegacyCubiomes/building_blocks/StructureComponent.hpp"
+#include "LegacyCubiomes/chunk_generator/Chunk.hpp"
+#include "LegacyCubiomes/chunk_generator/ChunkPrimer.hpp"
+#include "LegacyCubiomes/chunk_generator/World.hpp"
+#include "lce/include.hpp"
+
 
 namespace build::mineshaft {
-    
+
     using namespace lce::blocks;
-    using namespace states;
+    using namespace lce::blocks::states;
 
 
     const Block* getBiomeSpecificPlank(c_int structureType) {
@@ -35,7 +39,7 @@ namespace build::mineshaft {
                        c_int z, const StructureComponent& piece) {
         for (int x = minX; x <= maxX; ++x) {
             if (ids::isReplaceableBlock(
-                    piece.getBlockStateFromPos(world, x, y + 1, z, chunkBB)->getID())) {
+                        piece.getBlockStateFromPos(world, x, y + 1, z, chunkBB)->getID())) {
                 return false;
             }
         }
@@ -168,7 +172,7 @@ namespace build::mineshaft {
 
 
     void Corridor::placeCobwebsRandomly(World& world, const BoundingBox& chunkBB, RNG& rng, c_float chance,
-                                 c_int x, c_int y, c_int z, const StructureComponent& piece) {
+                                        c_int x, c_int y, c_int z, const StructureComponent& piece) {
         if (piece.getLightLevelAtBlock(world, x, y, z, chunkBB) < 8) {
             piece.randomlyPlaceBlock(world, chunkBB, rng, chance, x, y, z, &BlocksInit::COBWEB);
         }
@@ -231,7 +235,7 @@ namespace build::mineshaft {
         for (int i = 0; i <= piece.maxX - piece.minX; ++i) {
             for (int j = 0; j <= piece.maxZ - piece.minZ; ++j) {
                 if (ids::isReplaceableBlock(
-                        piece.getBlockStateFromPos(worldIn, i, -1, j, chunkBB)->getID()) &&
+                            piece.getBlockStateFromPos(worldIn, i, -1, j, chunkBB)->getID()) &&
                     piece.getLightLevelAtBlock(worldIn, i, -1, j, chunkBB) < 8) {
                     piece.setBlockState(worldIn, iblockstate, i, -1, j, chunkBB);
                 }
@@ -289,4 +293,6 @@ namespace build::mineshaft {
         return result;
     }
 }
+
+
 

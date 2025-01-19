@@ -7,7 +7,7 @@
 
 #include "lce/enums.hpp"
 
-
+#include "LegacyCubiomes/cubiomes/generator.hpp"
 
 class WorldGenerator {
 public:

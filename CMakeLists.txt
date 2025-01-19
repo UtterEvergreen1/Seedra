@@ -6,7 +6,10 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/build)
 
 
-add_executable(GenChunks programs/gen_chunk.cpp)
+add_executable(GenChunks
+        # programs/gen_chunk.cpp
+        programs/test_village_gen_speed.cpp
+)
 
 
 target_include_directories(GenChunks PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})

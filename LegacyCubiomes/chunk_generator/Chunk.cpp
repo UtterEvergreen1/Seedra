@@ -101,11 +101,11 @@ namespace Chunk {
 
         if constexpr (generateMineshafts) {
             for (auto& mineshaft : world.mineshafts) {
-                if (chunkBB.intersects(mineshaft->structureBB)) {
-                    for (int ip = 0; ip < mineshaft->pieceArraySize; ip++) {
-                        StructureComponent* piece = mineshaft->pieceArray[ip];
-                        if (chunkBB.intersects(*piece)) {
-                            build::mineshaft::addComponentParts(world, chunk->decorateRng, chunkBB, *piece);
+                if (chunkBB.intersects(mineshaft.getStructureBB())) {
+                    for (int ip = 0; ip < mineshaft.getPieceCount(); ip++) {
+                        StructureComponent& piece = mineshaft.getPiece(ip);
+                        if (chunkBB.intersects(piece)) {
+                            build::mineshaft::addComponentParts(world, chunk->decorateRng, chunkBB, piece);
                         }
                     }
                 }
@@ -114,12 +114,12 @@ namespace Chunk {
 
         if constexpr (generateVillages) {
             for (auto& village : world.villages) {
-                if (chunkBB.intersects(village->structureBB)) {
-                    for (int ip = 0; ip < village->pieceArraySize; ip++) {
-                        auto piece = village->pieceArray[ip];
-                        if (chunkBB.intersects(*piece)) {
-                            piece->structureType = village->biomeType;
-                            build::village::addComponentParts(world, chunk->decorateRng, chunkBB, *piece);
+                if (chunkBB.intersects(village.getStructureBB())) {
+                    for (int ip = 0; ip < village.getPieceCount(); ip++) {
+                        auto& piece = village.getPiece(ip);
+                        if (chunkBB.intersects(piece)) {
+                            piece.structureType = village.biomeType;
+                            build::village::addComponentParts(world, chunk->decorateRng, chunkBB, piece);
                         }
                     }
                 }
@@ -128,11 +128,11 @@ namespace Chunk {
 
         if constexpr (generateStrongholds) {
             for (auto& stronghold : world.strongholds) {
-                if (chunkBB.intersects(stronghold->structureBB)) {
-                    for (int ip = 0; ip < stronghold->pieceArraySize; ip++) {
-                        StructureComponent* piece = stronghold->pieceArray[ip];
-                        if (chunkBB.intersects(*piece)) {
-                            build::stronghold::addComponentParts(world, chunk->decorateRng, chunkBB, *piece);
+                if (chunkBB.intersects(stronghold.getStructureBB())) {
+                    for (int ip = 0; ip < stronghold.getPieceCount(); ip++) {
+                        StructureComponent& piece = stronghold.getPiece(ip);
+                        if (chunkBB.intersects(piece)) {
+                            build::stronghold::addComponentParts(world, chunk->decorateRng, chunkBB, piece);
                         }
                     }
                 }

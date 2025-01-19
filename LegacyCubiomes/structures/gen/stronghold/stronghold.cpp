@@ -3,6 +3,14 @@
 #include "LegacyCubiomes/utils/rng.hpp"
 #include "stronghold.hpp"
 
+#include "LegacyCubiomes/chunk_generator/Chunk.hpp"
+#include "LegacyCubiomes/chunk_generator/World.hpp"
+#include "lce/include.hpp"
+
+
+using namespace lce::blocks;
+using namespace lce::blocks::states;
+
 
 namespace gen {
 
@@ -56,9 +64,9 @@ namespace gen {
     }
 
     void Stronghold::deletePieces() {
-        for (int i = 0; i < pieceArraySize; i++) {
-            delete pieceArray[i];
-        }
+        // for (int i = 0; i < pieceArraySize; i++) {
+        //     delete pieceArray[i];
+        // }
     }
 
 
@@ -93,14 +101,14 @@ namespace gen {
             enumFacing direction = FACING_HORIZONTAL[rng.nextInt(4)];
             BoundingBox stairsBoundingBox = StructureComponent::makeBoundingBox(startPos.x, 64, startPos.z, direction, 5, 11, 5);
 
-            pieceArray[pieceArraySize++] = new StructureComponent(PT_Stronghold_StairsDown, 0, stairsBoundingBox, direction, 1);
+            pieceArray[pieceArraySize++] = StructureComponent(PT_Stronghold_StairsDown, 0, stairsBoundingBox, direction, 1);
 
             // this only adds the 5-crossing room
             addChildren(pieceArray[0]);
 
             while (pendingPiecesArraySize != 0) {
                 c_int i = rng.nextInt(pendingPiecesArraySize);
-                StructureComponent* piece = pieceArray[pendingPieceArray[i]];
+                StructureComponent& piece = pieceArray[pendingPieceArray[i]];
                 pendingPiecesArraySize--;
 
                 // shift all the pieces over
@@ -127,7 +135,7 @@ namespace gen {
             // encompass structure bounding box
             structureBB = BoundingBox::EMPTY;
             for (int index = 0; index < pieceArraySize; index++) {
-                structureBB.encompass(*pieceArray[index]);
+                structureBB.encompass(pieceArray[index]);
             }
 
             // find value to offset structure by "k"
@@ -141,7 +149,7 @@ namespace gen {
 
             // offset all pieces by "k"
             for (int index = 0; index < pieceArraySize; index++) {
-                pieceArray[index]->offsetY(k);
+                pieceArray[index].offsetY(k);
             }
 
 
@@ -247,7 +255,7 @@ namespace gen {
                 break;
             case PT_Stronghold_RightTurn:
                 additionalData |= rng.nextInt(5) << 16;
-                pieceArray[pieceArraySize++] = new StructureComponent(PT_Stronghold_LeftTurn, depth, boundingBox, facing, additionalData);
+                pieceArray[pieceArraySize++] = StructureComponent(PT_Stronghold_LeftTurn, depth, boundingBox, facing, additionalData);
                 return;
             case PT_Stronghold_RoomCrossing:
                 // rng.nextInt(5); // this is java
@@ -269,20 +277,20 @@ namespace gen {
                 break;
             case PT_Stronghold_ChestCorridor:
                 additionalData |= rng.nextInt(5) << 16;
-                altarChestsArray[altarChestArraySize++] = pieceArray[pieceArraySize];
+                altarChestsArray[altarChestArraySize++] = &pieceArray[pieceArraySize];
                 break;
             case PT_Stronghold_Library:
                 additionalData |= rng.nextInt(5) << 16;
                 additionalData |= boundingBox.maxY > 6 ? 1 : 0;
                 break;
             case PT_Stronghold_PortalRoom:
-                portalRoomPiece = pieceArray[pieceArraySize];
+                portalRoomPiece = &pieceArray[pieceArraySize];
                 break;
             default:
                 break;
         }
 
-        pieceArray[pieceArraySize++] = new StructureComponent(pieceType, depth, boundingBox, facing, additionalData);
+        pieceArray[pieceArraySize++] = StructureComponent(pieceType, depth, boundingBox, facing, additionalData);
     }
 
 
@@ -357,7 +365,7 @@ namespace gen {
             if (boundingBox.minY <= 1) { return false; }
 
             pendingPieceArray[pendingPiecesArraySize++] = pieceArraySize;
-            pieceArray[pieceArraySize++] = new StructureComponent(PT_Stronghold_FillerCorridor, depth, boundingBox, facing, 0);
+            pieceArray[pieceArraySize++] = StructureComponent(PT_Stronghold_FillerCorridor, depth, boundingBox, facing, 0);
 
             return true;
         }
@@ -388,7 +396,7 @@ namespace gen {
 
     StructureComponent* Stronghold::findCollisionPiece(const BoundingBox& boundingBox) {
         for (int i = 0; i < pieceArraySize; i++) {
-            if (pieceArray[i]->intersects(boundingBox)) { return pieceArray[i]; }
+            if (pieceArray[i].intersects(boundingBox)) { return &pieceArray[i]; }
         }
         return nullptr;
     }
@@ -402,70 +410,70 @@ namespace gen {
     bool inline Stronghold::isOkBox(const BoundingBox& boundingBox) { return boundingBox.minY > 10; }
 
 
-    void Stronghold::genSmallDoorChildForward(const StructureComponent *piece, c_int n, c_int n2) {
-        switch (piece->facing) {
+    void Stronghold::genSmallDoorChildForward(const StructureComponent& piece, c_int n, c_int n2) {
+        switch (piece.facing) {
             case enumFacing::DOWN:
             case enumFacing::UP:
                 break;
             case enumFacing::NORTH:
-                return genAndAddPiece({piece->minX + n, piece->minY + n2, piece->minZ - 1}, enumFacing::NORTH, piece->depth);
+                return genAndAddPiece({piece.minX + n, piece.minY + n2, piece.minZ - 1}, enumFacing::NORTH, piece.depth);
             case enumFacing::SOUTH:
-                return genAndAddPiece({piece->minX + n, piece->minY + n2, piece->maxZ + 1}, enumFacing::SOUTH, piece->depth);
+                return genAndAddPiece({piece.minX + n, piece.minY + n2, piece.maxZ + 1}, enumFacing::SOUTH, piece.depth);
             case enumFacing::WEST:
-                return genAndAddPiece({piece->minX - 1, piece->minY + n2, piece->minZ + n}, enumFacing::WEST, piece->depth);
+                return genAndAddPiece({piece.minX - 1, piece.minY + n2, piece.minZ + n}, enumFacing::WEST, piece.depth);
             case enumFacing::EAST:
-                return genAndAddPiece({piece->maxX + 1, piece->minY + n2, piece->minZ + n}, enumFacing::EAST, piece->depth);
+                return genAndAddPiece({piece.maxX + 1, piece.minY + n2, piece.minZ + n}, enumFacing::EAST, piece.depth);
         }
     }
 
 
-    void Stronghold::genSmallDoorChildLeft(const StructureComponent *piece, c_int n, c_int n2) {
-        switch (piece->facing) {
-            case enumFacing::DOWN:
-            case enumFacing::UP:
-                break;
-            case enumFacing::SOUTH:
-            case enumFacing::NORTH:
-                genAndAddPiece({piece->minX - 1, piece->minY + n, piece->minZ + n2}, enumFacing::WEST, piece->depth);
-                break;
-            case enumFacing::EAST:
-            case enumFacing::WEST:
-                genAndAddPiece({piece->minX + n2, piece->minY + n, piece->minZ - 1}, enumFacing::NORTH, piece->depth);
-                break;
-        }
-    }
-
-    void Stronghold::genSmallDoorChildRight(const StructureComponent *piece, c_int n, c_int n2) {
-        switch (piece->facing) {
+    void Stronghold::genSmallDoorChildLeft(const StructureComponent& piece, c_int n, c_int n2) {
+        switch (piece.facing) {
             case enumFacing::DOWN:
             case enumFacing::UP:
                 break;
             case enumFacing::SOUTH:
             case enumFacing::NORTH:
-                genAndAddPiece({piece->maxX + 1, piece->minY + n, piece->minZ + n2}, enumFacing::EAST, piece->depth);
+                genAndAddPiece({piece.minX - 1, piece.minY + n, piece.minZ + n2}, enumFacing::WEST, piece.depth);
                 break;
             case enumFacing::EAST:
             case enumFacing::WEST:
-                genAndAddPiece({piece->minX + n2, piece->minY + n, piece->maxZ + 1}, enumFacing::SOUTH, piece->depth);
+                genAndAddPiece({piece.minX + n2, piece.minY + n, piece.minZ - 1}, enumFacing::NORTH, piece.depth);
+                break;
+        }
+    }
+
+    void Stronghold::genSmallDoorChildRight(const StructureComponent& piece, c_int n, c_int n2) {
+        switch (piece.facing) {
+            case enumFacing::DOWN:
+            case enumFacing::UP:
+                break;
+            case enumFacing::SOUTH:
+            case enumFacing::NORTH:
+                genAndAddPiece({piece.maxX + 1, piece.minY + n, piece.minZ + n2}, enumFacing::EAST, piece.depth);
+                break;
+            case enumFacing::EAST:
+            case enumFacing::WEST:
+                genAndAddPiece({piece.minX + n2, piece.minY + n, piece.maxZ + 1}, enumFacing::SOUTH, piece.depth);
                 break;
         }
     }
 
 
-    void Stronghold::addChildren(const StructureComponent *piece) {
-        switch (piece->type) {
+    void Stronghold::addChildren(const StructureComponent& piece) {
+        switch (piece.type) {
             case PT_Stronghold_NONE:
                 break;
             case PT_Stronghold_Straight:
                 genSmallDoorChildForward(piece, 1, 1);
-                if ((piece->data & 1) != 0) genSmallDoorChildLeft(piece, 1, 2);
-                if ((piece->data & 2) != 0) genSmallDoorChildRight(piece, 1, 2);
+                if ((piece.data & 1) != 0) genSmallDoorChildLeft(piece, 1, 2);
+                if ((piece.data & 2) != 0) genSmallDoorChildRight(piece, 1, 2);
                 break;
             case PT_Stronghold_PrisonHall:
                 genSmallDoorChildForward(piece, 1, 1);
                 break;
             case PT_Stronghold_LeftTurn: {
-                if (const enumFacing direction = piece->facing;
+                if (const enumFacing direction = piece.facing;
                     direction == enumFacing::NORTH || direction == enumFacing::EAST) {
                     genSmallDoorChildLeft(piece, 1, 1);
                 } else {
@@ -474,7 +482,7 @@ namespace gen {
                 break;
             }
             case PT_Stronghold_RightTurn: {
-                if (const enumFacing direction = piece->facing;
+                if (const enumFacing direction = piece.facing;
                     direction == enumFacing::NORTH || direction == enumFacing::EAST) {
                     genSmallDoorChildRight(piece, 1, 1);
                 } else {
@@ -491,20 +499,20 @@ namespace gen {
                 genSmallDoorChildForward(piece, 1, 1);
                 break;
             case PT_Stronghold_StairsDown: {
-                if ((piece->data & 7) != 0) { forcedPiece = PT_Stronghold_FiveCrossing; }
+                if ((piece.data & 7) != 0) { forcedPiece = PT_Stronghold_FiveCrossing; }
                 genSmallDoorChildForward(piece, 1, 1);
                 break;
             }
             case PT_Stronghold_FiveCrossing: {
-                const enumFacing o = piece->facing;
+                const enumFacing o = piece.facing;
                 // 3 and 5 or 5 and 3
                 c_int n = 5 - 2 * (o == enumFacing::EAST || o == enumFacing::SOUTH);
                 c_int n2 = 8 - n;
                 genSmallDoorChildForward(piece, 5, 1);
-                if ((piece->data & 1) != 0) { genSmallDoorChildLeft(piece, n, 1); }
-                if ((piece->data & 2) != 0) { genSmallDoorChildLeft(piece, n2, 7); }
-                if ((piece->data & 4) != 0) { genSmallDoorChildRight(piece, n, 1); }
-                if ((piece->data & 8) != 0) { genSmallDoorChildRight(piece, n2, 7); }
+                if ((piece.data & 1) != 0) { genSmallDoorChildLeft(piece, n, 1); }
+                if ((piece.data & 2) != 0) { genSmallDoorChildLeft(piece, n2, 7); }
+                if ((piece.data & 4) != 0) { genSmallDoorChildRight(piece, n, 1); }
+                if ((piece.data & 8) != 0) { genSmallDoorChildRight(piece, n2, 7); }
                 break;
             }
             case PT_Stronghold_ChestCorridor:
@@ -516,4 +524,5 @@ namespace gen {
                 break;
         }
     }
-} // namespace generation
+} // namespace gen
+

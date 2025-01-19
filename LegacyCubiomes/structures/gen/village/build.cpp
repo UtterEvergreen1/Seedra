@@ -1,9 +1,16 @@
-#include "LegacyCubiomes/structures/build/village.hpp"
+#include "village.hpp"
+
+#include "LegacyCubiomes/structures/placement/StaticStructures.hpp"
+
+#include "LegacyCubiomes/cubiomes/biomeID.hpp"
+
+#include "lce/blocks/block_ids.hpp"
+#include "lce/blocks/blocks.hpp"
+#include "lce/blocks/block_states.hpp"
+
+#include <algorithm>
 
 #include "LegacyCubiomes/chunk_generator/World.hpp"
-
-#pragma clang diagnostic push
-#pragma ide diagnostic ignored "ConstantFunctionResult"
 
 
 namespace build::village {
@@ -16,15 +23,12 @@ namespace build::village {
 
     }
 
-
     const Block* getDoorTypeFromBiome(StructureComponent& piece) {
         switch (piece.structureType) {
             case 2:
                 return &BlocksInit::ACACIA_DOOR_BLOCK;
-
             case 3:
                 return &BlocksInit::SPRUCE_DOOR_BLOCK;
-
             default:
                 return &BlocksInit::OAK_DOOR_BLOCK;
         }
@@ -69,8 +73,11 @@ namespace build::village {
 
     MU const Block* getBiomeSpecificBlockState(const Block* blockPtr,
                                                const int structureType) {
-
-        if (structureType == 1) {
+        if (structureType == 0) {
+            if (blockPtr == &BlocksInit::GRAVEL) {
+                return &BlocksInit::GRASS_PATH;
+            }
+        } else if (structureType == 1) {
             if (blockPtr == &BlocksInit::OAK_WOOD) {
                 return &BlocksInit::SANDSTONE;
             }
@@ -98,7 +105,6 @@ namespace build::village {
             }
         } else if (structureType == 3) {
             if (blockPtr == &BlocksInit::OAK_WOOD) {
-                // .withProperty(BlockLog.LOG_AXIS, blockstateIn.getValue(BlockLog.LOG_AXIS));
                 return &BlocksInit::SPRUCE_WOOD;
             }
 
@@ -107,7 +113,6 @@ namespace build::village {
             }
 
             if (blockPtr == &BlocksInit::OAK_WOOD_STAIRS) {
-                // .withProperty(BlockStairs.FACING, blockstateIn.getValue(BlockStairs.FACING));
                 return &BlocksInit::SPRUCE_WOOD_STAIRS;
             }
 
@@ -116,7 +121,6 @@ namespace build::village {
             }
         } else if (structureType == 2) {
             if (blockPtr == &BlocksInit::OAK_WOOD) {
-                // .withProperty(BlockLog.LOG_AXIS, blockstateIn.getValue(BlockLog.LOG_AXIS));
                 return &BlocksInit::ACACIA_WOOD;
             }
 
@@ -125,12 +129,10 @@ namespace build::village {
             }
 
             if (blockPtr == &BlocksInit::OAK_WOOD_STAIRS) {
-                // .withProperty(BlockStairs.FACING, blockstateIn.getValue(BlockStairs.FACING));
                 return &BlocksInit::ACACIA_WOOD_STAIRS;
             }
 
             if (blockPtr == &BlocksInit::COBBLESTONE) {
-                // .withProperty(BlockLog.LOG_AXIS, BlockLog.EnumAxis.Y);
                 return &BlocksInit::COBBLESTONE;
             }
 
@@ -155,10 +157,10 @@ namespace build::village {
 
                 blockPos.setPos(x, 64, z);
 
-                // if (chunkBB.isVecInside(blockPos)) {
-                i += std::max(worldIn.getTopSolidOrLiquidBlock(blockPos).getY(), 64);
-                ++j;
-                // }
+                if (chunkBB.isVecInside(blockPos)) {
+                    i += std::max(worldIn.getTopSolidOrLiquidBlock(blockPos).getY(), 64);
+                    ++j;
+                }
             }
         }
 
@@ -830,12 +832,27 @@ namespace build::village {
     }
 
 
-    bool Path::addComponentParts(World& worldIn, RNG& rng, const BoundingBox& chunkBB,
-                                 const StructureComponent& piece) {
+    static const lce::blocks::Block* getUnderPathBlock(int type) {
+        switch(type) {
+            case 0:
+            case 2:
+            case 3:
+            default:
+                return &BlocksInit::GRASS;
+            case 1:
+                return &BlocksInit::SANDSTONE;
+        }
+    }
+
+
+    bool Path::addComponentParts(World& worldIn, RNG& rng, BoundingBox& chunkBB, StructureComponent& piece) {
 
         const Block* pathPrimary = getBiomeSpecificBlockState(&BlocksInit::GRASS_PATH, piece.structureType);
-        const Block* overWaterBlock = getBiomeSpecificBlockState(&BlocksInit::OAK_WOOD_PLANK, piece.structureType);
         const Block* pathSecondary = getBiomeSpecificBlockState(&BlocksInit::GRAVEL, piece.structureType);
+
+        const Block* overWaterBlock = getBiomeSpecificBlockState(&BlocksInit::OAK_WOOD_PLANK, piece.structureType);
+        // LCE only
+        const Block* underPathPrimary = getUnderPathBlock(piece.structureType);
         const Block* underPathSecondary = getBiomeSpecificBlockState(&BlocksInit::COBBLESTONE, piece.structureType);
 
         for (int x = piece.minX; x <= piece.maxX; ++x) {
@@ -850,21 +867,23 @@ namespace build::village {
                     }
 
                     while (topBlockPos.getY() >= World::getSeaLevel() - 1) {
-                        const Block* iblockstate4 = worldIn.getBlock(topBlockPos);
+                        const Block* topBlock = worldIn.getBlock(topBlockPos);
 
-                        if (iblockstate4 == &BlocksInit::GRASS && worldIn.isAirBlock(topBlockPos.up())) {
+                        if (topBlock == &BlocksInit::GRASS && worldIn.isAirBlock(topBlockPos.up())) {
                             worldIn.setBlock(topBlockPos, pathPrimary);
+                            // LCE only
+                            worldIn.setBlock(topBlockPos.down(), underPathPrimary);
                             break;
                         }
 
-                        if (ids::isLiquidBlock(iblockstate4->getID())) {
+                        if (ids::isLiquidBlock(topBlock->getID())) {
                             worldIn.setBlock(topBlockPos, overWaterBlock);
                             break;
                         }
 
-                        if (iblockstate4 == &BlocksInit::SAND ||
-                            iblockstate4 == &BlocksInit::SANDSTONE ||
-                            iblockstate4 == &BlocksInit::RED_SANDSTONE) {
+                        if (topBlock == &BlocksInit::SAND ||
+                            topBlock == &BlocksInit::SANDSTONE ||
+                            topBlock == &BlocksInit::RED_SANDSTONE) {
                             worldIn.setBlock(topBlockPos, pathSecondary);
                             worldIn.setBlock(topBlockPos.down(), underPathSecondary);
                             break;
@@ -914,7 +933,7 @@ namespace build::village {
         const Block* iblockstate = getBiomeSpecificBlockState(&BlocksInit::COBBLESTONE, piece.structureType);
         const Block* iblockstate1 = getBiomeSpecificBlockState(&BlocksInit::OAK_WOOD_PLANK, piece.structureType);
         const Block iblockstate2 = getBiomeSpecificBlockState(&BlocksInit::COBBLESTONE_STAIRS, piece.structureType)
-                                           ->getStateFromMeta(states::Stairs::withProperty(piece.rotation.apply(piece.mirror, enumFacing::NORTH)));
+            ->getStateFromMeta(states::Stairs::withProperty(piece.rotation.apply(piece.mirror, enumFacing::NORTH)));
         const Block* iblockstate3 = getBiomeSpecificBlockState(&BlocksInit::OAK_WOOD, piece.structureType);
         const Block* iblockstate4 = getBiomeSpecificBlockState(&BlocksInit::OAK_FENCE, piece.structureType);
 
@@ -988,29 +1007,32 @@ namespace build::village {
             piece.data |= 1 << 16;
         }
 
-        const Block* iblockstate = getBiomeSpecificBlockState(&BlocksInit::COBBLESTONE, piece.structureType);
-        const Block* iblockstate1 = getBiomeSpecificBlockState(&BlocksInit::OAK_FENCE, piece.structureType);
+        const Block* bottomRing = piece.structureType == 1 ? &BlocksInit::SANDSTONE : &BlocksInit::GRASS_PATH;
+        const Block* cobblestone = getBiomeSpecificBlockState(&BlocksInit::COBBLESTONE, piece.structureType);
+        const Block* fence = getBiomeSpecificBlockState(&BlocksInit::OAK_FENCE, piece.structureType);
 
-        piece.fillWithBlocks(worldIn, chunkBB, 1, 0, 1, 4, 12, 4, iblockstate, &BlocksInit::FLOWING_WATER, false);
+        piece.fillWithBlocks(worldIn, chunkBB, 1, 0, 1, 4, 12, 4, cobblestone, &BlocksInit::FLOWING_WATER, false);
         piece.setBlockState(worldIn, BlocksInit::AIR, 2, 12, 2, chunkBB);
         piece.setBlockState(worldIn, BlocksInit::AIR, 3, 12, 2, chunkBB);
         piece.setBlockState(worldIn, BlocksInit::AIR, 2, 12, 3, chunkBB);
         piece.setBlockState(worldIn, BlocksInit::AIR, 3, 12, 3, chunkBB);
-        piece.setBlockState(worldIn, iblockstate1, 1, 13, 1, chunkBB);
-        piece.setBlockState(worldIn, iblockstate1, 1, 14, 1, chunkBB);
-        piece.setBlockState(worldIn, iblockstate1, 4, 13, 1, chunkBB);
-        piece.setBlockState(worldIn, iblockstate1, 4, 14, 1, chunkBB);
-        piece.setBlockState(worldIn, iblockstate1, 1, 13, 4, chunkBB);
-        piece.setBlockState(worldIn, iblockstate1, 1, 14, 4, chunkBB);
-        piece.setBlockState(worldIn, iblockstate1, 4, 13, 4, chunkBB);
-        piece.setBlockState(worldIn, iblockstate1, 4, 14, 4, chunkBB);
-        piece.fillWithBlocks(worldIn, chunkBB, 1, 15, 1, 4, 15, 4, iblockstate, false);
 
-        for (int i=0; i <= 5; ++i) {
-            for (int j=0; j <= 5; ++j) {
-                if (j == 0 || j == 5 || i == 0 || i == 5) {
-                    piece.setBlockState(worldIn, iblockstate, j, 11, i, chunkBB);
-                    piece.clearCurrentPositionBlocksUpwards(worldIn, j, 12, i, chunkBB);
+        piece.setBlockState(worldIn, fence, 1, 13, 1, chunkBB);
+        piece.setBlockState(worldIn, fence, 1, 14, 1, chunkBB);
+        piece.setBlockState(worldIn, fence, 4, 13, 1, chunkBB);
+        piece.setBlockState(worldIn, fence, 4, 14, 1, chunkBB);
+        piece.setBlockState(worldIn, fence, 1, 13, 4, chunkBB);
+        piece.setBlockState(worldIn, fence, 1, 14, 4, chunkBB);
+        piece.setBlockState(worldIn, fence, 4, 13, 4, chunkBB);
+        piece.setBlockState(worldIn, fence, 4, 14, 4, chunkBB);
+        // Top piece
+        piece.fillWithBlocks(worldIn, chunkBB, 1, 15, 1, 4, 15, 4, cobblestone, false);
+
+        for (int z = 0; z <= 5; ++z) {
+            for (int x = 0; x <= 5; ++x) {
+                if (x == 0 || x == 5 || z == 0 || z == 5) {
+                    piece.setBlockState(worldIn, bottomRing, x, 11, z, chunkBB);
+                    piece.clearCurrentPositionBlocksUpwards(worldIn, x, 12, z, chunkBB);
                 }
             }
         }
@@ -1019,7 +1041,7 @@ namespace build::village {
     }
 
 
-    bool House4Garden::addComponentParts(World& worldIn, RNG& rng, BoundingBox& chunkBB,
+    bool House4Garden::addComponentParts(World& worldIn, MU RNG& rng, BoundingBox& chunkBB,
                                          StructureComponent& piece) {
         if ((piece.data >> 16 & 1) == 0) {
             c_int averageGroundLvl = getAverageGroundLevel(worldIn, chunkBB, piece);
@@ -1031,7 +1053,7 @@ namespace build::village {
         const Block* iBlockState = getBiomeSpecificBlockState(&BlocksInit::COBBLESTONE, piece.structureType);
         const Block* iBlockState1 = getBiomeSpecificBlockState(&BlocksInit::OAK_WOOD_PLANK, piece.structureType);
         const Block iBlockState2 = getBiomeSpecificBlockState(&BlocksInit::COBBLESTONE_STAIRS, piece.structureType)
-                                           ->getStateFromMeta(states::Stairs::withProperty(piece.rotation.apply(piece.mirror, enumFacing::NORTH)));
+            ->getStateFromMeta(states::Stairs::withProperty(piece.rotation.apply(piece.mirror, enumFacing::NORTH)));
         const Block* iBlockState3 = getBiomeSpecificBlockState(&BlocksInit::OAK_WOOD, piece.structureType);
         const Block* iBlockState4 = getBiomeSpecificBlockState(&BlocksInit::OAK_FENCE, piece.structureType);
 
@@ -1098,7 +1120,7 @@ namespace build::village {
         if (piece.data & 1) /* isRoofAccessible */ {
             // .withProperty(BlockLadder.FACING, FACING::SOUTH);
             c_auto ladderSouth = BlocksInit::LADDER.getStateFromMeta(
-                    states::Ladder::withProperty(piece.rotation.apply(piece.mirror, enumFacing::SOUTH)));
+                states::Ladder::withProperty(piece.rotation.apply(piece.mirror, enumFacing::SOUTH)));
             piece.setBlockState(worldIn, ladderSouth, 3, 1, 3, chunkBB);
             piece.setBlockState(worldIn, ladderSouth, 3, 2, 3, chunkBB);
             piece.setBlockState(worldIn, ladderSouth, 3, 3, 3, chunkBB);
@@ -1166,4 +1188,6 @@ namespace build::village {
     }
 }
 
-#pragma clang diagnostic pop
+
+
+

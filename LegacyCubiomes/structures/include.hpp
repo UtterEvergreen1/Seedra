@@ -16,8 +16,8 @@
 
 // rolls
 #include "LegacyCubiomes/structures/build/village.hpp"
-#include "LegacyCubiomes/structures/rolls/mineshaft.hpp"
-#include "LegacyCubiomes/structures/rolls/stronghold.hpp"
+#include "LegacyCubiomes/structures/gen/mineshaft/rolls.hpp"
+#include "LegacyCubiomes/structures/gen/stronghold/rolls.hpp"
 
 
 // generation

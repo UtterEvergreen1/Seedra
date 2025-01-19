@@ -1,5 +1,16 @@
+#include <cmath>
+
+#include "LegacyCubiomes/utils/rng.hpp"
 #include "stronghold.hpp"
+
 #include "LegacyCubiomes/chunk_generator/Chunk.hpp"
+#include "LegacyCubiomes/chunk_generator/World.hpp"
+#include "lce/include.hpp"
+
+
+using namespace lce::blocks;
+using namespace lce::blocks::states;
+
 
 namespace rolls {
 
@@ -13,68 +24,68 @@ namespace rolls {
             if (chunk && isLiquidInStructureBoundingBox(chunkBoundingBox, pieceStop, chunk)) return false;
         }*/
 
-        for (int pieceIndex = 0; pieceIndex < sg->pieceArraySize; ++pieceIndex) {
-            const StructureComponent *piece = sg->pieceArray[pieceIndex];
+        for (int pieceIndex = 0; pieceIndex < sg->getPieceCount(); ++pieceIndex) {
+            const StructureComponent& piece = sg->getPieceConst(pieceIndex);
 
-            if (piece->type == PT_Stronghold_NONE) continue;
+            if (piece.type == PT_Stronghold_NONE) continue;
 
-            if (!piece->intersects(chunkBoundingBox)) continue;
+            if (!piece.intersects(chunkBoundingBox)) continue;
 
-            if (chunk && piece->type != PT_Stronghold_PortalRoom &&
-                StructureComponent::isLiquidInStructureBoundingBox(chunkBoundingBox, *piece, chunk))
+            if (chunk && piece.type != PT_Stronghold_PortalRoom &&
+                StructureComponent::isLiquidInStructureBoundingBox(chunkBoundingBox, piece, chunk))
                 continue;
 
-            switch (piece->type) {
+            switch (piece.type) {
                 case PT_Stronghold_NONE:
                     break;
                 case PT_Stronghold_Straight:
                     // true means check for air
-                    StructureComponent::fillWithRandomizedBlocksRNGOnly(chunkBoundingBox, *piece, 0, 0, 0, 4, 4, 6, rng, chunk);
+                    StructureComponent::fillWithRandomizedBlocksRNGOnly(chunkBoundingBox, piece, 0, 0, 0, 4, 4, 6, rng, chunk);
                     rng.advance<4>();
                     break;
                 case PT_Stronghold_PrisonHall:
-                    StructureComponent::fillWithRandomizedBlocksRNGOnly(chunkBoundingBox, *piece, 0, 0, 0, 8, 4, 10, rng, chunk);
+                    StructureComponent::fillWithRandomizedBlocksRNGOnly(chunkBoundingBox, piece, 0, 0, 0, 8, 4, 10, rng, chunk);
                     rng.advance<12>();
                     break;
                 case PT_Stronghold_LeftTurn:
                 case PT_Stronghold_RightTurn:
-                    StructureComponent::fillWithRandomizedBlocksRNGOnly(chunkBoundingBox, *piece, 0, 0, 0, 4, 4, 4, rng, chunk);
+                    StructureComponent::fillWithRandomizedBlocksRNGOnly(chunkBoundingBox, piece, 0, 0, 0, 4, 4, 4, rng, chunk);
                     break;
                 case PT_Stronghold_RoomCrossing:
-                    StructureComponent::fillWithRandomizedBlocksRNGOnly(chunkBoundingBox, *piece, 0, 0, 0, 10, 6, 10, rng, chunk);
+                    StructureComponent::fillWithRandomizedBlocksRNGOnly(chunkBoundingBox, piece, 0, 0, 0, 10, 6, 10, rng, chunk);
                     if constexpr (stopStrongholdChest) {
-                        if (*piece == pieceStop) return true;
+                        if (piece == pieceStop) return true;
                     }
-                    if (piece->data == 2) { // rolling for the chest seed if in chunk
-                        StructureComponent::generateChest(chunkBoundingBox, *piece, rng, 3, 4, 8);
+                    if (piece.data == 2) { // rolling for the chest seed if in chunk
+                        StructureComponent::generateChest(chunkBoundingBox, piece, rng, 3, 4, 8);
                     }
                     break;
                 case PT_Stronghold_StraightStairsDown:
-                    StructureComponent::fillWithRandomizedBlocksRNGOnly(chunkBoundingBox, *piece, 0, 0, 0, 4, 10, 7, rng, chunk);
+                    StructureComponent::fillWithRandomizedBlocksRNGOnly(chunkBoundingBox, piece, 0, 0, 0, 4, 10, 7, rng, chunk);
                     break;
                 case PT_Stronghold_StairsDown:
-                    StructureComponent::fillWithRandomizedBlocksRNGOnly(chunkBoundingBox, *piece, 0, 0, 0, 4, 10, 4, rng, chunk);
+                    StructureComponent::fillWithRandomizedBlocksRNGOnly(chunkBoundingBox, piece, 0, 0, 0, 4, 10, 4, rng, chunk);
                     break;
                 case PT_Stronghold_FiveCrossing:
-                    StructureComponent::fillWithRandomizedBlocksRNGOnly(chunkBoundingBox, *piece, 0, 0, 0, 9, 8, 10, rng, chunk);
+                    StructureComponent::fillWithRandomizedBlocksRNGOnly(chunkBoundingBox, piece, 0, 0, 0, 9, 8, 10, rng, chunk);
                     rng.advance<109>();
                     break;
                 case PT_Stronghold_ChestCorridor:
-                    StructureComponent::fillWithRandomizedBlocksRNGOnly(chunkBoundingBox, *piece, 0, 0, 0, 4, 4, 6, rng, chunk);
+                    StructureComponent::fillWithRandomizedBlocksRNGOnly(chunkBoundingBox, piece, 0, 0, 0, 4, 4, 6, rng, chunk);
                     if constexpr (stopStrongholdChest) {
-                        if (*piece == pieceStop) return true;
+                        if (piece == pieceStop) return true;
                     }
-                    StructureComponent::generateChest(chunkBoundingBox, *piece, rng, 3, 2, 3);
+                    StructureComponent::generateChest(chunkBoundingBox, piece, rng, 3, 2, 3);
                     break;
                 case PT_Stronghold_Library:
-                    StructureComponent::fillWithRandomizedBlocksRNGOnly(chunkBoundingBox, *piece, 0, 0, 0, 13,
-                                             piece->data ? 10 : 5, 14, rng, chunk);
+                    StructureComponent::fillWithRandomizedBlocksRNGOnly(chunkBoundingBox, piece, 0, 0, 0, 13,
+                                                                        piece.data ? 10 : 5, 14, rng, chunk);
                     rng.advance<520>();
                     if constexpr (stopStrongholdChest) {
-                        if (*piece == pieceStop) return true;
+                        if (piece == pieceStop) return true;
                     }
-                    StructureComponent::generateChest(chunkBoundingBox, *piece, rng, 3, 3, 5);
-                    if (piece->data == 1) { StructureComponent::generateChest(chunkBoundingBox, *piece, rng, 12, 8, 1); }
+                    StructureComponent::generateChest(chunkBoundingBox, piece, rng, 3, 3, 5);
+                    if (piece.data == 1) { StructureComponent::generateChest(chunkBoundingBox, piece, rng, 12, 8, 1); }
                     break;
                 case PT_Stronghold_PortalRoom:
                     if constexpr (stopPortal) {

@@ -32,6 +32,8 @@ option(LC_BUILD_EXECUTABLE "Build LegacyCubiomes standalone executable" OFF)
 if(LC_BUILD_EXECUTABLE)
     add_executable(LegacyCubiomesExe
             ${LEGACY_CUBIOMES_SOURCES}
+            structures/gen/Structure.cpp
+            structures/gen/Structure.hpp
             # or a main file
     )
     target_link_libraries(LegacyCubiomesExe PRIVATE LegacyCubiomesLibs)

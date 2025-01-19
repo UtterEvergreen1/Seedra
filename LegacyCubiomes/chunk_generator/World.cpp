@@ -16,15 +16,6 @@ void World::deleteWorld() {
     for (auto &chunk : chunks) {
         delete chunk.second;
     }
-    for (auto village : villages) {
-        delete village;
-    }
-    for (auto stronghold : strongholds) {
-        delete stronghold;
-    }
-    for (auto mineshaft : mineshafts) {
-        delete mineshaft;
-    }
     chunks.clear();
     villages.clear();
     strongholds.clear();
@@ -221,8 +212,8 @@ void World::generateMineshafts() {
     auto mineshaft_locations = Placement::Mineshaft::getAllPositions(*g);
 
     for (auto& pos : mineshaft_locations) {
-        auto mineshaft_gen = new gen::Mineshaft();
-        mineshaft_gen->generate(g->getConsole(), g->getWorldSeed(), pos.toChunkPos());
+        auto mineshaft_gen = gen::Mineshaft();
+        mineshaft_gen.generate(g->getConsole(), g->getWorldSeed(), pos.toChunkPos());
         mineshafts.push_back(mineshaft_gen);
     }
 }
@@ -232,8 +223,8 @@ void World::generateVillages() {
     auto village_locations = Placement::Village<false>::getAllPositions(g);
 
     for (auto& village_pos : village_locations) {
-        auto village_gen = new gen::Village(g);
-        village_gen->generate(village_pos.toChunkPos());
+        auto village_gen = gen::Village(g);
+        village_gen.generate(village_pos.toChunkPos());
         villages.emplace_back(village_gen);
     }
 }
@@ -241,8 +232,9 @@ void World::generateVillages() {
 
 void World::generateStrongholds() {
     Pos2D strongholdPos = Placement::Stronghold::getWorldPosition(*g).toChunkPos();
-    strongholds.emplace_back(new gen::Stronghold());
-    strongholds[0]->generate(g->getWorldSeed(), strongholdPos);
+    strongholds.emplace_back();
+    strongholds[0].generate(g->getWorldSeed(), strongholdPos);
+    std::cout << "Stronghold piece count: " << strongholds[0].getPieceCount() << std::endl;
 }
 
 

@@ -3,7 +3,7 @@
 #include "Loot.hpp"
 
 #include "LegacyCubiomes/chunk_generator/Chunk.hpp"
-#include "LegacyCubiomes/structures/rolls/stronghold.hpp"
+#include "LegacyCubiomes/structures/gen/stronghold/rolls.hpp"
 
 namespace loot {
     template<typename T>

@@ -1,19 +1,23 @@
 #pragma once
 
 #include "LegacyCubiomes/building_blocks/GenerationStep.hpp"
-#include "LegacyCubiomes/building_blocks/Piece.hpp"
-#include "LegacyCubiomes/cubiomes/layers.hpp"
-#include "LegacyCubiomes/utils/Pos2DTemplate.hpp"
-#include "LegacyCubiomes/utils/Pos3DTemplate.hpp"
-#include "LegacyCubiomes/utils/rng.hpp"
+#include "LegacyCubiomes/building_blocks/StructureComponent.hpp"
+#include "LegacyCubiomes/structures/gen/Structure.hpp"
+
+#include "LegacyCubiomes/utils/include.hpp"
+
 #include <map>
 #include <vector>
+
+class Generator;
+class World;
 
 class StructureComponent;
 namespace gen {
 
-    class Village {
-        static constexpr u32 ARRAY_SIZE = 512;
+    static constexpr u32 VILLAGE_ARRAY_SIZE = 256;
+
+    class Village : public Structure<VILLAGE_ARRAY_SIZE> {
 
         struct PieceWeight {
             MU PieceType pieceType;
@@ -39,7 +43,7 @@ namespace gen {
 
         std::vector<FinalPieceWeight> currentVillagePW;
 
-        int pendingRoadArray[ARRAY_SIZE]{};
+        int pendingRoadArray[VILLAGE_ARRAY_SIZE]{};
         int pendingRoadArraySize{};
 
 
@@ -54,18 +58,13 @@ namespace gen {
         int numInvalidPieces = 1;
         int myBlackSmithPieceIndex = -1;
 
-
-    public:
         bool isZombieInfested{};
 
+
+    public:
         int biomeType{};
 
-        BoundingBox structureBB;
 
-        StructureComponent* pieceArray[ARRAY_SIZE]{};
-        int pieceArraySize{};
-
-        Pos2D startPos;
 
         Village() = delete;
         explicit Village(const Generator* generator);
@@ -91,18 +90,90 @@ namespace gen {
         void setupPieces();
         ND int updatePieceWeight() const;
         static BoundingBox createPieceBB(PieceType pieceType, Pos3D pos, enumFacing direction);
-        void buildComponentStart(const StructureComponent *piece);
-        void buildComponent(const StructureComponent *scIn);
+        void buildComponentStart(const StructureComponent& piece);
+        void buildComponent(const StructureComponent& scIn);
         BoundingBox road(Pos3D pos, enumFacing facing);
         void additionalRngRolls(Piece& p);
 
-        StructureComponent *generateComponent(Pos3D pos, enumFacing facing, i8 depth);
+        StructureComponent generateComponent(Pos3D pos, enumFacing facing, i8 depth);
 
         void genAndAddRoadPiece(Pos3D pos, enumFacing facing);
 
-        StructureComponent *genAndAddComponent(Pos3D pos, enumFacing facing, i8 depth);
-        void addPiece(StructureComponent *piece);
+        StructureComponent genAndAddComponent(Pos3D pos, enumFacing facing, i8 depth);
+        void addPiece(StructureComponent& piece);
         ND bool hasCollisionPiece(const BoundingBox& boundingBox) const;
     };
 
 } // namespace gen
+
+
+
+namespace build::village {
+
+    MU extern bool addComponentParts(
+            World& worldIn, RNG& rng, BoundingBox& chunkBB, StructureComponent& piece);
+
+    struct MU Path final {
+        Path() = delete;
+        static bool addComponentParts(
+                World& worldIn, MU RNG& rng, BoundingBox& chunkBB, StructureComponent& piece);};
+
+    struct MU Church final {
+        Church() = delete;
+        static bool addComponentParts(
+                World& worldIn, MU RNG& rng, BoundingBox& chunkBB, StructureComponent& piece);};
+
+    struct MU Field1 final {
+        Field1() = delete;
+        static bool addComponentParts(
+                World& worldIn, RNG& rng, BoundingBox& chunkBB, StructureComponent& piece);};
+
+    struct MU Field2 final {
+        Field2() = delete;
+        static bool addComponentParts(
+                World& worldIn, RNG& rng, BoundingBox& chunkBB, StructureComponent& piece);};
+
+    struct MU Hall final {
+        Hall() = delete;
+        static bool addComponentParts(
+                World& worldIn, MU RNG& rng, BoundingBox& chunkBB, StructureComponent& piece);};
+
+    struct MU House1 final {
+        House1() = delete;
+        static bool addComponentParts(
+                World& worldIn, MU RNG& rng, BoundingBox& chunkBB, StructureComponent& piece);};
+
+    struct MU House2 final {
+        House2() = delete;
+        static bool addComponentParts(
+                World& worldIn, MU RNG& rng, BoundingBox& chunkBB, StructureComponent& piece);};
+
+    struct MU House3 final {
+        House3() = delete;
+        static bool addComponentParts(
+                World& worldIn, MU RNG& rng, BoundingBox& chunkBB, StructureComponent& piece);};
+
+    struct MU House4Garden final {
+        House4Garden() = delete;
+        static bool addComponentParts(
+                World& worldIn, MU RNG& rng, BoundingBox& chunkBB, StructureComponent& piece);};
+
+    struct MU Torch final {
+        Torch() = delete;
+        static bool addComponentParts(
+                World& worldIn, MU RNG& rng, BoundingBox& chunkBB, StructureComponent& piece);};
+
+    struct MU WoodHut final {
+        WoodHut() = delete;
+        static bool addComponentParts(
+                World& worldIn, MU RNG& rng, BoundingBox& chunkBB, StructureComponent& piece);};
+
+    struct MU Well final {
+        Well() = delete;
+        static bool addComponentParts(
+                World& worldIn, MU RNG& rng, BoundingBox& chunkBB, StructureComponent& piece);};
+
+
+
+
+}; // namespace build::village

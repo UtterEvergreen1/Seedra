@@ -1,10 +1,19 @@
+#include <cmath>
+
+#include "LegacyCubiomes/utils/rng.hpp"
 #include "stronghold.hpp"
 
+#include "LegacyCubiomes/chunk_generator/Chunk.hpp"
 #include "LegacyCubiomes/chunk_generator/World.hpp"
+#include "lce/include.hpp"
+
+
+using namespace lce::blocks;
+using namespace lce::blocks::states;
 
 
 namespace build::stronghold {
-    
+
     using namespace lce::blocks;
     using namespace states;
 
@@ -356,7 +365,7 @@ namespace build::stronghold {
         piece.fillWithRandomizedStrongholdStones(worldIn, chunkBB, 4, 3, 7, 6, 3, 7, false, rng);
 
         const Block cobbleStairNorth = BlocksInit::STONE_BRICK_STAIRS
-                .getStateFromMeta(states::Stairs::withProperty(piece.rotation.apply(piece.mirror, enumFacing::NORTH)));
+                                               .getStateFromMeta(states::Stairs::withProperty(piece.rotation.apply(piece.mirror, enumFacing::NORTH)));
 
         for (int k = 4; k <= 6; ++k) {
             piece.setBlockState(worldIn, cobbleStairNorth, k, 1, 4, chunkBB);
@@ -474,7 +483,7 @@ namespace build::stronghold {
     bool RightTurn::addComponentParts(World& worldIn, RNG& rng, const BoundingBox& chunkBB,
                                       const StructureComponent& piece) {
         if (piece.isLiquidInStructureBoundingBox(worldIn, chunkBB)) { return false; }
-        
+
         const Door entryDoor = getRandomDoor(piece.data >> 16 & 7);
 
         piece.fillWithRandomizedStrongholdStones(worldIn, chunkBB, 0, 0, 0, 4, 4, 4, true, rng);
@@ -513,13 +522,13 @@ namespace build::stronghold {
                 piece.setBlockState(worldIn, &BlocksInit::STONE_BRICKS, 5, 3, 5, chunkBB);
 
                 piece.setBlockState(worldIn, BlocksInit::TORCH.getStateFromMeta(
-                        states::Torch::withProperty(piece.rotation.apply(piece.mirror, enumFacing::WEST))), 4, 3, 5, chunkBB);
+                                                     states::Torch::withProperty(piece.rotation.apply(piece.mirror, enumFacing::WEST))), 4, 3, 5, chunkBB);
                 piece.setBlockState(worldIn, BlocksInit::TORCH.getStateFromMeta(
-                        states::Torch::withProperty(piece.rotation.apply(piece.mirror, enumFacing::EAST))), 6, 3, 5, chunkBB);
+                                                     states::Torch::withProperty(piece.rotation.apply(piece.mirror, enumFacing::EAST))), 6, 3, 5, chunkBB);
                 piece.setBlockState(worldIn, BlocksInit::TORCH.getStateFromMeta(
-                        states::Torch::withProperty(piece.rotation.apply(piece.mirror, enumFacing::SOUTH))), 5, 3, 4, chunkBB);
+                                                     states::Torch::withProperty(piece.rotation.apply(piece.mirror, enumFacing::SOUTH))), 5, 3, 4, chunkBB);
                 piece.setBlockState(worldIn, BlocksInit::TORCH.getStateFromMeta(
-                        states::Torch::withProperty(piece.rotation.apply(piece.mirror, enumFacing::NORTH))), 5, 3, 6, chunkBB);
+                                                     states::Torch::withProperty(piece.rotation.apply(piece.mirror, enumFacing::NORTH))), 5, 3, 6, chunkBB);
 
 
                 piece.setBlockState(worldIn, &BlocksInit::STONE_SLAB, 4, 1, 4, chunkBB);
@@ -743,5 +752,6 @@ namespace build::stronghold {
         return result;
     }
 }
+
 
 

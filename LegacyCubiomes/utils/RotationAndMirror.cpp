@@ -20,6 +20,6 @@ enumFacing Rotation::apply(const Mirror& mirror, const enumFacing facing) const 
             return rotateY(mirroredFacing);
         case Rotation::Type::NONE:
         default:
-            return facing;
+            return mirroredFacing;
     }
 }

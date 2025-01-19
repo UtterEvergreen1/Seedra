@@ -1,28 +1,35 @@
 #include "LegacyCubiomes/chunk_generator/Chunk.hpp"
 #include <fstream>
+#include <filesystem>
+#include <cstdlib>
 
 #include "LegacyCubiomes/chunk_generator/World.hpp"
 #include "LegacyCubiomes/chunk_generator/biome.hpp"
-#include "LegacyCubiomes/features/WorldGenerator/WorldGenLakes.hpp"
-#include "LegacyCubiomes/structures/build/mineshaft.hpp"
-#include "LegacyCubiomes/structures/build/stronghold.hpp"
-#include "LegacyCubiomes/structures/build/village.hpp"
+
 #include "LegacyCubiomes/structures/gen/village/village.hpp"
 #include "LegacyCubiomes/structures/placement/StaticStructures.hpp"
-#include "LegacyCubiomes/structures/placement/mineshaft.hpp"
-#include "LegacyCubiomes/structures/placement/stronghold.hpp"
-#include "LegacyCubiomes/structures/rolls/mineshaft.hpp"
-#include "LegacyCubiomes/structures/rolls/stronghold.hpp"
 
+namespace fs = std::filesystem;
 
 int main() {
+    const char* userProfile = std::getenv("USERPROFILE");
+    if (!userProfile) {
+        std::cerr << "USERPROFILE environment variable not set!\n";
+        return 1;
+    }
+    fs::path dirPath = fs::path(userProfile)
+                       / "CLionProjects"
+                       / "LegacyChunkViewer";
+    std::string dirName = dirPath.string();
+    std::cout << "Using \"" + dirName + "\"...\n\n";
+    fs::path filePath = dirPath / R"(build/chunks/chunkdata.bin)";
 
 
     Biome::registerBiomes();
     auto console = lce::CONSOLE::XBOX360;
     auto version = LCEVERSION::ELYTRA;
     // -6651998285536156346
-    Generator g(console, version, -6588388363107578604, lce::WORLDSIZE::CLASSIC, lce::BIOMESCALE::LARGE);
+    Generator g(console, version, 27184353441555, lce::WORLDSIZE::CLASSIC, lce::BIOMESCALE::SMALL);
 
     // 3 13 for seed -101, 8 15 for seed 1, 11 16 or 15 5 for seed 27184353441555
     int X_WIDTH = 27;
@@ -37,29 +44,27 @@ int main() {
     world.getOrCreateChunk({X_CENTER, Z_CENTER});
     world.decorateChunks({X_CENTER, Z_CENTER}, X_WIDTH);
 
-    const lce::blocks::Block* block = world.getBlock({-215, 69, 118});
-    std::cout << block->getID() << " " << block->getDataTag() << "\n";
+    // const lce::blocks::Block* block = world.getBlock({-215, 69, 118});
+    // std::cout << block->getID() << " " << block->getDataTag() << "\n";
 
-    std::string DIR_NAME = R"(C:/Users/Daniel/CLionProjects/LegacyChunkViewer/)";
-    std::string filename = DIR_NAME + R"(build/chunks/chunkdata.bin)";
 
-    std::ofstream file(filename, std::ios::binary);
+    std::ofstream file(filePath.string(), std::ios::binary);
     if (!file) {
-        std::cerr << "Error opening file for writing: " << filename << std::endl;
+        std::cerr << "Error opening file for writing: " << filePath << std::endl;
         return -1;
     }
 
     int64_t worldSeed = g.getWorldSeed();
 
-    file.write(reinterpret_cast<const char*>(&worldSeed), sizeof(worldSeed));
+    // file.write(reinterpret_cast<const char*>(&worldSeed), sizeof(worldSeed));
     file.write(reinterpret_cast<const char*>(&X_CENTER), sizeof(X_CENTER));
     file.write(reinterpret_cast<const char*>(&Z_CENTER), sizeof(Z_CENTER));
     file.write(reinterpret_cast<const char*>(&X_WIDTH), sizeof(X_WIDTH));
     file.write(reinterpret_cast<const char*>(&Z_WIDTH), sizeof(Z_WIDTH));
 
 
-    for (int cx = -X_WIDTH + X_CENTER; cx < X_WIDTH + X_CENTER - 1; cx++) {
-        for (int cz = -Z_WIDTH + Z_CENTER; cz < Z_WIDTH + Z_CENTER - 1; cz++) {
+    for (int cx = -(X_WIDTH) + X_CENTER; cx < X_WIDTH + X_CENTER - 1; cx++) {
+        for (int cz = -(Z_WIDTH) + Z_CENTER; cz < Z_WIDTH + Z_CENTER - 1; cz++) {
             auto* chunk = world.getChunk({cx, cz});
             if (!chunk) {
                 std::cerr << "Error getting chunk: " << cx << ", " << cz << std::endl;
@@ -98,18 +103,16 @@ int main() {
             file.write(reinterpret_cast<const char*>(&cx), sizeof(cx));
             file.write(reinterpret_cast<const char*>(&cz), sizeof(cz));
 
-            file.write(reinterpret_cast<const char*>(chunk->blocks),
-                       sizeof(chunk->blocks));
+            file.write(reinterpret_cast<const char*>(chunk->blocks), sizeof(chunk->blocks));
 
             if (!file) {
-                std::cerr << "Error writing to file: " << filename << std::endl;
+                std::cerr << "Error writing to file: " << filePath << std::endl;
             }
         }
     }
 
     return 0;
 }
-
 
 
 

@@ -1,36 +1,40 @@
 #include "mineshaft.hpp"
 
+#include "LegacyCubiomes/building_blocks/StructureComponent.hpp"
+#include "LegacyCubiomes/chunk_generator/Chunk.hpp"
+#include "LegacyCubiomes/chunk_generator/ChunkPrimer.hpp"
+#include "LegacyCubiomes/chunk_generator/World.hpp"
+#include "lce/include.hpp"
 
 
 namespace rolls {
 
-
     ///TODO: MAKE SURE IT WORKS!!!
     void Mineshaft::generateStructure(World& worldIn, const ChunkPrimer* chunk, const gen::Mineshaft* mg,
-            RNG& rng, c_int chunkX, c_int chunkZ) {
-        for (int pieceIndex = 0; pieceIndex < mg->pieceArraySize; ++pieceIndex) {
-            const StructureComponent* piece = mg->pieceArray[pieceIndex];
+                                      RNG& rng, c_int chunkX, c_int chunkZ) {
+        for (int pieceIndex = 0; pieceIndex < mg->getPieceCount(); ++pieceIndex) {
+            const StructureComponent& piece = mg->getPieceConst(pieceIndex);
 
-            if (piece->type == PT_Mineshaft_NONE) continue;
+            if (piece.type == PT_Mineshaft_NONE) continue;
 
             BoundingBox chunkBoundingBox(chunkX << 4, 0, chunkZ << 4, (chunkX << 4) + 15, 255, (chunkZ << 4) + 15);
 
-            if (!piece->intersects(chunkBoundingBox)) continue;
+            if (!piece.intersects(chunkBoundingBox)) continue;
 
 
-            if (piece->type == PT_Mineshaft_Corridor) {
-                if (chunk && StructureComponent::isLiquidInStructureBoundingBox(chunkBoundingBox, *piece, chunk))
+            if (piece.type == PT_Mineshaft_Corridor) {
+                if (chunk && StructureComponent::isLiquidInStructureBoundingBox(chunkBoundingBox, piece, chunk))
                     continue;
 
                 c_int sectionCount =
-                        (piece->facing == enumFacing::NORTH ||
-                            piece->facing == enumFacing::SOUTH
-                                 ? piece->getZSize()
-                                 : piece->getXSize()) / 5;
+                        (piece.facing == enumFacing::NORTH ||
+                                         piece.facing == enumFacing::SOUTH
+                                 ? piece.getZSize()
+                                 : piece.getXSize()) / 5;
                 c_int depth = sectionCount * 5;
 
                 rng.skipNextN(3 * depth);
-                if (piece->data & 2) rng.skipNextN(6 * depth);
+                if (piece.data & 2) rng.skipNextN(6 * depth);
 
 
                 for (int i = 0; i < sectionCount; ++i) {
@@ -39,10 +43,10 @@ namespace rolls {
                     // place torches
                     bool shouldPlaceTorch = (chunk == nullptr);
                     if (!shouldPlaceTorch) {
-                        c_int worldY = piece->getWorldY(3);
+                        c_int worldY = piece.getWorldY(3);
                         for (int x = 0; x <= 2; ++x) {
-                            c_int worldX = piece->getWorldX(x, currentDepth);
-                            c_int worldZ = piece->getWorldZ(x, currentDepth);
+                            c_int worldX = piece.getWorldX(x, currentDepth);
+                            c_int worldZ = piece.getWorldZ(x, currentDepth);
                             if (!StructureComponent::intersectsWithBlock(chunkBoundingBox, worldX, worldY, worldZ) ||
                                 !chunk->getBlockId(worldX & 15, worldY, worldZ & 15)) {
                                 shouldPlaceTorch = false;
@@ -74,24 +78,24 @@ namespace rolls {
                         std::cout << rng.nextLong() << std::endl;
                     }*/
                     if (rng.nextInt(100) == 0) {
-                        generateChest(chunk, chunkBoundingBox, piece, rng, 2, 0, currentDepth - 1);
+                        generateChest(chunk, chunkBoundingBox, &piece, rng, 2, 0, currentDepth - 1);
                     }
 
                     if (rng.nextInt(100) == 0) {
-                        generateChest(chunk, chunkBoundingBox, piece, rng, 0, 0, currentDepth + 1);
+                        generateChest(chunk, chunkBoundingBox, &piece, rng, 0, 0, currentDepth + 1);
                     }
                     //if it has spawner
-                    if (piece->data & 2) {
+                    if (piece.data & 2) {
                         // advance rng for placement on the depth axis
                         rng.advance();
                     }
 
                     // if it has rails
-                    if (piece->data & 1) {
+                    if (piece.data & 1) {
                         for (int railPos = 0; railPos < depth; ++railPos) {
-                            c_int xPos = piece->getWorldX(1, railPos);
-                            c_int yPos = piece->getWorldY(-1);
-                            c_int zPos = piece->getWorldZ(1, railPos);
+                            c_int xPos = piece.getWorldX(1, railPos);
+                            c_int yPos = piece.getWorldY(-1);
+                            c_int zPos = piece.getWorldZ(1, railPos);
                             if (StructureComponent::intersectsWithBlock(chunkBoundingBox, xPos, yPos, zPos) &&
                                 (chunk == nullptr || chunk->getBlockId(xPos & 15, yPos - 1, zPos & 15) != 0)) {
                                 rng.advance(); // advance rng for rail placement
@@ -107,18 +111,20 @@ namespace rolls {
 
 
     MU void Mineshaft::generateAllChests(World& worldIn, const gen::Mineshaft* mg,
-                                      const Generator& g, c_bool generateFullChunk) {
-        c_int xEnd = (mg->startPos.x >> 4) + 6;
-        c_int zEnd = (mg->startPos.z >> 4) + 6;
+                                         const Generator& g, c_bool generateFullChunk) {
+        Pos2D start = (mg->getStartPos() >> 4) - 6;
+        Pos2D end = (mg->getStartPos() >> 4) + 6;
+
+
         RNG rng;
         rng.setSeed(g.getWorldSeed());
         u64 xModifier = rng.nextLong();
         u64 zModifier = rng.nextLong();
         xModifier = (i64) (((xModifier / 2) * 2) + 1);
         zModifier = (i64) (((zModifier / 2) * 2) + 1);
-        for (int xChunk = (mg->startPos.x >> 4) - 6; xChunk < xEnd; ++xChunk) {
+        for (int xChunk = start.x; xChunk < end.x; ++xChunk) {
             c_u64 aix = xChunk * xModifier;
-            for (int zChunk = (mg->startPos.z >> 4) - 6; zChunk < zEnd; ++zChunk) {
+            for (int zChunk = start.x; zChunk < end.z; ++zChunk) {
                 rng.setSeed((aix + zChunk * zModifier) ^ g.getWorldSeed());
                 rng.advance(); // advance rng
                 const ChunkPrimer* chunk = nullptr;
@@ -145,10 +151,10 @@ namespace rolls {
 
 
     void Mineshaft::placeCobWeb(const ChunkPrimer* chunk, const BoundingBox& chunkBB,
-                                const StructureComponent *piece, RNG& rng, c_int x, c_int z) {
-        c_int xPos = piece->getWorldX(x, z);
-        c_int yPos = piece->getWorldY(2);
-        c_int zPos = piece->getWorldZ(x, z);
+                                const StructureComponent& piece, RNG& rng, c_int x, c_int z) {
+        c_int xPos = piece.getWorldX(x, z);
+        c_int yPos = piece.getWorldY(2);
+        c_int zPos = piece.getWorldZ(x, z);
         if (StructureComponent::intersectsWithBlock(chunkBB, xPos, yPos, zPos) &&
             chunk->getSkyLight(xPos, yPos, zPos) < 8) {
             rng.advance(); // advance rng
