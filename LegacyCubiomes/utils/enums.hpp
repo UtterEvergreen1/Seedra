@@ -39,8 +39,8 @@ enum MCVERSION : i8 {
 };
 
 enum class EnumAxis : i8 {
-    X = 0,
-    Y = 1,
+    Y = 0,
+    X = 1,
     Z = 2,
 };
 

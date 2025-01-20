@@ -373,52 +373,48 @@ namespace build::stronghold {
             piece.setBlockState(worldIn, cobbleStairNorth, k, 3, 6, chunkBB);
         }
 
-        // .withProperty(BlockEndPortalFrame.FACING, FACING::NORTH);
-        const Block* iblockstate4 = &BlocksInit::END_PORTAL_FRAME;
-        // .withProperty(BlockEndPortalFrame.FACING, FACING::SOUTH);
-        const Block* iblockstate = &BlocksInit::END_PORTAL_FRAME;
-        // .withProperty(BlockEndPortalFrame.FACING, FACING::EAST);
-        const Block* iblockstate1 = &BlocksInit::END_PORTAL_FRAME;
-        // .withProperty(BlockEndPortalFrame.FACING, FACING::WEST);
-        const Block* iblockstate2 = &BlocksInit::END_PORTAL_FRAME;
+        const Block northFrame = BlocksInit::END_PORTAL_FRAME.getStateFromMeta(
+            states::EndPortalFrame::withProperty(piece.rotation.apply(piece.mirror, enumFacing::NORTH)));
 
-        /*
-        boolean flag = true;
-        boolean[] aboolean = new boolean[12];
+        const Block southFrame = BlocksInit::END_PORTAL_FRAME.getStateFromMeta(
+            states::EndPortalFrame::withProperty(piece.rotation.apply(piece.mirror, enumFacing::SOUTH)));
 
-        for (int l = 0; l < aboolean.length; ++l) {
-            aboolean[l] = rng.nextFloat() > 0.9F;
-            flag &= aboolean[l];
+        const Block eastFrame = BlocksInit::END_PORTAL_FRAME.getStateFromMeta(
+            states::EndPortalFrame::withProperty(piece.rotation.apply(piece.mirror, enumFacing::EAST)));
+
+        const Block westFrame = BlocksInit::END_PORTAL_FRAME.getStateFromMeta(
+            states::EndPortalFrame::withProperty(piece.rotation.apply(piece.mirror, enumFacing::WEST)));
+
+        bool flag = true;
+        constexpr int NUM_FRAMES = 12;
+        bool eyes[NUM_FRAMES];
+
+        for (bool & eye : eyes) {
+            eye = rng.nextFloat() > 0.9F;
+            flag &= eye;
         }
-         */
 
-        piece.setBlockState(worldIn, iblockstate4->getStateFromMeta(0), 4, 3, 8, chunkBB);
-        piece.setBlockState(worldIn, iblockstate4->getStateFromMeta(0), 5, 3, 8, chunkBB);
-        piece.setBlockState(worldIn, iblockstate4->getStateFromMeta(0), 6, 3, 8, chunkBB);
-        piece.setBlockState(worldIn, iblockstate->getStateFromMeta(0), 4, 3, 12, chunkBB);
-        piece.setBlockState(worldIn, iblockstate->getStateFromMeta(0), 5, 3, 12, chunkBB);
-        piece.setBlockState(worldIn, iblockstate->getStateFromMeta(0), 6, 3, 12, chunkBB);
-        piece.setBlockState(worldIn, iblockstate1->getStateFromMeta(0), 3, 3, 9, chunkBB);
-        piece.setBlockState(worldIn, iblockstate1->getStateFromMeta(0), 3, 3, 10, chunkBB);
-        piece.setBlockState(worldIn, iblockstate1->getStateFromMeta(0), 3, 3, 11, chunkBB);
-        piece.setBlockState(worldIn, iblockstate2->getStateFromMeta(0), 7, 3, 9, chunkBB);
-        piece.setBlockState(worldIn, iblockstate2->getStateFromMeta(0), 7, 3, 10, chunkBB);
-        piece.setBlockState(worldIn, iblockstate2->getStateFromMeta(0), 7, 3, 11, chunkBB);
+        for (int x = 4; x <= 6; ++x) {
+            piece.setBlockState(worldIn, northFrame.getStateFromMeta(
+                states::EndPortalFrame::withProperty(northFrame.getDataTag(), eyes[x-4])), x, 3, 8, chunkBB);
+            piece.setBlockState(worldIn, southFrame.getStateFromMeta(
+                states::EndPortalFrame::withProperty(southFrame.getDataTag(), eyes[x-1])), x, 3, 12, chunkBB);
+        }
+        for (int z = 9; z <= 11; ++z) {
+            piece.setBlockState(worldIn, eastFrame.getStateFromMeta(
+                states::EndPortalFrame::withProperty(eastFrame.getDataTag(), eyes[z-3])), 3, 3, z, chunkBB);
+            piece.setBlockState(worldIn, westFrame.getStateFromMeta(
+                states::EndPortalFrame::withProperty(westFrame.getDataTag(), eyes[z])), 7, 3, z, chunkBB);
+        }
 
-        /*
         if (flag) {
-            const Block* iblockstate5 = &BlocksInit::END_PORTAL;
-            piece.setBlockState(worldIn, iblockstate5, 4, 3, 9, chunkBB);
-            piece.setBlockState(worldIn, iblockstate5, 5, 3, 9, chunkBB);
-            piece.setBlockState(worldIn, iblockstate5, 6, 3, 9, chunkBB);
-            piece.setBlockState(worldIn, iblockstate5, 4, 3, 10, chunkBB);
-            piece.setBlockState(worldIn, iblockstate5, 5, 3, 10, chunkBB);
-            piece.setBlockState(worldIn, iblockstate5, 6, 3, 10, chunkBB);
-            piece.setBlockState(worldIn, iblockstate5, 4, 3, 11, chunkBB);
-            piece.setBlockState(worldIn, iblockstate5, 5, 3, 11, chunkBB);
-            piece.setBlockState(worldIn, iblockstate5, 6, 3, 11, chunkBB);
+            const Block *endPortal = &BlocksInit::END_PORTAL;
+            for (int x = 4; x <= 6; ++x) {
+                for (int z = 9; z <= 11; ++z) {
+                    piece.setBlockState(worldIn, endPortal, x, 3, z, chunkBB);
+                }
+            }
         }
-         */
 
 
         bool hasSpawner = false;

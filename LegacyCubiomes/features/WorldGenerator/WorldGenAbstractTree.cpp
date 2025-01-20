@@ -64,7 +64,8 @@ void WorldGenAbstractTree::placeFallenTrunk(World* worldIn, RNG& rand, const Pos
             Pos3D placePos = blockPos;
             for (int i = trunkLength; i > 0; --i) {
                 placePos = placePos.offset(facing);
-                worldIn->setBlock(placePos, woodType);
+                worldIn->setBlock(placePos, woodType->getStateFromMeta(
+                    states::Log::withProperty(woodType->getDataTag(), getAxis(facing))));
 
                 if (rand.nextInt(10) == 0) {
                     const int aboveBlockId = worldIn->getBlockId(placePos.up());

@@ -53,21 +53,25 @@ namespace Chunk {
         const ChunkPrimer* chunk2 = world.getChunk({chunkX, chunkZ + 1});
         const ChunkPrimer* chunk3 = world.getChunk({chunkX - 1, chunkZ});
 
+        //south east
         if (chunk1 && chunk2 && world.getChunk({chunkX + 1, chunkZ + 1}) != nullptr) {
             populateStructures(world, g, chunkX, chunkZ);
             populateDecorations(world, g, chunkX, chunkZ);
         }
 
+        //south west
         if (chunk3 && chunk2 && world.getChunk({chunkX - 1, chunkZ + 1}) != nullptr) {
             populateStructures(world, g, chunkX - 1, chunkZ);
             populateDecorations(world, g, chunkX - 1, chunkZ);
         }
 
+        //north east
         if (chunk && chunk1 && world.getChunk({chunkX + 1, chunkZ - 1}) != nullptr) {
             populateStructures(world, g, chunkX, chunkZ - 1);
             populateDecorations(world, g, chunkX, chunkZ - 1);
         }
 
+        //north west
         if (chunk && chunk3 && world.getChunk({chunkX - 1, chunkZ - 1}) != nullptr) {
             populateStructures(world, g, chunkX - 1, chunkZ - 1);
             populateDecorations(world, g, chunkX - 1, chunkZ - 1);
