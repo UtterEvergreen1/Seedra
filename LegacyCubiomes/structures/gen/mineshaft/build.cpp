@@ -14,23 +14,23 @@ namespace build::mineshaft {
     using namespace lce::blocks::states;
 
 
-    const Block* getBiomeSpecificPlank(c_int structureType) {
-        switch (structureType) {
-            case 0: // normal
+    const Block* getBiomeSpecificPlank(StructureVariant variant) {
+        switch (variant) {
+            case StructureVariant::SV_Mineshaft_Normal:
             default:
                 return &BlocksInit::OAK_WOOD_PLANK;
-            case 1: // mesa
+            case StructureVariant::SV_Mineshaft_Mesa:
                 return &BlocksInit::DARK_OAK_WOOD_PLANK;
         }
     }
 
 
-    const Block* getBiomeSpecificFence(c_int structureType) {
-        switch (structureType) {
-            case 0: // normal
+    const Block* getBiomeSpecificFence(StructureVariant variant) {
+        switch (variant) {
+            case StructureVariant::SV_Mineshaft_Normal:
             default:
                 return &BlocksInit::OAK_FENCE;
-            case 1: // mesa
+            case StructureVariant::SV_Mineshaft_Mesa:
                 return &BlocksInit::DARK_OAK_FENCE;
         }
     }
@@ -67,7 +67,7 @@ namespace build::mineshaft {
 
         const Block* air = &BlocksInit::AIR;
 
-        const Block* iblockstate = getBiomeSpecificPlank(piece.structureType);
+        const Block* iblockstate = getBiomeSpecificPlank(piece.variant);
         piece.fillWithAir(worldIn, chunkBB, 0, 0, 0, 2, 1, i1);
         piece.fillWithBlocksRandomLightCheck(worldIn, chunkBB, rng, 0.8F, 0, 2, 0, 2, 2, i1, air, air, false, 0);
 
@@ -149,8 +149,8 @@ namespace build::mineshaft {
                                  const StructureComponent& piece) {
 
         if (func_189918_a(world, chunkBB, minX, maxX, maxY, minZ, piece)) {
-            const Block* plank = getBiomeSpecificPlank(piece.structureType);
-            const Block* fence = getBiomeSpecificFence(piece.structureType);
+            const Block* plank = getBiomeSpecificPlank(piece.variant);
+            const Block* fence = getBiomeSpecificFence(piece.variant);
             const Block* air = &BlocksInit::AIR;
 
             piece.fillWithBlocks(world, chunkBB, minX, minY, minZ, minX, maxY - 1, minZ, fence, air, false);
@@ -207,7 +207,7 @@ namespace build::mineshaft {
 
         const bool isMultipleFloors = piece.data & 1;
 
-        const Block* iblockstate = getBiomeSpecificPlank(piece.structureType);
+        const Block* iblockstate = getBiomeSpecificPlank(piece.variant);
 
         if (isMultipleFloors) {
             piece.fillWithAir(worldIn, chunkBB, 1, 0, 0, piece.maxX - piece.minX - 1, 3 - 1,
@@ -253,7 +253,7 @@ namespace build::mineshaft {
         c_auto block = piece.getBlockStateFromPos(world, x, maxY + 1, z, chunkBB);
 
         if (!ids::isReplaceableBlock(block->getID())) {
-            c_auto* plank = getBiomeSpecificPlank(piece.structureType);
+            c_auto* plank = getBiomeSpecificPlank(piece.variant);
             piece.fillWithBlocks(world, chunkBB, x, minY, z, x, maxY, z, plank, &BlocksInit::AIR, false);
         }
     }

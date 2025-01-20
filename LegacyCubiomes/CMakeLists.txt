@@ -11,7 +11,8 @@ file(GLOB_RECURSE LEGACY_CUBIOMES_SOURCES
         ...
 )
 
-add_library(LegacyCubiomesLib STATIC ${LEGACY_CUBIOMES_SOURCES})
+add_library(LegacyCubiomesLib STATIC ${LEGACY_CUBIOMES_SOURCES}
+        building_blocks/StructureVariant.hpp)
 
 # Link the lce library
 target_link_libraries(LegacyCubiomesLib PRIVATE lceLib)

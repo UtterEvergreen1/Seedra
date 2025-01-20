@@ -15,7 +15,7 @@ enum class LCEVERSION : i8 {
     // PISTON,
     // GENERATION, // not supported yet
 
-    PS4_VP = 6,
+    PILLAGE = 6,
     NONE = 7
 };
 
@@ -176,7 +176,7 @@ enum class StructureType : u8 {
 
 static std::string LceVersionToString(const LCEVERSION version) {
     switch (version) {
-        case LCEVERSION::PS4_VP:
+        case LCEVERSION::PILLAGE:
             return "PS4_VP";
         case LCEVERSION::AQUATIC:
             return "AQUATIC";
@@ -249,7 +249,7 @@ static MCVERSION getMCVersion(const LCEVERSION lceVersionIn) {
             return MCVERSION::MC_1_2;
         case LCEVERSION::ADVENTURE:
             return MCVERSION::MC_1_0;
-        case LCEVERSION::PS4_VP:
+        case LCEVERSION::PILLAGE:
             return MCVERSION::MC_1_14;
             // case LCEVERSION::GENERATION:
             // return MCVERSION::MC_1_14;

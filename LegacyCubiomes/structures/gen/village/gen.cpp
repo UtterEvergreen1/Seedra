@@ -135,7 +135,7 @@ namespace gen {
         structureBB = BoundingBox::EMPTY;
         for (int index = 0; index < pieceArraySize; index++) {
             structureBB.encompass(pieceArray[index]);
-            pieceArray[index].structureType = biomeType;
+            pieceArray[index].variant = myVariant;
         }
 
     }
@@ -225,8 +225,8 @@ namespace gen {
     }
 
 
-    void Village::additionalRngRolls(Piece& p) {
-        switch (static_cast<PieceType>(p.type)) {
+    void Village::additionalRngRolls(StructureComponent& p) {
+        switch (p.type) {
             case PieceType::PT_Village_WoodHut: {
                 c_u8 isTallHouse = rng.nextBoolean() ? 1 : 0;
                 c_u8 tablePosition = rng.nextInt(3);
@@ -447,18 +447,18 @@ namespace gen {
         switch (g->getBiomeAt(1, startPos)) {
             case BiomeID::plains:
             default:
-                biomeType = 0;
+                myVariant = StructureVariant::SV_Village_Plains;
                 break;
             case BiomeID::desert:
-                biomeType = 1;
+                myVariant = StructureVariant::SV_Village_Desert;
                 break;
             case BiomeID::savanna:
-                biomeType = 2;
+                myVariant = StructureVariant::SV_Village_Savanna;
                 break;
             case BiomeID::taiga:
             case BiomeID::ice_plains:
             case BiomeID::cold_taiga:
-                biomeType = 3;
+                myVariant = StructureVariant::SV_Village_Taiga;
                 break;
         }
     }

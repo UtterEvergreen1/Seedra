@@ -7,6 +7,7 @@
 #include "LegacyCubiomes/utils/Pos3DTemplate.hpp"
 
 #include "LegacyCubiomes/utils/RotationAndMirror.hpp"
+#include "StructureVariant.hpp"
 
 
 class World;
@@ -15,7 +16,7 @@ class RNG;
 
 class StructureComponent final : public Piece {
 public:
-    mutable int structureType{};
+    mutable StructureVariant variant{};
     Rotation rotation = Rotation::NONE;
     Mirror mirror = Mirror::NONE;
 
@@ -72,7 +73,7 @@ public:
         mirror = scIn.mirror;
         data = scIn.data;
         depth = scIn.depth;
-        structureType = scIn.structureType;
+        variant = scIn.variant;
     }
 
     MU static void setBlockStateWithoutOffset(

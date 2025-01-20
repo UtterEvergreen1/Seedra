@@ -77,10 +77,10 @@ enum LayerId {
 
 
 struct Layer;
-typedef int(mapfunc_t)(const Layer*, int*, int, int, int, int);
+typedef int(mapFunc_t)(const Layer*, int*, int, int, int, int);
 
 struct Layer {
-    mapfunc_t* getMap;
+    mapFunc_t* getMap;
 
     MCVERSION mc; // minecraft version
     i8 zoom;  // zoom factor of layer
@@ -91,7 +91,7 @@ struct Layer {
     u64 startSalt; // (depends on world seed) used to step PRNG forward
     u64 startSeed; // (depends on world seed) start for chunk seeds
 
-    Layer *p, *p2; // parent layers
+    Layer *p1, *p2; // parent layers
 };
 
 
@@ -122,7 +122,7 @@ void setLayerSeed(Layer* layer, u64 worldSeed);
 // Noise
 //==============================================================================
 
-void initSurfaceNoiseOld(SurfaceNoise* rnd, u64* seed, double xzScale, double yScale, double xzFactor,
+MU void initSurfaceNoiseOld(SurfaceNoise* rnd, u64* seed, double xzScale, double yScale, double xzFactor,
                          double yFactor);
 void initSurfaceNoiseEnd(SurfaceNoise* rnd, u64 seed);
 double sampleSurfaceNoise(const Generator* g, const SurfaceNoise* rnd, int x, int y, int z);
@@ -157,38 +157,38 @@ int isSnowy(int id);
 //==============================================================================
 
 //                         old names
-mapfunc_t mapContinent; // mapIsland
-mapfunc_t mapZoomFuzzy;
-mapfunc_t mapZoom;
-mapfunc_t mapLand;   // mapAddIsland
-mapfunc_t mapIsland; // mapRemoveTooMuchOcean
-mapfunc_t mapSnow;   // mapAddSnow
-mapfunc_t mapCool;   // mapCoolWarm
-mapfunc_t mapHeat;   // mapHeatIce
-mapfunc_t mapSpecial;
-mapfunc_t mapMushroom; // mapAddMushroomIsland
-mapfunc_t mapDeepOcean;
-mapfunc_t mapBiome;
-mapfunc_t mapBamboo; // mapAddBamboo
-mapfunc_t mapNoise;  // mapRiverInit
-mapfunc_t mapBiomeEdge;
-mapfunc_t mapHills;
-mapfunc_t mapRiver;
-mapfunc_t mapSmooth;
-mapfunc_t mapSunflower; // mapRareBiome
-mapfunc_t mapShore;
-mapfunc_t mapRiverMix;
-mapfunc_t mapOceanTemp;
-mapfunc_t mapOceanMix;
+mapFunc_t mapContinent; // mapIsland
+mapFunc_t mapZoomFuzzy;
+mapFunc_t mapZoom;
+mapFunc_t mapLand;   // mapAddIsland
+mapFunc_t mapIsland; // mapRemoveTooMuchOcean
+mapFunc_t mapSnow;   // mapAddSnow
+mapFunc_t mapCool;   // mapCoolWarm
+mapFunc_t mapHeat;   // mapHeatIce
+mapFunc_t mapSpecial;
+mapFunc_t mapMushroom; // mapAddMushroomIsland
+mapFunc_t mapDeepOcean;
+mapFunc_t mapBiome;
+mapFunc_t mapBamboo; // mapAddBamboo
+mapFunc_t mapNoise;  // mapRiverInit
+mapFunc_t mapBiomeEdge;
+mapFunc_t mapHills;
+mapFunc_t mapRiver;
+mapFunc_t mapSmooth;
+mapFunc_t mapSunflower; // mapRareBiome
+mapFunc_t mapShore;
+mapFunc_t mapRiverMix;
+mapFunc_t mapOceanTemp;
+mapFunc_t mapOceanMix;
 /// LCE
-mapfunc_t mapGMushroom;
+mapFunc_t mapGMushroom;
 /// LCE
-mapfunc_t mapOceanEdge;
+mapFunc_t mapOceanEdge;
 /// final layer 1:1
-mapfunc_t mapVoronoi114;
+mapFunc_t mapVoronoi114;
 
 // stuff moved from generation
-Layer* setupLayer(Layer* l, mapfunc_t* map, MCVERSION theMc, i8 zoom, i8 edge, u64 saltBase, Layer* p,
+Layer* setupLayer(Layer* l, mapFunc_t* map, MCVERSION theMc, i8 zoom, i8 edge, u64 saltBase, Layer* p,
                   Layer* p2);
 void setupScale(Layer* l, int scale);
 int genArea(const Layer* layer, int* out, int areaX, int areaZ, int areaWidth, int areaHeight);
