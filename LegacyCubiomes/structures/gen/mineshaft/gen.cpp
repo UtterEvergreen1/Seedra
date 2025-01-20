@@ -92,7 +92,7 @@ namespace gen {
             structureBB.offset(0, i, 0);
             // update pieces offset
             for (int index = 0; index < pieceArraySize; index++) {
-                pieceArray[index].structureType = 1;
+                pieceArray[index].variant = 1;
                 pieceArray[index].offset(0, i, 0);
             }
             return;

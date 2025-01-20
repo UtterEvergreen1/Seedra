@@ -181,7 +181,7 @@ double sampleSimplex2D(const PerlinNoise* noise, c_double x, c_double y) {
 void octaveInit(OctaveNoise* noise, RNG& rng, PerlinNoise* octaves, c_int oMin, c_int len) {
     int i;
     c_int end = oMin + len - 1;
-    double persist = 1.0 / ((1LL << len) - 1.0);
+    double persist = 1.0 / (static_cast<double>(1LL << len) - 1.0);
     double lacuna = pow(2.0, end);
 
     if (len < 1 || end > 0) {
@@ -214,7 +214,7 @@ void octaveInit(OctaveNoise* noise, RNG& rng, PerlinNoise* octaves, c_int oMin, 
 }
 
 
-double sampleOctave(const Generator* g, const OctaveNoise* noise, c_double x, c_double y, c_double z) {
+MU double sampleOctave(const Generator* g, const OctaveNoise* noise, c_double x, c_double y, c_double z) {
     double v = 0;
     for (int i = 0; i < noise->octcnt; i++) {
         const PerlinNoise* p = noise->octaves + i;

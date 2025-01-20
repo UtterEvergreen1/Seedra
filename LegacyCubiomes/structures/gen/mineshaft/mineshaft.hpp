@@ -22,8 +22,6 @@ class ChunkPrimer;
 
 namespace gen {
 
-    enum class MineshaftType { NORMAL, MESA };
-
     static constexpr u32 MINESHAFT_ARRAY_SIZE = 1024;
 
     class Mineshaft : public Structure<MINESHAFT_ARRAY_SIZE> {
@@ -32,7 +30,7 @@ namespace gen {
 
 
     public:
-        MineshaftType mineShaftType = MineshaftType::NORMAL;
+        StructureVariant myVariant = StructureVariant::SV_Mineshaft_Normal;
 
 
         /// debugging purposes

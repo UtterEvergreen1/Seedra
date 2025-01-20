@@ -12,7 +12,6 @@ double maintainPrecision(double x);
 
 
 /// Perlin noise
-
 struct PerlinNoise {
     u8 d[512];
     double a;
@@ -30,7 +29,6 @@ double sampleSimplex2D(const PerlinNoise* noise, double x, double y);
 
 
 /// Octave noise
-
 struct OctaveNoise {
     int octcnt{};
     PerlinNoise* octaves = nullptr;
@@ -45,7 +43,6 @@ double sampleOctaveAmp(const Generator* g, const OctaveNoise* noise, double x, d
 
 
 /// Perlin Octaves
-
 struct SurfaceNoise {
     double xzScale{}, yScale{};
     double xzFactor{}, yFactor{};

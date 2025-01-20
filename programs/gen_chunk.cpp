@@ -26,10 +26,12 @@ int main() {
 
 
     Biome::registerBiomes();
-    auto console = lce::CONSOLE::XBOX360;
+    auto console = lce::CONSOLE::WIIU;
     auto version = LCEVERSION::ELYTRA;
     // -6651998285536156346
-    Generator g(console, version, 27184353441555, lce::WORLDSIZE::CLASSIC, lce::BIOMESCALE::SMALL);
+    Generator g(console, version,
+                7710511010199114,
+                lce::WORLDSIZE::CLASSIC, lce::BIOMESCALE::SMALL);
 
     // 3 13 for seed -101, 8 15 for seed 1, 11 16 or 15 5 for seed 27184353441555
     int X_WIDTH = 27;
@@ -56,7 +58,7 @@ int main() {
 
     int64_t worldSeed = g.getWorldSeed();
 
-    // file.write(reinterpret_cast<const char*>(&worldSeed), sizeof(worldSeed));
+    file.write(reinterpret_cast<const char*>(&worldSeed), sizeof(worldSeed));
     file.write(reinterpret_cast<const char*>(&X_CENTER), sizeof(X_CENTER));
     file.write(reinterpret_cast<const char*>(&Z_CENTER), sizeof(Z_CENTER));
     file.write(reinterpret_cast<const char*>(&X_WIDTH), sizeof(X_WIDTH));

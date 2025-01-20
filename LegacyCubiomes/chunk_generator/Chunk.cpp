@@ -93,13 +93,9 @@ namespace Chunk {
             return;
         }
 
-        constexpr bool generateMineshafts = true;
-        constexpr bool generateVillages = true;
-        constexpr bool generateStrongholds = true;
-
         auto chunkBB = BoundingBox::makeChunkBox(chunkX, chunkZ);
 
-        if constexpr (generateMineshafts) {
+        if (GENERATE_MINESHAFTS) {
             for (auto& mineshaft : world.mineshafts) {
                 if (chunkBB.intersects(mineshaft.getStructureBB())) {
                     for (int ip = 0; ip < mineshaft.getPieceCount(); ip++) {
@@ -112,13 +108,12 @@ namespace Chunk {
             }
         }
 
-        if constexpr (generateVillages) {
+        if (GENERATE_VILLAGES) {
             for (auto& village : world.villages) {
                 if (chunkBB.intersects(village.getStructureBB())) {
                     for (int ip = 0; ip < village.getPieceCount(); ip++) {
                         auto& piece = village.getPiece(ip);
                         if (chunkBB.intersects(piece)) {
-                            piece.structureType = village.biomeType;
                             build::village::addComponentParts(world, chunk->decorateRng, chunkBB, piece);
                         }
                     }
@@ -126,7 +121,7 @@ namespace Chunk {
             }
         }
 
-        if constexpr (generateStrongholds) {
+        if (GENERATE_STRONGHOLDS) {
             for (auto& stronghold : world.strongholds) {
                 if (chunkBB.intersects(stronghold.getStructureBB())) {
                     for (int ip = 0; ip < stronghold.getPieceCount(); ip++) {

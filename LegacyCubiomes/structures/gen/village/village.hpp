@@ -9,10 +9,10 @@
 #include <map>
 #include <vector>
 
+class StructureComponent;
 class Generator;
 class World;
 
-class StructureComponent;
 namespace gen {
 
     static constexpr u32 VILLAGE_ARRAY_SIZE = 256;
@@ -62,7 +62,7 @@ namespace gen {
 
 
     public:
-        int biomeType{};
+        StructureVariant myVariant{};
 
 
 
@@ -93,7 +93,7 @@ namespace gen {
         void buildComponentStart(const StructureComponent& piece);
         void buildComponent(const StructureComponent& scIn);
         BoundingBox road(Pos3D pos, enumFacing facing);
-        void additionalRngRolls(Piece& p);
+        void additionalRngRolls(StructureComponent& p);
 
         StructureComponent generateComponent(Pos3D pos, enumFacing facing, i8 depth);
 

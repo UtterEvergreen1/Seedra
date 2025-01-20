@@ -53,11 +53,9 @@ public:
         rng.setSeed(worldSeed);
         auto a = (i64) rng.nextLong();
         auto b = (i64) rng.nextLong();
+        // a = (i64) (((a / 2) * 2) + 1);
+        // b = (i64) (((b / 2) * 2) + 1);
         a = ((a / 2) * 2) + 1;
-        a = (a & 0xFFFFFFFFFFFFFFFD) | a >> 63;
-
-
-
         b = ((b / 2) * 2) + 1;
         c_i64 decoratorSeed = (chunkX * a + chunkZ * b) ^ worldSeed;
         rng.setSeed(decoratorSeed);

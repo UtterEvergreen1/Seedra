@@ -362,7 +362,7 @@ int isSnowy(c_int id) {
 void setLayerSeed(Layer* layer, c_u64 worldSeed) {
     if (layer->p2 != nullptr) setLayerSeed(layer->p2, worldSeed);
 
-    if (layer->p != nullptr) setLayerSeed(layer->p, worldSeed);
+    if (layer->p1 != nullptr) setLayerSeed(layer->p1, worldSeed);
 
     c_u64 ls = layer->layerSalt;
     if (ls == 0) { // Pre 1.13 the Hills branch stays zero-initialized
@@ -385,7 +385,7 @@ void setLayerSeed(Layer* layer, c_u64 worldSeed) {
 ///=============================================================================
 
 /* Set up custom layers. */
-Layer* setupLayer(Layer* l, mapfunc_t* map, const MCVERSION theMc, c_i8 zoom, c_i8 edge,
+Layer* setupLayer(Layer* l, mapFunc_t* map, const MCVERSION theMc, c_i8 zoom, c_i8 edge,
                   c_u64 saltBase, Layer* p, Layer* p2) {
     //Layer *l = g->layers + layerId;
     l->getMap = map;
@@ -398,24 +398,14 @@ Layer* setupLayer(Layer* l, mapfunc_t* map, const MCVERSION theMc, c_i8 zoom, c_
         l->layerSalt = getLayerSalt(saltBase);
     l->startSalt = 0;
     l->startSeed = 0;
-    l->p = p;
+    l->p1 = p;
     l->p2 = p2;
-    /*
-    std::cout
-    << (int)l->mc << " "
-    << (int)l->zoom << " "
-    << (int)l->edge << " "
-    << (int)l->scale << " "
-    << std::endl;
-     */
-    // printf("Layer address: %p\n", layer);
-
     return l;
 }
 
 void setupScale(Layer* l, const int scale) {
     l->scale = scale;
-    if (l->p) setupScale(l->p, scale * l->zoom);
+    if (l->p1) setupScale(l->p1, scale * l->zoom);
     if (l->p2) setupScale(l->p2, scale * l->zoom);
 }
 
@@ -926,7 +916,7 @@ void getMaxArea(const Layer* layer, int areaX, int areaZ, int* maxX, int* maxZ, 
     // multi-layers and zoom-layers use a temporary copy of their parent area
     if (layer->p2 || layer->zoom != 1) *siz += areaX * areaZ;
 
-    getMaxArea(layer->p, areaX, areaZ, maxX, maxZ, siz);
+    getMaxArea(layer->p1, areaX, areaZ, maxX, maxZ, siz);
     if (layer->p2) getMaxArea(layer->p2, areaX, areaZ, maxX, maxZ, siz);
 }
 
@@ -1095,7 +1085,7 @@ int getSurfaceHeight(c_double ncol00[], c_double ncol01[], c_double ncol10[], c_
 }
 
 
-int getSurfaceHeightEnd(const Generator* g, c_int mc, c_u64 seed, c_int x, c_int z) {
+MU int getSurfaceHeightEnd(const Generator* g, c_int mc, c_u64 seed, c_int x, c_int z) {
     (void) mc;
 
     EndNoise en;
@@ -1155,7 +1145,7 @@ int mapZoomFuzzy(const Layer* l, int* out, c_int x, c_int z, c_int w, c_int h) {
     c_int pW = ((x + w) >> 1) - pX + 1;
     c_int pH = ((z + h) >> 1) - pZ + 1;
 
-    c_int err = l->p->getMap(l->p, out, pX, pZ, pW, pH);
+    c_int err = l->p1->getMap(l->p1, out, pX, pZ, pW, pH);
     if EXPECT_FALSE (err != 0) return err;
 
     c_int newW = pW << 1;
@@ -1246,7 +1236,7 @@ int mapZoom(const Layer* l, int* out, c_int x, c_int z, c_int w, c_int h) {
     c_int pW = ((x + w) >> 1) - pX + 1; // (w >> 1) + 2;
     c_int pH = ((z + h) >> 1) - pZ + 1; // (h >> 1) + 2;
 
-    const int err = l->p->getMap(l->p, out, pX, pZ, pW, pH);
+    const int err = l->p1->getMap(l->p1, out, pX, pZ, pW, pH);
     if EXPECT_FALSE (err != 0) return err;
 
     const int newW = pW << 1;
@@ -1313,7 +1303,7 @@ int mapLand(const Layer* l, int* out, c_int x, c_int z, c_int w, c_int h) {
     c_int pW = w + 2;
     c_int pH = h + 2;
 
-    c_int err = l->p->getMap(l->p, out, pX, pZ, pW, pH);
+    c_int err = l->p1->getMap(l->p1, out, pX, pZ, pW, pH);
     if EXPECT_FALSE (err != 0) return err;
 
     const u64 st = l->startSalt;
@@ -1426,7 +1416,7 @@ int mapIsland(const Layer* l, int* out, c_int x, c_int z, c_int w, c_int h) {
     c_int pW = w + 2;
     c_int pH = h + 2;
 
-    c_int err = l->p->getMap(l->p, out, pX, pZ, pW, pH);
+    c_int err = l->p1->getMap(l->p1, out, pX, pZ, pW, pH);
     if EXPECT_FALSE (err != 0) return err;
 
     c_u64 ss = l->startSeed;
@@ -1457,7 +1447,7 @@ int mapSnow(const Layer* l, int* out, c_int x, c_int z, c_int w, c_int h) {
     c_int pW = w + 2;
     c_int pH = h + 2;
 
-    const int err = l->p->getMap(l->p, out, pX, pZ, pW, pH);
+    const int err = l->p1->getMap(l->p1, out, pX, pZ, pW, pH);
     if EXPECT_FALSE (err != 0) return err;
 
     c_u64 ss = l->startSeed;
@@ -1496,7 +1486,7 @@ int mapCool(const Layer* l, int* out, c_int x, c_int z, c_int w, c_int h) {
     c_int pW = w + 2;
     c_int pH = h + 2;
 
-    const int err = l->p->getMap(l->p, out, pX, pZ, pW, pH);
+    const int err = l->p1->getMap(l->p1, out, pX, pZ, pW, pH);
     if EXPECT_FALSE (err != 0) return err;
 
     for (int j = 0; j < h; j++) {
@@ -1526,7 +1516,7 @@ int mapHeat(const Layer* l, int* out, c_int x, c_int z, c_int w, c_int h) {
     c_int pW = w + 2;
     c_int pH = h + 2;
 
-    c_int err = l->p->getMap(l->p, out, pX, pZ, pW, pH);
+    c_int err = l->p1->getMap(l->p1, out, pX, pZ, pW, pH);
     if EXPECT_FALSE (err != 0) return err;
 
     for (int j = 0; j < h; j++) {
@@ -1551,7 +1541,7 @@ int mapHeat(const Layer* l, int* out, c_int x, c_int z, c_int w, c_int h) {
 
 
 int mapSpecial(const Layer* l, int* out, c_int x, c_int z, c_int w, c_int h) {
-    c_int err = l->p->getMap(l->p, out, x, z, w, h);
+    c_int err = l->p1->getMap(l->p1, out, x, z, w, h);
     if EXPECT_FALSE (err != 0) return err;
 
     const u64 st = l->startSalt;
@@ -1583,7 +1573,7 @@ int mapMushroom(const Layer* l, int* out, c_int x, c_int z, c_int w, c_int h) {
     c_int pW = w + 2;
     c_int pH = h + 2;
 
-    c_int err = l->p->getMap(l->p, out, pX, pZ, pW, pH);
+    c_int err = l->p1->getMap(l->p1, out, pX, pZ, pW, pH);
     if EXPECT_FALSE (err != 0) return err;
 
     const u64 ss = l->startSeed;
@@ -1613,7 +1603,7 @@ int mapDeepOcean(const Layer* l, int* out, c_int x, c_int z, c_int w, c_int h) {
     c_int pW = w + 2;
     c_int pH = h + 2;
 
-    c_int err = l->p->getMap(l->p, out, pX, pZ, pW, pH);
+    c_int err = l->p1->getMap(l->p1, out, pX, pZ, pW, pH);
     if EXPECT_FALSE (err != 0) return err;
 
     for (int j = 0; j < h; j++) {
@@ -1669,7 +1659,7 @@ constexpr int oldBiomes11[] = {desert, forest, mountains, swamp, plains, taiga};
 //c_int lushBiomesBE[] = {forest, dark_forest, mountains, plains, plains, plains, birch_forest, swamp};
 
 int mapBiome(const Layer* l, int* out, c_int x, c_int z, c_int w, c_int h) {
-    c_int err = l->p->getMap(l->p, out, x, z, w, h);
+    c_int err = l->p1->getMap(l->p1, out, x, z, w, h);
     if EXPECT_FALSE (err != 0) return err;
 
     c_i8 mc = l->mc;
@@ -1738,7 +1728,7 @@ int mapBiome(const Layer* l, int* out, c_int x, c_int z, c_int w, c_int h) {
 
 
 int mapNoise(const Layer* l, int* out, c_int x, c_int z, c_int w, c_int h) {
-    c_int err = l->p->getMap(l->p, out, x, z, w, h);
+    c_int err = l->p1->getMap(l->p1, out, x, z, w, h);
     if EXPECT_FALSE (err != 0) return err;
 
     c_u64 ss = l->startSeed;
@@ -1760,7 +1750,7 @@ int mapNoise(const Layer* l, int* out, c_int x, c_int z, c_int w, c_int h) {
 
 
 int mapBamboo(const Layer* l, int* out, c_int x, c_int z, c_int w, c_int h) {
-    c_int err = l->p->getMap(l->p, out, x, z, w, h);
+    c_int err = l->p1->getMap(l->p1, out, x, z, w, h);
     if EXPECT_FALSE (err != 0) return err;
 
     c_u64 ss = l->startSeed;
@@ -1801,7 +1791,7 @@ int mapBiomeEdge(const Layer* l, int* out, c_int x, c_int z, c_int w, c_int h) {
 
     c_i8 mc = l->mc;
 
-    c_int err = l->p->getMap(l->p, out, pX, pZ, pW, pH);
+    c_int err = l->p1->getMap(l->p1, out, pX, pZ, pW, pH);
     if EXPECT_FALSE (err != 0) return err;
 
     for (int j = 0; j < h; j++) {
@@ -1857,7 +1847,7 @@ int mapHills(const Layer* l, int* out, c_int x, c_int z, c_int w, c_int h) {
         exit(1);
     }
 
-    int err = l->p->getMap(l->p, out, pX, pZ, pW, pH);
+    int err = l->p1->getMap(l->p1, out, pX, pZ, pW, pH);
     if EXPECT_FALSE (err != 0) return err;
 
     int* riv = out + pW * pH;
@@ -1990,7 +1980,7 @@ int mapRiver(const Layer* l, int* out, const int x, const int z, const int w, co
     c_int pW = w + 2;
     c_int pH = h + 2;
 
-    c_int err = l->p->getMap(l->p, out, pX, pZ, pW, pH);
+    c_int err = l->p1->getMap(l->p1, out, pX, pZ, pW, pH);
     if EXPECT_FALSE (err != 0) return err;
 
     c_i8 mc = l->mc;
@@ -2036,7 +2026,7 @@ int mapSmooth(const Layer* l, int* out, c_int x, c_int z, c_int w, c_int h) {
     c_int pW = w + 2;
     c_int pH = h + 2;
 
-    const int err = l->p->getMap(l->p, out, pX, pZ, pW, pH);
+    const int err = l->p1->getMap(l->p1, out, pX, pZ, pW, pH);
     if EXPECT_FALSE (err != 0) return err;
 
     c_u64 ss = l->startSeed;
@@ -2074,7 +2064,7 @@ int mapSmooth(const Layer* l, int* out, c_int x, c_int z, c_int w, c_int h) {
 
 
 int mapSunflower(const Layer* l, int* out, c_int x, c_int z, c_int w, c_int h) {
-    c_int err = l->p->getMap(l->p, out, x, z, w, h);
+    c_int err = l->p1->getMap(l->p1, out, x, z, w, h);
     if EXPECT_FALSE (err != 0) return err;
 
     c_u64 ss = l->startSeed;
@@ -2122,7 +2112,7 @@ int mapShore(const Layer* l, int* out, c_int x, c_int z, c_int w, c_int h) {
     c_int pW = w + 2;
     c_int pH = h + 2;
 
-    c_int err = l->p->getMap(l->p, out, pX, pZ, pW, pH);
+    c_int err = l->p1->getMap(l->p1, out, pX, pZ, pW, pH);
     if EXPECT_FALSE (err != 0) return err;
 
     c_i8 mc = l->mc;
@@ -2200,7 +2190,7 @@ int mapRiverMix(const Layer* l, int* out, c_int x, c_int z, c_int w, c_int h) {
         exit(1);
     }
 
-    int err = l->p->getMap(l->p, out, x, z, w, h); // biome chain
+    int err = l->p1->getMap(l->p1, out, x, z, w, h); // biome chain
     if EXPECT_FALSE (err != 0) return err;
 
     c_int mc = static_cast<unsigned char>(l->mc);
@@ -2320,7 +2310,7 @@ int mapOceanMix(const Layer* l, int* out, const int x, const int z, const int w,
     int* land = out + w * h;
     const int lw = lx1 - lx0;
     const int lh = lz1 - lz0;
-    err = l->p->getMap(l->p, land, x + lx0, z + lz0, lw, lh);
+    err = l->p1->getMap(l->p1, land, x + lx0, z + lz0, lw, lh);
     if EXPECT_FALSE (err != 0) return err;
 
     for (j = 0; j < h; j++) {
@@ -2382,7 +2372,7 @@ int mapGMushroom(const Layer* l, int* out, c_int x, c_int z, c_int w, c_int h) {
     c_int pW = w + 2;
     c_int pH = h + 2;
 
-    c_int err = l->p->getMap(l->p, out, pX, pZ, pW, pH);
+    c_int err = l->p1->getMap(l->p1, out, pX, pZ, pW, pH);
     if EXPECT_FALSE (err != 0) return err;
 
     for (int j = 0; j < h; j++) {
@@ -2407,7 +2397,7 @@ int mapOceanEdge(const Layer* l, int* out, c_int x, c_int z, c_int w, c_int h) {
     c_int pW = w + 2;
     c_int pH = h + 2;
 
-    c_int err = l->p->getMap(l->p, out, pX, pZ, pW, pH);
+    c_int err = l->p1->getMap(l->p1, out, pX, pZ, pW, pH);
     if EXPECT_FALSE (err != 0) return err;
 
     for (int j = 0; j < h; j++) {
@@ -2459,8 +2449,8 @@ int mapVoronoi114(const Layer* l, int* out, int x, int z, int w, int h) {
     int pW = ((x + w) >> 2) - pX + 2;
     int pH = ((z + h) >> 2) - pZ + 2;
 
-    if (l->p) {
-        int err = l->p->getMap(l->p, out, pX, pZ, pW, pH);
+    if (l->p1) {
+        int err = l->p1->getMap(l->p1, out, pX, pZ, pW, pH);
         if (err != 0) return err;
     }
 
