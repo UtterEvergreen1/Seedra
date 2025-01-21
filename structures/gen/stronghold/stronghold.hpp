@@ -5,7 +5,7 @@
 
 #include "components/GenerationStep.hpp"
 #include "lce/processor.hpp"
-#include "support/rng.hpp"
+#include "common/rng.hpp"
 
 #include "components/PieceWeight.hpp"
 #include "components/StructureComponent.hpp"

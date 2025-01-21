@@ -2,8 +2,8 @@
 
 #include "terrain/World.hpp"
 #include "lce/enums.hpp"
-#include "support/Pos3DTemplate.hpp"
-#include "support/rng.hpp"
+#include "common/Pos3DTemplate.hpp"
+#include "common/rng.hpp"
 #include "terrain/generator.hpp"
 
 class AbstractWorldGenerator {

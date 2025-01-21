@@ -5,7 +5,7 @@
 
 #include "lce/enums.hpp"
 #include "lce/processor.hpp"
-#include "support/Pos3DTemplate.hpp"
+#include "common/Pos3DTemplate.hpp"
 
 
 struct BoundingBox {

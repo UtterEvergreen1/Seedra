@@ -2,7 +2,7 @@
 
 #include <vector>
 
-#include "support/Pos2DTemplate.hpp"
+#include "common/Pos2DTemplate.hpp"
 #include "Container.hpp"
 
 

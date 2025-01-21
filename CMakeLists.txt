@@ -20,7 +20,7 @@ file(GLOB_RECURSE LEGACY_CUBIOMES_SOURCES
         "${CMAKE_CURRENT_LIST_DIR}/include/*.*pp"
         "${CMAKE_CURRENT_LIST_DIR}/loot/*.*pp"
         "${CMAKE_CURRENT_LIST_DIR}/structures/*.*pp"
-        "${CMAKE_CURRENT_LIST_DIR}/support/*.*pp"
+        "${CMAKE_CURRENT_LIST_DIR}/common/*.*pp"
         ...
 )
 

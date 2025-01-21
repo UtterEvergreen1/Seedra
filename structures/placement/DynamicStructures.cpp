@@ -1,6 +1,6 @@
 #include "DynamicStructures.hpp"
 
-#include "support/rng.hpp"
+#include "common/rng.hpp"
 
 
 #include <unordered_set>

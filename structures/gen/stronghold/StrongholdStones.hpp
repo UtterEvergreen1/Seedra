@@ -2,7 +2,7 @@
 
 
 #include "lce/blocks/blocksInit.hpp"
-#include "support/rng.hpp"
+#include "common/rng.hpp"
 
 class StrongholdStones {
 public:

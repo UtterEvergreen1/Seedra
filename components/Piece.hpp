@@ -1,7 +1,7 @@
 #pragma once
 
 #include "lce/processor.hpp"
-#include "support/Pos2DTemplate.hpp"
+#include "common/Pos2DTemplate.hpp"
 #include "BoundingBox.hpp"
 
 #include "PieceType.hpp"

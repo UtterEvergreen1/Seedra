@@ -3,7 +3,7 @@
 #include "lce/items/items.hpp"
 
 #include "enchants/enchantment.hpp"
-#include "support/rng.hpp"
+#include "common/rng.hpp"
 #include "ItemEntry.hpp"
 #include "ItemStack.hpp"
 #include "UniformRoll.hpp"

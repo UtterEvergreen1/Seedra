@@ -5,8 +5,8 @@
 #include <utility>
 #include <vector>
 
-#include "support/MathHelper.hpp"
-#include "support/rng.hpp"
+#include "common/MathHelper.hpp"
+#include "common/rng.hpp"
 #include "terrain/generator.hpp"
 
 

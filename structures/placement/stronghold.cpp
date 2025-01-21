@@ -1,6 +1,6 @@
 #include "stronghold.hpp"
-#include "support/constants.hpp"
-#include "support/rng.hpp"
+#include "common/constants.hpp"
+#include "common/rng.hpp"
 
 
 namespace Placement {

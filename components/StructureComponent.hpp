@@ -5,8 +5,8 @@
 #include "Piece.hpp"
 
 #include "lce/blocks/block.hpp"
-#include "support/Pos3DTemplate.hpp"
-#include "support/RotationAndMirror.hpp"
+#include "common/Pos3DTemplate.hpp"
+#include "common/RotationAndMirror.hpp"
 
 
 class World;

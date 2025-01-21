@@ -1,8 +1,8 @@
 #include "RavineDetector.hpp"
 
 
-#include "support/MathHelper.hpp"
-#include "support/constants.hpp"
+#include "common/MathHelper.hpp"
+#include "common/constants.hpp"
 #include "terrain/biomes/biomeID.hpp"
 
 

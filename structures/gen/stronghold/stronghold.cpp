@@ -2,7 +2,7 @@
 
 #include "stronghold.hpp"
 
-#include "support/rng.hpp"
+#include "common/rng.hpp"
 
 #include "terrain/Chunk.hpp"
 #include "terrain/World.hpp"

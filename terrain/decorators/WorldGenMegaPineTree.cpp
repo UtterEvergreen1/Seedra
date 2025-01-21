@@ -1,7 +1,7 @@
 #include "WorldGenMegaPineTree.hpp"
 
 #include "lce/blocks/__include.hpp"
-#include "support/MathHelper.hpp"
+#include "common/MathHelper.hpp"
 #include "terrain/World.hpp"
 
 using namespace lce::blocks;

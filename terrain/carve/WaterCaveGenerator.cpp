@@ -1,7 +1,7 @@
 #include "WaterCaveGenerator.hpp"
 
-#include "support/MathHelper.hpp"
-#include "support/constants.hpp"
+#include "common/MathHelper.hpp"
+#include "common/constants.hpp"
 
 
 bool WaterCaveGenerator::canReplaceBlock(u16 blockAt) {

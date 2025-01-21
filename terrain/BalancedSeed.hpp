@@ -6,8 +6,8 @@
 #include <vector>
 
 #include "generator.hpp"
-#include "support/constants.hpp"
-#include "support/timer.hpp"
+#include "common/constants.hpp"
+#include "common/timer.hpp"
 #include "terrain/biomes/biomeID.hpp"
 
 namespace BalancedSeed {

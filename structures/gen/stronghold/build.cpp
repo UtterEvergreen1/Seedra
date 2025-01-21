@@ -1,6 +1,6 @@
 #include <cmath>
 
-#include "support/rng.hpp"
+#include "common/rng.hpp"
 #include "stronghold.hpp"
 
 #include "enchants/__include.hpp"

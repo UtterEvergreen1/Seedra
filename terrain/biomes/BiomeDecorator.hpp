@@ -11,9 +11,9 @@
 #include "terrain/decorators/WorldGenWaterlily.hpp"
 
 #include "lce/blocks/__include.hpp"
-#include "support/Pos2DTemplate.hpp"
-#include "support/Pos3DTemplate.hpp"
-#include "support/rng.hpp"
+#include "common/Pos2DTemplate.hpp"
+#include "common/Pos3DTemplate.hpp"
+#include "common/rng.hpp"
 
 
 class Biome;

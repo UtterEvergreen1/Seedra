@@ -19,9 +19,9 @@
 #include "terrain/decorators/WorldGenTaiga2.hpp"
 #include "terrain/decorators/WorldGenTallGrass.hpp"
 
-#include "support/Pos3DTemplate.hpp"
-#include "support/constants.hpp"
-#include "support/rng.hpp"
+#include "common/Pos3DTemplate.hpp"
+#include "common/constants.hpp"
+#include "common/rng.hpp"
 
 class WorldGenDoublePlant;
 class WorldGenSavannaTree;

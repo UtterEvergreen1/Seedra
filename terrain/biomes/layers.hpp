@@ -1,6 +1,6 @@
 #pragma once
 
-#include "support/__include.hpp"
+#include "common/__include.hpp"
 
 #include "lce/enums.hpp"
 #include "lce/processor.hpp"

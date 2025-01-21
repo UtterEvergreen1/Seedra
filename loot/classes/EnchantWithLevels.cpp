@@ -2,7 +2,7 @@
 
 
 #include "enchants/enchantmentHelper.hpp"
-#include "support/MathHelper.hpp"
+#include "common/MathHelper.hpp"
 
 /* Initializers */
 EnchantWithLevels::EnchantWithLevels(const UniformRoll roll) : randomLevel(roll) {}

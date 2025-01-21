@@ -1,6 +1,6 @@
 #pragma once
 
-#include "support/Pos2DTemplate.hpp"
+#include "common/Pos2DTemplate.hpp"
 #include "terrain/generator.hpp"
 #include <vector>
 

@@ -1,7 +1,7 @@
 #pragma once
 
 #include "lce/enums.hpp"
-#include "support/rng.hpp"
+#include "common/rng.hpp"
 
 class Generator;
 

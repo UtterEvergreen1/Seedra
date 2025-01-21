@@ -1,6 +1,6 @@
 #pragma once
 
-#include "support/rng.hpp"
+#include "common/rng.hpp"
 #include "enchantmentData.hpp"
 
 

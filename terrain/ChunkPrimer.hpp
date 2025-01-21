@@ -11,7 +11,7 @@
 
 #include "components/BoundingBox.hpp"
 #include "generator.hpp"
-#include "support/Pos3DTemplate.hpp"
+#include "common/Pos3DTemplate.hpp"
 
 
 enum class Stage : u8 {

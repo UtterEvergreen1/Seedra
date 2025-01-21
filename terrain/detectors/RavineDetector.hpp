@@ -9,8 +9,8 @@
 #include "lce/blocks/block.hpp"
 #include "lce/blocks/blockID.hpp"
 #include "lce/registry/blockRegistry.hpp"
-#include "support/Pos3DTemplate.hpp"
-#include "support/timer.hpp"
+#include "common/Pos3DTemplate.hpp"
+#include "common/timer.hpp"
 #include "terrain/generator.hpp"
 
 

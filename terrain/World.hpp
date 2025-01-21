@@ -6,8 +6,8 @@
 #include "structures/gen/mineshaft/mineshaft.hpp"
 #include "structures/gen/stronghold/stronghold.hpp"
 
-#include "support/Pos2DTemplate.hpp"
-#include "support/Pos3DTemplate.hpp"
+#include "common/Pos2DTemplate.hpp"
+#include "common/Pos3DTemplate.hpp"
 
 class Generator;
 class ChunkPrimer;

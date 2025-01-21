@@ -1,7 +1,7 @@
 #include "CaveGenerator.hpp"
 
-#include "support/MathHelper.hpp"
-#include "support/constants.hpp"
+#include "common/MathHelper.hpp"
+#include "common/constants.hpp"
 #include "terrain/biomes/biomeID.hpp"
 
 #include "lce/blocks/__include.hpp"

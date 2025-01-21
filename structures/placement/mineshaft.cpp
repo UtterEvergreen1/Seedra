@@ -1,6 +1,6 @@
 #include "mineshaft.hpp"
 
-#include "support/rng.hpp"
+#include "common/rng.hpp"
 
 namespace Placement {
 

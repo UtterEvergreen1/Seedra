@@ -5,7 +5,7 @@
 #include "components/GenerationStep.hpp"
 #include "components/StructureComponent.hpp"
 
-#include "support/rng.hpp"
+#include "common/rng.hpp"
 
 #include <map>
 #include <vector>

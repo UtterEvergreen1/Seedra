@@ -11,7 +11,7 @@
 #include "structures/placement/StaticStructures.hpp"
 #include "structures/placement/mineshaft.hpp"
 #include "structures/placement/stronghold.hpp"
-#include "support/timer.hpp"
+#include "common/timer.hpp"
 
 
 void calculateStatistics(const std::vector<int>& data) {

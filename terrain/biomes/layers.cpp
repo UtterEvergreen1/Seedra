@@ -5,8 +5,8 @@
 #include <cstring>
 
 
-#include "support/MathHelper.hpp"
-#include "support/rng.hpp"
+#include "common/MathHelper.hpp"
+#include "common/rng.hpp"
 #include "layers.hpp"
 
 #include "terrain/biomes/biomeID.hpp"

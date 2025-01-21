@@ -3,7 +3,7 @@
 #include <utility>
 
 #include "lce/include/picture.hpp"
-#include "support/util.hpp"
+#include "common/util.hpp"
 #include "terrain/generator.hpp"
 
 

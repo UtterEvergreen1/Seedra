@@ -1,8 +1,8 @@
 #include "WaterRavineGenerator.hpp"
 #include "WaterCaveGenerator.hpp"
 
-#include "support/MathHelper.hpp"
-#include "support/constants.hpp"
+#include "common/MathHelper.hpp"
+#include "common/constants.hpp"
 
 
 void WaterRavineGenerator::addTunnel(c_i64 randomSeed, const Pos2D chunk, ChunkPrimer* chunkPrimer,

@@ -6,7 +6,7 @@
 #include "enchants/__include.hpp"
 
 #include "structures/__include.hpp"
-#include "support/__include.hpp"
+#include "common/__include.hpp"
 #include "terrain/biomes/biome.hpp"
 #include "terrain/generator.hpp"
 

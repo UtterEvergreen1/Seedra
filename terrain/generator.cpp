@@ -1,7 +1,7 @@
 #include "generator.hpp"
 
-#include "support/range.hpp"
-#include "support/rng.hpp"
+#include "common/range.hpp"
+#include "common/rng.hpp"
 #include "terrain/biomes/biomeID.hpp"
 #include "terrain/noise/noise.hpp"
 

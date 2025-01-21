@@ -1,5 +1,5 @@
 #pragma once
-#include "support/Pos3DTemplate.hpp"
+#include "common/Pos3DTemplate.hpp"
 #include "terrain/generator.hpp"
 
 namespace Placement {

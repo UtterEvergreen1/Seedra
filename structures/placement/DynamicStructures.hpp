@@ -1,6 +1,6 @@
 #pragma once
 
-#include "support/Pos2DTemplate.hpp"
+#include "common/Pos2DTemplate.hpp"
 #include "terrain/biomes/biomeID.hpp"
 #include "terrain/biomes/layers.hpp"
 #include "terrain/generator.hpp"

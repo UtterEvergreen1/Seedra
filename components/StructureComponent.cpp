@@ -5,8 +5,8 @@
 #include "terrain/ChunkPrimer.hpp"
 #include "terrain/World.hpp"
 
-#include "support/RotationAndMirror.hpp"
-#include "support/rng.hpp"
+#include "common/RotationAndMirror.hpp"
+#include "common/rng.hpp"
 
 #include "lce/blocks/__include.hpp"
 

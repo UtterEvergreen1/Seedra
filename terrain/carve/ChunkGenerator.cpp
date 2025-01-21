@@ -2,7 +2,7 @@
 
 #include "terrain/biomes/biome.hpp"
 
-#include "support/range.hpp"
+#include "common/range.hpp"
 
 
 ChunkGeneratorOverWorld::ChunkGeneratorOverWorld(const Generator& generator) : g(generator) {

@@ -3,9 +3,9 @@
 #include "terrain/biomes/layers.hpp"
 
 #include "lce/enums.hpp"
-#include "support/Pos2DTemplate.hpp"
+#include "common/Pos2DTemplate.hpp"
 
-#include "support/rng.hpp"
+#include "common/rng.hpp"
 
 struct Layer;
 struct LayerStack;
