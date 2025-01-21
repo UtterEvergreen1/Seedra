@@ -23,14 +23,18 @@ enum class Stage : u8 {
 };
 
 class ChunkPrimer {
+
 public:
     /// all the blocks along with data in the chunk
-    u16 blocks[65536]{};
     Stage stage = Stage::STAGE_TERRAIN;
-    std::vector<u8> skyLight;
-    std::vector<int> precipitationHeightMap = std::vector(256, -999);
-    int highestYBlock = -1;
     RNG decorateRng;
+
+    u16 blocks[65536]{};
+    std::vector<u8> skyLight;
+    int highestYBlock = -1;
+
+    u8 heightMap[16][16];
+    std::vector<int> precipitationHeightMap = std::vector(256, -999);
 
 
     ChunkPrimer() = default;
@@ -49,7 +53,7 @@ public:
     }
 
     ND u16 getBlockId(c_i64 x, c_i64 y, c_i64 z) const {
-        if (x < 0 || y < 0 || z < 0 || x >= 16 || y >= 256 || z >= 16) {/*std::cout << "Invalid coords: " << x << ", " << y << ", " << z << std::endl;*/ return 0;}
+        if (x < 0 || y < 0 || z < 0 || x >= 16 || y >= 256 || z >= 16) { return 0; }
         return getBlockAtIndex(getStorageIndex(x, y, z)) >> 4;
     }
 
@@ -58,7 +62,7 @@ public:
     }
 
     void setBlockId(c_i64 x, c_i64 y, c_i64 z, c_u16 block) {
-        if (x < 0 || y < 0 || z < 0 || x >= 16 || y >= 256 || z >= 16) {/*std::cout << "Invalid coords: " << x << ", " << y << ", " << z << std::endl;*/ return;}
+        if (x < 0 || y < 0 || z < 0 || x >= 16 || y >= 256 || z >= 16) { return; }
         blocks[getStorageIndex(x, y, z)] = block << 4;
     }
 
@@ -67,7 +71,7 @@ public:
     }
 
     ND u16 getData(c_i64 x, c_i64 y, c_i64 z) const {
-        if (x < 0 || y < 0 || z < 0 || x >= 16 || y >= 256 || z >= 16) {/*std::cout << "Invalid coords: " << x << ", " << y << ", " << z << std::endl;*/ return 0;}
+        if (x < 0 || y < 0 || z < 0 || x >= 16 || y >= 256 || z >= 16) { return 0; }
         return getBlockAtIndex(getStorageIndex(x, y, z)) & 15;
     }
 
@@ -76,7 +80,7 @@ public:
     }
 
     void setData(c_i64 x, c_i64 y, c_i64 z, c_u8 data) {
-        if (x < 0 || y < 0 || z < 0 || x >= 16 || y >= 256 || z >= 16) {/*std::cout << "Invalid coords: " << x << ", " << y << ", " << z << std::endl;*/ return;}
+        if (x < 0 || y < 0 || z < 0 || x >= 16 || y >= 256 || z >= 16) { return; }
         blocks[getStorageIndex(x, y, z)] |= data;
     }
 
@@ -133,7 +137,7 @@ public:
         return out;
     }
 
-    /// in block cords not chunk cords
+    /// in block coords not chunk coords
     ND int getHighestYBlock() {
         if (highestYBlock != -1) return highestYBlock;
         for (int y = 255; y >= 0; y--) {
@@ -170,7 +174,8 @@ public:
     }
 
     static i64 getStorageIndex(c_i64 x, c_i64 y, c_i64 z) {
-        c_i64 value = x << 12 | z << 8 | y;
+        // c_i64 value = x << 12 | z << 8 | y;
+        c_i64 value = y << 8 | x << 4 | z;
         return value;
     }
 
@@ -194,7 +199,7 @@ public:
 
     void generateSkylightMap();
 
-    int getPrecipitationHeight(int x, int z);
+    int getPrecipitationHeight(int wX, int wZ);
 
     ND bool canBlockFreeze(const Pos3D &pos) const;
 

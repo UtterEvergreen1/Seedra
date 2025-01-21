@@ -28,10 +28,10 @@ void ChunkPrimer::generateSkylightMap() {
     }
 }
 
-int ChunkPrimer::getPrecipitationHeight(c_int x, c_int z) {
-    c_int i = x & 15;
-    c_int j = z & 15;
-    c_int k = i | j << 4;
+int ChunkPrimer::getPrecipitationHeight(c_int wX, c_int wZ) {
+    c_int x = wX & 15;
+    c_int z = wZ & 15;
+    c_int k = x | z << 4;
 
     using namespace lce::blocks;
     if (precipitationHeightMap[k] == -999) {
@@ -39,7 +39,7 @@ int ChunkPrimer::getPrecipitationHeight(c_int x, c_int z) {
         int y = -1;
 
         while (highestY > 0 && y == -1) {
-            int blockID = getBlockId(i, highestY, j);
+            int blockID = getBlockId(x, highestY, z);
             if (blocksMovement(blockID) || isLiquidBlock(blockID)) {
                 y = highestY + 1;
             } else {
