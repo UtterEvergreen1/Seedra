@@ -3,7 +3,7 @@
 #include "Loot.hpp"
 
 #include "terrain/Chunk.hpp"
-#include "LegacyCubiomes/structures/gen/stronghold/rolls.hpp"
+#include "structures/gen/stronghold/stronghold.hpp"
 
 namespace loot {
     template<typename T>
@@ -11,8 +11,8 @@ namespace loot {
     public:
         /// loot seeding with stronghold stone rolls
         template<bool checkCaves, bool checkWaterCaves = false>
-        ND static RNG getLootSeed(const Generator& g, gen::Stronghold* strongholdGenerator, const Piece& piece,
-                                  c_int chestChunkX, c_int chestChunkZ, bool accurate);
+        ND static RNG getLootSeed(const Generator& g, gen::Stronghold* strongholdGenerator,
+                                  const StructureComponent& piece, c_int chestChunkX, c_int chestChunkZ, bool accurate);
 
         /// combine loot seeding and generation to get the stronghold loot
         template<bool checkCaves, bool shuffle>
@@ -48,12 +48,12 @@ namespace loot {
     /// combine loot seeding and generation to get the stronghold loot
     template<typename T>
     template<bool checkCaves, bool shuffle>
-    Container StrongholdLoot<T>::getLoot(const Generator& g, gen::Stronghold* strongholdGenerator,
+    MU Container StrongholdLoot<T>::getLoot(const Generator& g, gen::Stronghold* strongholdGenerator,
                                          const StructureComponent& piece, c_int chestChunkX, c_int chestChunkZ,
                                          const bool accurate) {
         u64 lootSeed = StrongholdLoot<T>::template getLootSeed<checkCaves>(g, strongholdGenerator, piece, chestChunkX,
                                                                            chestChunkZ, accurate);
-        if (lootSeed == -1) return {};
+        if (lootSeed == -1ULL) return {};
         return T::template getLootFromSeed<shuffle>(lootSeed);
     }
 } // namespace loot

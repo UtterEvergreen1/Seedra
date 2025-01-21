@@ -58,7 +58,7 @@ const std::map<lce::CONSOLE, std::vector<std::vector<int>>> Enchantment::tableOf
 
 bool Enchantment::isSetup = false;
 int Enchantment::count = 0;
-bool Enchantment::Type::Base::canEnchantItem(const lce::Item *itemIn) const {
+bool Enchantment::Type::Base::canEnchantItem(MU const lce::Item *itemIn) const {
     return true;
 }
 

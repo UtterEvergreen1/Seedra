@@ -284,8 +284,9 @@ namespace gen {
                 k -= pieceWeight.weight;
 
                 if (k < 0) {
-                    if (pieceWeight.amountPlaced >= pieceWeight.maxPlaceCount ||
-                        pieceWeight.pieceType == previousPiece && currentVillagePW.size() > 1) {
+                    if ((pieceWeight.amountPlaced >= pieceWeight.maxPlaceCount
+                        || pieceWeight.pieceType == previousPiece)
+                        && currentVillagePW.size() > 1) {
                         break;
                     }
                     auto structureVillagePiece = StructureComponent(pieceWeight.pieceType, depth, createPieceBB(pieceWeight.pieceType, pos, facing), facing, 0);

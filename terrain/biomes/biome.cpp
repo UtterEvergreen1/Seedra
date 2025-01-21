@@ -151,11 +151,11 @@ const WorldGenAbstractTree *Biome::genBigTreeChance(RNG &rng) const {
     return (rng.nextInt(10) == 0 ? (WorldGenAbstractTree *) &BIG_TREE_FEATURE : (WorldGenAbstractTree *) &TREE_FEATURE);
 }
 
-const AbstractWorldGenerator *Biome::getRandomWorldGenForGrass(RNG &rng) const {
+const AbstractWorldGenerator *Biome::getRandomWorldGenForGrass(MU RNG &rng) const {
     return new WorldGenTallGrass(BlockTallGrass::EnumType::GRASS);
 }
 
-BlockFlower::EnumFlowerType Biome::pickRandomFlower(RNG &rng, const Pos2D &pos) const {
+BlockFlower::EnumFlowerType Biome::pickRandomFlower(RNG &rng, MU const Pos2D &pos) const {
     return rng.nextInt(3) > 0 ? BlockFlower::EnumFlowerType::DANDELION : BlockFlower::EnumFlowerType::POPPY;
 }
 
@@ -232,12 +232,12 @@ void Biome::generateBiomeTerrain(RNG &rng, ChunkPrimer *chunkPrimerIn, int x, in
 
 #pragma region TerrainBlocks
 
-void Biome::genTerrainBlocks(i64 worldSeed, RNG &rng, ChunkPrimer *chunkPrimerIn, c_int x, c_int z,
+void Biome::genTerrainBlocks(MU i64 worldSeed, RNG &rng, ChunkPrimer *chunkPrimerIn, c_int x, c_int z,
                              c_double noiseVal) {
     this->generateBiomeTerrain(rng, chunkPrimerIn, x, z, noiseVal);
 }
 
-void BiomeHills::genTerrainBlocks(i64 worldSeed, RNG &rng, ChunkPrimer *chunkPrimerIn, c_int x, c_int z,
+void BiomeHills::genTerrainBlocks(MU i64 worldSeed, RNG &rng, ChunkPrimer *chunkPrimerIn, c_int x, c_int z,
                                   c_double noiseVal) {
     this->topBlock = &lce::BlocksInit::GRASS;
     this->fillerBlock = &lce::BlocksInit::DIRT;
@@ -252,7 +252,7 @@ void BiomeHills::genTerrainBlocks(i64 worldSeed, RNG &rng, ChunkPrimer *chunkPri
     this->generateBiomeTerrain(rng, chunkPrimerIn, x, z, noiseVal);
 }
 
-void BiomeTaiga::genTerrainBlocks(i64 worldSeed, RNG &rng, ChunkPrimer *chunkPrimerIn, c_int x, c_int z,
+void BiomeTaiga::genTerrainBlocks(MU i64 worldSeed, RNG &rng, ChunkPrimer *chunkPrimerIn, c_int x, c_int z,
                                   c_double noiseVal) {
     if (this->type == BiomeTaiga::Type::MEGA || this->type == BiomeTaiga::Type::MEGA_SPRUCE) {
         if (noiseVal > 1.75) {
@@ -265,7 +265,7 @@ void BiomeTaiga::genTerrainBlocks(i64 worldSeed, RNG &rng, ChunkPrimer *chunkPri
     this->generateBiomeTerrain(rng, chunkPrimerIn, x, z, noiseVal);
 }
 
-void BiomeSwamp::genTerrainBlocks(i64 worldSeed, RNG &rng, ChunkPrimer *chunkPrimerIn, c_int x, c_int z,
+void BiomeSwamp::genTerrainBlocks(MU i64 worldSeed, RNG &rng, ChunkPrimer *chunkPrimerIn, c_int x, c_int z,
                                   c_double noiseVal) {
     c_double d0 = GRASS_COLOR_NOISE.getValue(static_cast<double>(x) * 0.25, static_cast<double>(z) * 0.25);
 
@@ -461,7 +461,7 @@ lce::Block const *BiomeMesa::getClayBand(c_int x, c_int y) {
     return this->clayBands[(y + offset + 64) % 64];
 }
 
-void BiomeSavannaMutated::genTerrainBlocks(i64 worldSeed, RNG &rng, ChunkPrimer *chunkPrimerIn, c_int x, c_int z,
+void BiomeSavannaMutated::genTerrainBlocks(MU i64 worldSeed, RNG &rng, ChunkPrimer *chunkPrimerIn, c_int x, c_int z,
                                            c_double noiseVal) {
     if (noiseVal > 1.75) {
         this->topBlock = &lce::BlocksInit::STONE;
@@ -755,15 +755,15 @@ const WorldGenAbstractTree *BiomeTaiga::genBigTreeChance(RNG &rng) const {
                : reinterpret_cast<const WorldGenAbstractTree *>(&SPRUCE_GENERATOR);
 }
 
-const WorldGenAbstractTree *BiomeSwamp::genBigTreeChance(RNG &rng) const {
+const WorldGenAbstractTree *BiomeSwamp::genBigTreeChance(MU RNG &rng) const {
     return &SWAMP_FEATURE;
 }
 
-const WorldGenAbstractTree *BiomeSnow::genBigTreeChance(RNG &rng) const {
+const WorldGenAbstractTree *BiomeSnow::genBigTreeChance(MU RNG &rng) const {
     return &BiomeTaiga::SPRUCE_GENERATOR;
 }
 
-const WorldGenAbstractTree *BiomeJungle::genBigTreeChance(RNG &rng) const {
+const WorldGenAbstractTree *BiomeJungle::genBigTreeChance(MU RNG &rng) const {
     if (rng.nextInt(10) == 0) {
         return &BIG_TREE_FEATURE;
     }
@@ -783,7 +783,7 @@ const WorldGenAbstractTree *BiomeSavanna::genBigTreeChance(RNG &rng) const {
                : reinterpret_cast<const WorldGenAbstractTree *>(&TREE_FEATURE);
 }
 
-const WorldGenAbstractTree *BiomeMesa::genBigTreeChance(RNG &rng) const {
+const WorldGenAbstractTree *BiomeMesa::genBigTreeChance(MU RNG &rng) const {
     return &TREE_FEATURE;
 }
 
@@ -851,7 +851,7 @@ BlockFlower::EnumFlowerType BiomeForest::pickRandomFlower(RNG &rng, const Pos2D 
     return flowerType == BlockFlower::EnumFlowerType::BLUE_ORCHID ? BlockFlower::EnumFlowerType::POPPY : flowerType;
 }
 
-BlockFlower::EnumFlowerType BiomeSwamp::pickRandomFlower(RNG &rng, const Pos2D &pos) const {
+BlockFlower::EnumFlowerType BiomeSwamp::pickRandomFlower(MU RNG &rng, MU const Pos2D &pos) const {
     return BlockFlower::EnumFlowerType::BLUE_ORCHID;
 }
 

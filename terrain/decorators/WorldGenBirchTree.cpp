@@ -44,8 +44,7 @@ bool WorldGenBirchTree::generate(World* worldIn, RNG& rng, const Pos3D& pos) con
                     int xOffset = x - pos.getX();
                     for (int z = pos.getZ() - radius; z <= pos.getZ() + radius; ++z) {
                         int zOffset = z - pos.getZ();
-                        if (std::abs(xOffset) != radius || std::abs(zOffset) != radius ||
-                            rng.nextInt(2) != 0 && yOffset != 0) {
+                        if ((std::abs(xOffset) != radius || std::abs(zOffset) != radius || rng.nextInt(2) != 0) && yOffset != 0) {
                             c_int blockId = worldIn->getBlockId(x, y, z);
                             if (lce::blocks::isAirOrLeavesBlock(blockId) || blockId == VINES_ID) {
                                 worldIn->setBlock(x, y, z, &lce::BlocksInit::BIRCH_LEAVES);

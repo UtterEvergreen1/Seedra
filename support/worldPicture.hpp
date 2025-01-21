@@ -36,8 +36,8 @@ public:
 
         c_auto [fst, snd] = g->generateAllBiomes();
 
-        for (int y = 0; y < getHeight(); ++y) {
-            for (int x = 0; x < getWidth(); ++x) {
+        for (u32 y = 0; y < getHeight(); ++y) {
+            for (u32 x = 0; x < getWidth(); ++x) {
                 c_int id = snd[getIndex(x, y)];
                 drawPixel(&biomeColors[id][0], x, y);
             }
@@ -62,8 +62,8 @@ public:
         c_int h = static_cast<int>(myHeight);
         c_int* ids = g->getBiomeRange(4, x, y, w, h);
 
-        for (int yi = 0; yi < getHeight(); ++yi) {
-            for (int xi = 0; xi < getWidth(); ++xi) {
+        for (u32 yi = 0; yi < getHeight(); ++yi) {
+            for (u32 xi = 0; xi < getWidth(); ++xi) {
                 c_int id = ids[getIndex(xi, yi)];
                 drawPixel(&biomeColors[id][0], xi, yi);
             }

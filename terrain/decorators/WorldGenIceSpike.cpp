@@ -34,8 +34,8 @@ bool WorldGenIceSpike::generate(World * worldIn, RNG &rng, const Pos3D &pos) con
             for (int j1 = -l; j1 <= l; ++j1) {
                 float f2 = static_cast<float>(std::abs(j1)) - 0.25F;
 
-                if ((i1 == 0 && j1 == 0 || f1 * f1 + f2 * f2 <= f * f) && (
-                        i1 != -l && i1 != l && j1 != -l && j1 != l || rng.nextFloat() <= 0.75F)) {
+                if (((i1 == 0 && j1 == 0) || f1 * f1 + f2 * f2 <= f * f) && (
+                        (i1 != -l && i1 != l && j1 != -l && j1 != l) || rng.nextFloat() <= 0.75F)) {
                     const int blockId = worldIn->getBlockId(position.add(i1, k, j1));
 
                     if (blockId == AIR_ID ||

@@ -10,7 +10,7 @@
 namespace rolls {
 
     ///TODO: MAKE SURE IT WORKS!!!
-    void Mineshaft::generateStructure(World& worldIn, const ChunkPrimer* chunk, const gen::Mineshaft* mg,
+    void Mineshaft::generateStructure(MU World& worldIn, const ChunkPrimer* chunk, const gen::Mineshaft* mg,
                                       RNG& rng, c_int chunkX, c_int chunkZ) {
         for (int pieceIndex = 0; pieceIndex < mg->getPieceCount(); ++pieceIndex) {
             const StructureComponent& piece = mg->getPieceConst(pieceIndex);

@@ -496,7 +496,7 @@ public:
     /// Bouncer function to the main one with some default arguments.
     std::vector<double> genNoiseOctaves(Generator* g, std::vector<double> noiseArray, c_int xOffset, c_int zOffset,
                                         c_int xSize, c_int zSize, c_double xScale, c_double zScale,
-                                        double p_76305_10_) {
+                                        MU double p_76305_10_) {
         return genNoiseOctaves(g, std::move(noiseArray), xOffset, 10, zOffset, xSize, 1, zSize, xScale, 1.0, zScale);
     }
 };

@@ -69,7 +69,7 @@ void ELDataArray::addRandomItem(RNG& rng) {
             return;
         }
 
-    END:;
+    MU END:;
     }
 }
 
@@ -97,7 +97,7 @@ void EnchantedBookEnchantsLookupTable::setup() {
 
     // sets up base cumulative weights
     int sum = 0;
-    for (int i = 0; i < Enchantment::REGISTRY.size(); ++i) {
+    for (size_t i = 0; i < Enchantment::REGISTRY.size(); ++i) {
         const Enchantment* ench = Enchantment::REGISTRY[i];
         sum += ench->rarity;
         CUMULATIVE_WEIGHT_ALL[i] = static_cast<i8>(sum);
@@ -109,7 +109,7 @@ void EnchantedBookEnchantsLookupTable::setup() {
         dataArrays[cost] = new ELDataArray();
         c_auto array = dataArrays[cost];
 
-        int i = 0;
+        MU int i = 0;
         for (Enchantment* ench_pt: Enchantment::REGISTRY.getRegistry()) {
             if (ench_pt == nullptr) throw std::runtime_error("Enchantment pointer is NULL; the table is incorrect!");
             for (int level = ench_pt->maxLevel; level > 0; --level) {

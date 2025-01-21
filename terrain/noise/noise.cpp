@@ -12,7 +12,7 @@
 double maintainPrecision(c_double x) { return x - floor(x / 33554432.0 + 0.5) * 33554432.0; }
 
 ATTR(hot, const, always_inline, artificial)
-static double indexedLerp(c_int idx, c_double a, c_double b, c_double c) {
+inline static double indexedLerp(c_int idx, c_double a, c_double b, c_double c) {
     switch (idx & 0xf) {
         case 0:
             return a + b;

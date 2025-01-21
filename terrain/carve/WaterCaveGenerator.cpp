@@ -238,7 +238,7 @@ void WaterCaveGenerator::addRoom(c_i64 seedModifier, const Pos2D target, ChunkPr
 
 
 void WaterCaveGenerator::addFeature(c_int baseChunkX, c_int baseChunkZ, int targetX, int targetZ,
-                                    ChunkPrimer* chunkPrimer, bool accurate) {
+                                    ChunkPrimer* chunkPrimer, MU bool accurate) {
     c_int tunnelCount = rng.nextInt(rng.nextInt(rng.nextInt(40) + 1) + 1);
 
     if EXPECT_TRUE (rng.nextInt(15) != 0) { return; }

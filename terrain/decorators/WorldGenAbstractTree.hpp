@@ -9,7 +9,7 @@ class WorldGenAbstractTree : public AbstractWorldGenerator {
 public:
     virtual void setDecorationDefaults() const {}
 
-    virtual void generateSaplings(World* worldIn, RNG& rand, const Pos3D& pos) const {}
+    virtual void generateSaplings(MU World* worldIn, MU RNG& rand, MU const Pos3D& pos) const {}
 
 protected:
     /// Sets dirt at a specific location if it isn't already dirt

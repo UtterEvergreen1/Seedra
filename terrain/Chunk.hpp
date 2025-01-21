@@ -14,9 +14,9 @@
 
 namespace Chunk {
 
-    static bool GENERATE_VILLAGES = true;
-    static bool GENERATE_MINESHAFTS = true;
-    static bool GENERATE_STRONGHOLDS = true;
+    MU static bool GENERATE_VILLAGES = true;
+    MU static bool GENERATE_MINESHAFTS = true;
+    MU static bool GENERATE_STRONGHOLDS = true;
 
     template<bool checkWaterCaves = false,
         bool generateCaves = true,

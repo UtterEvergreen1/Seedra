@@ -62,7 +62,7 @@ enum class StructureType : u8 {
 };
 
 
-static std::string LceVersionToString(const LCEVERSION version) {
+MU static std::string LceVersionToString(const LCEVERSION version) {
     switch (version) {
         case LCEVERSION::PILLAGE:
             return "PS4_VP";
@@ -84,7 +84,7 @@ static std::string LceVersionToString(const LCEVERSION version) {
 }
 
 
-static std::string getStructureName(const StructureType type) {
+MU static std::string getStructureName(const StructureType type) {
     switch (type) {
         case StructureType::DesertPyramid:
             return "DesertPyramid";
@@ -122,7 +122,7 @@ static std::string getStructureName(const StructureType type) {
 }
 
 
-static MCVERSION getMCVersion(const LCEVERSION lceVersionIn) {
+MU static MCVERSION getMCVersion(const LCEVERSION lceVersionIn) {
     switch (lceVersionIn) {
         case LCEVERSION::AQUATIC:
         default:
@@ -147,7 +147,7 @@ static MCVERSION getMCVersion(const LCEVERSION lceVersionIn) {
 }
 
 
-inline std::string mcVersionToString(const MCVERSION version) {
+MU static std::string mcVersionToString(const MCVERSION version) {
     switch (version) {
         case MC_1_0:
             return "1.0";

@@ -11,13 +11,14 @@ using namespace lce::blocks;
 bool BlockCactus::canBlockStay(World* worldIn, const Pos3D& pos) {
     for (const EnumFacing enumFacing : FACING_HORIZONTAL) {
         c_int blockId = worldIn->getBlockId(pos.offset(enumFacing));
-        if (lce::blocks::isSolidBlock(blockId) || lce::blocks::isLavaMaterial(blockId)) {
+        if (lce::blocks::isSolidBlock(blockId) || isLavaMaterial(blockId)) {
             return false;
         }
     }
 
     c_int blockId = worldIn->getBlockId(pos.down());
-    return blockId == lce::blocks::CACTUS_ID || blockId == lce::blocks::SAND_ID && !lce::blocks::isLiquidBlock(worldIn->getBlockId(pos.up()));
+    return (blockId == CACTUS_ID || blockId == SAND_ID)
+           && !isLiquidBlock(worldIn->getBlockId(pos.up()));
 }
 
 bool WorldGenCactus::generate(World* worldIn, RNG& rng, const Pos3D& pos) const {
@@ -31,7 +32,7 @@ bool WorldGenCactus::generate(World* worldIn, RNG& rng, const Pos3D& pos) const 
 
             for (int k = 0; k < height; ++k) {
                 if (BlockCactus::canBlockStay(worldIn, blockPos)) {
-                    worldIn->setBlock(blockPos.up(cactusYPos), lce::blocks::CACTUS_ID);
+                    worldIn->setBlock(blockPos.up(cactusYPos), CACTUS_ID);
                 }
                 cactusYPos++;
             }

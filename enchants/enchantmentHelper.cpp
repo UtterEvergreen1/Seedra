@@ -10,7 +10,7 @@ void EnchantmentHelper::setConsoleAndVersion(const lce::CONSOLE console, LCEVERS
     // error handling
     if (Enchantment::tableOfOrders.find(console) == Enchantment::tableOfOrders.end())
         throw std::range_error("EnchantmentHelper: Console not implemented.");
-    if (lceVersion >= Enchantment::tableOfOrders.at(console).size())
+    if (static_cast<size_t>(lceVersion) >= Enchantment::tableOfOrders.at(console).size())
         throw std::range_error("EnchantmentHelper: Version not implemented.");
     if (Enchantment::currentConsole == console && Enchantment::currentVersion == version)
         return;

@@ -19,7 +19,7 @@ public:
 
     bool operator==(const RNG& other) const { return seed == other.seed; }
 
-    bool operator==(c_int& rngValue) const { return seed == rngValue; }
+    bool operator==(c_u64& rngValue) const { return seed == rngValue; }
 
     ND RNG copy() const {
         c_auto rng = RNG(seed);
@@ -32,7 +32,7 @@ public:
         return rng;
     }
 
-    static int64_t getRandomWorldSeed() {
+    MU static int64_t getRandomWorldSeed() {
         RNG rng = initializeWithRandomSeed();
         return rng.nextLongI();
     }

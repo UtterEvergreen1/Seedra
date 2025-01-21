@@ -56,13 +56,13 @@ namespace gen {
 namespace build::mineshaft {
 
 
-    MU ND static const lce::Block* getBiomeSpecificPlank(c_int structureType);
+    MU ND extern const lce::Block* getBiomeSpecificPlank(c_int structureType);
 
 
-    MU ND static const lce::Block* getBiomeSpecificFence(c_int structureType);
+    MU ND extern const lce::Block* getBiomeSpecificFence(c_int structureType);
 
 
-    static bool func_189918_a(World& world, const BoundingBox& chunkBB, c_int minX, c_int maxX,
+    extern bool func_189918_a(World& world, const BoundingBox& chunkBB, c_int minX, c_int maxX,
                               c_int y, c_int z, const StructureComponent& piece);
 
 

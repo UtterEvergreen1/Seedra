@@ -36,7 +36,7 @@ namespace build::village {
 
 
     void PlaceDoorBlock(World& world, BoundingBox chunkBB,
-                        RNG& rng,
+                        MU RNG& rng,
                         StructureComponent& piece,
                         int x, int y, int z,
                         EnumFacing facing, const lce::Block* doorBlock) {
@@ -53,7 +53,7 @@ namespace build::village {
                       RNG& rng,
                       StructureComponent& piece,
                       int x, int y,
-                      int z, EnumFacing facing) {
+                      int z, MU EnumFacing facing) {
         // if (!villageIn->isZombieInfested) {
         PlaceDoorBlock(world, chunkBB, rng, piece, x, y, z, EnumFacing::NORTH, getDoorTypeFromBiome(piece));
         // }
@@ -814,7 +814,7 @@ namespace build::village {
     }
 
 
-    bool Path::addComponentParts(World& worldIn, RNG& rng, BoundingBox& chunkBB, StructureComponent& piece) {
+    bool Path::addComponentParts(World& worldIn, MU RNG& rng, BoundingBox& chunkBB, StructureComponent& piece) {
 
         const lce::Block* pathPrimary = getBiomeSpecificBlockState(&lce::BlocksInit::GRASS_PATH, piece.variant);
         const lce::Block* pathSecondary = getBiomeSpecificBlockState(&lce::BlocksInit::GRAVEL, piece.variant);
@@ -868,7 +868,7 @@ namespace build::village {
     }
 
 
-    bool Torch::addComponentParts(World& worldIn, RNG& rng, BoundingBox& chunkBB, StructureComponent& piece) {
+    bool Torch::addComponentParts(World& worldIn, MU RNG& rng, BoundingBox& chunkBB, StructureComponent& piece) {
         if ((piece.data >> 16 & 1) == 0) {
             c_int averageGroundLvl = getAverageGroundLevel(worldIn, chunkBB, piece);
             if (averageGroundLvl < 0) { return true; }
@@ -968,7 +968,7 @@ namespace build::village {
     }
 
 
-    bool Well::addComponentParts(World& worldIn, RNG& rng, BoundingBox& chunkBB, StructureComponent& piece) {
+    bool Well::addComponentParts(World& worldIn, MU RNG& rng, BoundingBox& chunkBB, StructureComponent& piece) {
         if ((piece.data >> 16 & 1) == 0) {
             c_int averageGroundLvl = getAverageGroundLevel(worldIn, chunkBB, piece);
             if (averageGroundLvl < 0) { return true; }

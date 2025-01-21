@@ -4,7 +4,7 @@
 #include "terrain/World.hpp"
 
 
-bool WorldGenLiquids::generate(World * worldIn, RNG& rand, const Pos3D& position) const {
+bool WorldGenLiquids::generate(World * worldIn, MU RNG& rand, const Pos3D& position) const {
     using namespace lce::blocks;
 
     if (worldIn->getBlockId(position.up()) != STONE_ID)

@@ -192,7 +192,7 @@ int getMutated(c_int mc, c_int id) {
     }
 }
 
-int getCategory(int mc, c_int id) {
+int getCategory(MU int mc, c_int id) {
     switch (id) {
         case beach:
         case snowy_beach:

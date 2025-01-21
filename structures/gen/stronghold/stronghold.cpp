@@ -124,9 +124,11 @@ namespace gen {
 
                 switch (generationStep) {
                     case GS_Stronghold_Portal:
-                        if (portalRoomPiece != nullptr) return;
+                        if (portalRoomPiece != nullptr) { return; }
+                        break;
                     case GS_Stronghold_Layout:
-                        if (generationStopped && portalRoomPiece != nullptr) return;
+                        if (generationStopped && portalRoomPiece != nullptr) { return; }
+                        break;
                     default:
                         break;
                 }

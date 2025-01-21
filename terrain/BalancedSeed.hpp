@@ -7,6 +7,7 @@
 
 #include "generator.hpp"
 #include "support/constants.hpp"
+#include "support/timer.hpp"
 #include "terrain/biomes/biomeID.hpp"
 
 namespace BalancedSeed {
@@ -136,16 +137,16 @@ namespace BalancedSeed {
     //shipwreck and buried treasure: -2529672569851994728
     // lots of j temples: 7985003115668529754
     template <bool returnAfter10Seconds>
-    inline i64 findBalancedSeed(const LCEVERSION version, int numThreads) {
-        std::atomic_bool found(false);
+    MU inline i64 findBalancedSeed(const LCEVERSION version, int numThreads) {
+        MU std::atomic_bool found(false);
         std::atomic<i64> result(-1);
-        u64 timeStart = 0;
+        Timer timer;
 
         if (numThreads < 1)
             numThreads = 1;
 
         if constexpr (returnAfter10Seconds) {
-            timeStart = getMilliseconds();
+            timer.reset();
         }
 
         auto searchSeed = [&](Generator* g, RNG localRng) {
@@ -162,7 +163,7 @@ namespace BalancedSeed {
                     return;
                 }
                 if constexpr (returnAfter10Seconds) {
-                    if (10000 < getMilliseconds() - timeStart) {
+                    if (10.0F < timer.getSeconds()) {
                         found.store(true);
                         return;
                     }

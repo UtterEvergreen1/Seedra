@@ -156,7 +156,7 @@ namespace build::stronghold {
 
 
 
-    static void placeDoor(World& worldIn, MU RNG& rng, const BoundingBox& chunkBB,
+    extern void placeDoor(World& worldIn, MU RNG& rng, const BoundingBox& chunkBB,
                           const StructureComponent& piece, Door door, c_int x, c_int y, c_int z);
 
 

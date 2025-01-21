@@ -92,7 +92,7 @@ namespace Chunk {
      shipwreck
      buried treasure
      */
-    void populateStructures(World& world, const Generator& g, int chunkX, int chunkZ) {
+    void populateStructures(World& world, MU const Generator& g, int chunkX, int chunkZ) {
         ChunkPrimer* chunk = world.getChunk({chunkX, chunkZ});
         if (!chunk || chunk->stage != Stage::STAGE_STRUCTURE) {
             return;

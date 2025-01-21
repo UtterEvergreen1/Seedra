@@ -13,7 +13,7 @@ public:
 
     int getMinCost(c_int enchantmentLevel) override { return LEVELS_MIN[enchantmentLevel - 1]; }
 
-    int getMaxCost(c_int enchantmentLevel) override { return 50; }
+    int getMaxCost(MU c_int enchantmentLevel) override { return 50; }
 
     ND bool canApplyTogether(const Enchantment *enchantment) const override {
         return Enchantment::canApplyTogether(enchantment) &&

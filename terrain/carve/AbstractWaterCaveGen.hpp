@@ -22,7 +22,7 @@ public:
             for (int currentZ = targetZ - range; currentZ <= targetZ + range; ++currentZ) {
                 c_int adjustedSeedX = currentX * seedMultiplierX;
                 c_int adjustedSeedZ = currentZ * seedMultiplierZ;
-                rng.setSeed(adjustedSeedX + adjustedSeedZ ^ g.getWorldSeed());
+                rng.setSeed((adjustedSeedX + adjustedSeedZ) ^ g.getWorldSeed());
 
                 addFeature(currentX, currentZ, targetX, targetZ, primer, accurate);
             }

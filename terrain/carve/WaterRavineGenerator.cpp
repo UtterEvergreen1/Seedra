@@ -154,7 +154,7 @@ void WaterRavineGenerator::addTunnel(c_i64 randomSeed, const Pos2D chunk, ChunkP
 }
 
 void WaterRavineGenerator::addFeature(c_int baseChunkX, c_int baseChunkZ, int targetX, int targetZ,
-                                      ChunkPrimer* chunkPrimer, bool accurate) {
+                                      ChunkPrimer* chunkPrimer, MU bool accurate) {
     if EXPECT_FALSE (rng.nextInt(20) == 0) {
         auto tunnelStartX = (double) (baseChunkX * 16 + rng.nextInt(16));
         auto tunnelStartY = (double) (rng.nextInt(rng.nextInt(40) + 8) + 20);
