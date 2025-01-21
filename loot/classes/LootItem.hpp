@@ -1,0 +1,22 @@
+#pragma once
+
+#include "lce/items/items.hpp"
+#include "LootFunction.hpp"
+
+
+class LootFunction;
+class LootItem {
+public:
+    const lce::Item* item;
+
+    ///stores the functions it calls for the item
+    const std::vector<LootFunction*> functions;
+    int weight;
+
+    LootItem() : item(nullptr), weight(0) {}
+
+    LootItem(const lce::Item* item, c_int weight) : item(item), weight(weight) {}
+
+    LootItem(const lce::Item* item, const std::vector<LootFunction*>& lootFunctions, c_int weight)
+        : item(item), functions(lootFunctions), weight(weight) {}
+};

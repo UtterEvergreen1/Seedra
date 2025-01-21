@@ -1,0 +1,20 @@
+#pragma once
+
+#include "AbstractWorldGenerator.hpp"
+
+
+class World;
+
+class WorldGenCucurbitsBlock final : public AbstractWorldGenerator {
+public:
+    int blockId;
+    bool hasRotation;
+
+    explicit WorldGenCucurbitsBlock(const int block, const bool has_rotation = false)
+        : blockId(block), hasRotation(has_rotation) {}
+
+    bool generate(World* worldIn, RNG& rng, const Pos3D& pos) const override;
+
+private:
+    static int getRandomRotationMetaData(RNG& rng);
+};

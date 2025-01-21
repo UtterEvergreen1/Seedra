@@ -1,24 +1,58 @@
-cmake_minimum_required(VERSION 3.28.1)
-project(GenChunks)
+cmake_minimum_required(VERSION 3.24)
+project(LIB_LegacyCubiomes)
 
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/build)
+
+# Build lceLib from the submodule
+add_subdirectory(lce)
+
+# Gather all the .cpp/.hpp for LegacyCubiomes
+file(GLOB_RECURSE LEGACY_CUBIOMES_SOURCES
+        # submodule
+        "${CMAKE_CURRENT_LIST_DIR}/lce/*.*pp"
+        # project
+        "${CMAKE_CURRENT_LIST_DIR}/components/*.*pp"
+        "${CMAKE_CURRENT_LIST_DIR}/chunk_detector/*.*pp"
+        "${CMAKE_CURRENT_LIST_DIR}/terrain/*.*pp"
+        "${CMAKE_CURRENT_LIST_DIR}/cubiomes/*.*pp"
+        "${CMAKE_CURRENT_LIST_DIR}/enchants/*.*pp"
+        "${CMAKE_CURRENT_LIST_DIR}/include/*.*pp"
+        "${CMAKE_CURRENT_LIST_DIR}/loot/*.*pp"
+        "${CMAKE_CURRENT_LIST_DIR}/structures/*.*pp"
+        "${CMAKE_CURRENT_LIST_DIR}/support/*.*pp"
+        ...
+)
+
+add_library(LIB_LegacyCubiomes STATIC ${LEGACY_CUBIOMES_SOURCES})
 
 
-add_executable(GenChunks
-        programs/gen_chunk.cpp
-        # programs/best_mine_chunk_seed.cpp
-        # programs/test_village_gen_speed.cpp
-        # programs/find_one_stairs_down_stronghold_in_one_chunk.cpp
+# Link the lce library
+target_link_libraries(LIB_LegacyCubiomes PRIVATE LIB_lce)
+
+# If your code does #include "LegacyCubiomes/xyz.hpp",
+# you need the parent of this folder on the path:
+target_include_directories(LIB_LegacyCubiomes
+        PUBLIC
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/>
 )
 
 
-target_include_directories(GenChunks PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
+# (Optional) If you want a standalone LegacyCubiomesExe for testing:
+unset(LC_BUILD_EXECUTABLE CACHE)
+option(LC_BUILD_EXECUTABLE "Build LegacyCubiomes standalone executable" ON)
+if(LC_BUILD_EXECUTABLE)
 
+    # Chunk Gen Code For LegacyChunkViewer
+    add_executable(EXE_GenCreateWorld "tests/gen_chunk.cpp")
+    target_link_libraries(EXE_GenCreateWorld PRIVATE LIB_LegacyCubiomes)
 
-add_subdirectory(lce)
-add_subdirectory(LegacyCubiomes)
+    # Ravine Gen Code for finding best seed for mine a chunk
+    add_executable(EXE_MineAChunkSF "tests/best_mine_chunk_seed.cpp")
+    target_link_libraries(EXE_MineAChunkSF PRIVATE LIB_LegacyCubiomes)
 
+    # Test Village generation speed
+    add_executable(EXE_TestVillageGen "tests/test_village_gen_speed.cpp")
+    target_link_libraries(EXE_TestVillageGen PRIVATE LIB_LegacyCubiomes)
 
-target_link_libraries(GenChunks PRIVATE LegacyCubiomesLib)
+endif()
