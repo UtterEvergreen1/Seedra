@@ -25,13 +25,21 @@ int main() {
     fs::path filePath = dirPath / "build" / "chunks" / "chunkdata.bin";
 
 
+    // auto* primer = new ChunkPrimer;
+    // primer->setBlock(0, 0, 0, &lce::BlocksInit::SPRUCE_WOOD_STAIRS);
+    // bool canSnowAt = primer->canSnowAt({0, 1, 0});
+    // std::cout << canSnowAt << "\n";
+
+
+
     Biome::registerBiomes();
-    auto console = lce::CONSOLE::WIIU;
-    auto version = LCEVERSION::ELYTRA;
+    c_i64 WORLD_SEED = 615831156172857837; // 7710511010199114;
+    c_auto CONSOLE = lce::CONSOLE::WIIU;
+    c_auto VERSION = LCEVERSION::ELYTRA;
+    c_auto WORLD_SIZE = lce::WORLDSIZE::CLASSIC;
+    c_auto BIOME_SCALE = lce::BIOMESCALE::SMALL;
     // -6651998285536156346
-    Generator g(console, version,
-                7710511010199114,
-                lce::WORLDSIZE::CLASSIC, lce::BIOMESCALE::SMALL);
+    Generator g(CONSOLE, VERSION, WORLD_SEED, WORLD_SIZE, BIOME_SCALE);
 
     // 3 13 for seed -101, 8 15 for seed 1, 11 16 or 15 5 for seed 27184353441555
     int X_WIDTH = 27;

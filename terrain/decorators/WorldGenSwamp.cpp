@@ -52,7 +52,7 @@ bool WorldGenSwamp::generate(World* worldIn, RNG& rand, const Pos3D& position) c
                     for (int i4 = pos.getZ() - l2; i4 <= pos.getZ() + l2; ++i4) {
                         int j1 = i4 - pos.getZ();
 
-                        if ((std::abs(k3) != l2 || std::abs(j1) != l2 || rand.nextInt(2) != 0) && j2 != 0) {
+                        if (std::abs(k3) != l2 || std::abs(j1) != l2 || (rand.nextInt(2) != 0 && j2 != 0)) {
                             Pos3D blockPos(j3, k1, i4);
 
                             if (!isFullBlock(worldIn->getBlockId(blockPos))) {

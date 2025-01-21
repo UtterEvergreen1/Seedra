@@ -126,7 +126,7 @@ public:
 
     // only works for integral types
     template<typename T = classType, typename = std::enable_if_t<std::is_integral_v<T>>> MU ND
-    Pos3DTemplate convertToChunkCords() const;
+    Pos3DTemplate convertToChunkCoords() const;
 
     MU ND bool insideBounds(classType lowerX, classType lowerY, classType lowerZ, classType upperX, classType upperY,
                             classType upperZ) const;

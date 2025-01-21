@@ -286,7 +286,8 @@ namespace build::village {
         piece.fillWithBlocks(worldIn, chunkBB, 1, 0, 0, 11, 0, 0, iBlockState, iBlockState, false);
         piece.fillWithBlocks(worldIn, chunkBB, 1, 0, 8, 11, 0, 8, iBlockState, iBlockState, false);
         piece.fillWithBlocks(worldIn, chunkBB, 3, 0, 1, 3, 0, 7, &lce::BlocksInit::FLOWING_WATER, false);
-        piece.fillWithBlocks(worldIn, chunkBB, 9, 0, 1, 9, 0, 7, &lce::BlocksInit::STILL_WATER, &lce::BlocksInit::FLOWING_WATER, false);
+        piece.fillWithBlocks(worldIn, chunkBB, 9, 0, 1, 9, 0, 7, &lce::BlocksInit::STILL_WATER,
+                             &lce::BlocksInit::FLOWING_WATER, false);
 
         const lce::Block* cropTypeA = getRandomCropType(piece.data >> 12 & 0xF);
         const lce::Block* cropTypeB = getRandomCropType(piece.data >> 8 & 0xF);
@@ -310,6 +311,7 @@ namespace build::village {
             piece.setBlockState(worldIn, cropTypeD->getStateFromMeta(rng.nextInt(i2, l1)), 10, 1, i, chunkBB);
             piece.setBlockState(worldIn, cropTypeD->getStateFromMeta(rng.nextInt(i2, l1)), 11, 1, i, chunkBB);
         }
+
 
         for (int j2 = 0; j2 < 9; ++j2) {
             for (int k2 = 0; k2 < 13; ++k2) {

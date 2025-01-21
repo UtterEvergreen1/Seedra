@@ -1,7 +1,9 @@
 #include "ChunkPrimer.hpp"
 
-#include "terrain/biomes/biome.hpp"
+#include "lce/__include.hpp"
 
+
+using namespace lce::blocks;
 
 void ChunkPrimer::generateSkylightMap() {
     skyLight.resize(65536, 0);
@@ -38,9 +40,11 @@ int ChunkPrimer::getPrecipitationHeight(c_int x, c_int z) {
 
         while (highestY > 0 && y == -1) {
             int blockID = getBlockId(i, highestY, j);
-            if (blocksMovement(blockID) || isLiquidBlock(blockID)) y = highestY + 1;
-            else
+            if (blocksMovement(blockID) || isLiquidBlock(blockID)) {
+                y = highestY + 1;
+            } else {
                 highestY -= 1;
+            }
         }
 
         precipitationHeightMap[k] = y;
@@ -61,9 +65,27 @@ bool ChunkPrimer::canBlockFreeze(const Pos3D &pos) const {
     return false;
 }
 
+
+static bool canPlaceSnowLayerAt(const ChunkPrimer* chunkPrimer, Pos3D pos) {
+    const lce::Block* block = chunkPrimer->getBlock(pos);
+
+    if (block->getID() != lce::blocks::AIR_ID) { return false; }
+
+    const lce::Block* blockDown = chunkPrimer->getBlock(pos.down());
+
+    if (blockDown == &lce::BlocksInit::ICE || blockDown == &lce::BlocksInit::PACKED_ICE) { return false; }
+
+    // auto blockFaceShape = block.func_193401_d(chunkPrimer, pos.down(), EnumFacing::UP);
+    return isFullBlock(blockDown->getID()) /* blockFaceShape == BlockFaceShape.SOLID || */
+           || lce::blocks::isLeavesBlock(blockDown->getID())
+           || (blockDown->getID() == lce::blocks::SNOW_ID && blockDown->getDataTag() == 8);
+}
+
+
+
 bool ChunkPrimer::canSnowAt(const Pos3D &pos) const {
-    if (pos.getY() >= 0 && pos.getY() < 256 /* && getLightFor(EnumSkyBlock.BLOCK, pos) < 10*/) {
-        if (getBlockId(pos.getX(), pos.getY(), pos.getZ()) == lce::blocks::AIR_ID) return true;
-    }
+    // if (getLightFor(EnumSkyBlock.BLOCK, pos) < 10*/) {
+    if (canPlaceSnowLayerAt(this, pos)) { return true; }
+    // }
     return false;
 }

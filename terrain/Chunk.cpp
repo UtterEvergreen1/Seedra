@@ -187,8 +187,11 @@ namespace Chunk {
                     world.setBlock(waterPos, lce::blocks::ICE_ID);
                 }
 
-                if (world.canSnowAt(snowPos, false)) { // TODO: check light
+                if (world.canSnowAt(snowPos, true)) { // TODO: check light
                     world.setBlock(snowPos, lce::blocks::SNOW_ID);
+                    if (world.getBlockId(snowPos.down()) == lce::blocks::FARMLAND_ID) {
+                        world.setBlock(snowPos.down(), lce::BlocksInit::DIRT);
+                    }
                 }
             }
         }

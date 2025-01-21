@@ -77,7 +77,7 @@ Pos2DTemplate<classType> Pos3DTemplate<classType>::convert2D() const { return {x
 
 template<class classType>
 template<typename, typename>
-Pos3DTemplate<classType> Pos3DTemplate<classType>::convertToChunkCords() const {
+Pos3DTemplate<classType> Pos3DTemplate<classType>::convertToChunkCoords() const {
     return {x & 15, y & 255, z & 15};
 }
 
@@ -115,4 +115,4 @@ class Pos3DTemplate<int>;
 template
 class Pos3DTemplate<double>;
 
-template Pos3DTemplate<int> Pos3DTemplate<int>::convertToChunkCords<int, void>() const;
+template Pos3DTemplate<int> Pos3DTemplate<int>::convertToChunkCoords<int, void>() const;

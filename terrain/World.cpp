@@ -168,12 +168,12 @@ bool World::canBlockFreeze(const Pos3D &pos, const bool noWaterAdj) {
         const Pos2D chunkPos = {pos.getX() >> 4, pos.getZ() >> 4};
         const ChunkPrimer *chunk = getOrCreateChunk(chunkPos);
         if (chunk) {
-            const bool valid = chunk->canBlockFreeze(pos.convertToChunkCords());
+            const bool valid = chunk->canBlockFreeze(pos.convertToChunkCoords());
             if (!noWaterAdj) return valid;
 
             if (!valid) return false;
             for (const auto faces : FACING_HORIZONTAL) {
-                if (chunk->canBlockFreeze(pos.offset(faces).convertToChunkCords())) {
+                if (chunk->canBlockFreeze(pos.offset(faces).convertToChunkCoords())) {
                     return false;
                 }
             }
@@ -194,12 +194,12 @@ bool World::canSnowAt(const Pos3D &pos, const bool checkLight) {
 
     if (!checkLight) { return true; }
 
-    // TODO: needs to check block light later on to replacate a perfect chunk
+    // TODO: needs to check block light later on to replicate a perfect chunk
     if (pos.getY() >= 0 && pos.getY() < 256) {
         const Pos2D chunkPos = {pos.getX() >> 4, pos.getZ() >> 4};
         const ChunkPrimer *chunk = getOrCreateChunk(chunkPos);
         if (chunk) {
-            return chunk->canSnowAt(pos.convertToChunkCords());
+            return chunk->canSnowAt(pos.convertToChunkCoords());
         }
     }
     return false;
