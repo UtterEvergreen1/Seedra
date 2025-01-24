@@ -68,7 +68,7 @@ This project uses a [separate project](https://github.com/zugebot/lce.git).
 Set this up by doing:
 
 ```bash
-git submodule add https://github.com/zugebot/lce.git
+git submodule add https://github.com/lce-resources/lceLIB.git
 git submodule update --init
 ```
 
