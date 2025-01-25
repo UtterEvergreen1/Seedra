@@ -36,7 +36,7 @@ class ChunkPrimer;
 class Biome {
 public:
     static const NoiseGeneratorPerlin TEMPERATURE_NOISE;
-    static const NoiseGeneratorPerlin GRASS_COLOR_NOISE;
+    static const NoiseGeneratorPerlin INFO_NOISE;
     static const WorldGenDoublePlant DOUBLE_PLANT_GENERATOR;
 
     /** The tree generator. */
@@ -60,6 +60,13 @@ public:
     /** Set to true if snow is enabled for this biome. */
     MU bool enableSnow;
 
+    /// The rainfall in the biome. Default 0.5.
+    float rainFall;
+
+    /// The color of the water. Default 16777215.
+    uint32_t waterColor;
+
+
     /// The block expected to be on the top of this biome
     lce::Block const *topBlock = &lce::BlocksInit::GRASS;
 
@@ -73,21 +80,23 @@ public:
     static void registerBiome(int id, Biome *biome) { registry.emplace(id, biome); }
 
     Biome(std::string biomeNameIn, c_float baseHeightIn, c_float heightVariationIn, c_bool enableSnowIn,
-          c_float temperatureIn)
+          c_float temperatureIn, c_float rainFallIn = 0.5f, uint32_t waterColorIn = 0xA5F5AF44)
         : biomeName(std::move(biomeNameIn)), baseHeight(baseHeightIn), heightVariation(heightVariationIn),
-          temperature(temperatureIn), enableSnow(enableSnowIn) {
+          temperature(temperatureIn), enableSnow(enableSnowIn), rainFall(rainFallIn), waterColor(waterColorIn) {
     }
 
     Biome(std::string biomeNameIn, c_float baseHeightIn, c_float heightVariationIn, c_bool enableSnowIn,
-          c_float temperatureIn, lce::Block const *topBlockIn)
-        : biomeName(std::move(biomeNameIn)), baseHeight(baseHeightIn), heightVariation(heightVariationIn),
-          temperature(temperatureIn), enableSnow(enableSnowIn), topBlock(topBlockIn) {
+          c_float temperatureIn, c_float rainFallIn, lce::Block const *topBlockIn)
+        : Biome(std::move(biomeNameIn), baseHeightIn, heightVariationIn, enableSnowIn, temperatureIn, rainFallIn) {
+        this->topBlock = topBlockIn;
     }
 
     Biome(std::string biomeNameIn, c_float baseHeightIn, c_float heightVariationIn, c_bool enableSnowIn,
-          c_float temperatureIn, lce::Block const *topBlockIn, lce::Block const *fillerBlockIn)
-        : biomeName(std::move(biomeNameIn)), baseHeight(baseHeightIn), heightVariation(heightVariationIn),
-          temperature(temperatureIn), enableSnow(enableSnowIn), topBlock(topBlockIn), fillerBlock(fillerBlockIn) {
+          c_float temperatureIn, c_float rainFallIn, lce::Block const *topBlockIn,
+          lce::Block const *fillerBlockIn)
+        : Biome(std::move(biomeNameIn), baseHeightIn, heightVariationIn, enableSnowIn, temperatureIn, rainFallIn,
+                topBlockIn) {
+        this->fillerBlock = fillerBlockIn;
     }
 
     virtual ~Biome();
@@ -106,6 +115,14 @@ public:
 
     virtual void decorate(World *worldIn, RNG &rng, const Pos2D &pos);
 
+    uint32_t getWaterColor();
+
+    float getRainfall() const;
+
+    virtual uint32_t getGrassColor(const Pos3D &pos) const;
+
+    virtual uint32_t getFoliageColor(const Pos3D &pos) const;
+
     void generateBiomeTerrain(RNG &rng, ChunkPrimer *chunkPrimerIn, int x, int z, double noiseVal) const;
 
     virtual void genTerrainBlocks(i64 worldSeed, RNG &rng, ChunkPrimer *chunkPrimerIn, c_int x, c_int z,
@@ -117,8 +134,8 @@ public:
 class BiomeOcean final : public Biome {
 public:
     BiomeOcean(MU std::string biomeName, c_float baseHeight, c_float heightVariation, c_bool enableSnow,
-               c_float temperature)
-        : Biome(std::move(biomeName), baseHeight, heightVariation, enableSnow, temperature) {
+               c_float temperature, uint32_t waterColor)
+        : Biome(std::move(biomeName), baseHeight, heightVariation, enableSnow, temperature, 0.5f, waterColor) {
     }
 };
 
@@ -127,9 +144,8 @@ public:
     bool hasSunflowers;
 
     BiomePlains(c_bool hasSunflowers, MU std::string biomeName, c_float baseHeight, c_float heightVariation,
-                c_bool enableSnow,
-                c_float temperature)
-        : Biome(std::move(biomeName), baseHeight, heightVariation, enableSnow, temperature),
+                c_bool enableSnow, c_float temperature)
+        : Biome(std::move(biomeName), baseHeight, heightVariation, enableSnow, temperature, 0.4f),
           hasSunflowers(hasSunflowers) {
         this->decorator->treesPerChunk = 0;
         this->decorator->extraTreeChance = 0.05F;
@@ -147,9 +163,10 @@ public:
 class BiomeDesert final : public Biome {
 public:
     BiomeDesert(MU std::string biomeName, c_float baseHeight, c_float heightVariation, c_bool enableSnow,
-                c_float temperature)
-        : Biome(std::move(biomeName), baseHeight, heightVariation, enableSnow, temperature, &lce::BlocksInit::SAND,
+                c_float temperature, uint32_t waterColor = 0xA5F5AF44)
+        : Biome(std::move(biomeName), baseHeight, heightVariation, enableSnow, temperature, 0.0f, &lce::BlocksInit::SAND,
                 &lce::BlocksInit::SAND) {
+        this->waterColor = waterColor;
         this->decorator->treesPerChunk = -999;
         this->decorator->deadBushPerChunk = 2;
         this->decorator->reedsPerChunk = 50;
@@ -168,9 +185,8 @@ public:
     };
 
     BiomeHills(const BiomeHills::Type typeIn, MU std::string biomeName, c_float baseHeight, c_float heightVariation,
-               c_bool enableSnow,
-               c_float temperature)
-        : Biome(std::move(biomeName), baseHeight, heightVariation, enableSnow, temperature), type(typeIn) {
+               c_bool enableSnow, c_float temperature, uint32_t waterColor = 0xA5F5AF44)
+        : Biome(std::move(biomeName), baseHeight, heightVariation, enableSnow, temperature, 0.3f, waterColor), type(typeIn) {
         if (type == BiomeHills::Type::EXTRA_TREES) {
             this->decorator->treesPerChunk = 3;
         }
@@ -204,8 +220,8 @@ public:
     };
 
     BiomeForest(const BiomeForest::Type typeIn, MU std::string biomeName, c_float baseHeight, c_float heightVariation,
-                c_bool enableSnow, c_float temperature)
-        : Biome(std::move(biomeName), baseHeight, heightVariation, enableSnow, temperature), type(typeIn) {
+                c_bool enableSnow, c_float temperature, uint32_t waterColor = 0xA5F5AF44)
+        : Biome(std::move(biomeName), baseHeight, heightVariation, enableSnow, temperature, 0.8f, waterColor), type(typeIn) {
         this->decorator->treesPerChunk = 10;
         this->decorator->grassPerChunk = 2;
 
@@ -223,6 +239,8 @@ public:
     const WorldGenAbstractTree *genBigTreeChance(RNG &rng) const override;
 
     ND BlockFlower::EnumFlowerType pickRandomFlower(RNG &rng, const Pos2D &pos) const override;
+
+    uint32_t getGrassColor(const Pos3D &pos) const override;
 
 private:
     void addMushrooms(World *worldIn, RNG &rng, const Pos2D &pos) const;
@@ -242,7 +260,7 @@ public:
     BiomeForestMutated(MU std::string biomeName, c_float baseHeight, c_float heightVariation,
                        c_bool enableSnow, c_float temperature)
         : BiomeForest(BiomeForest::Type::BIRCH, std::move(biomeName), baseHeight, heightVariation, enableSnow,
-                      temperature) {
+                      temperature, 0x80CA8900) {
     }
 
     const WorldGenAbstractTree *genBigTreeChance(RNG &rng) const override;
@@ -252,6 +270,7 @@ class WorldGenTaiga1;
 class WorldGenTaiga2;
 class WorldGenMegaPineTree;
 class WorldGenBlockBlob;
+
 class BiomeTaiga final : public Biome {
 public:
     enum class Type {
@@ -261,8 +280,8 @@ public:
     };
 
     BiomeTaiga(const BiomeTaiga::Type typeIn, MU std::string biomeName, c_float baseHeight, c_float heightVariation,
-               c_bool enableSnow, c_float temperature)
-        : Biome(std::move(biomeName), baseHeight, heightVariation, enableSnow, temperature), type(typeIn) {
+               c_bool enableSnow, c_float temperature, uint32_t waterColor = 0xA5F5AF44)
+        : Biome(std::move(biomeName), baseHeight, heightVariation, enableSnow, temperature, 0.8f, waterColor), type(typeIn) {
         this->decorator->treesPerChunk = 10;
 
         if (type != BiomeTaiga::Type::MEGA && type != BiomeTaiga::Type::MEGA_SPRUCE) {
@@ -286,6 +305,7 @@ public:
     static const WorldGenTaiga2 SPRUCE_GENERATOR;
     static const WorldGenTallGrass FERN_GENERATOR;
     static const WorldGenTallGrass GRASS_GENERATOR;
+
 private:
     static const WorldGenTaiga1 PINE_GENERATOR;
     static const WorldGenMegaPineTree MEGA_PINE_GENERATOR;
@@ -297,8 +317,8 @@ private:
 class BiomeSwamp final : public Biome {
 public:
     BiomeSwamp(MU std::string biomeName, c_float baseHeight, c_float heightVariation, c_bool enableSnow,
-               c_float temperature)
-        : Biome(std::move(biomeName), baseHeight, heightVariation, enableSnow, temperature) {
+               c_float temperature, uint32_t waterColor = 0xA5F5AF44)
+        : Biome(std::move(biomeName), baseHeight, heightVariation, enableSnow, temperature, 0.9F, waterColor/*0xAEFFE0*//*0xE0FFAE*/) {
         this->decorator->treesPerChunk = 2;
         this->decorator->flowersPerChunk = 1;
         this->decorator->deadBushPerChunk = 1;
@@ -320,6 +340,10 @@ public:
 
     BlockFlower::EnumFlowerType pickRandomFlower(RNG &rng, const Pos2D &pos) const override;
 
+    uint32_t getGrassColor(const Pos3D &pos) const override;
+
+    uint32_t getFoliageColor(const Pos3D &pos) const override;
+
 private:
     static const WorldGenSwamp SWAMP_FEATURE;
 };
@@ -327,8 +351,8 @@ private:
 class BiomeRiver final : public Biome {
 public:
     BiomeRiver(MU std::string biomeName, c_float baseHeight, c_float heightVariation, c_bool enableSnow,
-               c_float temperature)
-        : Biome(std::move(biomeName), baseHeight, heightVariation, enableSnow, temperature) {
+               c_float temperature, uint32_t waterColor = 0xA5F5AF44)
+        : Biome(std::move(biomeName), baseHeight, heightVariation, enableSnow, temperature, 0.5f, waterColor) {
     }
 };
 
@@ -337,8 +361,8 @@ public:
     MU bool superIcy;
 
     BiomeSnow(c_bool superIcy, MU std::string biomeName, c_float baseHeight, c_float heightVariation,
-              c_bool enableSnow, c_float temperature)
-        : Biome(std::move(biomeName), baseHeight, heightVariation, enableSnow, temperature) {
+              c_bool enableSnow, c_float temperature, uint32_t waterColor = 0xA5F5AF44)
+        : Biome(std::move(biomeName), baseHeight, heightVariation, enableSnow, temperature, 0.5f, waterColor) {
         this->superIcy = superIcy;
         if (superIcy) this->topBlock = &lce::BlocksInit::SNOW_BLOCK;
     }
@@ -355,8 +379,10 @@ private:
 class BiomeMushroomIsland final : public Biome {
 public:
     BiomeMushroomIsland(MU std::string biomeName, c_float baseHeight, c_float heightVariation,
-                        c_bool enableSnow, c_float temperature)
-        : Biome(std::move(biomeName), baseHeight, heightVariation, enableSnow, temperature, &lce::BlocksInit::MYCELIUM) {
+                        c_bool enableSnow, c_float temperature, uint32_t waterColor = 0xA5F5AF44)
+        : Biome(std::move(biomeName), baseHeight, heightVariation, enableSnow, temperature, 1.0f,
+                &lce::BlocksInit::MYCELIUM) {
+        this->waterColor = waterColor;
         this->decorator->treesPerChunk = -100;
         this->decorator->flowersPerChunk = -100;
         this->decorator->grassPerChunk = -100;
@@ -368,9 +394,10 @@ public:
 class BiomeBeach final : public Biome {
 public:
     BiomeBeach(MU std::string biomeName, c_float baseHeight, c_float heightVariation, c_bool enableSnow,
-               c_float temperature)
-        : Biome(std::move(biomeName), baseHeight, heightVariation, enableSnow, temperature, &lce::BlocksInit::SAND,
+               c_float temperature, c_float rainfall, uint32_t waterColor = 0xA5F5AF44)
+        : Biome(std::move(biomeName), baseHeight, heightVariation, enableSnow, temperature, rainfall, &lce::BlocksInit::SAND,
                 &lce::BlocksInit::SAND) {
+        this->waterColor = waterColor;
         this->decorator->treesPerChunk = -999;
     }
 };
@@ -378,8 +405,8 @@ public:
 class BiomeJungle final : public Biome {
 public:
     BiomeJungle(const bool isEdgeIn, MU std::string biomeName, c_float baseHeight, c_float heightVariation,
-                c_bool enableSnow, c_float temperature)
-        : Biome(std::move(biomeName), baseHeight, heightVariation, enableSnow, temperature), isEdge(isEdgeIn) {
+                c_bool enableSnow, c_float temperature, c_float rainfall, uint32_t waterColor = 0xA5F5AF44)
+        : Biome(std::move(biomeName), baseHeight, heightVariation, enableSnow, temperature, rainfall, waterColor), isEdge(isEdgeIn) {
         if (isEdgeIn) this->decorator->treesPerChunk = 2;
         else {
             this->decorator->treesPerChunk = 50;
@@ -396,6 +423,7 @@ public:
     const AbstractWorldGenerator *getRandomWorldGenForGrass(RNG &rng) const override;
 
     static constexpr int JUNGLE_TREE_HEIGHT_VARIATION = 7;
+
 private:
     bool isEdge;
     static const WorldGenMegaJungle MEGA_JUNGLE_FEATURE;
@@ -406,8 +434,9 @@ class BiomeStoneBeach final : public Biome {
 public:
     BiomeStoneBeach(MU std::string biomeName, c_float baseHeight, c_float heightVariation, c_bool enableSnow,
                     c_float temperature)
-        : Biome(std::move(biomeName), baseHeight, heightVariation, enableSnow, temperature, &lce::BlocksInit::STONE,
+        : Biome(std::move(biomeName), baseHeight, heightVariation, enableSnow, temperature, 0.3f, &lce::BlocksInit::STONE,
                 &lce::BlocksInit::STONE) {
+        this->waterColor = 0xA5BB670D;
         this->decorator->treesPerChunk = -999;
     }
 };
@@ -415,8 +444,8 @@ public:
 class BiomeSavanna : public Biome {
 public:
     BiomeSavanna(MU std::string biomeName, c_float baseHeight, c_float heightVariation, c_bool enableSnow,
-                 c_float temperature)
-        : Biome(std::move(biomeName), baseHeight, heightVariation, enableSnow, temperature) {
+                 c_float temperature, uint32_t waterColor = 0xA5F5AF44)
+        : Biome(std::move(biomeName), baseHeight, heightVariation, enableSnow, temperature, 0.0f, waterColor) {
         this->decorator->treesPerChunk = 1;
         this->decorator->flowersPerChunk = 4;
         this->decorator->grassPerChunk = 20;
@@ -441,8 +470,8 @@ public:
     bool hasForest = false;
 
     BiomeMesa(c_bool hasBrycePillars, c_bool hasForest, MU std::string biomeName, c_float baseHeight,
-              c_float heightVariation, c_bool enableSnow, c_float temperature)
-        : Biome(std::move(biomeName), baseHeight, heightVariation, enableSnow, temperature),
+              c_float heightVariation, c_bool enableSnow, c_float temperature, uint32_t waterColor = 0x80CA8900)
+        : Biome(std::move(biomeName), baseHeight, heightVariation, enableSnow, temperature, 0.0f, waterColor),
           brycePillars(hasBrycePillars),
           hasForest(hasForest) {
         this->topBlock = &lce::BlocksInit::RED_SAND;
@@ -469,6 +498,10 @@ public:
 
     const WorldGenAbstractTree *genBigTreeChance(RNG &rng) const override;
 
+    uint32_t getFoliageColor(const Pos3D &pos) const override;
+
+    uint32_t getGrassColor(const Pos3D &pos) const override;
+
     class Decorator final : public BiomeDecorator {
     protected:
         void generateOres(World *world, RNG &rng) override;
@@ -478,8 +511,8 @@ public:
 class MU BiomeSavannaMutated final : public BiomeSavanna {
 public:
     MU BiomeSavannaMutated(MU std::string biomeName, c_float baseHeight, c_float heightVariation,
-                           c_bool enableSnow, c_float temperature)
-        : BiomeSavanna(std::move(biomeName), baseHeight, heightVariation, enableSnow, temperature) {
+                           c_bool enableSnow, c_float temperature, uint32_t waterColor)
+        : BiomeSavanna(std::move(biomeName), baseHeight, heightVariation, enableSnow, temperature, waterColor) {
         this->decorator->treesPerChunk = 2;
         this->decorator->flowersPerChunk = 2;
         this->decorator->grassPerChunk = 5;

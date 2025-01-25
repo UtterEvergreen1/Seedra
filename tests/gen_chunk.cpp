@@ -42,11 +42,11 @@ int main() {
 
 
     Biome::registerBiomes();
-    c_i64 WORLD_SEED = 615831156172857837; // 7710511010199114;
+    c_i64 WORLD_SEED = -7167647479046862377; // 7710511010199114; 615831156172857837; -4040925134402355186;
     c_auto CONSOLE = lce::CONSOLE::WIIU;
-    c_auto VERSION = LCEVERSION::ELYTRA;
+    c_auto VERSION = LCEVERSION::AQUATIC;
     c_auto WORLD_SIZE = lce::WORLDSIZE::CLASSIC;
-    c_auto BIOME_SCALE = lce::BIOMESCALE::SMALL;
+    c_auto BIOME_SCALE = lce::BIOMESCALE::LARGE;
     // -6651998285536156346
     Generator g(CONSOLE, VERSION, WORLD_SEED, WORLD_SIZE, BIOME_SCALE);
 
@@ -87,10 +87,11 @@ int main() {
 
     int sx = (X_CENTER - X_WIDTH) * 16;
     int sz = (Z_CENTER - Z_WIDTH) * 16;
-    int sw = X_WIDTH * 2;
-    int sh = Z_WIDTH * 2;
+    int sw = X_WIDTH * 2 * 16;
+    int sh = Z_WIDTH * 2 * 16;
     int* biomes = world.getGenerator()
-        ->getBiomeRange(1, sx * 16, sz * 16, sw * 16, sh * 16);
+        ->getBiomeRange(1, sx, sz, sw, sh);
+    std::cout << "Generating biomes at " << sx << ", " << sz << ", " << sw <<  ", " << sh << std::endl;
 
     for (int cx = -(X_WIDTH) + X_CENTER; cx < X_WIDTH + X_CENTER - 1; cx++) {
         for (int cz = -(Z_WIDTH) + Z_CENTER; cz < Z_WIDTH + Z_CENTER - 1; cz++) {
@@ -98,8 +99,8 @@ int main() {
             u8 biomeChunk[256];
             for (int x = 0; x < 16; x++) {
                 for (int z = 0; z < 16; z++) {
-                    int bx = (cx + X_WIDTH) * 16;
-                    int bz = (cz + Z_WIDTH) * 16;
+                    int bx = (cx + X_WIDTH) * 16 + x;
+                    int bz = (cz + Z_WIDTH) * 16 + z;
                     biomeChunk[z * 16 + x] = (u8)biomes[bz * sw + bx];
                 }
             }
