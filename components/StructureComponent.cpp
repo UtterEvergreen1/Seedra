@@ -14,11 +14,7 @@
 MU void StructureComponent::setBlockStateWithoutOffset(World& worldIn, const lce::Block* blockStateIn, c_int x,
                                                        c_int y, c_int z, const BoundingBox& structureBB) {
     if (const auto blockPos = Pos3D(x, y, z); structureBB.isVecInside(blockPos)) {
-        /*if (this->mirror != Mirror::NONE)
-            blockStateIn = blockStateIn.withMirror(this->mirror);
-        if (this->rotation != Rotation::NONE)
-            blockStateIn = blockStateIn.withRotation(this->rotation);*/
-        worldIn.setBlock(blockPos, blockStateIn); // flags = 2
+        worldIn.setBlock(blockPos, blockStateIn);
     }
 }
 
@@ -27,11 +23,7 @@ MU void StructureComponent::setBlockState(World& worldIn, const lce::Block* bloc
                                           c_int z, const BoundingBox& structureBB) const {
     if (const auto blockPos = Pos3D(getWorldX(x, z), getWorldY(y), getWorldZ(x, z));
         structureBB.isVecInside(blockPos)) {
-        /*if (this->mirror != Mirror::NONE)
-            blockStateIn = blockStateIn.withMirror(this->mirror);
-        if (this->rotation != Rotation::NONE)
-            blockStateIn = blockStateIn.withRotation(this->rotation);*/
-        worldIn.setBlock(blockPos, blockStateIn); // flags = 2
+        worldIn.setBlock(blockPos, blockStateIn);
     }
 }
 
@@ -58,7 +50,7 @@ void StructureComponent::clearCurrentPositionBlocksUpwards(World& worldIn, c_int
 
     if (Pos3D blockPos(getWorldX(x, z), getWorldY(y), getWorldZ(x, z)); structureBB.isVecInside(blockPos)) {
         while (!worldIn.isAirBlock(blockPos) && blockPos.getY() < 255) {
-            worldIn.setBlock(blockPos, lce::blocks::AIR_ID); // 2
+            worldIn.setBlockId(blockPos, lce::blocks::AIR_ID); // 2
             blockPos = blockPos.up();
         }
     }

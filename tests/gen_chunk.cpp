@@ -19,7 +19,6 @@ void fileWrite(std::ofstream& file, T obj) {
 }
 
 
-
 int main() {
     const char* userProfile = std::getenv("USERPROFILE");
     if (!userProfile) {
@@ -42,19 +41,20 @@ int main() {
 
 
     Biome::registerBiomes();
-    c_i64 WORLD_SEED = -7167647479046862377; // 7710511010199114; 615831156172857837; -4040925134402355186;
+    // -1204924307554348042;
+    c_i64 WORLD_SEED = -1204924307554348042; // 615831156172857837; // 7710511010199114;
     c_auto CONSOLE = lce::CONSOLE::WIIU;
-    c_auto VERSION = LCEVERSION::AQUATIC;
+    c_auto VERSION = LCEVERSION::ELYTRA;
     c_auto WORLD_SIZE = lce::WORLDSIZE::CLASSIC;
-    c_auto BIOME_SCALE = lce::BIOMESCALE::LARGE;
+    c_auto BIOME_SCALE = lce::BIOMESCALE::SMALL;
     // -6651998285536156346
     Generator g(CONSOLE, VERSION, WORLD_SEED, WORLD_SIZE, BIOME_SCALE);
 
     // 3 13 for seed -101, 8 15 for seed 1, 11 16 or 15 5 for seed 27184353441555
-    int X_WIDTH = 27;
-    int Z_WIDTH = 27;
-    int X_CENTER = 0;
-    int Z_CENTER = 0;
+    int X_WIDTH  = 10; // 10;
+    int Z_WIDTH  = 10; // 10;
+    int X_CENTER = 0; // 9;
+    int Z_CENTER = 0; // 210 / 16;
 
     Timer start;
 
@@ -62,13 +62,17 @@ int main() {
     world.generateMineshafts();
     world.generateVillages();
     world.generateStrongholds();
+
     world.getOrCreateChunk({X_CENTER, Z_CENTER});
-    world.decorateChunks({X_CENTER, Z_CENTER}, X_WIDTH);
+
+    world.encompass({X_CENTER, Z_CENTER}, X_WIDTH);
+
+    world.createChunks({X_CENTER, Z_CENTER}, X_WIDTH);
+    world.decorateCaves({X_CENTER, Z_CENTER}, X_WIDTH);
+
+    // world.decorateChunks({X_CENTER, Z_CENTER}, X_WIDTH);
 
     std::cout << "World Gen Time: " << start.getSeconds() << "\n";
-
-    // const lce::Block* block = world.getBlock({-215, 69, 118});
-    // std::cout << block->getID() << " " << block->getDataTag() << "\n";
 
 
     std::ofstream file(filePath.string(), std::ios::binary);
@@ -89,43 +93,56 @@ int main() {
     int sz = (Z_CENTER - Z_WIDTH) * 16;
     int sw = X_WIDTH * 2 * 16;
     int sh = Z_WIDTH * 2 * 16;
+
+    std::cout << "Generating biomes at "
+              << sx << ", "
+              << sz << ", "
+              << sx + sw <<  ", "
+              << sz + sh << std::endl;
+
     int* biomes = world.getGenerator()
         ->getBiomeRange(1, sx, sz, sw, sh);
-    std::cout << "Generating biomes at " << sx << ", " << sz << ", " << sw <<  ", " << sh << std::endl;
+
+    if (biomes == nullptr) {
+        std::cerr << "Error loading biome map, exiting..." << std::endl;
+        return -1;
+    } else {
+        std::cout << "Loaded Biome Map, writing chunks to file" << std::endl;
+    }
 
     for (int cx = -(X_WIDTH) + X_CENTER; cx < X_WIDTH + X_CENTER - 1; cx++) {
         for (int cz = -(Z_WIDTH) + Z_CENTER; cz < Z_WIDTH + Z_CENTER - 1; cz++) {
+            Pos2D chunkPos(cx, cz);
+            auto* chunkPrimer = world.getChunk({cx, cz});
+
+            if (chunkPrimer == nullptr) {
+                std::cerr << "Error getting chunk: " << chunkPos << std::endl;
+                continue;
+            }
 
             u8 biomeChunk[256];
+
             for (int x = 0; x < 16; x++) {
                 for (int z = 0; z < 16; z++) {
-                    int bx = (cx + X_WIDTH) * 16 + x;
-                    int bz = (cz + Z_WIDTH) * 16 + z;
+                    int bx = (chunkPos.x + X_WIDTH) * 16 + x;
+                    int bz = (chunkPos.z + Z_WIDTH) * 16 + z;
                     biomeChunk[z * 16 + x] = (u8)biomes[bz * sw + bx];
                 }
             }
 
-            auto* chunk = world.getChunk({cx, cz});
-            if (!chunk) {
-                std::cerr << "Error getting chunk: " << cx << ", " << cz << std::endl;
-                continue;
-            }
 
-            if (chunk->highestYBlock != -1) {
-                chunk->highestYBlock = -1;
-                chunk->highestYBlock = std::min(chunk->getHighestYBlock() + 1, 255);
-                i64 sizeToWrite = (i64)sizeof(chunk->blocks[0]) * 256 * chunk->highestYBlock;
+            chunkPrimer->highestYBlock = -1;
+            chunkPrimer->highestYBlock = std::min(chunkPrimer->getHighestYBlock() + 1, 255);
+            i64 sizeToWrite = (i64) sizeof(chunkPrimer->blocks[0]) * 256 * chunkPrimer->highestYBlock;
 
-                fileWrite<int>(file, cx);
-                fileWrite<int>(file, cz);
-                fileWrite<int>(file, chunk->highestYBlock);
-                file.write(reinterpret_cast<const char*>(&biomeChunk[0]), 256);
-                file.write(reinterpret_cast<const char*>(&chunk->blocks[0]), sizeToWrite);
-            }
+            fileWrite<int>(file, chunkPos.x);
+            fileWrite<int>(file, chunkPos.z);
+            fileWrite<int>(file, chunkPrimer->highestYBlock);
+            file.write(reinterpret_cast<const char*>(&biomeChunk[0]), 256);
+            file.write(reinterpret_cast<const char*>(&chunkPrimer->blocks[0]), sizeToWrite);
 
-            if (!file) {
-                std::cerr << "Error writing to file: " << filePath << std::endl;
-            }
+
+            if (!file) { std::cerr << "Error writing to file: " << filePath << std::endl; }
         }
     }
 

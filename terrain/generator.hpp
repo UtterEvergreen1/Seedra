@@ -1,10 +1,10 @@
 #pragma once
 
 #include "terrain/biomes/layers.hpp"
-
 #include "lce/enums.hpp"
-#include "common/Pos2DTemplate.hpp"
 
+#include "common/Pos2DTemplate.hpp"
+#include "common/Pos3DTemplate.hpp"
 #include "common/rng.hpp"
 
 struct Layer;
@@ -87,6 +87,8 @@ public:
     ND i32 getBiomeAt(i32 scale, i32 x, i32 z) const;
 
     MU ND i32 getBiomeAt(c_i32 scale, Pos2D pos) const;
+
+    MU ND i32 getBiomeAt(c_i32 scale, Pos3D pos) const;
 
     ND i32* getBiomeRange(i32 scale, i32 x, i32 z, i32 w, i32 h) const;
 

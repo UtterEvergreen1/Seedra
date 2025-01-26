@@ -1,6 +1,7 @@
 #pragma once
 
 #include "AbstractMapGen.hpp"
+#include <set>
 
 
 class CaveGenerator final : public AbstractMapGen {
@@ -8,23 +9,38 @@ class CaveGenerator final : public AbstractMapGen {
 public:
     explicit CaveGenerator(const Generator& generator) : AbstractMapGen(generator) {}
 
-    MU CaveGenerator(const lce::CONSOLE console, const LCEVERSION version,
-                  c_i64 seed, const lce::WORLDSIZE size, const lce::BIOMESCALE scale)
-        : AbstractMapGen(console, version, seed, size, scale) {}
-
     ~CaveGenerator() override = default;
+
+    MU static Pos2DVec_t getStartingChunks(const Generator* g, Pos2D lower, Pos2D upper);
+
+
+    void addFeature(World& worldIn, Pos2D baseChunk, bool accurate) override;
+
+    void addTunnel(World& worldIn, i64 theSeedModifier, Pos2D currentChunk, DoublePos3D start, float theWidth,
+                   float theDirection, float theSlope, int theCurrentSegment, int theMaxSegment,
+                   double theHeightMultiplier, bool accurate);
+
+    void addRoom(World& worldIn, i64 seedModifier, Pos2D currentChunk, const DoublePos3D& roomStart, RNG& rng,
+                 bool accurate);
+
+
+
+
+
+
+    void addFeature(ChunkPrimer* chunkPrimer, Pos2D baseChunk, Pos2D currentChunk, bool accurate) override;
+
+    void addTunnel(ChunkPrimer* chunkPrimer, i64 theSeedModifier, Pos2D currentChunk, DoublePos3D startPos, float theWidth,
+                   float theDirection, float theSlope, int theCurrentSegment, int theMaxSegment,
+                   double theHeightMultiplier, bool accurate);
+
+    void addRoom(ChunkPrimer* chunkPrimer, i64 seedModifier, Pos2D currentChunk, const DoublePos3D& roomStart, RNG& rng,
+                 bool accurate);
+
+
+private:
 
     ND unsigned char topBlock(int x, int z) const;
 
     static bool canReplaceBlock(u16 blockAt, u16 blockAbove);
-
-    void addTunnel(i64 seedModifier, Pos2D chunk, ChunkPrimer* chunkPrimer, DoublePos3D start, float tunnelWidth,
-                   float tunnelDirection, float tunnelSlope, int currentTunnelSegment, int maxTunnelSegment,
-                   double tunnelHeightMultiplier, bool accurate);
-
-    void addRoom(i64 seedModifier, Pos2D target, ChunkPrimer* chunkPrimer,
-                 const DoublePos3D& roomStart, RNG& rng, bool accurate);
-
-    void addFeature(int baseChunkX, int baseChunkZ, int currentChunkX, int currentChunkZ,
-                    ChunkPrimer* chunkPrimer, bool accurate) override;
 };

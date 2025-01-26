@@ -31,19 +31,19 @@ bool WorldGeneratorBonusChest::generate(World* worldIn, RNG& rng, const Pos3D& p
             const Pos3D southBlock = blockPos.south();
 
             if (worldIn->isAirBlock(eastBlock) && isFullyOpaqueBlock(worldIn->getBlockId(eastBlock.down()))) {
-                worldIn->setBlock(eastBlock, TORCH_ID);
+                worldIn->setBlockId(eastBlock, TORCH_ID);
             }
 
             if (worldIn->isAirBlock(westBlock) && isFullyOpaqueBlock(worldIn->getBlockId(westBlock.down()))) {
-                worldIn->setBlock(westBlock, TORCH_ID);
+                worldIn->setBlockId(westBlock, TORCH_ID);
             }
 
             if (worldIn->isAirBlock(northBlock) && isFullyOpaqueBlock(worldIn->getBlockId(northBlock.down()))) {
-                worldIn->setBlock(northBlock, TORCH_ID);
+                worldIn->setBlockId(northBlock, TORCH_ID);
             }
 
             if (worldIn->isAirBlock(southBlock) && isFullyOpaqueBlock(worldIn->getBlockId(southBlock.down()))) {
-                worldIn->setBlock(southBlock, TORCH_ID);
+                worldIn->setBlockId(southBlock, TORCH_ID);
             }
 
             return true;

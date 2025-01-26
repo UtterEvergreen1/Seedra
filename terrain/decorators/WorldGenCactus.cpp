@@ -32,7 +32,7 @@ bool WorldGenCactus::generate(World* worldIn, RNG& rng, const Pos3D& pos) const 
 
             for (int k = 0; k < height; ++k) {
                 if (BlockCactus::canBlockStay(worldIn, blockPos)) {
-                    worldIn->setBlock(blockPos.up(cactusYPos), CACTUS_ID);
+                    worldIn->setBlockId(blockPos.up(cactusYPos), CACTUS_ID);
                 }
                 cactusYPos++;
             }

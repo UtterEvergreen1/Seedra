@@ -1,38 +1,45 @@
 #pragma once
 
 #include "terrain/ChunkPrimer.hpp"
+#include "terrain/World.hpp"
 
 
 class AbstractMapGen {
+protected:
+    static constexpr int CHUNK_RANGE = 8;
+    static constexpr float RESERVE_MULTIPLIER = 1.4F;
+
 public:
-    static constexpr int range = 8;
     Generator g;
     RNG rng;
 
     explicit AbstractMapGen(const Generator& generator) : g(generator), rng(0) {}
 
-    AbstractMapGen(const lce::CONSOLE console, const LCEVERSION version,
-        c_i64 seed, const lce::WORLDSIZE size, const lce::BIOMESCALE scale)
-        : g(console, version, seed, size, scale), rng(0) {}
-
     virtual ~AbstractMapGen() = default;
 
-    void generate(c_int targetX, c_int targetZ, ChunkPrimer* primer, bool accurate = true) {
-        rng.setSeed(g.getWorldSeed());
-        c_auto seedMultiplierX = rng.nextLongI();
-        c_auto seedMultiplierZ = rng.nextLongI();
+    /// used for caves and ravines
+    MU static Pos2DTemplate<i64> getSeedMultiplier(const Generator* g);
+    /// used for caves and ravines
+    MU void setupRNG(Pos2DTemplate<i64> seedMultiplier, Pos2D chunkPos);
+    /// used for water caves and water ravines
+    MU static void setupRNG(const Generator* g, RNG& rng, Pos2DTemplate<i64> seedMultiplier, Pos2D chunkPos);
 
-        for (int currentX = targetX - range; currentX <= targetX + range; ++currentX) {
-            for (int currentZ = targetZ - range; currentZ <= targetZ + range; ++currentZ) {
-                c_auto adjustedX = (i64) currentX * seedMultiplierX;
-                c_auto adjustedZ = (i64) currentZ * seedMultiplierZ;
-                rng.setSeed(adjustedX ^ adjustedZ ^ g.getWorldSeed());
 
-                addFeature(currentX, currentZ, targetX, targetZ, primer, accurate);
+    void generate(ChunkPrimer* primer, Pos2D target, bool accurate = true) {
+        Pos2DTemplate<i64> seedMultiplier = getSeedMultiplier(&g);
+
+        const Pos2D lower = target - CHUNK_RANGE;
+        const Pos2D upper = target + CHUNK_RANGE;
+        Pos2D chunkPos;
+        for (chunkPos.x = lower.x; chunkPos.x <= upper.x; ++chunkPos.x) {
+            for (chunkPos.z = lower.x; chunkPos.z <= upper.x; ++chunkPos.z) {
+                setupRNG(seedMultiplier, chunkPos);
+                addFeature(primer, chunkPos, target, accurate);
             }
         }
     }
 
-    virtual void addFeature(int baseChunkX, int baseChunkZ, int targetX, int targetZ,
-                            ChunkPrimer* chunkPrimer, bool accurate) = 0;
+    virtual void addFeature(World& worldIn, Pos2D baseChunk, bool accurate) = 0;
+
+    virtual void addFeature(ChunkPrimer* chunkPrimer, Pos2D baseChunk, Pos2D currentChunk, bool accurate) = 0;
 };

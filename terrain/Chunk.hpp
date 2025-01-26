@@ -2,14 +2,7 @@
 
 #include "ChunkPrimer.hpp"
 #include "World.hpp"
-#include "terrain/carve/CaveGenerator.hpp"
-#include "terrain/carve/ChunkGenerator.hpp"
-#include "terrain/carve/RavineGenerator.hpp"
-#include "terrain/carve/WaterCaveGenerator.hpp"
-#include "terrain/carve/WaterRavineGenerator.hpp"
 
-#include "terrain/decorators/WorldGenDungeons.hpp"
-#include "terrain/decorators/WorldGenLakes.hpp"
 
 
 namespace Chunk {
@@ -18,17 +11,18 @@ namespace Chunk {
     MU static bool GENERATE_MINESHAFTS = true;
     MU static bool GENERATE_STRONGHOLDS = true;
 
-    template<bool checkWaterCaves = false,
-        bool generateCaves = true,
-        bool generateRavines = true,
-        bool generateSkyLight = false>
-    ChunkPrimer *provideChunk(const Generator &g, c_int chunkX, c_int chunkZ,  bool accurate = true);
 
-    MU extern void populateChunk(World& world, const Generator &g, int chunkX, int chunkZ);
+    MU extern ChunkPrimer *provideChunk(const Generator &g, Pos2D chunkPos);
 
-    MU extern void populateStructures(World& world, const Generator& g, int chunkX, int chunkZ);
+    MU extern void populateChunk(World& world, Pos2D chunkPos);
 
-    MU extern void populateDecorations(World& world, const Generator &g, int chunkX, int chunkZ);
+    MU extern void populateCaves(World& world, Pos2D chunkPos);
+
+    MU extern void populateLight(World& world, Pos2D chunkPos);
+
+    MU extern void populateStructures(World& world, Pos2D chunkPos);
+
+    MU extern void populateDecorations(World& world, Pos2D chunkPos);
 
 }
 

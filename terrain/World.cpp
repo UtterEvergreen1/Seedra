@@ -1,10 +1,17 @@
 #include "World.hpp"
 
+#include "Chunk.hpp"
 #include "structures/gen/village/village.hpp"
 #include "structures/placement/StaticStructures.hpp"
 #include "structures/placement/mineshaft.hpp"
 #include "structures/placement/stronghold.hpp"
-#include "Chunk.hpp"
+#include "terrain/biomes/biome.hpp"
+
+#include "terrain/carve/CaveGenerator.hpp"
+#include "terrain/carve/ChunkGenerator.hpp"
+#include "terrain/carve/RavineGenerator.hpp"
+#include "terrain/carve/WaterCaveGenerator.hpp"
+#include "terrain/carve/WaterRavineGenerator.hpp"
 
 World::~World() {
     this->deleteWorld();
@@ -24,33 +31,136 @@ void World::addChunk(const Pos2D &pos, ChunkPrimer *chunk) {
     chunks[pos] = chunk;
 }
 
-ChunkPrimer *World::getChunk(const Pos2D &pos) const {
-    const auto it = chunks.find(pos);
-    return it != chunks.end() ? it->second : nullptr;
-}
+ChunkPrimer *World::getChunk(const Pos2D &pos) {
+    if (lastChunkCoords == pos) {
+        if (lastChunk != nullptr) {
+            return lastChunk;
+        }
+    }
 
-ChunkPrimer *World::getOrCreateChunk(const Pos2D &pos) {
+    lastChunkCoords = pos;
     const auto it = chunks.find(pos);
     if (it != chunks.end()) {
+        lastChunk = it->second;
+        return it->second;
+    } else {
+        return nullptr;
+    }
+}
+
+ChunkPrimer *World::getOrCreateChunk(const Pos2D & chunkPos) {
+    if (lastChunkCoords == chunkPos) {
+        if (lastChunk != nullptr) {
+            return lastChunk;
+        }
+    }
+
+    lastChunkCoords = chunkPos;
+    const auto it = chunks.find(chunkPos);
+    if (it != chunks.end()) {
+        lastChunk = it->second;
         return it->second;
     }
-    auto *chunk = Chunk::provideChunk(*this->g, pos.x, pos.z);
-    addChunk(pos, chunk);
+
+    auto *chunk = Chunk::provideChunk(*this->g, chunkPos);
+    lastChunk = chunk;
+    addChunk(chunkPos, chunk);
     return chunk;
 }
 
-void World::decorateChunks(const Pos2D &pos, const int radius) {
+
+void World::encompass(const Pos2D &pos, c_int radius) {
+    Pos2D lower = (pos - radius);
+    Pos2D upper = (pos + radius - 1);
+    BoundingBox lowerBox = BoundingBox::makeChunkBox(lower.x, lower.z);
+    BoundingBox upperBox = BoundingBox::makeChunkBox(upper.x, upper.z);
+    bounds.encompass(lowerBox);
+    bounds.encompass(upperBox);
+}
+
+
+void World::createChunks(const Pos2D &pos, c_int radius) {
+    std::cout << "Creating chunks around " << pos << " with radius " << radius << std::endl;
+    for (int dx = radius; dx >= -radius; --dx) {
+        for (int dz = radius; dz >= -radius; --dz) {
+            Pos2D chunkPos = pos + Pos2D(dx, dz);
+            this->getOrCreateChunk(chunkPos);
+        }
+    }
+}
+
+
+void World::decorateCaves(const Pos2D & theStartPosition, c_int radius) {
+    std::cout << "Carving chunks around " << theStartPosition << " with radius " << radius << std::endl;
+
+    Pos2D lower = theStartPosition - radius;
+    Pos2D upper = theStartPosition + radius - 1;
+
+
+    // Water Caves
+    {
+        const Pos2DVec_t waterCavePositions = WaterCaveGenerator::getStartingChunks(this->g, lower, upper);
+        const Pos2D seedMultiplierWaterCaves = WaterCaveGenerator::getSeedMultiplier(g);
+        for (c_auto& waterCavePos: waterCavePositions) {
+            WaterCaveGenerator waterCaveGen(*this->g);
+            waterCaveGen.setupRNG(seedMultiplierWaterCaves, waterCavePos);
+            waterCaveGen.addFeature(*this, waterCavePos, true);
+        }
+    }
+
+    // Water Ravines
+    {
+        const Pos2DVec_t waterRavinePositions = WaterRavineGenerator::getStartingChunks(this->g, lower, upper);
+        const Pos2D seedMultiplierWaterRavine = WaterRavineGenerator::getSeedMultiplier(g);
+        for (c_auto& waterRavinePos: waterRavinePositions) {
+            WaterRavineGenerator waterRavineGen(*this->g);
+            waterRavineGen.setupRNG(seedMultiplierWaterRavine, waterRavinePos);
+            waterRavineGen.addFeature(*this, waterRavinePos, true);
+        }
+    }
+
+    // Caves
+    {
+        const Pos2DVec_t cavePositions = CaveGenerator::getStartingChunks(this->g, lower, upper);
+        const Pos2DTemplate<i64> seedMultiplierCave = CaveGenerator::getSeedMultiplier(g);
+        for (c_auto& cavePos: cavePositions) {
+            CaveGenerator caveGen(*this->g);
+            caveGen.setupRNG(seedMultiplierCave, cavePos);
+            caveGen.addFeature(*this, cavePos, true);
+        }
+    }
+
+    // Ravines
+    {
+        const Pos2DVec_t ravinePositions = RavineGenerator::getStartingChunks(this->g, lower, upper);
+        const Pos2DTemplate<i64> seedMultiplierRavine = RavineGenerator::getSeedMultiplier(g);
+        for (c_auto& ravinePos: ravinePositions) {
+            RavineGenerator ravineGen(*this->g);
+            ravineGen.setupRNG(seedMultiplierRavine, ravinePos);
+            ravineGen.addFeature(*this, ravinePos, true);
+        }
+    }
+
+    for (auto [pos, chunkPrimer] : chunks) {
+        if (chunkPrimer != nullptr) {
+            chunkPrimer->stage = Stage::STAGE_STRUCTURE;
+        }
+    }
+}
+
+
+void World::decorateChunks(const Pos2D &pos, c_int radius) {
     std::cout << "Decorating chunks around " << pos << " with radius " << radius << std::endl;
     for (int dx = radius; dx >= -radius; --dx) {
         for (int dz = radius; dz >= -radius; --dz) {
             Pos2D chunkPos = pos + Pos2D(dx, dz);
             this->getOrCreateChunk(chunkPos);
-            Chunk::populateChunk(*this, *g, chunkPos.x, chunkPos.z);
+            Chunk::populateChunk(*this, chunkPos);
         }
     }
 }
 
-int World::getBlockId(const int x, const int y, const int z) {
+int World::getBlockId(c_int x, c_int y, c_int z) {
     if (const ChunkPrimer *chunk = this->getOrCreateChunk({x >> 4, z >> 4})) {
         return chunk->getBlockId(x & 15, y, z & 15);
     }
@@ -58,10 +168,10 @@ int World::getBlockId(const int x, const int y, const int z) {
 }
 
 int World::getBlockId(const Pos3D &pos) {
-    return this->getBlockId(pos.getX(), pos.getY(), pos.getZ());
+    return this->getBlockId(pos.x, pos.y, pos.z);
 }
 
-const lce::Block *World::getBlock(const int x, const int y, const int z) {
+const lce::Block *World::getBlock(c_int x, c_int y, c_int z) {
     if (const ChunkPrimer *chunk = this->getOrCreateChunk({x >> 4, z >> 4})) {
         return chunk->getBlock(x & 15, y, z & 15);
     }
@@ -69,53 +179,53 @@ const lce::Block *World::getBlock(const int x, const int y, const int z) {
 }
 
 const lce::Block *World::getBlock(const Pos3D &pos) {
-    return this->getBlock(pos.getX(), pos.getY(), pos.getZ());
+    return this->getBlock(pos.x, pos.y, pos.z);
 }
 
-void World::notifyNeighbors(const int x, const int y, const int z) {
+void World::notifyNeighbors(c_int x, c_int y, c_int z) {
     //mimic notify neighbors to load chunks
     for (const auto faces : FACING_HORIZONTAL) {
         (void*)this->getBlock(Pos3D(x, y, z).offset(faces));
     }
 }
 
-void World::setBlock(const int x, const int y, const int z, const int blockId) {
+void World::setBlock(c_int x, c_int y, c_int z, c_int blockId) {
     ChunkPrimer *chunk = this->getOrCreateChunk({x >> 4, z >> 4});
     chunk->setBlockId(x & 15, y, z & 15, blockId);
     notifyNeighbors(x, y, z);
 }
 
-void World::setBlock(const Pos3D &pos, const int blockId) {
-    this->setBlock(pos.getX(), pos.getY(), pos.getZ(), blockId);
+void World::setBlockId(const Pos3D &pos, int blockId) {
+    this->setBlock(pos.x, pos.y, pos.z, blockId);
 }
 
-void World::setBlock(const int x, const int y, const int z, const int blockId, const int meta) {
+void World::setBlock(c_int x, c_int y, c_int z, c_int blockId, c_int meta) {
     ChunkPrimer *chunk = getOrCreateChunk({x >> 4, z >> 4});
     chunk->setBlockAndData(x & 15, y, z & 15, blockId, meta);
     notifyNeighbors(x, y, z);
 }
 
-void World::setBlock(const Pos3D &pos, const int blockId, const int meta) {
-    this->setBlock(pos.getX(), pos.getY(), pos.getZ(), blockId, meta);
+void World::setBlock(const Pos3D &pos, c_int blockId, c_int meta) {
+    this->setBlock(pos.x, pos.y, pos.z, blockId, meta);
 }
 
-void World::setBlock(const int x, const int y, const int z, const lce::Block *block) {
+void World::setBlock(c_int x, c_int y, c_int z, const lce::Block *block) {
     this->setBlock(x, y, z, block->getID(), block->getDataTag());
 }
 
 void World::setBlock(const Pos3D &pos, const lce::Block *block) {
-    this->setBlock(pos.getX(), pos.getY(), pos.getZ(), block->getID(), block->getDataTag());
+    this->setBlock(pos.x, pos.y, pos.z, block->getID(), block->getDataTag());
 }
 
-void World::setBlock(const int x, const int y, const int z, const lce::Block& block) {
+void World::setBlock(c_int x, c_int y, c_int z, const lce::Block& block) {
     this->setBlock(x, y, z, block.getID(), block.getDataTag());
 }
 
 void World::setBlock(const Pos3D &pos, const lce::Block& block) {
-    this->setBlock(pos.getX(), pos.getY(), pos.getZ(), block.getID(), block.getDataTag());
+    this->setBlock(pos.x, pos.y, pos.z, block.getID(), block.getDataTag());
 }
 
-bool World::isAirBlock(const int x, const int y, const int z) {
+bool World::isAirBlock(c_int x, c_int y, c_int z) {
     if (const ChunkPrimer *chunk = getOrCreateChunk({x >> 4, z >> 4})) {
         return chunk->isAirBlock(x & 15, y, z & 15);
     }
@@ -123,10 +233,10 @@ bool World::isAirBlock(const int x, const int y, const int z) {
 }
 
 bool World::isAirBlock(const Pos3D &pos) {
-    return this->isAirBlock(pos.getX(), pos.getY(), pos.getZ());
+    return this->isAirBlock(pos.x, pos.y, pos.z);
 }
 
-int World::getHeight(const int x, const int z) {
+int World::getHeight(c_int x, c_int z) {
     const Pos2D chunkPos = {x >> 4, z >> 4};
     const ChunkPrimer *chunk = getOrCreateChunk(chunkPos);
     if (chunk) {
@@ -139,7 +249,7 @@ Pos3D World::getHeight(const Pos3D &pos) {
     return {pos.getX(), this->getHeight(pos.getX(), pos.getZ()), pos.getZ()};
 }
 
-int World::getTopSolidOrLiquidBlock(const int x, const int z) {
+int World::getTopSolidOrLiquidBlock(c_int x, c_int z) {
     const Pos2D chunkPos = {x >> 4, z >> 4};
     const ChunkPrimer *chunk = getOrCreateChunk(chunkPos);
     if (chunk) {

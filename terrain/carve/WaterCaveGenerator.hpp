@@ -8,17 +8,28 @@ class WaterCaveGenerator final : public AbstractWaterCaveGen {
 public:
     explicit WaterCaveGenerator(const Generator& generator) : AbstractWaterCaveGen(generator) {}
 
-    WaterCaveGenerator(const lce::CONSOLE console, const LCEVERSION version,
-        c_i64 seed, const lce::WORLDSIZE size, const lce::BIOMESCALE scale)
-        : AbstractWaterCaveGen(console, version, seed, size, scale) {}
+    MU static Pos2DVec_t getStartingChunks(const Generator* g, Pos2D lower, Pos2D upper);
+
+
+    void addFeature(World& worldIn, Pos2D baseChunk, bool accurate) override;
+
+
+    void addRoom(World& worldIn, c_i64 seedModifier, Pos2D baseChunk, const DoublePos3D& roomStart, RNG& rng);
+
+
+    void addTunnel(World& worldIn, c_i64 seedModifier, Pos2D baseChunk, DoublePos3D start, c_float theTunnelWidth,
+                   float theTunnelDirection, float theTunnelSlope, int theCurrentSegment, int theMaxSegment,
+                   c_double theHeightMultiplier);
+
 
     static bool canReplaceBlock(u16 blockAt);
 
-    void addTunnel(i64 seedModifier, Pos2D chunk, ChunkPrimer* chunkPrimer, DoublePos3D start, float tunnelWidth,
-                   float tunnelDirection, float tunnelSlope, int currentTunnelSegment, int maxTunnelSegment,
-                   double tunnelHeightMultiplier);
+
+    void addFeature(ChunkPrimer* chunkPrimer, Pos2D baseChunk, Pos2D currentChunk, bool accurate) override;
 
     void addRoom(i64 seedModifier, Pos2D target, ChunkPrimer* chunkPrimer, const DoublePos3D& roomStart, RNG& rng);
 
-    void addFeature(int baseChunkX, int baseChunkZ, int targetX, int targetZ, ChunkPrimer* chunkPrimer, bool accurate) override;
+    void addTunnel(ChunkPrimer* chunkPrimer, c_i64 seedModifier, Pos2D chunk, DoublePos3D start, c_float theTunnelWidth,
+                   float tunnelDirection, float theTunnelSlope, int currentTunnelSegment, int maxTunnelSegment,
+                   c_double theHeightMultiplier);
 };

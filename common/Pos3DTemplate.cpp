@@ -1,51 +1,68 @@
 #include "Pos3DTemplate.hpp"
 
 
-template<class classType>
-bool Pos3DTemplate<classType>::operator==(const Pos3DTemplate &other) const { return x == other.x && z == other.z; }
+template<class T>
+bool Pos3DTemplate<T>::operator==(const Pos3DTemplate &other) const { return x == other.x && z == other.z; }
 
+template<class T>
+void Pos3DTemplate<T>::operator+=(const Pos2DTemplate<T>& other) {
+    x += other.x;
+    z += other.z;
+}
 
-template<class classType>
-Pos3DTemplate<classType> Pos3DTemplate<classType>::operator+(const Pos3DTemplate &other) const {
+template<class T>
+void Pos3DTemplate<T>::operator-=(const Pos2DTemplate<T>& other) {
+    x -= other.x;
+    z -= other.z;
+}
+
+template<class T>
+Pos3DTemplate<T> Pos3DTemplate<T>::operator+(const Pos3DTemplate &other) const {
     return {x + other.x, y + other.y, z + other.z};
 }
 
-
-template<class classType>
-Pos3DTemplate<classType> Pos3DTemplate<classType>::operator+(const classType other) const {
+template<class T>
+Pos3DTemplate<T> Pos3DTemplate<T>::operator+(const T other) const {
     return {x + other, y + other, z + other};
 }
+template<class T>
+Pos3DTemplate<T> Pos3DTemplate<T>::operator+(const Pos2DTemplate<T>& other) const {
+    return {x + other.x, y, z + other.z};
+}
 
-
-template<class classType>
-Pos3DTemplate<classType> Pos3DTemplate<classType>::operator-(const Pos3DTemplate &other) const {
+template<class T>
+Pos3DTemplate<T> Pos3DTemplate<T>::operator-(const Pos3DTemplate &other) const {
     return {x - other.x, y - other.y, z - other.z};
 }
 
 
-template<class classType>
-Pos3DTemplate<classType> Pos3DTemplate<classType>::operator-(const classType other) const {
+template<class T>
+Pos3DTemplate<T> Pos3DTemplate<T>::operator-(const T other) const {
     return {x - other, y - other, z - other};
 }
 
+template<class T>
+Pos3DTemplate<T> Pos3DTemplate<T>::operator-(const Pos2DTemplate<T>& other) const {
+    return {x - other.x, y, z - other.z};
+}
 
-template<class classType>
-bool Pos3DTemplate<classType>::operator>(int value) const { return x > value && y > value && z > value; }
-
-
-template<class classType>
-bool Pos3DTemplate<classType>::operator<(int value) const { return x < value && y < value && z < value; }
-
-
-template<class classType>
-bool Pos3DTemplate<classType>::operator>=(int value) const { return x >= value && y >= value && z >= value; }
+template<class T>
+bool Pos3DTemplate<T>::operator>(int value) const { return x > value && y > value && z > value; }
 
 
-template<class classType>
-bool Pos3DTemplate<classType>::operator<=(int value) const { return x <= value && y <= value && z <= value; }
+template<class T>
+bool Pos3DTemplate<T>::operator<(int value) const { return x < value && y < value && z < value; }
 
-template<class classType>
-Pos3DTemplate<classType> Pos3DTemplate<classType>::offset(const EnumFacing facing, const int n) const {
+
+template<class T>
+bool Pos3DTemplate<T>::operator>=(int value) const { return x >= value && y >= value && z >= value; }
+
+
+template<class T>
+bool Pos3DTemplate<T>::operator<=(int value) const { return x <= value && y <= value && z <= value; }
+
+template<class T>
+Pos3DTemplate<T> Pos3DTemplate<T>::offset(const EnumFacing facing, const int n) const {
     switch (facing) {
         case EnumFacing::NORTH:
             return {x, y, z - n};
@@ -64,32 +81,63 @@ Pos3DTemplate<classType> Pos3DTemplate<classType>::offset(const EnumFacing facin
     }
 }
 
-template<class classType>
-double Pos3DTemplate<classType>::distanceSq(c_double toX, c_double toY, c_double toZ) const {
+
+template<class T>
+ND double Pos3DTemplate<T>::distanceSqXZ() const {
+    using ValueType = std::conditional_t<std::is_same_v<T, double>, T, double>;
+
+    auto d0 = static_cast<ValueType>(x);
+    auto d1 = static_cast<ValueType>(z);
+
+    return d0 * d0 + d1 * d1;
+}
+
+
+template<class T>
+ND double Pos3DTemplate<T>::distanceSq() const {
+    using ValueType = std::conditional_t<std::is_same_v<T, double>, T, double>;
+
+    auto d0 = static_cast<ValueType>(x);
+    auto d1 = static_cast<ValueType>(y);
+    auto d2 = static_cast<ValueType>(z);
+
+    return d0 * d0 + d1 * d1 + d2 * d2;
+}
+
+
+
+template<class T>
+double Pos3DTemplate<T>::distanceSq(c_double toX, c_double toY, c_double toZ) const {
+    /*
     c_double d0 = static_cast<double>(x) - toX;
     c_double d1 = static_cast<double>(y) - toY;
     c_double d2 = static_cast<double>(z) - toZ;
     return d0 * d0 + d1 * d1 + d2 * d2;
+    */
+    using ValueType = std::conditional_t<std::is_same_v<T, double>, T, double>;
+
+    constexpr auto cast = [](auto value) -> ValueType {
+        return static_cast<ValueType>(value);
+    };
+
+    ValueType d0 = cast(x) - toX;
+    ValueType d1 = cast(y) - toY;
+    ValueType d2 = cast(z) - toZ;
+    return d0 * d0 + d1 * d1 + d2 * d2;
 }
 
-template<class classType>
-Pos2DTemplate<classType> Pos3DTemplate<classType>::convert2D() const { return {x, z}; }
+template<class T>
+Pos2DTemplate<T> Pos3DTemplate<T>::asPos2D() const { return {x, z}; }
 
-template<class classType>
+template<class T>
 template<typename, typename>
-Pos3DTemplate<classType> Pos3DTemplate<classType>::convertToChunkCoords() const {
+Pos3DTemplate<T> Pos3DTemplate<T>::convertToChunkCoords() const {
     return {x & 15, y & 255, z & 15};
 }
 
 
-template<class classType>
-bool Pos3DTemplate<classType>::insideBounds(classType lowerX, classType lowerY, classType lowerZ, classType upperX,
-                                            classType upperY, classType upperZ) const {
-    return x >= lowerX && x <= upperX && y >= lowerY && y <= upperY && z >= lowerZ && z <= upperZ;
-}
-
-template<class classType>
-std::vector<Pos3DTemplate<classType>> Pos3DTemplate<classType>::getAllInBox(
+template<class T>
+std::vector<Pos3DTemplate<T>> Pos3DTemplate<T>::getAllInBox(
     const Pos3DTemplate &from, const Pos3DTemplate &to) {
     c_int minX = std::min(from.getX(), to.getX());
     c_int minY = std::min(from.getY(), to.getY());
@@ -98,7 +146,7 @@ std::vector<Pos3DTemplate<classType>> Pos3DTemplate<classType>::getAllInBox(
     c_int maxY = std::max(from.getY(), to.getY());
     c_int maxZ = std::max(from.getZ(), to.getZ());
 
-    std::vector<Pos3DTemplate<classType>> positions;
+    std::vector<Pos3DTemplate<T>> positions;
     for (int x = minX; x <= maxX; ++x) {
         for (int y = minY; y <= maxY; ++y) {
             for (int z = minZ; z <= maxZ; ++z) {
@@ -108,6 +156,7 @@ std::vector<Pos3DTemplate<classType>> Pos3DTemplate<classType>::getAllInBox(
     }
     return positions;
 }
+
 
 template
 class Pos3DTemplate<int>;

@@ -28,11 +28,18 @@ public:
 
     void addChunk(const Pos2D &pos, ChunkPrimer *chunk);
 
-    ChunkPrimer *getChunk(const Pos2D &pos) const;
+    ChunkPrimer *getChunk(const Pos2D &pos);
 
-    ChunkPrimer *getOrCreateChunk(const Pos2D &pos);
+    ChunkPrimer *getOrCreateChunk(const Pos2D & chunkPos);
+
+    void encompass(const Pos2D &pos, int radius);
+
+    void createChunks(const Pos2D &pos, int radius);
+
+    void decorateCaves(const Pos2D & theStartPosition, int radius);
 
     void decorateChunks(const Pos2D &pos, int radius);
+
 
     int getBlockId(int x, int y, int z);
 
@@ -46,7 +53,7 @@ public:
 
     void setBlock(int x, int y, int z, int blockId);
 
-    void setBlock(const Pos3D &pos, int blockId);
+    void setBlockId(const Pos3D &pos, int blockId);
 
     void setBlock(int x, int y, int z, int blockId, int meta);
 
@@ -90,7 +97,14 @@ public:
     std::vector<gen::Mineshaft> mineshafts;
     std::vector<gen::Stronghold> strongholds;
     std::unordered_map<Pos2D, ChunkPrimer *, Pos2D::Hasher> chunks;
+    BoundingBox bounds;
+
 private:
+
+    ChunkPrimer *lastChunk = nullptr;
+    Pos2D lastChunkCoords = Pos2D(-100000, -100000);
+
+
     Generator *g;
 
 };

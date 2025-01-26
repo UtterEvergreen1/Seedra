@@ -7,7 +7,7 @@ using namespace lce::blocks;
 
 
 void WorldGenAbstractTree::setDirtAt(World* worldIn, const Pos3D& pos) {
-    if (worldIn->getBlockId(pos) != DIRT_ID) { worldIn->setBlock(pos, DIRT_ID); }
+    if (worldIn->getBlockId(pos) != DIRT_ID) { worldIn->setBlockId(pos, DIRT_ID); }
 }
 
 bool WorldGenAbstractTree::canGrowInto(const int blockId) {

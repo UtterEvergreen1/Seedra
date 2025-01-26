@@ -6,23 +6,37 @@
 class RavineGenerator final : public AbstractMapGen {
 
 public:
+
     explicit RavineGenerator(const Generator& generator) : AbstractMapGen(generator) {}
 
-    RavineGenerator(const lce::CONSOLE console, const LCEVERSION version,
-                    c_i64 seed, const lce::WORLDSIZE size, const lce::BIOMESCALE scale)
-        : AbstractMapGen(console, version, seed, size, scale) {}
-
     ~RavineGenerator() override = default;
+
+
+
+    MU static Pos2DVec_t getStartingChunks(const Generator* g, Pos2D lower, Pos2D upper);
+
+
+
+    void addFeature(World& worldIn, Pos2D baseChunk, bool accurate) override;
+
+    void addTunnel(World& worldIn, i64 randomSeed, Pos2D baseChunk, DoublePos3D tunnel, float angle,
+                   float slope, float curvature, int theStartSegment, int theEndSegment, double theWidthMultiplier,
+                   bool accurate);
+
+
+
+    void addFeature(ChunkPrimer* chunkPrimer, Pos2D baseChunk, Pos2D currentChunk, bool accurate) override;
+
+    void addTunnel(ChunkPrimer* chunkPrimer, i64 randomSeed, Pos2D currentChunk, DoublePos3D tunnel, float angle,
+                   float slope, float curvature, int theStartSegment, int theEndSegment, double theWidthMultiplier,
+                   bool accurate);
+
+
+private:
 
     std::vector<float> rs = std::vector(128, 0.0F);
 
     ND unsigned char topBlock(int x, int z) const;
 
     static bool canReplaceBlock(u16 blockAt, u16 blockAbove);
-
-    void addTunnel(i64 randomSeed, Pos2D chunk, ChunkPrimer* chunkPrimer, DoublePos3D tunnel, float angle,
-                   float slope, float curvature, int tunnelStartSegment, int tunnelEndSegment, double widthMultiplier, bool accurate);
-
-    void addFeature(int baseChunkX, int baseChunkZ, int currentChunkX, int currentChunkZ,
-                           ChunkPrimer* chunkPrimer, bool accurate) override;
 };

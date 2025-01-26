@@ -407,6 +407,7 @@ int Generator::mapApproxHeight(float* y, int* ids, const SurfaceNoise* sn,
                     double d, s;
                     const int id = cache[(j + jj) * r.sx + (i + ii)];
                     getBiomeDepthAndScale(id, &d, &s, nullptr);
+                    // TODO: should this stay float, or become double?
                     float weight = biome_kernel[jj * 5 + ii] / (d + 2);
                     if (d > d0) weight *= 0.5;
                     ws += s * weight;
@@ -570,3 +571,14 @@ bool Generator::id_matches(const int id, const uint64_t validBiomes, const uint6
  * @return biome id or -1 if failed
  */
 int Generator::getBiomeAt(const int scale, const Pos2D pos) const { return getBiomeAt(scale, pos.x, pos.z); }
+
+
+/**
+ * Overload function for that allows for using Pos2D as position in genBiomes.
+ *
+ * @see int getBiomeAt(int scale, int x, int z) const
+ * @param scale the scale for generating biomes
+ * @param pos coordinates to generate the biome at
+ * @return biome id or -1 if failed
+ */
+int Generator::getBiomeAt(const int scale, const Pos3D pos) const { return getBiomeAt(scale, pos.x, pos.z); }

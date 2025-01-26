@@ -137,7 +137,7 @@ void BiomeDecorator::genDecorations(World *world, Biome *biome, RNG &rng) {
         c_int y = rng.nextInt(world->getHeight(this->chunkBlockPos.add(x, 0, z)).getY() + 32);
 
         Pos3D blockPos = this->chunkBlockPos.add(x, y, z);
-        BlockFlower::EnumFlowerType flowerType = biome->pickRandomFlower(rng, blockPos.convert2D());
+        BlockFlower::EnumFlowerType flowerType = biome->pickRandomFlower(rng, blockPos.asPos2D());
 
         c_int flowerBlock = flowerType == BlockFlower::EnumFlowerType::DANDELION
                                 ? lce::blocks::DANDELION_ID

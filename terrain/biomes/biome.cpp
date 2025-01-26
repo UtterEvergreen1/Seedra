@@ -550,7 +550,7 @@ void BiomeHills::decorate(World *worldIn, RNG &rng, const Pos2D &pos) {
         const Pos3D generatePos = blockPos.add(x_off, y_off, z_off);
 
         if (worldIn->getBlockId(generatePos) == lce::blocks::STONE_ID) {
-            worldIn->setBlock(generatePos, lce::blocks::EMERALD_ORE_ID);
+            worldIn->setBlockId(generatePos, lce::blocks::EMERALD_ORE_ID);
         }
     }
 

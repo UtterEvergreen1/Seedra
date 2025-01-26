@@ -123,7 +123,7 @@ bool WorldGenTrees::generate(World* worldIn, RNG& rng, const Pos3D& pos) const {
 }
 
 void WorldGenTrees::placeCocoa(World* worldIn, const Pos3D& pos, MU EnumFacing side, MU int age) {
-    worldIn->setBlock(pos, VINES_ID); //TODO: set rotation data and age data
+    worldIn->setBlockId(pos, VINES_ID); //TODO: set rotation data and age data
 }
 
 void WorldGenTrees::addHangingVine(World* worldIn, const Pos3D& pos, const EnumFacing facing) {

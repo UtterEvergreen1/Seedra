@@ -29,6 +29,8 @@ public:
     bool operator!=(int other) const;
     Pos2DTemplate operator+(const Pos2DTemplate& other) const;
     Pos2DTemplate operator+(int other) const;
+    Pos2DTemplate operator*(const Pos2DTemplate& other) const;
+    Pos2DTemplate operator*(int other) const;
     Pos2DTemplate operator-(const Pos2DTemplate& other) const;
     Pos2DTemplate operator-(int other) const;
     bool operator>(classType value) const;
@@ -57,6 +59,11 @@ public:
         return {x << 4, z << 4};
     }
 
+    template <typename U, typename = std::enable_if_t<std::is_fundamental_v<U>>>
+    MU ND Pos2DTemplate<U> asType() const {
+        return { static_cast<U>(x), static_cast<U>(z) };
+    }
+
 #ifdef INCLUDE_QT
     friend QDebug operator<<(QDebug out, const Pos2DTemplate<classType>& pos) {
         out.nospace() << "(" << pos.x << ", " << pos.z << ")";
@@ -72,6 +79,8 @@ public:
     MU friend Pos2DTemplate abs(const Pos2DTemplate& pos) {
         return {std::abs(pos.x), std::abs(pos.z)};
     }
+
+    ND double distanceSq() const;
 
     MU void setPos(classType xIn, classType zIn);
     MU ND std::string toString() const;

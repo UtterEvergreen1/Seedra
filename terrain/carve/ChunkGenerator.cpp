@@ -127,20 +127,16 @@ void ChunkGeneratorOverWorld::replaceBiomeBlocks(c_int x, c_int z, ChunkPrimer* 
 ChunkPrimer* ChunkGeneratorOverWorld::provideChunk(c_int x, c_int z) {
     rng.setSeed((i64) x * 341873128712LL + (i64) z * 132897987541LL);
     auto* chunkPrimer = new ChunkPrimer();
+    chunkPrimer->stage = Stage::STAGE_TERRAIN;
     setBlocksInChunk(x, z, chunkPrimer);
     setBiomesForGeneration(x * 16, z * 16, 16, 16, 1);
     replaceBiomeBlocks(x, z, chunkPrimer, biomesForGeneration);
+    chunkPrimer->stage = Stage::STAGE_WATER_CAVES;
     return chunkPrimer;
 }
 
 
 void ChunkGeneratorOverWorld::generateHeightmap(c_int x, c_int y, c_int z) {
-    // double depthNoiseScaleX = 200.0;
-    // double depthNoiseScaleZ = 200.0;
-    // double depthNoiseScaleExponent = 0.5;
-    // double mainNoiseScaleX = 80.0;
-    // double mainNoiseScaleY = 160.0;
-    // double mainNoiseScaleZ = 80.0;
     depthRegion = depthNoise.genNoiseOctaves(&g, depthRegion, x, z, 5, 5, 200.0, 200.0, 0.5);
     mainNoiseRegion = mainPerlinNoise.genNoiseOctaves(&g, mainNoiseRegion, x, y, z, 5, 33, 5, 8.55515, 4.277575, 8.55515);
     minLimitRegion = minLimitPerlinNoise.genNoiseOctaves(&g, minLimitRegion, x, y, z, 5, 33, 5, 684.412, 684.412, 684.412);

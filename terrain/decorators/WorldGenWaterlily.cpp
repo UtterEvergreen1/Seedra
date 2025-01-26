@@ -22,7 +22,7 @@ bool WorldGenWaterlily::generate(World* worldIn, RNG& rng, const Pos3D& position
         Pos3D blockPos = position + getWorldGenPos3D<8, 4, 8>(worldIn, rng);
 
         if (worldIn->isAirBlock(blockPos) && BlockLilyPad::canPlaceBlockAt(worldIn, blockPos)) {
-            worldIn->setBlock(blockPos, LILY_PAD_ID);
+            worldIn->setBlockId(blockPos, LILY_PAD_ID);
         }
     }
 

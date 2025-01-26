@@ -2,7 +2,251 @@
 
 #include "common/MathHelper.hpp"
 #include "common/constants.hpp"
+#include "terrain/World.hpp"
 #include "terrain/biomes/biomeID.hpp"
+
+
+using namespace lce::blocks;
+
+
+MU Pos2DVec_t RavineGenerator::getStartingChunks(const Generator* g, Pos2D lower, Pos2D upper) {
+
+    RNG rng;
+    Pos2DTemplate<i64> seedMultiplier = getSeedMultiplier(g);
+
+    lower = lower - CHUNK_RANGE;
+    upper = upper + CHUNK_RANGE;
+
+    Pos2DVec_t chunkPositions;
+    c_int sizeChecked = std::abs(upper.x - lower.x) * std::abs(upper.z - lower.z);
+    c_int reserveSize = (int)((float)(sizeChecked) * RESERVE_MULTIPLIER / 50.0F + 4);
+    chunkPositions.reserve(reserveSize);
+
+    Pos2D chunkPos;
+    for (chunkPos.x = lower.x; chunkPos.x <= upper.x; ++chunkPos.x) {
+        for (chunkPos.z = lower.z; chunkPos.z <= upper.z; ++chunkPos.z) {
+            RavineGenerator::setupRNG(g, rng, seedMultiplier, chunkPos);
+
+            if EXPECT_FALSE (rng.nextInt(50) == 0) {
+                chunkPositions.emplace_back(chunkPos.asType<int>());
+            }
+        }
+    }
+
+    return chunkPositions;
+}
+
+
+
+
+
+
+void RavineGenerator::addFeature(World& worldIn, Pos2D baseChunk, bool accurate) {
+    if EXPECT_FALSE (rng.nextInt(50) == 0) {
+        DoublePos3D tunnelStart;
+        tunnelStart.x = (double) (baseChunk.x * 16 + rng.nextInt(16));
+        tunnelStart.y = (double) (rng.nextInt(rng.nextInt(40) + 8) + 20);
+        tunnelStart.z = (double) (baseChunk.z * 16 + rng.nextInt(16));
+
+        c_float tunnelDirection = rng.nextFloat() * (PI_FLOAT * 2.0F);
+        c_float tunnelSlope = (rng.nextFloat() - 0.5F) * 2.0F / 8.0F;
+        c_float tunnelLengthMultiplier = (rng.nextFloat() * 2.0F + rng.nextFloat()) * 2.0F;
+
+        addTunnel(worldIn, rng.nextLongI(), baseChunk, tunnelStart, tunnelLengthMultiplier, tunnelDirection,
+                  tunnelSlope, 0, 0, 3.0, accurate);
+    }
+}
+
+
+void RavineGenerator::addTunnel(World& worldIn, i64 randomSeed, Pos2D baseChunk, DoublePos3D tunnel, float angle,
+                                float slope, float curvature, int theStartSegment, int theEndSegment,
+                                double theWidthMultiplier, bool accurate) {
+
+    if (accurate &&
+        g.getLCEVersion() == LCEVERSION::AQUATIC &&
+        isOceanic(g.getBiomeAt(1, tunnel.asType<int>()))) { return; }
+
+    RNG rng;
+    rng.setSeed(randomSeed);
+    Pos2D baseChunkX16 = baseChunk * 16;
+
+    float curvatureChangeRate = 0.0F;
+    float slopeChangeRate = 0.0F;
+
+    if (theEndSegment < 1) {
+        constexpr int rangeBoundary = CHUNK_RANGE * 16 - 16;
+        constexpr int randomRange = rangeBoundary / 4;
+        theEndSegment = rangeBoundary - rng.nextInt(randomRange);
+    }
+
+    bool isSegmentAtCenter = false;
+    if (theStartSegment == -1) {
+        theStartSegment = theEndSegment / 2;
+        isSegmentAtCenter = true;
+    }
+
+    float tunnelRadiusMultiplier = 1.0F;
+
+    for (int segment = 0; segment < 128; ++segment) {
+        if (segment == 0 || rng.nextInt(3) == 0) {
+            tunnelRadiusMultiplier = 1.0F + rng.nextFloat() * rng.nextFloat();
+        }
+        rs[segment] = tunnelRadiusMultiplier * tunnelRadiusMultiplier;
+    }
+
+    float theEndSegmentFDivPI = PI_FLOAT / (float)(theEndSegment);
+
+SEGMENT_FOR_LOOP_START:
+    for (; theStartSegment < theEndSegment; theStartSegment++) {
+
+        double adjustedWidth = 1.5 + (double) (MathHelper::sin(
+                                                       (float) theStartSegment * theEndSegmentFDivPI) * angle);
+        double adjustedHeight = adjustedWidth * theWidthMultiplier;
+
+        adjustedWidth = adjustedWidth * ((double) rng.nextFloat() * 0.25 + 0.75);
+        adjustedHeight = adjustedHeight * ((double) rng.nextFloat() * 0.25 + 0.75);
+
+        c_float cosCurvature = MathHelper::cos(curvature);
+        tunnel.x += (double) (MathHelper::cos(slope) * cosCurvature);
+        tunnel.y += (double) (MathHelper::sin(curvature));
+        tunnel.z += (double) (MathHelper::sin(slope) * cosCurvature);
+
+        // setup tunnel slope
+        c_float f1_1 = rng.nextFloat();
+        c_float f1_2 = rng.nextFloat();
+        c_float f1_3 = rng.nextFloat();
+        curvature = curvature * 0.7F;
+        curvature = curvature + slopeChangeRate * 0.05F;
+        slopeChangeRate = slopeChangeRate * 0.8F;
+        slopeChangeRate = slopeChangeRate + (f1_1 - f1_2) * f1_3 * 2.0F;
+
+        // setup tunnel curvature
+        c_float f2_1 = rng.nextFloat();
+        c_float f2_2 = rng.nextFloat();
+        c_float f2_3 = rng.nextFloat();
+        slope += curvatureChangeRate * 0.05F;
+        curvatureChangeRate = curvatureChangeRate * 0.5F;
+        curvatureChangeRate = curvatureChangeRate + (f2_1 - f2_2) * f2_3 * 4.0F;
+
+        if (!isSegmentAtCenter && rng.nextInt(4) == 0) { continue; }
+
+        /*
+        DoublePos2D offset = (currentChunkX16 + 8).asType<double>();
+        DoublePos2D distance = tunnel.asPos2D() - offset;
+        c_auto remainingSegments = (double) (theEndSegment - theStartSegment);
+        c_auto maxDistance = (double) (angle + 18.0F);
+        if (distance.distanceSq() - remainingSegments * remainingSegments > maxDistance * maxDistance) { return; }
+        if (tunnel.x < offset.x - 16.0 - adjustedWidth * 2.0 ||
+            tunnel.z < offset.z - 16.0 - adjustedWidth * 2.0 ||
+            tunnel.x > offset.x + 16.0 + adjustedWidth * 2.0 ||
+            tunnel.z > offset.z + 16.0 + adjustedWidth * 2.0) {
+            continue;
+        }
+         */
+        
+        Pos3D min;
+        Pos3D max;
+        min.x = (int) floor(tunnel.x - adjustedWidth) - baseChunkX16.x - 1;
+        max.x = (int) floor(tunnel.x + adjustedWidth) - baseChunkX16.x + 1;
+        min.y = (int) floor(tunnel.y - adjustedHeight) - 1;
+        max.y = (int) floor(tunnel.y + adjustedHeight) + 1;
+        min.z = (int) floor(tunnel.z - adjustedWidth) - baseChunkX16.z - 1;
+        max.z = (int) floor(tunnel.z + adjustedWidth) - baseChunkX16.z + 1;
+        if (min.y < 1) min.y = 1;
+        if (max.y > 120) max.y = 120;
+        min += baseChunkX16;
+        max += baseChunkX16;
+        if (!worldIn.bounds.isVecInside(min) && !worldIn.bounds.isVecInside(max)) {
+            continue;
+        }
+        Pos3D pos;
+        for (pos.x = min.x; pos.x < max.x; ++pos.x) {
+            for (pos.z = min.z; pos.z < max.z; ++pos.z) {
+                for (pos.y = max.y + 1; pos.y >= min.y - 1; --pos.y) {
+
+                    c_u16 blockId = worldIn.getBlockId(pos);
+                    if (pos.y != min.y - 1 &&
+                        pos.x != min.x &&
+                        pos.x != max.x - 1
+                        && pos.z != min.z
+                        && pos.z != max.z - 1) {
+                        pos.y = min.y;
+                    }
+                    c_bool hasLiquid = blockId == STILL_WATER_ID ||
+                                       blockId == FLOWING_WATER_ID;
+                    if (hasLiquid) {
+                        goto FOUND_LIQUID;
+                    }
+                }
+            }
+        }
+        min -= baseChunkX16;
+        max -= baseChunkX16;
+
+        // used to make the cpu not have to
+        // cache the later code when it finds water
+        goto JUMP_PAST_FOUND_LIQUID;
+    FOUND_LIQUID:
+        if (isSegmentAtCenter) { return; }
+        goto SEGMENT_FOR_LOOP_START;
+    JUMP_PAST_FOUND_LIQUID:
+
+        pos.setPos(0, 0, 0);
+        DoublePos3D dXYZ;
+        for (pos.x = min.x; pos.x < max.x; ++pos.x) {
+            dXYZ.x = ((double) (pos.x + baseChunkX16.x) + 0.5 - tunnel.x) / adjustedWidth;
+            for (pos.z = min.z; pos.z < max.z; ++pos.z) {
+                dXYZ.z = ((double) (pos.z + baseChunkX16.z) + 0.5 - tunnel.z) / adjustedWidth;
+                bool replaceableBlockDetected = false;
+
+                c_double sqXZ = dXYZ.distanceSqXZ();
+                if (sqXZ >= 1.0) { continue; }
+
+                for (pos.y = max.y - 1; pos.y >= min.y; --pos.y) {
+                    dXYZ.y = ((double) pos.y + 0.5 - tunnel.y) / adjustedHeight;
+
+                    if ((sqXZ) * (double) rs[pos.y] + dXYZ.y * dXYZ.y / 6.0 >= 1.0) { continue; }
+
+                    Pos3D blockPos = pos;
+                    blockPos += baseChunkX16;
+
+                    c_u16 currentBlock = worldIn.getBlockId(blockPos);
+                    c_u16 blockAbove = worldIn.getBlockId(blockPos.up());
+
+                    if (currentBlock == GRASS_ID) {
+                        replaceableBlockDetected = true;
+                    }
+
+                    if (canReplaceBlock(currentBlock, blockAbove)) {
+                        if (blockPos.y < 11) {
+                            worldIn.setBlockId(blockPos, FLOWING_LAVA_ID);
+                        } else {
+                            worldIn.setBlockId(blockPos, AIR_ID);
+
+                            if (replaceableBlockDetected &&
+                                worldIn.getBlockId(blockPos.down()) == DIRT_ID) {
+                                worldIn.setBlockId(blockPos.down(),
+                                    topBlock(blockPos.x, blockPos.z));
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        if (isSegmentAtCenter) { break; }
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
 
 
 unsigned char RavineGenerator::topBlock(c_int x, c_int z) const {
@@ -51,175 +295,219 @@ bool RavineGenerator::canReplaceBlock(c_u16 blockAt, c_u16 blockAbove) {
 }
 
 
-void RavineGenerator::addTunnel(c_i64 randomSeed, const Pos2D chunk, ChunkPrimer* chunkPrimer,
-                                DoublePos3D tunnel, c_float angle, float slope, float curvature,
-                                int tunnelStartSegment, int tunnelEndSegment,
-                                c_double widthMultiplier, bool accurate) {
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+void RavineGenerator::addFeature(ChunkPrimer* chunkPrimer, Pos2D baseChunk, Pos2D currentChunk, bool accurate) {
+    if EXPECT_FALSE (rng.nextInt(50) == 0) {
+        DoublePos3D tunnelStart;
+        tunnelStart.x = (double) (baseChunk.x * 16 + rng.nextInt(16));
+        tunnelStart.y = (double) (rng.nextInt(rng.nextInt(40) + 8) + 20);
+        tunnelStart.z = (double) (baseChunk.z * 16 + rng.nextInt(16));
+
+        c_float tunnelDirection = rng.nextFloat() * (PI_FLOAT * 2.0F);
+        c_float tunnelSlope = (rng.nextFloat() - 0.5F) * 2.0F / 8.0F;
+        c_float tunnelLengthMultiplier = (rng.nextFloat() * 2.0F + rng.nextFloat()) * 2.0F;
+
+        addTunnel(chunkPrimer, rng.nextLongI(), currentChunk, tunnelStart, tunnelLengthMultiplier, tunnelDirection,
+                  tunnelSlope, 0, 0, 3.0, accurate);
+    }
+}
+
+
+void RavineGenerator::addTunnel(ChunkPrimer* chunkPrimer, i64 randomSeed, Pos2D currentChunk, DoublePos3D tunnel, float angle,
+                                float slope, float curvature, int theStartSegment, int theEndSegment,
+                                double theWidthMultiplier, bool accurate) {
 
     if (accurate &&
         g.getLCEVersion() == LCEVERSION::AQUATIC &&
-        isOceanic(g.getBiomeAt(1, (int) tunnel.x, (int) tunnel.z))) { return; }
+        isOceanic(g.getBiomeAt(1, tunnel.asType<int>()))) { return; }
 
     RNG rng;
     rng.setSeed(randomSeed);
-    c_auto offsetX = (double) (chunk.x * 16 + 8);
-    c_auto offsetZ = (double) (chunk.z * 16 + 8);
+    Pos2D currentChunkX16 = currentChunk * 16;
+    DoublePos2D offset = (currentChunkX16 + 8).asType<double>();
+
     float curvatureChangeRate = 0.0F;
     float slopeChangeRate = 0.0F;
 
-    if (tunnelEndSegment < 1) {
-        constexpr int rangeBoundary = range * 16 - 16;
+    if (theEndSegment < 1) {
+        constexpr int rangeBoundary = CHUNK_RANGE * 16 - 16;
         constexpr int randomRange = rangeBoundary / 4;
-        tunnelEndSegment = rangeBoundary - rng.nextInt(randomRange);
+        theEndSegment = rangeBoundary - rng.nextInt(randomRange);
     }
 
     bool isSegmentAtCenter = false;
-
-    if (tunnelStartSegment == -1) {
-        tunnelStartSegment = tunnelEndSegment / 2;
+    if (theStartSegment == -1) {
+        theStartSegment = theEndSegment / 2;
         isSegmentAtCenter = true;
     }
 
     float tunnelRadiusMultiplier = 1.0F;
 
     for (int segment = 0; segment < 128; ++segment) {
-        if (segment == 0 || rng.nextInt(3) == 0) { tunnelRadiusMultiplier = 1.0F + rng.nextFloat() * rng.nextFloat(); }
-
+        if (segment == 0 || rng.nextInt(3) == 0) {
+            tunnelRadiusMultiplier = 1.0F + rng.nextFloat() * rng.nextFloat();
+        }
         rs[segment] = tunnelRadiusMultiplier * tunnelRadiusMultiplier;
     }
 
-    for (; tunnelStartSegment < tunnelEndSegment; tunnelStartSegment++) {
-        double adjustedWidth =
-                1.5 +
-                (double) (MathHelper::sin((float) tunnelStartSegment * PI_FLOAT / (float) tunnelEndSegment) * angle);
-        double adjustedHeight = adjustedWidth * widthMultiplier;
+    float endSegmentFDivPI = PI_FLOAT / (float)(theEndSegment);
+
+SEGMENT_FOR_LOOP_START:
+    for (; theStartSegment < theEndSegment; theStartSegment++) {
+
+        double adjustedWidth = 1.5 + (double) (MathHelper::sin(
+            (float) theStartSegment * endSegmentFDivPI) * angle);
+        double adjustedHeight = adjustedWidth * theWidthMultiplier;
+
         adjustedWidth = adjustedWidth * ((double) rng.nextFloat() * 0.25 + 0.75);
         adjustedHeight = adjustedHeight * ((double) rng.nextFloat() * 0.25 + 0.75);
+
         c_float cosCurvature = MathHelper::cos(curvature);
-        c_float sinCurvature = MathHelper::sin(curvature);
         tunnel.x += (double) (MathHelper::cos(slope) * cosCurvature);
-        tunnel.y += (double) sinCurvature;
+        tunnel.y += (double) (MathHelper::sin(curvature));
         tunnel.z += (double) (MathHelper::sin(slope) * cosCurvature);
+
+        // setup tunnel slope
+        c_float f1_1 = rng.nextFloat();
+        c_float f1_2 = rng.nextFloat();
+        c_float f1_3 = rng.nextFloat();
         curvature = curvature * 0.7F;
         curvature = curvature + slopeChangeRate * 0.05F;
-        slope += curvatureChangeRate * 0.05F;
         slopeChangeRate = slopeChangeRate * 0.8F;
+        slopeChangeRate = slopeChangeRate + (f1_1 - f1_2) * f1_3 * 2.0F;
+
+        // setup tunnel curvature
+        c_float f2_1 = rng.nextFloat();
+        c_float f2_2 = rng.nextFloat();
+        c_float f2_3 = rng.nextFloat();
+        slope += curvatureChangeRate * 0.05F;
         curvatureChangeRate = curvatureChangeRate * 0.5F;
-        slopeChangeRate = slopeChangeRate + (rng.nextFloat() - rng.nextFloat()) * rng.nextFloat() * 2.0F;
-        curvatureChangeRate = curvatureChangeRate + (rng.nextFloat() - rng.nextFloat()) * rng.nextFloat() * 4.0F;
+        curvatureChangeRate = curvatureChangeRate + (f2_1 - f2_2) * f2_3 * 4.0F;
 
-        if (isSegmentAtCenter || rng.nextInt(4) != 0) {
-            c_double distanceX = tunnel.x - offsetX;
-            c_double distanceZ = tunnel.z - offsetZ;
-            c_auto remainingSegments = (double) (tunnelEndSegment - tunnelStartSegment);
-            c_auto maxDistance = (double) (angle + 18.0F);
 
-            //std::cout << distanceX << " " <<  distanceZ << " " << remainingSegments <<" "<< maxDistance << std::endl;
+        DoublePos2D distance = tunnel.asPos2D() - offset;
+        c_auto remainingSegments = (double) (theEndSegment - theStartSegment);
+        c_auto maxDistance = (double) (angle + 18.0F);
 
-            if (distanceX * distanceX + distanceZ * distanceZ - remainingSegments * remainingSegments >
-                maxDistance * maxDistance) {
-                //std::cout << "returned" << std::endl;
-                return;
-            }
+        if (!isSegmentAtCenter && rng.nextInt(4) == 0) { continue; }
 
-            if (tunnel.x >= offsetX - 16.0 - adjustedWidth * 2.0 && tunnel.z >= offsetZ - 16.0 - adjustedWidth * 2.0 &&
-                tunnel.x <= offsetX + 16.0 + adjustedWidth * 2.0 && tunnel.z <= offsetZ + 16.0 + adjustedWidth * 2.0) {
-                int startX = (int) floor(tunnel.x - adjustedWidth) - chunk.x * 16 - 1;
-                int endX = (int) floor(tunnel.x + adjustedWidth) - chunk.x * 16 + 1;
-                int startY = (int) floor(tunnel.y - adjustedHeight) - 1;
-                int endY = (int) floor(tunnel.y + adjustedHeight) + 1;
-                int startZ = (int) floor(tunnel.z - adjustedWidth) - chunk.z * 16 - 1;
-                int endZ = (int) floor(tunnel.z + adjustedWidth) - chunk.z * 16 + 1;
+        if (distance.distanceSq() - remainingSegments * remainingSegments > maxDistance * maxDistance) {
+            return;
+        }
 
-                if (startX < 0) startX = 0;
-                if (endX > 16) endX = 16;
-                if (startY < 1) startY = 1;
-                if (endY > 120) endY = 120;
-                if (startZ < 0) startZ = 0;
-                if (endZ > 16) endZ = 16;
+        if (tunnel.x < offset.x - 16.0 - adjustedWidth * 2.0 ||
+            tunnel.z < offset.z - 16.0 - adjustedWidth * 2.0 ||
+            tunnel.x > offset.x + 16.0 + adjustedWidth * 2.0 ||
+            tunnel.z > offset.z + 16.0 + adjustedWidth * 2.0) {
+            continue;
+        }
+        
+        Pos3D min;
+        Pos3D max;
+        min.x = (int) floor(tunnel.x - adjustedWidth) - currentChunkX16.x - 1;
+        max.x = (int) floor(tunnel.x + adjustedWidth) - currentChunkX16.x + 1;
+        min.y = (int) floor(tunnel.y - adjustedHeight) - 1;
+        max.y = (int) floor(tunnel.y + adjustedHeight) + 1;
+        min.z = (int) floor(tunnel.z - adjustedWidth) - currentChunkX16.z - 1;
+        max.z = (int) floor(tunnel.z + adjustedWidth) - currentChunkX16.z + 1;
 
-                bool waterOrLavaDetected = false;
+        if (min.x < 0) min.x = 0;
+        if (max.x > 16) max.x = 16;
+        if (min.y < 1) min.y = 1;
+        if (max.y > 120) max.y = 120;
+        if (min.z < 0) min.z = 0;
+        if (max.z > 16) max.z = 16;
 
-                for (int x = startX; !waterOrLavaDetected && x < endX; ++x) {
-                    for (int z = startZ; !waterOrLavaDetected && z < endZ; ++z) {
-                        for (int y = endY + 1; !waterOrLavaDetected && y >= startY - 1; --y) {
-                            if (y >= 0 && y < 128) {
-                                c_u16 blockId = chunkPrimer->getBlockId(x, y, z);
-                                if (blockId == lce::blocks::FLOWING_WATER_ID
-                                    || blockId == lce::blocks::STILL_WATER_ID) {
-                                    waterOrLavaDetected = true;
-                                }
+        Pos3D pos;
+        for (pos.x = min.x; pos.x < max.x; ++pos.x) {
+            for (pos.z = min.z; pos.z < max.z; ++pos.z) {
+                for (pos.y = max.y + 1; pos.y >= min.y - 1; --pos.y) {
+                    if (pos.y < 0 || pos.y >= 128) { continue; }
+                    c_u16 blockId = chunkPrimer->getBlockId(pos);
+                    if (pos.y != min.y - 1 &&
+                        pos.x != min.x &&
+                        pos.x != max.x - 1
+                        && pos.z != min.z
+                        && pos.z != max.z - 1) {
+                        pos.y = min.y;
+                    }
 
-                                if (y != startY - 1 && x != startX && x != endX - 1 && z != startZ && z != endZ - 1) {
-                                    y = startY;
-                                }
-                            }
-                        }
+                    c_bool hasLiquid = blockId == STILL_WATER_ID ||
+                                       blockId == FLOWING_WATER_ID;
+                    if (hasLiquid) {
+                        goto FOUND_LIQUID;
                     }
                 }
-
-                if (!waterOrLavaDetected) {
-                    for (int x = startX; x < endX; ++x) {
-                        c_double dX = ((double) (x + chunk.x * 16) + 0.5 - tunnel.x) / adjustedWidth;
-
-                        for (int z = startZ; z < endZ; ++z) {
-                            c_double dZ = ((double) (z + chunk.z * 16) + 0.5 - tunnel.z) / adjustedWidth;
-                            bool replaceableBlockDetected = false;
-
-                            if (dX * dX + dZ * dZ < 1.0) {
-                                //startY - 1 <=
-                                //for (int y = endY; y > startY; --y)
-                                for (int y = endY - 1; y >= startY; --y) {
-                                    double dY = ((double) y + 0.5 - tunnel.y) / adjustedHeight;
-
-                                    if ((dX * dX + dZ * dZ) * (double) rs[y] + dY * dY / 6.0 < 1.0) {
-                                        c_u16 currentBlock = chunkPrimer->getBlockId(x, y, z);
-                                        c_u16 blockAbove = chunkPrimer->getBlockId(x, y + 1, z);
-
-                                        if (currentBlock == lce::blocks::GRASS_ID) {
-                                            replaceableBlockDetected = true;
-                                        }
-
-                                        /*if (iBlockState1 == lce::items::STONE_ID ||
-                                            iBlockState1 == lce::items::GRASS_ID ||
-                                            iBlockState1 == lce::items::DIRT_ID)*/
-                                        if (canReplaceBlock(currentBlock, blockAbove)) {
-                                            if (y < 11) {
-                                                chunkPrimer->setBlockId(x, y, z, lce::blocks::FLOWING_LAVA_ID);
-                                            } else {
-                                                chunkPrimer->setBlockId(x, y, z, lce::blocks::AIR_ID);
-
-                                                if (replaceableBlockDetected &&
-                                                    chunkPrimer->getBlockId(x, y - 1, z) == lce::blocks::DIRT_ID) {
-                                                    chunkPrimer->setBlockId(
-                                                            x, y - 1, z, topBlock(x + chunk.x * 16, z + chunk.z * 16));
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-                if (isSegmentAtCenter) { break; }
             }
         }
-    }
-}
+
+        // used to make the cpu not have to
+        // cache the later code when it finds water
+        goto JUMP_PAST_FOUND_LIQUID;
+    FOUND_LIQUID:
+        if (isSegmentAtCenter) { return; }
+        goto SEGMENT_FOR_LOOP_START;
+    JUMP_PAST_FOUND_LIQUID:
 
 
-void RavineGenerator::addFeature(c_int baseChunkX, c_int baseChunkZ, c_int currentChunkX,
-                                 c_int currentChunkZ, ChunkPrimer* chunkPrimer, bool accurate) {
-    if EXPECT_FALSE (rng.nextInt(50) == 0) {
-        auto tunnelStartX = (double) (baseChunkX * 16 + rng.nextInt(16));
-        auto tunnelStartY = (double) (rng.nextInt(rng.nextInt(40) + 8) + 20);
-        auto tunnelStartZ = (double) (baseChunkZ * 16 + rng.nextInt(16));
-        c_float tunnelDirection = rng.nextFloat() * (PI_FLOAT * 2.0F);
-        c_float tunnelSlope = (rng.nextFloat() - 0.5F) * 2.0F / 8.0F;
-        c_float tunnelLengthMultiplier = (rng.nextFloat() * 2.0F + rng.nextFloat()) * 2.0F;
-        addTunnel(rng.nextLongI(), {currentChunkX, currentChunkZ}, chunkPrimer,
-                  {tunnelStartX, tunnelStartY, tunnelStartZ}, tunnelLengthMultiplier, tunnelDirection, tunnelSlope, 0,
-                  0, 3.0, accurate);
+        pos.setPos(0, 0, 0);
+        DoublePos3D dXYZ;
+        for (pos.x = min.x; pos.x < max.x; ++pos.x) {
+            dXYZ.x = ((double) (pos.x + currentChunkX16.x) + 0.5 - tunnel.x) / adjustedWidth;
+
+            for (pos.z = min.z; pos.z < max.z; ++pos.z) {
+                dXYZ.z = ((double) (pos.z + currentChunkX16.z) + 0.5 - tunnel.z) / adjustedWidth;
+                bool replaceableBlockDetected = false;
+
+                c_double scaleDXDZSq = dXYZ.distanceSqXZ();
+
+                if (scaleDXDZSq >= 1.0) { continue; }
+
+                for (pos.y = max.y - 1; pos.y >= min.y; --pos.y) {
+                    dXYZ.y = ((double) pos.y + 0.5 - tunnel.y) / adjustedHeight;
+
+                    if ((scaleDXDZSq) * (double) rs[pos.y] + dXYZ.y * dXYZ.y / 6.0 >= 1.0) { continue; }
+
+                    c_u16 currentBlock = chunkPrimer->getBlockId(pos);
+                    c_u16 blockAbove = chunkPrimer->getBlockId(pos.up());
+
+                    if (currentBlock == GRASS_ID) {
+                        replaceableBlockDetected = true;
+                    }
+
+                    if (canReplaceBlock(currentBlock, blockAbove)) {
+                        if (pos.y < 11) {
+                            chunkPrimer->setBlockId(pos, FLOWING_LAVA_ID);
+                        } else {
+                            chunkPrimer->setBlockId(pos, AIR_ID);
+
+                            if (replaceableBlockDetected &&
+                                chunkPrimer->getBlockId(pos.down()) == DIRT_ID) {
+                                chunkPrimer->setBlockId(pos.down(),
+                                    topBlock(pos.x + currentChunkX16.x, pos.z + currentChunkX16.z));
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        if (isSegmentAtCenter) { break; }
     }
 }

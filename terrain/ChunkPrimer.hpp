@@ -16,24 +16,27 @@
 
 enum class Stage : u8 {
     STAGE_TERRAIN = 0,
-    STAGE_CAVES = 1,
-    STAGE_STRUCTURE = 2,
-    STAGE_DECORATE = 4,
-    STAGE_DONE = 8
+    STAGE_WATER_CAVES = 1,
+    STAGE_WATER_RAVINES = 2,
+    STAGE_CAVES = 4,
+    STAGE_RAVINES = 8,
+    STAGE_STRUCTURE = 16,
+    STAGE_DECORATE = 32,
+    STAGE_DONE = 64
 };
 
 class ChunkPrimer {
-
+    static constexpr int STORAGE_SIZE = 16 * (256) * 16;
 public:
     /// all the blocks along with data in the chunk
     Stage stage = Stage::STAGE_TERRAIN;
     RNG decorateRng;
 
-    u16 blocks[65536]{};
+    u16 blocks[STORAGE_SIZE]{};
     std::vector<u8> skyLight;
     int highestYBlock = -1;
 
-    u8 heightMap[16][16];
+    u8 heightMap[16][16]{};
     std::vector<int> precipitationHeightMap = std::vector(256, -999);
 
 
@@ -49,43 +52,43 @@ public:
     //ChunkPrimer &operator=(ChunkPrimer &&) = delete;
 
     ND u16 getBlockAtIndex(c_i64 index) const {
-        return index >= 0 && index < 65536 ? blocks[index] : 0;
+        return index >= 0 && index < STORAGE_SIZE - 1 ? blocks[index] : 0;
     }
 
     ND u16 getBlockId(c_i64 x, c_i64 y, c_i64 z) const {
-        if (x < 0 || y < 0 || z < 0 || x >= 16 || y >= 256 || z >= 16) { return 0; }
+        if EXPECT_FALSE(x < 0 || y < 0 || z < 0 || x >= 16 || y >= 256 || z >= 16) { return 0; }
         return getBlockAtIndex(getStorageIndex(x, y, z)) >> 4;
     }
 
     ND u16 getBlockId(const Pos3D &pos) const {
-        return this->getBlockId(pos.getX(), pos.getY(), pos.getZ());
+        return this->getBlockId(pos.x, pos.y, pos.z);
     }
 
     void setBlockId(c_i64 x, c_i64 y, c_i64 z, c_u16 block) {
-        if (x < 0 || y < 0 || z < 0 || x >= 16 || y >= 256 || z >= 16) { return; }
+        if EXPECT_FALSE(x < 0 || y < 0 || z < 0 || x >= 16 || y >= 256 || z >= 16) { return; }
         blocks[getStorageIndex(x, y, z)] = block << 4;
     }
 
     void setBlockId(const Pos3D &pos, c_u16 block) {
-        this->setBlockId(pos.getX(), pos.getY(), pos.getZ(), block);
+        this->setBlockId(pos.x, pos.y, pos.z, block);
     }
 
     ND u16 getData(c_i64 x, c_i64 y, c_i64 z) const {
-        if (x < 0 || y < 0 || z < 0 || x >= 16 || y >= 256 || z >= 16) { return 0; }
+        if EXPECT_FALSE(x < 0 || y < 0 || z < 0 || x >= 16 || y >= 256 || z >= 16) { return 0; }
         return getBlockAtIndex(getStorageIndex(x, y, z)) & 15;
     }
 
     ND u16 getData(const Pos3D &pos) const {
-        return this->getData(pos.getX(), pos.getY(), pos.getZ());
+        return this->getData(pos.x, pos.y, pos.z);
     }
 
     void setData(c_i64 x, c_i64 y, c_i64 z, c_u8 data) {
-        if (x < 0 || y < 0 || z < 0 || x >= 16 || y >= 256 || z >= 16) { return; }
+        if EXPECT_FALSE(x < 0 || y < 0 || z < 0 || x >= 16 || y >= 256 || z >= 16) { return; }
         blocks[getStorageIndex(x, y, z)] |= data;
     }
 
     void setData(const Pos3D &pos, c_u8 data) {
-        this->setData(pos.getX(), pos.getY(), pos.getZ(), data);
+        this->setData(pos.x, pos.y, pos.z, data);
     }
 
     ND const lce::Block* getBlock(c_i64 x, c_i64 y, c_i64 z) const {
@@ -93,7 +96,7 @@ public:
     }
 
     ND const lce::Block* getBlock(const Pos3D &pos) const {
-        return this->getBlock(pos.getX(), pos.getY(), pos.getZ());
+        return this->getBlock(pos.x, pos.y, pos.z);
     }
 
     ND u16 getSkyLight(c_i64 x, c_i64 y, c_i64 z) const {
@@ -105,12 +108,12 @@ public:
     }
 
     void setBlockAndData(c_i64 x, c_i64 y, c_i64 z, c_int id, c_int data) {
-        if (x < 0 || y < 0 || z < 0 || x >= 16 || y >= 256 || z >= 16) {/*std::cout << "Invalid coords: " << x << ", " << y << ", " << z << std::endl;*/ return;}
+        if EXPECT_FALSE(x < 0 || y < 0 || z < 0 || x >= 16 || y >= 256 || z >= 16) { return; }
         blocks[getStorageIndex(x, y, z)] = ((id << 4) | data);
     }
 
     void setBlockAndData(const Pos3D &pos, c_int id, c_int data) {
-        this->setBlockAndData(pos.getX(), pos.getY(), pos.getZ(), id, data);
+        this->setBlockAndData(pos.x, pos.y, pos.z, id, data);
     }
 
     void setBlock(c_i64 x, c_i64 y, c_i64 z, const lce::Block *block) {
@@ -118,7 +121,7 @@ public:
     }
 
     void setBlock(const Pos3D &pos, const lce::Block *block) {
-        this->setBlock(pos.getX(), pos.getY(), pos.getZ(), block);
+        this->setBlock(pos.x, pos.y, pos.z, block);
     }
 
     ND bool isAirBlock(c_i64 x, c_i64 y, c_i64 z) const {
@@ -126,7 +129,7 @@ public:
     }
 
     ND bool isAirBlock(const Pos3D &pos) const {
-        return isAirBlock(pos.getX(), pos.getY(), pos.getZ());
+        return isAirBlock(pos.x, pos.y, pos.z);
     }
 
     friend std::ostream &operator<<(std::ostream &out, const ChunkPrimer &chunkPrimer) {

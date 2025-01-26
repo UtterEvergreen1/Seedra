@@ -41,7 +41,7 @@ bool WorldGenIceSpike::generate(World * worldIn, RNG &rng, const Pos3D &pos) con
                     if (blockId == AIR_ID ||
                         blockId == DIRT_ID ||
                         blockId == SNOW_BLOCK_ID || blockId == ICE_ID) {
-                        worldIn->setBlock(position.add(i1, k, j1), PACKED_ICE_ID);
+                        worldIn->setBlockId(position.add(i1, k, j1), PACKED_ICE_ID);
                     }
 
                     if (k != 0 && l > 1) {
@@ -51,7 +51,7 @@ bool WorldGenIceSpike::generate(World * worldIn, RNG &rng, const Pos3D &pos) con
                             blockId1 == DIRT_ID ||
                             blockId1 == SNOW_BLOCK_ID ||
                             blockId1 == ICE_ID) {
-                            worldIn->setBlock(position.add(i1, -k, j1), PACKED_ICE_ID);
+                            worldIn->setBlockId(position.add(i1, -k, j1), PACKED_ICE_ID);
                         }
                     }
                 }
@@ -88,7 +88,7 @@ bool WorldGenIceSpike::generate(World * worldIn, RNG &rng, const Pos3D &pos) con
                     break;
                 }
 
-                worldIn->setBlock(blockPos, PACKED_ICE_ID);
+                worldIn->setBlockId(blockPos, PACKED_ICE_ID);
                 blockPos = blockPos.down();
                 --j2;
 

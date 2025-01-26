@@ -22,9 +22,23 @@ Pos2DTemplate<classType> Pos2DTemplate<classType>::operator+(const Pos2DTemplate
     return {x + other.x, z + other.z};
 }
 
-
 template<class classType>
 Pos2DTemplate<classType> Pos2DTemplate<classType>::operator+(c_int other) const { return {x + other, z + other}; }
+
+
+
+template<class classType>
+Pos2DTemplate<classType> Pos2DTemplate<classType>::operator*(const Pos2DTemplate &other) const {
+    return {x * other.x, z * other.z};
+}
+
+template<class classType>
+Pos2DTemplate<classType> Pos2DTemplate<classType>::operator*(c_int other) const {
+    return {x * other, z * other};
+}
+
+
+
 
 
 template<class classType>
@@ -65,6 +79,19 @@ template<class classType>
 std::string Pos2DTemplate<classType>::toString() const {
     return "(" + std::to_string(this->x) + ", " + std::to_string(this->z) + ")";
 }
+
+
+
+template<class classType>
+ND double Pos2DTemplate<classType>::distanceSq() const {
+    using ValueType = std::conditional_t<std::is_same_v<classType, double>, classType, double>;
+
+    auto d0 = static_cast<ValueType>(x);
+    auto d1 = static_cast<ValueType>(z);
+
+    return d0 * d0 + d1 * d1;
+}
+
 
 
 template<class classType>

@@ -40,7 +40,7 @@ bool WorldGenReed::generate(World* worldIn, RNG& rng, const Pos3D& position) con
 
                 for (int k = 0; k < j; ++k) {
                     if (BlockReed::canBlockStay(worldIn, blockPos)) {
-                        worldIn->setBlock(blockPos.up(k), SUGAR_CANES_ID);
+                        worldIn->setBlockId(blockPos.up(k), SUGAR_CANES_ID);
                     }
                 }
             }

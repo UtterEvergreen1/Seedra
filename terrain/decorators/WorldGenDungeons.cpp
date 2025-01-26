@@ -45,17 +45,16 @@ bool WorldGenDungeons::generate(World* worldIn, RNG& rng, const Pos3D& position)
                     Pos3D blockPos1 = position.add(k3, i4, k4);
 
                     if (k3 != k && i4 != -1 && k4 != l1 && k3 != l && i4 != 4 && k4 != i2) {
-                        if (worldIn->getBlockId(blockPos1) != CHEST_ID) {
-                            worldIn->setBlock(blockPos1, AIR_ID);
+                        if (worldIn->getBlockId(blockPos1) != CHEST_ID) { worldIn->setBlockId(blockPos1, AIR_ID);
                         }
                     } else if (blockPos1.getY() >= 0 && !isSolidBlock(worldIn->getBlockId(blockPos1.down()))) {
-                        worldIn->setBlock(blockPos1, AIR_ID);
+                        worldIn->setBlockId(blockPos1, AIR_ID);
                     } else if (isSolidBlock(worldIn->getBlockId(blockPos1)) &&
                                worldIn->getBlockId(blockPos1) != CHEST_ID) {
                         if (i4 == -1 && rng.nextInt(4) != 0) {
-                            worldIn->setBlock(blockPos1, MOSS_STONE_ID);
+                            worldIn->setBlockId(blockPos1, MOSS_STONE_ID);
                         } else {
-                            worldIn->setBlock(blockPos1, COBBLESTONE_ID);
+                            worldIn->setBlockId(blockPos1, COBBLESTONE_ID);
                         }
                     }
                 }
@@ -77,7 +76,7 @@ bool WorldGenDungeons::generate(World* worldIn, RNG& rng, const Pos3D& position)
                     }
 
                     if (j3 == 1) {
-                        worldIn->setBlock(blockPos2, CHEST_ID);
+                        worldIn->setBlockId(blockPos2, CHEST_ID);
                         rng.nextLong(); // skip the loot seed
                         /*TileEntity *tileentity1 = worldIn.getTileEntity(blockpos2);
 
@@ -91,7 +90,7 @@ bool WorldGenDungeons::generate(World* worldIn, RNG& rng, const Pos3D& position)
             }
         }
 
-        worldIn->setBlock(position, MONSTER_SPAWNER_ID);
+        worldIn->setBlockId(position, MONSTER_SPAWNER_ID);
         pickMobSpawner(rng);
         /*TileEntity *tileentity = worldIn.getTileEntity(position);
 

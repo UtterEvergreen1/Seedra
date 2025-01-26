@@ -84,12 +84,12 @@ bool WorldGenLakes::generate(World* worldIn, RNG& rng, const Pos3D& pos) const {
 
                     if (worldIn->getBlockId(blockPos) == DIRT_ID &&
                         !isFullyOpaqueBlock(worldIn->getBlockId(blockPos.up()))) {
-                        const Biome* biome = Biome::getBiomeForId(g->getBiomeAt(1, blockPos.convert2D()));
+                        const Biome* biome = Biome::getBiomeForId(g->getBiomeAt(1, blockPos.asPos2D()));
 
                         if (biome->topBlock == &lce::BlocksInit::MYCELIUM) {
-                            worldIn->setBlock(blockPos, MYCELIUM_ID);
+                            worldIn->setBlockId(blockPos, MYCELIUM_ID);
                         } else {
-                            worldIn->setBlock(blockPos, GRASS_ID);
+                            worldIn->setBlockId(blockPos, GRASS_ID);
                         }
                     }
                 }
@@ -111,7 +111,7 @@ bool WorldGenLakes::generate(World* worldIn, RNG& rng, const Pos3D& pos) const {
 
                     if (flag1 && (k4 < 4 || rng.nextInt(2) != 0) &&
                         lce::blocks::isSolidBlock(worldIn->getBlockId(position.add(j2, k4, k3)))) {
-                        worldIn->setBlock(position.add(j2, k4, k3), STONE_ID);
+                        worldIn->setBlockId(position.add(j2, k4, k3), STONE_ID);
                     }
                 }
             }
@@ -122,7 +122,7 @@ bool WorldGenLakes::generate(World* worldIn, RNG& rng, const Pos3D& pos) const {
         for (int k2 = 0; k2 < 16; ++k2) {
             for (int l3 = 0; l3 < 16; ++l3) {
                 if (worldIn->canBlockFreezeWater(position.add(k2, 4, l3))) {
-                    worldIn->setBlock(position.add(k2, 4, l3), ICE_ID);
+                    worldIn->setBlockId(position.add(k2, 4, l3), ICE_ID);
                 }
             }
         }
