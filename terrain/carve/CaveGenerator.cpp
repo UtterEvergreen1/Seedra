@@ -570,11 +570,7 @@ SEGMENT_FOR_LOOP_START:
                         if (pos.y < 11) {
                             chunkPrimer->setBlockId(pos, STILL_LAVA_ID);
                         } else {
-                            if (isMainTunnel) {
-                                chunkPrimer->setBlockId(pos, GLASS_ID);
-                            } else {
-                                chunkPrimer->setBlockId(pos, AIR_ID);
-                            }
+                            chunkPrimer->setBlockId(pos, AIR_ID);
                             if (isTopBlock && chunkPrimer->getBlockId(pos.down()) == DIRT_ID) {
                                 chunkPrimer->setBlockId(
                                         pos.down(),
