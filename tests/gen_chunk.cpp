@@ -70,7 +70,7 @@ int main() {
     world.createChunks({X_CENTER, Z_CENTER}, X_WIDTH);
     world.decorateCaves({X_CENTER, Z_CENTER}, X_WIDTH);
 
-    // world.decorateChunks({X_CENTER, Z_CENTER}, X_WIDTH);
+    world.decorateChunks({X_CENTER, Z_CENTER}, X_WIDTH);
 
     std::cout << "World Gen Time: " << start.getSeconds() << "\n";
 
