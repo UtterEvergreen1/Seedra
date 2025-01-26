@@ -898,12 +898,12 @@ uint32_t BiomeForest::getGrassColor(const Pos3D &pos) const {
         return color;
 
     //2634762
-    return (color & 0xFEFEFE) + 0x0A3428 >> 1;
+    return (((color & 0xFEFEFE) + 0xA3428) >> 1) | 0xFF000000;
 }
 
 uint32_t BiomeSwamp::getGrassColor(const Pos3D &pos) const {
     double d0 = INFO_NOISE.getValue(static_cast<double>(pos.x) * 0.0225, static_cast<double>(pos.z) * 0.0225);
-    return d0 < -0.1 ? 0x3C764C : 0x39706A;
+    return d0 < -0.1 ? 0xFF3C764C : 0xFF39706A;
 }
 
 uint32_t BiomeSwamp::getFoliageColor(const Pos3D &pos) const {
