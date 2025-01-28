@@ -68,10 +68,10 @@ public:
 
 
     /// The block expected to be on the top of this biome
-    const lce::BlockState topBlock = lce::BlocksInit::GRASS.getState();
+    lce::BlockState topBlock = lce::BlocksInit::GRASS.getState();
 
     /// The block to fill spots in when not on the top
-    const lce::BlockState fillerBlock = lce::BlocksInit::DIRT.getState();
+    lce::BlockState fillerBlock = lce::BlocksInit::DIRT.getState();
 
     BiomeDecorator *decorator = this->createBiomeDecorator();
 
@@ -115,7 +115,7 @@ public:
 
     virtual void decorate(World *worldIn, RNG &rng, const Pos2D &pos);
 
-    uint32_t getWaterColor();
+    uint32_t getWaterColor() const;
 
     float getRainfall() const;
 

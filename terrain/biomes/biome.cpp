@@ -218,8 +218,8 @@ void Biome::generateBiomeTerrain(RNG &rng, ChunkPrimer *chunkPrimerIn, int x, in
                     if (j == 0 && filler.getID() == lce::blocks::SAND_ID && k > 1) {
                         j = rng.nextInt(4) + std::max(0, j1 - 63);
                         filler = filler.getDataTag() == 1
-                                     ? &lce::BlocksInit::RED_SANDSTONE
-                                     : &lce::BlocksInit::SANDSTONE;
+                                     ? lce::BlocksInit::RED_SANDSTONE.getState()
+                                     : lce::BlocksInit::SANDSTONE.getState();
                     }
                 }
             }
@@ -238,14 +238,14 @@ void Biome::genTerrainBlocks(MU i64 worldSeed, RNG &rng, ChunkPrimer *chunkPrime
 
 void BiomeHills::genTerrainBlocks(MU i64 worldSeed, RNG &rng, ChunkPrimer *chunkPrimerIn, c_int x, c_int z,
                                   c_double noiseVal) {
-    this->topBlock = &lce::BlocksInit::GRASS;
-    this->fillerBlock = &lce::BlocksInit::DIRT;
+    this->topBlock = lce::BlocksInit::GRASS.getState();
+    this->fillerBlock = lce::BlocksInit::DIRT.getState();
     if ((noiseVal < -1.0 || noiseVal > 2.0) && this->type == BiomeHills::Type::MUTATED) {
-        this->topBlock = &lce::BlocksInit::GRAVEL;
-        this->fillerBlock = &lce::BlocksInit::GRAVEL;
+        this->topBlock = lce::BlocksInit::GRAVEL.getState();
+        this->fillerBlock = lce::BlocksInit::GRAVEL.getState();
     } else if (noiseVal > 1.0 && this->type != BiomeHills::Type::EXTRA_TREES) {
-        this->topBlock = &lce::BlocksInit::STONE;
-        this->fillerBlock = &lce::BlocksInit::STONE;
+        this->topBlock = lce::BlocksInit::STONE.getState();
+        this->fillerBlock = lce::BlocksInit::STONE.getState();
     }
 
     this->generateBiomeTerrain(rng, chunkPrimerIn, x, z, noiseVal);
@@ -255,9 +255,9 @@ void BiomeTaiga::genTerrainBlocks(MU i64 worldSeed, RNG &rng, ChunkPrimer *chunk
                                   c_double noiseVal) {
     if (this->type == BiomeTaiga::Type::MEGA || this->type == BiomeTaiga::Type::MEGA_SPRUCE) {
         if (noiseVal > 1.75) {
-            this->topBlock = &lce::BlocksInit::COARSE_DIRT;
+            this->topBlock = lce::BlocksInit::COARSE_DIRT.getState();
         } else if (noiseVal > -0.95) {
-            this->topBlock = &lce::BlocksInit::PODZOL;
+            this->topBlock = lce::BlocksInit::PODZOL.getState();
         }
     }
 
@@ -324,7 +324,7 @@ void BiomeMesa::genTerrainBlocks(c_i64 worldSeedIn, RNG &rng, ChunkPrimer *chunk
     c_int k1 = x & 15;
     c_int l1 = z & 15;
     constexpr int seaLevel = 63; // sea level
-    const lce::Block *filler = this->fillerBlock;
+    lce::BlockState filler = this->fillerBlock;
     c_int k = static_cast<int>(noiseVal / 3.0 + 3.0 + rng.nextDouble() * 0.25);
     c_bool flag = cos(noiseVal / 3.0 * PI) > 0.0;
     int l = -1;
@@ -347,7 +347,7 @@ void BiomeMesa::genTerrainBlocks(c_i64 worldSeedIn, RNG &rng, ChunkPrimer *chunk
                     flag1 = false;
 
                     if (k <= 0) {
-                        filler = &lce::BlocksInit::STONE;
+                        filler = lce::BlocksInit::STONE.getState();
                     } else if (j1 >= seaLevel - 4 && j1 <= seaLevel + 1) {
                         filler = this->fillerBlock;
                     }
@@ -360,14 +360,14 @@ void BiomeMesa::genTerrainBlocks(c_i64 worldSeedIn, RNG &rng, ChunkPrimer *chunk
                             else
                                 chunkPrimerIn->setBlockId(l1, j1, k1, lce::blocks::GRASS_ID);
                         } else if (j1 > seaLevel + 3 + k) {
-                            lce::BlockState iBlockState2;
+                            lce::BlockState iBlockState2 = lce::BlocksInit::AIR.getState();
 
                             if (j1 >= 64 && j1 <= 127) {
-                                if (flag) iBlockState2 = &lce::BlocksInit::HARDENED_CLAY;
+                                if (flag) iBlockState2 = lce::BlocksInit::HARDENED_CLAY.getState();
                                 else
                                     iBlockState2 = this->getClayBand(x, j1);
                             } else
-                                iBlockState2 = &lce::BlocksInit::ORANGE_HARDENED_CLAY;
+                                iBlockState2 = lce::BlocksInit::ORANGE_HARDENED_CLAY.getState();
 
                             chunkPrimerIn->setBlock(l1, j1, k1, iBlockState2);
                         } else {
@@ -377,13 +377,13 @@ void BiomeMesa::genTerrainBlocks(c_i64 worldSeedIn, RNG &rng, ChunkPrimer *chunk
                     } else {
                         chunkPrimerIn->setBlock(l1, j1, k1, filler);
 
-                        if (filler->getID() == lce::blocks::STAINED_HARDENED_CLAY_ID)
-                            chunkPrimerIn->setBlock(l1, j1, k1, &lce::BlocksInit::ORANGE_HARDENED_CLAY);
+                        if (filler.getID() == lce::blocks::STAINED_HARDENED_CLAY_ID)
+                            chunkPrimerIn->setBlock(l1, j1, k1, lce::BlocksInit::ORANGE_HARDENED_CLAY.getState());
                     }
                 } else if (l > 0) {
                     --l;
 
-                    if (flag1) chunkPrimerIn->setBlock(l1, j1, k1, &lce::BlocksInit::ORANGE_HARDENED_CLAY);
+                    if (flag1) chunkPrimerIn->setBlock(l1, j1, k1, lce::BlocksInit::ORANGE_HARDENED_CLAY.getState());
                     else
                         chunkPrimerIn->setBlock(l1, j1, k1, this->getClayBand(x, j1));
                 }
@@ -395,7 +395,7 @@ void BiomeMesa::genTerrainBlocks(c_i64 worldSeedIn, RNG &rng, ChunkPrimer *chunk
 }
 
 void BiomeMesa::generateClayBands(c_i64 seed) {
-    this->clayBands.resize(64, &lce::BlocksInit::HARDENED_CLAY);
+    this->clayBands.resize(64, lce::BlocksInit::HARDENED_CLAY.getState());
     RNG rng;
     rng.setSeed(seed);
     this->clayBandsOffsetNoise.setNoiseGeneratorPerlin(rng, 1);
@@ -403,7 +403,7 @@ void BiomeMesa::generateClayBands(c_i64 seed) {
     for (int index = 0; index < 64; ++index) {
         index += rng.nextInt(5) + 1;
 
-        if (index < 64) this->clayBands[index] = &lce::BlocksInit::WHITE_HARDENED_CLAY;
+        if (index < 64) this->clayBands[index] = lce::BlocksInit::WHITE_HARDENED_CLAY.getState();
     }
 
     c_int orangeBands = rng.nextInt(4) + 2;
@@ -413,7 +413,7 @@ void BiomeMesa::generateClayBands(c_i64 seed) {
         c_int startPos = rng.nextInt(64);
 
         for (int offset = 0; startPos + offset < 64 && offset < bandLength; ++offset)
-            this->clayBands[startPos + offset] = &lce::BlocksInit::YELLOW_HARDENED_CLAY;
+            this->clayBands[startPos + offset] = lce::BlocksInit::YELLOW_HARDENED_CLAY.getState();
     }
 
     c_int brownBands = rng.nextInt(4) + 2;
@@ -423,7 +423,7 @@ void BiomeMesa::generateClayBands(c_i64 seed) {
         c_int startPos = rng.nextInt(64);
 
         for (int offset = 0; startPos + offset < 64 && offset < bandLength; ++offset)
-            this->clayBands[startPos + offset] = &lce::BlocksInit::BROWN_HARDENED_CLAY;
+            this->clayBands[startPos + offset] = lce::BlocksInit::BROWN_HARDENED_CLAY.getState();
     }
 
     c_int redBands = rng.nextInt(4) + 2;
@@ -433,7 +433,7 @@ void BiomeMesa::generateClayBands(c_i64 seed) {
         c_int startPos = rng.nextInt(64);
 
         for (int offset = 0; startPos + offset < 64 && offset < bandLength; ++offset)
-            this->clayBands[startPos + offset] = &lce::BlocksInit::RED_HARDENED_CLAY;
+            this->clayBands[startPos + offset] = lce::BlocksInit::RED_HARDENED_CLAY.getState();
     }
 
     c_int grayBands = rng.nextInt(3) + 3;
@@ -443,13 +443,13 @@ void BiomeMesa::generateClayBands(c_i64 seed) {
         previousPos += rng.nextInt(16) + 4;
 
         for (int offset = 0; previousPos + offset < 64 && offset < 1; ++offset) {
-            this->clayBands[previousPos + offset] = &lce::BlocksInit::WHITE_HARDENED_CLAY;
+            this->clayBands[previousPos + offset] = lce::BlocksInit::WHITE_HARDENED_CLAY.getState();
 
             if (previousPos + offset > 1 && rng.nextBoolean())
-                this->clayBands[previousPos + offset - 1] = &lce::BlocksInit::LIGHT_GRAY_HARDENED_CLAY;
+                this->clayBands[previousPos + offset - 1] = lce::BlocksInit::LIGHT_GRAY_HARDENED_CLAY.getState();
 
             if (previousPos + offset < 63 && rng.nextBoolean())
-                this->clayBands[previousPos + offset + 1] = &lce::BlocksInit::LIGHT_GRAY_HARDENED_CLAY;
+                this->clayBands[previousPos + offset + 1] = lce::BlocksInit::LIGHT_GRAY_HARDENED_CLAY.getState();
         }
     }
 }
@@ -463,10 +463,10 @@ lce::BlockState BiomeMesa::getClayBand(c_int x, c_int y) {
 void BiomeSavannaMutated::genTerrainBlocks(MU i64 worldSeed, RNG &rng, ChunkPrimer *chunkPrimerIn, c_int x, c_int z,
                                            c_double noiseVal) {
     if (noiseVal > 1.75) {
-        this->topBlock = &lce::BlocksInit::STONE;
-        this->fillerBlock = &lce::BlocksInit::STONE;
+        this->topBlock = lce::BlocksInit::STONE.getState();
+        this->fillerBlock = lce::BlocksInit::STONE.getState();
     } else if (noiseVal > -0.5)
-        this->topBlock = &lce::BlocksInit::COARSE_DIRT;
+        this->topBlock = lce::BlocksInit::COARSE_DIRT.getState();
 
     this->generateBiomeTerrain(rng, chunkPrimerIn, x, z, noiseVal);
 }
@@ -479,7 +479,7 @@ void Biome::decorate(World *worldIn, RNG &rng, const Pos2D &pos) {
     this->decorator->decorate(worldIn, this, rng, pos);
 }
 
-uint32_t Biome::getWaterColor() {
+uint32_t Biome::getWaterColor() const {
     return this->waterColor;
 }
 
@@ -881,19 +881,19 @@ void BiomeMesa::Decorator::generateOres(World *world, RNG &rng) {
 #pragma region BiomeColors
 
 uint32_t Biome::getGrassColor(const Pos3D &pos) const {
-    const double temperature = std::clamp(getFloatTemperature(pos), 0.0f, 1.0f);
-    const double rainFall = std::clamp(getRainfall(), 0.0f, 1.0f);
-    return Colors::getGrassColor(temperature, rainFall);
+    const double _temperature = std::clamp(getFloatTemperature(pos), 0.0f, 1.0f);
+    const double _rainFall = std::clamp(getRainfall(), 0.0f, 1.0f);
+    return Colors::getGrassColor(_temperature, _rainFall);
 }
 
-uint32_t Biome::getFoliageColor(const Pos3D &pos) const {
-    const double temperature = std::clamp(getFloatTemperature(pos), 0.0f, 1.0f);
-    const double rainFall = std::clamp(getRainfall(), 0.0f, 1.0f);
-    return Colors::getFoliageColor(temperature, rainFall);
+MU uint32_t Biome::getFoliageColor(const Pos3D &pos) const {
+    const double _temperature = std::clamp(getFloatTemperature(pos), 0.0f, 1.0f);
+    const double _rainFall = std::clamp(getRainfall(), 0.0f, 1.0f);
+    return Colors::getFoliageColor(_temperature, _rainFall);
 }
 
 uint32_t BiomeForest::getGrassColor(const Pos3D &pos) const {
-    const int color = Biome::getGrassColor(pos);
+    const u32 color = Biome::getGrassColor(pos);
     if (this->type != Type::ROOFED)
         return color;
 
