@@ -26,60 +26,60 @@ namespace build::stronghold {
                 break;
 
             case Door::WOOD_DOOR: {
-                piece.setBlockState(worldIn, &lce::BlocksInit::STONE_BRICKS, x, y, z, chunkBB);
-                piece.setBlockState(worldIn, &lce::BlocksInit::STONE_BRICKS, x, y + 1, z, chunkBB);
-                piece.setBlockState(worldIn, &lce::BlocksInit::STONE_BRICKS, x, y + 2, z, chunkBB);
-                piece.setBlockState(worldIn, &lce::BlocksInit::STONE_BRICKS, x + 1, y + 2, z, chunkBB);
-                piece.setBlockState(worldIn, &lce::BlocksInit::STONE_BRICKS, x + 2, y + 2, z, chunkBB);
-                piece.setBlockState(worldIn, &lce::BlocksInit::STONE_BRICKS, x + 2, y + 1, z, chunkBB);
-                piece.setBlockState(worldIn, &lce::BlocksInit::STONE_BRICKS, x + 2, y, z, chunkBB);
+                piece.setBlockState(worldIn, lce::BlocksInit::STONE_BRICKS.getState(), x, y, z, chunkBB);
+                piece.setBlockState(worldIn, lce::BlocksInit::STONE_BRICKS.getState(), x, y + 1, z, chunkBB);
+                piece.setBlockState(worldIn, lce::BlocksInit::STONE_BRICKS.getState(), x, y + 2, z, chunkBB);
+                piece.setBlockState(worldIn, lce::BlocksInit::STONE_BRICKS.getState(), x + 1, y + 2, z, chunkBB);
+                piece.setBlockState(worldIn, lce::BlocksInit::STONE_BRICKS.getState(), x + 2, y + 2, z, chunkBB);
+                piece.setBlockState(worldIn, lce::BlocksInit::STONE_BRICKS.getState(), x + 2, y + 1, z, chunkBB);
+                piece.setBlockState(worldIn, lce::BlocksInit::STONE_BRICKS.getState(), x + 2, y, z, chunkBB);
 
-                const auto door_base = &lce::BlocksInit::OAK_DOOR_BLOCK;
+                constexpr auto door_base = lce::BlocksInit::OAK_DOOR_BLOCK.getState();
 
-                c_auto door_bottom = door_base->getStateFromMeta(states::DoorLower::withProperty(piece.rotation.apply(piece.mirror, EnumFacing::NORTH)));
+                c_auto door_bottom = door_base.getStateFromMeta(states::DoorLower::withProperty(piece.rotation.apply(piece.mirror, EnumFacing::NORTH)));
                 piece.setBlockState(worldIn, door_bottom, x + 1, y, z, chunkBB);
 
-                c_auto door_top = door_base->getStateFromMeta(states::DoorUpper::withProperty());
+                c_auto door_top = door_base.getStateFromMeta(states::DoorUpper::withProperty());
                 piece.setBlockState(worldIn, door_top, x + 1, y + 1, z, chunkBB);
                 break;
             }
 
             case Door::GRATES:
-                piece.setBlockState(worldIn, &lce::BlocksInit::AIR, x + 1, y, z, chunkBB);
-                piece.setBlockState(worldIn, &lce::BlocksInit::AIR, x + 1, y + 1, z, chunkBB);
-                piece.setBlockState(worldIn, &lce::BlocksInit::IRON_BARS, x, y, z, chunkBB);
-                piece.setBlockState(worldIn, &lce::BlocksInit::IRON_BARS, x, y + 1, z, chunkBB);
-                piece.setBlockState(worldIn, &lce::BlocksInit::IRON_BARS, x, y + 2, z, chunkBB);
-                piece.setBlockState(worldIn, &lce::BlocksInit::IRON_BARS, x + 1, y + 2, z, chunkBB);
-                piece.setBlockState(worldIn, &lce::BlocksInit::IRON_BARS, x + 2, y + 2, z, chunkBB);
-                piece.setBlockState(worldIn, &lce::BlocksInit::IRON_BARS, x + 2, y + 1, z, chunkBB);
-                piece.setBlockState(worldIn, &lce::BlocksInit::IRON_BARS, x + 2, y, z, chunkBB);
+                piece.setBlockState(worldIn, lce::BlocksInit::AIR.getState(), x + 1, y, z, chunkBB);
+                piece.setBlockState(worldIn, lce::BlocksInit::AIR.getState(), x + 1, y + 1, z, chunkBB);
+                piece.setBlockState(worldIn, lce::BlocksInit::IRON_BARS.getState(), x, y, z, chunkBB);
+                piece.setBlockState(worldIn, lce::BlocksInit::IRON_BARS.getState(), x, y + 1, z, chunkBB);
+                piece.setBlockState(worldIn, lce::BlocksInit::IRON_BARS.getState(), x, y + 2, z, chunkBB);
+                piece.setBlockState(worldIn, lce::BlocksInit::IRON_BARS.getState(), x + 1, y + 2, z, chunkBB);
+                piece.setBlockState(worldIn, lce::BlocksInit::IRON_BARS.getState(), x + 2, y + 2, z, chunkBB);
+                piece.setBlockState(worldIn, lce::BlocksInit::IRON_BARS.getState(), x + 2, y + 1, z, chunkBB);
+                piece.setBlockState(worldIn, lce::BlocksInit::IRON_BARS.getState(), x + 2, y, z, chunkBB);
                 break;
 
             case Door::IRON_DOOR: {
-                piece.setBlockState(worldIn, &lce::BlocksInit::STONE_BRICKS, x, y, z, chunkBB);
-                piece.setBlockState(worldIn, &lce::BlocksInit::STONE_BRICKS, x, y + 1, z, chunkBB);
-                piece.setBlockState(worldIn, &lce::BlocksInit::STONE_BRICKS, x, y + 2, z, chunkBB);
-                piece.setBlockState(worldIn, &lce::BlocksInit::STONE_BRICKS, x + 1, y + 2, z, chunkBB);
-                piece.setBlockState(worldIn, &lce::BlocksInit::STONE_BRICKS, x + 2, y + 2, z, chunkBB);
-                piece.setBlockState(worldIn, &lce::BlocksInit::STONE_BRICKS, x + 2, y + 1, z, chunkBB);
-                piece.setBlockState(worldIn, &lce::BlocksInit::STONE_BRICKS, x + 2, y, z, chunkBB);
+                piece.setBlockState(worldIn, lce::BlocksInit::STONE_BRICKS.getState(), x, y, z, chunkBB);
+                piece.setBlockState(worldIn, lce::BlocksInit::STONE_BRICKS.getState(), x, y + 1, z, chunkBB);
+                piece.setBlockState(worldIn, lce::BlocksInit::STONE_BRICKS.getState(), x, y + 2, z, chunkBB);
+                piece.setBlockState(worldIn, lce::BlocksInit::STONE_BRICKS.getState(), x + 1, y + 2, z, chunkBB);
+                piece.setBlockState(worldIn, lce::BlocksInit::STONE_BRICKS.getState(), x + 2, y + 2, z, chunkBB);
+                piece.setBlockState(worldIn, lce::BlocksInit::STONE_BRICKS.getState(), x + 2, y + 1, z, chunkBB);
+                piece.setBlockState(worldIn, lce::BlocksInit::STONE_BRICKS.getState(), x + 2, y, z, chunkBB);
 
                 c_auto doorBlockLower = lce::BlocksInit::IRON_DOOR_BLOCK.getStateFromMeta(
-                        states::DoorLower::withProperty(piece.rotation.apply(piece.mirror, EnumFacing::NORTH)));
+                        DoorLower::withProperty(piece.rotation.apply(piece.mirror, EnumFacing::NORTH)));
                 piece.setBlockState(worldIn, doorBlockLower, x + 1, y, z, chunkBB);
 
                 c_auto doorBlockUpper = lce::BlocksInit::IRON_DOOR_BLOCK.getStateFromMeta(
-                        states::DoorUpper::withProperty());
+                        DoorUpper::withProperty());
                 piece.setBlockState(worldIn, doorBlockUpper, x + 1, y + 1, z, chunkBB);
 
                 c_auto buttonBlock1 = lce::BlocksInit::STONE_BUTTON.getStateFromMeta(
-                        states::Button::withProperty(piece.rotation.apply(piece.mirror, EnumFacing::NORTH)));
-                piece.setBlockState(worldIn, &buttonBlock1, x + 2, y + 1, z + 1, chunkBB);
+                        Button::withProperty(piece.rotation.apply(piece.mirror, EnumFacing::NORTH)));
+                piece.setBlockState(worldIn, buttonBlock1, x + 2, y + 1, z + 1, chunkBB);
 
                 c_auto buttonBlock2 = lce::BlocksInit::STONE_BUTTON.getStateFromMeta(
-                        states::Button::withProperty(piece.rotation.apply(piece.mirror, EnumFacing::SOUTH)));
-                piece.setBlockState(worldIn, &buttonBlock2, x + 2, y + 1, z - 1, chunkBB);
+                        Button::withProperty(piece.rotation.apply(piece.mirror, EnumFacing::SOUTH)));
+                piece.setBlockState(worldIn, buttonBlock2, x + 2, y + 1, z - 1, chunkBB);
             }
         }
     }
@@ -96,22 +96,22 @@ namespace build::stronghold {
         piece.fillWithRandomizedStrongholdStones(worldIn, chunkBB, 0, 0, 0, 4, 4, 6, true, rng);
         placeDoor(worldIn, chunkBB, piece, entryDoor, 1, 1, 0);
         placeDoor(worldIn, chunkBB, piece, Door::OPENING, 1, 1, 6);
-        piece.fillWithBlocks(worldIn, chunkBB, 3, 1, 2, 3, 1, 4, &lce::BlocksInit::STONE_BRICKS, false);
+        piece.fillWithBlocks(worldIn, chunkBB, 3, 1, 2, 3, 1, 4, lce::BlocksInit::STONE_BRICKS.getState(), false);
 
-        piece.setBlockState(worldIn, &lce::BlocksInit::STONE_BRICK_SLAB, 3, 1, 1, chunkBB);
-        piece.setBlockState(worldIn, &lce::BlocksInit::STONE_BRICK_SLAB, 3, 1, 5, chunkBB);
-        piece.setBlockState(worldIn, &lce::BlocksInit::STONE_BRICK_SLAB, 3, 2, 2, chunkBB);
-        piece.setBlockState(worldIn, &lce::BlocksInit::STONE_BRICK_SLAB, 3, 2, 4, chunkBB);
+        piece.setBlockState(worldIn, lce::BlocksInit::STONE_BRICK_SLAB.getState(), 3, 1, 1, chunkBB);
+        piece.setBlockState(worldIn, lce::BlocksInit::STONE_BRICK_SLAB.getState(), 3, 1, 5, chunkBB);
+        piece.setBlockState(worldIn, lce::BlocksInit::STONE_BRICK_SLAB.getState(), 3, 2, 2, chunkBB);
+        piece.setBlockState(worldIn, lce::BlocksInit::STONE_BRICK_SLAB.getState(), 3, 2, 4, chunkBB);
 
         for (int i = 2; i <= 4; ++i) {
-            piece.setBlockState(worldIn, &lce::BlocksInit::STONE_BRICK_SLAB, 2, 1, i, chunkBB);
+            piece.setBlockState(worldIn, lce::BlocksInit::STONE_BRICK_SLAB.getState(), 2, 1, i, chunkBB);
         }
 
         Pos3D chestPos = piece.getWorldXYZ(3, 2, 3);
         if (!hasMadeChest && chunkBB.isVecInside(chestPos)) {
             hasMadeChest = true;
             // generateChest(worldIn, chunkBB, rng, 3, 2, 3, LootTableList.CHESTS_STRONGHOLD_CORRIDOR);
-            piece.setBlockState(worldIn, &lce::BlocksInit::CHEST,  3, 2, 3, chunkBB);
+            piece.setBlockState(worldIn, lce::BlocksInit::CHEST.getState(),  3, 2, 3, chunkBB);
             rng.nextLong();
         }
 
@@ -126,25 +126,25 @@ namespace build::stronghold {
         c_int steps = piece.facing != EnumFacing::NORTH && piece.facing != EnumFacing::SOUTH ? piece.getXSize() : piece.getZSize();
 
         for (int i = 0; i < steps; ++i) {
-            piece.setBlockState(worldIn, &lce::BlocksInit::STONE_BRICKS, 0, 0, i, chunkBB);
-            piece.setBlockState(worldIn, &lce::BlocksInit::STONE_BRICKS, 1, 0, i, chunkBB);
-            piece.setBlockState(worldIn, &lce::BlocksInit::STONE_BRICKS, 2, 0, i, chunkBB);
-            piece.setBlockState(worldIn, &lce::BlocksInit::STONE_BRICKS, 3, 0, i, chunkBB);
-            piece.setBlockState(worldIn, &lce::BlocksInit::STONE_BRICKS, 4, 0, i, chunkBB);
+            piece.setBlockState(worldIn, lce::BlocksInit::STONE_BRICKS.getState(), 0, 0, i, chunkBB);
+            piece.setBlockState(worldIn, lce::BlocksInit::STONE_BRICKS.getState(), 1, 0, i, chunkBB);
+            piece.setBlockState(worldIn, lce::BlocksInit::STONE_BRICKS.getState(), 2, 0, i, chunkBB);
+            piece.setBlockState(worldIn, lce::BlocksInit::STONE_BRICKS.getState(), 3, 0, i, chunkBB);
+            piece.setBlockState(worldIn, lce::BlocksInit::STONE_BRICKS.getState(), 4, 0, i, chunkBB);
 
             for (int j = 1; j <= 3; ++j) {
-                piece.setBlockState(worldIn, &lce::BlocksInit::STONE_BRICKS, 0, j, i, chunkBB);
-                piece.setBlockState(worldIn, &lce::BlocksInit::AIR, 1, j, i, chunkBB);
-                piece.setBlockState(worldIn, &lce::BlocksInit::AIR, 2, j, i, chunkBB);
-                piece.setBlockState(worldIn, &lce::BlocksInit::AIR, 3, j, i, chunkBB);
-                piece.setBlockState(worldIn, &lce::BlocksInit::STONE_BRICKS, 4, j, i, chunkBB);
+                piece.setBlockState(worldIn, lce::BlocksInit::STONE_BRICKS.getState(), 0, j, i, chunkBB);
+                piece.setBlockState(worldIn, lce::BlocksInit::AIR.getState(), 1, j, i, chunkBB);
+                piece.setBlockState(worldIn, lce::BlocksInit::AIR.getState(), 2, j, i, chunkBB);
+                piece.setBlockState(worldIn, lce::BlocksInit::AIR.getState(), 3, j, i, chunkBB);
+                piece.setBlockState(worldIn, lce::BlocksInit::STONE_BRICKS.getState(), 4, j, i, chunkBB);
             }
 
-            piece.setBlockState(worldIn, &lce::BlocksInit::STONE_BRICKS, 0, 4, i, chunkBB);
-            piece.setBlockState(worldIn, &lce::BlocksInit::STONE_BRICKS, 1, 4, i, chunkBB);
-            piece.setBlockState(worldIn, &lce::BlocksInit::STONE_BRICKS, 2, 4, i, chunkBB);
-            piece.setBlockState(worldIn, &lce::BlocksInit::STONE_BRICKS, 3, 4, i, chunkBB);
-            piece.setBlockState(worldIn, &lce::BlocksInit::STONE_BRICKS, 4, 4, i, chunkBB);
+            piece.setBlockState(worldIn, lce::BlocksInit::STONE_BRICKS.getState(), 0, 4, i, chunkBB);
+            piece.setBlockState(worldIn, lce::BlocksInit::STONE_BRICKS.getState(), 1, 4, i, chunkBB);
+            piece.setBlockState(worldIn, lce::BlocksInit::STONE_BRICKS.getState(), 2, 4, i, chunkBB);
+            piece.setBlockState(worldIn, lce::BlocksInit::STONE_BRICKS.getState(), 3, 4, i, chunkBB);
+            piece.setBlockState(worldIn, lce::BlocksInit::STONE_BRICKS.getState(), 4, 4, i, chunkBB);
 
         }
         return true;
@@ -176,16 +176,16 @@ namespace build::stronghold {
         piece.fillWithRandomizedStrongholdStones(worldIn, chunkBB, 8, 1, 5, 8, 4, 9, false, rng);
         piece.fillWithRandomizedStrongholdStones(worldIn, chunkBB, 1, 4, 7, 3, 4, 9, false, rng);
         piece.fillWithRandomizedStrongholdStones(worldIn, chunkBB, 1, 3, 5, 3, 3, 6, false, rng);
-        piece.fillWithBlocks(worldIn, chunkBB, 1, 3, 4, 3, 3, 4, &lce::BlocksInit::STONE_SLAB, false);
-        piece.fillWithBlocks(worldIn, chunkBB, 1, 4, 6, 3, 4, 6, &lce::BlocksInit::STONE_SLAB, false);
+        piece.fillWithBlocks(worldIn, chunkBB, 1, 3, 4, 3, 3, 4, lce::BlocksInit::STONE_SLAB.getState(), false);
+        piece.fillWithBlocks(worldIn, chunkBB, 1, 4, 6, 3, 4, 6, lce::BlocksInit::STONE_SLAB.getState(), false);
         piece.fillWithRandomizedStrongholdStones(worldIn, chunkBB, 5, 1, 7, 7, 1, 8, false, rng);
-        piece.fillWithBlocks(worldIn, chunkBB, 5, 1, 9, 7, 1, 9, &lce::BlocksInit::STONE_SLAB, false);
-        piece.fillWithBlocks(worldIn, chunkBB, 5, 2, 7, 7, 2, 7, &lce::BlocksInit::STONE_SLAB, false);
-        piece.fillWithBlocks(worldIn, chunkBB, 4, 5, 7, 4, 5, 9, &lce::BlocksInit::STONE_SLAB, false);
-        piece.fillWithBlocks(worldIn, chunkBB, 8, 5, 7, 8, 5, 9, &lce::BlocksInit::STONE_SLAB, false);
-        piece.fillWithBlocks(worldIn, chunkBB, 5, 5, 7, 7, 5, 9, &lce::BlocksInit::DOUBLE_STONE_SLAB, false);
+        piece.fillWithBlocks(worldIn, chunkBB, 5, 1, 9, 7, 1, 9, lce::BlocksInit::STONE_SLAB.getState(), false);
+        piece.fillWithBlocks(worldIn, chunkBB, 5, 2, 7, 7, 2, 7, lce::BlocksInit::STONE_SLAB.getState(), false);
+        piece.fillWithBlocks(worldIn, chunkBB, 4, 5, 7, 4, 5, 9, lce::BlocksInit::STONE_SLAB.getState(), false);
+        piece.fillWithBlocks(worldIn, chunkBB, 8, 5, 7, 8, 5, 9, lce::BlocksInit::STONE_SLAB.getState(), false);
+        piece.fillWithBlocks(worldIn, chunkBB, 5, 5, 7, 7, 5, 9, lce::BlocksInit::DOUBLE_STONE_SLAB.getState(), false);
 
-        const lce::Block torchSouth = lce::BlocksInit::TORCH.getStateFromMeta(
+        const lce::BlockState torchSouth = lce::BlocksInit::TORCH.getStateFromMeta(
                 states::Torch::withProperty(piece.rotation.apply(piece.mirror, EnumFacing::SOUTH)));
         piece.setBlockState(worldIn, torchSouth, 6, 5, 6, chunkBB);
         return true;
@@ -225,25 +225,25 @@ namespace build::stronghold {
         piece.fillWithRandomizedStrongholdStones(worldIn, chunkBB, 0, 0, 0, 13, i - 1, 14, true, rng);
         placeDoor(worldIn, chunkBB, piece, entryDoor, 4, 1, 0);
         piece.fillWithBlocksRandomLightCheck(worldIn, chunkBB, rng, 0.07F, 2, 1, 1, 11, 4, 13,
-                                             &lce::BlocksInit::COBWEB, &lce::BlocksInit::COBWEB, false, 0);
+                                             lce::BlocksInit::COBWEB.getState(), lce::BlocksInit::COBWEB.getState(), false, 0);
         // int j = 1;
         // int k = 12;
 
-        const lce::Block* air = &lce::BlocksInit::AIR;
-        const lce::Block* plank = &lce::BlocksInit::OAK_WOOD_PLANK;
-        const lce::Block* bookshelf = &lce::BlocksInit::BOOKSHELF;
-        const lce::Block* fence = &lce::BlocksInit::OAK_FENCE;
-        const lce::Block* torch = &lce::BlocksInit::TORCH;
+        constexpr lce::BlockState air = lce::BlocksInit::AIR.getState();
+        constexpr lce::BlockState plank = lce::BlocksInit::OAK_WOOD_PLANK.getState();
+        constexpr lce::BlockState bookshelf = lce::BlocksInit::BOOKSHELF.getState();
+        constexpr lce::BlockState fence = lce::BlocksInit::OAK_FENCE.getState();
+        const lce::Block& torch = lce::BlocksInit::TORCH;
 
         for (int l = 1; l <= 13; ++l) {
             if ((l - 1) % 4 == 0) {
                 piece.fillWithBlocks(worldIn, chunkBB, 1, 1, l, 1, 4, l, plank, false);
                 piece.fillWithBlocks(worldIn, chunkBB, 12, 1, l, 12, 4, l, plank, false);
 
-                auto torchEast = torch->getStateFromMeta(states::Torch::withProperty(piece.rotation.apply(piece.mirror, EnumFacing::EAST)));
+                c_auto torchEast = torch.getStateFromMeta(states::Torch::withProperty(piece.rotation.apply(piece.mirror, EnumFacing::EAST)));
                 piece.setBlockState(worldIn, torchEast, 2, 3, l, chunkBB);
 
-                auto torchWest = torch->getStateFromMeta(states::Torch::withProperty(piece.rotation.apply(piece.mirror, EnumFacing::WEST)));
+                c_auto torchWest = torch.getStateFromMeta(states::Torch::withProperty(piece.rotation.apply(piece.mirror, EnumFacing::WEST)));
                 piece.setBlockState(worldIn, torchWest, 11, 3, l, chunkBB);
 
                 if (isLargeRoom) {
@@ -310,7 +310,7 @@ namespace build::stronghold {
             piece.setBlockState(worldIn, fence, 7, 7, 6, chunkBB);
             piece.setBlockState(worldIn, fence, 7, 7, 8, chunkBB);
 
-            c_auto torchUp = torch->getStateFromMeta(states::Torch::withProperty(piece.rotation.apply(piece.mirror, EnumFacing::UP)));
+            c_auto torchUp = torch.getStateFromMeta(states::Torch::withProperty(piece.rotation.apply(piece.mirror, EnumFacing::UP)));
             piece.setBlockState(worldIn, torchUp, 5, 8, 7, chunkBB);
             piece.setBlockState(worldIn, torchUp, 8, 8, 7, chunkBB);
             piece.setBlockState(worldIn, torchUp, 6, 8, 6, chunkBB);
@@ -320,13 +320,13 @@ namespace build::stronghold {
         }
 
         // generateChest(worldIn, chunkBB, rng, 3, 3, 5, LootTableList.CHESTS_STRONGHOLD_LIBRARY);
-        piece.setBlockState(worldIn, lce::BlocksInit::CHEST, 3, 3, 5, chunkBB);
+        piece.setBlockState(worldIn, lce::BlocksInit::CHEST.getState(), 3, 3, 5, chunkBB);
         rng.nextLong();
 
         if (isLargeRoom) {
             piece.setBlockState(worldIn, air, 12, 9, 1, chunkBB);
             // generateChest(worldIn, chunkBB, rng, 12, 8, 1, LootTableList.CHESTS_STRONGHOLD_LIBRARY);
-            piece.setBlockState(worldIn, lce::BlocksInit::CHEST, 12, 8, 1, chunkBB);
+            piece.setBlockState(worldIn, lce::BlocksInit::CHEST.getState(), 12, 8, 1, chunkBB);
             rng.nextLong();
         }
 
@@ -346,26 +346,26 @@ namespace build::stronghold {
         piece.fillWithRandomizedStrongholdStones(worldIn, chunkBB, 2, i, 14, 8, i, 14, false, rng);
         piece.fillWithRandomizedStrongholdStones(worldIn, chunkBB, 1, 1, 1, 2, 1, 4, false, rng);
         piece.fillWithRandomizedStrongholdStones(worldIn, chunkBB, 8, 1, 1, 9, 1, 4, false, rng);
-        piece.fillWithBlocks(worldIn, chunkBB, 1, 1, 1, 1, 1, 3, &lce::BlocksInit::FLOWING_LAVA, false);
-        piece.fillWithBlocks(worldIn, chunkBB, 9, 1, 1, 9, 1, 3, &lce::BlocksInit::FLOWING_LAVA, false);
+        piece.fillWithBlocks(worldIn, chunkBB, 1, 1, 1, 1, 1, 3, lce::BlocksInit::FLOWING_LAVA.getState(), false);
+        piece.fillWithBlocks(worldIn, chunkBB, 9, 1, 1, 9, 1, 3, lce::BlocksInit::FLOWING_LAVA.getState(), false);
         piece.fillWithRandomizedStrongholdStones(worldIn, chunkBB, 3, 1, 8, 7, 1, 12, false, rng);
-        piece.fillWithBlocks(worldIn, chunkBB, 4, 1, 9, 6, 1, 11, &lce::BlocksInit::FLOWING_LAVA, false);
+        piece.fillWithBlocks(worldIn, chunkBB, 4, 1, 9, 6, 1, 11, lce::BlocksInit::FLOWING_LAVA.getState(), false);
 
         for (int j = 3; j < 14; j += 2) {
-            piece.fillWithBlocks(worldIn, chunkBB, 0, 3, j, 0, 4, j, &lce::BlocksInit::IRON_BARS, false);
-            piece.fillWithBlocks(worldIn, chunkBB, 10, 3, j, 10, 4, j, &lce::BlocksInit::IRON_BARS, false);
+            piece.fillWithBlocks(worldIn, chunkBB, 0, 3, j, 0, 4, j, lce::BlocksInit::IRON_BARS.getState(), false);
+            piece.fillWithBlocks(worldIn, chunkBB, 10, 3, j, 10, 4, j, lce::BlocksInit::IRON_BARS.getState(), false);
         }
 
         for (int i1 = 2; i1 < 9; i1 += 2) {
-            piece.fillWithBlocks(worldIn, chunkBB, i1, 3, 15, i1, 4, 15, &lce::BlocksInit::IRON_BARS, false);
+            piece.fillWithBlocks(worldIn, chunkBB, i1, 3, 15, i1, 4, 15, lce::BlocksInit::IRON_BARS.getState(), false);
         }
 
         piece.fillWithRandomizedStrongholdStones(worldIn, chunkBB, 4, 1, 5, 6, 1, 7, false, rng);
         piece.fillWithRandomizedStrongholdStones(worldIn, chunkBB, 4, 2, 6, 6, 2, 7, false, rng);
         piece.fillWithRandomizedStrongholdStones(worldIn, chunkBB, 4, 3, 7, 6, 3, 7, false, rng);
 
-        const lce::Block cobbleStairNorth = lce::BlocksInit::STONE_BRICK_STAIRS
-                                               .getStateFromMeta(states::Stairs::withProperty(piece.rotation.apply(piece.mirror, EnumFacing::NORTH)));
+        const lce::BlockState cobbleStairNorth = lce::BlocksInit::STONE_BRICK_STAIRS
+            .getStateFromMeta(states::Stairs::withProperty(piece.rotation.apply(piece.mirror, EnumFacing::NORTH)));
 
         for (int k = 4; k <= 6; ++k) {
             piece.setBlockState(worldIn, cobbleStairNorth, k, 1, 4, chunkBB);
@@ -373,16 +373,16 @@ namespace build::stronghold {
             piece.setBlockState(worldIn, cobbleStairNorth, k, 3, 6, chunkBB);
         }
 
-        const lce::Block northFrame = lce::BlocksInit::END_PORTAL_FRAME.getStateFromMeta(
+        const lce::BlockState northFrame = lce::BlocksInit::END_PORTAL_FRAME.getStateFromMeta(
             states::EndPortalFrame::withProperty(piece.rotation.apply(piece.mirror, EnumFacing::NORTH)));
 
-        const lce::Block southFrame = lce::BlocksInit::END_PORTAL_FRAME.getStateFromMeta(
+        const lce::BlockState southFrame = lce::BlocksInit::END_PORTAL_FRAME.getStateFromMeta(
             states::EndPortalFrame::withProperty(piece.rotation.apply(piece.mirror, EnumFacing::SOUTH)));
 
-        const lce::Block eastFrame = lce::BlocksInit::END_PORTAL_FRAME.getStateFromMeta(
+        const lce::BlockState eastFrame = lce::BlocksInit::END_PORTAL_FRAME.getStateFromMeta(
             states::EndPortalFrame::withProperty(piece.rotation.apply(piece.mirror, EnumFacing::EAST)));
 
-        const lce::Block westFrame = lce::BlocksInit::END_PORTAL_FRAME.getStateFromMeta(
+        const lce::BlockState westFrame = lce::BlocksInit::END_PORTAL_FRAME.getStateFromMeta(
             states::EndPortalFrame::withProperty(piece.rotation.apply(piece.mirror, EnumFacing::WEST)));
 
         bool flag = true;
@@ -408,7 +408,7 @@ namespace build::stronghold {
         }
 
         if (flag) {
-            const lce::Block *endPortal = &lce::BlocksInit::END_PORTAL;
+            constexpr lce::BlockState endPortal = lce::BlocksInit::END_PORTAL.getState();
             for (int x = 4; x <= 6; ++x) {
                 for (int z = 9; z <= 11; ++z) {
                     piece.setBlockState(worldIn, endPortal, x, 3, z, chunkBB);
@@ -424,7 +424,7 @@ namespace build::stronghold {
 
             if (chunkBB.isVecInside(blockPos)) {
                 hasSpawner = true;
-                worldIn.setBlock(blockPos, &lce::BlocksInit::MONSTER_SPAWNER); // 2
+                worldIn.setBlock(blockPos, lce::BlocksInit::MONSTER_SPAWNER.getState()); // 2
                 /*
                 TileEntity tileentity = worldIn.getTileEntity(blockPos);
 
@@ -455,16 +455,16 @@ namespace build::stronghold {
         piece.fillWithRandomizedStrongholdStones(worldIn, chunkBB, 4, 1, 3, 4, 3, 3, false, rng);
         piece.fillWithRandomizedStrongholdStones(worldIn, chunkBB, 4, 1, 7, 4, 3, 7, false, rng);
         piece.fillWithRandomizedStrongholdStones(worldIn, chunkBB, 4, 1, 9, 4, 3, 9, false, rng);
-        piece.fillWithBlocks(worldIn, chunkBB, 4, 1, 4, 4, 3, 6, &lce::BlocksInit::IRON_BARS, false);
-        piece.fillWithBlocks(worldIn, chunkBB, 5, 1, 5, 7, 3, 5, &lce::BlocksInit::IRON_BARS, false);
-        piece.setBlockState(worldIn, &lce::BlocksInit::IRON_BARS, 4, 3, 2, chunkBB);
-        piece.setBlockState(worldIn, &lce::BlocksInit::IRON_BARS, 4, 3, 8, chunkBB);
+        piece.fillWithBlocks(worldIn, chunkBB, 4, 1, 4, 4, 3, 6, lce::BlocksInit::IRON_BARS.getState(), false);
+        piece.fillWithBlocks(worldIn, chunkBB, 5, 1, 5, 7, 3, 5, lce::BlocksInit::IRON_BARS.getState(), false);
+        piece.setBlockState(worldIn, lce::BlocksInit::IRON_BARS.getState(), 4, 3, 2, chunkBB);
+        piece.setBlockState(worldIn, lce::BlocksInit::IRON_BARS.getState(), 4, 3, 8, chunkBB);
 
 
-        const lce::Block iblockstate = lce::BlocksInit::IRON_DOOR_BLOCK.getStateFromMeta(
+        const lce::BlockState iblockstate = lce::BlocksInit::IRON_DOOR_BLOCK.getStateFromMeta(
                 states::DoorLower::withProperty(piece.rotation.apply(piece.mirror, EnumFacing::WEST)));
 
-        const lce::Block iblockstate1 = lce::BlocksInit::IRON_DOOR_BLOCK.getStateFromMeta(
+        const lce::BlockState iblockstate1 = lce::BlocksInit::IRON_DOOR_BLOCK.getStateFromMeta(
                 states::DoorUpper::withProperty());
 
 
@@ -513,9 +513,9 @@ namespace build::stronghold {
             default:
                 break;
             case 0:
-                piece.setBlockState(worldIn, &lce::BlocksInit::STONE_BRICKS, 5, 1, 5, chunkBB);
-                piece.setBlockState(worldIn, &lce::BlocksInit::STONE_BRICKS, 5, 2, 5, chunkBB);
-                piece.setBlockState(worldIn, &lce::BlocksInit::STONE_BRICKS, 5, 3, 5, chunkBB);
+                piece.setBlockState(worldIn, lce::BlocksInit::STONE_BRICKS.getState(), 5, 1, 5, chunkBB);
+                piece.setBlockState(worldIn, lce::BlocksInit::STONE_BRICKS.getState(), 5, 2, 5, chunkBB);
+                piece.setBlockState(worldIn, lce::BlocksInit::STONE_BRICKS.getState(), 5, 3, 5, chunkBB);
 
                 piece.setBlockState(worldIn, lce::BlocksInit::TORCH.getStateFromMeta(
                                                      states::Torch::withProperty(piece.rotation.apply(piece.mirror, EnumFacing::WEST))), 4, 3, 5, chunkBB);
@@ -527,74 +527,74 @@ namespace build::stronghold {
                                                      states::Torch::withProperty(piece.rotation.apply(piece.mirror, EnumFacing::NORTH))), 5, 3, 6, chunkBB);
 
 
-                piece.setBlockState(worldIn, &lce::BlocksInit::STONE_SLAB, 4, 1, 4, chunkBB);
-                piece.setBlockState(worldIn, &lce::BlocksInit::STONE_SLAB, 4, 1, 5, chunkBB);
-                piece.setBlockState(worldIn, &lce::BlocksInit::STONE_SLAB, 4, 1, 6, chunkBB);
-                piece.setBlockState(worldIn, &lce::BlocksInit::STONE_SLAB, 6, 1, 4, chunkBB);
-                piece.setBlockState(worldIn, &lce::BlocksInit::STONE_SLAB, 6, 1, 5, chunkBB);
-                piece.setBlockState(worldIn, &lce::BlocksInit::STONE_SLAB, 6, 1, 6, chunkBB);
-                piece.setBlockState(worldIn, &lce::BlocksInit::STONE_SLAB, 5, 1, 4, chunkBB);
-                piece.setBlockState(worldIn, &lce::BlocksInit::STONE_SLAB, 5, 1, 6, chunkBB);
+                piece.setBlockState(worldIn, lce::BlocksInit::STONE_SLAB.getState(), 4, 1, 4, chunkBB);
+                piece.setBlockState(worldIn, lce::BlocksInit::STONE_SLAB.getState(), 4, 1, 5, chunkBB);
+                piece.setBlockState(worldIn, lce::BlocksInit::STONE_SLAB.getState(), 4, 1, 6, chunkBB);
+                piece.setBlockState(worldIn, lce::BlocksInit::STONE_SLAB.getState(), 6, 1, 4, chunkBB);
+                piece.setBlockState(worldIn, lce::BlocksInit::STONE_SLAB.getState(), 6, 1, 5, chunkBB);
+                piece.setBlockState(worldIn, lce::BlocksInit::STONE_SLAB.getState(), 6, 1, 6, chunkBB);
+                piece.setBlockState(worldIn, lce::BlocksInit::STONE_SLAB.getState(), 5, 1, 4, chunkBB);
+                piece.setBlockState(worldIn, lce::BlocksInit::STONE_SLAB.getState(), 5, 1, 6, chunkBB);
                 break;
 
             case 1:
                 for (int i1 = 0; i1 < 5; ++i1) {
-                    piece.setBlockState(worldIn, &lce::BlocksInit::STONE_BRICKS, 3, 1, 3 + i1, chunkBB);
-                    piece.setBlockState(worldIn, &lce::BlocksInit::STONE_BRICKS, 7, 1, 3 + i1, chunkBB);
-                    piece.setBlockState(worldIn, &lce::BlocksInit::STONE_BRICKS, 3 + i1, 1, 3, chunkBB);
-                    piece.setBlockState(worldIn, &lce::BlocksInit::STONE_BRICKS, 3 + i1, 1, 7, chunkBB);
+                    piece.setBlockState(worldIn, lce::BlocksInit::STONE_BRICKS.getState(), 3, 1, 3 + i1, chunkBB);
+                    piece.setBlockState(worldIn, lce::BlocksInit::STONE_BRICKS.getState(), 7, 1, 3 + i1, chunkBB);
+                    piece.setBlockState(worldIn, lce::BlocksInit::STONE_BRICKS.getState(), 3 + i1, 1, 3, chunkBB);
+                    piece.setBlockState(worldIn, lce::BlocksInit::STONE_BRICKS.getState(), 3 + i1, 1, 7, chunkBB);
                 }
 
-                piece.setBlockState(worldIn, &lce::BlocksInit::STONE_BRICKS, 5, 1, 5, chunkBB);
-                piece.setBlockState(worldIn, &lce::BlocksInit::STONE_BRICKS, 5, 2, 5, chunkBB);
-                piece.setBlockState(worldIn, &lce::BlocksInit::STONE_BRICKS, 5, 3, 5, chunkBB);
-                piece.setBlockState(worldIn, &lce::BlocksInit::FLOWING_WATER, 5, 4, 5, chunkBB);
+                piece.setBlockState(worldIn, lce::BlocksInit::STONE_BRICKS.getState(), 5, 1, 5, chunkBB);
+                piece.setBlockState(worldIn, lce::BlocksInit::STONE_BRICKS.getState(), 5, 2, 5, chunkBB);
+                piece.setBlockState(worldIn, lce::BlocksInit::STONE_BRICKS.getState(), 5, 3, 5, chunkBB);
+                piece.setBlockState(worldIn, lce::BlocksInit::FLOWING_WATER.getState(), 5, 4, 5, chunkBB);
                 break;
 
             case 2:
                 for (int i = 1; i <= 9; ++i) {
-                    piece.setBlockState(worldIn, &lce::BlocksInit::COBBLESTONE, 1, 3, i, chunkBB);
-                    piece.setBlockState(worldIn, &lce::BlocksInit::COBBLESTONE, 9, 3, i, chunkBB);
+                    piece.setBlockState(worldIn, lce::BlocksInit::COBBLESTONE.getState(), 1, 3, i, chunkBB);
+                    piece.setBlockState(worldIn, lce::BlocksInit::COBBLESTONE.getState(), 9, 3, i, chunkBB);
                 }
 
                 for (int j = 1; j <= 9; ++j) {
-                    piece.setBlockState(worldIn, &lce::BlocksInit::COBBLESTONE, j, 3, 1, chunkBB);
-                    piece.setBlockState(worldIn, &lce::BlocksInit::COBBLESTONE, j, 3, 9, chunkBB);
+                    piece.setBlockState(worldIn, lce::BlocksInit::COBBLESTONE.getState(), j, 3, 1, chunkBB);
+                    piece.setBlockState(worldIn, lce::BlocksInit::COBBLESTONE.getState(), j, 3, 9, chunkBB);
                 }
 
-                piece.setBlockState(worldIn, &lce::BlocksInit::COBBLESTONE, 5, 1, 4, chunkBB);
-                piece.setBlockState(worldIn, &lce::BlocksInit::COBBLESTONE, 5, 1, 6, chunkBB);
-                piece.setBlockState(worldIn, &lce::BlocksInit::COBBLESTONE, 5, 3, 4, chunkBB);
-                piece.setBlockState(worldIn, &lce::BlocksInit::COBBLESTONE, 5, 3, 6, chunkBB);
-                piece.setBlockState(worldIn, &lce::BlocksInit::COBBLESTONE, 4, 1, 5, chunkBB);
-                piece.setBlockState(worldIn, &lce::BlocksInit::COBBLESTONE, 6, 1, 5, chunkBB);
-                piece.setBlockState(worldIn, &lce::BlocksInit::COBBLESTONE, 4, 3, 5, chunkBB);
-                piece.setBlockState(worldIn, &lce::BlocksInit::COBBLESTONE, 6, 3, 5, chunkBB);
+                piece.setBlockState(worldIn, lce::BlocksInit::COBBLESTONE.getState(), 5, 1, 4, chunkBB);
+                piece.setBlockState(worldIn, lce::BlocksInit::COBBLESTONE.getState(), 5, 1, 6, chunkBB);
+                piece.setBlockState(worldIn, lce::BlocksInit::COBBLESTONE.getState(), 5, 3, 4, chunkBB);
+                piece.setBlockState(worldIn, lce::BlocksInit::COBBLESTONE.getState(), 5, 3, 6, chunkBB);
+                piece.setBlockState(worldIn, lce::BlocksInit::COBBLESTONE.getState(), 4, 1, 5, chunkBB);
+                piece.setBlockState(worldIn, lce::BlocksInit::COBBLESTONE.getState(), 6, 1, 5, chunkBB);
+                piece.setBlockState(worldIn, lce::BlocksInit::COBBLESTONE.getState(), 4, 3, 5, chunkBB);
+                piece.setBlockState(worldIn, lce::BlocksInit::COBBLESTONE.getState(), 6, 3, 5, chunkBB);
 
                 for (int k = 1; k <= 3; ++k) {
-                    piece.setBlockState(worldIn, &lce::BlocksInit::COBBLESTONE, 4, k, 4, chunkBB);
-                    piece.setBlockState(worldIn, &lce::BlocksInit::COBBLESTONE, 6, k, 4, chunkBB);
-                    piece.setBlockState(worldIn, &lce::BlocksInit::COBBLESTONE, 4, k, 6, chunkBB);
-                    piece.setBlockState(worldIn, &lce::BlocksInit::COBBLESTONE, 6, k, 6, chunkBB);
+                    piece.setBlockState(worldIn, lce::BlocksInit::COBBLESTONE.getState(), 4, k, 4, chunkBB);
+                    piece.setBlockState(worldIn, lce::BlocksInit::COBBLESTONE.getState(), 6, k, 4, chunkBB);
+                    piece.setBlockState(worldIn, lce::BlocksInit::COBBLESTONE.getState(), 4, k, 6, chunkBB);
+                    piece.setBlockState(worldIn, lce::BlocksInit::COBBLESTONE.getState(), 6, k, 6, chunkBB);
                 }
 
-                piece.setBlockState(worldIn, &lce::BlocksInit::TORCH, 5, 3, 5, chunkBB);
+                piece.setBlockState(worldIn, lce::BlocksInit::TORCH.getState(), 5, 3, 5, chunkBB);
 
                 for (int l = 2; l <= 8; ++l) {
-                    piece.setBlockState(worldIn, &lce::BlocksInit::OAK_WOOD_PLANK, 2, 3, l, chunkBB);
-                    piece.setBlockState(worldIn, &lce::BlocksInit::OAK_WOOD_PLANK, 3, 3, l, chunkBB);
+                    piece.setBlockState(worldIn, lce::BlocksInit::OAK_WOOD_PLANK.getState(), 2, 3, l, chunkBB);
+                    piece.setBlockState(worldIn, lce::BlocksInit::OAK_WOOD_PLANK.getState(), 3, 3, l, chunkBB);
 
                     if (l <= 3 || l >= 7) {
-                        piece.setBlockState(worldIn, &lce::BlocksInit::OAK_WOOD_PLANK, 4, 3, l, chunkBB);
-                        piece.setBlockState(worldIn, &lce::BlocksInit::OAK_WOOD_PLANK, 5, 3, l, chunkBB);
-                        piece.setBlockState(worldIn, &lce::BlocksInit::OAK_WOOD_PLANK, 6, 3, l, chunkBB);
+                        piece.setBlockState(worldIn, lce::BlocksInit::OAK_WOOD_PLANK.getState(), 4, 3, l, chunkBB);
+                        piece.setBlockState(worldIn, lce::BlocksInit::OAK_WOOD_PLANK.getState(), 5, 3, l, chunkBB);
+                        piece.setBlockState(worldIn, lce::BlocksInit::OAK_WOOD_PLANK.getState(), 6, 3, l, chunkBB);
                     }
 
-                    piece.setBlockState(worldIn, &lce::BlocksInit::OAK_WOOD_PLANK, 7, 3, l, chunkBB);
-                    piece.setBlockState(worldIn, &lce::BlocksInit::OAK_WOOD_PLANK, 8, 3, l, chunkBB);
+                    piece.setBlockState(worldIn, lce::BlocksInit::OAK_WOOD_PLANK.getState(), 7, 3, l, chunkBB);
+                    piece.setBlockState(worldIn, lce::BlocksInit::OAK_WOOD_PLANK.getState(), 8, 3, l, chunkBB);
                 }
 
-                const lce::Block ladderWest = lce::BlocksInit::LADDER.getStateFromMeta(
+                const lce::BlockState ladderWest = lce::BlocksInit::LADDER.getStateFromMeta(
                         states::Ladder::withProperty(piece.rotation.apply(piece.mirror, EnumFacing::WEST)));
                 piece.setBlockState(worldIn, ladderWest, 9, 1, 3, chunkBB);
                 piece.setBlockState(worldIn, ladderWest, 9, 2, 3, chunkBB);
@@ -602,7 +602,7 @@ namespace build::stronghold {
 
                 // LootTableList.CHESTS_STRONGHOLD_CROSSING
                 // generateChest(worldIn, chunkBB, rng, 3, 4, 8);
-                piece.setBlockState(worldIn, lce::BlocksInit::CHEST, 3, 4, 8, chunkBB);
+                piece.setBlockState(worldIn, lce::BlocksInit::CHEST.getState(), 3, 4, 8, chunkBB);
                 rng.nextLong();
         }
 
@@ -619,23 +619,23 @@ namespace build::stronghold {
         piece.fillWithRandomizedStrongholdStones(worldIn, chunkBB, 0, 0, 0, 4, 10, 4, true, rng);
         placeDoor(worldIn, chunkBB, piece, entryDoor, 1, 7, 0);
         placeDoor(worldIn, chunkBB, piece, Door::OPENING, 1, 1, 4);
-        piece.setBlockState(worldIn, &lce::BlocksInit::STONE_BRICKS, 2, 6, 1, chunkBB);
-        piece.setBlockState(worldIn, &lce::BlocksInit::STONE_BRICKS, 1, 5, 1, chunkBB);
-        piece.setBlockState(worldIn, &lce::BlocksInit::STONE_SLAB, 1, 6, 1, chunkBB);
-        piece.setBlockState(worldIn, &lce::BlocksInit::STONE_BRICKS, 1, 5, 2, chunkBB);
-        piece.setBlockState(worldIn, &lce::BlocksInit::STONE_BRICKS, 1, 4, 3, chunkBB);
-        piece.setBlockState(worldIn, &lce::BlocksInit::STONE_SLAB, 1, 5, 3, chunkBB);
-        piece.setBlockState(worldIn, &lce::BlocksInit::STONE_BRICKS, 2, 4, 3, chunkBB);
-        piece.setBlockState(worldIn, &lce::BlocksInit::STONE_BRICKS, 3, 3, 3, chunkBB);
-        piece.setBlockState(worldIn, &lce::BlocksInit::STONE_SLAB, 3, 4, 3, chunkBB);
-        piece.setBlockState(worldIn, &lce::BlocksInit::STONE_BRICKS, 3, 3, 2, chunkBB);
-        piece.setBlockState(worldIn, &lce::BlocksInit::STONE_BRICKS, 3, 2, 1, chunkBB);
-        piece.setBlockState(worldIn, &lce::BlocksInit::STONE_SLAB, 3, 3, 1, chunkBB);
-        piece.setBlockState(worldIn, &lce::BlocksInit::STONE_BRICKS, 2, 2, 1, chunkBB);
-        piece.setBlockState(worldIn, &lce::BlocksInit::STONE_BRICKS, 1, 1, 1, chunkBB);
-        piece.setBlockState(worldIn, &lce::BlocksInit::STONE_SLAB, 1, 2, 1, chunkBB);
-        piece.setBlockState(worldIn, &lce::BlocksInit::STONE_BRICKS, 1, 1, 2, chunkBB);
-        piece.setBlockState(worldIn, &lce::BlocksInit::STONE_SLAB, 1, 1, 3, chunkBB);
+        piece.setBlockState(worldIn, lce::BlocksInit::STONE_BRICKS.getState(), 2, 6, 1, chunkBB);
+        piece.setBlockState(worldIn, lce::BlocksInit::STONE_BRICKS.getState(), 1, 5, 1, chunkBB);
+        piece.setBlockState(worldIn, lce::BlocksInit::STONE_SLAB.getState(), 1, 6, 1, chunkBB);
+        piece.setBlockState(worldIn, lce::BlocksInit::STONE_BRICKS.getState(), 1, 5, 2, chunkBB);
+        piece.setBlockState(worldIn, lce::BlocksInit::STONE_BRICKS.getState(), 1, 4, 3, chunkBB);
+        piece.setBlockState(worldIn, lce::BlocksInit::STONE_SLAB.getState(), 1, 5, 3, chunkBB);
+        piece.setBlockState(worldIn, lce::BlocksInit::STONE_BRICKS.getState(), 2, 4, 3, chunkBB);
+        piece.setBlockState(worldIn, lce::BlocksInit::STONE_BRICKS.getState(), 3, 3, 3, chunkBB);
+        piece.setBlockState(worldIn, lce::BlocksInit::STONE_SLAB.getState(), 3, 4, 3, chunkBB);
+        piece.setBlockState(worldIn, lce::BlocksInit::STONE_BRICKS.getState(), 3, 3, 2, chunkBB);
+        piece.setBlockState(worldIn, lce::BlocksInit::STONE_BRICKS.getState(), 3, 2, 1, chunkBB);
+        piece.setBlockState(worldIn, lce::BlocksInit::STONE_SLAB.getState(), 3, 3, 1, chunkBB);
+        piece.setBlockState(worldIn, lce::BlocksInit::STONE_BRICKS.getState(), 2, 2, 1, chunkBB);
+        piece.setBlockState(worldIn, lce::BlocksInit::STONE_BRICKS.getState(), 1, 1, 1, chunkBB);
+        piece.setBlockState(worldIn, lce::BlocksInit::STONE_SLAB.getState(), 1, 2, 1, chunkBB);
+        piece.setBlockState(worldIn, lce::BlocksInit::STONE_BRICKS.getState(), 1, 1, 2, chunkBB);
+        piece.setBlockState(worldIn, lce::BlocksInit::STONE_SLAB.getState(), 1, 1, 3, chunkBB);
         return true;
     }
 
@@ -650,7 +650,7 @@ namespace build::stronghold {
         placeDoor(worldIn, chunkBB, piece, entryDoor, 1, 7, 0);
         placeDoor(worldIn, chunkBB, piece, Door::OPENING, 1, 1, 7);
 
-        const lce::Block cobblestoneStairs = lce::BlocksInit::COBBLESTONE_STAIRS.getStateFromMeta(
+        const lce::BlockState cobblestoneStairs = lce::BlocksInit::COBBLESTONE_STAIRS.getStateFromMeta(
                 states::Stairs::withProperty(piece.rotation.apply(piece.mirror, EnumFacing::SOUTH)));
 
         for (int i = 0; i < 6; ++i) {
@@ -659,9 +659,9 @@ namespace build::stronghold {
             piece.setBlockState(worldIn, cobblestoneStairs, 3, 6 - i, 1 + i, chunkBB);
 
             if (i < 5) {
-                piece.setBlockState(worldIn, &lce::BlocksInit::STONE_BRICKS, 1, 5 - i, 1 + i, chunkBB);
-                piece.setBlockState(worldIn, &lce::BlocksInit::STONE_BRICKS, 2, 5 - i, 1 + i, chunkBB);
-                piece.setBlockState(worldIn, &lce::BlocksInit::STONE_BRICKS, 3, 5 - i, 1 + i, chunkBB);
+                piece.setBlockState(worldIn, lce::BlocksInit::STONE_BRICKS.getState(), 1, 5 - i, 1 + i, chunkBB);
+                piece.setBlockState(worldIn, lce::BlocksInit::STONE_BRICKS.getState(), 2, 5 - i, 1 + i, chunkBB);
+                piece.setBlockState(worldIn, lce::BlocksInit::STONE_BRICKS.getState(), 3, 5 - i, 1 + i, chunkBB);
             }
         }
 
@@ -679,15 +679,15 @@ namespace build::stronghold {
         placeDoor(worldIn, chunkBB, piece, entryDoor, 1, 1, 0);
         placeDoor(worldIn, chunkBB, piece, Door::OPENING, 1, 1, 6);
 
-        const lce::Block iblockstate = lce::BlocksInit::TORCH.getStateFromMeta(
+        const lce::BlockState iblockstate = lce::BlocksInit::TORCH.getStateFromMeta(
                 states::Torch::withProperty(piece.rotation.apply(piece.mirror, EnumFacing::EAST)));
-        const lce::Block iblockstate1 = lce::BlocksInit::TORCH.getStateFromMeta(
+        const lce::BlockState iblockstate1 = lce::BlocksInit::TORCH.getStateFromMeta(
                 states::Torch::withProperty(piece.rotation.apply(piece.mirror, EnumFacing::WEST)));
 
-        piece.randomlyPlaceBlock(worldIn, chunkBB, rng, 0.1F, 1, 2, 1, &iblockstate);
-        piece.randomlyPlaceBlock(worldIn, chunkBB, rng, 0.1F, 3, 2, 1, &iblockstate1);
-        piece.randomlyPlaceBlock(worldIn, chunkBB, rng, 0.1F, 1, 2, 5, &iblockstate);
-        piece.randomlyPlaceBlock(worldIn, chunkBB, rng, 0.1F, 3, 2, 5, &iblockstate1);
+        piece.randomlyPlaceBlock(worldIn, chunkBB, rng, 0.1F, 1, 2, 1, iblockstate);
+        piece.randomlyPlaceBlock(worldIn, chunkBB, rng, 0.1F, 3, 2, 1, iblockstate1);
+        piece.randomlyPlaceBlock(worldIn, chunkBB, rng, 0.1F, 1, 2, 5, iblockstate);
+        piece.randomlyPlaceBlock(worldIn, chunkBB, rng, 0.1F, 3, 2, 5, iblockstate1);
 
         c_bool expandsX = piece.data & 1;
         if (expandsX) {

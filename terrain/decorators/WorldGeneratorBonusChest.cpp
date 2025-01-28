@@ -18,7 +18,7 @@ bool WorldGeneratorBonusChest::generate(World* worldIn, RNG& rng, const Pos3D& p
         Pos3D blockPos = position + getWorldGenPos3D<4, 3, 4>(worldIn, rng);
 
         if (worldIn->isAirBlock(blockPos) && isFullyOpaqueBlock(worldIn->getBlockId(blockPos.down()))) {
-            worldIn->setBlock(blockPos, &lce::BlocksInit::CHEST);
+            worldIn->setBlock(blockPos, lce::BlocksInit::CHEST.getState());
             // Assuming TileEntityChest and LootTableList are handled elsewhere in the C++ codebase
             // TileEntity* tileentity = worldIn->getTileEntity(blockPos);
             // if (tileentity && dynamic_cast<TileEntityChest*>(tileentity)) {

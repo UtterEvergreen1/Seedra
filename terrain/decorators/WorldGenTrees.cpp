@@ -6,8 +6,8 @@
 using namespace lce::blocks;
 
 
-const lce::Block* WorldGenTrees::DEFAULT_TRUNK = &lce::BlocksInit::OAK_WOOD;
-const lce::Block* WorldGenTrees::DEFAULT_LEAF = &lce::BlocksInit::OAK_LEAVES;
+const lce::BlockState WorldGenTrees::DEFAULT_TRUNK = lce::BlocksInit::OAK_WOOD.getState();
+const lce::BlockState WorldGenTrees::DEFAULT_LEAF = lce::BlocksInit::OAK_LEAVES.getState();
 
 bool WorldGenTrees::generate(World* worldIn, RNG& rng, const Pos3D& pos) const {
     const int height = rng.nextInt(3) + this->minTreeHeight;
@@ -123,7 +123,8 @@ bool WorldGenTrees::generate(World* worldIn, RNG& rng, const Pos3D& pos) const {
 }
 
 void WorldGenTrees::placeCocoa(World* worldIn, const Pos3D& pos, MU EnumFacing side, MU int age) {
-    worldIn->setBlockId(pos, VINES_ID); //TODO: set rotation data and age data
+    // TODO: set rotation data and age data
+    worldIn->setBlockId(pos, VINES_ID);
 }
 
 void WorldGenTrees::addHangingVine(World* worldIn, const Pos3D& pos, const EnumFacing facing) {

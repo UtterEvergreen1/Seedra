@@ -13,24 +13,24 @@ namespace build::mineshaft {
     using namespace lce::blocks::states;
 
 
-    const lce::Block* getBiomeSpecificPlank(StructureVariant variant) {
+    lce::BlockState getBiomeSpecificPlank(const StructureVariant variant) {
         switch (variant) {
             case StructureVariant::SV_Mineshaft_Normal:
             default:
-                return &lce::BlocksInit::OAK_WOOD_PLANK;
+                return lce::BlocksInit::OAK_WOOD_PLANK.getState();
             case StructureVariant::SV_Mineshaft_Mesa:
-                return &lce::BlocksInit::DARK_OAK_WOOD_PLANK;
+                return lce::BlocksInit::DARK_OAK_WOOD_PLANK.getState();
         }
     }
 
 
-    const lce::Block* getBiomeSpecificFence(StructureVariant variant) {
+    lce::BlockState getBiomeSpecificFence(const StructureVariant variant) {
         switch (variant) {
             case StructureVariant::SV_Mineshaft_Normal:
             default:
-                return &lce::BlocksInit::OAK_FENCE;
+                return lce::BlocksInit::OAK_FENCE.getState();
             case StructureVariant::SV_Mineshaft_Mesa:
-                return &lce::BlocksInit::DARK_OAK_FENCE;
+                return lce::BlocksInit::DARK_OAK_FENCE.getState();
         }
     }
 
@@ -39,7 +39,7 @@ namespace build::mineshaft {
                        c_int z, const StructureComponent& piece) {
         for (int x = minX; x <= maxX; ++x) {
             if (isReplaceableBlock(
-                        piece.getBlockStateFromPos(world, x, y + 1, z, chunkBB)->getID())) {
+                        piece.getBlockStateFromPos(world, x, y + 1, z, chunkBB).getID())) {
                 return false;
             }
         }
@@ -64,9 +64,9 @@ namespace build::mineshaft {
 
         c_int i1 = sectionCount * 5 - 1;
 
-        const lce::Block* air = &lce::BlocksInit::AIR;
+        constexpr lce::BlockState air = lce::BlocksInit::AIR.getState();
 
-        const lce::Block* iblockstate = getBiomeSpecificPlank(piece.variant);
+        const lce::BlockState iblockstate = getBiomeSpecificPlank(piece.variant);
         piece.fillWithAir(worldIn, chunkBB, 0, 0, 0, 2, 1, i1);
         piece.fillWithBlocksRandomLightCheck(worldIn, chunkBB, rng, 0.8F, 0, 2, 0, 2, 2, i1, air, air, false, 0);
 
@@ -88,14 +88,14 @@ namespace build::mineshaft {
 
             if (rng.nextInt(100) == 0) {
                 // generateChest(worldIn, chunkBB, rng, 2, 0, k1 - 1, LootTableList.CHESTS_ABANDONED_MINESHAFT);
-                piece.setBlockState(worldIn, lce::BlocksInit::CHEST, 2, 0, k1 - 1, chunkBB);
+                piece.setBlockState(worldIn, lce::BlocksInit::CHEST.getState(), 2, 0, k1 - 1, chunkBB);
                 rng.nextLong();
             }
 
 
             if (rng.nextInt(100) == 0) {
                 // generateChest(worldIn, chunkBB, rng, 0, 0, k1 + 1, LootTableList.CHESTS_ABANDONED_MINESHAFT);
-                piece.setBlockState(worldIn, lce::BlocksInit::CHEST, 0, 0, k1 + 1, chunkBB);
+                piece.setBlockState(worldIn, lce::BlocksInit::CHEST.getState(), 0, 0, k1 + 1, chunkBB);
                 rng.nextLong();
             }
 
@@ -106,7 +106,7 @@ namespace build::mineshaft {
                 if (chunkBB.isVecInside(blockPos) && piece.getLightLevelAtBlock(worldIn, 1, 0, i2, chunkBB) < 8) {
                     spawnerPlaced = true;
                     // caveSpider
-                    piece.setBlockState(worldIn, &lce::BlocksInit::MONSTER_SPAWNER, 1, 0, 1, chunkBB);
+                    piece.setBlockState(worldIn, lce::BlocksInit::MONSTER_SPAWNER.getState(), 1, 0, 1, chunkBB);
                 }
             }
         }
@@ -114,10 +114,10 @@ namespace build::mineshaft {
         for (int l2 = 0; l2 <= 2; ++l2) {
             for (int i3 = 0; i3 <= i1; ++i3) {
                 MU int k3 = -1;
-                const lce::Block* iBlockState3 =
+                const lce::BlockState iBlockState3 =
                         piece.getBlockStateFromPos(worldIn, l2, -1, i3, chunkBB);
 
-                if (isReplaceableBlock(iBlockState3->getID()) &&
+                if (isReplaceableBlock(iBlockState3.getID()) &&
                     piece.getLightLevelAtBlock(worldIn, l2, -1, i3, chunkBB) < 8) {
                     MU int l3 = -1;
                     piece.setBlockState(worldIn, iblockstate, l2, -1, i3, chunkBB);
@@ -129,10 +129,10 @@ namespace build::mineshaft {
             c_auto iblockstate1 = lce::BlocksInit::RAIL.getStateFromMeta(states::Rail::withProperty(states::RailShape::NS));
 
             for (int j3 = 0; j3 <= i1; ++j3) {
-                c_auto* iBlockState2 = piece.getBlockStateFromPos(worldIn, 1, -1, j3, chunkBB);
-                if (!isReplaceableBlock(iBlockState2->getID()) && isFullBlock(iBlockState2->getID())) {
+                const lce::BlockState iBlockState2 = piece.getBlockStateFromPos(worldIn, 1, -1, j3, chunkBB);
+                if (!isReplaceableBlock(iBlockState2.getID()) && isFullBlock(iBlockState2.getID())) {
                     c_float f = piece.getLightLevelAtBlock(worldIn, 1, 0, j3, chunkBB) > 8 ? 0.9F : 0.7F;
-                    piece.randomlyPlaceBlock(worldIn, chunkBB, rng, f, 1, 0, j3, &iblockstate1);
+                    piece.randomlyPlaceBlock(worldIn, chunkBB, rng, f, 1, 0, j3, iblockstate1);
                 }
             }
         }
@@ -148,9 +148,9 @@ namespace build::mineshaft {
                                  const StructureComponent& piece) {
 
         if (func_189918_a(world, chunkBB, minX, maxX, maxY, minZ, piece)) {
-            const lce::Block* plank = getBiomeSpecificPlank(piece.variant);
-            const lce::Block* fence = getBiomeSpecificFence(piece.variant);
-            const lce::Block* air = &lce::BlocksInit::AIR;
+            const lce::BlockState plank = getBiomeSpecificPlank(piece.variant);
+            const lce::BlockState fence = getBiomeSpecificFence(piece.variant);
+            constexpr lce::BlockState air = lce::BlocksInit::AIR.getState();
 
             piece.fillWithBlocks(world, chunkBB, minX, minY, minZ, minX, maxY - 1, minZ, fence, air, false);
             piece.fillWithBlocks(world, chunkBB, maxX, minY, minZ, maxX, maxY - 1, minZ, fence, air, false);
@@ -160,12 +160,12 @@ namespace build::mineshaft {
                 piece.fillWithBlocks(world, chunkBB, maxX, maxY, minZ, maxX, maxY, minZ, plank, air, false);
             } else {
                 piece.fillWithBlocks(world, chunkBB, minX, maxY, minZ, maxX, maxY, minZ, plank, air, false);
-                c_auto torchNorth = lce::BlocksInit::TORCH.getStateFromMeta(
+                const lce::BlockState torchNorth = lce::BlocksInit::TORCH.getStateFromMeta(
                         states::Torch::withProperty(EnumFacing::NORTH));
-                piece.randomlyPlaceBlock(world, chunkBB, rng, 0.05F, minX + 1, maxY, minZ - 1, &torchNorth);
-                c_auto torchSouth = lce::BlocksInit::TORCH.getStateFromMeta(
+                piece.randomlyPlaceBlock(world, chunkBB, rng, 0.05F, minX + 1, maxY, minZ - 1, torchNorth);
+                const lce::BlockState torchSouth = lce::BlocksInit::TORCH.getStateFromMeta(
                         states::Torch::withProperty(EnumFacing::SOUTH));
-                piece.randomlyPlaceBlock(world, chunkBB, rng, 0.05F, minX + 1, maxY, minZ + 1, &torchSouth);
+                piece.randomlyPlaceBlock(world, chunkBB, rng, 0.05F, minX + 1, maxY, minZ + 1, torchSouth);
             }
         }
     }
@@ -174,7 +174,7 @@ namespace build::mineshaft {
     void Corridor::placeCobwebsRandomly(World& world, const BoundingBox& chunkBB, RNG& rng, c_float chance,
                                         c_int x, c_int y, c_int z, const StructureComponent& piece) {
         if (piece.getLightLevelAtBlock(world, x, y, z, chunkBB) < 8) {
-            piece.randomlyPlaceBlock(world, chunkBB, rng, chance, x, y, z, &lce::BlocksInit::COBWEB);
+            piece.randomlyPlaceBlock(world, chunkBB, rng, chance, x, y, z, lce::BlocksInit::COBWEB.getState());
         }
     }
 
@@ -184,7 +184,7 @@ namespace build::mineshaft {
 
 
         piece.fillWithBlocks(worldIn, chunkBB, 0, 0, 0, piece.maxX - piece.minX, 0, piece.maxZ - piece.minZ,
-                             &lce::BlocksInit::DIRT, &lce::BlocksInit::AIR, false);
+                             lce::BlocksInit::DIRT.getState(), lce::BlocksInit::AIR.getState(), false);
         piece.fillWithAir(worldIn, chunkBB, 0, 1, 0, piece.maxX - piece.minX,
                           std::min(3, static_cast<int>(piece.maxY - piece.minY)), piece.maxZ - piece.minZ);
 
@@ -195,7 +195,7 @@ namespace build::mineshaft {
         // }
 
         piece.randomlyRareFillWithBlocks(worldIn, chunkBB, 0, 4, 0, piece.maxX - piece.minX,
-                                         piece.maxY - piece.minY, piece.maxZ - piece.minZ, &lce::BlocksInit::AIR, false);
+                                         piece.maxY - piece.minY, piece.maxZ - piece.minZ, lce::BlocksInit::AIR.getState(), false);
         return true;
     }
 
@@ -206,7 +206,7 @@ namespace build::mineshaft {
 
         const bool isMultipleFloors = piece.data & 1;
 
-        const lce::Block* iblockstate = getBiomeSpecificPlank(piece.variant);
+        const lce::BlockState iblockstate = getBiomeSpecificPlank(piece.variant);
 
         if (isMultipleFloors) {
             piece.fillWithAir(worldIn, chunkBB, 1, 0, 0, piece.maxX - piece.minX - 1, 3 - 1,
@@ -235,7 +235,7 @@ namespace build::mineshaft {
         for (int i = 0; i <= piece.maxX - piece.minX; ++i) {
             for (int j = 0; j <= piece.maxZ - piece.minZ; ++j) {
                 if (isReplaceableBlock(
-                            piece.getBlockStateFromPos(worldIn, i, -1, j, chunkBB)->getID()) &&
+                            piece.getBlockStateFromPos(worldIn, i, -1, j, chunkBB).getID()) &&
                     piece.getLightLevelAtBlock(worldIn, i, -1, j, chunkBB) < 8) {
                     piece.setBlockState(worldIn, iblockstate, i, -1, j, chunkBB);
                 }
@@ -251,9 +251,9 @@ namespace build::mineshaft {
 
         c_auto block = piece.getBlockStateFromPos(world, x, maxY + 1, z, chunkBB);
 
-        if (!isReplaceableBlock(block->getID())) {
-            c_auto* plank = getBiomeSpecificPlank(piece.variant);
-            piece.fillWithBlocks(world, chunkBB, x, minY, z, x, maxY, z, plank, &lce::BlocksInit::AIR, false);
+        if (!isReplaceableBlock(block.getID())) {
+            const lce::BlockState plank = getBiomeSpecificPlank(piece.variant);
+            piece.fillWithBlocks(world, chunkBB, x, minY, z, x, maxY, z, plank, lce::BlocksInit::AIR.getState(), false);
         }
     }
 

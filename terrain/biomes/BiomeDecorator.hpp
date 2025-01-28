@@ -31,10 +31,10 @@ protected:
     WorldGenClay *clayGen = new WorldGenClay(4);
 
     /// The sand generator.
-    WorldGenSand *sandGen = new WorldGenSand(&lce::BlocksInit::SAND, 7);
+    WorldGenSand *sandGen = new WorldGenSand(lce::BlocksInit::SAND.getState(), 7);
 
     /// The gravel generator.
-    WorldGenSand *gravelAsSandGen = new WorldGenSand(&lce::BlocksInit::GRAVEL, 6);
+    WorldGenSand *gravelAsSandGen = new WorldGenSand(lce::BlocksInit::GRAVEL.getState(), 6);
 
     /// The dirt generator.
     WorldGenMinable *dirtGen{};
@@ -56,10 +56,10 @@ protected:
     WorldGenFlowers* flowerGen = new WorldGenFlowers(lce::blocks::DANDELION_ID, BlockFlower::EnumFlowerType::DANDELION);
 
     /// Field that holds mushroomBrown WorldGenFlowers
-    WorldGenBush* mushroomBrownGen = new WorldGenBush(&lce::BlocksInit::BROWN_MUSHROOM);
+    WorldGenBush* mushroomBrownGen = new WorldGenBush(lce::BlocksInit::BROWN_MUSHROOM.getState());
 
     /// Field that holds mushroomRed WorldGenFlowers
-    WorldGenBush* mushroomRedGen = new WorldGenBush(&lce::BlocksInit::RED_MUSHROOM);
+    WorldGenBush* mushroomRedGen = new WorldGenBush(lce::BlocksInit::RED_MUSHROOM.getState());
 
     /// Field that holds big mushroom generator
     WorldGenBigMushroom* bigMushroomGen = new WorldGenBigMushroom();

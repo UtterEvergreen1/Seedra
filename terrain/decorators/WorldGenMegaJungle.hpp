@@ -7,8 +7,8 @@ class World;
 
 class WorldGenMegaJungle final : public WorldGenHugeTrees {
 public:
-    WorldGenMegaJungle(const int baseHeight, const int extraRandomHeight, const lce::Block* woodMetadata,
-                       const lce::Block* leavesMetadata)
+    WorldGenMegaJungle(const int baseHeight, const int extraRandomHeight, const lce::BlockState woodMetadata,
+                       const lce::BlockState leavesMetadata)
         : WorldGenHugeTrees(baseHeight, extraRandomHeight, woodMetadata, leavesMetadata) {}
 
     bool generate(World* worldIn, RNG& rng, const Pos3D& pos) const override;

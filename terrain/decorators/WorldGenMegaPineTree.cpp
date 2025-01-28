@@ -8,7 +8,8 @@ using namespace lce::blocks;
 
 
 WorldGenMegaPineTree::WorldGenMegaPineTree(const bool useBaseHeight)
-    : WorldGenHugeTrees(13, 15, &lce::BlocksInit::SPRUCE_WOOD, &lce::BlocksInit::SPRUCE_LEAVES), useBaseHeight(useBaseHeight) {}
+    : WorldGenHugeTrees(13, 15, lce::BlocksInit::SPRUCE_WOOD.getState(), lce::BlocksInit::SPRUCE_LEAVES.getState()),
+    useBaseHeight(useBaseHeight) {}
 
 
 bool WorldGenMegaPineTree::generate(World* worldIn, RNG& rand, const Pos3D& position) const {
@@ -88,7 +89,7 @@ void WorldGenMegaPineTree::placePodzolAt(World* worldIn, const Pos3D& pos) {
         c_int blockId = worldIn->getBlockId(blockPos);
 
         if (blockId == GRASS_ID || blockId == DIRT_ID) {
-            worldIn->setBlock(blockPos, &lce::BlocksInit::PODZOL);
+            worldIn->setBlock(blockPos, lce::BlocksInit::PODZOL.getState());
             break;
         }
 

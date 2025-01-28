@@ -73,12 +73,12 @@ public:
         this->setBlockId(pos.x, pos.y, pos.z, block);
     }
 
-    ND u16 getData(c_i64 x, c_i64 y, c_i64 z) const {
+    ND u8 getData(c_i64 x, c_i64 y, c_i64 z) const {
         if EXPECT_FALSE(x < 0 || y < 0 || z < 0 || x >= 16 || y >= 256 || z >= 16) { return 0; }
         return getBlockAtIndex(getStorageIndex(x, y, z)) & 15;
     }
 
-    ND u16 getData(const Pos3D &pos) const {
+    ND u8 getData(const Pos3D &pos) const {
         return this->getData(pos.x, pos.y, pos.z);
     }
 
@@ -91,12 +91,13 @@ public:
         this->setData(pos.x, pos.y, pos.z, data);
     }
 
-    ND const lce::Block* getBlock(c_i64 x, c_i64 y, c_i64 z) const {
-        return lce::registry::BlockRegistry::getBlock(getBlockId(x, y, z), getData(x, y, z));
+    ND lce::BlockState getBlock(c_i64 x, c_i64 y, c_i64 z) const {
+        // return lce::registry::BlockRegistry::getBlock(getBlockId(x, y, z), getData(x, y, z));
+        return {getBlockId(x, y, z), getData(x, y, z)};
     }
 
-    ND const lce::Block* getBlock(const Pos3D &pos) const {
-        return this->getBlock(pos.x, pos.y, pos.z);
+    ND lce::BlockState getBlock(const Pos3D &pos) const {
+        return getBlock(pos.x, pos.y, pos.z);
     }
 
     ND u16 getSkyLight(c_i64 x, c_i64 y, c_i64 z) const {
@@ -116,11 +117,11 @@ public:
         this->setBlockAndData(pos.x, pos.y, pos.z, id, data);
     }
 
-    void setBlock(c_i64 x, c_i64 y, c_i64 z, const lce::Block *block) {
-        this->setBlockAndData(x, y, z, block->getID(), block->getDataTag());
+    void setBlock(c_i64 x, c_i64 y, c_i64 z, const lce::BlockState block) {
+        this->setBlockAndData(x, y, z, block.getID(), block.getDataTag());
     }
 
-    void setBlock(const Pos3D &pos, const lce::Block *block) {
+    void setBlock(const Pos3D &pos, const lce::BlockState block) {
         this->setBlock(pos.x, pos.y, pos.z, block);
     }
 
@@ -170,7 +171,7 @@ public:
 
     ND int getTopSolidOrLiquidBlock(c_i64 x, c_i64 z) const {
         for (int i = 255; i >= 0; i--) {
-            int blockId = getBlockId(x, i - 1, z);
+            c_int blockId = getBlockId(x, i - 1, z);
             if (lce::blocks::blocksMovement(blockId) && !lce::blocks::isLeavesBlock(blockId)) return i;
         }
         return 0;

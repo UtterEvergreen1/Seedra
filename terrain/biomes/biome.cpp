@@ -43,20 +43,20 @@ const WorldGenTallGrass BiomeTaiga::GRASS_GENERATOR = WorldGenTallGrass(BlockTal
 const WorldGenMegaPineTree BiomeTaiga::MEGA_PINE_GENERATOR = WorldGenMegaPineTree(false);
 const WorldGenMegaPineTree BiomeTaiga::MEGA_SPRUCE_GENERATOR = WorldGenMegaPineTree(true);
 
-const WorldGenBlockBlob BiomeTaiga::FOREST_ROCK_GENERATOR = WorldGenBlockBlob(&lce::BlocksInit::MOSS_STONE, 0);
+const WorldGenBlockBlob BiomeTaiga::FOREST_ROCK_GENERATOR = WorldGenBlockBlob(lce::BlocksInit::MOSS_STONE.getState(), 0);
 
 const WorldGenSwamp BiomeSwamp::SWAMP_FEATURE;
 
 const WorldGenMegaJungle BiomeJungle::MEGA_JUNGLE_FEATURE = WorldGenMegaJungle(
-    10, 20, &lce::BlocksInit::JUNGLE_WOOD, &lce::BlocksInit::JUNGLE_LEAVES);
+    10, 20, lce::BlocksInit::JUNGLE_WOOD.getState(), lce::BlocksInit::JUNGLE_LEAVES.getState());
 const WorldGenTrees BiomeJungle::JUNGLE_TREES[BiomeJungle::JUNGLE_TREE_HEIGHT_VARIATION] = {
-    WorldGenTrees(4, &lce::BlocksInit::JUNGLE_WOOD, &lce::BlocksInit::JUNGLE_LEAVES, true),
-    WorldGenTrees(5, &lce::BlocksInit::JUNGLE_WOOD, &lce::BlocksInit::JUNGLE_LEAVES, true),
-    WorldGenTrees(6, &lce::BlocksInit::JUNGLE_WOOD, &lce::BlocksInit::JUNGLE_LEAVES, false),
-    WorldGenTrees(7, &lce::BlocksInit::JUNGLE_WOOD, &lce::BlocksInit::JUNGLE_LEAVES, false),
-    WorldGenTrees(8, &lce::BlocksInit::JUNGLE_WOOD, &lce::BlocksInit::JUNGLE_LEAVES, false),
-    WorldGenTrees(9, &lce::BlocksInit::JUNGLE_WOOD, &lce::BlocksInit::JUNGLE_LEAVES, false),
-    WorldGenTrees(10, &lce::BlocksInit::JUNGLE_WOOD, &lce::BlocksInit::JUNGLE_LEAVES, false)
+    WorldGenTrees(4, lce::BlocksInit::JUNGLE_WOOD.getState(), lce::BlocksInit::JUNGLE_LEAVES.getState(), true),
+    WorldGenTrees(5, lce::BlocksInit::JUNGLE_WOOD.getState(), lce::BlocksInit::JUNGLE_LEAVES.getState(), true),
+    WorldGenTrees(6, lce::BlocksInit::JUNGLE_WOOD.getState(), lce::BlocksInit::JUNGLE_LEAVES.getState(), false),
+    WorldGenTrees(7, lce::BlocksInit::JUNGLE_WOOD.getState(), lce::BlocksInit::JUNGLE_LEAVES.getState(), false),
+    WorldGenTrees(8, lce::BlocksInit::JUNGLE_WOOD.getState(), lce::BlocksInit::JUNGLE_LEAVES.getState(), false),
+    WorldGenTrees(9, lce::BlocksInit::JUNGLE_WOOD.getState(), lce::BlocksInit::JUNGLE_LEAVES.getState(), false),
+    WorldGenTrees(10, lce::BlocksInit::JUNGLE_WOOD.getState(), lce::BlocksInit::JUNGLE_LEAVES.getState(), false)
 };
 
 const WorldGenSavannaTree BiomeSavanna::SAVANNA_TREE;
@@ -168,8 +168,8 @@ float Biome::getFloatTemperature(const Pos3D &pos) const {
 
 void Biome::generateBiomeTerrain(RNG &rng, ChunkPrimer *chunkPrimerIn, int x, int z, double noiseVal) const {
     constexpr int seaLevel = 63; // sea level
-    const lce::Block *top = this->topBlock;
-    const lce::Block *filler = this->fillerBlock;
+    lce::BlockState top = this->topBlock;
+    lce::BlockState filler = this->fillerBlock;
     int j = -1;
     c_int k = (int) (noiseVal / 3.0 + 3.0 + rng.nextDouble() * 0.25);
     c_int l = x & 15;
@@ -188,26 +188,26 @@ void Biome::generateBiomeTerrain(RNG &rng, ChunkPrimer *chunkPrimerIn, int x, in
             else if (currentBlockId == lce::blocks::STONE_ID) {
                 if (j == -1) {
                     if (k <= 0) {
-                        top = &lce::BlocksInit::AIR;
-                        filler = &lce::BlocksInit::STONE;
+                        top = lce::BlocksInit::AIR.getState();
+                        filler = lce::BlocksInit::STONE.getState();
                     } else if (j1 >= seaLevel - 4 && j1 <= seaLevel + 1) {
                         top = this->topBlock;
                         filler = this->fillerBlock;
                     }
 
-                    if (j1 < seaLevel && top == &lce::BlocksInit::AIR) {
+                    if (j1 < seaLevel && top == lce::BlocksInit::AIR.getState()) {
                         blockPos.setPos(x, j1, z);
-                        if (this->getFloatTemperature(blockPos) < 0.15F) top = &lce::BlocksInit::ICE;
+                        if (this->getFloatTemperature(blockPos) < 0.15F) top = lce::BlocksInit::ICE.getState();
                         else
-                            top = &lce::BlocksInit::STILL_WATER;
+                            top = lce::BlocksInit::STILL_WATER.getState();
                     }
 
                     j = k;
 
                     if (j1 >= seaLevel - 1) chunkPrimerIn->setBlock(i1, j1, l, top);
                     else if (j1 < seaLevel - 7 - k) {
-                        top = &lce::BlocksInit::AIR;
-                        filler = &lce::BlocksInit::STONE;
+                        top = lce::BlocksInit::AIR.getState();
+                        filler = lce::BlocksInit::STONE.getState();
                         chunkPrimerIn->setBlockId(i1, j1, l, lce::blocks::GRAVEL_ID);
                     } else
                         chunkPrimerIn->setBlock(i1, j1, l, filler);
@@ -215,9 +215,9 @@ void Biome::generateBiomeTerrain(RNG &rng, ChunkPrimer *chunkPrimerIn, int x, in
                     --j;
                     chunkPrimerIn->setBlock(i1, j1, l, filler);
 
-                    if (j == 0 && filler->getID() == lce::blocks::SAND_ID && k > 1) {
+                    if (j == 0 && filler.getID() == lce::blocks::SAND_ID && k > 1) {
                         j = rng.nextInt(4) + std::max(0, j1 - 63);
-                        filler = filler->getDataTag() == 1
+                        filler = filler.getDataTag() == 1
                                      ? &lce::BlocksInit::RED_SANDSTONE
                                      : &lce::BlocksInit::SANDSTONE;
                     }
@@ -356,11 +356,11 @@ void BiomeMesa::genTerrainBlocks(c_i64 worldSeedIn, RNG &rng, ChunkPrimer *chunk
 
                     if (j1 >= seaLevel - 1) {
                         if (this->hasForest && j1 > 86 + k * 2) {
-                            if (flag) chunkPrimerIn->setBlock(l1, j1, k1, &lce::BlocksInit::COARSE_DIRT);
+                            if (flag) chunkPrimerIn->setBlock(l1, j1, k1, lce::BlocksInit::COARSE_DIRT.getState());
                             else
                                 chunkPrimerIn->setBlockId(l1, j1, k1, lce::blocks::GRASS_ID);
                         } else if (j1 > seaLevel + 3 + k) {
-                            lce::Block const *iBlockState2;
+                            lce::BlockState iBlockState2;
 
                             if (j1 >= 64 && j1 <= 127) {
                                 if (flag) iBlockState2 = &lce::BlocksInit::HARDENED_CLAY;
@@ -454,7 +454,7 @@ void BiomeMesa::generateClayBands(c_i64 seed) {
     }
 }
 
-lce::Block const *BiomeMesa::getClayBand(c_int x, c_int y) {
+lce::BlockState BiomeMesa::getClayBand(c_int x, c_int y) {
     c_double noiseFactor = x / 512.0;
     c_int offset = static_cast<int>(round(this->clayBandsOffsetNoise.getValue(noiseFactor, noiseFactor) * 2.0));
     return this->clayBands[(y + offset + 64) % 64];
@@ -775,7 +775,7 @@ const WorldGenAbstractTree *BiomeJungle::genBigTreeChance(MU RNG &rng) const {
         return &BIG_TREE_FEATURE;
     }
     if (rng.nextInt(2) == 0) {
-        return new WorldGenShrub(&lce::BlocksInit::JUNGLE_WOOD, &lce::BlocksInit::OAK_LEAVES);
+        return new WorldGenShrub(lce::BlocksInit::JUNGLE_WOOD.getState(), lce::BlocksInit::OAK_LEAVES.getState());
     }
 
     return !this->isEdge && rng.nextInt(3) == 0
@@ -881,19 +881,19 @@ void BiomeMesa::Decorator::generateOres(World *world, RNG &rng) {
 #pragma region BiomeColors
 
 uint32_t Biome::getGrassColor(const Pos3D &pos) const {
-    double temperature = std::clamp(getFloatTemperature(pos), 0.0f, 1.0f);
-    double rainFall = std::clamp(getRainfall(), 0.0f, 1.0f);
+    const double temperature = std::clamp(getFloatTemperature(pos), 0.0f, 1.0f);
+    const double rainFall = std::clamp(getRainfall(), 0.0f, 1.0f);
     return Colors::getGrassColor(temperature, rainFall);
 }
 
 uint32_t Biome::getFoliageColor(const Pos3D &pos) const {
-    double temperature = std::clamp(getFloatTemperature(pos), 0.0f, 1.0f);
-    double rainFall = std::clamp(getRainfall(), 0.0f, 1.0f);
+    const double temperature = std::clamp(getFloatTemperature(pos), 0.0f, 1.0f);
+    const double rainFall = std::clamp(getRainfall(), 0.0f, 1.0f);
     return Colors::getFoliageColor(temperature, rainFall);
 }
 
 uint32_t BiomeForest::getGrassColor(const Pos3D &pos) const {
-    int color = Biome::getGrassColor(pos);
+    const int color = Biome::getGrassColor(pos);
     if (this->type != Type::ROOFED)
         return color;
 
@@ -902,7 +902,7 @@ uint32_t BiomeForest::getGrassColor(const Pos3D &pos) const {
 }
 
 uint32_t BiomeSwamp::getGrassColor(const Pos3D &pos) const {
-    double d0 = INFO_NOISE.getValue(static_cast<double>(pos.x) * 0.0225, static_cast<double>(pos.z) * 0.0225);
+    const double d0 = INFO_NOISE.getValue(static_cast<double>(pos.x) * 0.0225, static_cast<double>(pos.z) * 0.0225);
     return d0 < -0.1 ? 0xFF3C764C : 0xFF39706A;
 }
 

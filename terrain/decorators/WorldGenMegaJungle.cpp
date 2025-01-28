@@ -88,7 +88,8 @@ bool WorldGenMegaJungle::generate(World *worldIn, RNG &rng, const Pos3D &pos) co
 
 void WorldGenMegaJungle::placeVine(World *worldIn, RNG &rand, const Pos3D &pos, MU EnumFacing facing) {
     if (rand.nextInt(3) > 0 && worldIn->isAirBlock(pos)) {
-        worldIn->setBlock(pos, &lce::BlocksInit::VINES);
+        // TODO: set correct vine metadata
+        worldIn->setBlock(pos, lce::BlocksInit::VINES.getState());
     }
 }
 

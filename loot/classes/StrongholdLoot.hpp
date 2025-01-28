@@ -5,6 +5,8 @@
 #include "terrain/Chunk.hpp"
 #include "structures/gen/stronghold/stronghold.hpp"
 
+#include "terrain/Chunk.hpp"
+
 namespace loot {
     template<typename T>
     class StrongholdLoot : public Loot<StrongholdLoot<T>> {
@@ -30,7 +32,8 @@ namespace loot {
         RNG rng = RNG::getPopulationSeed(g.getWorldSeed(), chestChunkX, chestChunkZ);
 
         if constexpr (checkCaves) {
-            ChunkPrimer* chunk = Chunk::provideChunk<checkWaterCaves>(g, chestChunkX, chestChunkZ, accurate);
+            // TODO: probably needs fixed
+            ChunkPrimer* chunk = Chunk::provideChunk(g, {chestChunkX, chestChunkZ}); // , accurate
             // we roll rng equal to the stone bricks in the chunk that generated before the chest corridor
             if (!rolls::Stronghold::generateStructure<true>(chunk, strongholdGenerator, rng, chestChunkX, chestChunkZ,
                                                             piece)) {

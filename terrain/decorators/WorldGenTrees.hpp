@@ -6,8 +6,8 @@
 class World;
 
 class WorldGenTrees final : public WorldGenAbstractTree {
-    static const lce::Block* DEFAULT_TRUNK;
-    static const lce::Block* DEFAULT_LEAF;
+    static const lce::BlockState DEFAULT_TRUNK;
+    static const lce::BlockState DEFAULT_LEAF;
 
 public:
     /// The minimum height of a generated tree.
@@ -17,14 +17,14 @@ public:
     const bool vinesGrow;
 
     /// The metadata value of the wood to use in tree generation.
-    const lce::Block* metaWood;
+    const lce::BlockState metaWood;
 
     /// The metadata value of the leaves to use in tree generation.
-    const lce::Block* metaLeaves;
+    const lce::BlockState metaLeaves;
 
     WorldGenTrees() : WorldGenTrees(4, DEFAULT_TRUNK, DEFAULT_LEAF, false) {}
 
-    WorldGenTrees(const int minTreeHeight, const lce::Block* metaWood, const lce::Block* metaLeaves,
+    WorldGenTrees(const int minTreeHeight, const lce::BlockState metaWood, const lce::BlockState metaLeaves,
                   const bool vinesGrow)
         : minTreeHeight(minTreeHeight), vinesGrow(vinesGrow), metaWood(metaWood), metaLeaves(metaLeaves) {}
 

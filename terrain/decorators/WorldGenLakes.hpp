@@ -9,10 +9,10 @@ class World;
 
 class WorldGenLakes final : public AbstractWorldGenerator {
     Generator const *g;
-    lce::Block const *block;
+    const lce::BlockState block;
 
 public:
-    MU explicit WorldGenLakes(const Generator *g, lce::Block const *blockIn)
+    MU explicit WorldGenLakes(const Generator *g, const lce::BlockState blockIn)
         : g(g), block(blockIn) {
     }
 

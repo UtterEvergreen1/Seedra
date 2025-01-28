@@ -43,11 +43,11 @@ bool WorldGenMinable::generate(World *world, RNG &rng, const Pos3D &pos) const {
 
                             if (d12 * d12 + d13 * d13 + d14 * d14 < 1.0) {
                                 Pos3D blockPos(l1, i2, j2);
-                                const lce::Block *block = world->getBlock(blockPos);
-                                if (block == &lce::BlocksInit::STONE ||
-                                    block == &lce::BlocksInit::GRANITE ||
-                                    block == &lce::BlocksInit::DIORITE ||
-                                    block == &lce::BlocksInit::ANDESITE) {
+                                const lce::BlockState block = world->getBlock(blockPos);
+                                if (block == lce::BlocksInit::STONE.getState() ||
+                                    block == lce::BlocksInit::GRANITE.getState() ||
+                                    block == lce::BlocksInit::DIORITE.getState() ||
+                                    block == lce::BlocksInit::ANDESITE.getState()) {
                                     world->setBlock(blockPos, this->oreBlock);
                                 }
                             }

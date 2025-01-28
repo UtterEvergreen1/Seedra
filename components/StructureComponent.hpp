@@ -76,18 +76,13 @@ public:
     }
 
     MU static void setBlockStateWithoutOffset(
-        World &worldIn, const lce::Block *blockStateIn, int x, int y, int z, const BoundingBox &structureBB);
+        World &worldIn, lce::BlockState blockStateIn, int x, int y, int z, const BoundingBox &structureBB);
 
     MU void setBlockState(
-        World &worldIn, const lce::Block *blockStateIn, int x, int y, int z,
+        World &worldIn, lce::BlockState blockStateIn, int x, int y, int z,
         const BoundingBox &structureBB) const;
 
-    void setBlockState(
-        World &worldIn, const lce::Block &blockStateIn, int x, int y, int z,
-        const BoundingBox &structureBB) const;
-
-
-    MU ND const lce::Block *getBlockStateFromPos(
+    MU ND lce::BlockState getBlockStateFromPos(
         World &worldIn, int x, int y, int z, const BoundingBox &boundingBoxIn) const;
 
 
@@ -96,15 +91,15 @@ public:
 
 
     void replaceAirAndLiquidDownwards(
-        World &worldIn, const lce::Block *blockStateIn, int x, int y, int z,
+        World &worldIn, lce::BlockState blockStateIn, int x, int y, int z,
         const BoundingBox &boundingBoxIn) const;
 
     void fillWithBlocks(World &worldIn, const BoundingBox &bbIn, int minX, int minY, int minZ, int maxX, int maxY,
-                        int maxZ, const lce::Block *boundaryBlockState,
-                        const lce::Block *insideBlockState, bool existingOnly) const;
+                        int maxZ, lce::BlockState boundaryBlockState,
+                        lce::BlockState insideBlockState, bool existingOnly) const;
 
     void fillWithBlocks(World &worldIn, const BoundingBox &bbIn, int minX, int minY, int minZ, int maxX, int maxY,
-                        int maxZ, const lce::Block *theBlockState, bool existingOnly) const;
+                        int maxZ, lce::BlockState theBlockState, bool existingOnly) const;
 
     void fillWithAir(
         World &worldIn, const BoundingBox &bbIn, int minX, int minY, int minZ, int maxX, int maxY, int maxZ) const;
@@ -130,18 +125,18 @@ public:
 
 
     void randomlyRareFillWithBlocks(World &worldIn, const BoundingBox &bbIn, int minX, int minY, int minZ, int maxX,
-                                    int maxY, int maxZ, const lce::Block *blockStateIn, bool excludeAir) const;
+                                    int maxY, int maxZ, lce::BlockState blockStateIn, bool excludeAir) const;
 
 
     int getLightLevelAtBlock(MU World &world, MU int x, MU int y, MU int z, MU const BoundingBox &structureBB) const;
 
     void randomlyPlaceBlock(World &worldIn, const BoundingBox &bbIn, RNG &rand, float chance, int x, int y, int z,
-                            const lce::Block *blockStateIn) const;
+                            lce::BlockState blockStateIn) const;
 
 
     void fillWithBlocksRandomLightCheck(World &world, const BoundingBox &structureBB, RNG &rng, float chance, int minX,
                                         int minY, int minZ, int maxX, int maxY, int maxZ,
-                                        const lce::Block *blockState1, const lce::Block *blockState2,
+                                        lce::BlockState blockState1, lce::BlockState blockState2,
                                         bool flag,
                                         int lightLevel) const;
 

@@ -11,7 +11,7 @@
 #include "lce/blocks/__include.hpp"
 
 
-MU void StructureComponent::setBlockStateWithoutOffset(World& worldIn, const lce::Block* blockStateIn, c_int x,
+MU void StructureComponent::setBlockStateWithoutOffset(World& worldIn, const lce::BlockState blockStateIn, c_int x,
                                                        c_int y, c_int z, const BoundingBox& structureBB) {
     if (const auto blockPos = Pos3D(x, y, z); structureBB.isVecInside(blockPos)) {
         worldIn.setBlock(blockPos, blockStateIn);
@@ -19,7 +19,7 @@ MU void StructureComponent::setBlockStateWithoutOffset(World& worldIn, const lce
 }
 
 
-MU void StructureComponent::setBlockState(World& worldIn, const lce::Block* blockStateIn, c_int x, c_int y,
+MU void StructureComponent::setBlockState(World& worldIn, const lce::BlockState blockStateIn, c_int x, c_int y,
                                           c_int z, const BoundingBox& structureBB) const {
     if (const auto blockPos = Pos3D(getWorldX(x, z), getWorldY(y), getWorldZ(x, z));
         structureBB.isVecInside(blockPos)) {
@@ -28,19 +28,14 @@ MU void StructureComponent::setBlockState(World& worldIn, const lce::Block* bloc
 }
 
 
-void StructureComponent::setBlockState(World& worldIn, const lce::Block& blockStateIn, c_int x, c_int y,
-                                       c_int z, const BoundingBox& structureBB) const {
-    setBlockState(worldIn, &blockStateIn, x, y, z, structureBB);
-}
 
-
-MU ND const lce::Block* StructureComponent::getBlockStateFromPos(World& worldIn, c_int x, c_int y, c_int z,
+MU ND lce::BlockState StructureComponent::getBlockStateFromPos(World& worldIn, c_int x, c_int y, c_int z,
                                                                          const BoundingBox& boundingBoxIn) const {
     c_int i = getWorldX(x, z);
     c_int j = getWorldY(y);
     c_int k = getWorldZ(x, z);
     const Pos3D blockPos = {i, j, k};
-    return !boundingBoxIn.isVecInside(blockPos) ? &lce::BlocksInit::AIR : worldIn.getBlock(blockPos);
+    return !boundingBoxIn.isVecInside(blockPos) ? lce::BlocksInit::AIR.getState() : worldIn.getBlock(blockPos);
 }
 
 
@@ -58,7 +53,7 @@ void StructureComponent::clearCurrentPositionBlocksUpwards(World& worldIn, c_int
 
 
 /// Replaces air and liquid from given position downwards. Stops when hitting anything else than air or liquid
-void StructureComponent::replaceAirAndLiquidDownwards(World& worldIn, const lce::Block* blockStateIn, c_int x,
+void StructureComponent::replaceAirAndLiquidDownwards(World& worldIn, const lce::BlockState blockStateIn, c_int x,
                                                       c_int y, c_int z, const BoundingBox& boundingBoxIn) const {
     c_int i = getWorldX(x, z);
     int j = getWorldY(y);
@@ -66,7 +61,7 @@ void StructureComponent::replaceAirAndLiquidDownwards(World& worldIn, const lce:
 
     if (boundingBoxIn.isVecInside(Pos3D(i, j, k))) {
         while ((worldIn.isAirBlock(Pos3D(i, j, k)) ||
-                lce::blocks::isLiquidBlock(worldIn.getBlock(i, j, k)->getID())) &&
+                lce::blocks::isLiquidBlock(worldIn.getBlock(i, j, k).getID())) &&
                j > 1) {
             worldIn.setBlock(i, j, k, blockStateIn); // 2
             --j;
@@ -77,8 +72,8 @@ void StructureComponent::replaceAirAndLiquidDownwards(World& worldIn, const lce:
 
 void StructureComponent::fillWithBlocks(World& worldIn, const BoundingBox& bbIn, c_int minX, c_int minY, c_int minZ,
                                         c_int maxX, c_int maxY, c_int maxZ,
-                                        const lce::Block* boundaryBlockState,
-                                        const lce::Block* insideBlockState, const bool existingOnly) const {
+                                        const lce::BlockState boundaryBlockState,
+                                        const lce::BlockState insideBlockState, const bool existingOnly) const {
 
     // TODO: do BoundingBox::shrinkToFit on bounds
 
@@ -93,7 +88,7 @@ void StructureComponent::fillWithBlocks(World& worldIn, const BoundingBox& bbIn,
                 if (bbIn.isVecInside({wX, wY, wZ})) {
 
                     // TODO: probably replace with is MATERIAL::AIR? I cannot remember
-                    if (!existingOnly || worldIn.getBlock(wX, wY, wZ)->getID() != lce::blocks::AIR_ID) {
+                    if (!existingOnly || worldIn.getBlock(wX, wY, wZ).getID() != lce::blocks::AIR_ID) {
                         if (y != minY && y != maxY && x != minX && x != maxX && z != minZ && z != maxZ) {
                             setBlockState(worldIn, insideBlockState, x, y, z, bbIn);
                         } else {
@@ -109,7 +104,7 @@ void StructureComponent::fillWithBlocks(World& worldIn, const BoundingBox& bbIn,
 
 void StructureComponent::fillWithBlocks(World& worldIn, const BoundingBox& bbIn, c_int minX, c_int minY,
                                              c_int minZ, c_int maxX, c_int maxY, c_int maxZ,
-                                             const lce::Block* theBlockState, c_bool existingOnly) const {
+                                             const lce::BlockState theBlockState, c_bool existingOnly) const {
     // TODO: do BoundingBox::shrinkToFit on bounds
 
     for (int y = minY; y <= maxY; y++) {
@@ -122,7 +117,7 @@ void StructureComponent::fillWithBlocks(World& worldIn, const BoundingBox& bbIn,
 
                 if (bbIn.isVecInside({wX, wY, wZ})) {
 
-                    if (!existingOnly || worldIn.getBlock(wX, wY, wZ)->getID() != lce::blocks::AIR_ID) {
+                    if (!existingOnly || worldIn.getBlock(wX, wY, wZ).getID() != lce::blocks::AIR_ID) {
                         setBlockState(worldIn, theBlockState, x, y, z, bbIn);
                     }
                 }
@@ -146,7 +141,7 @@ void StructureComponent::fillWithAir(World& worldIn, const BoundingBox& bbIn,
                 c_int wZ = getWorldZ(x, z);
 
                 if (bbIn.isVecInside({wX, wY, wZ})) {
-                    setBlockState(worldIn, &lce::BlocksInit::AIR, x, y, z, bbIn);
+                    setBlockState(worldIn, lce::BlocksInit::AIR.getState(), x, y, z, bbIn);
                 }
             }
         }
@@ -269,7 +264,7 @@ bool StructureComponent::isLiquidInStructureBoundingBox(World& worldIn, const Bo
 
 void StructureComponent::randomlyRareFillWithBlocks(World& worldIn, const BoundingBox& bbIn, c_int minX, c_int minY,
                                                     c_int minZ, c_int maxX, c_int maxY, c_int maxZ,
-                                                    const lce::Block* blockStateIn, c_bool excludeAir) const {
+                                                    const lce::BlockState blockStateIn, c_bool excludeAir) const {
     c_auto f = static_cast<float>(maxX - minX + 1);
     c_auto f1 = static_cast<float>(maxY - minY + 1);
     c_auto f2 = static_cast<float>(maxZ - minZ + 1);
@@ -286,7 +281,7 @@ void StructureComponent::randomlyRareFillWithBlocks(World& worldIn, const Boundi
                 c_auto f7 = (static_cast<float>(k) - f4) / (f2 * 0.5F);
 
                 if (!excludeAir ||
-                    !lce::blocks::isReplaceableBlock(getBlockStateFromPos(worldIn, j, i, k, bbIn)->getID())) {
+                    !lce::blocks::isReplaceableBlock(getBlockStateFromPos(worldIn, j, i, k, bbIn).getID())) {
                     c_auto f8 = f6 * f6 + f5 * f5 + f7 * f7;
 
                     if (f8 <= 1.05F) { setBlockState(worldIn, blockStateIn, j, i, k, bbIn); }
@@ -311,7 +306,7 @@ int StructureComponent::getLightLevelAtBlock(MU World& world, MU int x, MU int y
 
 
 void StructureComponent::randomlyPlaceBlock(World& worldIn, const BoundingBox& bbIn, RNG& rand, c_float chance, c_int x,
-                                            c_int y, c_int z, const lce::Block* blockStateIn) const {
+                                            c_int y, c_int z, const lce::BlockState blockStateIn) const {
     if (rand.nextFloat() < chance) { setBlockState(worldIn, blockStateIn, x, y, z, bbIn); }
 }
 
@@ -319,15 +314,15 @@ void StructureComponent::randomlyPlaceBlock(World& worldIn, const BoundingBox& b
 /// looks like fillWithBlocks but with a rng chance + light level checks?
 void StructureComponent::fillWithBlocksRandomLightCheck(World& world, const BoundingBox& structureBB, RNG& rng,
                                                         c_float chance, c_int minX, c_int minY, c_int minZ, c_int maxX,
-                                                        c_int maxY, c_int maxZ, const lce::Block* blockState1,
-                                                        const lce::Block* blockState2, c_bool flag,
+                                                        c_int maxY, c_int maxZ, const lce::BlockState blockState1,
+                                                        const lce::BlockState blockState2, c_bool flag,
                                                         c_int lightLevel) const {
     for (int i = minY; i <= maxY; ++i) {
         for (int j = minX; j <= maxX; ++j) {
             for (int k = minZ; k <= maxZ; ++k) {
                 if (rng.nextFloat() <= chance &&
                     (!flag || !lce::blocks::isReplaceableBlock(
-                                              getBlockStateFromPos(world, j, i, k, structureBB)->getID())) &&
+                                              getBlockStateFromPos(world, j, i, k, structureBB).getID())) &&
                     (lightLevel <= 0 || getLightLevelAtBlock(world, j, i, k, structureBB) < lightLevel)) {
                     if (i != minY
                         && i != maxY
@@ -353,8 +348,8 @@ void StructureComponent::fillWithRandomizedStrongholdStones(World& worldIn, cons
         for (int j = minX; j <= maxX; ++j) {
             for (int k = minZ; k <= maxZ; ++k) {
                 if (!alwaysReplace || !lce::blocks::isReplaceableBlock(
-                                              getBlockStateFromPos(worldIn, j, i, k, structureBB)->getID())) {
-                    const lce::Block* block = StrongholdStones::selectBlocks(
+                                              getBlockStateFromPos(worldIn, j, i, k, structureBB).getID())) {
+                    const lce::BlockState block = StrongholdStones::selectBlocks(
                             rng, i == minY || i == maxY || j == minX || j == maxX || k == minZ || k == maxZ);
                     setBlockState(worldIn, block, j, i, k, structureBB);
                 }

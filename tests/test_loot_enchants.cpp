@@ -2,6 +2,8 @@
 #include "enchants/enchantmentHelper.hpp"
 #include "loot/tables/include.hpp"
 
+#include <cstdint>
+
 int main(int argc, char* argv[]) {
 
     EnchantmentHelper::setup(lce::CONSOLE::WIIU, LCEVERSION::AQUATIC);

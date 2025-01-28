@@ -67,18 +67,18 @@ bool ChunkPrimer::canBlockFreeze(const Pos3D &pos) const {
 
 
 static bool canPlaceSnowLayerAt(const ChunkPrimer* chunkPrimer, Pos3D pos) {
-    const lce::Block* block = chunkPrimer->getBlock(pos);
+    const lce::BlockState block = chunkPrimer->getBlock(pos);
 
-    if (block->getID() != lce::blocks::AIR_ID) { return false; }
+    if (block.getID() != lce::blocks::AIR_ID) { return false; }
 
-    const lce::Block* blockDown = chunkPrimer->getBlock(pos.down());
+    const lce::BlockState blockDown = chunkPrimer->getBlock(pos.down());
 
-    if (blockDown == &lce::BlocksInit::ICE || blockDown == &lce::BlocksInit::PACKED_ICE) { return false; }
+    if (blockDown == lce::BlocksInit::ICE || blockDown == lce::BlocksInit::PACKED_ICE) { return false; }
 
     // auto blockFaceShape = block.func_193401_d(chunkPrimer, pos.down(), EnumFacing::UP);
-    return isFullBlock(blockDown->getID()) /* blockFaceShape == BlockFaceShape.SOLID || */
-           || lce::blocks::isLeavesBlock(blockDown->getID())
-           || (blockDown->getID() == lce::blocks::SNOW_ID && blockDown->getDataTag() == 8);
+    return isFullBlock(blockDown.getID()) /* blockFaceShape == BlockFaceShape.SOLID || */
+           || lce::blocks::isLeavesBlock(blockDown.getID())
+           || (blockDown.getID() == lce::blocks::SNOW_ID && blockDown.getDataTag() == 8);
 }
 
 

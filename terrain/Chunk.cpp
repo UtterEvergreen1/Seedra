@@ -208,13 +208,13 @@ namespace Chunk {
 
         if (const Pos3D waterPos = FeaturePositions::waterLake(
                     g, chunk->decorateRng, chunkPos.x, chunkPos.z); !waterPos.isNull()) {
-            const WorldGenLakes waterGen(g, &lce::BlocksInit::STILL_WATER);
+            const WorldGenLakes waterGen(g, lce::BlocksInit::STILL_WATER.getState());
             waterGen.generate(&world, chunk->decorateRng, waterPos);
         }
 
         if (const Pos3D lavaPos = FeaturePositions::lavaLake(
                     chunk->decorateRng, chunkPos.x, chunkPos.z); !lavaPos.isNull()) {
-            const WorldGenLakes lavaGen(g, &lce::BlocksInit::STILL_LAVA);
+            const WorldGenLakes lavaGen(g, lce::BlocksInit::STILL_LAVA.getState());
             lavaGen.generate(&world, chunk->decorateRng, lavaPos);
         }
 
@@ -247,7 +247,7 @@ namespace Chunk {
                 if (world.canSnowAt(snowPos, true)) { // TODO: check light
                     world.setBlockId(snowPos, lce::blocks::SNOW_ID);
                     if (world.getBlockId(snowPos.down()) == lce::blocks::FARMLAND_ID) {
-                        world.setBlock(snowPos.down(), lce::BlocksInit::DIRT);
+                        world.setBlock(snowPos.down(), lce::BlocksInit::DIRT.getState());
                     }
                 }
             }

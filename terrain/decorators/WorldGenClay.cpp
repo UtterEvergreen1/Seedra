@@ -22,7 +22,7 @@ bool WorldGenClay::generate(World* worldIn, RNG& rand, const Pos3D& position) co
                     const int blockId = worldIn->getBlockId(blockPos);
 
                     if (blockId == DIRT_ID || blockId == CLAY_BLOCK_ID) {
-                        worldIn->setBlock(blockPos, &lce::BlocksInit::CLAY_BLOCK);
+                        worldIn->setBlock(blockPos, lce::BlocksInit::CLAY_BLOCK.getState());
                     }
                 }
             }

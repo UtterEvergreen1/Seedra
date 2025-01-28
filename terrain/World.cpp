@@ -171,21 +171,21 @@ int World::getBlockId(const Pos3D &pos) {
     return this->getBlockId(pos.x, pos.y, pos.z);
 }
 
-const lce::Block *World::getBlock(c_int x, c_int y, c_int z) {
+lce::BlockState World::getBlock(c_int x, c_int y, c_int z) {
     if (const ChunkPrimer *chunk = this->getOrCreateChunk({x >> 4, z >> 4})) {
         return chunk->getBlock(x & 15, y, z & 15);
     }
-    return nullptr;
+    return lce::BlocksInit::AIR.getState();
 }
 
-const lce::Block *World::getBlock(const Pos3D &pos) {
+lce::BlockState World::getBlock(const Pos3D &pos) {
     return this->getBlock(pos.x, pos.y, pos.z);
 }
 
 void World::notifyNeighbors(c_int x, c_int y, c_int z) {
     //mimic notify neighbors to load chunks
     for (const auto faces : FACING_HORIZONTAL) {
-        (void*)this->getBlock(Pos3D(x, y, z).offset(faces));
+        this->getBlock(Pos3D(x, y, z).offset(faces));
     }
 }
 
@@ -209,21 +209,14 @@ void World::setBlock(const Pos3D &pos, c_int blockId, c_int meta) {
     this->setBlock(pos.x, pos.y, pos.z, blockId, meta);
 }
 
-void World::setBlock(c_int x, c_int y, c_int z, const lce::Block *block) {
-    this->setBlock(x, y, z, block->getID(), block->getDataTag());
+void World::setBlock(c_int x, c_int y, c_int z, const lce::BlockState blockstate) {
+    this->setBlock(x, y, z, blockstate.getID(), blockstate.getDataTag());
 }
 
-void World::setBlock(const Pos3D &pos, const lce::Block *block) {
-    this->setBlock(pos.x, pos.y, pos.z, block->getID(), block->getDataTag());
+void World::setBlock(const Pos3D &pos, const lce::BlockState blockstate) {
+    this->setBlock(pos.x, pos.y, pos.z, blockstate.getID(), blockstate.getDataTag());
 }
 
-void World::setBlock(c_int x, c_int y, c_int z, const lce::Block& block) {
-    this->setBlock(x, y, z, block.getID(), block.getDataTag());
-}
-
-void World::setBlock(const Pos3D &pos, const lce::Block& block) {
-    this->setBlock(pos.x, pos.y, pos.z, block.getID(), block.getDataTag());
-}
 
 bool World::isAirBlock(c_int x, c_int y, c_int z) {
     if (const ChunkPrimer *chunk = getOrCreateChunk({x >> 4, z >> 4})) {

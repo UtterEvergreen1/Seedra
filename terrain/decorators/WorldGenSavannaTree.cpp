@@ -135,9 +135,9 @@ bool WorldGenSavannaTree::generate(World* worldIn, RNG& rand, const Pos3D& posit
 }
 
 void WorldGenSavannaTree::placeLogAt(World* worldIn, const Pos3D& pos) {
-    worldIn->setBlock(pos, &lce::BlocksInit::ACACIA_WOOD);
+    worldIn->setBlock(pos, lce::BlocksInit::ACACIA_WOOD.getState());
 }
 
 void WorldGenSavannaTree::placeLeafAt(World* worldIn, const Pos3D& pos) {
-    if (lce::blocks::isAirOrLeavesBlock(worldIn->getBlockId(pos))) { worldIn->setBlock(pos, &lce::BlocksInit::ACACIA_LEAVES); }
+    if (lce::blocks::isAirOrLeavesBlock(worldIn->getBlockId(pos))) { worldIn->setBlock(pos, lce::BlocksInit::ACACIA_LEAVES.getState()); }
 }

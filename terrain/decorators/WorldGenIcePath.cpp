@@ -6,7 +6,7 @@
 using namespace lce::blocks;
 
 
-const lce::Block* WorldGenIcePath::PATH_BLOCK = &lce::BlocksInit::PACKED_ICE;
+const lce::BlockState WorldGenIcePath::PATH_BLOCK = lce::BlocksInit::PACKED_ICE.getState();
 
 
 bool WorldGenIcePath::generate(World * worldIn, RNG &rng, const Pos3D &pos) const {

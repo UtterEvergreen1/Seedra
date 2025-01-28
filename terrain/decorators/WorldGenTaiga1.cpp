@@ -48,7 +48,7 @@ bool WorldGenTaiga1::generate(World* worldIn, RNG& rng, const Pos3D& pos) const 
                             Pos3D blockpos(j3, l2, i2);
 
                             if (!isFullBlock(worldIn->getBlockId(blockpos))) {
-                                worldIn->setBlock(blockpos, &lce::BlocksInit::SPRUCE_LEAVES);
+                                worldIn->setBlock(blockpos, lce::BlocksInit::SPRUCE_LEAVES.getState());
                             }
                         }
                     }
@@ -64,7 +64,7 @@ bool WorldGenTaiga1::generate(World* worldIn, RNG& rng, const Pos3D& pos) const 
             for (int i3 = 0; i3 < height - 1; ++i3) {
                 if (worldIn->isAirBlock(pos.up(i3)) ||
                     isLeavesBlock(worldIn->getBlockId(pos.up(i3)))) {
-                    worldIn->setBlock(pos.up(i3), &lce::BlocksInit::SPRUCE_WOOD);
+                    worldIn->setBlock(pos.up(i3), lce::BlocksInit::SPRUCE_WOOD.getState());
                 }
             }
 

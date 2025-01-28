@@ -7,8 +7,8 @@ class World;
 
 class WorldGenHugeTrees : public WorldGenAbstractTree {
 public:
-    WorldGenHugeTrees(const int baseHeightIn, const int extraRandomHeightIn, const lce::Block* woodMetadataIn,
-                      const lce::Block* leavesMetadataIn)
+    WorldGenHugeTrees(const int baseHeightIn, const int extraRandomHeightIn, const lce::BlockState woodMetadataIn,
+                      const lce::BlockState leavesMetadataIn)
         : baseHeight(baseHeightIn), extraRandomHeight(extraRandomHeightIn), woodMetadata(woodMetadataIn),
           leavesMetadata(leavesMetadataIn) {}
 
@@ -27,6 +27,6 @@ protected:
 
     int baseHeight;
     int extraRandomHeight;
-    const lce::Block* woodMetadata;
-    const lce::Block* leavesMetadata;
+    lce::BlockState woodMetadata;
+    lce::BlockState leavesMetadata;
 };

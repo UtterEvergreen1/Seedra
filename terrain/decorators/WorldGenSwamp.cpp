@@ -56,7 +56,7 @@ bool WorldGenSwamp::generate(World* worldIn, RNG& rand, const Pos3D& position) c
                             Pos3D blockPos(j3, k1, i4);
 
                             if (!isFullBlock(worldIn->getBlockId(blockPos))) {
-                                worldIn->setBlock(blockPos, &lce::BlocksInit::OAK_LEAVES);
+                                worldIn->setBlock(blockPos, lce::BlocksInit::OAK_LEAVES.getState());
                             }
                         }
                     }
@@ -66,7 +66,7 @@ bool WorldGenSwamp::generate(World* worldIn, RNG& rand, const Pos3D& position) c
             for (int l1 = 0; l1 < height; ++l1) {
                 const int blockId = worldIn->getBlockId(pos.up(l1));
                 if (lce::blocks::isAirOrLeavesBlock(blockId) || isWaterMaterial(blockId)) {
-                    worldIn->setBlock(pos.up(l1), &lce::BlocksInit::OAK_WOOD);
+                    worldIn->setBlock(pos.up(l1), lce::BlocksInit::OAK_WOOD.getState());
                 }
             }
 

@@ -137,12 +137,12 @@ bool WorldGenCanopyTree::placeTreeOfHeight(World* worldIn, const Pos3D& pos, c_i
 }
 
 void WorldGenCanopyTree::placeLogAt(World* worldIn, const Pos3D& pos) {
-    if (canGrowInto(worldIn->getBlockId(pos))) { worldIn->setBlock(pos, &lce::BlocksInit::DARK_OAK_WOOD); }
+    if (canGrowInto(worldIn->getBlockId(pos))) { worldIn->setBlock(pos, lce::BlocksInit::DARK_OAK_WOOD.getState()); }
 }
 
 void WorldGenCanopyTree::placeLeafAt(World* worldIn, c_int x, c_int y, c_int z) {
     const Pos3D blockPos(x, y, z);
     if (worldIn->isAirBlock(blockPos)) {
-        worldIn->setBlock(blockPos, &lce::BlocksInit::DARK_OAK_LEAVES);
+        worldIn->setBlock(blockPos, lce::BlocksInit::DARK_OAK_LEAVES.getState());
     }
 }

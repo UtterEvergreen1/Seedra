@@ -14,7 +14,7 @@ public:
         TALL_GRASS
     };
 
-    static const lce::Block* getBlockVariantById(const EnumType type);
+    static lce::BlockState getBlockVariantById(EnumType type);
 
     static bool canBlockStay(World *worldIn, const Pos3D &pos);
 };
@@ -22,8 +22,7 @@ public:
 
 class WorldGenTallGrass final : public AbstractWorldGenerator {
 public:
-    explicit WorldGenTallGrass(const BlockTallGrass::EnumType typeIn) : type(typeIn) {
-    }
+    explicit WorldGenTallGrass(const BlockTallGrass::EnumType typeIn) : type(typeIn) {}
 
     bool generate(World * worldIn, RNG &rng, const Pos3D &pos) const override;
 

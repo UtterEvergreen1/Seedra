@@ -2,23 +2,23 @@
 
 #include "lce/blocks/__include.hpp"
 #include "terrain/World.hpp"
-#include "terrain/generator.hpp"
+
 
 using namespace lce::blocks;
 
 
-const lce::Block* BlockTallGrass::getBlockVariantById(const EnumType type) {
+lce::BlockState BlockTallGrass::getBlockVariantById(const EnumType type) {
     switch (type) {
         case EnumType::DEAD_BUSH:
-            return &lce::BlocksInit::DEAD_BUSH;
+            return lce::BlocksInit::DEAD_BUSH.getState();
         case EnumType::FERN:
-            return &lce::BlocksInit::TALL_GRASS_FERN;
+            return lce::BlocksInit::TALL_GRASS_FERN.getState();
         case EnumType::GRASS:
-            return &lce::BlocksInit::TALL_GRASS_GRASS;
+            return lce::BlocksInit::TALL_GRASS_GRASS.getState();
         case EnumType::TALL_GRASS:
-            return &lce::BlocksInit::DOUBLE_TALLGRASS;
+            return lce::BlocksInit::DOUBLE_TALLGRASS.getState();
     }
-    return &lce::BlocksInit::DEAD_BUSH;
+    return lce::BlocksInit::DEAD_BUSH.getState();
 }
 
 

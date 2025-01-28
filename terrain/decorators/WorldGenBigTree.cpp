@@ -67,7 +67,7 @@ void WorldGenBigTree::generateLeafNodeList() const {
     }
 }
 
-void WorldGenBigTree::crossSection(const Pos3D& pos, const float radius, const lce::Block* block) const {
+void WorldGenBigTree::crossSection(const Pos3D& pos, const float radius, const lce::BlockState block) const {
     c_int i = static_cast<int>(radius + 0.618);
 
     for (int j = -i; j <= i; ++j) {
@@ -110,11 +110,11 @@ float WorldGenBigTree::leafSize(c_int y) const {
 
 void WorldGenBigTree::generateLeafNode(const Pos3D& pos) const {
     for (int i = 0; i < this->leafDistanceLimit; ++i) {
-        this->crossSection(pos.up(i), this->leafSize(i), &lce::BlocksInit::OAK_LEAVES);
+        this->crossSection(pos.up(i), this->leafSize(i), lce::BlocksInit::OAK_LEAVES.getState());
     }
 }
 
-void WorldGenBigTree::limb(const Pos3D& start, const Pos3D& end, const lce::Block* block) const {
+void WorldGenBigTree::limb(const Pos3D& start, const Pos3D& end, const lce::BlockState block) const {
     const Pos3D blockPos = end.add(-start.getX(), -start.getY(), -start.getZ());
     c_int i = WorldGenBigTree::getGreatestDistance(blockPos);
     const float f = static_cast<float>(blockPos.getX()) / static_cast<float>(i);
@@ -126,7 +126,7 @@ void WorldGenBigTree::limb(const Pos3D& start, const Pos3D& end, const lce::Bloc
                 start.add((int) (0.5F + (float) j * f), (int) (0.5F + (float) j * f1), (int) (0.5F + (float) j * f2));
         const EnumAxis axis = getLogAxis(start, blockPos1);
         c_int metaStateAxis = axis == EnumAxis::Y ? 0 : axis == EnumAxis::X ? 4 : 8;
-        this->world->setBlock(blockPos1, block->getID(), block->getDataTag() | metaStateAxis);
+        this->world->setBlock(blockPos1, block.getID(), block.getDataTag() | metaStateAxis);
     }
 }
 
@@ -166,7 +166,7 @@ bool WorldGenBigTree::leafNodeNeedsBase(c_int y) const { return static_cast<doub
 void WorldGenBigTree::generateTrunk() const {
     const Pos3D blockPos = this->basePos;
     const Pos3D blockPos1 = this->basePos.up(this->height);
-    const lce::Block* trunkBlock = &lce::BlocksInit::OAK_WOOD;
+    constexpr lce::BlockState trunkBlock = lce::BlocksInit::OAK_WOOD.getState();
     this->limb(blockPos, blockPos1, trunkBlock);
 
     if (this->trunkSize == 2) {
@@ -182,7 +182,7 @@ void WorldGenBigTree::generateLeafNodeBases() const {
         const Pos3D blockPos(this->basePos.getX(), i, this->basePos.getZ());
 
         if (blockPos != foliage && this->leafNodeNeedsBase(i - this->basePos.getY())) {
-            this->limb(blockPos, foliage, &lce::BlocksInit::OAK_WOOD);
+            this->limb(blockPos, foliage, lce::BlocksInit::OAK_WOOD.getState());
         }
     }
 }

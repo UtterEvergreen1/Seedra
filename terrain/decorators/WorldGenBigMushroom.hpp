@@ -1,6 +1,7 @@
 #pragma once
 
 #include "AbstractWorldGenerator.hpp"
+#include "lce/blocks/blocksInit.hpp"
 
 class World;
 
@@ -26,10 +27,11 @@ public:
 
 class WorldGenBigMushroom final : public AbstractWorldGenerator {
 public:
-    explicit WorldGenBigMushroom(lce::Block* mushroomType = nullptr) : mushroomType(mushroomType) {}
+    explicit WorldGenBigMushroom(const lce::BlockState mushroomType = lce::BlocksInit::AIR.getState())
+    : mushroomType(mushroomType) {}
 
     bool generate(World * worldIn, RNG& rand, const Pos3D& position) const override;
 
 private:
-    lce::Block* mushroomType;
+    lce::BlockState mushroomType;
 };

@@ -24,9 +24,8 @@ protected:
 
     static void addVine(World* worldIn, const Pos3D& pos, EnumFacing facing);
 
-    static int placeTrunk(World* worldIn, RNG& rand, const Pos3D& pos, int height, const lce::Block* woodType,
+    static int placeTrunk(World* worldIn, RNG& rand, const Pos3D& pos, int height, lce::BlockState woodType,
                           bool vinesGrow);
 
-    static void placeFallenTrunk(World* worldIn, RNG& rand, const Pos3D& pos, int height,
-                                 const lce::Block* woodType);
+    static void placeFallenTrunk(World* worldIn, RNG& rand, const Pos3D& pos, int height, lce::BlockState woodType);
 };

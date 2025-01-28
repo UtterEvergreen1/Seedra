@@ -64,17 +64,17 @@ void BiomeDecorator::decorate(World *world, Biome *biome, RNG &rng, int posX, in
 
     this->decorating = true;
     this->chunkBlockPos = {posX, 0, posZ};
-    this->dirtGen = new WorldGenMinable(&lce::BlocksInit::DIRT, STONE_SUBS_SIZE);
-    this->gravelGen = new WorldGenMinable(&lce::BlocksInit::GRAVEL, STONE_SUBS_SIZE);
-    this->graniteGen = new WorldGenMinable(&lce::BlocksInit::GRANITE, STONE_SUBS_SIZE);
-    this->dioriteGen = new WorldGenMinable(&lce::BlocksInit::DIORITE, STONE_SUBS_SIZE);
-    this->andesiteGen = new WorldGenMinable(&lce::BlocksInit::ANDESITE, STONE_SUBS_SIZE);
-    this->coalGen = new WorldGenMinable(&lce::BlocksInit::COAL_ORE, COAL_SIZE);
-    this->ironGen = new WorldGenMinable(&lce::BlocksInit::IRON_ORE, IRON_SIZE);
-    this->goldGen = new WorldGenMinable(&lce::BlocksInit::GOLD_ORE, GOLD_SIZE);
-    this->redstoneGen = new WorldGenMinable(&lce::BlocksInit::REDSTONE_ORE, REDSTONE_SIZE);
-    this->diamondGen = new WorldGenMinable(&lce::BlocksInit::DIAMOND_ORE, DIAMOND_SIZE);
-    this->lapisGen = new WorldGenMinable(&lce::BlocksInit::LAPIS_LAZULI_ORE, LAPIS_SIZE);
+    this->dirtGen = new WorldGenMinable(lce::BlocksInit::DIRT.getState(), STONE_SUBS_SIZE);
+    this->gravelGen = new WorldGenMinable(lce::BlocksInit::GRAVEL.getState(), STONE_SUBS_SIZE);
+    this->graniteGen = new WorldGenMinable(lce::BlocksInit::GRANITE.getState(), STONE_SUBS_SIZE);
+    this->dioriteGen = new WorldGenMinable(lce::BlocksInit::DIORITE.getState(), STONE_SUBS_SIZE);
+    this->andesiteGen = new WorldGenMinable(lce::BlocksInit::ANDESITE.getState(), STONE_SUBS_SIZE);
+    this->coalGen = new WorldGenMinable(lce::BlocksInit::COAL_ORE.getState(), COAL_SIZE);
+    this->ironGen = new WorldGenMinable(lce::BlocksInit::IRON_ORE.getState(), IRON_SIZE);
+    this->goldGen = new WorldGenMinable(lce::BlocksInit::GOLD_ORE.getState(), GOLD_SIZE);
+    this->redstoneGen = new WorldGenMinable(lce::BlocksInit::REDSTONE_ORE.getState(), REDSTONE_SIZE);
+    this->diamondGen = new WorldGenMinable(lce::BlocksInit::DIAMOND_ORE.getState(), DIAMOND_SIZE);
+    this->lapisGen = new WorldGenMinable(lce::BlocksInit::LAPIS_LAZULI_ORE.getState(), LAPIS_SIZE);
     this->genDecorations(world, biome, rng);
     this->decorating = false;
 }

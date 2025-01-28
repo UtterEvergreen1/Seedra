@@ -43,7 +43,7 @@ bool WorldGenTaiga2::generate(World* worldIn, RNG& rng, const Pos3D& pos) const 
             pos.getY() < 255 - height) {
             setDirtAt(worldIn, pos.down());
             const int i4 = rng.nextInt(3);
-            const int fallen = placeTrunk(worldIn, rng, pos, height - i4, &lce::BlocksInit::SPRUCE_WOOD, false);
+            const int fallen = placeTrunk(worldIn, rng, pos, height - i4, lce::BlocksInit::SPRUCE_WOOD.getState(), false);
             if (fallen != 0) {
                 int i3 = rng.nextInt(2);
                 int j3 = 1;
@@ -63,7 +63,7 @@ bool WorldGenTaiga2::generate(World* worldIn, RNG& rng, const Pos3D& pos) const 
 
                                 const int blockId = worldIn->getBlockId(blockpos);
                                 if (!isFullBlock(blockId)) {
-                                    worldIn->setBlock(blockpos, &lce::BlocksInit::SPRUCE_LEAVES);
+                                    worldIn->setBlock(blockpos, lce::BlocksInit::SPRUCE_LEAVES.getState());
                                 }
                             }
                         }

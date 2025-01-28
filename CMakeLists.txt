@@ -57,4 +57,9 @@ if(LC_BUILD_EXECUTABLE)
     add_executable(EXE_TestVillageGen "tests/test_village_gen_speed.cpp")
     target_link_libraries(EXE_TestVillageGen PRIVATE LIB_LegacyCubiomes)
 
+
+    # Test Enchants
+    add_executable(EXE_TestLootEnchants "tests/test_loot_enchants.cpp")
+    target_link_libraries(EXE_TestLootEnchants PRIVATE LIB_LegacyCubiomes)
+
 endif()

@@ -28,11 +28,11 @@ public:
 
 private:
     void generateLeafNodeList() const;
-    void crossSection(const Pos3D& pos, float radius, const lce::Block* block) const;
+    void crossSection(const Pos3D& pos, float radius, lce::BlockState block) const;
     float layerSize(int y) const;
     float leafSize(int y) const;
     void generateLeafNode(const Pos3D& pos) const;
-    void limb(const Pos3D& start, const Pos3D& end, const lce::Block* block) const;
+    void limb(const Pos3D& start, const Pos3D& end, lce::BlockState block) const;
     static int getGreatestDistance(const Pos3D& pos);
     static EnumAxis getLogAxis(const Pos3D& start, const Pos3D& end);
     void generateLeaves() const;

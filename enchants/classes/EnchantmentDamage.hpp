@@ -1,6 +1,6 @@
 #pragma once
 
-#include "lce/items/item_ids.hpp"
+#include "lce/items/itemID.hpp"
 
 #include "enchants/enchantment.hpp"
 

@@ -15,6 +15,6 @@ public:
     bool generate(World * worldIn, RNG &rng, const Pos3D &pos) const override;
 
 private:
-    static const lce::Block* PATH_BLOCK;
+    static const lce::BlockState PATH_BLOCK;
     const int pathWidth;
 };

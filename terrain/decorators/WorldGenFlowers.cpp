@@ -2,7 +2,6 @@
 #include "WorldGenBush.hpp"
 
 #include "terrain/World.hpp"
-#include "terrain/generator.hpp"
 
 
 bool WorldGenFlowers::generate(World* worldIn, RNG& rng, const Pos3D& position) const {

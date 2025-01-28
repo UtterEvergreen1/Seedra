@@ -35,7 +35,7 @@ bool WorldGenDeadBush::generate(World * worldIn, RNG &rng, const Pos3D &pos) con
         Pos3D blockPos = position + getWorldGenPos3D<8, 4, 8>(worldIn, rng);
 
         if (worldIn->isAirBlock(blockPos) && BlockDeadBush::canBlockStay(worldIn, blockPos)) {
-            worldIn->setBlock(blockPos, &lce::BlocksInit::DEAD_BUSH);
+            worldIn->setBlock(blockPos, lce::BlocksInit::DEAD_BUSH.getState());
         }
     }
 

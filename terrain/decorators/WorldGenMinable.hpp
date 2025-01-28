@@ -6,11 +6,11 @@
 class World;
 
 class WorldGenMinable final : public AbstractWorldGenerator {
-    lce::Block const* oreBlock;
+    const lce::BlockState oreBlock;
     int blockCount;
 
 public:
-    WorldGenMinable(lce::Block const* block, const int blockCount) : oreBlock(block), blockCount(blockCount) {}
+    WorldGenMinable(const lce::BlockState block, const int blockCount) : oreBlock(block), blockCount(blockCount) {}
 
     bool generate(World* world, RNG& rng, const Pos3D& pos) const override;
 };

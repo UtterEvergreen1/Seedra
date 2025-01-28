@@ -13,10 +13,10 @@ public:
 };
 
 class WorldGenBush final : public AbstractWorldGenerator {
-    const lce::Block* block;
+    lce::BlockState block;
 
 public:
-    explicit WorldGenBush(const lce::Block* blockIn) { this->block = blockIn; }
+    explicit WorldGenBush(const lce::BlockState blockIn) : block(blockIn) {}
 
     bool generate(World* worldIn, RNG& rng, const Pos3D& pos) const override;
 };
