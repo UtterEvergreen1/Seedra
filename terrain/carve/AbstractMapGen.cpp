@@ -16,7 +16,7 @@ MU Pos2DTemplate<i64> AbstractMapGen::getSeedMultiplier(const Generator* g) {
 MU void AbstractMapGen::setupRNG(Pos2DTemplate<i64> seedMultiplier, Pos2D chunkPos) {
     c_auto adjustedX = (i64) chunkPos.x * seedMultiplier.x;
     c_auto adjustedZ = (i64) chunkPos.z * seedMultiplier.z;
-    rng.setSeed(adjustedX ^ adjustedZ ^ g.getWorldSeed());
+    rng.setSeed(adjustedX ^ adjustedZ ^ g->getWorldSeed());
 }
 
 

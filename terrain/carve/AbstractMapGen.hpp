@@ -10,10 +10,12 @@ protected:
     static constexpr float RESERVE_MULTIPLIER = 1.4F;
 
 public:
-    Generator g;
+    World& world;
+    Generator* g;
     RNG rng;
+    BoundingBox genBounds = BoundingBox::EMPTY;
 
-    explicit AbstractMapGen(const Generator& generator) : g(generator), rng(0) {}
+    explicit AbstractMapGen(World& world) : world(world), g(world.getGenerator()), rng(0) {}
 
     virtual ~AbstractMapGen() = default;
 
@@ -24,9 +26,13 @@ public:
     /// used for water caves and water ravines
     MU static void setupRNG(const Generator* g, RNG& rng, Pos2DTemplate<i64> seedMultiplier, Pos2D chunkPos);
 
+    void setGenBounds(const BoundingBox& bounds) {
+        genBounds = bounds;
+    }
+
 
     void generate(ChunkPrimer* primer, Pos2D target, bool accurate = true) {
-        Pos2DTemplate<i64> seedMultiplier = getSeedMultiplier(&g);
+        Pos2DTemplate<i64> seedMultiplier = getSeedMultiplier(world.getGenerator());
 
         const Pos2D lower = target - CHUNK_RANGE;
         const Pos2D upper = target + CHUNK_RANGE;

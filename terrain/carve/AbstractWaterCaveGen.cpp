@@ -15,7 +15,7 @@ MU void AbstractWaterCaveGen::setupRNG(Pos2D seedMultiplier, Pos2D chunkPos) {
     c_int adjustedX = chunkPos.x * seedMultiplier.x;
     c_int adjustedZ = chunkPos.z * seedMultiplier.z;
 
-    rng.setSeed((adjustedX + adjustedZ) ^ g.getWorldSeed());
+    rng.setSeed((adjustedX + adjustedZ) ^ g->getWorldSeed());
 }
 
 

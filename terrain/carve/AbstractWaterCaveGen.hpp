@@ -5,7 +5,7 @@
 class AbstractWaterCaveGen : public AbstractMapGen {
 
 public:
-    explicit AbstractWaterCaveGen(const Generator& generator) : AbstractMapGen(generator) {}
+    explicit AbstractWaterCaveGen(World& world) : AbstractMapGen(world) {}
 
     ~AbstractWaterCaveGen() override = default;
     
@@ -18,7 +18,7 @@ public:
 
 
     void generateUnderwater(ChunkPrimer* primer, Pos2D target, bool accurate = true) {
-        rng.setSeed(g.getWorldSeed());
+        rng.setSeed(g->getWorldSeed());
         c_int seedMultiplierX = rng.nextInt() / 2 * 2 + 1;
         c_int seedMultiplierZ = rng.nextInt() / 2 * 2 + 1;
         
@@ -31,7 +31,7 @@ public:
 
                 c_int adjustedSeedX = chunkPos.x * seedMultiplierX;
                 c_int adjustedSeedZ = chunkPos.z * seedMultiplierZ;
-                rng.setSeed((adjustedSeedX + adjustedSeedZ) ^ g.getWorldSeed());
+                rng.setSeed((adjustedSeedX + adjustedSeedZ) ^ g->getWorldSeed());
 
                 addFeature(primer, current, target, accurate);
             }

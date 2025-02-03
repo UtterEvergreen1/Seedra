@@ -7,7 +7,7 @@ class RavineGenerator final : public AbstractMapGen {
 
 public:
 
-    explicit RavineGenerator(const Generator& generator) : AbstractMapGen(generator) {}
+    explicit RavineGenerator(World& world) : AbstractMapGen(world) {}
 
     ~RavineGenerator() override = default;
 

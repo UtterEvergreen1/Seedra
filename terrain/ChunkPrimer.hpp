@@ -52,7 +52,7 @@ public:
     //ChunkPrimer &operator=(ChunkPrimer &&) = delete;
 
     ND u16 getBlockAtIndex(c_i64 index) const {
-        return index >= 0 && index < STORAGE_SIZE - 1 ? blocks[index] : 0;
+        return index >= 0 && index < STORAGE_SIZE ? blocks[index] : 0;
     }
 
     ND u16 getBlockId(c_i64 x, c_i64 y, c_i64 z) const {
@@ -142,12 +142,16 @@ public:
     }
 
     /// in block coords not chunk coords
+    template<bool saveHighestY = false>
     ND int getHighestYBlock() {
         if (highestYBlock != -1) return highestYBlock;
         for (int y = 255; y >= 0; y--) {
             for (int x = 0; x < 16; x++) {
                 for (int z = 0; z < 16; z++) {
-                    if (getBlockId(x, y, z) != lce::blocks::AIR_ID) { highestYBlock = y; return y; }
+                    if (getBlockId(x, y, z) != lce::blocks::AIR_ID) {
+                        if constexpr (saveHighestY) highestYBlock = y;
+                        return y;
+                    }
                 }
             }
         }

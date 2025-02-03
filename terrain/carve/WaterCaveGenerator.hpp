@@ -6,7 +6,7 @@
 class WaterCaveGenerator final : public AbstractWaterCaveGen {
 
 public:
-    explicit WaterCaveGenerator(const Generator& generator) : AbstractWaterCaveGen(generator) {}
+    explicit WaterCaveGenerator(World& world) : AbstractWaterCaveGen(world) {}
 
     MU static Pos2DVec_t getStartingChunks(const Generator* g, Pos2D lower, Pos2D upper);
 

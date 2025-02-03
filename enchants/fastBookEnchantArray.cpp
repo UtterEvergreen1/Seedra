@@ -69,7 +69,7 @@ void ELDataArray::addRandomItem(RNG& rng) {
             return;
         }
 
-    MU END:;
+    END:;
     }
 }
 

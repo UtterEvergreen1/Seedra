@@ -9,14 +9,17 @@
 #include "common/Pos2DTemplate.hpp"
 #include "common/Pos3DTemplate.hpp"
 
+#include <atomic>
+#include <mutex>
+
+class Biome;
 class Generator;
 class ChunkPrimer;
 
 
 class World {
 public:
-    explicit World(Generator *g) : g(g) {
-    }
+    explicit World(Generator *g);
 
     ~World();
 
@@ -32,14 +35,26 @@ public:
 
     ChunkPrimer *getOrCreateChunk(const Pos2D & chunkPos);
 
-    void encompass(const Pos2D &pos, int radius);
-
     void createChunks(const Pos2D &pos, int radius);
 
-    void decorateCaves(const Pos2D & theStartPosition, int radius);
+    void decorateCaves(const Pos2D & theStartPosition, int radius, bool hasWaterCaves);
 
     void decorateChunks(const Pos2D &pos, int radius);
 
+    void generateWorldBiomes();
+
+    int* getWorldBiomes() const { return biomes; }
+
+    int *getChunkBiomes(const Pos2D &pos);
+
+    Biome* getBiomeAt(int x, int z) const;
+    int getBiomeIdAt(int x, int z) const;
+
+    auto& getChunks() const { return chunks; }
+
+    void lockChunks() { chunkMutex.lock(); }
+
+    void unlockChunks() { chunkMutex.unlock(); }
 
     int getBlockId(int x, int y, int z);
 
@@ -94,10 +109,12 @@ public:
     std::vector<gen::Mineshaft> mineshafts;
     std::vector<gen::Stronghold> strongholds;
     std::unordered_map<Pos2D, ChunkPrimer *, Pos2D::Hasher> chunks;
-    BoundingBox bounds;
+    BoundingBox worldBounds;
+    std::mutex chunkMutex;
 
 private:
 
+    int* biomes = nullptr;
     ChunkPrimer *lastChunk = nullptr;
     Pos2D lastChunkCoords = Pos2D(-100000, -100000);
 

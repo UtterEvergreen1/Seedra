@@ -7,7 +7,7 @@
 class CaveGenerator final : public AbstractMapGen {
 
 public:
-    explicit CaveGenerator(const Generator& generator) : AbstractMapGen(generator) {}
+    explicit CaveGenerator(World& world) : AbstractMapGen(world) {}
 
     ~CaveGenerator() override = default;
 

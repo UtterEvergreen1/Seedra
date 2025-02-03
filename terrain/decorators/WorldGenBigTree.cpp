@@ -45,7 +45,7 @@ void WorldGenBigTree::generateLeafNodeList() const {
         if (f >= 0.0F) {
             for (int l = 0; l < i; ++l) {
                 c_double d0 = this->scaleWidth * (double) f * ((double) this->rand.nextFloat() + 0.328);
-                c_double d1 = (double) (this->rand.nextFloat() * 2.0F) * M_PI;
+                c_double d1 = (double) (this->rand.nextFloat() * 2.0F) * PI;
                 c_double d2 = d0 * std::sin(d1) + 0.5;
                 c_double d3 = d0 * std::cos(d1) + 0.5;
                 Pos3D blockPos = this->basePos.add((int) std::floor(d2), k - 1, (int) std::floor(d3));

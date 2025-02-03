@@ -68,7 +68,7 @@ int main() {
     world.encompass({X_CENTER, Z_CENTER}, X_WIDTH);
 
     world.createChunks({X_CENTER, Z_CENTER}, X_WIDTH);
-    world.decorateCaves({X_CENTER, Z_CENTER}, X_WIDTH);
+    world.decorateCaves({X_CENTER, Z_CENTER}, X_WIDTH, TODO);
 
     world.decorateChunks({X_CENTER, Z_CENTER}, X_WIDTH);
 

@@ -153,7 +153,7 @@ SEGMENT_FOR_LOOP_START:
             float tunnelWidth1, tunnelWidth2;
             i64 seedModifier1, seedModifier2;
 
-            if (lce::isXbox(g.getConsole())) {
+            if (lce::isXbox(g->getConsole())) {
                 tunnelWidth1 = rng.nextFloat();
                 seedModifier1 = rng.nextLongI();
                 tunnelWidth2 = rng.nextFloat();
@@ -176,8 +176,8 @@ SEGMENT_FOR_LOOP_START:
         double maxDistance = theWidth + 18.0F;
 
         if (accurate &&
-            g.getLCEVersion() == LCEVERSION::AQUATIC &&
-            isOceanic(g.getBiomeAt(1, startPos.asType<int>()))) { return; }
+            g->getLCEVersion() == LCEVERSION::AQUATIC &&
+            isOceanic(world.getBiomeIdAt((int)startPos.getX(), (int)startPos.getZ()))) { return; }
 
         if (!isMainTunnel && rng.nextInt(4) == 0) { continue; }
 
@@ -202,7 +202,7 @@ SEGMENT_FOR_LOOP_START:
 
         min += currentChunkX16;
         max += currentChunkX16;
-        if (!worldIn.bounds.isVecInside(min) && !worldIn.bounds.isVecInside(max)) {
+        if (!genBounds.isVecInside(min) && !genBounds.isVecInside(max)) {
             continue;
         }
         Pos3D pos;
@@ -265,11 +265,7 @@ SEGMENT_FOR_LOOP_START:
                         if (blockPos.y < 11) {
                             worldIn.setBlockId(blockPos, STILL_LAVA_ID);
                         } else {
-                            if (isMainTunnel) {
-                                worldIn.setBlockId(blockPos, GLASS_ID);
-                            } else {
-                                worldIn.setBlockId(blockPos, AIR_ID);
-                            }
+                            worldIn.setBlockId(blockPos, AIR_ID);
                             if (isTopBlock && worldIn.getBlockId(blockPos.down()) == DIRT_ID) {
                                 worldIn.setBlockId(
                                         blockPos.down(),
@@ -306,7 +302,7 @@ void CaveGenerator::addRoom(World& worldIn, i64 seedModifier, Pos2D currentChunk
 
 
 unsigned char CaveGenerator::topBlock(c_int x, c_int z) const {
-    switch (g.getBiomeAt(1, x, z)) {
+    switch (world.getBiomeIdAt(x, z)) {
         case beach:
         case desert:
         case mesa:
@@ -463,7 +459,7 @@ SEGMENT_FOR_LOOP_START:
             float tunnelWidth1, tunnelWidth2;
             i64 seedModifier1, seedModifier2;
 
-            if (lce::isXbox(g.getConsole())) {
+            if (lce::isXbox(g->getConsole())) {
                 tunnelWidth1 = rng.nextFloat();
                 seedModifier1 = rng.nextLongI();
                 tunnelWidth2 = rng.nextFloat();
@@ -486,8 +482,8 @@ SEGMENT_FOR_LOOP_START:
         double maxDistance = theWidth + 18.0F;
 
         if (accurate &&
-            g.getLCEVersion() == LCEVERSION::AQUATIC &&
-            isOceanic(g.getBiomeAt(1, startPos.asType<int>()))) { return; }
+            g->getLCEVersion() == LCEVERSION::AQUATIC &&
+            isOceanic(world.getBiomeIdAt((int)startPos.getX(), (int)startPos.getZ()))) { return; }
 
         if (!isMainTunnel && rng.nextInt(4) == 0) { continue; }
 

@@ -16,6 +16,7 @@ struct BoundingBox {
     BoundingBox(int minX, int minY, int minZ, int maxX, int maxY, int maxZ);
 
     bool operator==(const BoundingBox& other) const;
+    BoundingBox operator<<(int shiftAmount) const;
 
     ND bool intersects(const BoundingBox& other) const;
     MU ND bool contains(const BoundingBox& other) const;

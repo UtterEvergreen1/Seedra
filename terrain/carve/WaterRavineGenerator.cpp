@@ -56,7 +56,7 @@ void WaterRavineGenerator::addTunnel(World& worldIn, c_i64 randomSeed, const Pos
                                      c_float angle, float slope, float curvature, int tunnelStartSegment,
                                      int tunnelEndSegment, c_double widthMultiplier) {
 
-    if (!isOceanic(g.getBiomeAt(1, tunnel.asType<int>()))) return;
+    if (!isOceanic(world.getBiomeIdAt((int)tunnel.getX(), (int)tunnel.getZ()))) return;
 
 
     RNG rng;
@@ -137,7 +137,7 @@ void WaterRavineGenerator::addTunnel(World& worldIn, c_i64 randomSeed, const Pos
 
         min += baseChunkX16;
         max += baseChunkX16;
-        if (!worldIn.bounds.isVecInside(min) && !worldIn.bounds.isVecInside(max)) {
+        if (!genBounds.isVecInside(min) && !genBounds.isVecInside(max)) {
             continue;
         }
         min -= baseChunkX16;
@@ -266,7 +266,7 @@ void WaterRavineGenerator::addTunnel(ChunkPrimer* chunkPrimer, c_i64 randomSeed,
                                      c_float angle, float slope, float curvature, int tunnelStartSegment,
                                      int tunnelEndSegment, c_double widthMultiplier) {
 
-    if (!isOceanic(g.getBiomeAt(1, tunnel.asType<int>()))) return;
+    if (!isOceanic(world.getBiomeIdAt((int)tunnel.getX(), (int)tunnel.getZ()))) return;
 
     RNG rng;
     rng.setSeed(randomSeed);

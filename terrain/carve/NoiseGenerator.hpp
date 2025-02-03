@@ -9,6 +9,8 @@
 #include "common/rng.hpp"
 #include "terrain/generator.hpp"
 
+#include <array>
+
 
 static i64 lfloor(c_double value) {
     c_auto i = (i64) value;

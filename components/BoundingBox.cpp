@@ -12,12 +12,13 @@ BoundingBox::BoundingBox(c_int minX, c_int minY, c_int minZ, c_int maxX, c_int m
 
 
 bool BoundingBox::operator==(const BoundingBox& other) const {
-    return minX == other.minX
-        && maxX == other.maxX
-        && minZ == other.minZ
-        && maxZ == other.maxZ
-        && minY == other.minY
-        && maxY == other.maxY;
+    return minX == other.minX && maxX == other.maxX && minZ == other.minZ && maxZ == other.maxZ && minY == other.minY &&
+           maxY == other.maxY;
+}
+
+BoundingBox BoundingBox::operator<<(int shiftAmount) const {
+    return {minX << shiftAmount, minY << shiftAmount, minZ << shiftAmount, maxX << shiftAmount, maxY << shiftAmount,
+            maxZ << shiftAmount};
 }
 
 bool BoundingBox::intersects(const BoundingBox& other) const {

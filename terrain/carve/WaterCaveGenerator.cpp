@@ -101,7 +101,7 @@ void WaterCaveGenerator::addTunnel(World& worldIn, c_i64 seedModifier, Pos2D bas
             float tunnelWidth1, tunnelWidth2;
             i64 seed1, seed2;
 
-            if (lce::isXbox(g.getConsole())) {
+            if (lce::isXbox(g->getConsole())) {
                 tunnelWidth1 = rng.nextFloat();
                 seed1 = rng.nextLongI();
                 tunnelWidth2 = rng.nextFloat();
@@ -120,7 +120,7 @@ void WaterCaveGenerator::addTunnel(World& worldIn, c_i64 seedModifier, Pos2D bas
             return;
         }
 
-        if (!isOceanic(g.getBiomeAt(1, startPos))) return;
+        if (!isOceanic(world.getBiomeIdAt(startPos.x, startPos.z))) return;
 
         if (!isMainTunnel && rng.nextInt(4) == 0) { continue; }
         DoublePos2D distance = start.asPos2D() - targetCenter;
@@ -146,7 +146,7 @@ void WaterCaveGenerator::addTunnel(World& worldIn, c_i64 seedModifier, Pos2D bas
 
         min += baseChunkX16;
         max += baseChunkX16;
-        if (!worldIn.bounds.isVecInside(min) && !worldIn.bounds.isVecInside(max)) {
+        if (!genBounds.isVecInside(min) && !genBounds.isVecInside(max)) {
             continue;
         }
         min -= baseChunkX16;
@@ -349,7 +349,7 @@ void WaterCaveGenerator::addTunnel(ChunkPrimer* chunkPrimer, c_i64 seedModifier,
             float tunnelWidth1, tunnelWidth2;
             i64 seed1, seed2;
 
-            if (lce::isXbox(g.getConsole())) {
+            if (lce::isXbox(g->getConsole())) {
                 tunnelWidth1 = rng.nextFloat();
                 seed1 = rng.nextLongI();
                 tunnelWidth2 = rng.nextFloat();
@@ -368,7 +368,7 @@ void WaterCaveGenerator::addTunnel(ChunkPrimer* chunkPrimer, c_i64 seedModifier,
             return;
         }
 
-        if (!isOceanic(g.getBiomeAt(1, startPos))) return;
+        if (!isOceanic(world.getBiomeIdAt(startPos.x, startPos.z))) return;
 
         if (!isMainTunnel && rng.nextInt(4) == 0) { continue; }
         DoublePos2D distance = start.asPos2D() - targetCenter;

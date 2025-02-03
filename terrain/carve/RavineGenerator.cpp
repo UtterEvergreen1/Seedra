@@ -63,8 +63,8 @@ void RavineGenerator::addTunnel(World& worldIn, i64 randomSeed, Pos2D baseChunk,
                                 double theWidthMultiplier, bool accurate) {
 
     if (accurate &&
-        g.getLCEVersion() == LCEVERSION::AQUATIC &&
-        isOceanic(g.getBiomeAt(1, tunnel.asType<int>()))) { return; }
+        g->getLCEVersion() == LCEVERSION::AQUATIC &&
+        isOceanic(worldIn.getBiomeIdAt((int)tunnel.x, (int)tunnel.z))) { return; }
 
     RNG rng;
     rng.setSeed(randomSeed);
@@ -156,7 +156,7 @@ SEGMENT_FOR_LOOP_START:
         if (max.y > 120) max.y = 120;
         min += baseChunkX16;
         max += baseChunkX16;
-        if (!worldIn.bounds.isVecInside(min) && !worldIn.bounds.isVecInside(max)) {
+        if (!genBounds.isVecInside(min) && !genBounds.isVecInside(max)) {
             continue;
         }
         Pos3D pos;
@@ -250,7 +250,7 @@ SEGMENT_FOR_LOOP_START:
 
 
 unsigned char RavineGenerator::topBlock(c_int x, c_int z) const {
-    switch (g.getBiomeAt(1, x, z)) {
+    switch (world.getBiomeIdAt(x, z)) {
         case beach:
         case desert:
         case mesa:
@@ -335,8 +335,8 @@ void RavineGenerator::addTunnel(ChunkPrimer* chunkPrimer, i64 randomSeed, Pos2D 
                                 double theWidthMultiplier, bool accurate) {
 
     if (accurate &&
-        g.getLCEVersion() == LCEVERSION::AQUATIC &&
-        isOceanic(g.getBiomeAt(1, tunnel.asType<int>()))) { return; }
+        g->getLCEVersion() == LCEVERSION::AQUATIC &&
+        isOceanic(world.getBiomeIdAt((int)tunnel.getX(), (int)tunnel.getZ()))) { return; }
 
     RNG rng;
     rng.setSeed(randomSeed);

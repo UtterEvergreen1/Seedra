@@ -26,7 +26,6 @@ namespace Chunk {
 
 
     MU void populateCaves(World& world, Pos2D chunkPos) {
-        Generator* g = world.getGenerator();
         ChunkPrimer* chunkPrimer = world.getChunk(chunkPos);
 
         bool accurate = true;
@@ -35,7 +34,7 @@ namespace Chunk {
 
         
         
-        if (g->getLCEVersion() != LCEVERSION::AQUATIC &&
+        if (world.getGenerator()->getLCEVersion() != LCEVERSION::AQUATIC &&
             (chunkPrimer->stage == Stage::STAGE_TERRAIN ||
             chunkPrimer->stage == Stage::STAGE_WATER_CAVES || 
             chunkPrimer->stage == Stage::STAGE_WATER_RAVINES)) {
@@ -44,28 +43,28 @@ namespace Chunk {
         
 
         if (chunkPrimer->stage == Stage::STAGE_WATER_CAVES) {
-            WaterCaveGenerator waterCaveGenerator(*g);
+            WaterCaveGenerator waterCaveGenerator(world);
             waterCaveGenerator.generateUnderwater(chunkPrimer, chunkPos, accurate);
             chunkPrimer->stage = Stage::STAGE_WATER_RAVINES;
         }
         
 
         if (chunkPrimer->stage == Stage::STAGE_WATER_RAVINES) {
-            WaterRavineGenerator waterRavineGenerator(*g);
+            WaterRavineGenerator waterRavineGenerator(world);
             waterRavineGenerator.generateUnderwater(chunkPrimer, chunkPos, accurate);
             chunkPrimer->stage = Stage::STAGE_CAVES;
         }
         
         
         if (chunkPrimer->stage == Stage::STAGE_CAVES) {
-            CaveGenerator caveGenerator(*g);
+            CaveGenerator caveGenerator(world);
             caveGenerator.generate(chunkPrimer, chunkPos, accurate);
             chunkPrimer->stage = Stage::STAGE_RAVINES;
         }
         
         
         if (chunkPrimer->stage == Stage::STAGE_RAVINES) {
-            RavineGenerator ravineGenerator(*g);
+            RavineGenerator ravineGenerator(world);
             ravineGenerator.generate(chunkPrimer, chunkPos, accurate);
             
         }
@@ -199,13 +198,13 @@ namespace Chunk {
 
 
     void populateDecorations(World& world, Pos2D chunkPos) {
-        ChunkPrimer* chunk = world.getChunk(chunkPos);
-        Generator* g = world.getGenerator();
 
+        ChunkPrimer* chunk = world.getChunk(chunkPos);
         if (!chunk || chunk->stage != Stage::STAGE_DECORATE) {
             return;
         }
 
+        Generator* g = world.getGenerator();
         if (const Pos3D waterPos = FeaturePositions::waterLake(
                     g, chunk->decorateRng, chunkPos.x, chunkPos.z); !waterPos.isNull()) {
             const WorldGenLakes waterGen(g, lce::BlocksInit::STILL_WATER.getState());
@@ -226,7 +225,7 @@ namespace Chunk {
             }
         }
 
-        Biome::registry[g->getBiomeAt(1, (chunkPos.x << 4) + 16, (chunkPos.z << 4) + 16)]->decorate(
+        world.getBiomeAt((chunkPos.x << 4) + 16, (chunkPos.z << 4) + 16)->decorate(
                 &world, chunk->decorateRng, {chunkPos.x << 4, chunkPos.z << 4});
 
 
