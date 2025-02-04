@@ -23,7 +23,7 @@ World::~World() {
 }
 
 void World::deleteWorld() {
-    for (auto &chunk: chunks) {
+    for (auto &chunk : chunks) {
         delete chunk.second;
     }
     delete biomes;
@@ -148,7 +148,7 @@ void World::decorateCaves(const Pos2D &theStartPosition, c_int radius, bool hasW
         }
     }
 
-    for (auto [pos, chunkPrimer]: chunks) {
+    for (auto [pos, chunkPrimer] : chunks) {
         if (chunkPrimer != nullptr) {
             chunkPrimer->stage = Stage::STAGE_STRUCTURE;
         }
@@ -205,6 +205,7 @@ int World::getBlockId(const Pos3D &pos) {
     return this->getBlockId(pos.x, pos.y, pos.z);
 }
 
+
 lce::BlockState World::getBlock(c_int x, c_int y, c_int z) {
     if (const ChunkPrimer *chunk = this->getOrCreateChunk({x >> 4, z >> 4})) {
         return chunk->getBlock(x & 15, y, z & 15);
@@ -234,6 +235,8 @@ void World::setBlockId(const Pos3D &pos, int blockId) {
     this->setBlock(pos.x, pos.y, pos.z, blockId);
 }
 
+
+// TODO: remove
 void World::setBlock(c_int x, c_int y, c_int z, c_int blockId, c_int meta) {
     ChunkPrimer *chunk = getOrCreateChunk({x >> 4, z >> 4});
     if (chunk == nullptr) return;
@@ -275,7 +278,7 @@ int World::getHeight(c_int x, c_int z) {
 }
 
 Pos3D World::getHeight(const Pos3D &pos) {
-    return {pos.getX(), this->getHeight(pos.getX(), pos.getZ()), pos.getZ()};
+    return {pos.x, this->getHeight(pos.x, pos.z), pos.z};
 }
 
 int World::getTopSolidOrLiquidBlock(c_int x, c_int z) {
@@ -288,7 +291,7 @@ int World::getTopSolidOrLiquidBlock(c_int x, c_int z) {
 }
 
 Pos3D World::getTopSolidOrLiquidBlock(const Pos3D &pos) {
-    return {pos.getX(), this->getTopSolidOrLiquidBlock(pos.getX(), pos.getZ()), pos.getZ()};
+    return {pos.x, this->getTopSolidOrLiquidBlock(pos.x, pos.z), pos.z};
 }
 
 int World::getPrecipitationHeight(c_int x, c_int z) {
@@ -311,7 +314,7 @@ bool World::canBlockFreeze(const Pos3D &pos, const bool noWaterAdj) {
             if (!noWaterAdj) return valid;
 
             if (!valid) return false;
-            for (const auto faces: FACING_HORIZONTAL) {
+            for (const auto faces : FACING_HORIZONTAL) {
                 if (chunk->canBlockFreeze(pos.offset(faces).convertToChunkCoords())) {
                     return false;
                 }
@@ -348,7 +351,7 @@ bool World::canSnowAt(const Pos3D &pos, const bool checkLight) {
 void World::generateMineshafts() {
     auto mineshaft_locations = Placement::Mineshaft::getAllPositions(*g);
 
-    for (auto &pos: mineshaft_locations) {
+    for (auto& pos : mineshaft_locations) {
         auto mineshaft_gen = gen::Mineshaft();
         mineshaft_gen.generate(g->getConsole(), g->getWorldSeed(), pos.toChunkPos());
         mineshafts.push_back(mineshaft_gen);
@@ -359,7 +362,7 @@ void World::generateMineshafts() {
 void World::generateVillages() {
     auto village_locations = Placement::Village<false>::getAllPositions(g);
 
-    for (auto &village_pos: village_locations) {
+    for (auto& village_pos : village_locations) {
         auto village_gen = gen::Village(g);
         village_gen.generate(village_pos.toChunkPos());
         villages.emplace_back(village_gen);

@@ -51,21 +51,23 @@ int main() {
     Generator g(CONSOLE, VERSION, WORLD_SEED, WORLD_SIZE, BIOME_SCALE);
 
     // 3 13 for seed -101, 8 15 for seed 1, 11 16 or 15 5 for seed 27184353441555
-    int X_WIDTH  = 10; // 10;
-    int Z_WIDTH  = 10; // 10;
+    int X_WIDTH  = 27; // 10;
+    int Z_WIDTH  = 27; // 10;
     int X_CENTER = 0; // 9;
     int Z_CENTER = 0; // 210 / 16;
 
     Timer start;
 
     auto world = World(&g);
+
+    world.generateWorldBiomes();
     world.generateMineshafts();
     world.generateVillages();
     world.generateStrongholds();
 
     world.getOrCreateChunk({X_CENTER, Z_CENTER});
 
-    world.encompass({X_CENTER, Z_CENTER}, X_WIDTH);
+    bool TODO = true;
 
     world.createChunks({X_CENTER, Z_CENTER}, X_WIDTH);
     world.decorateCaves({X_CENTER, Z_CENTER}, X_WIDTH, TODO);

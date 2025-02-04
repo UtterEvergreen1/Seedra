@@ -10,7 +10,8 @@ bool WorldGenBigMushroom::generate(World* worldIn, RNG& rand, const Pos3D& posit
     lce::BlockState block = this->mushroomType;
 
     if (block == lce::BlocksInit::AIR.getState()) {
-        block = rand.nextBoolean() ? lce::BlocksInit::BROWN_MUSHROOM_BLOCK.getState() : lce::BlocksInit::RED_MUSHROOM_BLOCK.getState();
+        block = rand.nextBoolean() ? lce::BlocksInit::BROWN_MUSHROOM_BLOCK.getState()
+                                   : lce::BlocksInit::RED_MUSHROOM_BLOCK.getState();
     }
 
     int height = rand.nextInt(3) + 4;

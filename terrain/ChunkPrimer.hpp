@@ -36,7 +36,7 @@ public:
     std::vector<u8> skyLight;
     int highestYBlock = -1;
 
-    u8 heightMap[16][16]{};
+    MU u8 heightMap[16][16]{};
     std::vector<int> precipitationHeightMap = std::vector(256, -999);
 
 
@@ -44,91 +44,95 @@ public:
 
     /// do not allow copy
     ChunkPrimer(const ChunkPrimer &) = delete;
-
     ChunkPrimer &operator=(const ChunkPrimer &) = delete;
 
     ///do not allow move
     //ChunkPrimer(ChunkPrimer &&) = delete;
     //ChunkPrimer &operator=(ChunkPrimer &&) = delete;
 
-    ND u16 getBlockAtIndex(c_i64 index) const {
-        return index >= 0 && index < STORAGE_SIZE ? blocks[index] : 0;
+
+    MU ND static bool isInvalidIndex(c_i64 x, c_i64 y, c_i64 z) {
+        return EXPECT_FALSE(((x | z) & ~15) || (y & ~255));
     }
+
 
     ND u16 getBlockId(c_i64 x, c_i64 y, c_i64 z) const {
-        if EXPECT_FALSE(x < 0 || y < 0 || z < 0 || x >= 16 || y >= 256 || z >= 16) { return 0; }
-        return getBlockAtIndex(getStorageIndex(x, y, z)) >> 4;
+        if EXPECT_FALSE(isInvalidIndex(x, y, z)) { return 0; }
+        return blocks[getStorageIndex(x, y, z)] >> 4;
     }
-
     ND u16 getBlockId(const Pos3D &pos) const {
         return this->getBlockId(pos.x, pos.y, pos.z);
     }
 
-    void setBlockId(c_i64 x, c_i64 y, c_i64 z, c_u16 block) {
-        if EXPECT_FALSE(x < 0 || y < 0 || z < 0 || x >= 16 || y >= 256 || z >= 16) { return; }
+
+    MU void setBlockId(c_i64 x, c_i64 y, c_i64 z, c_u16 block) {
+        if EXPECT_FALSE(isInvalidIndex(x, y, z)) { return; }
         blocks[getStorageIndex(x, y, z)] = block << 4;
     }
-
-    void setBlockId(const Pos3D &pos, c_u16 block) {
+    MU void setBlockId(const Pos3D &pos, c_u16 block) {
         this->setBlockId(pos.x, pos.y, pos.z, block);
     }
 
-    ND u8 getData(c_i64 x, c_i64 y, c_i64 z) const {
-        if EXPECT_FALSE(x < 0 || y < 0 || z < 0 || x >= 16 || y >= 256 || z >= 16) { return 0; }
-        return getBlockAtIndex(getStorageIndex(x, y, z)) & 15;
-    }
 
-    ND u8 getData(const Pos3D &pos) const {
+    MU ND u8 getData(c_i64 x, c_i64 y, c_i64 z) const {
+        if EXPECT_FALSE(isInvalidIndex(x, y, z)) { return 0; }
+        return blocks[getStorageIndex(x, y, z)] & 15;
+    }
+    MU ND u8 getData(const Pos3D &pos) const {
         return this->getData(pos.x, pos.y, pos.z);
     }
 
-    void setData(c_i64 x, c_i64 y, c_i64 z, c_u8 data) {
-        if EXPECT_FALSE(x < 0 || y < 0 || z < 0 || x >= 16 || y >= 256 || z >= 16) { return; }
+
+    MU void setData(c_i64 x, c_i64 y, c_i64 z, c_u8 data) {
+        if EXPECT_FALSE(isInvalidIndex(x, y, z)) { return; }
         blocks[getStorageIndex(x, y, z)] |= data;
     }
-
-    void setData(const Pos3D &pos, c_u8 data) {
+    MU void setData(const Pos3D &pos, c_u8 data) {
         this->setData(pos.x, pos.y, pos.z, data);
     }
 
+
     ND lce::BlockState getBlock(c_i64 x, c_i64 y, c_i64 z) const {
-        // return lce::registry::BlockRegistry::getBlock(getBlockId(x, y, z), getData(x, y, z));
         return {getBlockId(x, y, z), getData(x, y, z)};
     }
-
     ND lce::BlockState getBlock(const Pos3D &pos) const {
         return getBlock(pos.x, pos.y, pos.z);
     }
 
+
     ND u16 getSkyLight(c_i64 x, c_i64 y, c_i64 z) const {
-        return getBlockAtIndex(getStorageIndex(x, y, z));
+        if EXPECT_FALSE(isInvalidIndex(x, y, z)) { return 0; }
+        return blocks[getStorageIndex(x, y, z)];
     }
 
     void setSkyLight(c_i64 x, c_i64 y, c_i64 z, c_u8 lightValue) {
+        if EXPECT_FALSE(isInvalidIndex(x, y, z)) { return; }
         skyLight[getStorageIndex(x, y, z)] = lightValue;
     }
 
-    void setBlockAndData(c_i64 x, c_i64 y, c_i64 z, c_int id, c_int data) {
-        if EXPECT_FALSE(x < 0 || y < 0 || z < 0 || x >= 16 || y >= 256 || z >= 16) { return; }
+
+    MU void setBlockAndData(c_i64 x, c_i64 y, c_i64 z, c_int id, c_int data) {
+        if EXPECT_FALSE(isInvalidIndex(x, y, z)) { return; }
         blocks[getStorageIndex(x, y, z)] = ((id << 4) | data);
     }
-
-    void setBlockAndData(const Pos3D &pos, c_int id, c_int data) {
+    MU void setBlockAndData(const Pos3D &pos, c_int id, c_int data) {
         this->setBlockAndData(pos.x, pos.y, pos.z, id, data);
     }
 
-    void setBlock(c_i64 x, c_i64 y, c_i64 z, const lce::BlockState block) {
-        this->setBlockAndData(x, y, z, block.getID(), block.getDataTag());
-    }
 
+    void setBlock(c_i64 x, c_i64 y, c_i64 z, const lce::BlockState block) {
+        if EXPECT_FALSE(isInvalidIndex(x, y, z)) { return; }
+        // TODO: optimize this
+        blocks[getStorageIndex(x, y, z)] = ((block.getID() << 4) | block.getDataTag());
+    }
     void setBlock(const Pos3D &pos, const lce::BlockState block) {
         this->setBlock(pos.x, pos.y, pos.z, block);
     }
 
+
     ND bool isAirBlock(c_i64 x, c_i64 y, c_i64 z) const {
         return getBlockId(x, y, z) == lce::blocks::AIR_ID;
     }
-
     ND bool isAirBlock(const Pos3D &pos) const {
         return isAirBlock(pos.x, pos.y, pos.z);
     }

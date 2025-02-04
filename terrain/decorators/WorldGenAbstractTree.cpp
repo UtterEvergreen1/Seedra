@@ -110,32 +110,32 @@ int WorldGenAbstractTree::placeTrunk(World* worldIn, RNG& rand, const Pos3D& pos
     }
 
     if (vineGrowthChance == 0.0) {
-        for (int j3 = 0; j3 < height; ++j3) {
-            const int blockId = worldIn->getBlockId(pos.up(j3));
+        for (int y = 0; y < height; ++y) {
+            const int blockId = worldIn->getBlockId(pos.up(y));
             if (lce::blocks::isAirOrLeavesBlock(blockId) || blockId == VINES_ID) {
-                worldIn->setBlock(pos.up(j3), woodType);
+                worldIn->setBlock(pos.up(y), woodType);
             }
         }
     } else {
-        for (int j3 = 0; j3 < height; ++j3) {
-            const int blockId = worldIn->getBlockId(pos.up(j3));
+        for (int y = 0; y < height; ++y) {
+            const int blockId = worldIn->getBlockId(pos.up(y));
             if (lce::blocks::isAirOrLeavesBlock(blockId) || blockId == VINES_ID) {
-                worldIn->setBlock(pos.up(j3), woodType);
+                worldIn->setBlock(pos.up(y), woodType);
 
-                if (rand.nextFloat() < vineGrowthChance && worldIn->isAirBlock(pos.add(-1, j3, 0))) {
-                    addVine(worldIn, pos.add(-1, j3, 0), EnumFacing::EAST);
+                if (rand.nextFloat() < vineGrowthChance && worldIn->isAirBlock(pos.add(-1, y, 0))) {
+                    addVine(worldIn, pos.add(-1, y, 0), EnumFacing::EAST);
                 }
 
-                if (rand.nextFloat() < vineGrowthChance && worldIn->isAirBlock(pos.add(1, j3, 0))) {
-                    addVine(worldIn, pos.add(1, j3, 0), EnumFacing::WEST);
+                if (rand.nextFloat() < vineGrowthChance && worldIn->isAirBlock(pos.add(1, y, 0))) {
+                    addVine(worldIn, pos.add(1, y, 0), EnumFacing::WEST);
                 }
 
-                if (rand.nextFloat() < vineGrowthChance && worldIn->isAirBlock(pos.add(0, j3, -1))) {
-                    addVine(worldIn, pos.add(0, j3, -1), EnumFacing::SOUTH);
+                if (rand.nextFloat() < vineGrowthChance && worldIn->isAirBlock(pos.add(0, y, -1))) {
+                    addVine(worldIn, pos.add(0, y, -1), EnumFacing::SOUTH);
                 }
 
-                if (rand.nextFloat() < vineGrowthChance && worldIn->isAirBlock(pos.add(0, j3, 1))) {
-                    addVine(worldIn, pos.add(0, j3, 1), EnumFacing::NORTH);
+                if (rand.nextFloat() < vineGrowthChance && worldIn->isAirBlock(pos.add(0, y, 1))) {
+                    addVine(worldIn, pos.add(0, y, 1), EnumFacing::NORTH);
                 }
             }
         }
