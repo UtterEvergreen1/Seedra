@@ -45,14 +45,14 @@ int main() {
     c_i64 WORLD_SEED = -1204924307554348042; // 615831156172857837; // 7710511010199114;
     c_auto CONSOLE = lce::CONSOLE::WIIU;
     c_auto VERSION = LCEVERSION::AQUATIC;
-    c_auto WORLD_SIZE = lce::WORLDSIZE::CLASSIC;
+    c_auto WORLD_SIZE = lce::WORLDSIZE::MEDIUM;
     c_auto BIOME_SCALE = lce::BIOMESCALE::SMALL;
     // -6651998285536156346
     Generator g(CONSOLE, VERSION, WORLD_SEED, WORLD_SIZE, BIOME_SCALE);
 
     // 3 13 for seed -101, 8 15 for seed 1, 11 16 or 15 5 for seed 27184353441555
-    int X_WIDTH  = 27; // 10;
-    int Z_WIDTH  = 27; // 10;
+    int X_WIDTH  = 54; // 10;
+    int Z_WIDTH  = 54; // 10;
     int X_CENTER = 0; // 9;
     int Z_CENTER = 0; // 210 / 16;
 
