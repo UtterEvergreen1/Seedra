@@ -14,17 +14,17 @@ add_subdirectory(lce)
 # Gather all the .cpp/.hpp for LegacyCubiomes
 file(GLOB_RECURSE LEGACY_CUBIOMES_SOURCES
         # submodule
-        "${CMAKE_CURRENT_LIST_DIR}/lce/*.*pp"
+        "${CMAKE_CURRENT_LIST_DIR}/lce/*.cpp"
         # project
-        "${CMAKE_CURRENT_LIST_DIR}/components/*.*pp"
-        "${CMAKE_CURRENT_LIST_DIR}/chunk_detector/*.*pp"
-        "${CMAKE_CURRENT_LIST_DIR}/terrain/*.*pp"
-        "${CMAKE_CURRENT_LIST_DIR}/cubiomes/*.*pp"
-        "${CMAKE_CURRENT_LIST_DIR}/enchants/*.*pp"
-        "${CMAKE_CURRENT_LIST_DIR}/include/*.*pp"
-        "${CMAKE_CURRENT_LIST_DIR}/loot/*.*pp"
-        "${CMAKE_CURRENT_LIST_DIR}/structures/*.*pp"
-        "${CMAKE_CURRENT_LIST_DIR}/common/*.*pp"
+        "${CMAKE_CURRENT_LIST_DIR}/components/*.cpp"
+        "${CMAKE_CURRENT_LIST_DIR}/chunk_detector/*.cpp"
+        "${CMAKE_CURRENT_LIST_DIR}/terrain/*.cpp"
+        "${CMAKE_CURRENT_LIST_DIR}/cubiomes/*.cpp"
+        "${CMAKE_CURRENT_LIST_DIR}/enchants/*.cpp"
+        "${CMAKE_CURRENT_LIST_DIR}/include/*.cpp"
+        "${CMAKE_CURRENT_LIST_DIR}/loot/*.cpp"
+        "${CMAKE_CURRENT_LIST_DIR}/structures/*.cpp"
+        "${CMAKE_CURRENT_LIST_DIR}/common/*.cpp"
         ...
 )
 

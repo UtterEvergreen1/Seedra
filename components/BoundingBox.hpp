@@ -8,7 +8,8 @@
 #include "common/Pos3DTemplate.hpp"
 
 
-struct BoundingBox {
+class BoundingBox {
+public:
     static const BoundingBox EMPTY;
     short minX{}, minY{}, minZ{}, maxX{}, maxY{}, maxZ{};
 
@@ -24,7 +25,8 @@ struct BoundingBox {
     MU void encompassY(const BoundingBox& other);
     MU void shrinkToFit(const BoundingBox& other);
 
-    MU ND bool isVecInside(Pos3D pos) const;
+    MU ND bool isVecInside(const Pos3D& pos) const;
+    MU ND bool isVecInside(const Pos2D& pos) const;
 
     MU void offset(int x, int y, int z);
     MU void offsetY(int y);
@@ -51,3 +53,5 @@ struct BoundingBox {
 
     friend std::ostream& operator<<(std::ostream& out, const BoundingBox& boundingBox);
 };
+
+#include "BoundingBox.inl"

@@ -119,7 +119,7 @@ namespace rolls {
                             std::vector<bool> &portalRoomEyes, int &success, c_int index) {
         c_bool hasEye = random.nextFloat() > 0.9F;
         const Pos2D pos = piece->getWorldPos(x, z);
-        if (pos.insideBounds(chunkBB) && pos.insideBounds(*piece)) {
+        if (chunkBB.isVecInside(pos) && piece->isVecInside(pos)) {
             portalRoomEyes[index] = hasEye;
             success++;
         }

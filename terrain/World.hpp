@@ -1,7 +1,10 @@
 #pragma once
 
 #include <unordered_map>
+#include <atomic>
+#include <mutex>
 
+#include "Chunk.hpp"
 #include "structures/gen/village/village.hpp"
 #include "structures/gen/mineshaft/mineshaft.hpp"
 #include "structures/gen/stronghold/stronghold.hpp"
@@ -9,13 +12,10 @@
 #include "common/Pos2DTemplate.hpp"
 #include "common/Pos3DTemplate.hpp"
 
-#include <atomic>
-#include <mutex>
 
 class Biome;
 class Generator;
 class ChunkPrimer;
-
 
 class World {
 public:
@@ -30,6 +30,8 @@ public:
     }
 
     void addChunk(const Pos2D &pos, ChunkPrimer *chunk);
+
+    bool chunkExists(const Pos2D &pos) const;
 
     ChunkPrimer *getChunk(const Pos2D &pos);
 
@@ -126,3 +128,5 @@ private:
     Generator *g;
 
 };
+
+#include "World.inl"

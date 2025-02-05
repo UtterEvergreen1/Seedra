@@ -132,3 +132,5 @@ typedef Pos3DTemplate<int> Pos3D;
 typedef std::vector<Pos3D> Pos3DVec_t;
 
 typedef Pos3DTemplate<double> DoublePos3D;
+
+#include "Pos3DTemplate.inl"

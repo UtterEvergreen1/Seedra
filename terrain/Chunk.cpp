@@ -1,4 +1,5 @@
 #include "Chunk.hpp"
+#include "World.hpp"
 
 #include "structures/gen/village/village.hpp"
 #include "structures/placement/mineshaft.hpp"

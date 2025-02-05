@@ -1,9 +1,8 @@
 #pragma once
 
 #include "ChunkPrimer.hpp"
-#include "World.hpp"
 
-
+class World;
 
 namespace Chunk {
 

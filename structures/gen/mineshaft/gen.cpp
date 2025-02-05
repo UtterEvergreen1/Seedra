@@ -1,7 +1,6 @@
 #include "mineshaft.hpp"
 
 #include "components/StructureComponent.hpp"
-#include "terrain/Chunk.hpp"
 #include "terrain/ChunkPrimer.hpp"
 #include "terrain/World.hpp"
 

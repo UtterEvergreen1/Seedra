@@ -1,6 +1,3 @@
-#include "Pos3DTemplate.hpp"
-
-
 template<class T>
 bool Pos3DTemplate<T>::operator==(const Pos3DTemplate &other) const { return x == other.x && z == other.z; }
 

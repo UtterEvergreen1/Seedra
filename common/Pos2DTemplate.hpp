@@ -11,8 +11,6 @@
 
 #include "lce/processor.hpp"
 
-class BoundingBox;
-
 template<class classType>
 class Pos2DTemplate {
 public:
@@ -85,7 +83,6 @@ public:
     MU void setPos(classType xIn, classType zIn);
     MU ND std::string toString() const;
     MU ND bool insideBounds(classType lowerX, classType lowerZ, classType upperX, classType upperZ) const;
-    MU ND bool insideBounds(const BoundingBox& bb) const;
     MU ND uint64_t asLong() const {
         return (static_cast<uint64_t>(x) << 32) | static_cast<uint64_t>(z);
     }
@@ -96,9 +93,7 @@ public:
     struct Hasher {
         template <typename T = classType, typename = std::enable_if_t<std::is_integral_v<T>>>
         std::size_t operator()(const Pos2DTemplate& pos) const {
-            c_int i = 1664525 * pos.x + 1013904223;
-            c_int j = 1664525 * (pos.z ^ -559038737) + 1013904223;
-            return static_cast<size_t>(i) ^ j;
+            return pos.hash();
         }
     };
 };
@@ -107,3 +102,5 @@ typedef Pos2DTemplate<int> Pos2D;
 typedef std::vector<Pos2D> Pos2DVec_t;
 
 typedef Pos2DTemplate<double> DoublePos2D;
+
+#include "Pos2DTemplate.inl"

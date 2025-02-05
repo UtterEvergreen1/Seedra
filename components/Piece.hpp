@@ -6,7 +6,6 @@
 
 #include "PieceType.hpp"
 
-
 class Piece : public BoundingBox {
 public:
     EnumFacing facing;
@@ -35,16 +34,6 @@ public:
     MU static BoundingBox makeBoundingBox(int x, int y, int z, EnumFacing direction, int width, int height, int depth);
 
     MU ND bool isTypeNone() const { return type == PT_NONE; }
-
-
-
-
-
-
-
-
-
-
-
-
 };
+
+#include "Piece.inl"

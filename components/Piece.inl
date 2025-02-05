@@ -1,12 +1,8 @@
-#include "Piece.hpp"
-
-
-MU Pos2D Piece::getBoundingBoxCenter() const {
+inline Pos2D Piece::getBoundingBoxCenter() const {
     return {minX + maxX / 2, minZ + maxZ / 2};
 }
 
-
-int Piece::getWorldX(c_int offsetWidth, c_int offsetDepth) const {
+inline int Piece::getWorldX(c_int offsetWidth, c_int offsetDepth) const {
     switch (facing) {
         case EnumFacing::NORTH:
         case EnumFacing::SOUTH:
@@ -19,13 +15,11 @@ int Piece::getWorldX(c_int offsetWidth, c_int offsetDepth) const {
     }
 }
 
-
-ND int Piece::getWorldY(c_int offsetHeight) const {
+inline int Piece::getWorldY(c_int offsetHeight) const {
     return minY + offsetHeight;
 }
 
-
-int Piece::getWorldZ(c_int offsetWidth, c_int offsetDepth) const {
+inline int Piece::getWorldZ(c_int offsetWidth, c_int offsetDepth) const {
     switch (facing) {
         case EnumFacing::NORTH:
             return maxZ - offsetDepth;
@@ -38,18 +32,16 @@ int Piece::getWorldZ(c_int offsetWidth, c_int offsetDepth) const {
     }
 }
 
-
-MU ND Pos3D Piece::getWorldXYZ(c_int offsetWidth, c_int offsetHeight, c_int offsetDepth) const {
+inline  Pos3D Piece::getWorldXYZ(c_int offsetWidth, c_int offsetHeight, c_int offsetDepth) const {
     return {getWorldX(offsetWidth, offsetDepth), getWorldY(offsetHeight), getWorldZ(offsetWidth, offsetDepth)};
 }
 
 
-Pos2D Piece::getWorldPos(c_int offsetWidth, c_int offsetDepth) const {
+inline Pos2D Piece::getWorldPos(c_int offsetWidth, c_int offsetDepth) const {
     return {getWorldX(offsetWidth, offsetDepth), getWorldZ(offsetWidth, offsetDepth)};
 }
 
-
-BoundingBox Piece::makeBoundingBox(c_int x, c_int y, c_int z, const EnumFacing direction,
+inline BoundingBox Piece::makeBoundingBox(c_int x, c_int y, c_int z, const EnumFacing direction,
                                    c_int width, c_int height, c_int depth) {
     if (direction == EnumFacing::NORTH || direction == EnumFacing::SOUTH) {
         return {x, y, z, x + width - 1, y + height - 1, z + depth - 1};

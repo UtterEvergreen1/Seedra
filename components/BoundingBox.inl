@@ -1,27 +1,24 @@
-#include "BoundingBox.hpp"
+inline const BoundingBox BoundingBox::EMPTY = BoundingBox(SHRT_MAX, SHRT_MAX, SHRT_MAX, SHRT_MIN, SHRT_MIN, SHRT_MIN);
 
 
-const BoundingBox BoundingBox::EMPTY = BoundingBox(SHRT_MAX, SHRT_MAX, SHRT_MAX, SHRT_MIN, SHRT_MIN, SHRT_MIN);
+inline BoundingBox::BoundingBox() = default;
 
 
-BoundingBox::BoundingBox() = default;
-
-
-BoundingBox::BoundingBox(c_int minX, c_int minY, c_int minZ, c_int maxX, c_int maxY, c_int maxZ)
+inline BoundingBox::BoundingBox(c_int minX, c_int minY, c_int minZ, c_int maxX, c_int maxY, c_int maxZ)
     : minX(minX), minY(minY), minZ(minZ), maxX(maxX), maxY(maxY), maxZ(maxZ) {}
 
 
-bool BoundingBox::operator==(const BoundingBox& other) const {
+inline bool BoundingBox::operator==(const BoundingBox& other) const {
     return minX == other.minX && maxX == other.maxX && minZ == other.minZ && maxZ == other.maxZ && minY == other.minY &&
            maxY == other.maxY;
 }
 
-BoundingBox BoundingBox::operator<<(int shiftAmount) const {
+inline BoundingBox BoundingBox::operator<<(int shiftAmount) const {
     return {minX << shiftAmount, minY << shiftAmount, minZ << shiftAmount, maxX << shiftAmount, maxY << shiftAmount,
             maxZ << shiftAmount};
 }
 
-bool BoundingBox::intersects(const BoundingBox& other) const {
+inline bool BoundingBox::intersects(const BoundingBox& other) const {
     return maxX >= other.minX
         && minX <= other.maxX
         && maxZ >= other.minZ
@@ -31,14 +28,14 @@ bool BoundingBox::intersects(const BoundingBox& other) const {
 }
 
 
-bool BoundingBox::contains(const BoundingBox& other) const {
+inline bool BoundingBox::contains(const BoundingBox& other) const {
     return maxX >= other.maxX && minX <= other.minX && maxY >= other.maxY &&
            minY <= other.minY && maxZ >= other.maxZ && minZ <= other.minZ;
 }
 
 
 /// makes "*this" expand such that it contains "other".
-void BoundingBox::encompass(const BoundingBox& other) {
+inline void BoundingBox::encompass(const BoundingBox& other) {
     if (other.minX < minX) minX = other.minX;
     if (other.minY < minY) minY = other.minY;
     if (other.minZ < minZ) minZ = other.minZ;
@@ -49,14 +46,14 @@ void BoundingBox::encompass(const BoundingBox& other) {
 
 
 /// makes "*this" expand such that it contains "other". Only y-coords.
-MU void BoundingBox::encompassY(const BoundingBox& other) {
+inline void BoundingBox::encompassY(const BoundingBox& other) {
     if (other.minY < minY) minY = other.minY;
     if (other.maxY > maxY) maxY = other.maxY;
 }
 
 
 /// makes "*this" shrink such that "other" contains it.
-MU void BoundingBox::shrinkToFit(const BoundingBox& other) {
+inline void BoundingBox::shrinkToFit(const BoundingBox& other) {
     if (minX < other.minX) minX = other.minX;
     if (minY < other.minY) minY = other.minY;
     if (minZ < other.minZ) minZ = other.minZ;
@@ -66,14 +63,19 @@ MU void BoundingBox::shrinkToFit(const BoundingBox& other) {
 }
 
 
-bool BoundingBox::isVecInside(const Pos3D pos) const {
+inline bool BoundingBox::isVecInside(const Pos3D& pos) const {
     return this->maxX >= pos.x && this->minX <= pos.x &&
            this->maxY >= pos.y && this->minY <= pos.y &&
            this->maxZ >= pos.z && this->minZ <= pos.z;
 }
 
+inline bool BoundingBox::isVecInside(const Pos2D& pos) const {
+    return this->maxX >= pos.x && this->minX <= pos.x &&
+           this->maxZ >= pos.z && this->minZ <= pos.z;
+}
 
-void BoundingBox::offset(c_int x, c_int y, c_int z) {
+
+inline void BoundingBox::offset(c_int x, c_int y, c_int z) {
     minX += x;
     minY += y;
     minZ += z;
@@ -83,18 +85,18 @@ void BoundingBox::offset(c_int x, c_int y, c_int z) {
 }
 
 
-void BoundingBox::offsetY(c_int y) {
+inline void BoundingBox::offsetY(c_int y) {
     minY += y;
     maxY += y;
 }
 
 
-BoundingBox BoundingBox::makeChunkBox(c_int xChunk, c_int zChunk) {
+inline BoundingBox BoundingBox::makeChunkBox(c_int xChunk, c_int zChunk) {
     return {xChunk << 4, 0, zChunk << 4, (xChunk << 4) + 15, 255, (zChunk << 4) + 15};
 }
 
 
-BoundingBox BoundingBox::orientBox(c_int x, c_int y, c_int z,
+inline BoundingBox BoundingBox::orientBox(c_int x, c_int y, c_int z,
                                    c_int width, c_int height,
                                    c_int depth, const EnumFacing direction) {
     switch (direction) {
@@ -111,7 +113,7 @@ BoundingBox BoundingBox::orientBox(c_int x, c_int y, c_int z,
 }
 
 
-BoundingBox BoundingBox::orientBox(const Pos3D& xyz, c_int width, c_int height, c_int depth, const EnumFacing direction) {
+inline BoundingBox BoundingBox::orientBox(const Pos3D& xyz, c_int width, c_int height, c_int depth, const EnumFacing direction) {
     switch (direction) {
         case EnumFacing::NORTH:
             return {xyz.getX(),
@@ -146,7 +148,7 @@ BoundingBox BoundingBox::orientBox(const Pos3D& xyz, c_int width, c_int height, 
 }
 
 
-BoundingBox BoundingBox::orientBox(c_int x, c_int y, c_int z, c_int offsetWidth, c_int offsetHeight,
+inline BoundingBox BoundingBox::orientBox(c_int x, c_int y, c_int z, c_int offsetWidth, c_int offsetHeight,
                                    c_int offsetDepth, c_int width,
                                    c_int height, c_int depth, const EnumFacing direction) {
     switch (direction) {
@@ -183,25 +185,25 @@ BoundingBox BoundingBox::orientBox(c_int x, c_int y, c_int z, c_int offsetWidth,
 }
 
 
-BoundingBox BoundingBox::orientBox(const Pos3D& posXYZ, const Pos3D& posOffset, const Pos3D& size,
+inline BoundingBox BoundingBox::orientBox(const Pos3D& posXYZ, const Pos3D& posOffset, const Pos3D& size,
                                    const EnumFacing direction) {
     return orientBox(posXYZ.getX(), posXYZ.getY(), posXYZ.getZ(), posOffset.getX(), posOffset.getY(), posOffset.getZ(),
                      size.getX(), size.getY(), size.getZ(), direction);
 }
 
-BoundingBox BoundingBox::orientBox(const Pos3D& posXYZ, c_int offsetWidth, c_int offsetHeight,
+inline BoundingBox BoundingBox::orientBox(const Pos3D& posXYZ, c_int offsetWidth, c_int offsetHeight,
     c_int offsetDepth, c_int width, c_int height, c_int depth, const EnumFacing direction) {
     return orientBox(posXYZ.getX(), posXYZ.getY(), posXYZ.getZ(), offsetWidth, offsetHeight, offsetDepth, width, height,
                      depth, direction);
 }
 
-std::string BoundingBox::toString() const {
+inline std::string BoundingBox::toString() const {
     return "(" + std::to_string(minX) + ", " + std::to_string(minY) + ", " + std::to_string(minZ) + ") -> (" +
            std::to_string(maxX) + ", " + std::to_string(maxY) + ", " + std::to_string(maxZ) + ")";
 }
 
 
-std::ostream& operator<<(std::ostream& out, const BoundingBox& bBox) {
+inline std::ostream& operator<<(std::ostream& out, const BoundingBox& bBox) {
     out << bBox.toString();
     return out;
 }
