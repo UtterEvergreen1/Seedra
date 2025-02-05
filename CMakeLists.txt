@@ -3,7 +3,7 @@ project(LIB_LegacyCubiomes)
 
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
-set(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} -s")
+set(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} -O3 -s")
 set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O3 -s")
 
 # Build lceLib from the submodule
@@ -48,6 +48,10 @@ if(LC_BUILD_EXECUTABLE)
     # Chunk Gen Code For LegacyChunkViewer
     add_executable(EXE_GenCreateWorld "tests/gen_chunk.cpp")
     target_link_libraries(EXE_GenCreateWorld PRIVATE LIB_LegacyCubiomes)
+
+    # Chunk Gen Code For LegacyChunkViewer
+    add_executable(EXE_GetMaxTempBiomes "tests/get_min_temp_biomes.cpp")
+    target_link_libraries(EXE_GetMaxTempBiomes PRIVATE LIB_LegacyCubiomes)
 
     # Ravine Gen Code for finding best seed for mine a chunk
     add_executable(EXE_MineAChunkSF "tests/best_mine_chunk_seed.cpp")

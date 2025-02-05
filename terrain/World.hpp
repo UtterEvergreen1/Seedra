@@ -91,6 +91,10 @@ public:
 
     Pos3D getTopSolidOrLiquidBlock(const Pos3D &pos);
 
+    ND bool isSnowyAt(int x, int z) const;
+
+    ND bool hasIdealTemperature(const Pos3D &pos) const;
+
     int getPrecipitationHeight(c_int x, c_int z);
 
     bool canBlockFreeze(const Pos3D &pos, bool noWaterAdj);

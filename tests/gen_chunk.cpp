@@ -4,11 +4,11 @@
 
 #include "terrain/Chunk.hpp"
 #include "terrain/World.hpp"
-#include "terrain/biomes/biome.hpp"
 
 #include "common/timer.hpp"
 #include "structures/gen/village/village.hpp"
 #include "structures/placement/StaticStructures.hpp"
+#include "terrain/biomes/biome.hpp"
 
 namespace fs = std::filesystem;
 
@@ -40,11 +40,11 @@ int main() {
 
 
 
-    Biome::registerBiomes();
     // -1204924307554348042;
+    Biome::registerBiomes();
     c_i64 WORLD_SEED = -1204924307554348042; // 615831156172857837; // 7710511010199114;
     c_auto CONSOLE = lce::CONSOLE::WIIU;
-    c_auto VERSION = LCEVERSION::ELYTRA;
+    c_auto VERSION = LCEVERSION::AQUATIC;
     c_auto WORLD_SIZE = lce::WORLDSIZE::CLASSIC;
     c_auto BIOME_SCALE = lce::BIOMESCALE::SMALL;
     // -6651998285536156346
@@ -57,6 +57,7 @@ int main() {
     int Z_CENTER = 0; // 210 / 16;
 
     Timer start;
+    Timer gen;
 
     auto world = World(&g);
 
@@ -67,14 +68,17 @@ int main() {
 
     world.getOrCreateChunk({X_CENTER, Z_CENTER});
 
-    bool TODO = true;
-
     world.createChunks({X_CENTER, Z_CENTER}, X_WIDTH);
-    world.decorateCaves({X_CENTER, Z_CENTER}, X_WIDTH, TODO);
+    std::cout << "Chunk Gen Time: " << gen.getSeconds() << "\n";
+    gen.reset();
+    world.decorateCaves({X_CENTER, Z_CENTER}, X_WIDTH, VERSION == LCEVERSION::AQUATIC);
+    std::cout << "Cave Gen Time: " << gen.getSeconds() << "\n";
+    gen.reset();
 
     world.decorateChunks({X_CENTER, Z_CENTER}, X_WIDTH);
 
-    std::cout << "World Gen Time: " << start.getSeconds() << "\n";
+    std::cout << "Decorate Gen Time: " << gen.getSeconds() << "\n";
+    std::cout << "Total world Gen Time: " << start.getSeconds() << "\n";
 
 
     std::ofstream file(filePath.string(), std::ios::binary);

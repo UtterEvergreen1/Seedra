@@ -25,6 +25,34 @@
 
 #pragma region Definitions
 
+const std::map<int, int> Biome::SNOW_BIOMES = {
+    {BiomeID::extreme_hills, 90},
+    {BiomeID::taiga, 120},
+    {BiomeID::taiga_hills, 120},
+    {BiomeID::extreme_hills_edge, 90},
+    {BiomeID::stone_beach, 90},
+    {BiomeID::cold_beach, 0},
+    {BiomeID::mega_taiga, 150},
+    {BiomeID::mega_taiga_hills, 150},
+    {BiomeID::extreme_hills, 90},
+    {BiomeID::extreme_hills_plus_trees, 90},
+    {BiomeID::extreme_hills_mutated, 90},
+    {BiomeID::taiga_mutated, 120},
+    {BiomeID::mega_spruce_taiga, 120},
+    {BiomeID::mega_taiga_hills, 120},
+    // Biomes that always snow
+    {BiomeID::legacy_frozen_ocean, -10},
+    {BiomeID::frozen_river, -10},
+    {BiomeID::ice_plains, -10},
+    {BiomeID::ice_mountains, -10},
+    {BiomeID::cold_taiga, -10},
+    {BiomeID::cold_taiga_hills, -10},
+    {BiomeID::frozen_ocean, -10},
+    {BiomeID::deep_frozen_ocean, -10},
+    {BiomeID::ice_plains_spikes, -10},
+    {BiomeID::cold_taiga_mutated, -10},
+};
+
 const NoiseGeneratorPerlin Biome::TEMPERATURE_NOISE = NoiseGeneratorPerlin(RNG(1234ULL), 1);
 const NoiseGeneratorPerlin Biome::INFO_NOISE = NoiseGeneratorPerlin(RNG(2345ULL), 1);
 
@@ -43,7 +71,8 @@ const WorldGenTallGrass BiomeTaiga::GRASS_GENERATOR = WorldGenTallGrass(BlockTal
 const WorldGenMegaPineTree BiomeTaiga::MEGA_PINE_GENERATOR = WorldGenMegaPineTree(false);
 const WorldGenMegaPineTree BiomeTaiga::MEGA_SPRUCE_GENERATOR = WorldGenMegaPineTree(true);
 
-const WorldGenBlockBlob BiomeTaiga::FOREST_ROCK_GENERATOR = WorldGenBlockBlob(lce::BlocksInit::MOSS_STONE.getState(), 0);
+const WorldGenBlockBlob BiomeTaiga::FOREST_ROCK_GENERATOR =
+        WorldGenBlockBlob(lce::BlocksInit::MOSS_STONE.getState(), 0);
 
 const WorldGenSwamp BiomeSwamp::SWAMP_FEATURE;
 
@@ -93,7 +122,8 @@ void Biome::registerBiomes() {
     registerBiome(17, new BiomeDesert("Desert Hills", 0.45, 0.3F, false, 2.0F, 0xA5A17A1A));
     registerBiome(18, new BiomeForest(BiomeForest::Type::NORMAL, "Forest Hills", 0.45F, 0.3F, false, 0.7F, 0xA5D16B05));
     registerBiome(19, new BiomeTaiga(BiomeTaiga::Type::NORMAL, "Taiga Hills", 0.45F, 0.3F, false, 0.25F, 0xA5836523));
-    registerBiome(20, new BiomeHills(BiomeHills::Type::EXTRA_TREES, "Extreme Hills Edge", 0.8F, 0.3F, false, 0.2F, 0xA5D55C04));
+    registerBiome(20, new BiomeHills(BiomeHills::Type::EXTRA_TREES, "Extreme Hills Edge", 0.8F, 0.3F, false, 0.2F,
+                                     0xA5D55C04));
     registerBiome(21, new BiomeJungle(false, "Jungle", 0.1F, 0.2F, false, 0.95F, 0.9F, 0xA5C5A214));
     registerBiome(22, new BiomeJungle(false, "Jungle Hills", 0.45F, 0.3F, false, 0.95F, 0.9F, 0xA5D89E1B));
     registerBiome(23, new BiomeJungle(true, "Jungle Edge", 0.1F, 0.2F, false, 0.95F, 0.8F, 0xA5E38A0D));
@@ -101,13 +131,16 @@ void Biome::registerBiomes() {
     registerBiome(25, new BiomeStoneBeach("Stone Beach", 0.1F, 0.8F, false, 0.2F));
     registerBiome(26, new BiomeBeach("Cold Beach", 0.0F, 0.025F, true, 0.05F, 0.3F, 0xA5A56314));
     registerBiome(27, new BiomeForest(BiomeForest::Type::BIRCH, "Birch Forest", 0.1F, 0.2F, false, 0.6F, 0xA5CE7706));
-    registerBiome(28, new BiomeForest(BiomeForest::Type::BIRCH, "Birch Forest Hills", 0.45F, 0.3F, false, 0.6F, 0xA5C4740A));
+    registerBiome(28, new BiomeForest(BiomeForest::Type::BIRCH, "Birch Forest Hills", 0.45F, 0.3F, false, 0.6F,
+                                      0xA5C4740A));
     registerBiome(29, new BiomeForest(BiomeForest::Type::ROOFED, "Roofed Forest", 0.1F, 0.2F, false, 0.7F, 0xA5D16C3B));
     registerBiome(30, new BiomeTaiga(BiomeTaiga::Type::NORMAL, "Cold Taiga", 0.2F, 0.2F, true, -0.5F, 0xA5835E20));
-    registerBiome(31, new BiomeTaiga(BiomeTaiga::Type::NORMAL, "Cold Taiga Hills", 0.45F, 0.3F, true, -0.5F, 0xA5785B24));
+    registerBiome(
+        31, new BiomeTaiga(BiomeTaiga::Type::NORMAL, "Cold Taiga Hills", 0.45F, 0.3F, true, -0.5F, 0xA5785B24));
     registerBiome(32, new BiomeTaiga(BiomeTaiga::Type::MEGA, "Mega Taiga", 0.2F, 0.2F, false, 0.3F, 0xA5776D2D));
     registerBiome(33, new BiomeTaiga(BiomeTaiga::Type::MEGA, "Mega Taiga Hills", 0.45F, 0.3F, false, 0.3F));
-    registerBiome(34, new BiomeHills(BiomeHills::Type::EXTRA_TREES, "Extreme Hills Plus Trees", 1.0F, 0.5F, false, 0.2F, 0xA5AB630E));
+    registerBiome(34, new BiomeHills(BiomeHills::Type::EXTRA_TREES, "Extreme Hills Plus Trees", 1.0F, 0.5F, false, 0.2F,
+                                     0xA5AB630E));
     registerBiome(35, new BiomeSavanna("Savanna", 0.125F, 0.05F, false, 1.2F, 0xA59C8B2C));
     registerBiome(36, new BiomeSavanna("Savanna Plateau", 1.5F, 0.025F, false, 1.0F, 0xA5A89025));
     registerBiome(37, new BiomeMesa(false, false, "Mesa", 0.1F, 0.2F, false, 2.0F, 0xA5817F4E));
@@ -120,13 +153,15 @@ void Biome::registerBiomes() {
     registerBiome(43, new BiomeOcean("Deep Lukewarm Ocean", -1.8F, 0.1F, false, 0.5F, 0xA5DB960D));
     registerBiome(44, new BiomeOcean("Cold Ocean", -1.0F, 0.1F, false, 0.5F, 0xA5C98020));
     registerBiome(45, new BiomeOcean("Deep Cold Ocean", -1.8F, 0.1F, false, 0.5F, 0xA5C98020));
-    registerBiome(46, new BiomeOcean("Frozen Ocean", -1.0F, 0.1F, false, 0.5F, 0xA5B57025));
-    registerBiome(47, new BiomeOcean("Deep Frozen Ocean", -1.8F, 0.1F, false, 0.5F, 0xA5B57025));
+    registerBiome(46, new BiomeOcean("Frozen Ocean", -1.0F, 0.1F, false, 0.0F, 0xA5B57025));
+    registerBiome(47, new BiomeOcean("Deep Frozen Ocean", -1.8F, 0.1F, false, 0.0F, 0xA5B57025));
     // mutated
     registerBiome(129, new BiomePlains(true, "Sunflower Plains", 0.125F, 0.05F, false, 0.8F));
     registerBiome(130, new BiomeDesert("Mutated Desert", 0.225F, 0.25F, false, 2.0F, 0x80CA8900));
-    registerBiome(131, new BiomeHills(BiomeHills::Type::MUTATED, "Mutated Extreme Hills", 1.0F, 0.5F, false, 0.2F, 0xA5AB630E));
-    registerBiome(132, new BiomeForest(BiomeForest::Type::FLOWER, "Flower Forest", 0.1F, 0.4F, false, 0.7F, 0xA5CCA320));
+    registerBiome(131, new BiomeHills(BiomeHills::Type::MUTATED, "Mutated Extreme Hills", 1.0F, 0.5F, false, 0.2F,
+                                      0xA5AB630E));
+    registerBiome(132, new BiomeForest(BiomeForest::Type::FLOWER, "Flower Forest", 0.1F, 0.4F, false, 0.7F,
+                                       0xA5CCA320));
     registerBiome(133, new BiomeTaiga(BiomeTaiga::Type::NORMAL, "Mutated Taiga", 0.3F, 0.4F, false, 0.25F, 0xA5826B1E));
     registerBiome(134, new BiomeSwamp("Mutated Swampland", -0.1F, 0.3F, false, 0.8F, 0xFF56614C));
     registerBiome(140, new BiomeSnow(true, "Ice Plains Spikes", 0.425F, 0.45000002F, true, 0.0F, 0xA59B5514));
@@ -134,11 +169,16 @@ void Biome::registerBiomes() {
     registerBiome(151, new BiomeJungle(true, "Mutated Jungle Edge", 0.2F, 0.4F, false, 0.95F, 0.8F, 0x80CA8900));
     registerBiome(155, new BiomeForestMutated("Mutated Birch Forest", 0.2F, 0.4F, false, 0.6F));
     registerBiome(156, new BiomeForestMutated("Mutated Birch Forest Hills", 0.55F, 0.5F, false, 0.6F));
-    registerBiome(157, new BiomeForest(BiomeForest::Type::ROOFED, "Mutated Roofed Forest", 0.2F, 0.4F, false, 0.7F, 0x80CA8900));
-    registerBiome(158, new BiomeTaiga(BiomeTaiga::Type::NORMAL, "Mutated Cold Taiga", 0.3F, 0.4F, true, -0.5F, 0xA5835E20));
-    registerBiome(160, new BiomeTaiga(BiomeTaiga::Type::MEGA_SPRUCE, "Mega Spruce Taiga", 0.2F, 0.2F, false, 0.25F, 0xA5776D2D));
-    registerBiome(161, new BiomeTaiga(BiomeTaiga::Type::MEGA_SPRUCE, "Mega Taiga Hills", 0.2F, 0.2F, false, 0.25F, 0xA5786328));
-    registerBiome(162, new BiomeHills(BiomeHills::Type::MUTATED, "Mutated Extreme Hills Plus Trees", 1.0F, 0.5F, false, 0.2F, 0xA5AB630E));
+    registerBiome(157, new BiomeForest(BiomeForest::Type::ROOFED, "Mutated Roofed Forest", 0.2F, 0.4F, false, 0.7F,
+                                       0x80CA8900));
+    registerBiome(158, new BiomeTaiga(BiomeTaiga::Type::NORMAL, "Mutated Cold Taiga", 0.3F, 0.4F, true, -0.5F,
+                                      0xA5835E20));
+    registerBiome(160, new BiomeTaiga(BiomeTaiga::Type::MEGA_SPRUCE, "Mega Spruce Taiga", 0.2F, 0.2F, false, 0.25F,
+                                      0xA5776D2D));
+    registerBiome(161, new BiomeTaiga(BiomeTaiga::Type::MEGA_SPRUCE, "Mega Taiga Hills", 0.2F, 0.2F, false, 0.25F,
+                                      0xA5786328));
+    registerBiome(162, new BiomeHills(BiomeHills::Type::MUTATED, "Mutated Extreme Hills Plus Trees", 1.0F, 0.5F, false,
+                                      0.2F, 0xA5AB630E));
     registerBiome(163, new BiomeSavannaMutated("Mutated Savanna", 0.3625F, 1.225F, false, 1.1F, 0xA5A89025));
     registerBiome(164, new BiomeSavannaMutated("Mutated Savanna Plateau", 1.05F, 1.2125001F, false, 1.0F, 0x80CA8900));
     registerBiome(165, new BiomeMesa(true, false, "Mesa Bryce", 0.1F, 0.2F, false, 2.0F, 0xA5997F49));
@@ -156,6 +196,25 @@ const AbstractWorldGenerator *Biome::getRandomWorldGenForGrass(MU RNG &rng) cons
 
 BlockFlower::EnumFlowerType Biome::pickRandomFlower(RNG &rng, MU const Pos2D &pos) const {
     return rng.nextInt(3) > 0 ? BlockFlower::EnumFlowerType::DANDELION : BlockFlower::EnumFlowerType::POPPY;
+}
+
+bool Biome::isSnowyBiome() const {
+    return SNOW_BIOMES.contains(biomeID);
+}
+
+bool Biome::hasIdealTemperature(const Pos3D& pos) const {
+    if (!SNOW_BIOMES.contains(biomeID))
+        return false;
+
+    int chanceStart = SNOW_BIOMES.at(biomeID);
+    if (pos.getY() < chanceStart)
+        return false;
+
+    int alwaysStart = chanceStart + SNOW_CHANCE_HEIGHT;
+    if (pos.getY() >= alwaysStart)
+        return true;
+
+    return getFloatTemperature(pos) >= 0.15F;
 }
 
 float Biome::getFloatTemperature(const Pos3D &pos) const {

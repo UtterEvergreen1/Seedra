@@ -294,6 +294,14 @@ Pos3D World::getTopSolidOrLiquidBlock(const Pos3D &pos) {
     return {pos.x, this->getTopSolidOrLiquidBlock(pos.x, pos.z), pos.z};
 }
 
+bool World::isSnowyAt(int x, int z) const {
+    return this->getBiomeAt(x, z)->isSnowyBiome();
+}
+
+bool World::hasIdealTemperature(const Pos3D &pos) const {
+    return this->getBiomeAt(pos.getX(), pos.getZ())->hasIdealTemperature(pos);
+}
+
 int World::getPrecipitationHeight(c_int x, c_int z) {
     ChunkPrimer *chunk = getOrCreateChunk({x >> 4, z >> 4});
     if (chunk) {
@@ -303,7 +311,7 @@ int World::getPrecipitationHeight(c_int x, c_int z) {
 }
 
 bool World::canBlockFreeze(const Pos3D &pos, const bool noWaterAdj) {
-    if (this->getBiomeAt(pos.getX(), pos.getZ())->getFloatTemperature(pos) >= 0.15F)
+    if (!this->getBiomeAt(pos.getX(), pos.getZ())->hasIdealTemperature(pos))
         return false;
 
     if (pos.getY() >= 0 && pos.getY() < 256) {
@@ -330,9 +338,8 @@ ND bool World::canBlockFreezeWater(const Pos3D &pos) {
 }
 
 bool World::canSnowAt(const Pos3D &pos, const bool checkLight) {
-    if (this->getBiomeAt(pos.getX(), pos.getZ())->getFloatTemperature(pos) >= 0.15F) {
+    if (!this->getBiomeAt(pos.getX(), pos.getZ())->hasIdealTemperature(pos))
         return false;
-    }
 
     if (!checkLight) { return true; }
 

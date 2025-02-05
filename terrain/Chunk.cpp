@@ -235,6 +235,8 @@ namespace Chunk {
             for (int zPos = 0; zPos < 16; ++zPos) {
                 c_int x = xStart + xPos;
                 c_int z = zStart + zPos;
+                // Skip snow and ice generation if the biome is never cold enough
+                if (!world.isSnowyAt(x, z)) continue;
 
                 c_int precipitationHeight = world.getPrecipitationHeight(x, z);
                 const Pos3D snowPos = Pos3D(x, precipitationHeight, z);

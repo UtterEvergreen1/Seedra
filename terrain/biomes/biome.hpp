@@ -10,6 +10,7 @@
 #include "lce/blocks/blocksInit.hpp"
 
 #include "BiomeDecorator.hpp"
+#include "biomeID.hpp"
 
 #include "terrain/decorators/WorldGenAbstractTree.hpp"
 #include "terrain/decorators/WorldGenFlowers.hpp"
@@ -35,6 +36,15 @@ class ChunkPrimer;
 
 class Biome {
 public:
+    static constexpr int SNOW_CHANCE_HEIGHT = 10;
+    /**
+     * Biome that have a chance of snowing between y1 and y2 and always snowing above y2 and never snowing below y1
+     *
+     * Biomes not in this map will never snow
+     *
+     * Map generated based on output of get_min_temp_biomes.cpp in programs directory
+     */
+    static const std::map<int, int> SNOW_BIOMES;
     static const NoiseGeneratorPerlin TEMPERATURE_NOISE;
     static const NoiseGeneratorPerlin INFO_NOISE;
     static const WorldGenDoublePlant DOUBLE_PLANT_GENERATOR;
@@ -46,6 +56,7 @@ public:
     static const WorldGenBigTree BIG_TREE_FEATURE;
 
     static std::map<int, Biome *> registry;
+    int biomeID;
     std::string biomeName;
 
     /// The base height of this biome. Default 0.1.
@@ -77,7 +88,7 @@ public:
 
     static Biome *getBiomeForId(c_int id) { return registry.at(id); }
 
-    static void registerBiome(int id, Biome *biome) { registry.emplace(id, biome); }
+    static void registerBiome(int id, Biome *biome) { biome->biomeID = id; registry.emplace(id, biome);  }
 
     Biome(std::string biomeNameIn, c_float baseHeightIn, c_float heightVariationIn, c_bool enableSnowIn,
           c_float temperatureIn, c_float rainFallIn = 0.5f, c_u32 waterColorIn = 0xA5F5AF44)
@@ -110,6 +121,10 @@ public:
     ND virtual const AbstractWorldGenerator *getRandomWorldGenForGrass(RNG &rng) const;
 
     ND virtual BlockFlower::EnumFlowerType pickRandomFlower(RNG &rng, const Pos2D &pos) const;
+
+    ND bool isSnowyBiome() const;
+
+    ND bool hasIdealTemperature(const Pos3D& pos) const;
 
     ND float getFloatTemperature(const Pos3D &pos) const;
 
