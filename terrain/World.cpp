@@ -112,7 +112,6 @@ void World::decorateCaves(const Pos2D &theStartPosition, c_int radius, bool hasW
 
 void World::decorateChunks(const Pos2D &pos, c_int radius) {
     std::cout << "Decorating chunks around " << pos << " with radius " << radius << std::endl;
-    generateWorldBiomes();
     for (int dx = radius; dx >= -radius; --dx) {
         for (int dz = radius; dz >= -radius; --dz) {
             Pos2D chunkPos = pos + Pos2D(dx, dz);

@@ -32,16 +32,17 @@ bool WorldGenMinable::generate(World *world, RNG &rng, const Pos3D &pos) const {
 
         for (int l1 = j; l1 <= i1; ++l1) {
             const double d12 = (static_cast<double>(l1) + 0.5 - d6) / d10;
-
-            if (d12 * d12 < 1.0) {
+            const double d12sq = d12 * d12;
+            if (d12sq < 1.0) {
                 for (int i2 = k; i2 <= j1; ++i2) {
                     const double d13 = (static_cast<double>(i2) + 0.5 - d7) / d10;
-
-                    if (d12 * d12 + d13 * d13 < 1.0) {
+                    const double d13sq = d13 * d13;
+                    const double d13sqd12sq = d12sq + d13sq;
+                    if (d13sqd12sq < 1.0) {
                         for (int j2 = l; j2 <= k1; ++j2) {
                             const double d14 = (static_cast<double>(j2) + 0.5 - d8) / d10;
 
-                            if (d12 * d12 + d13 * d13 + d14 * d14 < 1.0) {
+                            if (d13sqd12sq + d14 * d14 < 1.0) {
                                 Pos3D blockPos(l1, i2, j2);
                                 // const lce::BlockState block = world->getBlock(blockPos);
                                 int blockId = world->getBlockId(blockPos);

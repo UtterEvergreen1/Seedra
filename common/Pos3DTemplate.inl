@@ -143,11 +143,12 @@ std::vector<Pos3DTemplate<T>> Pos3DTemplate<T>::getAllInBox(
     c_int maxY = std::max(from.getY(), to.getY());
     c_int maxZ = std::max(from.getZ(), to.getZ());
 
-    std::vector<Pos3DTemplate<T>> positions;
+    std::vector<Pos3DTemplate<T>> positions((maxX - minX + 1) * (maxY - minY + 1) * (maxZ - minZ + 1));
+    int posIndex = 0;
     for (int x = minX; x <= maxX; ++x) {
         for (int y = minY; y <= maxY; ++y) {
             for (int z = minZ; z <= maxZ; ++z) {
-                positions.emplace_back(x, y, z);
+                positions[posIndex++] = {x, y, z};
             }
         }
     }

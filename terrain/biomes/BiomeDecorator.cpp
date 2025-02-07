@@ -109,17 +109,11 @@ void BiomeDecorator::genDecorations(World *world, Biome *biome, RNG &rng) {
         ++trees;
     }
     for (int i = 0; i < trees; ++i) {
-        /*if (this->chunkBlockPos.getX() >> 4 == -9 && this->chunkBlockPos.getZ() >> 4 == 11) {
-            std::cout << "Tree seed: " << rng.nextLongI() << std::endl;
-        }*/
         c_int x = rng.nextInt(16) + 8;
         c_int z = rng.nextInt(16) + 8;
         auto *tree = biome->genBigTreeChance(rng);
         tree->setDecorationDefaults();
         Pos3D blockPos = world->getHeight(this->chunkBlockPos.add(x, 0, z));
-        /*if (this->chunkBlockPos.getX() >> 4 == -9 && this->chunkBlockPos.getZ() >> 4 == 11) {
-            std::cout << "Tree pos: " << blockPos << std::endl;
-        }*/
         if (tree->generate(world, rng, blockPos)) {
             tree->generateSaplings(world, rng, blockPos);
         }
