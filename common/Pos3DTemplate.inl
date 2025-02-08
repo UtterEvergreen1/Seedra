@@ -148,7 +148,7 @@ std::vector<Pos3DTemplate<T>> Pos3DTemplate<T>::getAllInBox(
     for (int x = minX; x <= maxX; ++x) {
         for (int y = minY; y <= maxY; ++y) {
             for (int z = minZ; z <= maxZ; ++z) {
-                positions[posIndex++] = {x, y, z};
+                positions[posIndex++] = {static_cast<T>(x), static_cast<T>(y), static_cast<T>(z)};
             }
         }
     }
