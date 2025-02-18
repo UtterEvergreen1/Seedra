@@ -7,6 +7,9 @@ inline BoundingBox::BoundingBox() = default;
 inline BoundingBox::BoundingBox(c_int minX, c_int minY, c_int minZ, c_int maxX, c_int maxY, c_int maxZ)
     : minX(minX), minY(minY), minZ(minZ), maxX(maxX), maxY(maxY), maxZ(maxZ) {}
 
+inline BoundingBox::BoundingBox(c_int minX, c_int minZ, c_int maxX, c_int maxZ)
+    : BoundingBox(minX, 0, minZ, maxX, 255, maxZ) {}
+
 
 inline bool BoundingBox::operator==(const BoundingBox& other) const {
     return minX == other.minX && maxX == other.maxX && minZ == other.minZ && maxZ == other.maxZ && minY == other.minY &&

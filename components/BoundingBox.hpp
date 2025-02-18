@@ -15,6 +15,7 @@ public:
 
     BoundingBox();
     BoundingBox(int minX, int minY, int minZ, int maxX, int maxY, int maxZ);
+    BoundingBox(int minX, int minZ, int maxX, int maxZ);
 
     bool operator==(const BoundingBox& other) const;
     BoundingBox operator<<(int shiftAmount) const;

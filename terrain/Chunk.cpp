@@ -42,9 +42,10 @@ namespace Chunk {
             chunkPrimer->stage = Stage::STAGE_CAVES;
         }
         
-
+        const Pos2D seedMultiplierWaterCaves = AbstractWaterCaveGen::getSeedMultiplier(world.getGenerator());
         if (chunkPrimer->stage == Stage::STAGE_WATER_CAVES) {
             WaterCaveGenerator waterCaveGenerator(world);
+            waterCaveGenerator.setupRNG(seedMultiplierWaterCaves, chunkPos);
             waterCaveGenerator.generateUnderwater(chunkPrimer, chunkPos, accurate);
             chunkPrimer->stage = Stage::STAGE_WATER_RAVINES;
         }
@@ -52,13 +53,15 @@ namespace Chunk {
 
         if (chunkPrimer->stage == Stage::STAGE_WATER_RAVINES) {
             WaterRavineGenerator waterRavineGenerator(world);
+            waterRavineGenerator.setupRNG(seedMultiplierWaterCaves, chunkPos);
             waterRavineGenerator.generateUnderwater(chunkPrimer, chunkPos, accurate);
             chunkPrimer->stage = Stage::STAGE_CAVES;
         }
         
-        
+        const Pos2DTemplate<i64> seedMultiplierCaves = AbstractMapGen::getSeedMultiplier(world.getGenerator());
         if (chunkPrimer->stage == Stage::STAGE_CAVES) {
             CaveGenerator caveGenerator(world);
+            caveGenerator.setupRNG(seedMultiplierCaves, chunkPos);
             caveGenerator.generate(chunkPrimer, chunkPos, accurate);
             chunkPrimer->stage = Stage::STAGE_RAVINES;
         }
@@ -66,16 +69,12 @@ namespace Chunk {
         
         if (chunkPrimer->stage == Stage::STAGE_RAVINES) {
             RavineGenerator ravineGenerator(world);
+            ravineGenerator.setupRNG(seedMultiplierCaves, chunkPos);
             ravineGenerator.generate(chunkPrimer, chunkPos, accurate);
-            
+            chunkPrimer->stage = Stage::STAGE_STRUCTURE;
         }
 
-
-
         // chunkPrimer->generateSkylightMap();
-
-
-        chunkPrimer->stage = Stage::STAGE_STRUCTURE;
     }
 
 

@@ -34,7 +34,7 @@ void World::deleteWorld() {
 }
 
 void World::createChunks(const Pos2D &pos, c_int radius) {
-    std::cout << "Creating chunks around " << pos << " with radius " << radius << std::endl;
+    //std::cout << "Creating chunks around " << pos << " with radius " << radius << std::endl;
     for (int dx = radius; dx >= -radius; --dx) {
         for (int dz = radius; dz >= -radius; --dz) {
             Pos2D chunkPos = pos + Pos2D(dx, dz);
@@ -45,8 +45,7 @@ void World::createChunks(const Pos2D &pos, c_int radius) {
 
 
 void World::decorateCaves(const Pos2D &theStartPosition, c_int radius, bool hasWaterCaves) {
-    std::cout << "Carving chunks around " << theStartPosition << " with radius " << radius << std::endl;
-
+    //std::cout << "Carving chunks around " << theStartPosition << " with radius " << radius << std::endl;
     Pos2D lower = theStartPosition - radius;
     Pos2D upper = theStartPosition + radius;
 
@@ -111,7 +110,7 @@ void World::decorateCaves(const Pos2D &theStartPosition, c_int radius, bool hasW
 
 
 void World::decorateChunks(const Pos2D &pos, c_int radius) {
-    std::cout << "Decorating chunks around " << pos << " with radius " << radius << std::endl;
+    //std::cout << "Decorating chunks around " << pos << " with radius " << radius << std::endl;
     for (int dx = radius; dx >= -radius; --dx) {
         for (int dz = radius; dz >= -radius; --dz) {
             Pos2D chunkPos = pos + Pos2D(dx, dz);
@@ -127,7 +126,7 @@ void World::generateWorldBiomes() {
     this->biomes = g->getBiomeRange(1, worldBounds.minX << 4, worldBounds.minZ << 4, worldBounds.maxX << 5, worldBounds.maxZ << 5);
 }
 
-int* World::getChunkBiomes(const Pos2D& pos) {
+int* World::getChunkBiomes(const Pos2D& pos) const {
     if (biomes == nullptr) { return nullptr; }
 
     BoundingBox bounds = worldBounds << 4;

@@ -47,7 +47,7 @@ public:
 
     int* getWorldBiomes() const { return biomes; }
 
-    int *getChunkBiomes(const Pos2D &pos);
+    int *getChunkBiomes(const Pos2D &pos) const;
 
     Biome* getBiomeAt(int x, int z) const;
     int getBiomeIdAt(int x, int z) const;
