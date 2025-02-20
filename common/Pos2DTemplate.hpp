@@ -20,6 +20,9 @@ public:
     Pos2DTemplate() : x(0), z(0) {}
 
     Pos2DTemplate(classType xIn, classType zIn) : x(xIn), z(zIn) {}
+    Pos2DTemplate(Pos2DTemplate&&) = default;
+    Pos2DTemplate(const Pos2DTemplate&) = default;
+    Pos2DTemplate& operator=(const Pos2DTemplate&) = default;
 
     bool operator==(const Pos2DTemplate& other) const;
     bool operator==(int other) const;
