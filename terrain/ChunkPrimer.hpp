@@ -1,5 +1,6 @@
 #pragma once
 
+#include <atomic>
 #include <cmath>
 #include <iomanip>
 #include <string>
@@ -29,7 +30,8 @@ class ChunkPrimer {
     static constexpr int STORAGE_SIZE = 16 * (256) * 16;
 public:
     /// all the blocks along with data in the chunk
-    Stage stage = Stage::STAGE_TERRAIN;
+    std::atomic<Stage> stage = Stage::STAGE_TERRAIN;
+    std::atomic_bool isModifying = false;
     RNG decorateRng;
 
     u16 blocks[STORAGE_SIZE]{};

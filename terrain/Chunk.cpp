@@ -28,7 +28,9 @@ namespace Chunk {
 
     MU void populateCaves(World& world, Pos2D chunkPos) {
         ChunkPrimer* chunkPrimer = world.getChunk(chunkPos);
+        if (chunkPrimer->isModifying.load()) return;
 
+        chunkPrimer->isModifying.store(true);
         bool accurate = true;
 
 
@@ -44,35 +46,36 @@ namespace Chunk {
         
         const Pos2D seedMultiplierWaterCaves = AbstractWaterCaveGen::getSeedMultiplier(world.getGenerator());
         if (chunkPrimer->stage == Stage::STAGE_WATER_CAVES) {
+            chunkPrimer->stage = Stage::STAGE_WATER_RAVINES;
             WaterCaveGenerator waterCaveGenerator(world);
             waterCaveGenerator.setupRNG(seedMultiplierWaterCaves, chunkPos);
             waterCaveGenerator.generateUnderwater(chunkPrimer, chunkPos, accurate);
-            chunkPrimer->stage = Stage::STAGE_WATER_RAVINES;
         }
         
 
         if (chunkPrimer->stage == Stage::STAGE_WATER_RAVINES) {
+            chunkPrimer->stage = Stage::STAGE_CAVES;
             WaterRavineGenerator waterRavineGenerator(world);
             waterRavineGenerator.setupRNG(seedMultiplierWaterCaves, chunkPos);
             waterRavineGenerator.generateUnderwater(chunkPrimer, chunkPos, accurate);
-            chunkPrimer->stage = Stage::STAGE_CAVES;
         }
         
         const Pos2DTemplate<i64> seedMultiplierCaves = AbstractMapGen::getSeedMultiplier(world.getGenerator());
         if (chunkPrimer->stage == Stage::STAGE_CAVES) {
+            chunkPrimer->stage = Stage::STAGE_RAVINES;
             CaveGenerator caveGenerator(world);
             caveGenerator.setupRNG(seedMultiplierCaves, chunkPos);
             caveGenerator.generate(chunkPrimer, chunkPos, accurate);
-            chunkPrimer->stage = Stage::STAGE_RAVINES;
         }
         
         
         if (chunkPrimer->stage == Stage::STAGE_RAVINES) {
+            chunkPrimer->stage = Stage::STAGE_STRUCTURE;
             RavineGenerator ravineGenerator(world);
             ravineGenerator.setupRNG(seedMultiplierCaves, chunkPos);
             ravineGenerator.generate(chunkPrimer, chunkPos, accurate);
-            chunkPrimer->stage = Stage::STAGE_STRUCTURE;
         }
+        chunkPrimer->isModifying.store(false);
 
         // chunkPrimer->generateSkylightMap();
     }
@@ -144,9 +147,10 @@ namespace Chunk {
      */
     void populateStructures(World& world, Pos2D chunkPos) {
         ChunkPrimer* chunk = world.getChunk(chunkPos);
-        if (!chunk || chunk->stage != Stage::STAGE_STRUCTURE) {
+        if (!chunk || chunk->isModifying.load() || chunk->stage != Stage::STAGE_STRUCTURE) {
             return;
         }
+        chunk->isModifying.store(true);
 
         chunk->decorateRng = RNG::getPopulationSeed(world.getGenerator()->getWorldSeed(), chunkPos.x, chunkPos.z);
 
@@ -193,6 +197,7 @@ namespace Chunk {
 
 
         chunk->stage = Stage::STAGE_DECORATE;
+        chunk->isModifying.store(false);
     }
 
 
@@ -200,9 +205,10 @@ namespace Chunk {
     void populateDecorations(World& world, Pos2D chunkPos) {
 
         ChunkPrimer* chunk = world.getChunk(chunkPos);
-        if (!chunk || chunk->stage != Stage::STAGE_DECORATE) {
+        if (!chunk || chunk->isModifying.load() || chunk->stage != Stage::STAGE_DECORATE) {
             return;
         }
+        chunk->isModifying.store(true);
 
         Generator* g = world.getGenerator();
         if (const Pos3D waterPos = FeaturePositions::waterLake(
@@ -254,6 +260,7 @@ namespace Chunk {
             }
         }
         chunk->stage = Stage::STAGE_DONE;
+        chunk->isModifying.store(false);
     }
 
 }
