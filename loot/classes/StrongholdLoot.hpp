@@ -33,7 +33,7 @@ namespace loot {
 
         if constexpr (checkCaves) {
             // TODO: probably needs fixed
-            ChunkPrimer* chunk = Chunk::provideChunk(g, {chestChunkX, chestChunkZ}); // , accurate
+            ChunkPrimer* chunk = Chunk::provideNewChunk(g, {chestChunkX, chestChunkZ}); // , accurate
             // we roll rng equal to the stone bricks in the chunk that generated before the chest corridor
             if (!rolls::Stronghold::generateStructure<true>(chunk, strongholdGenerator, rng, chestChunkX, chestChunkZ,
                                                             piece)) {

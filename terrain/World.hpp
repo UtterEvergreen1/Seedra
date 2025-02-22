@@ -121,8 +121,8 @@ public:
 private:
 
     int* biomes = nullptr;
-    ChunkPrimer *lastChunk = nullptr;
-    Pos2D lastChunkCoords = Pos2D(-100000, -100000);
+    std::atomic<ChunkPrimer *> lastChunk = nullptr;
+    std::atomic<Pos2D> lastChunkCoords = Pos2D(-100000, -100000);
 
 
     Generator *g;

@@ -124,15 +124,12 @@ void ChunkGeneratorOverWorld::replaceBiomeBlocks(c_int x, c_int z, ChunkPrimer* 
 }
 
 
-ChunkPrimer* ChunkGeneratorOverWorld::provideChunk(c_int x, c_int z) {
+void ChunkGeneratorOverWorld::provideChunk(ChunkPrimer *chunkPrimer, c_int x,c_int z) {
     rng.setSeed((i64) x * 341873128712LL + (i64) z * 132897987541LL);
-    auto* chunkPrimer = new ChunkPrimer();
-    chunkPrimer->stage = Stage::STAGE_TERRAIN;
     setBlocksInChunk(x, z, chunkPrimer);
     setBiomesForGeneration(x * 16, z * 16, 16, 16, 1);
     replaceBiomeBlocks(x, z, chunkPrimer, biomesForGeneration);
     chunkPrimer->stage = Stage::STAGE_WATER_CAVES;
-    return chunkPrimer;
 }
 
 

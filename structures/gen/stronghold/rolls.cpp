@@ -141,7 +141,7 @@ namespace rolls {
                     continue;
 
                 // TODO: populateCaves
-                ChunkPrimer *chunk = Chunk::provideChunk(g, {checkChunkX, checkChunkZ});
+                ChunkPrimer *chunk = Chunk::provideNewChunk(g, {checkChunkX, checkChunkZ});
                 RNG random = RNG::getPopulationSeed(g.getWorldSeed(), portalRoomChunkPos.x + x,
                                                     portalRoomChunkPos.z + z);
                 additionalStrongholdRolls<false, true>(chunk, sg, random,

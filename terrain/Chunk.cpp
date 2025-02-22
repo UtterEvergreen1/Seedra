@@ -15,12 +15,16 @@
 #include "terrain/decorators/WorldGenLakes.hpp"
 
 namespace Chunk {
-
-
-    ChunkPrimer* provideChunk(const Generator& g, Pos2D chunkPos) {
+    void provideChunk(ChunkPrimer *chunkPrimer, const Generator &g, const Pos2D& chunkPos) {
         ChunkGeneratorOverWorld chunk(g);
-        ChunkPrimer *chunkPrimer = chunk.provideChunk(chunkPos);
+        chunkPrimer->isModifying.store(true);
+        chunk.provideChunk(chunkPrimer, chunkPos);
+        chunkPrimer->isModifying.store(false);
+    }
 
+    ChunkPrimer* provideNewChunk(const Generator& g, const Pos2D& chunkPos) {
+        auto* chunkPrimer = new ChunkPrimer();
+        provideChunk(chunkPrimer, g, chunkPos);
         return chunkPrimer;
     }
 
@@ -28,7 +32,9 @@ namespace Chunk {
 
     MU void populateCaves(World& world, Pos2D chunkPos) {
         ChunkPrimer* chunkPrimer = world.getChunk(chunkPos);
-        if (chunkPrimer->isModifying.load()) return;
+        if (chunkPrimer->isModifying.load() || chunkPrimer->stage != Stage::STAGE_WATER_CAVES) {
+            return;
+        }
 
         chunkPrimer->isModifying.store(true);
         bool accurate = true;

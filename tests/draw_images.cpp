@@ -261,5 +261,5 @@ int main(int argc, char* argv[]) {
     // std::cout << pos << std::endl;
     // auto lol2 = Pos2D(-55 - 0, 389 - 16).toChunkPos();
     // Pos2D chunkPos = pos.toChunkPos();
-    // auto* chunkPrimer = Chunk::provideChunk<true, false, false>(g, 0, 0);
+    // auto* chunkPrimer = Chunk::provideNewChunk<true, false, false>(g, 0, 0);
      */

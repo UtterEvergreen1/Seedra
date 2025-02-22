@@ -96,7 +96,7 @@ public:
     struct Hasher {
         template <typename T = classType, typename = std::enable_if_t<std::is_integral_v<T>>>
         std::size_t operator()(const Pos2DTemplate& pos) const {
-            return pos.hash();
+            return pos.asLong();
         }
     };
 };

@@ -60,9 +60,9 @@ inline void BoundingBox::shrinkToFit(const BoundingBox& other) {
     if (minX < other.minX) minX = other.minX;
     if (minY < other.minY) minY = other.minY;
     if (minZ < other.minZ) minZ = other.minZ;
-    if (maxX < other.maxX) maxX = other.maxX;
-    if (maxY < other.maxY) maxY = other.maxY;
-    if (maxZ < other.maxZ) maxZ = other.maxZ;
+    if (maxX > other.maxX) maxX = other.maxX;
+    if (maxY > other.maxY) maxY = other.maxY;
+    if (maxZ > other.maxZ) maxZ = other.maxZ;
 }
 
 

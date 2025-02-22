@@ -172,7 +172,7 @@ void processSeedRange(
 
         // Evaluate each chunk in this (2*WIDTH+1)x(2*WIDTH+1) region
         for (auto& pos : allRavineChunks) {
-            auto* chunk = Chunk::provideChunk(g, pos.x, pos.z);
+            auto* chunk = Chunk::provideNewChunk(g, pos.x, pos.z);
             if (!chunk) {
                 std::cerr << "Error getting chunk: " << pos.x << ", " << pos.z << std::endl;
                 continue;
@@ -354,7 +354,7 @@ int main() {
                     lce::WORLDSIZE::CLASSIC, lce::BIOMESCALE::SMALL);
 
 
-        auto* chunk = Chunk::provideChunk(g, chunkPos.x, chunkPos.z);
+        auto* chunk = Chunk::provideNewChunk(g, chunkPos.x, chunkPos.z);
         if (!chunk) {
             std::cerr << "Error getting chunk: " << chunkPos.x
                       << ", " << chunkPos.z << std::endl;

@@ -8,7 +8,8 @@ inline bool World::chunkExists(const Pos2D &pos) const {
 }
 
 inline ChunkPrimer *World::getChunk(const Pos2D &pos) {
-    if (lastChunkCoords == pos) {
+    std::lock_guard lock(chunkMutex);
+    if (lastChunkCoords.load() == pos) {
         if (lastChunk != nullptr) {
             return lastChunk;
         }
@@ -19,11 +20,10 @@ inline ChunkPrimer *World::getChunk(const Pos2D &pos) {
         return nullptr;
     }
 
-    lastChunkCoords = pos;
-    std::lock_guard lock(chunkMutex);
     const auto it = chunks.find(pos);
     if (it != chunks.end()) {
-        lastChunk = it->second;
+        lastChunkCoords.store(pos);
+        lastChunk.store(it->second);
         return it->second;
     }
 
@@ -41,9 +41,12 @@ inline ChunkPrimer *World::getOrCreateChunk(const Pos2D &chunkPos) {
         return nullptr;
     }
 
-    chunk = Chunk::provideChunk(*this->g, chunkPos);
-    lastChunk = chunk;
+    chunk = new ChunkPrimer();
     addChunk(chunkPos, chunk);
+    Chunk::provideChunk(chunk, *this->g, chunkPos);
+    std::lock_guard lock(chunkMutex);
+    lastChunkCoords.store(chunkPos);
+    lastChunk.store(chunk);
     return chunk;
 }
 

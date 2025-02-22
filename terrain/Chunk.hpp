@@ -11,7 +11,8 @@ namespace Chunk {
     MU static bool GENERATE_STRONGHOLDS = true;
 
 
-    MU extern ChunkPrimer *provideChunk(const Generator &g, Pos2D chunkPos);
+    MU extern void provideChunk(ChunkPrimer* chunkPrimer, const Generator &g, const Pos2D& chunkPos);
+    MU extern ChunkPrimer *provideNewChunk(const Generator &g, const Pos2D& chunkPos);
 
     MU extern void populateChunk(World& world, Pos2D chunkPos);
 

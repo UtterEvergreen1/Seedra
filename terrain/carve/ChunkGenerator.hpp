@@ -36,8 +36,15 @@ public:
     void setBiomesForGeneration(int x, int z, int width, int height, int scale);
     void setBlocksInChunk(int chunkX, int chunkZ, ChunkPrimer* primer);
     void replaceBiomeBlocks(int x, int z, ChunkPrimer* primer, c_int* biomesIn);
-    ChunkPrimer* provideChunk(int x, int z);
-    MU ChunkPrimer* provideChunk(const Pos2D chunkPos) { return provideChunk(chunkPos.x, chunkPos.z); };
+
+    void provideChunk(ChunkPrimer *chunkPrimer, int x, int z);
+    MU void provideChunk(ChunkPrimer *chunkPrimer, const Pos2D& chunkPos) { provideChunk(chunkPrimer, chunkPos.x, chunkPos.z); }
+    ChunkPrimer* provideNewChunk(int x, int z) {
+        ChunkPrimer* chunkPrimer = new ChunkPrimer();
+        provideChunk(chunkPrimer, x, z);
+        return chunkPrimer;
+    }
+    MU ChunkPrimer* provideNewChunk(const Pos2D& chunkPos) { return provideNewChunk(chunkPos.x, chunkPos.z); }
     void generateHeightmap(int x, int y, int z);
 
 };
