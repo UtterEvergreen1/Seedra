@@ -101,40 +101,53 @@ namespace Chunk {
         const ChunkPrimer* chunk1 = world.getChunk({chunkPos.x + 1, chunkPos.z});
         const ChunkPrimer* chunk2 = world.getChunk({chunkPos.x, chunkPos.z + 1});
         const ChunkPrimer* chunk3 = world.getChunk({chunkPos.x - 1, chunkPos.z});
+        // Checks if caves are done on adj chunks before decorating
 
-        //south east
-        if (chunk1 && chunk2 && world.getChunk({chunkPos.x + 1, chunkPos.z + 1}) != nullptr) {
-            // populateCaves(world, chunkPos);
-            // populateLight(world, g, chunkPos.x, chunkPos.z);
-            populateStructures(world, chunkPos);
-            populateDecorations(world, chunkPos);
+        //south-east
+        if (chunk1 && chunk2 && chunk1->stage >= Stage::STAGE_STRUCTURE && chunk2->stage >= Stage::STAGE_STRUCTURE) {
+            ChunkPrimer* chunk4 = world.getChunk({chunkPos.x + 1, chunkPos.z + 1});
+            if (chunk4 != nullptr && chunk4->stage >= Stage::STAGE_STRUCTURE) {
+                // populateCaves(world, chunkPos);
+                // populateLight(world, g, chunkPos.x, chunkPos.z);
+                populateStructures(world, chunkPos);
+                populateDecorations(world, chunkPos);
+            }
         }
 
-        //south west
-        if (chunk3 && chunk2 && world.getChunk({chunkPos.x - 1, chunkPos.z + 1}) != nullptr) {
-            // populateCaves(world, chunkPos);
-            // populateLight(world, g, chunkPos.x, chunkPos.z);
-            Pos2D newPos(chunkPos.x - 1, chunkPos.z);
-            populateStructures(world, newPos);
-            populateDecorations(world, newPos);
+        //south-west
+        if (chunk3 && chunk2 && chunk3->stage >= Stage::STAGE_STRUCTURE && chunk2->stage >= Stage::STAGE_STRUCTURE) {
+            ChunkPrimer* chunk4 = world.getChunk({chunkPos.x - 1, chunkPos.z + 1});
+            if (chunk4 != nullptr && chunk4->stage >= Stage::STAGE_STRUCTURE) {
+                // populateCaves(world, chunkPos);
+                // populateLight(world, g, chunkPos.x, chunkPos.z);
+                Pos2D newPos(chunkPos.x - 1, chunkPos.z);
+                populateStructures(world, newPos);
+                populateDecorations(world, newPos);
+            }
         }
 
-        //north east
-        if (chunk && chunk1 && world.getChunk({chunkPos.x + 1, chunkPos.z - 1}) != nullptr) {
-            // populateCaves(world, chunkPos);
-            // populateLight(world, g, chunkPos.x, chunkPos.z);
-            Pos2D newPos(chunkPos.x, chunkPos.z - 1);
-            populateStructures(world, newPos);
-            populateDecorations(world, newPos);
+        //north-east
+        if (chunk && chunk1 && chunk->stage >= Stage::STAGE_STRUCTURE && chunk1->stage >= Stage::STAGE_STRUCTURE) {
+            ChunkPrimer* chunk4 = world.getChunk({chunkPos.x + 1, chunkPos.z - 1});
+            if (chunk4 != nullptr && chunk4->stage >= Stage::STAGE_STRUCTURE) {
+                // populateCaves(world, chunkPos);
+                // populateLight(world, g, chunkPos.x, chunkPos.z);
+                Pos2D newPos(chunkPos.x, chunkPos.z - 1);
+                populateStructures(world, newPos);
+                populateDecorations(world, newPos);
+            }
         }
 
-        //north west
-        if (chunk && chunk3 && world.getChunk({chunkPos.x - 1, chunkPos.z - 1}) != nullptr) {
-            // populateCaves(world, chunkPos);
-            // populateLight(world, g, chunkPos.x, chunkPos.z);
-            Pos2D newPos(chunkPos.x - 1, chunkPos.z - 1);
-            populateStructures(world, newPos);
-            populateDecorations(world, newPos);
+        //north-west
+        if (chunk && chunk3 && chunk->stage >= Stage::STAGE_STRUCTURE && chunk3->stage >= Stage::STAGE_STRUCTURE) {
+            ChunkPrimer* chunk4 = world.getChunk({chunkPos.x - 1, chunkPos.z - 1});
+            if (chunk4 != nullptr && chunk4->stage >= Stage::STAGE_STRUCTURE) {
+                // populateCaves(world, chunkPos);
+                // populateLight(world, g, chunkPos.x, chunkPos.z);
+                Pos2D newPos(chunkPos.x - 1, chunkPos.z - 1);
+                populateStructures(world, newPos);
+                populateDecorations(world, newPos);
+            }
         }
     }
 
