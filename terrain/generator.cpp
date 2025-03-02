@@ -77,22 +77,13 @@ void Generator::applyWorldSeed(c_i64 seed) {
 }
 
 
-i32 Generator::stringToSeed(const std::string& theString) {
-    int32_t hash = 0;
-    for (unsigned char c: theString) {
-        hash = 31 * hash + c;
-    }
-    return hash;
-}
-
-
 /**
  * Initializes the generator for a given world seed in the overworld.
  *
  * @param seed world seed to apply
  */
 void Generator::applyWorldSeed(const std::string& seed) {
-    applyWorldSeed(stringToSeed(seed));
+    applyWorldSeed(StringHash::hash(seed));
 }
 
 

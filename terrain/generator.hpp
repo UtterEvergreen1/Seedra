@@ -115,6 +115,4 @@ public:
     MU ND Pos2D getSpawnBlock() const;
 
     static bool id_matches(i32 id, u64 validBiomes, u64 mutatedValidBiomes = 0);
-
-    static i32 stringToSeed(const std::string& theString);
 };

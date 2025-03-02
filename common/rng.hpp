@@ -1,6 +1,7 @@
 #pragma once
 
 #include "lce/processor.hpp"
+#include "StringHash.hpp"
 
 #include <iostream>
 #include <chrono>
@@ -16,6 +17,7 @@ class RNG {
 public:
     RNG() = default;
     explicit RNG(c_u64 seedIn) { this->setSeed(seedIn); }
+    explicit RNG(const std::string& seedIn) { this->setSeed(StringHash::hash(seedIn)); }
 
     bool operator==(const RNG& other) const { return seed == other.seed; }
 
