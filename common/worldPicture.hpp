@@ -24,9 +24,6 @@ public:
 
     MU explicit WorldPicture(Generator* g) : Picture(g->getWorldCoordinateBounds() >> 1), g(g) {}
 
-    ~WorldPicture() { delete[] myData; }
-
-
     MU void drawBiomes() const {
         if (myWidth == 0) return;
         if (myHeight == 0) return;

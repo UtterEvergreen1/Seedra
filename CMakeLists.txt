@@ -51,7 +51,11 @@ if(LC_BUILD_EXECUTABLE)
     add_executable(EXE_GenCreateWorld "tests/gen_chunk.cpp")
     target_link_libraries(EXE_GenCreateWorld PRIVATE LIB_LegacyCubiomes)
 
-    # Chunk Gen Code For LegacyChunkViewer
+    # Chunk Gen Code For drawing biomes to file
+    add_executable(EXE_DrawImages "tests/draw_images.cpp")
+    target_link_libraries(EXE_DrawImages PRIVATE LIB_LegacyCubiomes)
+
+    # Chunk Gen Code For getting the output used to optimize biomes
     add_executable(EXE_GetMaxTempBiomes "tests/get_min_temp_biomes.cpp")
     target_link_libraries(EXE_GetMaxTempBiomes PRIVATE LIB_LegacyCubiomes)
 
