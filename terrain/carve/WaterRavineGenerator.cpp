@@ -250,15 +250,12 @@ void WaterRavineGenerator::addFeature(
         addTunnel(chunkPrimer, rng.nextLongI(), currentChunk, {tunnelStartX, tunnelStartY, tunnelStartZ},
                   tunnelLengthMultiplier, tunnelDirection, tunnelSlope, 0, 0, 3.0);
 
-        Pos3D blockPos = DoublePos3D(tunnelStartX, tunnelStartY, tunnelStartZ).asType<int>();
+        /*Pos3D blockPos = DoublePos3D(tunnelStartX, tunnelStartY, tunnelStartZ).asType<int>();
 
         blockPos.x - baseChunk.x * 16;
         blockPos.z - baseChunk.z * 16;
-        chunkPrimer->setBlockId(blockPos, lce::blocks::REDSTONE_BLOCK_ID);
+        chunkPrimer->setBlockId(blockPos, lce::blocks::REDSTONE_BLOCK_ID);*/
     }
-
-
-
 }
 
 

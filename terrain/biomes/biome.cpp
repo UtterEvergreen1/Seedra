@@ -966,17 +966,17 @@ uint32_t BiomeSwamp::getGrassColor(const Pos3D &pos) const {
 }
 
 uint32_t BiomeSwamp::getFoliageColor(const Pos3D &pos) const {
-    return 0x39706A;
+    return 0xFF39706A;
 }
 
 uint32_t BiomeMesa::getFoliageColor(const Pos3D &pos) const {
     // return 10387789;
-    return 0x4D819E;
+    return 0xFF4D819E;
 }
 
 uint32_t BiomeMesa::getGrassColor(const Pos3D &pos) const {
     // return 9470285;
-    return 0x4D8190;
+    return 0xFF4D8190;
 }
 
 
