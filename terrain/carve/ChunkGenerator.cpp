@@ -114,7 +114,7 @@ void ChunkGeneratorOverWorld::setBlocksInChunk(c_int chunkX, c_int chunkZ, Chunk
 
 void ChunkGeneratorOverWorld::replaceBiomeBlocks(c_int x, c_int z, ChunkPrimer* primer, c_int* biomesIn) {
     depthBuffer =
-            surfaceNoise.getRegion(depthBuffer, (double) (x * 16), (double) (z * 16), 16, 16, 0.0625, 0.0625, 1.0);
+            surfaceNoise.getRegion(depthBuffer, x * 16, z * 16, 16, 16, 0.0625, 0.0625, 1.0);
     for (int i = 0; i < 16; ++i) {
         for (int j = 0; j < 16; ++j) {
             Biome* biome = Biome::getBiomeForId(biomesIn[j + i * 16]);
@@ -153,7 +153,7 @@ void ChunkGeneratorOverWorld::generateHeightmap(c_int x, c_int y, c_int z) {
                     c_int biome1 = biomesForGeneration[k + j1 + 2 + (l + k1 + 2) * 10];
                     double f5;
                     double f6;
-                    getBiomeDepthAndScale(biome1, &f5, &f6, 0);
+                    getBiomeDepthAndScale(biome1, &f5, &f6, nullptr);
                     /* if (this->terrainType == WorldType.AMPLIFIED && f5 > 0.0F)
                      {
                          f5 = 1.0F + f5 * 2.0F;

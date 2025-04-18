@@ -1,53 +1,44 @@
 #pragma once
 
-#include "loot/classes/EnchantRandomly.hpp"
+#include "lce/items/itemsInit.hpp"
 #include "loot/classes/Loot.hpp"
 
-
 namespace loot {
-    class SimpleDungeon : public Loot<SimpleDungeon> {
-    public:
-        static void setup();
-    };
 
-    inline void SimpleDungeon::setup() {
-        std::vector<ItemEntry> items1;
-        std::vector<ItemEntry> items2;
-        std::vector<ItemEntry> items3;
+    using namespace lce::items;
 
-        // table 1
-        items1.emplace_back(&lce::items::SADDLE, 20);
-        items1.emplace_back(&lce::items::GOLDEN_APPLE, 15);
-        items1.emplace_back(&lce::items::ENCHANTED_GOLDEN_APPLE, 2);
-        items1.emplace_back(&lce::items::DISC_13, 15);
-        items1.emplace_back(&lce::items::DISC_CAT, 15);
-        items1.emplace_back(&lce::items::NAME_TAG, 20);
-        items1.emplace_back(&lce::items::GOLDEN_HORSE_ARMOR, 10);
-        items1.emplace_back(&lce::items::IRON_HORSE_ARMOR, 15);
-        items1.emplace_back(&lce::items::DIAMOND_HORSE_ARMOR, 5);
-        items1.emplace_back(&lce::items::ENCHANTED_BOOK, new EnchantRandomlyBook(), 10);
-        lootTables.emplace_back(items1, 1, 3);
-
-        // table 2
-        items2.emplace_back(&lce::items::IRON_INGOT, 10, 1, 4);
-        items2.emplace_back(&lce::items::GOLD_INGOT, 5, 1, 4);
-        items2.emplace_back(&lce::items::BREAD, 20);
-        items2.emplace_back(&lce::items::WHEAT, 20, 1, 4);
-        items2.emplace_back(&lce::items::BUCKET, 10);
-        items2.emplace_back(&lce::items::REDSTONE, 15, 1, 4);
-        items2.emplace_back(&lce::items::COAL, 15, 1, 4);
-        items2.emplace_back(&lce::items::MELON_SEEDS, 10, 2, 4);
-        items2.emplace_back(&lce::items::PUMPKIN_SEEDS, 10, 2, 4);
-        items2.emplace_back(&lce::items::BEETROOT_SEEDS, 10, 2, 4);
-        lootTables.emplace_back(items2, 1, 4);
-
-        // table 3
-        items3.emplace_back(&lce::items::BONE, 10, 1, 8);
-        items3.emplace_back(&lce::items::GUNPOWDER, 10, 1, 8);
-        items3.emplace_back(&lce::items::ROTTEN_FLESH, 10, 1, 8);
-        items3.emplace_back(&lce::items::STRING, 10, 1, 8);
-        lootTables.emplace_back(items3, 3);
-
-        maxItemsPossible = 10;
-    }
+    MU static constexpr auto simple_dungeon
+            = LootWrapper<
+                    27,
+                    TableWrapper<1, 3,
+                                 LootItem<20, 1, 1, SADDLE.getState()>,
+                                 LootItem<15, 1, 1, GOLDEN_APPLE.getState()>,
+                                 LootItem< 2, 1, 1, ENCHANTED_GOLDEN_APPLE.getState()>,
+                                 LootItem<15, 1, 1, DISC_13.getState()>,
+                                 LootItem<15, 1, 1, DISC_CAT.getState()>,
+                                 LootItem<20, 1, 1, NAME_TAG.getState()>,
+                                 LootItem<10, 1, 1, GOLDEN_HORSE_ARMOR.getState()>,
+                                 LootItem<15, 1, 1, IRON_HORSE_ARMOR.getState()>,
+                                 LootItem< 5, 1, 1, DIAMOND_HORSE_ARMOR.getState()>,
+                                 LootItem<10, 1, 1, ENCHANTED_BOOK.getState(), enchant_random_book>
+                                 >,
+                    TableWrapper<1, 4,
+                                 LootItem<10, 1, 4, IRON_INGOT.getState()>,
+                                 LootItem< 5, 1, 4, GOLD_INGOT.getState()>,
+                                 LootItem<20, 1, 1, BREAD.getState()>,
+                                 LootItem<20, 1, 4, WHEAT.getState()>,
+                                 LootItem<10, 1, 1, BUCKET.getState()>,
+                                 LootItem<15, 1, 4, REDSTONE.getState()>,
+                                 LootItem<15, 1, 4, COAL.getState()>,
+                                 LootItem<10, 2, 4, MELON_SEEDS.getState()>,
+                                 LootItem<10, 2, 4, PUMPKIN_SEEDS.getState()>,
+                                 LootItem<10, 2, 4, BEETROOT_SEEDS.getState()>
+                                 >,
+                    TableWrapper<3, 3,
+                                 LootItem<10, 1, 8, BONE.getState()>,
+                                 LootItem<10, 1, 8, GUNPOWDER.getState()>,
+                                 LootItem<10, 1, 8, ROTTEN_FLESH.getState()>,
+                                 LootItem<10, 1, 8, STRING.getState()>
+                                 >
+                    >::value;
 }

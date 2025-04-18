@@ -1,3 +1,5 @@
+#pragma once
+
 inline Pos2D Piece::getBoundingBoxCenter() const {
     return {minX + maxX / 2, minZ + maxZ / 2};
 }

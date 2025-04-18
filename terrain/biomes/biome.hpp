@@ -130,13 +130,13 @@ public:
 
     virtual void decorate(World *worldIn, RNG &rng, const Pos2D &pos);
 
-    uint32_t getWaterColor() const;
+    ND uint32_t getWaterColor() const;
 
-    float getRainfall() const;
+    ND float getRainfall() const;
 
-    virtual uint32_t getGrassColor(const Pos3D &pos) const;
+    ND virtual uint32_t getGrassColor(const Pos3D &pos) const;
 
-    virtual uint32_t getFoliageColor(const Pos3D &pos) const;
+    ND virtual uint32_t getFoliageColor(const Pos3D &pos) const;
 
     void generateBiomeTerrain(RNG &rng, ChunkPrimer *chunkPrimerIn, int x, int z, double noiseVal) const;
 
@@ -355,9 +355,9 @@ public:
 
     BlockFlower::EnumFlowerType pickRandomFlower(RNG &rng, const Pos2D &pos) const override;
 
-    uint32_t getGrassColor(const Pos3D &pos) const override;
+    ND uint32_t getGrassColor(const Pos3D &pos) const override;
 
-    uint32_t getFoliageColor(const Pos3D &pos) const override;
+    ND uint32_t getFoliageColor(const Pos3D &pos) const override;
 
 private:
     static const WorldGenSwamp SWAMP_FEATURE;
@@ -513,9 +513,9 @@ public:
 
     const WorldGenAbstractTree *genBigTreeChance(RNG &rng) const override;
 
-    uint32_t getFoliageColor(const Pos3D &pos) const override;
+    ND uint32_t getFoliageColor(const Pos3D &pos) const override;
 
-    uint32_t getGrassColor(const Pos3D &pos) const override;
+    ND uint32_t getGrassColor(const Pos3D &pos) const override;
 
     class Decorator final : public BiomeDecorator {
     protected:

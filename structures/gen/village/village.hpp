@@ -7,7 +7,6 @@
 
 #include "common/rng.hpp"
 
-#include <map>
 #include <vector>
 
 class StructureComponent;
@@ -32,7 +31,6 @@ namespace gen {
         static c_int VILLAGE_SIZE;
         static const PieceWeight PIECE_WEIGHTS[9];
 
-    private:
         struct FinalPieceWeight {
             PieceType pieceType;
             int weight;
@@ -177,4 +175,4 @@ namespace build::village {
 
 
 
-}; // namespace build::village
+} // namespace build::village

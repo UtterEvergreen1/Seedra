@@ -11,18 +11,15 @@
 
 #include "lce/processor.hpp"
 
-template<class classType>
+template<class T>
 class Pos2DTemplate {
 public:
-    classType x;
-    classType z;
+    T x;
+    T z;
 
     Pos2DTemplate() : x(0), z(0) {}
 
-    Pos2DTemplate(classType xIn, classType zIn) : x(xIn), z(zIn) {}
-    Pos2DTemplate(Pos2DTemplate&&) = default;
-    Pos2DTemplate(const Pos2DTemplate&) = default;
-    Pos2DTemplate& operator=(const Pos2DTemplate&) = default;
+    Pos2DTemplate(T xIn, T zIn) : x(xIn), z(zIn) {}
 
     bool operator==(const Pos2DTemplate& other) const;
     bool operator==(int other) const;
@@ -34,28 +31,28 @@ public:
     Pos2DTemplate operator*(int other) const;
     Pos2DTemplate operator-(const Pos2DTemplate& other) const;
     Pos2DTemplate operator-(int other) const;
-    bool operator>(classType value) const;
-    bool operator<(classType value) const;
+    bool operator>(T value) const;
+    bool operator<(T value) const;
     bool operator<(const Pos2DTemplate& other) const;
-    bool operator>=(classType value) const;
-    bool operator<=(classType value) const;
+    bool operator>=(T value) const;
+    bool operator<=(T value) const;
 
-    template <typename T = classType, typename = std::enable_if_t<std::is_integral_v<T>>>
+    template <typename U = T, typename = std::enable_if_t<std::is_integral_v<U>>>
     Pos2DTemplate operator>>(int shiftAmount) const {
         return {x >> shiftAmount, z >> shiftAmount};
     }
 
-    template <typename T = classType, typename = std::enable_if_t<std::is_integral_v<T>>>
+    template <typename U = T, typename = std::enable_if_t<std::is_integral_v<U>>>
     Pos2DTemplate operator<<(int shiftAmount) const {
         return {x << shiftAmount, z << shiftAmount};
     }
 
-    template <typename T = classType, typename = std::enable_if_t<std::is_integral_v<T>>>
+    template <typename U = T, typename = std::enable_if_t<std::is_integral_v<U>>>
     MU ND Pos2DTemplate toChunkPos() const {
         return {x >> 4, z >> 4};
     }
 
-    template <typename T = classType, typename = std::enable_if_t<std::is_integral_v<T>>>
+    template <typename U = T, typename = std::enable_if_t<std::is_integral_v<U>>>
     MU ND Pos2DTemplate toBlockPos() const {
         return {x << 4, z << 4};
     }
@@ -83,9 +80,9 @@ public:
 
     ND double distanceSq() const;
 
-    MU void setPos(classType xIn, classType zIn);
+    MU void setPos(T xIn, T zIn);
     MU ND std::string toString() const;
-    MU ND bool insideBounds(classType lowerX, classType lowerZ, classType upperX, classType upperZ) const;
+    MU ND bool insideBounds(T lowerX, T lowerZ, T upperX, T upperZ) const;
     MU ND uint64_t asLong() const {
         return (static_cast<uint64_t>(x) << 32) | static_cast<uint64_t>(z);
     }
@@ -94,9 +91,9 @@ public:
     }
 
     struct Hasher {
-        template <typename T = classType, typename = std::enable_if_t<std::is_integral_v<T>>>
+        template <typename U = T, typename = std::enable_if_t<std::is_integral_v<U>>>
         std::size_t operator()(const Pos2DTemplate& pos) const {
-            return pos.asLong();
+            return pos.hash();
         }
     };
 };

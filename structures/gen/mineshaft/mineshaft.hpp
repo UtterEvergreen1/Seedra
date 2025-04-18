@@ -1,6 +1,5 @@
 #pragma once
 
-#include "components/GenerationStep.hpp"
 #include "components/StructureComponent.hpp"
 #include "structures/gen/Structure.hpp"
 

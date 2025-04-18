@@ -1,66 +1,45 @@
 #pragma once
 
+#include "lce/items/itemsInit.hpp"
 #include "loot/classes/Loot.hpp"
-#include "loot/classes/SetMetadata.hpp"
 
 namespace loot {
-    class SpawnBonusChest : public Loot<SpawnBonusChest> {
-    public:
-        static void setup();
-    };
 
-    inline void SpawnBonusChest::setup() {
-        std::vector<ItemEntry> items1;
-        std::vector<ItemEntry> items2;
-        std::vector<ItemEntry> items3;
-        std::vector<ItemEntry> items4;
-        std::vector<ItemEntry> items5;
-        std::vector<ItemEntry> items6;
-        std::vector<ItemEntry> items7;
-        std::vector<ItemEntry> items8;
-        const std::vector LOG1_vec = {&lce::items::OAK_WOOD, &lce::items::SPRUCE_WOOD,
-                                      &lce::items::BIRCH_WOOD, &lce::items::JUNGLE_WOOD};
-        const std::vector LOG2_vec = {&lce::items::ACACIA_WOOD, &lce::items::DARK_OAK_WOOD};
+    using namespace lce::items;
 
-        // table 1
-        items1.emplace_back(&lce::items::JUNGLE_SAPLING, 1, 1, 5);
-        lootTables.emplace_back(items1, 1);
-
-        // table 2
-        items2.emplace_back(&lce::items::MELON_SEEDS, 1, 1, 5);
-        lootTables.emplace_back(items2, 1);
-
-        // table 3
-        items3.emplace_back(&lce::items::PUMPKIN_SEEDS, 1, 1, 5);
-        lootTables.emplace_back(items3, 1);
-
-        // table 4
-        items4.emplace_back(&lce::items::BEETROOT_SEEDS, 1, 1, 5);
-        lootTables.emplace_back(items4, 1);
-
-        // table 5
-        items5.emplace_back(&lce::items::STONE_AXE, 1);
-        items5.emplace_back(&lce::items::WOODEN_AXE, 3);
-        lootTables.emplace_back(items5, 1);
-
-        // table 6
-        items6.emplace_back(&lce::items::STONE_PICKAXE, 1);
-        items6.emplace_back(&lce::items::WOODEN_PICKAXE, 3);
-        lootTables.emplace_back(items6, 1);
-
-        // table 7
-        items7.emplace_back(&lce::items::APPLE, 5, 1, 2);
-        items7.emplace_back(&lce::items::BREAD, 3, 1, 2);
-        items7.emplace_back(&lce::items::RAW_SALMON, 3, 1, 2);
-        lootTables.emplace_back(items7, 3);
-
-        // table 8
-        items8.emplace_back(&lce::items::STICK, 10, 1, 8);
-        items8.emplace_back(&lce::items::OAK_WOOD_PLANK, 10, 1, 12);
-        items8.emplace_back(&lce::items::OAK_WOOD, new SetMetadata({0, 3}, LOG1_vec), 10, 1, 3);
-        items8.emplace_back(&lce::items::ACACIA_WOOD, new SetMetadata({0, 1}, LOG2_vec), 10, 1, 3);
-        lootTables.emplace_back(items8, 4);
-
-        maxItemsPossible = 9;
-    }
+    MU static constexpr auto spawn_bonus_chest
+            = LootWrapper<
+                    27,
+                    TableWrapper<1, 1,
+                                 LootItem<1, 1, 5, JUNGLE_SAPLING.getState()>
+                                 >,
+                    TableWrapper<1, 1,
+                                 LootItem<1, 1, 5, MELON_SEEDS.getState()>
+                                 >,
+                    TableWrapper<1, 1,
+                                 LootItem<1, 1, 5, PUMPKIN_SEEDS.getState()>
+                                 >,
+                    TableWrapper<1, 1,
+                                 LootItem<1, 1, 5, BEETROOT_SEEDS.getState()>
+                                 >,
+                    TableWrapper<1, 1,
+                                 LootItem<1, 1, 1, STONE_AXE.getState()>,
+                                 LootItem<3, 1, 1, WOODEN_AXE.getState()>
+                                 >,
+                    TableWrapper<1, 1,
+                                 LootItem<1, 1, 1, STONE_PICKAXE.getState()>,
+                                 LootItem<3, 1, 1, WOODEN_PICKAXE.getState()>
+                                 >,
+                    TableWrapper<3, 3,
+                                 LootItem<5, 1, 2, APPLE.getState()>,
+                                 LootItem<3, 1, 2, BREAD.getState()>,
+                                 LootItem<3, 1, 2, RAW_SALMON.getState()>
+                                 >,
+                    TableWrapper<4, 4,
+                                 LootItem<10, 1, 8, STICK.getState()>,
+                                 LootItem<10, 1,12, OAK_WOOD_PLANK.getState()>,
+                                 LootItem<10, 1, 3, OAK_WOOD.getState(), metadata_0_3>,
+                                 LootItem<10, 1, 3, ACACIA_WOOD.getState(), metadata_0_1>
+                                 >
+                    >::value;
 }

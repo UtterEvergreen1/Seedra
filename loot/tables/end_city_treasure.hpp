@@ -1,46 +1,39 @@
 #pragma once
 
-#include "loot/classes/EnchantWithLevels.hpp"
+#include "lce/items/itemsInit.hpp"
 #include "loot/classes/Loot.hpp"
 
 namespace loot {
-    class EndCityTreasure : public Loot<EndCityTreasure> {
-    public:
-        static void setup();
-    };
 
-    inline void EndCityTreasure::setup() {
-        std::vector<ItemEntry> items;
+    using namespace lce::items;
 
-        items.emplace_back(&lce::items::DIAMOND, 5, 2, 7);
-        items.emplace_back(&lce::items::IRON_INGOT, 10, 4, 8);
-        items.emplace_back(&lce::items::GOLD_INGOT, 15, 2, 7);
-        items.emplace_back(&lce::items::EMERALD, 2, 2, 6);
-        items.emplace_back(&lce::items::BEETROOT_SEEDS, 5, 1, 10);
-        items.emplace_back(&lce::items::SADDLE, 3);
-        items.emplace_back(&lce::items::IRON_HORSE_ARMOR, 1);
-        items.emplace_back(&lce::items::GOLDEN_HORSE_ARMOR, 1);
-        items.emplace_back(&lce::items::DIAMOND_HORSE_ARMOR, 1);
+    MU static constexpr auto end_city_treasure
+            = LootWrapper<
+                    27,
+                    TableWrapper<2, 6,
+                                 LootItem< 5, 2, 7, DIAMOND.getState()>,
+                                 LootItem<10, 4, 8, IRON_INGOT.getState()>,
+                                 LootItem<15, 2, 7, GOLD_INGOT.getState()>,
+                                 LootItem< 2, 2, 6, EMERALD.getState()>,
+                                 LootItem< 5, 1,10, BEETROOT_SEEDS.getState()>,
+                                 LootItem< 3, 1, 1, SADDLE.getState()>,
+                                 LootItem< 1, 1, 1, IRON_HORSE_ARMOR.getState()>,
+                                 LootItem< 1, 1, 1, GOLDEN_HORSE_ARMOR.getState()>,
+                                 LootItem< 1, 1, 1, DIAMOND_HORSE_ARMOR.getState()>,
 
-        auto* enchantFunction = new EnchantWithLevelsItem({20, 39});
-        items.emplace_back(&lce::items::DIAMOND_SWORD, enchantFunction, 3);
-        items.emplace_back(&lce::items::DIAMOND_BOOTS, enchantFunction, 3);
-        items.emplace_back(&lce::items::DIAMOND_CHESTPLATE, enchantFunction, 3);
-        items.emplace_back(&lce::items::DIAMOND_LEGGINGS, enchantFunction, 3);
-        items.emplace_back(&lce::items::DIAMOND_HELMET, enchantFunction, 3);
-        items.emplace_back(&lce::items::DIAMOND_PICKAXE, enchantFunction, 3);
-        items.emplace_back(&lce::items::DIAMOND_SHOVEL, enchantFunction, 3);
-
-        items.emplace_back(&lce::items::IRON_SWORD, enchantFunction, 3);
-        items.emplace_back(&lce::items::IRON_BOOTS, enchantFunction, 3);
-        items.emplace_back(&lce::items::IRON_CHESTPLATE, enchantFunction, 3);
-        items.emplace_back(&lce::items::IRON_LEGGINGS, enchantFunction, 3);
-        items.emplace_back(&lce::items::IRON_HELMET, enchantFunction, 3);
-        items.emplace_back(&lce::items::IRON_PICKAXE, enchantFunction, 3);
-        items.emplace_back(&lce::items::IRON_SHOVEL, enchantFunction, 3);
-
-        lootTables.emplace_back(items, 2, 6);
-
-        maxItemsPossible = 6;
-    }
-} // namespace loot
+                                 LootItem< 3, 1, 1, DIAMOND_SWORD.getState(), enchant_levels_item_20_39>,
+                                 LootItem< 3, 1, 1, DIAMOND_BOOTS.getState(), enchant_levels_item_20_39>,
+                                 LootItem< 3, 1, 1, DIAMOND_CHESTPLATE.getState(), enchant_levels_item_20_39>,
+                                 LootItem< 3, 1, 1, DIAMOND_LEGGINGS.getState(), enchant_levels_item_20_39>,
+                                 LootItem< 3, 1, 1, DIAMOND_HELMET.getState(), enchant_levels_item_20_39>,
+                                 LootItem< 3, 1, 1, DIAMOND_PICKAXE.getState(), enchant_levels_item_20_39>,
+                                 LootItem< 3, 1, 1, DIAMOND_SHOVEL.getState(), enchant_levels_item_20_39>,
+                                 LootItem< 3, 1, 1, IRON_SWORD.getState(), enchant_levels_item_20_39>,
+                                 LootItem< 3, 1, 1, IRON_BOOTS.getState(), enchant_levels_item_20_39>,
+                                 LootItem< 3, 1, 1, IRON_CHESTPLATE.getState(), enchant_levels_item_20_39>,
+                                 LootItem< 3, 1, 1, IRON_LEGGINGS.getState(), enchant_levels_item_20_39>,
+                                 LootItem< 3, 1, 1, IRON_HELMET.getState(), enchant_levels_item_20_39>,
+                                 LootItem< 3, 1, 1, IRON_PICKAXE.getState(), enchant_levels_item_20_39>,
+                                 LootItem< 3, 1, 1, IRON_SHOVEL.getState(), enchant_levels_item_20_39>
+                                 >>::value;
+}

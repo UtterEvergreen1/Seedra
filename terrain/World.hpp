@@ -76,9 +76,9 @@ public:
 
     void setBlock(const Pos3D &pos, int blockId, int meta);
 
-    void setBlock(int x, int y, int z, lce::BlockState blockstate);
+    void setBlock(int x, int y, int z, lce::BlockState blockState);
 
-    void setBlock(const Pos3D &pos, lce::BlockState blockstate);
+    void setBlock(const Pos3D &pos, lce::BlockState blockState);
 
 
     bool isAirBlock(int x, int y, int z);

@@ -3,9 +3,6 @@
 #include "enums.hpp"
 
 #include <array>
-#include <string>
-#include <utility>
-
 
 enum class RotationEnum {
     NONE,

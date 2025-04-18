@@ -10,7 +10,7 @@ bool WorldGenLakes::generate(World* worldIn, RNG& rng, const Pos3D& pos) const {
     Pos3D position = pos;
     for (position = position.add(-8, 0, -8); position.getY() > 5 && worldIn->isAirBlock(position);
          position = position.down()) {
-        ;
+
     }
 
     if (position.getY() <= 4) { return false; }

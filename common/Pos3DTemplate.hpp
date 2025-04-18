@@ -60,7 +60,7 @@ public:
         return pos;
     }
 
-    template<typename V = T, typename = std::enable_if_t<std::is_integral_v<V>>>
+    template<typename U = T, typename = std::enable_if_t<std::is_integral_v<U>>>
     MU ND Pos3DTemplate convertToChunkCoords() const;
 
 #ifdef INCLUDE_QT
@@ -91,27 +91,27 @@ public:
         this->z = zIn;
     }
 
-    Pos3DTemplate add(T xOff, T yOff, T zOff) const {
+    ND Pos3DTemplate add(T xOff, T yOff, T zOff) const {
         return {x + xOff, y + yOff, z + zOff};
     }
 
     /// minus yOff
-    Pos3DTemplate down(T yOff = 1) const { return {x, y - yOff, z}; }
+    ND Pos3DTemplate down(T yOff = 1) const { return {x, y - yOff, z}; }
 
     /// plus yOff
-    Pos3DTemplate up(T yOff = 1) const { return {x, y + yOff, z}; }
+    ND Pos3DTemplate up(T yOff = 1) const { return {x, y + yOff, z}; }
 
     /// plus xOff
-    Pos3DTemplate east(T xOff = 1) const { return {x + xOff, y, z}; }
+    ND Pos3DTemplate east(T xOff = 1) const { return {x + xOff, y, z}; }
 
     /// minus xOff
-    Pos3DTemplate west(T xOff = 1) const { return {x - xOff, y, z}; }
+    ND Pos3DTemplate west(T xOff = 1) const { return {x - xOff, y, z}; }
 
     /// minus zOff
-    Pos3DTemplate north(T zOff = 1) const { return {x, y, z - zOff}; }
+    ND Pos3DTemplate north(T zOff = 1) const { return {x, y, z - zOff}; }
 
     /// plus zOff
-    Pos3DTemplate south(T zOff = 1) const { return {x, y, z + zOff}; }
+    ND Pos3DTemplate south(T zOff = 1) const { return {x, y, z + zOff}; }
 
     Pos3DTemplate offset(EnumFacing facing, int n = 1) const;
 

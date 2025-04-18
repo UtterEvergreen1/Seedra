@@ -1,6 +1,5 @@
 #pragma once
 
-#include "lce/blocks/__include.hpp"
 #include "terrain/biomes/biome.hpp"
 #include "terrain/biomes/biomeID.hpp"
 #include "terrain/generator.hpp"

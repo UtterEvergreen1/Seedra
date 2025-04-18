@@ -1,27 +1,26 @@
 #pragma once
 
+#include "lce/items/itemsInit.hpp"
 #include "loot/classes/Loot.hpp"
 
-
 namespace loot {
-    class ShipwreckMap : public Loot<ShipwreckMap> {
-    public:
-        static void setup();
-    };
 
-    inline void ShipwreckMap::setup() {
-        std::vector<ItemEntry> items1;
-        std::vector<ItemEntry> items2;
+    using namespace lce::items;
 
-        items1.emplace_back(&lce::items::TREASURE_MAP, 1);
-        lootTables.emplace_back(items1, 1);
+    MU static constexpr auto shipwreck_map
+            = LootWrapper<
+                    27,
+                    TableWrapper<1, 1,
+                                 LootItem<1, 1, 1, TREASURE_MAP.getState()>
+                                 >,
 
-        items2.emplace_back(&lce::items::COMPASS, 1);
-        items2.emplace_back(&lce::items::MAP, 1);
-        items2.emplace_back(&lce::items::CLOCK, 1);
-        items2.emplace_back(&lce::items::PAPER, 20, 1, 10);
-        items2.emplace_back(&lce::items::FEATHER, 10, 1, 5);
-        items2.emplace_back(&lce::items::BOOK, 5, 1, 5);
-        lootTables.emplace_back(items2, 3);
-    }
+                    TableWrapper<3, 3,
+                                 LootItem< 1, 1, 1, COMPASS.getState()>,
+                                 LootItem< 1, 1, 1, MAP.getState()>,
+                                 LootItem< 1, 1, 1, CLOCK.getState()>,
+                                 LootItem<20, 1,10, PAPER.getState()>,
+                                 LootItem<10, 1, 5, FEATHER.getState()>,
+                                 LootItem< 5, 1, 5, BOOK.getState()>
+                                 >
+                    >::value;
 }

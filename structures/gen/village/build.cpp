@@ -2,8 +2,6 @@
 
 #include <algorithm>
 
-#include "structures/placement/StaticStructures.hpp"
-
 #include "terrain/World.hpp"
 
 #include "lce/blocks/__include.hpp"
@@ -41,10 +39,10 @@ namespace build::village {
                         int x, int y, int z,
                         EnumFacing facing, const lce::BlockState doorBlock) {
 
-        auto doorBlockLower = doorBlock.getStateFromMeta(states::DoorLower::withProperty(piece.rotation.apply(piece.mirror, facing)));
+        auto doorBlockLower = doorBlock.getStateFromMeta(DoorLower::withProperty(piece.rotation.apply(piece.mirror, facing)));
         piece.setBlockState(world, doorBlockLower, x, y, z, chunkBB);
 
-        auto doorBlockUpper = doorBlock.getStateFromMeta(states::DoorUpper::withProperty());
+        auto doorBlockUpper = doorBlock.getStateFromMeta(DoorUpper::withProperty());
         piece.setBlockState(world, doorBlockUpper, x, y + 1, z, chunkBB);
     }
 
@@ -70,7 +68,7 @@ namespace build::village {
 
 
 
-    MU const lce::BlockState getBiomeSpecificBlockState(const lce::BlockState blockPtr,
+    MU lce::BlockState getBiomeSpecificBlockState(const lce::BlockState blockPtr,
                                                     const StructureVariant structureType) {
         if (structureType == StructureVariant::SV_Village_Plains) {
             if (blockPtr == lce::BlocksInit::GRAVEL.getState())
@@ -151,9 +149,9 @@ namespace build::village {
         const lce::BlockState cobblestone = getBiomeSpecificBlockState(lce::BlocksInit::COBBLESTONE.getState(), piece.variant);
 
         c_auto cobbleStairsSouth = getBiomeSpecificBlockState(lce::BlocksInit::COBBLESTONE_STAIRS.getState(), piece.variant);
-        const auto cobbleStairsNorth = cobbleStairsSouth.getStateFromMeta(states::Stairs::withProperty(piece.rotation.apply(piece.mirror, EnumFacing::NORTH)));
-        const auto cobbleStairsWest = cobbleStairsSouth.getStateFromMeta(states::Stairs::withProperty(piece.rotation.apply(piece.mirror, EnumFacing::WEST)));
-        const auto cobbleStairsEast = cobbleStairsSouth.getStateFromMeta(states::Stairs::withProperty(piece.rotation.apply(piece.mirror, EnumFacing::EAST)));
+        const auto cobbleStairsNorth = cobbleStairsSouth.getStateFromMeta(Stairs::withProperty(piece.rotation.apply(piece.mirror, EnumFacing::NORTH)));
+        const auto cobbleStairsWest = cobbleStairsSouth.getStateFromMeta(Stairs::withProperty(piece.rotation.apply(piece.mirror, EnumFacing::WEST)));
+        const auto cobbleStairsEast = cobbleStairsSouth.getStateFromMeta(Stairs::withProperty(piece.rotation.apply(piece.mirror, EnumFacing::EAST)));
         piece.fillWithAir(worldIn, chunkBB, 1, 1, 1, 3, 3, 7);
         piece.fillWithAir(worldIn, chunkBB, 1, 5, 1, 3, 9, 3);
         piece.fillWithBlocks(worldIn, chunkBB, 1, 0, 0, 3, 0, 8, cobblestone, false);
@@ -182,7 +180,7 @@ namespace build::village {
         piece.setBlockState(worldIn, cobbleStairsWest, 1, 2, 7, chunkBB);
         piece.setBlockState(worldIn, cobbleStairsEast, 3, 2, 7, chunkBB);
 
-        const lce::BlockState glassPane = lce::BlocksInit::GLASS_PANE.getState();
+        constexpr lce::BlockState glassPane = lce::BlocksInit::GLASS_PANE.getState();
         piece.setBlockState(worldIn, glassPane, 0, 2, 2, chunkBB);
         piece.setBlockState(worldIn, glassPane, 0, 3, 2, chunkBB);
         piece.setBlockState(worldIn, glassPane, 4, 2, 2, chunkBB);
@@ -206,7 +204,7 @@ namespace build::village {
 
         // .withProperty(BlockLadder.FACING, FACING::WEST);
         const lce::BlockState ladderWest = lce::BlocksInit::LADDER.getStateFromMeta(
-                states::Ladder::withProperty(piece.rotation.apply(piece.mirror, EnumFacing::WEST)));
+                Ladder::withProperty(piece.rotation.apply(piece.mirror, EnumFacing::WEST)));
 
         for (int i=1; i <= 9; ++i) {
             piece.setBlockState(worldIn, ladderWest, 3, i, 3, chunkBB);
@@ -237,7 +235,7 @@ namespace build::village {
     }
 
 
-    const lce::BlockState getRandomCropType(const int data) {
+    lce::BlockState getRandomCropType(const int data) {
         switch (data) {
             case 0:
             case 1:
@@ -380,9 +378,9 @@ namespace build::village {
         const lce::BlockState iBlockState = getBiomeSpecificBlockState(lce::BlocksInit::COBBLESTONE.getState(), piece.variant);
 
         c_auto woodStairs = getBiomeSpecificBlockState(lce::BlocksInit::OAK_WOOD_STAIRS.getState(), piece.variant);
-        const lce::BlockState iBlockState1 = woodStairs.getStateFromMeta(states::Stairs::withProperty(piece.rotation.apply(piece.mirror, EnumFacing::NORTH)));
-        const lce::BlockState iBlockState2 = woodStairs.getStateFromMeta(states::Stairs::withProperty(piece.rotation.apply(piece.mirror, EnumFacing::SOUTH)));
-        const lce::BlockState iBlockState3 = woodStairs.getStateFromMeta(states::Stairs::withProperty(piece.rotation.apply(piece.mirror, EnumFacing::WEST)));
+        const lce::BlockState iBlockState1 = woodStairs.getStateFromMeta(Stairs::withProperty(piece.rotation.apply(piece.mirror, EnumFacing::NORTH)));
+        const lce::BlockState iBlockState2 = woodStairs.getStateFromMeta(Stairs::withProperty(piece.rotation.apply(piece.mirror, EnumFacing::SOUTH)));
+        const lce::BlockState iBlockState3 = woodStairs.getStateFromMeta(Stairs::withProperty(piece.rotation.apply(piece.mirror, EnumFacing::WEST)));
 
         const lce::BlockState iBlockState4 = getBiomeSpecificBlockState(lce::BlocksInit::OAK_WOOD_PLANK.getState(), piece.variant);
         const lce::BlockState iBlockState5 = getBiomeSpecificBlockState(lce::BlocksInit::OAK_WOOD.getState(), piece.variant);
@@ -484,15 +482,15 @@ namespace build::village {
         const lce::BlockState iBlockState = getBiomeSpecificBlockState(lce::BlocksInit::COBBLESTONE.getState(), piece.variant);
 
         const auto wood_stairs = getBiomeSpecificBlockState(lce::BlocksInit::OAK_WOOD_STAIRS.getState(), piece.variant);
-        const lce::BlockState iBlockState1 = wood_stairs.getStateFromMeta(states::Stairs::withProperty(piece.rotation.apply(piece.mirror, EnumFacing::NORTH)));
-        const lce::BlockState iBlockState2 = wood_stairs.getStateFromMeta(states::Stairs::withProperty(piece.rotation.apply(piece.mirror, EnumFacing::SOUTH)));
-        const lce::BlockState iBlockState3 = wood_stairs.getStateFromMeta(states::Stairs::withProperty(piece.rotation.apply(piece.mirror, EnumFacing::EAST)));
+        const lce::BlockState iBlockState1 = wood_stairs.getStateFromMeta(Stairs::withProperty(piece.rotation.apply(piece.mirror, EnumFacing::NORTH)));
+        const lce::BlockState iBlockState2 = wood_stairs.getStateFromMeta(Stairs::withProperty(piece.rotation.apply(piece.mirror, EnumFacing::SOUTH)));
+        const lce::BlockState iBlockState3 = wood_stairs.getStateFromMeta(Stairs::withProperty(piece.rotation.apply(piece.mirror, EnumFacing::EAST)));
 
         const lce::BlockState iBlockState4 = getBiomeSpecificBlockState(lce::BlocksInit::OAK_WOOD_PLANK.getState(), piece.variant);
 
 
         const lce::BlockState iBlockState5 = getBiomeSpecificBlockState(lce::BlocksInit::COBBLESTONE_STAIRS.getState(), piece.variant)
-                                                .getStateFromMeta(states::Stairs::withProperty(piece.rotation.apply(piece.mirror, EnumFacing::NORTH)));
+                                                .getStateFromMeta(Stairs::withProperty(piece.rotation.apply(piece.mirror, EnumFacing::NORTH)));
         const lce::BlockState iBlockState6 = getBiomeSpecificBlockState(lce::BlocksInit::OAK_FENCE.getState(), piece.variant);
         piece.fillWithAir(worldIn, chunkBB, 1, 1, 1, 7, 5, 4);
         piece.fillWithBlocks(worldIn, chunkBB, 0, 0, 0, 8, 0, 5, iBlockState, false);
@@ -587,12 +585,12 @@ namespace build::village {
 
         const lce::BlockState iBlockState = getBiomeSpecificBlockState(lce::BlocksInit::COBBLESTONE.getState(), piece.variant);
         const lce::BlockState iBlockState1 = getBiomeSpecificBlockState(lce::BlocksInit::OAK_WOOD_STAIRS.getState(), piece.variant)
-                                                .getStateFromMeta(states::Stairs::withProperty(piece.rotation.apply(piece.mirror, EnumFacing::NORTH)));
+                                                .getStateFromMeta(Stairs::withProperty(piece.rotation.apply(piece.mirror, EnumFacing::NORTH)));
         const lce::BlockState iBlockState2 = getBiomeSpecificBlockState(lce::BlocksInit::OAK_WOOD_STAIRS.getState(), piece.variant)
-                                                .getStateFromMeta(states::Stairs::withProperty(piece.rotation.apply(piece.mirror, EnumFacing::WEST)));
+                                                .getStateFromMeta(Stairs::withProperty(piece.rotation.apply(piece.mirror, EnumFacing::WEST)));
         const lce::BlockState iBlockState3 = getBiomeSpecificBlockState(lce::BlocksInit::OAK_WOOD_PLANK.getState(), piece.variant);
         const lce::BlockState iBlockState4 = getBiomeSpecificBlockState(lce::BlocksInit::COBBLESTONE_STAIRS.getState(), piece.variant)
-                                                .getStateFromMeta(states::Stairs::withProperty(piece.rotation.apply(piece.mirror, EnumFacing::NORTH)));
+                                                .getStateFromMeta(Stairs::withProperty(piece.rotation.apply(piece.mirror, EnumFacing::NORTH)));
         const lce::BlockState iBlockState5 = getBiomeSpecificBlockState(lce::BlocksInit::OAK_WOOD.getState(), piece.variant);
         const lce::BlockState iBlockState6 = getBiomeSpecificBlockState(lce::BlocksInit::OAK_FENCE.getState(), piece.variant);
 
@@ -622,7 +620,7 @@ namespace build::village {
         piece.setBlockState(worldIn, lce::BlocksInit::FURNACE.getState(), 6, 2, 3, chunkBB);
         piece.setBlockState(worldIn, lce::BlocksInit::FURNACE.getState(), 6, 3, 3, chunkBB);
         piece.setBlockState(worldIn, lce::BlocksInit::DOUBLE_STONE_SLAB.getState(), 8, 1, 1, chunkBB);
-        const lce::BlockState glassPane = lce::BlocksInit::GLASS_PANE.getState();
+        constexpr lce::BlockState glassPane = lce::BlocksInit::GLASS_PANE.getState();
         piece.setBlockState(worldIn, glassPane, 0, 2, 2, chunkBB);
         piece.setBlockState(worldIn, glassPane, 0, 2, 4, chunkBB);
         piece.setBlockState(worldIn, glassPane, 2, 2, 6, chunkBB);
@@ -675,13 +673,13 @@ namespace build::village {
 
         const lce::BlockState iBlockState = getBiomeSpecificBlockState(lce::BlocksInit::COBBLESTONE.getState(), piece.variant);
         const lce::BlockState iBlockState1 = getBiomeSpecificBlockState(lce::BlocksInit::OAK_WOOD_STAIRS.getState(), piece.variant)
-                                                .getStateFromMeta(states::Stairs::withProperty(piece.rotation.apply(piece.mirror, EnumFacing::NORTH)));
+                                                .getStateFromMeta(Stairs::withProperty(piece.rotation.apply(piece.mirror, EnumFacing::NORTH)));
         const lce::BlockState iBlockState2 = getBiomeSpecificBlockState(lce::BlocksInit::OAK_WOOD_STAIRS.getState(), piece.variant)
-                                                .getStateFromMeta(states::Stairs::withProperty(piece.rotation.apply(piece.mirror, EnumFacing::SOUTH)));
+                                                .getStateFromMeta(Stairs::withProperty(piece.rotation.apply(piece.mirror, EnumFacing::SOUTH)));
         const lce::BlockState iBlockState3 = getBiomeSpecificBlockState(lce::BlocksInit::OAK_WOOD_STAIRS.getState(), piece.variant)
-                                                .getStateFromMeta(states::Stairs::withProperty(piece.rotation.apply(piece.mirror, EnumFacing::EAST)));
+                                                .getStateFromMeta(Stairs::withProperty(piece.rotation.apply(piece.mirror, EnumFacing::EAST)));
         const lce::BlockState iBlockState4 = getBiomeSpecificBlockState(lce::BlocksInit::OAK_WOOD_STAIRS.getState(), piece.variant)
-                                                .getStateFromMeta(states::Stairs::withProperty(piece.rotation.apply(piece.mirror, EnumFacing::WEST)));
+                                                .getStateFromMeta(Stairs::withProperty(piece.rotation.apply(piece.mirror, EnumFacing::WEST)));
         const lce::BlockState iBlockState5 = getBiomeSpecificBlockState(lce::BlocksInit::OAK_WOOD_PLANK.getState(), piece.variant);
         const lce::BlockState iBlockState6 = getBiomeSpecificBlockState(lce::BlocksInit::OAK_WOOD.getState(), piece.variant);
 
@@ -744,7 +742,7 @@ namespace build::village {
             }
         }
 
-        const lce::BlockState glassPane = lce::BlocksInit::GLASS_PANE.getState();
+        constexpr lce::BlockState glassPane = lce::BlocksInit::GLASS_PANE.getState();
         piece.setBlockState(worldIn, iBlockState6, 0, 2, 1, chunkBB);
         piece.setBlockState(worldIn, iBlockState6, 0, 2, 4, chunkBB);
         piece.setBlockState(worldIn, glassPane, 0, 2, 2, chunkBB);
@@ -803,7 +801,7 @@ namespace build::village {
     }
 
 
-    static const lce::BlockState getUnderPathBlock(StructureVariant variant) {
+    static lce::BlockState getUnderPathBlock(StructureVariant variant) {
         switch(variant) {
             case StructureVariant::SV_Village_Plains:
             case StructureVariant::SV_Village_Savanna:
@@ -901,47 +899,47 @@ namespace build::village {
             piece.data |= 1 << 16;
         }
 
-        const lce::BlockState iblockstate = getBiomeSpecificBlockState(lce::BlocksInit::COBBLESTONE.getState(), piece.variant);
-        const lce::BlockState iblockstate1 = getBiomeSpecificBlockState(lce::BlocksInit::OAK_WOOD_PLANK.getState(), piece.variant);
-        const lce::BlockState iblockstate2 = getBiomeSpecificBlockState(lce::BlocksInit::COBBLESTONE_STAIRS.getState(), piece.variant)
-                                                .getStateFromMeta(states::Stairs::withProperty(piece.rotation.apply(piece.mirror, EnumFacing::NORTH)));
-        const lce::BlockState iblockstate3 = getBiomeSpecificBlockState(lce::BlocksInit::OAK_WOOD.getState(), piece.variant);
-        const lce::BlockState iblockstate4 = getBiomeSpecificBlockState(lce::BlocksInit::OAK_FENCE.getState(), piece.variant);
+        const lce::BlockState iBlockState = getBiomeSpecificBlockState(lce::BlocksInit::COBBLESTONE.getState(), piece.variant);
+        const lce::BlockState iBlockState1 = getBiomeSpecificBlockState(lce::BlocksInit::OAK_WOOD_PLANK.getState(), piece.variant);
+        const lce::BlockState iBlockState2 = getBiomeSpecificBlockState(lce::BlocksInit::COBBLESTONE_STAIRS.getState(), piece.variant)
+                                                .getStateFromMeta(Stairs::withProperty(piece.rotation.apply(piece.mirror, EnumFacing::NORTH)));
+        const lce::BlockState iBlockState3 = getBiomeSpecificBlockState(lce::BlocksInit::OAK_WOOD.getState(), piece.variant);
+        const lce::BlockState iBlockState4 = getBiomeSpecificBlockState(lce::BlocksInit::OAK_FENCE.getState(), piece.variant);
 
         piece.fillWithAir(worldIn, chunkBB, 1, 1, 1, 3, 5, 4);
-        piece.fillWithBlocks(worldIn, chunkBB, 0, 0, 0, 3, 0, 4, iblockstate, iblockstate, false);
+        piece.fillWithBlocks(worldIn, chunkBB, 0, 0, 0, 3, 0, 4, iBlockState, iBlockState, false);
         piece.fillWithBlocks(worldIn, chunkBB, 1, 0, 1, 2, 0, 3, lce::BlocksInit::DIRT.getState(), false);
 
         if (piece.data >> 8 & 1) { // isTallHouse
-            piece.fillWithBlocks(worldIn, chunkBB, 1, 4, 1, 2, 4, 3, iblockstate3, false);
+            piece.fillWithBlocks(worldIn, chunkBB, 1, 4, 1, 2, 4, 3, iBlockState3, false);
         } else {
-            piece.fillWithBlocks(worldIn, chunkBB, 1, 5, 1, 2, 5, 3, iblockstate3, false);
+            piece.fillWithBlocks(worldIn, chunkBB, 1, 5, 1, 2, 5, 3, iBlockState3, false);
         }
 
-        piece.setBlockState(worldIn, iblockstate3, 1, 4, 0,  chunkBB);
-        piece.setBlockState(worldIn, iblockstate3, 2, 4, 0,  chunkBB);
-        piece.setBlockState(worldIn, iblockstate3, 1, 4, 4,  chunkBB);
-        piece.setBlockState(worldIn, iblockstate3, 2, 4, 4,  chunkBB);
-        piece.setBlockState(worldIn, iblockstate3, 0, 4, 1,  chunkBB);
-        piece.setBlockState(worldIn, iblockstate3, 0, 4, 2,  chunkBB);
-        piece.setBlockState(worldIn, iblockstate3, 0, 4, 3,  chunkBB);
-        piece.setBlockState(worldIn, iblockstate3, 3, 4, 1,  chunkBB);
-        piece.setBlockState(worldIn, iblockstate3, 3, 4, 2,  chunkBB);
-        piece.setBlockState(worldIn, iblockstate3, 3, 4, 3,  chunkBB);
-        piece.fillWithBlocks(worldIn, chunkBB, 0, 1, 0, 0, 3, 0, iblockstate3, false);
-        piece.fillWithBlocks(worldIn, chunkBB, 3, 1, 0, 3, 3, 0, iblockstate3, false);
-        piece.fillWithBlocks(worldIn, chunkBB, 0, 1, 4, 0, 3, 4, iblockstate3, false);
-        piece.fillWithBlocks(worldIn, chunkBB, 3, 1, 4, 3, 3, 4, iblockstate3, false);
-        piece.fillWithBlocks(worldIn, chunkBB, 0, 1, 1, 0, 3, 3, iblockstate1, false);
-        piece.fillWithBlocks(worldIn, chunkBB, 3, 1, 1, 3, 3, 3, iblockstate1, false);
-        piece.fillWithBlocks(worldIn, chunkBB, 1, 1, 0, 2, 3, 0, iblockstate1, false);
-        piece.fillWithBlocks(worldIn, chunkBB, 1, 1, 4, 2, 3, 4, iblockstate1, false);
+        piece.setBlockState(worldIn, iBlockState3, 1, 4, 0,  chunkBB);
+        piece.setBlockState(worldIn, iBlockState3, 2, 4, 0,  chunkBB);
+        piece.setBlockState(worldIn, iBlockState3, 1, 4, 4,  chunkBB);
+        piece.setBlockState(worldIn, iBlockState3, 2, 4, 4,  chunkBB);
+        piece.setBlockState(worldIn, iBlockState3, 0, 4, 1,  chunkBB);
+        piece.setBlockState(worldIn, iBlockState3, 0, 4, 2,  chunkBB);
+        piece.setBlockState(worldIn, iBlockState3, 0, 4, 3,  chunkBB);
+        piece.setBlockState(worldIn, iBlockState3, 3, 4, 1,  chunkBB);
+        piece.setBlockState(worldIn, iBlockState3, 3, 4, 2,  chunkBB);
+        piece.setBlockState(worldIn, iBlockState3, 3, 4, 3,  chunkBB);
+        piece.fillWithBlocks(worldIn, chunkBB, 0, 1, 0, 0, 3, 0, iBlockState3, false);
+        piece.fillWithBlocks(worldIn, chunkBB, 3, 1, 0, 3, 3, 0, iBlockState3, false);
+        piece.fillWithBlocks(worldIn, chunkBB, 0, 1, 4, 0, 3, 4, iBlockState3, false);
+        piece.fillWithBlocks(worldIn, chunkBB, 3, 1, 4, 3, 3, 4, iBlockState3, false);
+        piece.fillWithBlocks(worldIn, chunkBB, 0, 1, 1, 0, 3, 3, iBlockState1, false);
+        piece.fillWithBlocks(worldIn, chunkBB, 3, 1, 1, 3, 3, 3, iBlockState1, false);
+        piece.fillWithBlocks(worldIn, chunkBB, 1, 1, 0, 2, 3, 0, iBlockState1, false);
+        piece.fillWithBlocks(worldIn, chunkBB, 1, 1, 4, 2, 3, 4, iBlockState1, false);
         piece.setBlockState(worldIn, lce::BlocksInit::GLASS_PANE.getState(), 0, 2, 2,  chunkBB);
         piece.setBlockState(worldIn, lce::BlocksInit::GLASS_PANE.getState(), 3, 2, 2,  chunkBB);
 
         int tablePosition = piece.data & 3;
         if (tablePosition > 0) {
-            piece.setBlockState(worldIn, iblockstate4, tablePosition, 1, 3,  chunkBB);
+            piece.setBlockState(worldIn, iBlockState4, tablePosition, 1, 3,  chunkBB);
             piece.setBlockState(worldIn, lce::BlocksInit::WOODEN_PRESSURE_PLATE.getState(), tablePosition, 2, 3,  chunkBB);
         }
 
@@ -951,7 +949,7 @@ namespace build::village {
 
         if (isReplaceableBlock(piece.getBlockStateFromPos(worldIn, 1, 0, -1,  chunkBB).getID()) &&
             !isReplaceableBlock(piece.getBlockStateFromPos(worldIn, 1, -1, -1,  chunkBB).getID())) {
-            piece.setBlockState(worldIn, iblockstate2, 1, 0, -1,  chunkBB);
+            piece.setBlockState(worldIn, iBlockState2, 1, 0, -1,  chunkBB);
 
             if (piece.getBlockStateFromPos(worldIn, 1, -1, -1,  chunkBB) == lce::BlocksInit::GRASS_PATH.getState()) {
                 piece.setBlockState(worldIn, lce::BlocksInit::GRASS.getState(), 1, -1, -1,  chunkBB);
@@ -961,7 +959,7 @@ namespace build::village {
         for (int i=0; i < 5; ++i) {
             for (int j=0; j < 4; ++j) {
                 piece.clearCurrentPositionBlocksUpwards(worldIn, j, 6, i,  chunkBB);
-                piece.replaceAirAndLiquidDownwards(worldIn, iblockstate, j, -1, i,  chunkBB);
+                piece.replaceAirAndLiquidDownwards(worldIn, iBlockState, j, -1, i,  chunkBB);
             }
         }
 
@@ -1024,7 +1022,7 @@ namespace build::village {
         const lce::BlockState iBlockState = getBiomeSpecificBlockState(lce::BlocksInit::COBBLESTONE.getState(), piece.variant);
         const lce::BlockState iBlockState1 = getBiomeSpecificBlockState(lce::BlocksInit::OAK_WOOD_PLANK.getState(), piece.variant);
         const lce::BlockState iBlockState2 = getBiomeSpecificBlockState(lce::BlocksInit::COBBLESTONE_STAIRS.getState(), piece.variant)
-                                                .getStateFromMeta(states::Stairs::withProperty(piece.rotation.apply(piece.mirror, EnumFacing::NORTH)));
+                                                .getStateFromMeta(Stairs::withProperty(piece.rotation.apply(piece.mirror, EnumFacing::NORTH)));
         const lce::BlockState iBlockState3 = getBiomeSpecificBlockState(lce::BlocksInit::OAK_WOOD.getState(), piece.variant);
         const lce::BlockState iBlockState4 = getBiomeSpecificBlockState(lce::BlocksInit::OAK_FENCE.getState(), piece.variant);
 
@@ -1091,7 +1089,7 @@ namespace build::village {
         if (piece.data & 1) /* isRoofAccessible */ {
             // .withProperty(BlockLadder.FACING, FACING::SOUTH);
             c_auto ladderSouth = lce::BlocksInit::LADDER.getStateFromMeta(
-                    states::Ladder::withProperty(piece.rotation.apply(piece.mirror, EnumFacing::SOUTH)));
+                    Ladder::withProperty(piece.rotation.apply(piece.mirror, EnumFacing::SOUTH)));
             piece.setBlockState(worldIn, ladderSouth, 3, 1, 3, chunkBB);
             piece.setBlockState(worldIn, ladderSouth, 3, 2, 3, chunkBB);
             piece.setBlockState(worldIn, ladderSouth, 3, 3, 3, chunkBB);

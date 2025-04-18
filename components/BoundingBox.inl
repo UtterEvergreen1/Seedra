@@ -1,3 +1,6 @@
+#pragma once
+
+
 inline const BoundingBox BoundingBox::EMPTY = BoundingBox(SHRT_MAX, SHRT_MAX, SHRT_MAX, SHRT_MIN, SHRT_MIN, SHRT_MIN);
 
 
@@ -206,7 +209,7 @@ inline std::string BoundingBox::toString() const {
 }
 
 
-inline std::ostream& operator<<(std::ostream& out, const BoundingBox& bBox) {
-    out << bBox.toString();
+inline std::ostream& operator<<(std::ostream& out, const BoundingBox& boundingBox) {
+    out << boundingBox.toString();
     return out;
 }

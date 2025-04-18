@@ -1,32 +1,27 @@
 #pragma once
 
-#include "loot/classes/EnchantWithLevels.hpp"
+#include "lce/items/itemsInit.hpp"
 #include "loot/classes/Loot.hpp"
 
-
 namespace loot {
-    class JungleTemple : public Loot<JungleTemple> {
-    public:
-        static void setup();
-    };
 
-    inline void JungleTemple::setup() {
-        std::vector<ItemEntry> items;
+    using namespace lce::items;
 
-        items.emplace_back(&lce::items::EMERALD, 15, 1, 3);
-        items.emplace_back(&lce::items::IRON_INGOT, 50, 1, 5);
-        items.emplace_back(&lce::items::GOLD_INGOT, 75, 2, 7);
-        items.emplace_back(&lce::items::EMERALD, 10, 1, 3);
-        items.emplace_back(&lce::items::BONE, 100, 4, 6);
-        items.emplace_back(&lce::items::ROTTEN_FLESH, 80, 3, 7);
-        items.emplace_back(&lce::items::SADDLE, 15);
-        items.emplace_back(&lce::items::IRON_HORSE_ARMOR, 5);
-        items.emplace_back(&lce::items::GOLDEN_HORSE_ARMOR, 5);
-        items.emplace_back(&lce::items::DIAMOND_HORSE_ARMOR, 5);
-        items.emplace_back(&lce::items::ENCHANTED_BOOK, new EnchantWithLevelsBook(30), 6);
-
-        lootTables.emplace_back(items, 2, 6);
-
-        maxItemsPossible = 6;
-    }
+    MU static constexpr auto jungle_temple
+            = LootWrapper<
+                    27,
+                    TableWrapper<2, 6,
+                                 LootItem< 15, 1, 3, EMERALD.getState()>,
+                                 LootItem< 50, 1, 5, IRON_INGOT.getState()>,
+                                 LootItem< 75, 2, 7, GOLD_INGOT.getState()>,
+                                 LootItem< 10, 1, 3, EMERALD.getState()>,
+                                 LootItem<100, 4, 6, BONE.getState()>,
+                                 LootItem< 80, 3, 7, ROTTEN_FLESH.getState()>,
+                                 LootItem< 15, 1, 1, SADDLE.getState()>,
+                                 LootItem<  5, 1, 1, IRON_HORSE_ARMOR.getState()>,
+                                 LootItem<  5, 1, 1, GOLDEN_HORSE_ARMOR.getState()>,
+                                 LootItem<  5, 1, 1, DIAMOND_HORSE_ARMOR.getState()>,
+                                 LootItem<  6, 1, 1, ENCHANTED_BOOK.getState(), enchant_levels_book_30>
+                                 >
+                    >::value;
 }

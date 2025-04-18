@@ -6,7 +6,7 @@
 
 /// Minecraft console versions
 // TODO: this code sucks make it better
-enum class LCEVERSION : i8 {
+enum class LCEVERSION : int8_t {
     AQUATIC = 0,
     ELYTRA = 1,
     BOUNTIFUL = 2,

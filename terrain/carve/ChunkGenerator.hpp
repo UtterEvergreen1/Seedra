@@ -39,8 +39,8 @@ public:
 
     void provideChunk(ChunkPrimer *chunkPrimer, int x, int z);
     MU void provideChunk(ChunkPrimer *chunkPrimer, const Pos2D& chunkPos) { provideChunk(chunkPrimer, chunkPos.x, chunkPos.z); }
-    ChunkPrimer* provideNewChunk(int x, int z) {
-        ChunkPrimer* chunkPrimer = new ChunkPrimer();
+    ChunkPrimer* provideNewChunk(const int x, const int z) {
+        auto* chunkPrimer = new ChunkPrimer();
         provideChunk(chunkPrimer, x, z);
         return chunkPrimer;
     }

@@ -1,9 +1,10 @@
+#pragma once
+
 #include "lce/processor.hpp"
 #include "terrain/biomes/biomeID.hpp"
 
 #include <cstdint>
 #include <cstdio>
-#include <cstdlib>
 #include <cstring>
 
 
@@ -136,7 +137,7 @@ MU static int biomesToImage(u8* pixels, u8 biomeColors[256][3], c_int* biomes, c
             u32 m, n;
             for (m = 0; m < pixScale; m++) {
                 for (n = 0; n < pixScale; n++) {
-                    const int idx = pixScale * i + n + (pixScale * sx) * (pixScale * j + m);
+                    const int idx = static_cast<int>(pixScale) * i + n + (pixScale * sx) * (pixScale * j + m);
 
                     unsigned char* pix = pixels + 3 * idx;
                     pix[0] = (u8) r;

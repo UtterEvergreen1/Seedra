@@ -1,3 +1,5 @@
+#pragma once
+
 inline const Rotation Rotation::NONE = Rotation(Type::NONE);
 inline const Rotation Rotation::CLOCKWISE_90 = Rotation(Type::CLOCKWISE_90);
 inline const Rotation Rotation::CLOCKWISE_180 = Rotation(Type::CLOCKWISE_180);
@@ -92,17 +94,16 @@ inline RotationEnum Rotation::toRotationEnum(const EnumFacing facing) const {
 inline EnumFacing Rotation::rotateFacing(const EnumFacing facing) const {
     if (getAxis(facing) == EnumAxis::Y) {
         return facing;
-    } else {
-        switch (this->type) {
-            case Type::CLOCKWISE_90:
-                return rotateY(facing);
-            case Type::CLOCKWISE_180:
-                return getOpposite(facing);
-            case Type::COUNTERCLOCKWISE_90:
-                return rotateYCCW(facing);
-            default:
-                return facing;
-        }
+    }
+    switch (this->type) {
+        case Type::CLOCKWISE_90:
+            return rotateY(facing);
+        case Type::CLOCKWISE_180:
+            return getOpposite(facing);
+        case Type::COUNTERCLOCKWISE_90:
+            return rotateYCCW(facing);
+        default:
+            return facing;
     }
 }
 
@@ -206,14 +207,14 @@ inline EnumFacing Mirror::mirrorFACING(EnumFacing facing) const {
         case Type::FRONT_BACK:
             if (facing == EnumFacing::WEST)
                 return EnumFacing::EAST;
-            else if (facing == EnumFacing::EAST)
+            if (facing == EnumFacing::EAST)
                 return EnumFacing::WEST;
             break;
 
         case Type::LEFT_RIGHT:
             if (facing == EnumFacing::NORTH)
                 return EnumFacing::SOUTH;
-            else if (facing == EnumFacing::SOUTH)
+            if (facing == EnumFacing::SOUTH)
                 return EnumFacing::NORTH;
             break;
 

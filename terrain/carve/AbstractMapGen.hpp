@@ -15,7 +15,7 @@ public:
     RNG rng;
     BoundingBox genBounds = BoundingBox::EMPTY;
 
-    explicit AbstractMapGen(World& world) : world(world), g(world.getGenerator()), rng(0) {}
+    explicit AbstractMapGen(World& world) : world(world), g(world.getGenerator()) {}
 
     virtual ~AbstractMapGen() = default;
 

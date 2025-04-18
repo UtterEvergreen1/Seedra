@@ -3,7 +3,6 @@
 #include "common/rng.hpp"
 #include "stronghold.hpp"
 
-#include "enchants/__include.hpp"
 #include "lce/blocks/blockStates.hpp"
 #include "terrain/Chunk.hpp"
 #include "terrain/World.hpp"
@@ -426,10 +425,10 @@ namespace build::stronghold {
                 hasSpawner = true;
                 worldIn.setBlock(blockPos, lce::BlocksInit::MONSTER_SPAWNER.getState()); // 2
                 /*
-                TileEntity tileentity = worldIn.getTileEntity(blockPos);
+                TileEntity / tileEntity = worldIn.getTileEntity(blockPos);
 
-                if (tileentity instanceof TileEntityMobSpawner) {
-                    ((TileEntityMobSpawner) tileentity)
+                if (tileEntity instanceof TileEntityMobSpawner) {
+                    ((TileEntityMobSpawner) tileEntity)
                             .getSpawnerBaseLogic()
                             .func_190894_a(EntityList.func_191306_a(EntitySilverfish.class));
                 }
@@ -461,17 +460,17 @@ namespace build::stronghold {
         piece.setBlockState(worldIn, lce::BlocksInit::IRON_BARS.getState(), 4, 3, 8, chunkBB);
 
 
-        const lce::BlockState iblockstate = lce::BlocksInit::IRON_DOOR_BLOCK.getStateFromMeta(
+        const lce::BlockState iBlockState = lce::BlocksInit::IRON_DOOR_BLOCK.getStateFromMeta(
                 states::DoorLower::withProperty(piece.rotation.apply(piece.mirror, EnumFacing::WEST)));
 
-        const lce::BlockState iblockstate1 = lce::BlocksInit::IRON_DOOR_BLOCK.getStateFromMeta(
+        const lce::BlockState iBlockState1 = lce::BlocksInit::IRON_DOOR_BLOCK.getStateFromMeta(
                 states::DoorUpper::withProperty());
 
 
-        piece.setBlockState(worldIn, iblockstate, 4, 1, 2, chunkBB);
-        piece.setBlockState(worldIn, iblockstate1, 4, 2, 2, chunkBB);
-        piece.setBlockState(worldIn, iblockstate, 4, 1, 8, chunkBB);
-        piece.setBlockState(worldIn, iblockstate1, 4, 2, 8, chunkBB);
+        piece.setBlockState(worldIn, iBlockState, 4, 1, 2, chunkBB);
+        piece.setBlockState(worldIn, iBlockState1, 4, 2, 2, chunkBB);
+        piece.setBlockState(worldIn, iBlockState, 4, 1, 8, chunkBB);
+        piece.setBlockState(worldIn, iBlockState1, 4, 2, 8, chunkBB);
         return true;
     }
 
@@ -679,15 +678,15 @@ namespace build::stronghold {
         placeDoor(worldIn, chunkBB, piece, entryDoor, 1, 1, 0);
         placeDoor(worldIn, chunkBB, piece, Door::OPENING, 1, 1, 6);
 
-        const lce::BlockState iblockstate = lce::BlocksInit::TORCH.getStateFromMeta(
+        const lce::BlockState iBlockState = lce::BlocksInit::TORCH.getStateFromMeta(
                 states::Torch::withProperty(piece.rotation.apply(piece.mirror, EnumFacing::EAST)));
-        const lce::BlockState iblockstate1 = lce::BlocksInit::TORCH.getStateFromMeta(
+        const lce::BlockState iBlockState1 = lce::BlocksInit::TORCH.getStateFromMeta(
                 states::Torch::withProperty(piece.rotation.apply(piece.mirror, EnumFacing::WEST)));
 
-        piece.randomlyPlaceBlock(worldIn, chunkBB, rng, 0.1F, 1, 2, 1, iblockstate);
-        piece.randomlyPlaceBlock(worldIn, chunkBB, rng, 0.1F, 3, 2, 1, iblockstate1);
-        piece.randomlyPlaceBlock(worldIn, chunkBB, rng, 0.1F, 1, 2, 5, iblockstate);
-        piece.randomlyPlaceBlock(worldIn, chunkBB, rng, 0.1F, 3, 2, 5, iblockstate1);
+        piece.randomlyPlaceBlock(worldIn, chunkBB, rng, 0.1F, 1, 2, 1, iBlockState);
+        piece.randomlyPlaceBlock(worldIn, chunkBB, rng, 0.1F, 3, 2, 1, iBlockState1);
+        piece.randomlyPlaceBlock(worldIn, chunkBB, rng, 0.1F, 1, 2, 5, iBlockState);
+        piece.randomlyPlaceBlock(worldIn, chunkBB, rng, 0.1F, 3, 2, 5, iBlockState1);
 
         c_bool expandsX = piece.data & 1;
         if (expandsX) {

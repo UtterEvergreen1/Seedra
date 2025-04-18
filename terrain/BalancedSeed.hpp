@@ -6,7 +6,6 @@
 #include <vector>
 
 #include "generator.hpp"
-#include "common/constants.hpp"
 #include "common/timer.hpp"
 #include "terrain/biomes/biomeID.hpp"
 
@@ -14,88 +13,88 @@ namespace BalancedSeed {
     inline int getBiomeGroup(c_int biomeID) {
         switch (biomeID) {
             // Category 0: Cold biomes (snow and ice)
-            case BiomeID::snowy_tundra:
-            case BiomeID::ice_mountains:
-            case BiomeID::snowy_beach:
-            case BiomeID::snowy_taiga:
-            case BiomeID::snowy_taiga_hills:
-            case BiomeID::ice_spikes:
-            case BiomeID::snowy_taiga_mountains:
+            case snowy_tundra:
+            case ice_mountains:
+            case snowy_beach:
+            case snowy_taiga:
+            case snowy_taiga_hills:
+            case ice_spikes:
+            case snowy_taiga_mountains:
                 return 0;
             // Category 1: High elevation biomes (mountains)
-            case BiomeID::extreme_hills:
-            case BiomeID::taiga:
-            //case BiomeID::the_end:
-            case BiomeID::taiga_hills:
-            case BiomeID::extreme_hills_edge:
-            case BiomeID::stone_beach:
-            case BiomeID::mega_taiga:
-            case BiomeID::mega_taiga_hills:
-            case BiomeID::wooded_mountains:
-            case BiomeID::gravelly_mountains:
-            case BiomeID::taiga_mutated:
-            case BiomeID::mega_spruce_taiga:
-            case BiomeID::giant_spruce_taiga_hills:
-            case BiomeID::modified_gravelly_mountains:
+            case extreme_hills:
+            case taiga:
+            //case the_end:
+            case taiga_hills:
+            case extreme_hills_edge:
+            case stone_beach:
+            case mega_taiga:
+            case mega_taiga_hills:
+            case wooded_mountains:
+            case gravelly_mountains:
+            case taiga_mutated:
+            case mega_spruce_taiga:
+            case giant_spruce_taiga_hills:
+            case modified_gravelly_mountains:
                 return 1;
             // Category 2: Moderate climate biomes (forests, plains, beaches, etc.)
-            case BiomeID::plains:
-            case BiomeID::forest:
-            case BiomeID::beach:
-            case BiomeID::forest_hills:
-            case BiomeID::birch_forest:
-            case BiomeID::birch_forest_hills:
-            case BiomeID::roofed_forest:
-            case BiomeID::sunflower_plains:
-            case BiomeID::flower_forest:
-            case BiomeID::tall_birch_forest:
-            case BiomeID::tall_birch_hills:
-            case BiomeID::dark_forest_hills:
+            case plains:
+            case forest:
+            case beach:
+            case forest_hills:
+            case birch_forest:
+            case birch_forest_hills:
+            case roofed_forest:
+            case sunflower_plains:
+            case flower_forest:
+            case tall_birch_forest:
+            case tall_birch_hills:
+            case dark_forest_hills:
                 return 2;
             // Category 3: High humidity biomes (swamps, jungles)
-            case BiomeID::swampland:
-            case BiomeID::jungle:
-            case BiomeID::jungle_hills:
-            case BiomeID::jungle_edge:
-            case BiomeID::swamp_hills:
-            case BiomeID::modified_jungle:
-            case BiomeID::modified_jungle_edge:
+            case swampland:
+            case jungle:
+            case jungle_hills:
+            case jungle_edge:
+            case swamp_hills:
+            case modified_jungle:
+            case modified_jungle_edge:
                 return 3;
             // Category 4: Hot and dry biomes (deserts, savannas, mesas)
-            case BiomeID::desert:
-            case BiomeID::desert_hills:
-            case BiomeID::savanna:
-            case BiomeID::savanna_plateau:
-            case BiomeID::mesa:
-            case BiomeID::mesa_plateau_stone:
-            case BiomeID::mesa_plateau:
-            case BiomeID::desert_lakes:
-            case BiomeID::shattered_savanna:
-            case BiomeID::shattered_savanna_plateau:
-            case BiomeID::mesa_bryce:
-            case BiomeID::mesa_plateau_stone_mutated:
-            case BiomeID::mesa_plateau_mutated:
+            case desert:
+            case desert_hills:
+            case savanna:
+            case savanna_plateau:
+            case mesa:
+            case mesa_plateau_stone:
+            case mesa_plateau:
+            case desert_lakes:
+            case shattered_savanna:
+            case shattered_savanna_plateau:
+            case mesa_bryce:
+            case mesa_plateau_stone_mutated:
+            case mesa_plateau_mutated:
                 return 4;
             // Category 5: Ocean biomes (ocean, deep ocean, warm ocean, etc.)
-            case BiomeID::ocean:
-            case BiomeID::legacy_frozen_ocean:
-            case BiomeID::deep_ocean:
-            case BiomeID::warm_ocean:
-            case BiomeID::deep_warm_ocean:
-            case BiomeID::lukewarm_ocean:
-            case BiomeID::deep_lukewarm_ocean:
-            case BiomeID::cold_ocean:
-            case BiomeID::deep_cold_ocean:
-            case BiomeID::frozen_ocean:
-            case BiomeID::deep_frozen_ocean:
+            case ocean:
+            case legacy_frozen_ocean:
+            case deep_ocean:
+            case warm_ocean:
+            case deep_warm_ocean:
+            case lukewarm_ocean:
+            case deep_lukewarm_ocean:
+            case cold_ocean:
+            case deep_cold_ocean:
+            case frozen_ocean:
+            case deep_frozen_ocean:
                 return 5;
             // Category 6: River biomes (river, frozen river)
-            case BiomeID::river:
-            case BiomeID::frozen_river:
+            case river:
+            case frozen_river:
                 return 6;
             // Category 7: Mushroom biomes (mushroom fields, mushroom field shore)
-            case BiomeID::mushroom_island:
-            case BiomeID::mushroom_island_shore:
+            case mushroom_island:
+            case mushroom_island_shore:
                 return 7;
             // Category 8: Other biomes (the end, nether, etc.)
             default:
