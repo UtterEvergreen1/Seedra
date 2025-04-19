@@ -6,22 +6,31 @@
 #include <cstdlib>
 #include <cstring>
 
-
+/**
+ * @brief Sets the RGB color for a specific biome ID.
+ *
+ * @param colors A 2D array of RGB colors.
+ * @param id The biome ID to set the color for.
+ * @param hex The color in hexadecimal format (e.g., 0xRRGGBB).
+ */
 MU static void setColor(unsigned char colors[256][3], int id, u32 hex) {
     colors[id][0] = (hex >> 16) & 0xff;
     colors[id][1] = (hex >> 8) & 0xff;
     colors[id][2] = (hex >> 0) & 0xff;
 }
 
-
+/**
+ * @brief Initializes the biome colors with predefined values.
+ *
+ * This function sets up a color scheme for various biomes, inspired by the AMIDST program,
+ * with additional biomes for Minecraft 1.18+ and improved contrast for new world generation.
+ *
+ * @param colors A 2D array to store the RGB colors for each biome.
+ */
 static void initBiomeColors(u8 colors[256][3]) {
-    // This coloring scheme is largely inspired by the AMIDST program:
-    // https://github.com/toolbox4minecraft/amidst/wiki/Biome-Color-Table
-    // but with additional biomes for 1.18+, and with some subtle changes to
-    // improve contrast for the new world generation.
-
     memset(colors, 0, 256 * 3);
 
+    // Set colors for various biomes
     setColor(colors, ocean, 0x0b0b73);
     setColor(colors, plains, 0x86b359);
     setColor(colors, desert, 0xf28518);
@@ -99,6 +108,11 @@ static void initBiomeColors(u8 colors[256][3]) {
     setColor(colors, bamboo_jungle_hills, 0x3c4d0b);
 }
 
+/**
+ * @brief Initializes biome type colors with predefined values.
+ *
+ * @param colors A 2D array to store the RGB colors for each biome type.
+ */
 MU static void initBiomeTypeColors(unsigned char colors[256][3]) {
     memset(colors, 0, 256 * 3);
 
@@ -109,7 +123,18 @@ MU static void initBiomeTypeColors(unsigned char colors[256][3]) {
     setColor(colors, Freezing, 0xffffff);
 }
 
-MU static int biomesToImage(u8* pixels, u8 biomeColors[256][3], c_int* biomes, c_u32 sx, c_u32 sy, c_u32 pixScale) {
+/**
+ * @brief Converts biome data into an image representation.
+ *
+ * @param pixels The output pixel array.
+ * @param biomeColors The RGB color array for biomes.
+ * @param biomes The biome data array.
+ * @param sx The width of the biome data.
+ * @param sy The height of the biome data.
+ * @param pixScale The scaling factor for each pixel.
+ * @return 1 if invalid biomes are encountered, 0 otherwise.
+ */
+MU static int biomesToImage(u8 *pixels, u8 biomeColors[256][3], c_int *biomes, c_u32 sx, c_u32 sy, c_u32 pixScale) {
     u32 i, j;
     int containsInvalidBiomes = 0;
 
@@ -119,7 +144,7 @@ MU static int biomesToImage(u8* pixels, u8 biomeColors[256][3], c_int* biomes, c
             u32 r, g, b;
 
             if (id < 0 || id >= 256) {
-                // This may happen for some intermediate layers
+                // Handle invalid biome IDs
                 containsInvalidBiomes = 1;
                 r = biomeColors[id & 0x7f][0] - 40;
                 r = (r > 0xff) ? 0x00 : r & 0xff;
@@ -138,7 +163,7 @@ MU static int biomesToImage(u8* pixels, u8 biomeColors[256][3], c_int* biomes, c
                 for (n = 0; n < pixScale; n++) {
                     const int idx = pixScale * i + n + (pixScale * sx) * (pixScale * j + m);
 
-                    unsigned char* pix = pixels + 3 * idx;
+                    unsigned char *pix = pixels + 3 * idx;
                     pix[0] = (u8) r;
                     pix[1] = (u8) g;
                     pix[2] = (u8) b;
@@ -150,8 +175,17 @@ MU static int biomesToImage(u8* pixels, u8 biomeColors[256][3], c_int* biomes, c
     return containsInvalidBiomes;
 }
 
-MU static int savePPM(const char* path, c_u8* pixels, c_u32 sx, c_u32 sy) {
-    FILE* fp = fopen(path, "wb");
+/**
+ * @brief Saves a PPM image to a file.
+ *
+ * @param path The file path to save the image.
+ * @param pixels The pixel data array.
+ * @param sx The width of the image.
+ * @param sy The height of the image.
+ * @return 0 on success, -1 on failure.
+ */
+MU static int savePPM(const char *path, c_u8 *pixels, c_u32 sx, c_u32 sy) {
+    FILE *fp = fopen(path, "wb");
     if (!fp) return -1;
     fprintf(fp, "P6\n%d %d\n255\n", sx, sy);
     size_t pixelsLen = 3 * sx * sy;

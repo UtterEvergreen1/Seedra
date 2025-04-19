@@ -3,65 +3,69 @@
 #include "lce/processor.hpp"
 #include "lce/enums.hpp"
 
+/**
+ * @file enums.hpp
+ * @brief Defines enumerations and utility functions for Minecraft versions and structures.
+ */
 
 /// Minecraft console versions
-// TODO: this code sucks make it better
 enum class LCEVERSION : i8 {
-    AQUATIC = 0,
-    ELYTRA = 1,
-    BOUNTIFUL = 2,
-    HORSE = 3,
-    POTIONS = 4,
-    ADVENTURE = 5,
-    // PISTON,
-    // GENERATION, // not supported yet
-
-    PILLAGE = 6,
-    NONE = 7
+    AQUATIC = 0, ///< Represents the Aquatic update.
+    ELYTRA = 1, ///< Represents the Elytra update.
+    BOUNTIFUL = 2, ///< Represents the Bountiful update.
+    HORSE = 3, ///< Represents the Horse update.
+    POTIONS = 4, ///< Represents the Potions update.
+    ADVENTURE = 5, ///< Represents the Adventure update.
+    PILLAGE = 6, ///< Represents the Pillage update.
+    NONE = 7 ///< Represents no specific version.
 };
 
 /// Minecraft Java versions
 enum MCVERSION : i8 {
-    MC_1_0 = 0, // <=1.0 Experimental!
-    MC_1_1 = 1,
-    MC_1_2 = 2,
-    MC_1_3 = 3,
-    MC_1_4 = 4,
-    MC_1_5 = 5,
-    MC_1_6 = 6,
-    MC_1_7 = 7,
-    MC_1_8 = 8,
-    MC_1_9 = 9,
-    MC_1_10 = 10,
-    MC_1_11 = 11,
-    MC_1_12 = 12,
-    MC_1_13 = 13,
-    MC_1_14 = 14
+    MC_1_0 = 0, ///< Version 1.0
+    MC_1_1 = 1, ///< Version 1.1
+    MC_1_2 = 2, ///< Version 1.2
+    MC_1_3 = 3, ///< Version 1.3
+    MC_1_4 = 4, ///< Version 1.4
+    MC_1_5 = 5, ///< Version 1.5
+    MC_1_6 = 6, ///< Version 1.6
+    MC_1_7 = 7, ///< Version 1.7
+    MC_1_8 = 8, ///< Version 1.8
+    MC_1_9 = 9, ///< Version 1.9
+    MC_1_10 = 10, ///< Version 1.10
+    MC_1_11 = 11, ///< Version 1.11
+    MC_1_12 = 12, ///< Version 1.12
+    MC_1_13 = 13, ///< Version 1.13
+    MC_1_14 = 14 ///< Version 1.14
 };
 
-
+/// Types of structures in Minecraft
 enum class StructureType : u8 {
-    DesertPyramid,
-    JungleTemple,
-    JunglePyramid = JungleTemple,
-    SwampHut,
-    Igloo,
-    FEATURE_NUM,
-    Village,
-    OceanRuin,
-    Mansion,
-    Monument,
-    Treasure,
-    Shipwreck,
-    Outpost,
-    Mineshaft,
-    Fortress,
-    EndCity,
-    EndGateway,
-    NONE
+    DesertPyramid, ///< Desert Pyramid structure.
+    JungleTemple, ///< Jungle Temple structure.
+    JunglePyramid = JungleTemple, ///< Alias for Jungle Temple.
+    SwampHut, ///< Swamp Hut structure.
+    Igloo, ///< Igloo structure.
+    FEATURE_NUM, ///< Number of features (internal use).
+    Village, ///< Village structure.
+    OceanRuin, ///< Ocean Ruin structure.
+    Mansion, ///< Woodland Mansion structure.
+    Monument, ///< Ocean Monument structure.
+    Treasure, ///< Buried Treasure structure.
+    Shipwreck, ///< Shipwreck structure.
+    Outpost, ///< Pillager Outpost structure.
+    Mineshaft, ///< Mineshaft structure.
+    Fortress, ///< Nether Fortress structure.
+    EndCity, ///< End City structure.
+    EndGateway, ///< End Gateway structure.
+    NONE ///< No specific structure.
 };
 
-
+/**
+ * @brief Converts an LCEVERSION enum value to its string representation.
+ * @param version The LCEVERSION value to convert.
+ * @return A string representing the LCEVERSION.
+ */
 MU static std::string LceVersionToString(const LCEVERSION version) {
     switch (version) {
         case LCEVERSION::PILLAGE:
@@ -83,7 +87,11 @@ MU static std::string LceVersionToString(const LCEVERSION version) {
     }
 }
 
-
+/**
+ * @brief Converts a StructureType enum value to its string representation.
+ * @param type The StructureType value to convert.
+ * @return A string representing the StructureType.
+ */
 MU static std::string getStructureName(const StructureType type) {
     switch (type) {
         case StructureType::DesertPyramid:
@@ -121,7 +129,11 @@ MU static std::string getStructureName(const StructureType type) {
     }
 }
 
-
+/**
+ * @brief Maps an LCEVERSION value to its corresponding MCVERSION.
+ * @param lceVersionIn The LCEVERSION value to map.
+ * @return The corresponding MCVERSION value.
+ */
 MU static MCVERSION getMCVersion(const LCEVERSION lceVersionIn) {
     switch (lceVersionIn) {
         case LCEVERSION::AQUATIC:
@@ -139,14 +151,14 @@ MU static MCVERSION getMCVersion(const LCEVERSION lceVersionIn) {
             return MCVERSION::MC_1_0;
         case LCEVERSION::PILLAGE:
             return MCVERSION::MC_1_14;
-            // case LCEVERSION::GENERATION:
-            // return MCVERSION::MC_1_14;
-            // case LCEVERSION::PISTON:
-            // return MCVERSION::MC_1_14;
     }
 }
 
-
+/**
+ * @brief Converts an MCVERSION enum value to its string representation.
+ * @param version The MCVERSION value to convert.
+ * @return A string representing the MCVERSION.
+ */
 MU static std::string mcVersionToString(const MCVERSION version) {
     switch (version) {
         case MC_1_0:

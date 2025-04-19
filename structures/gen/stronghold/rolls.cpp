@@ -125,7 +125,7 @@ namespace rolls {
         }
     }
 
-    [[gnu::noinline]] std::vector<bool> Stronghold::getEyePlacements(MU World& worldIn, const gen::Stronghold * sg, const Generator &g) {
+    [[gnu::noinline]] std::vector<bool> Stronghold::getEyePlacements(const gen::Stronghold * sg, const Generator &g) {
         std::vector<bool> eyes(12, false);
         const Pos2D portalRoomPos = sg->portalRoomPiece->getWorldPos(5, 10);
         const auto portalRoomBoundingBox = BoundingBox(portalRoomPos.x - 5, 0, portalRoomPos.z - 5,
@@ -171,8 +171,8 @@ namespace rolls {
         return eyes;
     }
 
-    MU int Stronghold::getEyesCount(World& worldIn, const gen::Stronghold * sg, const Generator &g) {
-        std::vector<bool> eyes = getEyePlacements(worldIn, sg, g);
+    MU int Stronghold::getEyesCount(const gen::Stronghold * sg, const Generator &g) {
+        std::vector<bool> eyes = getEyePlacements(sg, g);
         int count = 0;
         for (c_bool eye : eyes) {
             if (eye) count++;

@@ -6,24 +6,57 @@
 #include "common/util.hpp"
 #include "terrain/generator.hpp"
 
-
-
-inline std::string getBiomeImageFileNameFromGenerator(const Generator* g, const std::string& directory) {
+/**
+ * @brief Generates a file name for a biome image based on the generator's properties.
+ *
+ * The file name includes the world seed, LCE version, biome scale, and world size.
+ *
+ * @param g Pointer to the Generator object.
+ * @param directory The directory where the file will be saved.
+ * @return The generated file name as a string.
+ */
+inline std::string getBiomeImageFileNameFromGenerator(const Generator *g, const std::string &directory) {
     std::string file = directory + std::to_string(g->getWorldSeed()) + "_" + LceVersionToString(g->getLCEVersion()) +
                        "_" + biomeScaleToString(g->getBiomeScale()) + "_" + worldSizeToString(g->getWorldSize()) +
                        ".png";
     return file;
 }
 
-
+/**
+ * @class WorldPicture
+ * @brief A class for generating and managing biome images based on a world generator.
+ *
+ * This class extends the Picture class and provides functionality to draw and save
+ * biome images using a Generator object.
+ */
 class MU WorldPicture : public Picture {
-    Generator* g;
+    Generator *g; ///< Pointer to the Generator object.
 
 public:
-    MU WorldPicture(Generator* g, c_int width, c_int height) : Picture(width, height), g(g) {}
+    /**
+     * @brief Constructs a WorldPicture object with a specified width and height.
+     *
+     * @param g Pointer to the Generator object.
+     * @param width The width of the picture.
+     * @param height The height of the picture.
+     */
+    MU WorldPicture(Generator *g, c_int width, c_int height) : Picture(width, height), g(g) {
+    }
 
-    MU explicit WorldPicture(Generator* g) : Picture(g->getWorldCoordinateBounds() >> 1), g(g) {}
+    /**
+     * @brief Constructs a WorldPicture object with dimensions based on the generator's world bounds.
+     *
+     * @param g Pointer to the Generator object.
+     */
+    MU explicit WorldPicture(Generator *g) : Picture(g->getWorldCoordinateBounds() >> 1), g(g) {
+    }
 
+    /**
+     * @brief Draws the biomes onto the picture using the generator's biome data.
+     *
+     * This method initializes biome colors and uses the generator to retrieve biome data,
+     * which is then drawn pixel by pixel.
+     */
     MU void drawBiomes() const {
         if (myWidth == 0) return;
         if (myHeight == 0) return;
@@ -41,6 +74,15 @@ public:
         }
     }
 
+    /**
+     * @brief Draws the biomes onto the picture with specified dimensions.
+     *
+     * This method resizes the picture, initializes biome colors, and uses the generator
+     * to retrieve biome data for the specified dimensions, which is then drawn pixel by pixel.
+     *
+     * @param widthIn The width of the picture.
+     * @param heightIn The height of the picture.
+     */
     MU void drawBiomesWithSize(c_int widthIn, c_int heightIn) {
         if (widthIn == 0) return;
         if (heightIn == 0) return;
@@ -57,7 +99,7 @@ public:
         c_int y = static_cast<int>(myHeight);
         c_int w = static_cast<int>(myWidth);
         c_int h = static_cast<int>(myHeight);
-        c_int* ids = g->getBiomeRange(4, x, y, w, h);
+        c_int *ids = g->getBiomeRange(4, x, y, w, h);
 
         for (u32 yi = 0; yi < getHeight(); ++yi) {
             for (u32 xi = 0; xi < getWidth(); ++xi) {
@@ -67,5 +109,12 @@ public:
         }
     }
 
-    void save(const std::string& directory) const;
+    /**
+     * @brief Saves the biome image to a specified directory.
+     *
+     * The file name is generated using the generator's properties.
+     *
+     * @param directory The directory where the image will be saved.
+     */
+    void save(const std::string &directory) const;
 };

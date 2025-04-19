@@ -14,6 +14,14 @@
 
 // placement
 namespace Placement {
+    /**
+     * @brief Sets the world size for all structures in the Placement namespace.
+     *
+     * This function adjusts the world size for various structures, ensuring that
+     * their placement logic is consistent with the specified world size.
+     *
+     * @param worldSize The size of the world, which determines placement behavior.
+     */
     static void setWorldSize(const lce::WORLDSIZE worldSize) {
         Stronghold::setWorldSize(worldSize);
         Feature::setWorldSize(worldSize);

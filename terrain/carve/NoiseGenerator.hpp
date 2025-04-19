@@ -11,16 +11,25 @@
 
 #include <array>
 
-
+/* * @brief Computes the floor of a double value.
+ * @param value The input value.
+ * @return The floor of the input value as a 64-bit integer.
+ */
 static i64 lfloor(c_double value) {
     c_auto i = (i64) value;
     return value < (double) i ? i - 1L : i;
 }
 
+/**
+ * @class NoiseGeneratorSimplex
+ * @brief Generates 2D simplex noise for terrain generation.
+ */
 class NoiseGeneratorSimplex {
 public:
-    int grad3[12][3] = {{1, 1, 0},  {-1, 1, 0},  {1, -1, 0}, {-1, -1, 0}, {1, 0, 1},  {-1, 0, 1},
-                        {1, 0, -1}, {-1, 0, -1}, {0, 1, 1},  {0, -1, 1},  {0, 1, -1}, {0, -1, -1}};
+    int grad3[12][3] = {
+        {1, 1, 0}, {-1, 1, 0}, {1, -1, 0}, {-1, -1, 0}, {1, 0, 1}, {-1, 0, 1},
+        {1, 0, -1}, {-1, 0, -1}, {0, 1, 1}, {0, -1, 1}, {0, 1, -1}, {0, -1, -1}
+    };
     double SQRT_3 = sqrt(3.0);
     int p[512]{};
     double xo{};
@@ -29,7 +38,11 @@ public:
     double F2 = 0.5 * (SQRT_3 - 1.0);
     double G2 = (3.0 - SQRT_3) / 6.0;
 
-    void setNoiseGeneratorSimplex(RNG& rng) {
+    /**
+     * @brief Initializes the simplex noise generator with a random seed.
+     * @param rng The random number generator.
+     */
+    void setNoiseGeneratorSimplex(RNG &rng) {
         xo = rng.nextDouble() * 256.0;
         yo = rng.nextDouble() * 256.0;
         zo = rng.nextDouble() * 256.0;
@@ -45,170 +58,197 @@ public:
         }
     }
 
+    /**
+     * @brief Computes the floor of a value quickly.
+     * @param value The input value.
+     * @return The floor of the input value as an integer.
+     */
     static int fastFloor(c_double value) { return value > 0.0 ? (int) value : (int) value - 1; }
 
-    static double dot(c_int p_151604_0_[], double p_151604_1_, double p_151604_3_) {
-        return (double) p_151604_0_[0] * p_151604_1_ + (double) p_151604_0_[1] * p_151604_3_;
+    /**
+      * @brief Computes the dot product of a gradient vector and a 2D vector.
+      * @param gradient The gradient vector.
+      * @param x The X-coordinate of the vector.
+      * @param y The Y-coordinate of the vector.
+      * @return The dot product.
+      */
+    static double dot(const int gradient[], double x, double y) {
+        return gradient[0] * x + gradient[1] * y;
     }
 
+    /**
+     * @brief Generates simplex noise for a given 2D position.
+     * @param posX The X-coordinate of the position.
+     * @param posZ The Z-coordinate of the position.
+     * @return The noise value at the given position.
+     */
     ND double getValue(c_double posX, c_double posZ) const {
-        c_double d3 = 0.5 * (SQRT_3 - 1.0);
-        c_double d4 = (posX + posZ) * d3;
-        c_int i = fastFloor(posX + d4);
-        c_int j = fastFloor(posZ + d4);
-        c_double d5 = (3.0 - SQRT_3) / 6.0;
-        c_double d6 = (double) (i + j) * d5;
-        c_double d7 = (double) i - d6;
-        c_double d8 = (double) j - d6;
-        c_double d9 = posX - d7;
-        c_double d10 = posZ - d8;
-        int k;
-        int l;
+        // Skewing and unskewing factors
+        const double skewFactor = 0.5 * (SQRT_3 - 1.0);
+        const double unskewFactor = (3.0 - SQRT_3) / 6.0;
 
-        if (d9 > d10) {
-            k = 1;
-            l = 0;
-        } else {
-            k = 0;
-            l = 1;
-        }
+        // Skew the input space
+        double skew = (posX + posZ) * skewFactor;
+        int skewedX = fastFloor(posX + skew);
+        int skewedZ = fastFloor(posZ + skew);
 
-        c_double d11 = d9 - (double) k + d5;
-        c_double d12 = d10 - (double) l + d5;
-        c_double d13 = d9 - 1.0 + 2.0 * d5;
-        c_double d14 = d10 - 1.0 + 2.0 * d5;
-        c_int i1 = i & 255;
-        c_int j1 = j & 255;
-        c_int k1 = p[i1 + p[j1]] % 12;
-        c_int l1 = p[i1 + k + p[j1 + l]] % 12;
-        c_int i2 = p[i1 + 1 + p[j1 + 1]] % 12;
-        double d15 = 0.5 - d9 * d9 - d10 * d10;
-        double d0;
+        // Unskew the cell origin
+        double unskew = (skewedX + skewedZ) * unskewFactor;
+        double cellOriginX = skewedX - unskew;
+        double cellOriginZ = skewedZ - unskew;
 
-        if (d15 < 0.0) {
-            d0 = 0.0;
-        } else {
-            d15 = d15 * d15;
-            d0 = d15 * d15 * dot(grad3[k1], d9, d10);
-        }
+        // Distances from the cell origin
+        double xDist = posX - cellOriginX;
+        double zDist = posZ - cellOriginZ;
 
-        double d16 = 0.5 - d11 * d11 - d12 * d12;
-        double d1;
+        // Determine simplex corner offsets
+        int offsetX = (xDist > zDist) ? 1 : 0;
+        int offsetZ = (xDist > zDist) ? 0 : 1;
 
-        if (d16 < 0.0) {
-            d1 = 0.0;
-        } else {
-            d16 = d16 * d16;
-            d1 = d16 * d16 * dot(grad3[l1], d11, d12);
-        }
+        // Calculate the positions of the simplex corners
+        double x1 = xDist - offsetX + unskewFactor;
+        double z1 = zDist - offsetZ + unskewFactor;
+        double x2 = xDist - 1.0 + 2.0 * unskewFactor;
+        double z2 = zDist - 1.0 + 2.0 * unskewFactor;
 
-        double d17 = 0.5 - d13 * d13 - d14 * d14;
-        double d2;
+        // Hash the coordinates to get gradient indices
+        int permX = skewedX & 255;
+        int permZ = skewedZ & 255;
+        int gradIndex0 = p[permX + p[permZ]] % 12;
+        int gradIndex1 = p[permX + offsetX + p[permZ + offsetZ]] % 12;
+        int gradIndex2 = p[permX + 1 + p[permZ + 1]] % 12;
 
-        if (d17 < 0.0) {
-            d2 = 0.0;
-        } else {
-            d17 = d17 * d17;
-            d2 = d17 * d17 * dot(grad3[i2], d13, d14);
-        }
+        // Calculate contributions from each corner
+        double contribution0 = 0.5 - xDist * xDist - zDist * zDist;
+        double noise0 = (contribution0 < 0) ? 0 : pow(contribution0, 4) * dot(grad3[gradIndex0], xDist, zDist);
 
-        return 70.0 * (d0 + d1 + d2);
+        double contribution1 = 0.5 - x1 * x1 - z1 * z1;
+        double noise1 = (contribution1 < 0) ? 0 : pow(contribution1, 4) * dot(grad3[gradIndex1], x1, z1);
+
+        double contribution2 = 0.5 - x2 * x2 - z2 * z2;
+        double noise2 = (contribution2 < 0) ? 0 : pow(contribution2, 4) * dot(grad3[gradIndex2], x2, z2);
+
+        // Combine contributions and scale the result
+        return 70.0 * (noise0 + noise1 + noise2);
     }
 
-    std::vector<double> add(std::vector<double> p_151606_1_, double p_151606_2_, double p_151606_4_, int p_151606_6_,
-                            int p_151606_7_, double p_151606_8_, double p_151606_10_, double p_151606_12_) {
-        int i = 0;
+    /**
+     * @brief Adds simplex noise to a region.
+     * @param noiseValues The vector to store noise values.
+     * @param xOffset The X-offset.
+     * @param zOffset The Z-offset.
+     * @param width The width of the region.
+     * @param height The height of the region.
+     * @param xScale The X-scale.
+     * @param zScale The Z-scale.
+     * @param noiseScale The noise scale.
+     * @return The vector with added noise values.
+     */
+    std::vector<double> add(std::vector<double> noiseValues, double xOffset, double zOffset, int width,
+                            int height, double xScale, double zScale, double noiseScale) {
+        int index = 0;
 
-        for (int j = 0; j < p_151606_7_; ++j) {
-            double d0 = (p_151606_4_ + (double) j) * p_151606_10_ + yo;
+        for (int z = 0; z < height; ++z) {
+            double zCoord = (zOffset + z) * zScale + yo;
 
-            for (int k = 0; k < p_151606_6_; ++k) {
-                double d1 = (p_151606_2_ + (double) k) * p_151606_8_ + xo;
-                double d5 = (d1 + d0) * F2;
-                int l = fastFloor(d1 + d5);
-                int i1 = fastFloor(d0 + d5);
-                double d6 = (double) (l + i1) * G2;
-                double d7 = (double) l - d6;
-                double d8 = (double) i1 - d6;
-                double d9 = d1 - d7;
-                double d10 = d0 - d8;
-                int j1;
-                int k1;
+            for (int x = 0; x < width; ++x) {
+                double xCoord = (xOffset + x) * xScale + xo;
+                double skew = (xCoord + zCoord) * F2;
+                int skewedX = fastFloor(xCoord + skew);
+                int skewedZ = fastFloor(zCoord + skew);
+                double unskew = (skewedX + skewedZ) * G2;
+                double xUnskewed = xCoord - (skewedX - unskew);
+                double zUnskewed = zCoord - (skewedZ - unskew);
 
-                if (d9 > d10) {
-                    j1 = 1;
-                    k1 = 0;
+                int offsetX, offsetZ;
+                if (xUnskewed > zUnskewed) {
+                    offsetX = 1;
+                    offsetZ = 0;
                 } else {
-                    j1 = 0;
-                    k1 = 1;
+                    offsetX = 0;
+                    offsetZ = 1;
                 }
 
-                double d11 = d9 - (double) j1 + G2;
-                double d12 = d10 - (double) k1 + G2;
-                double d13 = d9 - 1.0 + 2.0 * G2;
-                double d14 = d10 - 1.0 + 2.0 * G2;
-                int l1 = l & 255;
-                int i2 = i1 & 255;
-                int j2 = p[l1 + p[i2]] % 12;
-                int k2 = p[l1 + j1 + p[i2 + k1]] % 12;
-                int l2 = p[l1 + 1 + p[i2 + 1]] % 12;
-                double d15 = 0.5 - d9 * d9 - d10 * d10;
-                double d2;
+                double x1 = xUnskewed - offsetX + G2;
+                double z1 = zUnskewed - offsetZ + G2;
+                double x2 = xUnskewed - 1.0 + 2.0 * G2;
+                double z2 = zUnskewed - 1.0 + 2.0 * G2;
 
-                if (d15 < 0.0) {
-                    d2 = 0.0;
-                } else {
-                    d15 = d15 * d15;
-                    d2 = d15 * d15 * dot(grad3[j2], d9, d10);
-                }
+                int permX = skewedX & 255;
+                int permZ = skewedZ & 255;
+                int gradIndex0 = p[permX + p[permZ]] % 12;
+                int gradIndex1 = p[permX + offsetX + p[permZ + offsetZ]] % 12;
+                int gradIndex2 = p[permX + 1 + p[permZ + 1]] % 12;
 
-                double d16 = 0.5 - d11 * d11 - d12 * d12;
-                double d3;
+                double contribution0 = 0.5 - xUnskewed * xUnskewed - zUnskewed * zUnskewed;
+                double noise0 = (contribution0 < 0)
+                                    ? 0
+                                    : pow(contribution0, 4) * dot(grad3[gradIndex0], xUnskewed, zUnskewed);
 
-                if (d16 < 0.0) {
-                    d3 = 0.0;
-                } else {
-                    d16 = d16 * d16;
-                    d3 = d16 * d16 * dot(grad3[k2], d11, d12);
-                }
+                double contribution1 = 0.5 - x1 * x1 - z1 * z1;
+                double noise1 = (contribution1 < 0) ? 0 : pow(contribution1, 4) * dot(grad3[gradIndex1], x1, z1);
 
-                double d17 = 0.5 - d13 * d13 - d14 * d14;
-                double d4;
+                double contribution2 = 0.5 - x2 * x2 - z2 * z2;
+                double noise2 = (contribution2 < 0) ? 0 : pow(contribution2, 4) * dot(grad3[gradIndex2], x2, z2);
 
-                if (d17 < 0.0) {
-                    d4 = 0.0;
-                } else {
-                    d17 = d17 * d17;
-                    d4 = d17 * d17 * dot(grad3[l2], d13, d14);
-                }
-
-                int i3 = i++;
-                p_151606_1_[i3] += 70.0 * (d2 + d3 + d4) * p_151606_12_;
+                noiseValues[index++] += 70.0 * (noise0 + noise1 + noise2) * noiseScale;
             }
         }
-        return p_151606_1_;
+        return noiseValues;
     }
 };
 
 
+/**
+ * @class NoiseGeneratorPerlin
+ * @brief Generates Perlin noise using multiple levels of simplex noise.
+ */
 class NoiseGeneratorPerlin {
 public:
+    /**
+     * @brief A vector of simplex noise generators for each level.
+     */
     std::vector<NoiseGeneratorSimplex> noiseLevels;
+
+    /**
+     * @brief The number of levels of noise.
+     */
     int levels{};
 
+    /**
+     * @brief Default constructor for NoiseGeneratorPerlin.
+     */
     NoiseGeneratorPerlin() = default;
 
+    /**
+     * @brief Constructs a NoiseGeneratorPerlin with the specified number of levels.
+     * @param rng The random number generator.
+     * @param levelsIn The number of levels of noise to generate.
+     */
     NoiseGeneratorPerlin(RNG rng, const int levelsIn) {
         this->setNoiseGeneratorPerlin(rng, levelsIn);
     }
 
-    void setNoiseGeneratorPerlin(RNG& rng, const int levelsIn) {
+    /**
+     * @brief Initializes the Perlin noise generator with the specified number of levels.
+     * @param rng The random number generator.
+     * @param levelsIn The number of levels of noise to generate.
+     */
+    void setNoiseGeneratorPerlin(RNG &rng, const int levelsIn) {
         levels = levelsIn;
         noiseLevels = std::vector<NoiseGeneratorSimplex>(levelsIn);
 
-        for (int i = 0; i < levelsIn; ++i) { noiseLevels[i].setNoiseGeneratorSimplex(rng); }
+        for (int i = 0; i < levelsIn; ++i) {
+            noiseLevels[i].setNoiseGeneratorSimplex(rng);
+        }
     }
 
+    /**
+     * @brief Computes the Perlin noise value at a given 2D position.
+     * @param posX The X-coordinate of the position.
+     * @param posZ The Z-coordinate of the position.
+     * @return The noise value at the given position.
+     */
     ND double getValue(const double posX, const double posZ) const {
         double d0 = 0.0;
         double d1 = 1.0;
@@ -221,41 +261,67 @@ public:
         return d0;
     }
 
-    std::vector<double> getRegion(std::vector<double> p_151600_1_, double p_151600_2_, double p_151600_4_,
-                                  int p_151600_6_, int p_151600_7_, double p_151600_8_, double p_151600_10_,
-                                  double p_151600_12_, double p_151600_14_) {
-        //p_151600_8_ = p_151600_8_ / 1.5; // WiiU?
-        //p_151600_10_ = p_151600_10_ / 1.5;
-        if (!p_151600_1_.empty() && (int) p_151600_1_.size() >= p_151600_6_ * p_151600_7_) {
-            for (int i = 0; i < (int) p_151600_1_.size(); ++i) {
-                p_151600_1_[i] = 0.0;
-            }
+    /**
+     * @brief Generates a region of Perlin noise values.
+     * @param noiseValues The vector to store noise values.
+     * @param xOffset The X-offset of the region.
+     * @param zOffset The Z-offset of the region.
+     * @param width The width of the region.
+     * @param height The height of the region.
+     * @param xScale The X-scale of the noise.
+     * @param zScale The Z-scale of the noise.
+     * @param persistence The persistence factor for scaling.
+     * @param lacunarity The lacunarity factor for scaling.
+     */
+    void getRegion(std::vector<double> &noiseValues, double xOffset, double zOffset,
+                   int width, int height, double xScale, double zScale,
+                   double persistence, double lacunarity) {
+        // Ensure the vector is properly sized and initialized
+        if (noiseValues.size() < static_cast<size_t>(width * height)) {
+            noiseValues.assign(width * height, 0.0);
         } else {
-            p_151600_1_ = std::vector<double>(p_151600_6_ * p_151600_7_);
+            std::fill(noiseValues.begin(), noiseValues.end(), 0.0);
         }
 
-        double d1 = 1.0;
-        double d0 = 1.0;
+        double amplitude = 1.0;
+        double frequency = 1.0;
 
-        for (int j = 0; j < levels; ++j) {
-            p_151600_1_ = noiseLevels[j].add(p_151600_1_, p_151600_2_, p_151600_4_, p_151600_6_, p_151600_7_,
-                                             p_151600_8_ * d0, p_151600_10_ * d0, (double) 0.55 / d1);
-            d0 *= p_151600_12_;
-            d1 *= p_151600_14_;
+        // Add noise from each level
+        for (int i = 0; i < levels; ++i) {
+            noiseValues = noiseLevels[i].add(noiseValues, xOffset, zOffset, width, height,
+                                             xScale * frequency, zScale * frequency, 0.55 / amplitude);
+            frequency *= lacunarity;
+            amplitude *= persistence;
         }
-        return p_151600_1_;
     }
 
-    std::vector<double> getRegion(std::vector<double> p_151599_1_, double p_151599_2_, double p_151599_4_,
-                                  int p_151599_6_, int p_151599_7_, double p_151599_8_, double p_151599_10_,
-                                  double p_151599_12_) {
-        return getRegion(std::move(p_151599_1_), p_151599_2_, p_151599_4_, p_151599_6_, p_151599_7_, p_151599_8_,
-                         p_151599_10_, p_151599_12_, 0.5);
+    /**
+      * @brief Overloaded method to generate a region of Perlin noise values with default lacunarity.
+      * @param noiseValues The vector to store noise values.
+      * @param xOffset The X-offset of the region.
+      * @param zOffset The Z-offset of the region.
+      * @param width The width of the region.
+      * @param height The height of the region.
+      * @param xScale The X-scale of the noise.
+      * @param zScale The Z-scale of the noise.
+      * @param persistence The persistence factor for scaling.
+      */
+    void getRegion(std::vector<double> &noiseValues, double xOffset, double zOffset,
+                   int width, int height, double xScale, double zScale, double persistence) {
+        // Call the main getRegion method with default lacunarity value of 0.5
+        getRegion(noiseValues, xOffset, zOffset, width, height, xScale, zScale, persistence, 0.5);
     }
 };
 
+/**
+ * @class NoiseGeneratorImproved
+ * @brief Generates improved Perlin noise for 3D terrain generation.
+ */
 class NoiseGeneratorImproved {
-
+    /**
+     * @brief A static constexpr array containing integers from 0 to 255.
+     * Used for initializing the permutation array.
+     */
     static constexpr std::array<int, 256> oneTo255Array = []() constexpr {
         std::array<int, 256> arr = {};
         for (int i = 0; i < 256; ++i) {
@@ -264,37 +330,42 @@ class NoiseGeneratorImproved {
         return arr;
     }();
 
-
-
 public:
     /**
-     * An int[512], where the first 256 elements are the numbers 0..255, in random shuffled order,
-     * and the second half of the array is identical to the first half, apparently for convenience in wrapping lookups.
-     *
-     * Effectively a shuffled 0..255 that wraps once.
+     * @brief Permutation array used for noise generation.
+     * The first 256 elements are shuffled numbers from 0 to 255, and the second half is a duplicate of the first.
      */
     int permutations[512]{};
+
+    /**
+     * @brief Coordinates used for noise generation.
+     */
     double xCoord{};
     double yCoord{};
     double zCoord{};
+
+    /**
+     * @brief Gradient vectors for 3D noise generation.
+     */
     double GRAD_X[16] = {1.0, -1.0, 1.0, -1.0, 1.0, -1.0, 1.0, -1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, -1.0, 0.0};
     double GRAD_Y[16] = {1.0, 1.0, -1.0, -1.0, 0.0, 0.0, 0.0, 0.0, 1.0, -1.0, 1.0, -1.0, 1.0, -1.0, 1.0, -1.0};
     double GRAD_Z[16] = {0.0, 0.0, 0.0, 0.0, 1.0, 1.0, -1.0, -1.0, 1.0, 1.0, -1.0, -1.0, 0.0, 1.0, 0.0, -1.0};
     double GRAD_2X[16] = {1.0, -1.0, 1.0, -1.0, 1.0, -1.0, 1.0, -1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, -1.0, 0.0};
     double GRAD_2Z[16] = {0.0, 0.0, 0.0, 0.0, 1.0, 1.0, -1.0, -1.0, 1.0, 1.0, -1.0, -1.0, 0.0, 1.0, 0.0, -1.0};
 
-    void setNoiseGeneratorImproved(RNG& rng) {
+    /**
+     * @brief Initializes the noise generator with a random seed.
+     * @param rng The random number generator used for shuffling the permutation array.
+     */
+    void setNoiseGeneratorImproved(RNG &rng) {
         xCoord = rng.nextDouble() * 256.0;
         yCoord = rng.nextDouble() * 256.0;
         zCoord = rng.nextDouble() * 256.0;
 
-        // for (int i = 0; i < 256; i++) {
-        //     permutations[i] = i;
-        // }
-
+        // Initialize the first 256 elements of the permutation array.
         memcpy(permutations, oneTo255Array.data(), 256 * sizeof(int));
 
-
+        // Shuffle the permutation array and duplicate it.
         for (int l = 0; l < 256; ++l) {
             int j = rng.nextInt(256 - l) + l;
             int k = permutations[l];
@@ -304,23 +375,52 @@ public:
         }
     }
 
-    ND double grad(int p_76310_1_, double p_76310_2_, double p_76310_4_, double p_76310_6_) const {
-        int i = p_76310_1_ & 15;
-        return GRAD_X[i] * p_76310_2_ + GRAD_Y[i] * p_76310_4_ + GRAD_Z[i] * p_76310_6_;
-    }
-
-    ND double grad2(int p_76309_1_, double p_76309_2_, double p_76309_4_) const {
-        int i = p_76309_1_ & 15;
-        return GRAD_2X[i] * p_76309_2_ + GRAD_2Z[i] * p_76309_4_;
+    /**
+     * @brief Computes the gradient dot product for 3D noise.
+     * @param hash The hash value used to select the gradient.
+     * @param x The X-coordinate of the input vector.
+     * @param y The Y-coordinate of the input vector.
+     * @param z The Z-coordinate of the input vector.
+     * @return The dot product of the gradient and the input vector.
+     */
+    ND double grad(int hash, double x, double y, double z) const {
+        int i = hash & 15;
+        return GRAD_X[i] * x + GRAD_Y[i] * y + GRAD_Z[i] * z;
     }
 
     /**
-     * noiseArray should be xSize*ySize*zSize in size
+     * @brief Computes the gradient dot product for 2D noise.
+     * @param hash The hash value used to select the gradient.
+     * @param x The X-coordinate of the input vector.
+     * @param z The Z-coordinate of the input vector.
+     * @return The dot product of the gradient and the input vector.
      */
-    std::vector<double> populateNoiseArray(Generator* g, std::vector<double> noiseArray, double xOffset, double yOffset,
+    ND double grad2(int hash, double x, double z) const {
+        int i = hash & 15;
+        return GRAD_2X[i] * x + GRAD_2Z[i] * z;
+    }
+
+    /**
+     * @brief Populates a noise array with generated noise values.
+     * @param g The generator object used for console-specific behavior.
+     * @param noiseArray The array to store the generated noise values.
+     * @param xOffset The X-offset for noise generation.
+     * @param yOffset The Y-offset for noise generation.
+     * @param zOffset The Z-offset for noise generation.
+     * @param xSize The size of the noise array in the X-dimension.
+     * @param ySize The size of the noise array in the Y-dimension.
+     * @param zSize The size of the noise array in the Z-dimension.
+     * @param xScale The scale factor for the X-dimension.
+     * @param yScale The scale factor for the Y-dimension.
+     * @param zScale The scale factor for the Z-dimension.
+     * @param noiseScale The overall scale factor for the noise.
+     * @return The populated noise array.
+     */
+    std::vector<double> populateNoiseArray(Generator *g, std::vector<double> noiseArray, double xOffset, double yOffset,
                                            double zOffset, int xSize, int ySize, int zSize, double xScale,
                                            double yScale, double zScale, double noiseScale) {
         if (ySize == 1) {
+            // Special case for 2D noise generation.
             int i5 = 0;
             int j5 = 0;
             int j = 0;
@@ -332,15 +432,13 @@ public:
 
             double d17 = xOffset + xCoord;
             for (int j2 = 0; j2 < xSize; ++j2) {
-                // double d17 = xOffset + (double)j2 * xScale + xCoord;
                 int i6 = (int) d17;
 
                 if (d17 < (double) i6) { --i6; }
 
                 int k2 = i6 & 255;
-                // only on xbox (and java)
                 if (g->getConsole() != lce::CONSOLE::WIIU) {
-                    d17 = d17 - (double)i6;
+                    d17 = d17 - (double) i6;
                 }
                 double d18 = d17 * d17 * d17 * (d17 * (d17 * 6.0 - 15.0) + 10.0);
 
@@ -351,9 +449,8 @@ public:
                     if (d19 < (double) k6) { --k6; }
 
                     int l6 = k6 & 255;
-                    // only on xbox (and java)
                     if (g->getConsole() != lce::CONSOLE::WIIU) {
-                        d19 = d19 - (double)k6;
+                        d19 = d19 - (double) k6;
                     }
                     double d20 = d19 * d19 * d19 * (d19 * (d19 * 6.0 - 15.0) + 10.0);
                     i5 = permutations[k2] + 0;
@@ -371,6 +468,7 @@ public:
                 d17 += i6 + xScale;
             }
         } else {
+            // General case for 3D noise generation.
             int i = 0;
             double d0 = 1.0 / noiseScale;
             int k = -1;
@@ -446,59 +544,108 @@ public:
     }
 };
 
+/**
+ * @class NoiseGeneratorOctaves
+ * @brief Combines multiple noise generation functions to produce octaves of noise.
+ */
 class NoiseGeneratorOctaves {
 public:
     /**
-     * Collection of noise generation functions.  Output is combined to produce different octaves of noise.
+     * @brief Collection of noise generation functions.
+     * Each function contributes to a different octave of noise.
      */
     std::vector<NoiseGeneratorImproved> generatorCollection;
+
+    /**
+     * @brief The number of octaves used in noise generation.
+     */
     int octaves;
 
-    void setNoiseGeneratorOctaves(RNG& rng, c_int octavesIn) {
+    /**
+     * @brief Initializes the noise generator with the specified number of octaves.
+     * @param rng The random number generator used for initializing each octave.
+     * @param octavesIn The number of octaves to generate.
+     */
+    void setNoiseGeneratorOctaves(RNG &rng, c_int octavesIn) {
         octaves = octavesIn;
         generatorCollection = std::vector<NoiseGeneratorImproved>(octavesIn);
 
-        for (int i = 0; i < octavesIn; ++i) { generatorCollection[i].setNoiseGeneratorImproved(rng); }
+        for (int i = 0; i < octavesIn; ++i) {
+            generatorCollection[i].setNoiseGeneratorImproved(rng);
+        }
     }
 
     /**
-     * pars:(par2,3,4=noiseOffset ; so that adjacent noise segments connect) (pars5,6,7=x,y,zArraySize),(pars8,10,12 =
-     * x,y,z noiseScale)
+     * @brief Generates noise values for a 3D region using multiple octaves.
+     * @param g The generator object used for console-specific behavior.
+     * @param noiseArray The array to store the generated noise values.
+     * @param xOffset The X-offset for noise generation.
+     * @param yOffset The Y-offset for noise generation.
+     * @param zOffset The Z-offset for noise generation.
+     * @param xSize The size of the region in the X-dimension.
+     * @param ySize The size of the region in the Y-dimension.
+     * @param zSize The size of the region in the Z-dimension.
+     * @param xScale The scale factor for the X-dimension.
+     * @param yScale The scale factor for the Y-dimension.
+     * @param zScale The scale factor for the Z-dimension.
+     * @return A vector containing the generated noise values.
      */
-    std::vector<double> genNoiseOctaves(Generator* g, std::vector<double> noiseArray, c_int xOffset, c_int yOffset,
+    std::vector<double> genNoiseOctaves(Generator *g, std::vector<double> noiseArray, c_int xOffset, c_int yOffset,
                                         c_int zOffset, c_int xSize, c_int ySize, c_int zSize,
                                         c_double xScale, c_double yScale, c_double zScale) {
-        if EXPECT_TRUE (noiseArray.empty()) {
-            noiseArray.resize(xSize * ySize * zSize);
+        // Ensure the noise array is properly sized and initialized
+        if EXPECT_TRUE(noiseArray.empty()) {
+            noiseArray.resize(xSize * ySize * zSize, 0.0);
         } else {
-            for (double & i : noiseArray) { i = 0.0; }
+            std::fill(noiseArray.begin(), noiseArray.end(), 0.0);
         }
 
-        double d3 = 1.0;
+        double amplitude = 1.0;
 
-        for (int j = 0; j < octaves; ++j) {
-            double d0 = (double) xOffset * d3 * xScale;
-            double d1 = (double) yOffset * d3 * yScale;
-            double d2 = (double) zOffset * d3 * zScale;
-            i64 k = lfloor(d0);
-            i64 l = lfloor(d2);
-            d0 = d0 - (double) k;
-            d2 = d2 - (double) l;
-            k = k % 16777216LL;
-            l = l % 16777216LL;
-            d0 = d0 + (double) k;
-            d2 = d2 + (double) l;
-            noiseArray = generatorCollection[j].populateNoiseArray(g, noiseArray, d0, d1, d2, xSize, ySize, zSize,
-                                                                   xScale * d3, yScale * d3, zScale * d3, d3);
-            d3 /= 2.0;
+        // Generate noise for each octave
+        for (int i = 0; i < octaves; ++i) {
+            double scaledXOffset = xOffset * amplitude * xScale;
+            double scaledYOffset = yOffset * amplitude * yScale;
+            double scaledZOffset = zOffset * amplitude * zScale;
+
+            i64 flooredX = lfloor(scaledXOffset);
+            i64 flooredZ = lfloor(scaledZOffset);
+
+            scaledXOffset -= flooredX;
+            scaledZOffset -= flooredZ;
+
+            flooredX %= 16777216LL;
+            flooredZ %= 16777216LL;
+
+            scaledXOffset += flooredX;
+            scaledZOffset += flooredZ;
+
+            noiseArray = generatorCollection[i].populateNoiseArray(g, noiseArray, scaledXOffset, scaledYOffset,
+                                                                   scaledZOffset,
+                                                                   xSize, ySize, zSize, xScale * amplitude,
+                                                                   yScale * amplitude,
+                                                                   zScale * amplitude, amplitude);
+
+            amplitude /= 2.0;
         }
+
         return noiseArray;
     }
 
-    /// Bouncer function to the main one with some default arguments.
-    std::vector<double> genNoiseOctaves(Generator* g, std::vector<double> noiseArray, c_int xOffset, c_int zOffset,
-                                        c_int xSize, c_int zSize, c_double xScale, c_double zScale,
-                                        MU double p_76305_10_) {
+    /**
+     * @brief Overloaded method to generate noise values for a 2D region with default parameters.
+     * @param g The generator object used for console-specific behavior.
+     * @param noiseArray The array to store the generated noise values.
+     * @param xOffset The X-offset for noise generation.
+     * @param zOffset The Z-offset for noise generation.
+     * @param xSize The size of the region in the X-dimension.
+     * @param zSize The size of the region in the Z-dimension.
+     * @param xScale The scale factor for the X-dimension.
+     * @param zScale The scale factor for the Z-dimension.
+     * @return A vector containing the generated noise values.
+     */
+    std::vector<double> genNoiseOctaves(Generator *g, std::vector<double> noiseArray, c_int xOffset, c_int zOffset,
+                                        c_int xSize, c_int zSize, c_double xScale, c_double zScale) {
         return genNoiseOctaves(g, std::move(noiseArray), xOffset, 10, zOffset, xSize, 1, zSize, xScale, 1.0, zScale);
     }
 };

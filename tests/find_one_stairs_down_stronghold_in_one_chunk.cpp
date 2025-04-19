@@ -4,7 +4,7 @@
 
 #include "terrain/Chunk.hpp"
 #include "terrain/World.hpp"
-#include "terrain/features/biome.hpp"
+#include "terrain/biomes/biome.hpp"
 
 #include "structures/gen/village/village.hpp"
 #include "structures/placement/StaticStructures.hpp"

@@ -113,8 +113,7 @@ void ChunkGeneratorOverWorld::setBlocksInChunk(c_int chunkX, c_int chunkZ, Chunk
 
 
 void ChunkGeneratorOverWorld::replaceBiomeBlocks(c_int x, c_int z, ChunkPrimer* primer, c_int* biomesIn) {
-    depthBuffer =
-            surfaceNoise.getRegion(depthBuffer, (double) (x * 16), (double) (z * 16), 16, 16, 0.0625, 0.0625, 1.0);
+    surfaceNoise.getRegion(depthBuffer, (double) (x * 16), (double) (z * 16), 16, 16, 0.0625, 0.0625, 1.0);
     for (int i = 0; i < 16; ++i) {
         for (int j = 0; j < 16; ++j) {
             Biome* biome = Biome::getBiomeForId(biomesIn[j + i * 16]);

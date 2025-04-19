@@ -1,4 +1,4 @@
-#include "terrain/Chunk.hpp"
+/*#include "terrain/Chunk.hpp"
 #include "terrain/ChunkPrimer.hpp"
 #include "terrain/World.hpp"
 #include <array>
@@ -56,7 +56,7 @@ void buildGlobalSubchunkArray(World* world, int minChunkX, int maxChunkX, int mi
     for (int cx = minChunkX; cx <= maxChunkX; cx++) {
         for (int cz = minChunkZ; cz <= maxChunkZ; cz++) {
             // Provide or get the chunk from the world
-            ChunkPrimer* chunk = Chunk::provideNewChunk(*world->getGenerator(), cx, cz);
+            ChunkPrimer* chunk = Chunk::provideNewChunk(*world->getGenerator(), {cx, cz});
             // ChunkPrimer* chunk = world->getChunk({cx, cz});
             if (!chunk) {
                 // handle missing chunk
@@ -202,4 +202,4 @@ int main() {
     }
 
     return 0;
-}
+}*/

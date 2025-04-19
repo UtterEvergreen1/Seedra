@@ -26,6 +26,6 @@ int main(int argc, char* argv[]) {
     canvas.placeSubImage(obsidian, 16, 32);
     canvas.placeSubImage(sand, 32, 32);
 
-    canvas.saveWithName("sillyDrawing.png", "");
+    //canvas.saveWithName("sillyDrawing.png", "");
     return 0;
 }

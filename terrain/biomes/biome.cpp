@@ -3,6 +3,7 @@
 #include "terrain/World.hpp"
 
 #include "BiomeDecorator.hpp"
+#include "biomeID.hpp"
 #include "terrain/color/Colors.hpp"
 #include "terrain/decorators/WorldGenBigMushroom.hpp"
 #include "terrain/decorators/WorldGenBigTree.hpp"

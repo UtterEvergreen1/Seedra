@@ -22,6 +22,7 @@ public:
     MU ND StructureComponent& getPiece(int index) { return pieceArray[index]; }
     /// getter
     MU ND const StructureComponent& getPieceConst(int index) const { return pieceArray[index]; }
+    MU ND StructureComponent* getPieceArray() { return pieceArray; }
     /// getter
     MU ND int getPieceCount() const { return pieceArraySize; }
     /// getter

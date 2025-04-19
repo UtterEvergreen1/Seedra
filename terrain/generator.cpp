@@ -133,7 +133,7 @@ MU void Generator::changeWorldSize(const lce::WORLDSIZE size) {
 
 /**
  * Calculates the buffer size (number of ints) required to generate a 2D plane
- * The function allocCache() can be used afterwards to allocate the corresponding int
+ * The function allocCache() can be used afterward to allocate the corresponding int
  * buffer using malloc().
  *
  * @param scale the scale for generating biomes

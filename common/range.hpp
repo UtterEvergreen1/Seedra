@@ -4,6 +4,9 @@
 
 
 /**
+ * @struct Range
+ * @brief Represents a cuboidal range used to define a generation area in 2D or 3D space.
+ *
  * Cuboidal range, given by a position, size, and scaling in the horizontal
  * axes, used to define a generation range. The parameters for the vertical
  * control can be left at zero when dealing with versions without 3D volume
@@ -40,9 +43,18 @@
  * Range r_vol = {4, x, z, sx, sz, y, sy};
  */
 struct Range {
-    int scale;
-    int x, z, sx, sz;
+    int scale; ///< Horizontal scale factor (e.g., 1, 4, 16, 64, or 256). A value of 0 bypasses scaling.
+    int x;     ///< Horizontal x-coordinate of the northwest corner.
+    int z;     ///< Horizontal z-coordinate of the northwest corner.
+    int sx;    ///< Horizontal size (width) of the range. Must be positive.
+    int sz;    ///< Horizontal size (height) of the range. Must be positive.
 
+    /**
+     * @brief Outputs the Range object to an output stream in a readable format.
+     * @param out The output stream.
+     * @param range The Range object to output.
+     * @return The modified output stream.
+     */
     friend std::ostream& operator<<(std::ostream& out, const Range& range) {
         out << "Range{" << range.scale << ", " << range.x << ", " << range.z << ", " << range.sx << ", " << range.sz
             << "}";

@@ -2,39 +2,55 @@
 
 #include "AbstractMapGen.hpp"
 
+/**
+ * @class AbstractWaterCaveGen
+ * @brief Specialized map generator for creating water caves and water ravines.
+ *
+ * This class extends the AbstractMapGen class and provides functionality
+ * for generating underwater features such as water caves and ravines.
+ */
 class AbstractWaterCaveGen : public AbstractMapGen {
-
 public:
-    explicit AbstractWaterCaveGen(World& world) : AbstractMapGen(world) {}
-
-    ~AbstractWaterCaveGen() override = default;
-    
-    /// used for water caves and water ravines
-    MU static Pos2D getSeedMultiplier(const Generator* g);
-    /// used for water caves and water ravines
-    MU void setupRNG(Pos2D seedMultiplier, Pos2D chunkPos);
-    /// used for water caves and water ravines
-    MU static void setupRNG(const Generator* g, RNG& rng, Pos2D seedMultiplier, Pos2D chunkPos);
-
-
-    void generateUnderwater(ChunkPrimer* primer, Pos2D target, bool accurate = true) {
-        rng.setSeed(g->getWorldSeed());
-        c_int seedMultiplierX = rng.nextInt() / 2 * 2 + 1;
-        c_int seedMultiplierZ = rng.nextInt() / 2 * 2 + 1;
-        
-        const Pos2D lower = target - CHUNK_RANGE;
-        const Pos2D upper = target + CHUNK_RANGE;
-        Pos2D chunkPos;
-        for (chunkPos.x = lower.x; chunkPos.x <= upper.x; ++chunkPos.x) {
-            for (chunkPos.z = lower.x; chunkPos.z <= upper.x; ++chunkPos.z) {
-                Pos2D current(chunkPos.x, chunkPos.z);
-
-                c_int adjustedSeedX = chunkPos.x * seedMultiplierX;
-                c_int adjustedSeedZ = chunkPos.z * seedMultiplierZ;
-                rng.setSeed((adjustedSeedX + adjustedSeedZ) ^ g->getWorldSeed());
-
-                addFeature(primer, current, target, accurate);
-            }
-        }
+    /**
+     * @brief Constructs an AbstractWaterCaveGen object.
+     * @param world Reference to the world object used for generation.
+     */
+    explicit AbstractWaterCaveGen(World &world) : AbstractMapGen(world) {
     }
+
+    /**
+     * @brief Virtual destructor for AbstractWaterCaveGen.
+     */
+    ~AbstractWaterCaveGen() override = default;
+
+    /**
+     * @brief Retrieves the seed multiplier for water caves and water ravines.
+     * @param g Pointer to the generator.
+     * @return The seed multiplier as a 2D position.
+     */
+    MU static Pos2D getSeedMultiplier(const Generator *g);
+
+    /**
+     * @brief Sets up the RNG for water caves and water ravines.
+     * @param seedMultiplier The seed multiplier.
+     * @param chunkPos The position of the chunk.
+     */
+    MU void setupRNG(Pos2D seedMultiplier, Pos2D chunkPos);
+
+    /**
+     * @brief Sets up the RNG for water caves and water ravines.
+     * @param g Pointer to the generator.
+     * @param rng Reference to the RNG.
+     * @param seedMultiplier The seed multiplier.
+     * @param chunkPos The position of the chunk.
+     */
+    MU static void setupRNG(const Generator *g, RNG &rng, Pos2D seedMultiplier, Pos2D chunkPos);
+
+    /**
+     * @brief Generates underwater features within the specified target chunk.
+     * @param primer Pointer to the chunk primer.
+     * @param target The target chunk position.
+     * @param accurate Whether to use accurate generation (default is true).
+     */
+    void generateUnderwater(ChunkPrimer *primer, Pos2D target, bool accurate = true);
 };

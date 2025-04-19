@@ -7,25 +7,46 @@
 
 class World;
 
+/**
+ * @class WorldGenLakes
+ * @brief A final class responsible for generating lake structures in the world.
+ * Inherits from AbstractWorldGenerator and provides methods for lake generation.
+ */
 class WorldGenLakes final : public AbstractWorldGenerator {
-    Generator const *g;
-    const lce::BlockState block;
+    Generator const *g; /**< Pointer to the generator used for terrain generation. */
+    const lce::BlockState block; /**< The block state representing the type of lake (e.g., water or lava). */
 
 public:
+    /**
+     * @brief Constructs a WorldGenLakes object with the specified generator and block state.
+     * @param g Pointer to the generator used for terrain generation.
+     * @param blockIn The block state representing the type of lake.
+     */
     MU explicit WorldGenLakes(const Generator *g, const lce::BlockState blockIn)
         : g(g), block(blockIn) {
     }
 
-    bool generate(World * worldIn, RNG &rng, const Pos3D &pos) const override;
+    /**
+     * @brief Generates a lake at the specified position in the world.
+     * @param worldIn Pointer to the World object where the lake will be generated.
+     * @param rng Reference to the random number generator.
+     * @param pos The position where the lake should be generated.
+     * @return True if the lake generation was successful, false otherwise.
+     */
+    bool generate(World *worldIn, RNG &rng, const Pos3D &pos) const override;
 };
 
+/**
+ * @class FeaturePositions
+ * @brief A utility class for generating feature positions such as lakes and dungeons in the world.
+ */
 class FeaturePositions {
 public:
     /**
      * @brief Generates a water lake in the chunk.
-     * @param g The generator.
-     * @param chunkX The chunk X.
-     * @param chunkZ The chunk Z.
+     * @param g Pointer to the generator used for terrain generation.
+     * @param chunkX The X-coordinate of the chunk.
+     * @param chunkZ The Z-coordinate of the chunk.
      * @return The position of the water lake.
      */
     MU ND static Pos3D waterLake(const Generator *g, const int chunkX, const int chunkZ) {
@@ -35,10 +56,10 @@ public:
 
     /**
      * @brief Generates a water lake in the chunk using the given random number generator.
-     * @param g The generator.
-     * @param rng The random number generator.
-     * @param chunkX The chunk X.
-     * @param chunkZ The chunk Z.
+     * @param g Pointer to the generator used for terrain generation.
+     * @param rng Reference to the random number generator.
+     * @param chunkX The X-coordinate of the chunk.
+     * @param chunkZ The Z-coordinate of the chunk.
      * @return The position of the water lake.
      */
     ND static Pos3D waterLake(const Generator *g, RNG &rng, const int chunkX, const int chunkZ) {
@@ -53,9 +74,9 @@ public:
 
     /**
      * @brief Generates a lava lake in the chunk.
-     * @param g The generator.
-     * @param chunkX The chunk X.
-     * @param chunkZ The chunk Z.
+     * @param g Pointer to the generator used for terrain generation.
+     * @param chunkX The X-coordinate of the chunk.
+     * @param chunkZ The Z-coordinate of the chunk.
      * @return The position of the lava lake.
      */
     MU ND static Pos3D lavaLake(const Generator *g, const int chunkX, const int chunkZ) {
@@ -67,9 +88,9 @@ public:
 
     /**
      * @brief Generates a lava lake in the chunk using the given random number generator.
-     * @param rng The random number generator.
-     * @param chunkX The chunk X.
-     * @param chunkZ The chunk Z.
+     * @param rng Reference to the random number generator.
+     * @param chunkX The X-coordinate of the chunk.
+     * @param chunkZ The Z-coordinate of the chunk.
      * @return The position of the lava lake.
      */
     ND static Pos3D lavaLake(RNG &rng, const int chunkX, const int chunkZ) {
@@ -87,9 +108,9 @@ public:
 
     /**
      * @brief Generates a dungeon in the chunk.
-     * @param g The generator.
-     * @param chunkX The chunk X.
-     * @param chunkZ The chunk Z.
+     * @param g Pointer to the generator used for terrain generation.
+     * @param chunkX The X-coordinate of the chunk.
+     * @param chunkZ The Z-coordinate of the chunk.
      * @return The position of the dungeon.
      */
     MU ND static Pos3D dungeon(const Generator *g, const int chunkX, const int chunkZ) {
@@ -102,9 +123,9 @@ public:
 
     /**
      * @brief Generates a dungeon in the chunk using the given random number generator.
-     * @param rng The random number generator.
-     * @param chunkX The chunk X.
-     * @param chunkZ The chunk Z.
+     * @param rng Reference to the random number generator.
+     * @param chunkX The X-coordinate of the chunk.
+     * @param chunkZ The Z-coordinate of the chunk.
      * @return The position of the dungeon.
      */
     ND static Pos3D dungeon(RNG &rng, const int chunkX, const int chunkZ) {
@@ -114,6 +135,12 @@ public:
         return {xPos, yPos, zPos};
     }
 
+    /**
+     * @brief Advances the random number generator to skip unnecessary steps for decoration generation.
+     * @param rng Reference to the random number generator.
+     * @param chunkX The X-coordinate of the chunk.
+     * @param chunkZ The Z-coordinate of the chunk.
+     */
     MU static void decorations(RNG &rng, MU c_int chunkX, MU c_int chunkZ) {
         // generate ores
         // skip rng for now

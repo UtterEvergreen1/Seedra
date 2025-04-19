@@ -1,4 +1,5 @@
 
+/*
 #include "terrain/Chunk.hpp"
 #include <fstream>
 #include <immintrin.h>
@@ -124,7 +125,7 @@ std::mutex printMutex;
 
 /**
  * Each thread processes a range [startSeed, endSeed).
- */
+ #1#
 void processSeedRange(
         int64_t startSeed,
         int64_t endSeed,
@@ -403,8 +404,9 @@ int main() {
     outputFile.close();
 
     std::cout << "Done!" << std::endl;
-     */
+     #1#
 }
+*/
 
 
 

@@ -1,4 +1,5 @@
 
+/*
 #include <fstream>
 #include <iostream>
 
@@ -245,7 +246,7 @@ int main(int argc, char* argv[]) {
         std::to_string(pos.x) + "_" + std::to_string(pos.z) + ".png", path);
 
     }
-    */
+    #1#
 
 
     // g.applyWorldSeed(5887763652726489932);
@@ -262,4 +263,5 @@ int main(int argc, char* argv[]) {
     // auto lol2 = Pos2D(-55 - 0, 389 - 16).toChunkPos();
     // Pos2D chunkPos = pos.toChunkPos();
     // auto* chunkPrimer = Chunk::provideNewChunk<true, false, false>(g, 0, 0);
+     #1#
      */

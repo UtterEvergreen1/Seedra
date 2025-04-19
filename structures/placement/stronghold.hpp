@@ -3,10 +3,23 @@
 #include "terrain/biomes/biomeID.hpp"
 #include "terrain/generator.hpp"
 
-
 namespace Placement {
+    /**
+     * @class Stronghold
+     * @brief Handles the placement logic for Stronghold structures in the world.
+     *
+     * This class provides methods to determine the position of Strongholds based on the world seed
+     * and biome constraints. It also includes functionality to adjust placement behavior based on
+     * the world size.
+     */
     class Stronghold {
     public:
+        /**
+         * @brief Bitmask of biomes valid for Stronghold placement.
+         *
+         * This constant defines the biomes where Strongholds can be placed. Each biome is represented
+         * as a bit in the bitmask.
+         */
         static constexpr u64 stronghold_biomes =
                 1ULL << plains | 1ULL << desert | 1ULL << extreme_hills | 1ULL << forest | 1ULL << taiga |
                 1ULL << hell | 1ULL << the_end | 1ULL << ice_plains | 1ULL << ice_mountains |
@@ -17,11 +30,64 @@ namespace Placement {
                 1ULL << mega_taiga_hills | 1ULL << extreme_hills_plus_trees | 1ULL << savanna |
                 1ULL << savanna_plateau | 1ULL << mesa | 1ULL << mesa_plateau_stone | 1ULL << mesa_plateau;
 
+        /**
+         * @brief Flag indicating whether to use far Stronghold placement logic.
+         *
+         * This flag is set based on the world size. Larger worlds may require different placement logic.
+         */
         static bool useFarStronghold;
+
+        /**
+         * @brief Sets the world size and adjusts Stronghold placement logic accordingly.
+         *
+         * If the world size is medium or larger, the `useFarStronghold` flag is set to true.
+         *
+         * @param worldSize The size of the world.
+         */
         static void setWorldSize(const lce::WORLDSIZE worldSize) { useFarStronghold = (worldSize >= lce::WORLDSIZE::MEDIUM); }
+
+        /**
+         * @brief Calculates the world position of the Stronghold.
+         *
+         * This method determines the position of the Stronghold in the world using the provided generator.
+         *
+         * @param g The generator object containing world seed and other parameters.
+         * @return The position of the Stronghold as a 2D coordinate.
+         */
         ND static Pos2D getWorldPosition(const Generator& g);
+
+        /**
+         * @brief Calculates the starting center position of the Stronghold.
+         *
+         * This method determines the starting center position of the Stronghold by offsetting
+         * the world position by 4.
+         *
+         * @param g The generator object containing world seed and other parameters.
+         * @return The starting center position of the Stronghold as a 2D coordinate.
+         */
         MU ND static Pos2D getStartCenter(const Generator& g) { return getWorldPosition(g) - 4; }
+
+        /**
+         * @brief Calculates the starting chunk position of the Stronghold.
+         *
+         * This method determines the starting chunk position of the Stronghold by dividing
+         * the world position by 16 (shifting right by 4).
+         *
+         * @param g The generator object containing world seed and other parameters.
+         * @return The starting chunk position of the Stronghold as a 2D coordinate.
+         */
         MU ND static Pos2D getStartChunk(const Generator& g) { return getWorldPosition(g) >> 4; }
+
+        /**
+         * @brief Calculates the raw world position of the Stronghold.
+         *
+         * This method determines the raw world position of the Stronghold using the world seed
+         * and a flag indicating whether to use Xbox-specific placement logic.
+         *
+         * @param worldSeed The seed of the world.
+         * @param xboxStronghold Flag indicating whether to use Xbox-specific placement logic.
+         * @return The raw world position of the Stronghold as a 2D coordinate.
+         */
         MU ND static Pos2D getRawWorldPosition(i64 worldSeed, bool xboxStronghold);
     };
 } // namespace Placement
