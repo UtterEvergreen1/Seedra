@@ -2,7 +2,6 @@
 
 #include "lce/blocks/__include.hpp"
 #include "terrain/World.hpp"
-#include "terrain/generator.hpp"
 
 
 bool WorldGenCucurbitsBlock::generate(World* worldIn, RNG &rng, const Pos3D &pos) const {

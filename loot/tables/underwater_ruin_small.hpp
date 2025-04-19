@@ -1,33 +1,27 @@
 #pragma once
 
-#include "loot/classes/EnchantRandomly.hpp"
+#include "lce/items/itemsInit.hpp"
 #include "loot/classes/Loot.hpp"
 
-
 namespace loot {
-    class UnderwaterRuinSmall : public Loot<UnderwaterRuinSmall> {
-    public:
-        static void setup();
-    };
 
-    inline void UnderwaterRuinSmall::setup() {
-        std::vector<ItemEntry> items1;
-        std::vector<ItemEntry> items2;
+    using namespace lce::items;
 
-        items1.emplace_back(&lce::items::COAL, 10, 1, 4);
-        items1.emplace_back(&lce::items::STONE_AXE, 2);
-        items1.emplace_back(&lce::items::ROTTEN_FLESH, 5);
-        items1.emplace_back(&lce::items::EMERALD, 1);
-        items1.emplace_back(&lce::items::WHEAT, 10, 2, 3);
-        lootTables.emplace_back(items1, 2, 8);
-
-        items2.emplace_back(&lce::items::LEATHER_TUNIC, 1);
-        items2.emplace_back(&lce::items::GOLDEN_HELMET, 1);
-        items2.emplace_back(&lce::items::FISHING_ROD, new EnchantRandomlyItem(), 5);
-        items2.emplace_back(&lce::items::TREASURE_MAP, 5);
-
-        lootTables.emplace_back(items2, 1);
-
-        maxItemsPossible = 9;
-    }
+    MU static constexpr auto underwater_ruin_small
+            = LootWrapper<
+                    27,
+                    TableWrapper<2, 8,
+                                 LootItem<10, 1, 4, COAL.getState()>,
+                                 LootItem< 2, 1, 1, STONE_AXE.getState()>,
+                                 LootItem< 5, 1, 1, ROTTEN_FLESH.getState()>,
+                                 LootItem< 1, 1, 1, EMERALD.getState()>,
+                                 LootItem<10, 2, 3, WHEAT.getState()>
+                                 >,
+                    TableWrapper<1, 1,
+                                 LootItem<1, 1, 1, LEATHER_TUNIC.getState()>,
+                                 LootItem<1, 1, 1, GOLDEN_HELMET.getState()>,
+                                 LootItem<5, 1, 1, FISHING_ROD.getState(), enchant_random_item>,
+                                 LootItem<5, 1, 1, TREASURE_MAP.getState()>
+                                 >
+                    >::value;
 }

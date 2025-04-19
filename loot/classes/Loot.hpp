@@ -1,152 +1,61 @@
 #pragma once
 
-#include <vector>
-
-#include "common/Pos2DTemplate.hpp"
+#include "Buffer.hpp"
 #include "Container.hpp"
-
+#include "LootGenMode.hpp"
+#include "LootItem.hpp"
+#include "lce/processor.hpp"
 
 namespace loot {
-    template<typename T>
-    class Loot {
+
+    /**
+     * @brief Aggregates multiple loot tables to generate loot.
+     *
+     * @tparam ContainerSize The size of the container for generated loot.
+     * @tparam Tables One or more loot table types.
+     *
+     * The Loot class holds a tuple of loot tables and provides functions to generate loot
+     * from a seed, chunk coordinates, block coordinates, or a loot table seed. Detailed
+     * function documentation is provided in the corresponding implementation file (Loot.inl).
+     */
+    template<size_t ContainerSize, typename... Tables>
+    class Loot final {
+
+        /**
+         * @brief Tuple containing the loot tables.
+         *
+         * This tuple stores the loot tables provided during construction. Each element in the tuple
+         * represents a loot table that will be used during loot generation.
+         */
+        const std::tuple<Tables...> m_LootTables;
+
+        ND consteval i32 computeMaxItemCount() const noexcept;
+
+        /**
+         * @brief The maximum number of items that can be generated.
+         *
+         * This compile-time constant is computed as the sum of maximum item counts from all loot tables.
+         * It is calculated by the private member function @c computeMaxItemCount().
+         */
+        static constexpr i32 MAX_ITEM_COUNT = computeMaxItemCount();
+
     public:
-        static std::vector<LootTable> lootTables;
-        static u8 maxItemsPossible;
+        consteval Loot() = delete;
+        consteval explicit Loot(Tables... ts) noexcept;
 
-        /// combine base loot seeding and generation to get the base loot
-        template<bool shuffle, bool legacy>
-        ND static Container getLootFromChunk(i64 worldSeed, int chunkX, int chunkZ);
+        template<GenMode Mode>
+        MU void getLootFromSeed(Container<ContainerSize>& container, RNG& seed) const;
 
-        /// loot generation from seed, don't use in a search unless you know the exact seed
-        template<bool shuffle>
-        static Container getLootFromSeed(RNG& seed);
-        template<bool shuffle>
-        static Container getLootFromLootTableSeed(u64 lootTableSeed);
+        template<GenMode Mode, typename... Args>
+        MU void getLootFromChunk(Container<ContainerSize>& container, i64 worldSeed, Args &&...args) const;
 
-        static Container getLootLegacyFromSeed(RNG& seed);
+        template<GenMode Mode, typename... Args>
+        MU void getLootFromBlock(Container<ContainerSize>& container, i64 worldSeed, Args &&...args) const;
 
-        /// other parameter options for loot finding
-        template<bool shuffle, bool legacy>
-        static Container getLootFromChunk(i64 worldSeed, Pos2D chunkPos);
-        template<bool shuffle, bool legacy>
-        static Container getLootFromBlock(i64 worldSeed, int blockX, int blockZ);
-        template<bool shuffle, bool legacy>
-        static Container getLootFromBlock(i64 worldSeed, Pos2D blockPos);
-
-        /// generate loot chests in a row eg. needed to get all desert temple chests
-        template<bool shuffle, bool legacy>
-        ND static std::vector<Container> getLootChests(int numChests, i64 worldSeed, int chunkX, int chunkZ);
-
-        template<bool shuffle, bool legacy>
-        static std::vector<Container> getLootChestsFromSeed(int numChests, RNG& seed);
+        template<GenMode Mode>
+        MU void getLootFromLootTableSeed(Container<ContainerSize>& container, u64 lootTableSeed, Buffer* buffer) const;
     };
 
+} // namespace loot
 
-    template<typename T>
-    std::vector<LootTable> Loot<T>::lootTables;
-
-    template<typename T>
-    u8 Loot<T>::maxItemsPossible;
-
-    /// combine loot seeding and generation to get the base loot
-    template<typename T>
-    template<bool shuffle, bool legacy>
-    Container Loot<T>::getLootFromChunk(c_i64 worldSeed, c_int chunkX, c_int chunkZ) {
-        static_assert(!shuffle || !legacy, "Legacy loot does not shuffle: change shuffle to false");
-        RNG seed = RNG::getPopulationSeed(worldSeed, chunkX, chunkZ);
-        if constexpr (legacy) return getLootLegacyFromSeed(seed);
-        else
-            return getLootFromSeed<shuffle>(seed);
-    }
-
-
-    /// loot generation from seed
-    template<typename T>
-    template<bool shuffle>
-    Container Loot<T>::getLootFromLootTableSeed(c_u64 lootTableSeed) {
-        std::vector<ItemStack> chestContents;
-        chestContents.reserve(maxItemsPossible);
-        RNG random;
-        random.setSeed(lootTableSeed);
-
-        // generate loot
-        for (const LootTable& table: lootTables) {
-            c_int rollCount = random.nextInt(table.getMin(), table.getMax());
-            for (int rollIndex = 0; rollIndex < rollCount; rollIndex++) {
-                ItemStack result = table.createLootRoll<false>(random);
-                chestContents.push_back(result);
-            }
-        }
-
-        if constexpr (!shuffle) { return {std::move(chestContents)}; }
-
-        auto container = Container(Container::CHEST_SIZE);
-        container.shuffleIntoContainer(chestContents, random);
-        return container;
-    }
-
-    /// loot generation from seed
-    template<typename T>
-    template<bool shuffle>
-    Container Loot<T>::getLootFromSeed(RNG& seed) {
-        return getLootFromLootTableSeed<shuffle>(seed.nextLong());
-    }
-
-    template<typename T>
-    Container Loot<T>::getLootLegacyFromSeed(RNG& seed) {
-        auto chestContents = Container();
-
-        //generate loot
-        for (const LootTable& table: lootTables) {
-            c_int rollCount = seed.nextIntLegacy(table.getMin(), table.getMax());
-            for (int rollIndex = 0; rollIndex < rollCount; rollIndex++) {
-                ItemStack result = table.createLootRoll<true>(seed);
-                chestContents.setInventorySlotContents(seed.nextInt(Container::CHEST_SIZE), std::move(result));
-            }
-        }
-        return chestContents;
-    }
-
-
-    /// other parameter options for loot finding
-    template<typename T>
-    template<bool shuffle, bool legacy>
-    Container Loot<T>::getLootFromChunk(c_i64 worldSeed, const Pos2D chunkPos) {
-        return getLootFromChunk<shuffle, legacy>(worldSeed, chunkPos.x, chunkPos.z);
-    }
-
-    template<typename T>
-    template<bool shuffle, bool legacy>
-    Container Loot<T>::getLootFromBlock(c_i64 worldSeed, c_int blockX, c_int blockZ) {
-        return getLootFromChunk<shuffle, legacy>(worldSeed, blockX >> 4, blockZ >> 4);
-    }
-
-    template<typename T>
-    template<bool shuffle, bool legacy>
-    Container Loot<T>::getLootFromBlock(c_i64 worldSeed, const Pos2D blockPos) {
-        return getLootFromChunk<shuffle, legacy>(worldSeed, blockPos.x >> 4, blockPos.z >> 4);
-    }
-
-
-    /// generate loot chests in a row eg. needed to get all desert temple chests
-    template<typename T>
-    template<bool shuffle, bool legacy>
-    std::vector<Container> Loot<T>::getLootChests(c_int numChests, c_i64 worldSeed, c_int chunkX,
-                                                  c_int chunkZ) {
-        RNG seed = RNG::getPopulationSeed(worldSeed, chunkX, chunkZ);
-        return getLootChestsFromSeed<shuffle, legacy>(numChests, seed);
-    }
-
-    template<typename T>
-    template<bool shuffle, bool legacy>
-    std::vector<Container> Loot<T>::getLootChestsFromSeed(c_int numChests, RNG& seed) {
-        std::vector<Container> chests(numChests);
-        for (int chestIndex = 0; chestIndex < numChests; chestIndex++) {
-            if constexpr (legacy) chests[chestIndex] = getLootLegacyFromSeed(seed);
-            else
-                chests[chestIndex] = getLootFromSeed<shuffle>(seed);
-        }
-        return chests;
-    }
-
-}
+#include "Loot.inl"

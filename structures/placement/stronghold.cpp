@@ -10,7 +10,7 @@ namespace Placement {
     Pos2D Stronghold::getWorldPosition(const Generator& g) {
         c_bool xboxStronghold = g.getConsole() == lce::CONSOLE::XBOX360 ||
                                     g.getConsole() == lce::CONSOLE::XBOX1;
-        int multiplier;
+        int multiplier = 0;
         RNG rng;
         Pos2D p{};
         int out;
@@ -47,7 +47,7 @@ namespace Placement {
     /**
      * This returns the non-pushed position of the stronghold, ignoring biome checks
      * @param worldSeed the world seed
-     * @param xboxStronghold whether or not the console is Xbox.
+     * @param xboxStronghold whether the console is Xbox.
      * @return stronghold position.
      */
     MU Pos2D Stronghold::getRawWorldPosition(i64 worldSeed, bool xboxStronghold) {

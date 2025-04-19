@@ -2,7 +2,6 @@
 #include "WorldGenBush.hpp"
 #include "lce/blocks/__include.hpp"
 #include "terrain/World.hpp"
-#include "terrain/generator.hpp"
 
 using namespace lce::blocks;
 

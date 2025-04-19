@@ -1,26 +1,21 @@
 #pragma once
 
-#include "loot/classes/EnchantWithLevels.hpp"
-#include "loot/classes/StrongholdLoot.hpp"
-
+#include "lce/items/itemsInit.hpp"
+#include "loot/classes/Loot.hpp"
 
 namespace loot {
-    class StrongholdLibrary : public StrongholdLoot<StrongholdLibrary> {
-    public:
-        static void setup();
-    };
 
-    inline void StrongholdLibrary::setup() {
-        std::vector<ItemEntry> items;
+    using namespace lce::items;
 
-        items.emplace_back(&lce::items::BOOK, 100, 1, 3);
-        items.emplace_back(&lce::items::PAPER, 100, 2, 7);
-        items.emplace_back(&lce::items::MAP, 5);
-        items.emplace_back(&lce::items::COMPASS, 5);
-        items.emplace_back(&lce::items::ENCHANTED_BOOK, new EnchantWithLevelsBook(30), 60);
-
-        lootTables.emplace_back(items, 2, 10);
-
-        maxItemsPossible = 10;
-    }
+    MU static constexpr auto stronghold_library
+            = LootWrapper<
+                    27,
+                    TableWrapper<2, 10,
+                                 LootItem<100, 1, 3, BOOK.getState()>,
+                                 LootItem<100, 2, 7, PAPER.getState()>,
+                                 LootItem<  5, 1, 1, MAP.getState()>,
+                                 LootItem<  5, 1, 1, COMPASS.getState()>,
+                                 LootItem< 60, 1, 1, ENCHANTED_BOOK.getState(), enchant_levels_book_30>
+                                 >
+                    >::value;
 }

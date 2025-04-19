@@ -1,5 +1,6 @@
 #include "generator.hpp"
 
+#include "common/StringHash.hpp"
 #include "common/range.hpp"
 #include "common/rng.hpp"
 #include "terrain/biomes/biomeID.hpp"
@@ -20,7 +21,7 @@ c_u64 Generator::SPAWN_BIOMES = (1ULL << forest) | (1ULL << plains) | (1ULL << t
  */
 Generator::Generator(const lce::CONSOLE console, const LCEVERSION version,
                      const lce::WORLDSIZE size, const lce::BIOMESCALE scale)
-    : worldSeed(0), version(version), console(console), biomeScale(scale), worldSize(size),
+    : version(version), console(console), biomeScale(scale), worldSize(size),
       worldCoordinateBounds(getChunkWorldBounds(size) << 4) {
     setupLayerStack(&this->layerStack, version, scale);
     setLayerSeed(this->layerStack.entry_1, 0);
@@ -217,7 +218,7 @@ int* Generator::getBiomeRange(c_int scale, c_int x, c_int z, c_int w, c_int h) c
     return ids;
 }
 
-/** Generates all biomes, and returns a std::pair of
+/** Generates all biomes, and returns a std::pair
  *
  * @return std::pair<N, *ids> where N is the NxN size of array size,
  * and ids is the pointer to that data.
@@ -306,8 +307,8 @@ bool Generator::areBiomesViable(c_int x, c_int z, c_int rad, c_u64 validBiomes,
         }
     }
     if (false)
-    L_no:
-        viable = false;
+L_no:
+    viable = false;
     if (ids) free(ids);
     return viable;
 }
@@ -421,7 +422,8 @@ int Generator::mapApproxHeight(float* y, int* ids, const SurfaceNoise* sn,
 
     for (j = 0; j < h; j++) {
         for (i = 0; i < w; i++) {
-            const int px = x + i, pz = z + j;
+            const int px = x + i;
+            const int pz = z + j;
             double off = sampleOctaveAmp(this, &sn->octaveDepth, px * 200, 10, pz * 200, 1, 0, 1);
             off *= 65535. / 8000;
             if (off < 0) off = -0.3 * off;

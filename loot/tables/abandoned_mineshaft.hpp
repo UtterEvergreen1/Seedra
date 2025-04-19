@@ -1,50 +1,44 @@
 #pragma once
 
-#include "loot/classes/EnchantRandomly.hpp"
+#include "lce/items/itemsInit.hpp"
 #include "loot/classes/Loot.hpp"
-
+#include "loot/classes/LootFunctions.hpp"
+#include "loot/classes/LootItem.hpp"
+#include "loot/classes/LootTable.hpp"
 
 namespace loot {
-    class AbandonedMineshaft : public Loot<AbandonedMineshaft> {
-    public:
-        static void setup();
-    };
 
-    inline void AbandonedMineshaft::setup() {
-        std::vector<ItemEntry> items1;
-        std::vector<ItemEntry> items2;
-        std::vector<ItemEntry> items3;
+    using namespace lce::items;
 
-        // table 1
-        items1.emplace_back(&lce::items::GOLDEN_APPLE, 20);
-        items1.emplace_back(&lce::items::ENCHANTED_GOLDEN_APPLE, 1);
-        items1.emplace_back(&lce::items::NAME_TAG, 30);
-        items1.emplace_back(&lce::items::ENCHANTED_BOOK, new EnchantRandomlyBook(), 10);
-        items1.emplace_back(&lce::items::IRON_PICKAXE, 5);
-        items1.emplace_back(&lce::items::AIR, 5);
-        lootTables.emplace_back(items1, 1);
-
-        // table 2
-        items2.emplace_back(&lce::items::IRON_INGOT, 10, 1, 5);
-        items2.emplace_back(&lce::items::GOLD_INGOT, 5, 1, 3);
-        items2.emplace_back(&lce::items::REDSTONE, 5, 4, 9);
-        items2.emplace_back(&lce::items::LAPIS_LAZULI, 5, 4, 9);
-        items2.emplace_back(&lce::items::DIAMOND, 3, 1, 2);
-        items2.emplace_back(&lce::items::COAL, 10, 3, 8);
-        items2.emplace_back(&lce::items::BREAD, 15, 1, 3);
-        items2.emplace_back(&lce::items::MELON_SEEDS, 10, 2, 4);
-        items2.emplace_back(&lce::items::PUMPKIN_SEEDS, 10, 2, 4);
-        items2.emplace_back(&lce::items::BEETROOT_SEEDS, 10, 2, 4);
-        lootTables.emplace_back(items2, 2, 4);
-
-        // table 3
-        items3.emplace_back(&lce::items::RAIL, 20, 4, 8);
-        items3.emplace_back(&lce::items::POWERED_RAIL, 5, 1, 4);
-        items3.emplace_back(&lce::items::DETECTOR_RAIL, 5, 1, 4);
-        items3.emplace_back(&lce::items::ACTIVATOR_RAIL, 5, 1, 4);
-        items3.emplace_back(&lce::items::TORCH, 15, 1, 16);
-        lootTables.emplace_back(items3, 3);
-
-        maxItemsPossible = 8;
-    }
-} // namespace loot
+    static constexpr auto abandoned_mineshaft =
+            LootWrapper<
+                    27,
+                    TableWrapper<1, 1,
+                                 LootItem<20, 1, 1, GOLDEN_APPLE.getState()>,
+                                 LootItem< 1, 1, 1, ENCHANTED_GOLDEN_APPLE.getState()>,
+                                 LootItem<30, 1, 1, NAME_TAG.getState()>,
+                                 LootItem<10, 1, 1, ENCHANTED_BOOK.getState(), enchant_random_book>,
+                                 LootItem< 5, 1, 1, IRON_PICKAXE.getState()>,
+                                 LootItem< 5, 1, 1, AIR.getState()>
+                                 >,
+                    TableWrapper<2, 4,
+                                 LootItem<10, 1, 5, IRON_INGOT.getState()>,
+                                 LootItem< 5, 1, 3, GOLD_INGOT.getState()>,
+                                 LootItem< 5, 4, 9, REDSTONE.getState()>,
+                                 LootItem< 5, 4, 9, LAPIS_LAZULI.getState()>,
+                                 LootItem< 3, 1, 2, DIAMOND.getState()>,
+                                 LootItem<10, 3, 8, COAL.getState()>,
+                                 LootItem<15, 1, 3, BREAD.getState()>,
+                                 LootItem<10, 2, 4, MELON_SEEDS.getState()>,
+                                 LootItem<10, 2, 4, PUMPKIN_SEEDS.getState()>,
+                                 LootItem<10, 2, 4, BEETROOT_SEEDS.getState()>
+                                 >,
+                    TableWrapper<3, 3,
+                                 LootItem<20, 4, 8, RAIL.getState()>,
+                                 LootItem< 5, 1, 4, POWERED_RAIL.getState()>,
+                                 LootItem< 5, 1, 4, DETECTOR_RAIL.getState()>,
+                                 LootItem< 5, 1, 4, ACTIVATOR_RAIL.getState()>,
+                                 LootItem<15, 1,16, TORCH.getState()>
+                                 >
+                    >::value;
+}

@@ -101,9 +101,8 @@ bool WorldGenDungeons::generate(World* worldIn, RNG& rng, const Pos3D& position)
         }*/
 
         return true;
-    } else {
-        return false;
     }
+    return false;
 }
 
 void WorldGenDungeons::pickMobSpawner(RNG& rng) { rng.nextInt(sizeof(SPAWNER_TYPES)); }

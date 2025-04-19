@@ -410,11 +410,11 @@ void setupScale(Layer* l, const int scale) {
 }
 
 // TODO: BIOMES FOR EARLY VERSIONS (before elytra)
-void setupLayerStack(LayerStack* g, const LCEVERSION lceVersion, const lce::BIOMESCALE biomeSize) {
+void setupLayerStack(LayerStack* layerStack, const LCEVERSION lceVersion, const lce::BIOMESCALE biomeSize) {
 
     const MCVERSION mc = getMCVersion(lceVersion);
-    memset(g, 0, sizeof(LayerStack));
-    Layer *l = g->layers;
+    memset(layerStack, 0, sizeof(LayerStack));
+    Layer *l = layerStack->layers;
     // L: layer
     // M: mapping function
     // V: minecraft version
@@ -522,18 +522,18 @@ void setupLayerStack(LayerStack* g, const LCEVERSION lceVersion, const lce::BIOM
 
     p = setupLayer(l + L_VORONOI_1, mapVoronoi114, mc, 4, 3, 10, p, nullptr);
 
-    g->entry_1 = p;
-    g->entry_4 = l + (!hasOceans ? L_RIVER_MIX_4 : L_OCEAN_MIX_4);
+    layerStack->entry_1 = p;
+    layerStack->entry_4 = l + (!hasOceans ? L_RIVER_MIX_4 : L_OCEAN_MIX_4);
     if (mc >= MC_1_1) {
-        g->entry_16 = l + (mc <= MC_1_6 ? L_SWAMP_RIVER_16 : L_SHORE_16);
-        g->entry_64 = l + (mc <= MC_1_7 ? L_HILLS_64 : L_SUNFLOWER_64);
-        g->entry_256 = l + (mc <= MC_1_14 ? L_BIOME_256 : L_BAMBOO_256);
+        layerStack->entry_16 = l + (mc <= MC_1_6 ? L_SWAMP_RIVER_16 : L_SHORE_16);
+        layerStack->entry_64 = l + (mc <= MC_1_7 ? L_HILLS_64 : L_SUNFLOWER_64);
+        layerStack->entry_256 = l + (mc <= MC_1_14 ? L_BIOME_256 : L_BAMBOO_256);
     } else {
-        g->entry_16 = l + L_ZOOM_16;
-        g->entry_64 = l + L_ZOOM_64;
-        g->entry_256 = l + L_BIOME_256;
+        layerStack->entry_16 = l + L_ZOOM_16;
+        layerStack->entry_64 = l + L_ZOOM_64;
+        layerStack->entry_256 = l + L_BIOME_256;
     }
-    setupScale(g->entry_1, 1);
+    setupScale(layerStack->entry_1, 1);
 }
 
 

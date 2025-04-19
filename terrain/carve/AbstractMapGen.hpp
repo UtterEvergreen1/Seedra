@@ -44,7 +44,7 @@ public:
      * @brief Constructs an AbstractMapGen object.
      * @param world Reference to the world object.
      */
-    explicit AbstractMapGen(World &world) : world(world), g(world.getGenerator()), rng(0) {
+    explicit AbstractMapGen(World &world) : world(world), g(world.getGenerator()) {
     }
 
     /**

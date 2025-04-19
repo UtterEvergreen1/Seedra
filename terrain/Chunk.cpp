@@ -264,8 +264,8 @@ namespace Chunk {
                 if (!world.isSnowyAt(x, z)) continue;
 
                 c_int precipitationHeight = world.getPrecipitationHeight(x, z);
-                const Pos3D snowPos = Pos3D(x, precipitationHeight, z);
-                const Pos3D waterPos = Pos3D(x, precipitationHeight - 1, z);
+                const auto snowPos = Pos3D(x, precipitationHeight, z);
+                const auto waterPos = Pos3D(x, precipitationHeight - 1, z);
 
                 if (world.canBlockFreezeWater(waterPos)) { world.setBlockId(waterPos, lce::blocks::ICE_ID);
                 }

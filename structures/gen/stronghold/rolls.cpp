@@ -126,7 +126,7 @@ namespace rolls {
     }
 
     [[gnu::noinline]] std::vector<bool> Stronghold::getEyePlacements(const gen::Stronghold * sg, const Generator &g) {
-        std::vector<bool> eyes(12, false);
+        std::vector eyes(12, false);
         const Pos2D portalRoomPos = sg->portalRoomPiece->getWorldPos(5, 10);
         const auto portalRoomBoundingBox = BoundingBox(portalRoomPos.x - 5, 0, portalRoomPos.z - 5,
                                                        portalRoomPos.x + 5, 255, portalRoomPos.z + 5);

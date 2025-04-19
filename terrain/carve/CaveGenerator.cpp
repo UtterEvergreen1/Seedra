@@ -171,9 +171,9 @@ SEGMENT_FOR_LOOP_START:
             return;
         }
 
-        DoublePos2D distance = startPos.asPos2D() - currentChunkCenter;
-        double segmentsRemaining = theMaxSegment - theCurrentSegment;
-        double maxDistance = theWidth + 18.0F;
+        // DoublePos2D distance = startPos.asPos2D() - currentChunkCenter;
+        // double segmentsRemaining = theMaxSegment - theCurrentSegment;
+        // double maxDistance = theWidth + 18.0F;
 
         if (accurate &&
             g->getLCEVersion() == LCEVERSION::AQUATIC &&

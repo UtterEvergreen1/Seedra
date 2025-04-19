@@ -103,9 +103,8 @@ float WorldGenBigTree::layerSize(c_int y) const {
 float WorldGenBigTree::leafSize(c_int y) const {
     if (y >= 0 && y < this->leafDistanceLimit) {
         return y != 0 && y != this->leafDistanceLimit - 1 ? 3.0F : 2.0F;
-    } else {
-        return -1.0F;
     }
+    return -1.0F;
 }
 
 void WorldGenBigTree::generateLeafNode(const Pos3D& pos) const {
@@ -196,17 +195,15 @@ int WorldGenBigTree::checkBlockLine(const Pos3D& start, const Pos3D& end) const 
 
     if (i == 0) {
         return -1;
-    } else {
-        for (int j = 0; j <= i; ++j) {
-            Pos3D blockPos1 = start.add((int) (0.5F + (float) j * f),
-                                        (int) (0.5F + (float) j * f1),
-                                        (int) (0.5F + (float) j * f2));
-
-            if (!canGrowInto(this->world->getBlockId(blockPos1))) { return j; }
-        }
-
-        return -1;
     }
+    for (int j = 0; j <= i; ++j) {
+        Pos3D blockPos1 = start.add((int) (0.5F + (float) j * f),
+                                    (int) (0.5F + (float) j * f1),
+                                    (int) (0.5F + (float) j * f2));
+
+        if (!canGrowInto(this->world->getBlockId(blockPos1))) { return j; }
+    }
+    return -1;
 }
 
 bool WorldGenBigTree::validTreeLocation() const {

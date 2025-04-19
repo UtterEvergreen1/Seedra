@@ -1,19 +1,11 @@
 #include "village.hpp"
 
-#include <algorithm>
-
 #include "structures/placement/StaticStructures.hpp"
 
 #include "components/StructureComponent.hpp"
 #include "terrain/World.hpp"
 #include "terrain/biomes/biomeID.hpp"
 #include "terrain/generator.hpp"
-
-
-#include "lce/blocks/blockID.hpp"
-#include "lce/blocks/blockStates.hpp"
-#include "lce/blocks/blocksInit.hpp"
-
 
 namespace gen {
 

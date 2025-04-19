@@ -1,3 +1,5 @@
+#pragma once
+
 template<class T>
 bool Pos3DTemplate<T>::operator==(const Pos3DTemplate &other) const { return x == other.x && z == other.z; }
 
@@ -143,7 +145,7 @@ std::vector<Pos3DTemplate<T>> Pos3DTemplate<T>::getAllInBox(
     c_int maxY = std::max(from.getY(), to.getY());
     c_int maxZ = std::max(from.getZ(), to.getZ());
 
-    std::vector<Pos3DTemplate<T>> positions((maxX - minX + 1) * (maxY - minY + 1) * (maxZ - minZ + 1));
+    std::vector<Pos3DTemplate> positions((maxX - minX + 1) * (maxY - minY + 1) * (maxZ - minZ + 1));
     int posIndex = 0;
     for (int x = minX; x <= maxX; ++x) {
         for (int y = minY; y <= maxY; ++y) {

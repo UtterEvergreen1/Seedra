@@ -36,8 +36,8 @@ MU Pos2DVec_t WaterCaveGenerator::getStartingChunks(const Generator* g, Pos2D lo
 
 
 void WaterCaveGenerator::addTunnel(World& worldIn, c_i64 seedModifier, Pos2D baseChunk, DoublePos3D start,
-                                   c_float tunnelWidth, float tunnelDirection, float tunnelSlope,
-                                   int currentTunnelSegment, int maxTunnelSegment, c_double tunnelHeightMultiplier) {
+                                   c_float theTunnelWidth, float theTunnelDirection, float theTunnelSlope,
+                                   int theCurrentSegment, int theMaxSegment, c_double theHeightMultiplier) {
     Pos2D baseChunkX16 = baseChunk * 16;
 
     float directionModifier = 0.0F;
@@ -45,46 +45,46 @@ void WaterCaveGenerator::addTunnel(World& worldIn, c_i64 seedModifier, Pos2D bas
     RNG rng;
     rng.setSeed(seedModifier);
 
-    if (maxTunnelSegment <= 0) {
+    if (theMaxSegment <= 0) {
         constexpr int rangeBoundary = CHUNK_RANGE * 16 - 16;
         constexpr int randomRange = rangeBoundary / 4;
-        maxTunnelSegment = rangeBoundary - rng.nextInt(randomRange);
+        theMaxSegment = rangeBoundary - rng.nextInt(randomRange);
     }
 
     bool isMainTunnel = false;
 
-    if (currentTunnelSegment == -1) {
-        currentTunnelSegment = maxTunnelSegment / 2;
+    if (theCurrentSegment == -1) {
+        theCurrentSegment = theMaxSegment / 2;
         isMainTunnel = true;
     }
 
-    c_int splitPoint = rng.nextInt(maxTunnelSegment / 2) + maxTunnelSegment / 4;
+    c_int splitPoint = rng.nextInt(theMaxSegment / 2) + theMaxSegment / 4;
     const Pos2D startPos((int) start.x, (int) start.z);
-    DoublePos2D targetCenter = (baseChunk * 16 + 8).asType<double>();
-    float maxSegmentFDivPI = PI_FLOAT / (float)(maxTunnelSegment);
-    c_double maxDistanceSq = (tunnelWidth + 18.0F) * (tunnelWidth + 18.0F);
+    // DoublePos2D targetCenter = (baseChunk * 16 + 8).asType<double>();
+    float maxSegmentFDivPI = PI_FLOAT / (float)(theMaxSegment);
+    // c_double maxDistanceSq = (theTunnelWidth + 18.0F) * (theTunnelWidth + 18.0F);
     c_bool isTunnelWide = rng.nextInt(6) == 0;
 
-    for (; currentTunnelSegment < maxTunnelSegment; ++currentTunnelSegment) {
+    for (; theCurrentSegment < theMaxSegment; ++theCurrentSegment) {
         c_double tunnelWidthScaled =
-                1.5 + (double) (MathHelper::sin((float) currentTunnelSegment * maxSegmentFDivPI) * tunnelWidth);
-        c_double tunnelHeight = tunnelWidthScaled * tunnelHeightMultiplier;
+                1.5 + (double) (MathHelper::sin((float) theCurrentSegment * maxSegmentFDivPI) * theTunnelWidth);
+        c_double tunnelHeight = tunnelWidthScaled * theHeightMultiplier;
 
         {
-            c_float directionCosine = MathHelper::cos(tunnelSlope);
-            start.x += (double) (MathHelper::cos(tunnelDirection) * directionCosine);
-            start.y += (double) (MathHelper::sin(tunnelSlope));
-            start.z += (double) (MathHelper::sin(tunnelDirection) * directionCosine);
+            c_float directionCosine = MathHelper::cos(theTunnelSlope);
+            start.x += (double) (MathHelper::cos(theTunnelDirection) * directionCosine);
+            start.y += (double) (MathHelper::sin(theTunnelSlope));
+            start.z += (double) (MathHelper::sin(theTunnelDirection) * directionCosine);
         }
 
         if (isTunnelWide) {
-            tunnelSlope = tunnelSlope * 0.92F;
+            theTunnelSlope = theTunnelSlope * 0.92F;
         } else {
-            tunnelSlope = tunnelSlope * 0.7F;
+            theTunnelSlope = theTunnelSlope * 0.7F;
         }
 
-        tunnelSlope = tunnelSlope + slopeModifier * 0.1F;
-        tunnelDirection += directionModifier * 0.1F;
+        theTunnelSlope = theTunnelSlope + slopeModifier * 0.1F;
+        theTunnelDirection += directionModifier * 0.1F;
         slopeModifier = slopeModifier * 0.9F;
         directionModifier = directionModifier * 0.75F;
 
@@ -97,7 +97,7 @@ void WaterCaveGenerator::addTunnel(World& worldIn, c_i64 seedModifier, Pos2D bas
         slopeModifier = slopeModifier + (f1_1 - f1_2) * f1_3 * 2.0F;
         directionModifier = directionModifier + (f1 - f2) * f3 * 4.0F;
 
-        if (!isMainTunnel && currentTunnelSegment == splitPoint && tunnelWidth > 1.0F && maxTunnelSegment > 0) {
+        if (!isMainTunnel && theCurrentSegment == splitPoint && theTunnelWidth > 1.0F && theMaxSegment > 0) {
             float tunnelWidth1, tunnelWidth2;
             i64 seed1, seed2;
 
@@ -112,20 +112,20 @@ void WaterCaveGenerator::addTunnel(World& worldIn, c_i64 seedModifier, Pos2D bas
                 seed2 = rng.nextLongI();
                 tunnelWidth2 = rng.nextFloat();
             }
-            addTunnel(worldIn, seed1, baseChunk, start, tunnelWidth1 * 0.5F + 0.5F, tunnelDirection - HALF_PI,
-                      tunnelSlope / 3.0F, currentTunnelSegment, maxTunnelSegment, 1.0);
+            addTunnel(worldIn, seed1, baseChunk, start, tunnelWidth1 * 0.5F + 0.5F, theTunnelDirection - HALF_PI,
+                      theTunnelSlope / 3.0F, theCurrentSegment, theMaxSegment, 1.0);
 
-            addTunnel(worldIn, seed2, baseChunk, start, tunnelWidth2 * 0.5F + 0.5F, tunnelDirection + HALF_PI,
-                      tunnelSlope / 3.0F, currentTunnelSegment, maxTunnelSegment, 1.0);
+            addTunnel(worldIn, seed2, baseChunk, start, tunnelWidth2 * 0.5F + 0.5F, theTunnelDirection + HALF_PI,
+                      theTunnelSlope / 3.0F, theCurrentSegment, theMaxSegment, 1.0);
             return;
         }
 
         if (!isOceanic(world.getBiomeIdAt(startPos.x, startPos.z))) return;
 
         if (!isMainTunnel && rng.nextInt(4) == 0) { continue; }
-        DoublePos2D distance = start.asPos2D() - targetCenter;
+        // DoublePos2D distance = start.asPos2D() - targetCenter;
 
-        c_double segmentsRemaining = maxTunnelSegment - currentTunnelSegment;
+        // c_double segmentsRemaining = theMaxSegment - theCurrentSegment;
 
         Pos3D min;
         Pos3D max;

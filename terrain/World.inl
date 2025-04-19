@@ -1,3 +1,5 @@
+#pragma once
+
 inline bool World::chunkExists(const Pos2D &pos) const {
     if (pos.x < worldBounds.minX || pos.x > worldBounds.maxX || pos.z < worldBounds.minZ ||
         pos.z > worldBounds.maxZ) {
@@ -111,16 +113,16 @@ inline void World::setBlock(const Pos3D &pos, c_int blockId, c_int meta) {
     this->setBlock(pos.x, pos.y, pos.z, blockId, meta);
 }
 
-inline void World::setBlock(c_int x, c_int y, c_int z, const lce::BlockState blockstate) {
-    this->setBlock(x, y, z, blockstate.getID(), blockstate.getDataTag());
+inline void World::setBlock(c_int x, c_int y, c_int z, const lce::BlockState blockState) {
+    this->setBlock(x, y, z, blockState.getID(), blockState.getDataTag());
 }
 
-inline void World::setBlock(const Pos3D &pos, const lce::BlockState blockstate) {
-    this->setBlock(pos.x, pos.y, pos.z, blockstate.getID(), blockstate.getDataTag());
+inline void World::setBlock(const Pos3D &pos, const lce::BlockState blockState) {
+    this->setBlock(pos.x, pos.y, pos.z, blockState.getID(), blockState.getDataTag());
 }
 
 
-inline void World::notifyNeighbors(c_int x, c_int y, c_int z) {
+inline void World::notifyNeighbors(MU c_int x, MU c_int y, MU c_int z) {
     //mimic notify neighbors to load chunks
     /*for (const auto faces: FACING_HORIZONTAL) {
         (void) this->getBlock(Pos3D(x, y, z).offset(faces));

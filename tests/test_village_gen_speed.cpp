@@ -2,17 +2,17 @@
 #include <fstream>
 #include <algorithm>
 
-#include "features/WorldGenerator/WorldGenLakes.hpp"
 #include "terrain/Chunk.hpp"
 #include "terrain/World.hpp"
-#include "terrain/features/biome.hpp"
+
 
 #include "structures/gen/village/village.hpp"
 
+#include "common/timer.hpp"
 #include "structures/placement/StaticStructures.hpp"
 #include "structures/placement/mineshaft.hpp"
 #include "structures/placement/stronghold.hpp"
-#include "common/timer.hpp"
+#include "terrain/biomes/biome.hpp"
 
 
 void calculateStatistics(const std::vector<int>& data) {

@@ -36,6 +36,8 @@ namespace gen {
     /**
      * \n
      * Overload function. Generates a mineshaft with the given seed and chunk coordinates.
+     *
+     * @param console the console
      * @param worldSeed the seed
      * @param chunkPos coordinates of the chunk
      */
@@ -46,11 +48,12 @@ namespace gen {
     /**
      * \n
      * Generates a mineshaft with the given seed and chunk coordinates.
+     * @param console the console
      * @param worldSeed the seed
      * @param chunkX x coordinate of the chunk
      * @param chunkZ z coordinate of the chunk
      */
-    void Mineshaft::generate(lce::CONSOLE console, c_i64 worldSeed, c_int chunkX, c_int chunkZ) {
+    void Mineshaft::generate(const lce::CONSOLE console, c_i64 worldSeed, c_int chunkX, c_int chunkZ) {
         RNG rng = RNG::getLargeFeatureSeed(worldSeed, chunkX, chunkZ);
         // 4 rolls (1 for skip, 3 for is feature chunk rolls (2 double, 1 int))
         rng = RNG::ConstructWithoutSetSeed((rng.getSeed() * 0x32EB772C5F11 + 0x2D3873C4CD04) & 0xFFFFFFFFFFFF);
@@ -75,7 +78,7 @@ namespace gen {
         const BoundingBox roomBoundingBox(startPos.x, 50, startPos.z, boundingBoxXUpper, boundingBoxYUpper, boundingBoxZUpper);
 
         // recursive gen
-        buildComponent(rng, {PieceType::PT_Mineshaft_Room, 0, roomBoundingBox, EnumFacing::NORTH, 1});
+        buildComponent(rng, {PT_Mineshaft_Room, 0, roomBoundingBox, EnumFacing::NORTH, 1});
 
         // get Y level
         structureBB = BoundingBox::EMPTY;
@@ -94,17 +97,18 @@ namespace gen {
                 pieceArray[index].offset(0, i, 0);
             }
             return;
-        } else {
-            // non-mesa
-            constexpr int i = 63 - 10;
-            int j = structureBB.getYSize() + 1;
-            if (j < i) { j += rng.nextInt(i - j); }
-            c_int k = j - structureBB.maxY;
-            // update structure offset
-            structureBB.offset(0, k, 0);
-            // update pieces offset
-            for (int piece = 0; piece < pieceArraySize; piece++) { pieceArray[piece].offset(0, k, 0); }
         }
+
+        // non-mesa
+        constexpr int i = 63 - 10;
+        int j = structureBB.getYSize() + 1;
+        if (j < i) { j += rng.nextInt(i - j); }
+        c_int k = j - structureBB.maxY;
+        // update structure offset
+        structureBB.offset(0, k, 0);
+        // update pieces offset
+        for (int piece = 0; piece < pieceArraySize; piece++) { pieceArray[piece].offset(0, k, 0); }
+
 
     }
 

@@ -186,7 +186,7 @@ namespace build::mineshaft {
         piece.fillWithBlocks(worldIn, chunkBB, 0, 0, 0, piece.maxX - piece.minX, 0, piece.maxZ - piece.minZ,
                              lce::BlocksInit::DIRT.getState(), lce::BlocksInit::AIR.getState(), false);
         piece.fillWithAir(worldIn, chunkBB, 0, 1, 0, piece.maxX - piece.minX,
-                          std::min(3, static_cast<int>(piece.maxY - piece.minY)), piece.maxZ - piece.minZ);
+                          std::min(3, piece.maxY - piece.minY), piece.maxZ - piece.minZ);
 
         // for (const BoundingBox& sbb: roomsLinkedToTheRoom) {
         //     piece.fillWithBlocks(worldIn, chunkBB, sbb.piece.minX, sbb.piece.maxY - 2,

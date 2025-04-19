@@ -1,79 +1,81 @@
-template<class classType>
-bool Pos2DTemplate<classType>::operator==(const Pos2DTemplate &other) const { return x == other.x && z == other.z; }
+#pragma once
+
+template<class T>
+bool Pos2DTemplate<T>::operator==(const Pos2DTemplate &other) const { return x == other.x && z == other.z; }
 
 
-template<class classType>
-bool Pos2DTemplate<classType>::operator==(int other) const { return x == other && z == other; }
+template<class T>
+bool Pos2DTemplate<T>::operator==(int other) const { return x == other && z == other; }
 
 
-template<class classType>
-bool Pos2DTemplate<classType>::operator!=(const Pos2DTemplate &other) const { return x != other.x || z != other.z; }
+template<class T>
+bool Pos2DTemplate<T>::operator!=(const Pos2DTemplate &other) const { return x != other.x || z != other.z; }
 
-template<class classType>
-bool Pos2DTemplate<classType>::operator!=(int other) const { return x != other || z != other; }
+template<class T>
+bool Pos2DTemplate<T>::operator!=(int other) const { return x != other || z != other; }
 
 
-template<class classType>
-Pos2DTemplate<classType> Pos2DTemplate<classType>::operator+(const Pos2DTemplate &other) const {
+template<class T>
+Pos2DTemplate<T> Pos2DTemplate<T>::operator+(const Pos2DTemplate &other) const {
     return {x + other.x, z + other.z};
 }
 
-template<class classType>
-Pos2DTemplate<classType> Pos2DTemplate<classType>::operator+(c_int other) const { return {x + other, z + other}; }
+template<class T>
+Pos2DTemplate<T> Pos2DTemplate<T>::operator+(c_int other) const { return {x + other, z + other}; }
 
 
 
-template<class classType>
-Pos2DTemplate<classType> Pos2DTemplate<classType>::operator*(const Pos2DTemplate &other) const {
+template<class T>
+Pos2DTemplate<T> Pos2DTemplate<T>::operator*(const Pos2DTemplate &other) const {
     return {x * other.x, z * other.z};
 }
 
-template<class classType>
-Pos2DTemplate<classType> Pos2DTemplate<classType>::operator*(c_int other) const {
+template<class T>
+Pos2DTemplate<T> Pos2DTemplate<T>::operator*(c_int other) const {
     return {x * other, z * other};
 }
 
-template<class classType>
-Pos2DTemplate<classType> Pos2DTemplate<classType>::operator-(const Pos2DTemplate &other) const {
+template<class T>
+Pos2DTemplate<T> Pos2DTemplate<T>::operator-(const Pos2DTemplate &other) const {
     return {x - other.x, z - other.z};
 }
 
 
-template<class classType>
-Pos2DTemplate<classType> Pos2DTemplate<classType>::operator-(c_int other) const { return {x - other, z - other}; }
+template<class T>
+Pos2DTemplate<T> Pos2DTemplate<T>::operator-(c_int other) const { return {x - other, z - other}; }
 
 
-template<class classType>
-bool Pos2DTemplate<classType>::operator>(classType value) const { return x > value && z > value; }
+template<class T>
+bool Pos2DTemplate<T>::operator>(T value) const { return x > value && z > value; }
 
 
-template<class classType>
-bool Pos2DTemplate<classType>::operator<(classType value) const { return x < value && z < value; }
+template<class T>
+bool Pos2DTemplate<T>::operator<(T value) const { return x < value && z < value; }
 
 
-template<class classType>
-bool Pos2DTemplate<classType>::operator<(const Pos2DTemplate& other) const {
+template<class T>
+bool Pos2DTemplate<T>::operator<(const Pos2DTemplate& other) const {
     if (x < other.x) return true;
     if (x > other.x) return false;
     return z < other.z;
 }
 
-template<class classType>
-bool Pos2DTemplate<classType>::operator>=(classType value) const { return x >= value && z >= value; }
+template<class T>
+bool Pos2DTemplate<T>::operator>=(T value) const { return x >= value && z >= value; }
 
 
-template<class classType>
-bool Pos2DTemplate<classType>::operator<=(classType value) const { return x <= value && z <= value; }
+template<class T>
+bool Pos2DTemplate<T>::operator<=(T value) const { return x <= value && z <= value; }
 
 
-template<class classType>
-std::string Pos2DTemplate<classType>::toString() const {
+template<class T>
+std::string Pos2DTemplate<T>::toString() const {
     return "(" + std::to_string(this->x) + ", " + std::to_string(this->z) + ")";
 }
 
-template<class classType>
-ND double Pos2DTemplate<classType>::distanceSq() const {
-    using ValueType = std::conditional_t<std::is_same_v<classType, double>, classType, double>;
+template<class T>
+ND double Pos2DTemplate<T>::distanceSq() const {
+    using ValueType = std::conditional_t<std::is_same_v<T, double>, T, double>;
 
     auto d0 = static_cast<ValueType>(x);
     auto d1 = static_cast<ValueType>(z);
@@ -81,13 +83,13 @@ ND double Pos2DTemplate<classType>::distanceSq() const {
     return d0 * d0 + d1 * d1;
 }
 
-template<class classType>
-bool Pos2DTemplate<classType>::insideBounds(classType lowerX, classType lowerZ, classType upperX, classType upperZ) const {
+template<class T>
+bool Pos2DTemplate<T>::insideBounds(T lowerX, T lowerZ, T upperX, T upperZ) const {
     return x >= lowerX && x <= upperX && z >= lowerZ && z <= upperZ;
 }
 
-template<class classType>
-void Pos2DTemplate<classType>::setPos(classType xIn, classType zIn) {
+template<class T>
+void Pos2DTemplate<T>::setPos(T xIn, T zIn) {
     this->x = xIn;
     this->z = zIn;
 }

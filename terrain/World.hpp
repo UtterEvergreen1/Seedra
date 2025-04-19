@@ -223,14 +223,14 @@ public:
      * @param z The Z-coordinate.
      * @param blockstate The block state to set.
      */
-    void setBlock(int x, int y, int z, lce::BlockState blockstate);
+    void setBlock(int x, int y, int z, lce::BlockState blockState);
 
     /**
      * @brief Sets the block state at the specified position.
      * @param pos The position.
      * @param blockstate The block state to set.
      */
-    void setBlock(const Pos3D &pos, lce::BlockState blockstate);
+    void setBlock(const Pos3D &pos, lce::BlockState blockState);
 
     /**
      * @brief Checks if the block at the specified coordinates is air.
