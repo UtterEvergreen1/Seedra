@@ -6,6 +6,10 @@
 #include "LootItem.hpp"
 #include "lce/processor.hpp"
 
+namespace gen {
+    class Stronghold;
+}
+
 namespace loot {
 
     /**
@@ -53,7 +57,18 @@ namespace loot {
         MU void getLootFromBlock(Container<ContainerSize>& container, i64 worldSeed, Args &&...args) const;
 
         template<GenMode Mode>
-        MU void getLootFromLootTableSeed(Container<ContainerSize>& container, u64 lootTableSeed, Buffer* buffer) const;
+        MU void getLootFromLootTableSeed(Container<ContainerSize>& container, u64 lootTableSeed, Buffer* buffer = nullptr) const;
+
+        /// loot seeding with stronghold stone rolls
+        template<bool checkCaves, bool checkWaterCaves = false>
+        ND static RNG getStrongholdLootSeed(const Generator& g, gen::Stronghold* strongholdGenerator,
+                                  const StructureComponent& piece, c_int chestChunkX, c_int chestChunkZ, bool accurate);
+
+        /// combine loot seeding and generation to get the stronghold loot
+        template<bool checkCaves, bool shuffle>
+        MU ND static Container27 getStrongholdLoot(const Generator& g, gen::Stronghold* strongholdGenerator,
+                                       const StructureComponent& piece, c_int chestChunkX, c_int chestChunkZ,
+                                       bool accurate);
     };
 
 } // namespace loot

@@ -22,6 +22,7 @@
 #include "lce/registry/itemRegistry.hpp"
 #include "loot/enchants/enchantController.hpp"
 #include "loot/enchants/enchantState.hpp"
+#include "loot/classes/Buffer.hpp"
 
 namespace loot {
 
@@ -365,5 +366,7 @@ namespace loot {
     /// Explicit template instantiations.
     template class Container<27, 64>;
     template class Container<9, 64>;
+    typedef Container<27, 64> Container27;
+    typedef Container<9, 64> Container9;
 
 } // namespace loot

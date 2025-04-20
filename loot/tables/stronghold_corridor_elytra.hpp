@@ -32,4 +32,33 @@ namespace loot {
                                  LootItem< 6, 1, 1, ENCHANTED_BOOK.getState(), enchant_levels_book_30>
                                  >
                     >::value;
+
+    template<bool checkCaves, bool shuffle, bool checkWaterCaves>
+    Container27 getElytraAltarChestLoot(const Generator &g, const StructureComponent &altarChestPiece,
+                                  gen::Stronghold *strongholdGenerator, bool accurate) {
+        RNG lootSeed = stronghold_corridor_elytra.getStrongholdLootSeed<checkCaves, checkWaterCaves>(
+            g, strongholdGenerator, altarChestPiece, altarChestPiece.getWorldX(3, 3) >> 4,
+            altarChestPiece.getWorldZ(3, 3) >> 4, accurate);
+        if (lootSeed == -1) return {};
+
+        Container27 chestLoot;
+        if constexpr (shuffle) {
+            stronghold_corridor_aquatic.getLootFromSeed<GenMode::MODERN>(chestLoot, lootSeed);
+        }
+        else {
+            stronghold_corridor_aquatic.getLootFromSeed<GenMode::MOD_NO_SHUF>(chestLoot, lootSeed);
+        }
+        return chestLoot;
+    }
+
+    template<bool checkCaves, bool shuffle, bool checkWaterCaves>
+    std::vector<Container27> getAllElytraAltarChestLoot(const Generator &g, gen::Stronghold *strongholdGenerator,
+                                                  bool accurate) {
+        std::vector<Container27> altarChests(strongholdGenerator->altarChestArraySize);
+        for (int altarChestIndex = 0; altarChestIndex < strongholdGenerator->altarChestArraySize; altarChestIndex++)
+            altarChests[altarChestIndex] = getElytraAltarChestLoot<checkCaves, shuffle, checkWaterCaves>(
+                        g, *strongholdGenerator->altarChestsArray[altarChestIndex], strongholdGenerator, accurate);
+
+        return altarChests;
+    }
 }

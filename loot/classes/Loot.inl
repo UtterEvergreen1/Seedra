@@ -3,6 +3,8 @@
 #include "Buffer.hpp"
 #include "LootTable.hpp"
 #include "common/Pos2DTemplate.hpp"
+#include "terrain/Chunk.hpp"
+#include "structures/gen/stronghold/stronghold.hpp"
 
 namespace loot {
 
@@ -77,7 +79,7 @@ namespace loot {
     template<size_t ContainerSize, typename... Tables>
     template<GenMode Mode>
     MU void Loot<ContainerSize, Tables...>::getLootFromSeed(MU Container<ContainerSize> &container, RNG &seed) const {
-        return getLootFromLootTableSeed<Mode>(seed.nextLong());
+        getLootFromLootTableSeed<Mode>(container, seed.nextLong());
     }
 
     /**
@@ -258,7 +260,7 @@ namespace loot {
             const int chunkX = std::get<0>(argsTuple);
             const int chunkZ = std::get<1>(argsTuple);
             RNG seed = RNG::getPopulationSeed(worldSeed, chunkX, chunkZ);
-            getLootFromLootTableSeed<Mode>(container, seed);
+            getLootFromLootTableSeed<Mode>(container, seed.getSeed());
         } else if constexpr (sizeof...(Args) == 1) {
             using Arg0 = std::decay_t<decltype(std::get<0>(argsTuple))>;
             if constexpr (std::is_same_v<Arg0, Pos2D>) {
@@ -266,7 +268,7 @@ namespace loot {
                 const int chunkX = chunkPos.x;
                 const int chunkZ = chunkPos.z;
                 RNG seed = RNG::getPopulationSeed(worldSeed, chunkX, chunkZ);
-                getLootFromLootTableSeed<Mode>(container, seed);
+                getLootFromLootTableSeed<Mode>(container, seed.getSeed());
             } else {
                 static_assert(dependent_false_v<Args...>, "getLootFromChunk(...) called with invalid parameter type. "
                                                           "Pass either (chunkX, chunkZ) or (Pos2D).");
@@ -276,6 +278,43 @@ namespace loot {
                                                       "Pass either (chunkX, chunkZ) or (Pos2D).");
         }
     }
+
+    /// loot seeding with stronghold stone rolls
+    template<size_t ContainerSize, typename... Tables>
+    template<bool checkCaves, bool checkWaterCaves>
+    RNG Loot<ContainerSize, Tables...>::getStrongholdLootSeed(const Generator& g, gen::Stronghold* strongholdGenerator,
+                                        const StructureComponent& piece, c_int chestChunkX, c_int chestChunkZ,
+                                        bool accurate) {
+         RNG rng = RNG::getPopulationSeed(g.getWorldSeed(), chestChunkX, chestChunkZ);
+
+         if constexpr (checkCaves) {
+             // TODO: probably needs fixed
+             ChunkPrimer* chunk = Chunk::provideNewChunk(g, {chestChunkX, chestChunkZ}); // , accurate
+             // we roll rng equal to the stone bricks in the chunk that generated before the chest corridor
+             if (!rolls::Stronghold::generateStructure<true>(chunk, strongholdGenerator, rng, chestChunkX, chestChunkZ,
+                                                             piece)) {
+                 delete chunk;
+                 return RNG::ConstructWithoutSetSeed(-1);
+             }
+             delete chunk;
+         } else {
+             rolls::Stronghold::generateStructure<true>(nullptr, strongholdGenerator, rng, chestChunkX, chestChunkZ,
+                                                        piece);
+         }
+         return rng;
+     }
+
+    /// loot seeding with stronghold stone rolls
+    template<size_t ContainerSize, typename... Tables>
+    template<bool checkCaves, bool shuffle>
+    Container27 Loot<ContainerSize, Tables...>::getStrongholdLoot(const Generator& g, gen::Stronghold* strongholdGenerator,
+                                          const StructureComponent& piece, c_int chestChunkX, c_int chestChunkZ,
+                                          const bool accurate) {
+         u64 lootSeed = getStrongholdLootSeed<checkCaves>(g, strongholdGenerator, piece, chestChunkX,
+                                                                            chestChunkZ, accurate);
+         if (lootSeed == -1ULL) return {};
+         return getLootFromSeed<shuffle>(lootSeed);
+     }
 
     /**
      * @brief Helper structure to aggregate multiple loot tables into a single loot instance.

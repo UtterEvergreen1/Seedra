@@ -40,7 +40,7 @@ public:
      * @brief Retrieves the generator associated with the world.
      * @return Pointer to the Generator.
      */
-    Generator *getGenerator() const;
+    Generator *getGenerator() const { return g; }
 
     /**
      * @brief Adds a chunk to the world at the specified position.
@@ -101,7 +101,7 @@ public:
      * @brief Retrieves the world biomes.
      * @return Pointer to the array of world biomes.
      */
-    int *getWorldBiomes() const;
+    int *getWorldBiomes() const { return biomes; }
 
     /**
      * @brief Retrieves the biomes for a specific chunk.
@@ -130,17 +130,17 @@ public:
      * @brief Retrieves all chunks in the world.
      * @return Reference to the unordered map of chunks.
      */
-    auto &getChunks() const;
+    auto &getChunks() const { return chunks; }
 
     /**
      * @brief Locks the chunk mutex to prevent concurrent access.
      */
-    void lockChunks();
+    void lockChunks() { chunkMutex.lock(); }
 
     /**
      * @brief Unlocks the chunk mutex.
      */
-    void unlockChunks();
+    void unlockChunks() { chunkMutex.unlock(); }
 
     /**
      * @brief Retrieves the block ID at the specified coordinates.
@@ -328,7 +328,7 @@ public:
      * @brief Retrieves the sea level of the world.
      * @return The sea level.
      */
-    static int getSeaLevel();
+    static int getSeaLevel() { return 63; }
 
     /**
      * @brief Generates mineshafts in the world.
