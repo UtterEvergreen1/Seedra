@@ -50,6 +50,7 @@ Structure loot:
 #include "LegacyCubiomes/loot/Tables.hpp"
 
 int main(int argc, char* argv[]) {
+    constexpr auto Mode = loot::GenMode::MODERN;
     int64_t worldSeed = 789;
     loot::Container<27> container;
     
