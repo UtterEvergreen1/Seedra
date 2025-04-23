@@ -47,20 +47,20 @@ int main(int argc, char* argv[]) {
 Structure loot:
 
 ```c++
-#include "LegacyCubiomes/loot/tables/buried_treasure.hpp"
-#include "LegacyCubiomes/loot/tables/blacksmith.hpp"
+#include "LegacyCubiomes/loot/Tables.hpp"
 
 int main(int argc, char* argv[]) {
     int64_t worldSeed = 789;
-    // Get loot for buried treasure at chunk 0, 0
-    loot::BuriedTreasure::setup();
-    std::cout << loot::BuriedTreasure::getLoot<true>(worldSeed, 0, 0) << std::endl;
-
+    loot::Container<27> container;
+    
     // Get loot for blacksmith at chunk 0, 0
-    loot::Blacksmith::setup();
-    std::cout << loot::Blacksmith::getLootFromChunk<true, false>(worldSeed, 0, 0) << std::endl;
+    loot::blacksmith.getLootFromChunk<Mode>(container, worldSeed, 0, 0);
+    std::cout << container << std::endl;
+    return 0;
 }
 ```
+
+Refer to the `tests/` directory to see many other ways the code can be used.
 
 ## Submodules
 
@@ -68,6 +68,7 @@ This project uses a [separate project](https://github.com/zugebot/lce.git).
 Set this up by doing:
 
 ```bash
+git init
 git submodule add https://github.com/lce-resources/lceLIB.git
 git submodule update --init
 ```
