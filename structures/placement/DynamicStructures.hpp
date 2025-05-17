@@ -14,15 +14,17 @@ namespace Placement {
      * This constant defines a bitmask of biomes that are considered valid for secondary structures.
      */
     static constexpr u64 DEFAULT_SECONDARY_VALID_BIOMES =
-            1ULL << plains | 1ULL << desert | 1ULL << forest | 1ULL << taiga | 1ULL << swampland |
+            1ULL << ocean | 1ULL << plains | 1ULL << desert | 1ULL << forest | 1ULL << taiga | 1ULL << swampland |
             1ULL << river | 1ULL << hell | 1ULL << the_end | 1ULL << legacy_frozen_ocean |
             1ULL << frozen_river | 1ULL << ice_plains | 1ULL << ice_mountains | 1ULL << mushroom_island |
             1ULL << mushroom_island_shore | 1ULL << beach | 1ULL << desert_hills | 1ULL << forest_hills |
             1ULL << taiga_hills | 1ULL << extreme_hills_edge | 1ULL << jungle | 1ULL << jungle_hills |
-            1ULL << jungle_edge | 1ULL << cold_beach | 1ULL << birch_forest | 1ULL << birch_forest_hills |
+            1ULL << jungle_edge | 1ULL << deep_ocean | 1ULL << cold_beach | 1ULL << birch_forest | 1ULL << birch_forest_hills |
             1ULL << roofed_forest | 1ULL << cold_taiga | 1ULL << cold_taiga_hills | 1ULL << mega_taiga |
             1ULL << mega_taiga_hills | 1ULL << savanna | 1ULL << savanna_plateau | 1ULL << mesa |
-            1ULL << mesa_plateau_stone | 1ULL << mesa_plateau;
+            1ULL << mesa_plateau_stone | 1ULL << mesa_plateau | 1ULL << warm_ocean | 1ULL << deep_warm_ocean |
+            1ULL << lukewarm_ocean | 1ULL << deep_lukewarm_ocean | 1ULL << cold_ocean | 1ULL << deep_cold_ocean |
+            1ULL << frozen_ocean | 1ULL << deep_frozen_ocean;
 
     /**
      * @brief Default valid mutated biomes for secondary structures.

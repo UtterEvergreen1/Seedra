@@ -41,3 +41,38 @@ target_include_directories(LIB_LegacyCubiomes
         PUBLIC
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/>
 )
+
+# (Optional) If you want a standalone LegacyCubiomesExe for testing:
+unset(LC_BUILD_EXECUTABLE CACHE)
+option(LC_BUILD_EXECUTABLE "Build LegacyCubiomes standalone executable" ON)
+if(LC_BUILD_EXECUTABLE)
+
+    # Chunk Gen Code For LegacyChunkViewer
+    add_executable(EXE_GenCreateWorld "tests/gen_chunk.cpp")
+    target_link_libraries(EXE_GenCreateWorld PRIVATE LIB_LegacyCubiomes)
+
+    # Chunk Gen Code For drawing biomes to file
+    add_executable(EXE_DrawImages "tests/draw_images.cpp")
+    target_link_libraries(EXE_DrawImages PRIVATE LIB_LegacyCubiomes)
+
+    # Chunk Gen Code For getting the output used to optimize biomes
+    add_executable(EXE_GetMaxTempBiomes "tests/get_min_temp_biomes.cpp")
+    target_link_libraries(EXE_GetMaxTempBiomes PRIVATE LIB_LegacyCubiomes)
+
+    # Ravine Gen Code for finding best seed for mine a chunk
+    add_executable(EXE_MineAChunkSF "tests/best_mine_chunk_seed.cpp")
+    target_link_libraries(EXE_MineAChunkSF PRIVATE LIB_LegacyCubiomes)
+
+    # Test Village generation speed
+    add_executable(EXE_TestVillageGen "tests/test_village_gen_speed.cpp")
+    target_link_libraries(EXE_TestVillageGen PRIVATE LIB_LegacyCubiomes)
+
+
+    # Test Enchants
+    add_executable(EXE_TestLootEnchants "tests/test_loot_enchants.cpp")
+    target_link_libraries(EXE_TestLootEnchants PRIVATE LIB_LegacyCubiomes)
+
+    add_executable(EXE_TestFindVillages "tests/find_villages.cpp")
+    target_link_libraries(EXE_TestFindVillages PRIVATE LIB_LegacyCubiomes)
+
+endif()

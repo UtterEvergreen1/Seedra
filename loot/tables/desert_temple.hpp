@@ -9,7 +9,7 @@ namespace loot {
 
     MU static constexpr auto desert_temple
             = LootWrapper<
-                    27,
+                    27, false,
                     TableWrapper<2, 4,
                                  LootItem< 5, 1, 3, DIAMOND.getState()>,
                                  LootItem<15, 1, 5, IRON_INGOT.getState()>,

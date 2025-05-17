@@ -1,7 +1,7 @@
 
-# Minecraft\-Style Loot System
+# Loot System
 
-This project implements a Minecraft Console Edition–style loot generation system. 
+This project implements the Minecraft Legacy Console Edition loot generation system. 
 It provides a set of pre-compiled loot table objects that you can use to generate loot 
 using a few public functions while keeping the internal code hidden.
 

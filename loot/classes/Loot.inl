@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Buffer.hpp"
+#include "Loot.hpp"
 #include "LootTable.hpp"
 #include "common/Pos2DTemplate.hpp"
 #include "terrain/Chunk.hpp"
@@ -48,8 +49,8 @@ namespace loot {
      * @details This constructor is evaluated at compile time and initializes the internal tuple
      * and computes the maximum item count.
      */
-    template<size_t ContainerSize, typename... Tables>
-    consteval Loot<ContainerSize, Tables...>::Loot(Tables... ts) noexcept
+    template<size_t ContainerSize, bool Aquatic, typename... Tables>
+    consteval Loot<ContainerSize, Aquatic, Tables...>::Loot(Tables... ts) noexcept
         : m_LootTables(ts...) {}
 
     /**
@@ -59,8 +60,8 @@ namespace loot {
      *
      * @details Uses a lambda with std::apply to iterate over the tuple of loot tables.
      */
-    template<size_t ContainerSize, typename... Tables>
-    consteval i32 Loot<ContainerSize, Tables...>::computeMaxItemCount() const noexcept {
+    template<size_t ContainerSize, bool Aquatic, typename... Tables>
+    consteval i32 Loot<ContainerSize, Aquatic, Tables...>::computeMaxItemCount() const noexcept {
         return std::apply([](auto const &...table) -> i32 {
             return (0 + ... + table.maxItemCount());
         },
@@ -76,9 +77,9 @@ namespace loot {
      *
      * @details Calls getLootFromLootTableSeed using a seed obtained by calling seed.nextLong().
      */
-    template<size_t ContainerSize, typename... Tables>
+    template<size_t ContainerSize, bool Aquatic, typename... Tables>
     template<GenMode Mode>
-    MU void Loot<ContainerSize, Tables...>::getLootFromSeed(MU Container<ContainerSize> &container, RNG &seed) const {
+    MU void Loot<ContainerSize, Aquatic, Tables...>::getLootFromSeed(MU Container<ContainerSize> &container, RNG &seed) const {
         getLootFromLootTableSeed<Mode>(container, seed.nextLong());
     }
 
@@ -159,10 +160,10 @@ namespace loot {
      *
      * @note Shuffling and legacy mode cannot be used simultaneously.
      */
-    template<size_t ContainerSize, typename... Tables>
+    template<size_t ContainerSize, bool Aquatic, typename... Tables>
     template<GenMode Mode>
-    MU void Loot<ContainerSize, Tables...>::getLootFromLootTableSeed(
-            Container<ContainerSize> &container, c_u64 lootTableSeed, Buffer *buffer) const {
+    MU void Loot<ContainerSize, Aquatic, Tables...>::getLootFromLootTableSeed(
+        Container<ContainerSize> &container, c_i64 lootTableSeed, Buffer *buffer) const {
 
         RNG rng;
         rng.setSeed(lootTableSeed);
@@ -208,9 +209,9 @@ namespace loot {
      *
      * @warning Passing invalid parameters will cause a compile-time error.
      */
-    template<size_t ContainerSize, typename... Tables>
+    template<size_t ContainerSize, bool Aquatic, typename... Tables>
     template<GenMode Mode, typename... Args>
-    MU void Loot<ContainerSize, Tables...>::getLootFromBlock(Container<ContainerSize>& container, c_i64 worldSeed, Args &&...args) const {
+    MU void Loot<ContainerSize, Aquatic, Tables...>::getLootFromBlock(Container<ContainerSize>& container, c_i64 worldSeed, Args &&...args) const {
 
         // Create a tuple from the forwarded arguments once.
         auto argsTuple = std::forward_as_tuple(std::forward<Args>(args)...);
@@ -251,16 +252,20 @@ namespace loot {
      *
      * @warning Passing invalid parameters will cause a compile-time error.
      */
-    template<size_t ContainerSize, typename... Tables>
+    template<size_t ContainerSize, bool Aquatic, typename... Tables>
     template<GenMode Mode, typename... Args>
-    MU void Loot<ContainerSize, Tables...>::getLootFromChunk(Container<ContainerSize>& container, c_i64 worldSeed, Args &&...args) const {
+    MU void Loot<ContainerSize, Aquatic, Tables...>::getLootFromChunk(Container<ContainerSize>& container, c_i64 worldSeed, Args &&...args) const {
         auto argsTuple = std::forward_as_tuple(std::forward<Args>(args)...);
 
         if constexpr (sizeof...(Args) == 2 && all_integral_v<Args...>) {
             const int chunkX = std::get<0>(argsTuple);
             const int chunkZ = std::get<1>(argsTuple);
             RNG seed = RNG::getPopulationSeed(worldSeed, chunkX, chunkZ);
-            getLootFromLootTableSeed<Mode>(container, seed.getSeed());
+            if constexpr (Aquatic) {
+                getLootFromLootTableSeed<Mode>(container, (int)seed.nextLong());
+            } else {
+                getLootFromLootTableSeed<Mode>(container, seed.nextLong());
+            }
         } else if constexpr (sizeof...(Args) == 1) {
             using Arg0 = std::decay_t<decltype(std::get<0>(argsTuple))>;
             if constexpr (std::is_same_v<Arg0, Pos2D>) {
@@ -268,7 +273,11 @@ namespace loot {
                 const int chunkX = chunkPos.x;
                 const int chunkZ = chunkPos.z;
                 RNG seed = RNG::getPopulationSeed(worldSeed, chunkX, chunkZ);
-                getLootFromLootTableSeed<Mode>(container, seed.getSeed());
+                if constexpr (Aquatic) {
+                    getLootFromLootTableSeed<Mode>(container, (int)seed.nextLong());
+                } else {
+                    getLootFromLootTableSeed<Mode>(container, seed.nextLong());
+                }
             } else {
                 static_assert(dependent_false_v<Args...>, "getLootFromChunk(...) called with invalid parameter type. "
                                                           "Pass either (chunkX, chunkZ) or (Pos2D).");
@@ -280,9 +289,9 @@ namespace loot {
     }
 
     /// loot seeding with stronghold stone rolls
-    template<size_t ContainerSize, typename... Tables>
+    template<size_t ContainerSize, bool Aquatic, typename... Tables>
     template<bool checkCaves, bool checkWaterCaves>
-    RNG Loot<ContainerSize, Tables...>::getStrongholdLootSeed(const Generator& g, gen::Stronghold* strongholdGenerator,
+    RNG Loot<ContainerSize, Aquatic, Tables...>::getStrongholdLootSeed(const Generator& g, gen::Stronghold* strongholdGenerator,
                                         const StructureComponent& piece, c_int chestChunkX, c_int chestChunkZ,
                                         bool accurate) {
          RNG rng = RNG::getPopulationSeed(g.getWorldSeed(), chestChunkX, chestChunkZ);
@@ -305,9 +314,9 @@ namespace loot {
      }
 
     /// loot seeding with stronghold stone rolls
-    template<size_t ContainerSize, typename... Tables>
+    template<size_t ContainerSize, bool Aquatic, typename... Tables>
     template<bool checkCaves, bool shuffle>
-    Container27 Loot<ContainerSize, Tables...>::getStrongholdLoot(const Generator& g, gen::Stronghold* strongholdGenerator,
+    Container27 Loot<ContainerSize, Aquatic, Tables...>::getStrongholdLoot(const Generator& g, gen::Stronghold* strongholdGenerator,
                                           const StructureComponent& piece, c_int chestChunkX, c_int chestChunkZ,
                                           const bool accurate) {
          u64 lootSeed = getStrongholdLootSeed<checkCaves>(g, strongholdGenerator, piece, chestChunkX,
@@ -326,9 +335,9 @@ namespace loot {
      * The @c LootWrapper structure creates a compile-time constant instance of @c Loot by aggregating
      * the loot tables provided in the wrappers. This simplifies usage when referencing a combined loot configuration.
      */
-    template<size_t ContainerSize, typename... Wrappers>
+    template<size_t ContainerSize, bool Aquatic, typename... Wrappers>
     struct LootWrapper {
-        using loot_t = Loot<ContainerSize, typename Wrappers::table_t...>;
+        using loot_t = Loot<ContainerSize, Aquatic, typename Wrappers::table_t...>;
         /// A compile-time constant aggregated loot instance.
         static constexpr loot_t value{Wrappers::value...};
     };

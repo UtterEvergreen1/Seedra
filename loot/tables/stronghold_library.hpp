@@ -9,7 +9,7 @@ namespace loot {
 
     MU static constexpr auto stronghold_library
             = LootWrapper<
-                    27,
+                    27, false,
                     TableWrapper<2, 10,
                                  LootItem<100, 1, 3, BOOK.getState()>,
                                  LootItem<100, 2, 7, PAPER.getState()>,

@@ -9,7 +9,7 @@ namespace loot {
 
     MU static constexpr auto woodland_mansion
             = LootWrapper<
-                    27,
+                    27, false,
                     TableWrapper<1, 3,
                                  LootItem<100, 1, 1, LEAD.getState()>,
                                  LootItem< 75, 1, 1, GOLDEN_APPLE.getState()>,

@@ -9,7 +9,7 @@ namespace loot {
 
     MU static constexpr auto village_two_room_house
             = LootWrapper<
-                    27,
+                    27, false,
                     TableWrapper<6, 8,
                                  LootItem<10, 5, 8, POTATO.getState()>,
                                  LootItem<10, 4, 8, CARROT.getState()>,

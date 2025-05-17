@@ -37,8 +37,8 @@ namespace Placement {
 
     template<typename Derived>
     std::vector<Pos2D> StaticStructure<Derived>::getAllPositions(const Generator *g) {
-        return getAllPositionsBounded(g, -g->getWorldCoordinateBounds(), -g->getWorldCoordinateBounds(),
-                                      g->getWorldCoordinateBounds(), g->getWorldCoordinateBounds());
+        return getAllPositionsBounded(g, -g->getWorldChunkBounds(), -g->getWorldChunkBounds(),
+                                      g->getWorldChunkBounds(), g->getWorldChunkBounds());
     }
 
     template<typename Derived>
@@ -63,7 +63,7 @@ namespace Placement {
         if (chunkX < -CHUNK_BOUNDS || chunkX > CHUNK_BOUNDS || chunkZ < -CHUNK_BOUNDS || chunkZ > CHUNK_BOUNDS)
             return false;
 
-        return Generator::id_matches(g->getBiomeAt(1, (chunkX << 4) + 8, (chunkZ << 4) + 8), VALID_BIOMES);
+        return Generator::id_matches(g->getBiomeIdAt(1, (chunkX << 4) + 8, (chunkZ << 4) + 8), VALID_BIOMES);
     }
 
 
@@ -90,7 +90,7 @@ namespace Placement {
             blockZ < -g->getWorldCoordinateBounds() || blockZ > g->getWorldCoordinateBounds()) {
             return StructureType::NONE;
         }
-        switch (g->getBiomeAt(1, blockX, blockZ)) {
+        switch (g->getBiomeIdAt(1, blockX, blockZ)) {
             case desert:
             case desert_hills:
                 return StructureType::DesertPyramid;

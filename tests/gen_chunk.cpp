@@ -1,25 +1,15 @@
-#include <fstream>
-#include <filesystem>
-#include <cstdlib>
 
-#include "terrain/Chunk.hpp"
-#include "terrain/World.hpp"
 
-#include "common/timer.hpp"
-#include "structures/gen/village/village.hpp"
-#include "structures/placement/StaticStructures.hpp"
-#include "terrain/biomes/biome.hpp"
-
-namespace fs = std::filesystem;
+/*namespace fs = std::filesystem;
 
 
 template<typename T>
 void fileWrite(std::ofstream& file, T obj) {
     file.write(reinterpret_cast<const char*>(&obj), sizeof(T));
-}
+}*/
 
 
-int main() {
+/*int main() {
     const char* userProfile = std::getenv("USERPROFILE");
     if (!userProfile) {
         std::cerr << "USERPROFILE environment variable not set!\n";
@@ -155,10 +145,130 @@ int main() {
     delete biomes;
 
     return 0;
+}*/
+
+#include "common/timer.hpp"
+#include "terrain/Chunk.hpp"
+#include "terrain/generator.hpp"
+#include "common/worldPicture.hpp"
+#include "structures/placement/DynamicStructures.hpp"
+#include "loot/Tables.hpp"
+#include "terrain/biomes/biome.hpp"
+
+/*int main() {
+    // Initialize the generator
+    Biome::registerBiomes();
+    Generator generator(lce::CONSOLE::XBOX360, LCEVERSION::ELYTRA, 12345, lce::WORLDSIZE::CLASSIC, lce::BIOMESCALE::SMALL);
+
+    // Step 1: Generate a chunk
+    Pos2D chunkPos(0, 0);
+    ChunkPrimer* chunk = Chunk::provideNewChunk(generator, chunkPos);
+    std::cout << "Generated chunk at position: (" << chunkPos.x << ", " << chunkPos.z << ")" << std::endl;
+
+    // Step 2: Save the world's biomes to a PNG
+    WorldPicture worldPicture(&generator);
+    worldPicture.drawBiomes();
+    worldPicture.save("output_directory/");
+    std::cout << "Saved biomes to PNG in 'output_directory/'" << std::endl;
+
+    // Step 3: Find all buried treasure positions
+    auto buriedTreasurePositions = Placement::BuriedTreasure::getAllPositions(&generator);
+    std::cout << "Found " << buriedTreasurePositions.size() << " buried treasures in the world." << std::endl;
+
+    // Step 4: Retrieve loot for each buried treasure
+    constexpr auto Mode = loot::GenMode::MODERN;
+    loot::Container<27> container;
+
+    for (const auto& pos : buriedTreasurePositions) {
+        loot::buried_treasure.getLootFromChunk<Mode>(container, generator.getWorldSeed(), pos.x, pos.z);
+        std::cout << "Loot for buried treasure at (" << pos.x << ", " << pos.z << "):" << std::endl;
+        std::cout << container << std::endl;
+    }
+
+    // Clean up
+    delete chunk;
+    return 0;
+}*/
+
+int main() {
+    // Initialize the generator
+    Biome::registerBiomes();
+    lce::registry::ItemRegistry::setup();
+
+    Generator generator(lce::CONSOLE::XBOX360, LCEVERSION::AQUATIC, lce::WORLDSIZE::CLASSIC, lce::BIOMESCALE::SMALL);
+    //generator.generateCaches(4);
+
+    Timer timer;
+    constexpr int seedInterval = 1000;
+    for (int64_t seed = 830750; seed <= 830750; ++seed) {
+        if EXPECT_FALSE (seed % seedInterval == 0) {
+            std::cout << "Seed: " << seed << std::endl;
+            std::cout << "Seeds per second: " << seedInterval / timer.getSeconds() << std::endl;
+            timer.reset();
+        }
+        generator.applyWorldSeed(seed);
+
+        auto buriedTreasurePositions = Placement::BuriedTreasure::getAllPositions(&generator);
+        if (buriedTreasurePositions.size() < 4) {
+            continue;
+        }
+
+        std::cout << "Found " << buriedTreasurePositions.size() << " buried treasures in the world. Seed: " << seed << std::endl;
+
+        // Step 4: Retrieve loot for each buried treasure
+        constexpr auto Mode = loot::GenMode::MODERN;
+        loot::Container<27> container;
+
+        for (const auto& pos : buriedTreasurePositions) {
+            loot::buried_treasure.getLootFromBlock<Mode>(container, seed, pos.x, pos.z);
+            std::cout << "Loot for buried treasure at (" << pos.x << ", " << pos.z << "):" << std::endl;
+            std::cout << container << std::endl;
+            container.clear();
+        }
+    }
+
+    // Clean up
+    return 0;
 }
 
 
+/*int main() {
+    Pos2DVec_t positions = {
+    {-1, 7},
+        {-11, -24},
+        {12, 33},
+        {30, -11},
+        {-34, 18},
+        {7, 18}
+        };
+    RNG rng;
 
+    int amountRight = 0;
+    for (uint64_t worldSeed = 22873568274; worldSeed < 281474976710656; ++worldSeed) {
+        amountRight = 0;
+        rng.setSeed(worldSeed);
+        c_u64 xModifier = rng.nextLong();
+        c_u64 zModifier = rng.nextLong();
+
+        for (const Pos2D& pos : positions) {
+            c_u64 aix = pos.x * xModifier ^ worldSeed;
+            rng.setSeed(aix ^ pos.z * zModifier);
+            rng.advance();
+            if EXPECT_FALSE (rng.nextDouble() < 0.004) {
+                int distance = pos.x;
+                if (-pos.x > distance) distance = -pos.x;
+                if (+pos.z > distance) distance = +pos.z;
+                if (-pos.z > distance) distance = -pos.z;
+                if (distance >= 80 || rng.nextInt(80) < distance) {
+                    ++amountRight;
+                    if (amountRight > 4) {
+                        std::cout << "Position: (" << pos.x << ", " << pos.z << ") on seed: " << worldSeed << std::endl;
+                    }
+                }
+            }
+        }
+    }
+}*/
 
 // replace all stone with air
 // for (int i = 0; i < 16 * 16 * 256; i++) {

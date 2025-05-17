@@ -67,10 +67,10 @@ namespace Placement {
     DynamicStructure<Derived>::getAllPositionsBounded(const Generator *g, int lowerX, int lowerZ, int upperX,
                                                       int upperZ, std::atomic_bool* terminateFlag) {
         std::vector<Pos2D> positions;
-        c_int numXRegions = (upperX - lowerX) / REGION_SIZE;
-        c_int numZRegions = (upperZ - lowerZ) / REGION_SIZE;
-        for (int regionX = -numXRegions - 1; regionX <= numXRegions; ++regionX) {
-            for (int regionZ = -numZRegions - 1; regionZ <= numZRegions; ++regionZ) {
+        c_int numXRegions = ((upperX - lowerX) >> 4) / REGION_SIZE;
+        c_int numZRegions = ((upperZ - lowerZ) >> 4) / REGION_SIZE;
+        for (int regionX = -numXRegions; regionX < numXRegions; ++regionX) {
+            for (int regionZ = -numZRegions; regionZ < numZRegions; ++regionZ) {
                 if (terminateFlag && terminateFlag->load()) return positions;
                 if (Pos2D structPos = getPosition(g, regionX, regionZ); structPos != 0 &&
                                                                         structPos.insideBounds(lowerX, lowerZ, upperX,

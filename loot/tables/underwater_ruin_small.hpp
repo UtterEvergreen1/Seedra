@@ -9,7 +9,7 @@ namespace loot {
 
     MU static constexpr auto underwater_ruin_small
             = LootWrapper<
-                    27,
+                    27, false,
                     TableWrapper<2, 8,
                                  LootItem<10, 1, 4, COAL.getState()>,
                                  LootItem< 2, 1, 1, STONE_AXE.getState()>,

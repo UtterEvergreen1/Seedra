@@ -9,7 +9,7 @@ namespace loot {
 
     MU static constexpr auto shipwreck_map
             = LootWrapper<
-                    27,
+                    27, false,
                     TableWrapper<1, 1,
                                  LootItem<1, 1, 1, TREASURE_MAP.getState()>
                                  >,

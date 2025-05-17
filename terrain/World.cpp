@@ -26,7 +26,6 @@ void World::deleteWorld() {
     for (auto &chunk : chunks) {
         delete chunk.second;
     }
-    delete biomes;
     chunks.clear();
     villages.clear();
     strongholds.clear();
@@ -120,30 +119,12 @@ void World::decorateChunks(const Pos2D &pos, c_int radius) {
     }
 }
 
-void World::generateWorldBiomes() {
-    // Generate biomes for the whole world
-    delete this->biomes;
-    this->biomes = g->getBiomeRange(1, worldBounds.minX << 4, worldBounds.minZ << 4, worldBounds.maxX << 5, worldBounds.maxZ << 5);
-}
-
-int* World::getChunkBiomes(const Pos2D& pos) const {
-    if (biomes == nullptr) { return nullptr; }
-
-    BoundingBox bounds = worldBounds << 4;
-    Pos2D chunkBlockPos = pos.toBlockPos();
-    return biomes + (chunkBlockPos.z + bounds.maxZ) * (bounds.maxX * 2) + (chunkBlockPos.x + bounds.maxX);
-}
-
 Biome* World::getBiomeAt(int x, int z) const {
     return Biome::getBiomeForId(this->getBiomeIdAt(x, z));
 }
 
 int World::getBiomeIdAt(int x, int z) const {
-    BoundingBox bounds = worldBounds << 4;
-    if (!bounds.isVecInside({x, 0, z})) {
-        return 0;
-    }
-    return this->biomes[(z + bounds.maxZ) * (bounds.maxX * 2) + (x + bounds.maxX)];
+    return g->getBiomeIdAt(1, x, z);
 }
 
 bool World::isSnowyAt(int x, int z) const {

@@ -9,7 +9,7 @@ namespace loot {
 
     MU static constexpr auto buried_treasure
             = LootWrapper<
-                    27,
+                    27, true,
                     TableWrapper<1, 1,
                                  LootItem<1, 1, 1, HEART_OF_THE_SEA.getState()>>,
                     TableWrapper<5, 12,

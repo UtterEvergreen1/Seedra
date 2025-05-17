@@ -9,7 +9,7 @@ namespace loot {
 
     MU static constexpr auto simple_dungeon
             = LootWrapper<
-                    27,
+                    27, false,
                     TableWrapper<1, 3,
                                  LootItem<20, 1, 1, SADDLE.getState()>,
                                  LootItem<15, 1, 1, GOLDEN_APPLE.getState()>,

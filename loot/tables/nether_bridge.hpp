@@ -9,7 +9,7 @@ namespace loot {
 
     MU static constexpr auto nether_bridge
             = LootWrapper<
-                    27,
+                    27, false,
                     TableWrapper<2, 4,
                                  LootItem< 5, 1, 3, DIAMOND.getState()>,
                                  LootItem< 5, 1, 5, IRON_INGOT.getState()>,

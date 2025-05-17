@@ -147,7 +147,7 @@ void Biome::registerBiomes() {
     registerBiome(37, new BiomeMesa(false, false, "Mesa", 0.1F, 0.2F, false, 2.0F, 0xA5817F4E));
     registerBiome(38, new BiomeMesa(false, true, "Mesa Plateau Stone", 1.5F, 0.025F, false, 2.0F, 0xA59E8055));
     registerBiome(39, new BiomeMesa(false, false, "Mesa Plateau", 1.5F, 0.025F, false, 2.0F, 0xA59E8055));
-    //new ocean temperatures are not correct
+
     registerBiome(40, new BiomeOcean("Warm Ocean", -1.0F, 0.1F, false, 0.5F, 0x8CE5B002));
     registerBiome(41, new BiomeOcean("Deep Warm Ocean", -1.8F, 0.1F, false, 0.5F, 0xA5E5B002));
     registerBiome(42, new BiomeOcean("Lukewarm Ocean", -1.0F, 0.1F, false, 0.5F, 0xA5DB960D));

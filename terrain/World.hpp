@@ -93,24 +93,6 @@ public:
     void decorateChunks(const Pos2D &pos, int radius);
 
     /**
-     * @brief Generates biomes for the world.
-     */
-    void generateWorldBiomes();
-
-    /**
-     * @brief Retrieves the world biomes.
-     * @return Pointer to the array of world biomes.
-     */
-    int *getWorldBiomes() const { return biomes; }
-
-    /**
-     * @brief Retrieves the biomes for a specific chunk.
-     * @param pos The position of the chunk.
-     * @return Pointer to the array of chunk biomes.
-     */
-    int *getChunkBiomes(const Pos2D &pos) const;
-
-    /**
      * @brief Retrieves the biome at the specified coordinates.
      * @param x The X-coordinate.
      * @param z The Z-coordinate.
@@ -353,7 +335,6 @@ public:
     std::mutex chunkMutex; ///< Mutex for synchronizing chunk access.
 
 private:
-    int *biomes = nullptr; ///< Pointer to the array of world biomes.
     std::atomic<ChunkPrimer *> lastChunk = nullptr; ///< Pointer to the last accessed chunk.
     std::atomic<Pos2D> lastChunkCoords = Pos2D(-100000, -100000); ///< Coordinates of the last accessed chunk.
 

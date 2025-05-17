@@ -9,7 +9,7 @@ namespace loot {
 
     MU static constexpr auto stronghold_crossing
             = LootWrapper<
-                    27,
+                    27, false,
                     TableWrapper<1, 4,
                                  LootItem<50, 1, 5, IRON_INGOT.getState()>,
                                  LootItem<25, 1, 3, GOLD_INGOT.getState()>,

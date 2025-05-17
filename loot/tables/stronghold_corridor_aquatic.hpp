@@ -8,7 +8,7 @@ namespace loot {
 
     MU static constexpr auto stronghold_corridor_aquatic
             = LootWrapper<
-                27,
+                27, false,
                 TableWrapper<2, 3,
                     LootItem<50, 1, 1, ENDER_PEARL.getState()>,
                     LootItem<15, 1, 3, EMERALD.getState()>,

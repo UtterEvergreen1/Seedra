@@ -85,7 +85,7 @@ bool WorldGenLakes::generate(World* worldIn, RNG& rng, const Pos3D& pos) const {
 
                     if (worldIn->getBlockId(blockPos) == DIRT_ID &&
                         !isFullyOpaqueBlock(worldIn->getBlockId(blockPos.up()))) {
-                        const Biome* biome = Biome::getBiomeForId(g->getBiomeAt(1, blockPos.asPos2D()));
+                        const Biome* biome = Biome::getBiomeForId(g->getBiomeIdAt(1, blockPos.asPos2D()));
 
                         if (biome->topBlock == lce::BlocksInit::MYCELIUM.getState()) {
                             worldIn->setBlockId(blockPos, MYCELIUM_ID);

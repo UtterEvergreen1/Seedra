@@ -6,9 +6,12 @@
 #include "LootItem.hpp"
 #include "lce/processor.hpp"
 
+class Generator;
+
 namespace gen {
     class Stronghold;
 }
+class StructureComponent;
 
 namespace loot {
 
@@ -22,7 +25,7 @@ namespace loot {
      * from a seed, chunk coordinates, block coordinates, or a loot table seed. Detailed
      * function documentation is provided in the corresponding implementation file (Loot.inl).
      */
-    template<size_t ContainerSize, typename... Tables>
+    template<size_t ContainerSize, bool Aquatic, typename... Tables>
     class Loot final {
 
         /**
@@ -57,7 +60,7 @@ namespace loot {
         MU void getLootFromBlock(Container<ContainerSize>& container, i64 worldSeed, Args &&...args) const;
 
         template<GenMode Mode>
-        MU void getLootFromLootTableSeed(Container<ContainerSize>& container, u64 lootTableSeed, Buffer* buffer = nullptr) const;
+        MU void getLootFromLootTableSeed(Container<ContainerSize>& container, c_i64 lootTableSeed, Buffer* buffer = nullptr) const;
 
         /// loot seeding with stronghold stone rolls
         template<bool checkCaves, bool checkWaterCaves = false>

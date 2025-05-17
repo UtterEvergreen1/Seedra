@@ -9,7 +9,7 @@ namespace loot {
 
     MU static constexpr auto shipwreck_supply
             = LootWrapper<
-                    27,
+                    27, false,
                     TableWrapper<3, 10,
                                  LootItem<8, 1,12, PAPER.getState()>,
                                  LootItem<7, 2, 6, POTATO.getState()>,

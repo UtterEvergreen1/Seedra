@@ -9,7 +9,7 @@ namespace loot {
 
     MU static constexpr auto blacksmith
             = LootWrapper<
-                    27,
+                    27, false,
                     TableWrapper<3, 8,
                                  LootItem< 3, 1, 3, DIAMOND.getState()>,
                                  LootItem<10, 1, 5, IRON_INGOT.getState()>,

@@ -9,7 +9,7 @@ namespace loot {
 
     MU static constexpr auto stronghold_corridor_elytra
             = LootWrapper<
-                    27,
+                    27, false,
                     TableWrapper<2, 3,
                                  LootItem<50, 1, 1, ENDER_PEARL.getState()>,
                                  LootItem<15, 1, 3, EMERALD.getState()>,
@@ -43,10 +43,10 @@ namespace loot {
 
         Container27 chestLoot;
         if constexpr (shuffle) {
-            stronghold_corridor_aquatic.getLootFromSeed<GenMode::MODERN>(chestLoot, lootSeed);
+            stronghold_corridor_elytra.getLootFromSeed<GenMode::MODERN>(chestLoot, lootSeed);
         }
         else {
-            stronghold_corridor_aquatic.getLootFromSeed<GenMode::MOD_NO_SHUF>(chestLoot, lootSeed);
+            stronghold_corridor_elytra.getLootFromSeed<GenMode::MOD_NO_SHUF>(chestLoot, lootSeed);
         }
         return chestLoot;
     }

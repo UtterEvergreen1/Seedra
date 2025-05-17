@@ -9,7 +9,7 @@ namespace loot {
 
     MU static constexpr auto jungle_temple_dispenser
             = LootWrapper<
-                    9,
+                    9, false,
                     TableWrapper<1, 2,
                                  LootItem<30, 2, 7, ARROW.getState()>
                                  >

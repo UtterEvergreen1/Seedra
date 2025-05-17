@@ -439,7 +439,7 @@ namespace gen {
 
 
     MU void Village::setVillageBiomeType() {
-        switch (g->getBiomeAt(1, startPos)) {
+        switch (g->getBiomeIdAt(1, startPos)) {
             case BiomeID::plains:
             default:
                 myVariant = StructureVariant::SV_Village_Plains;

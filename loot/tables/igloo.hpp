@@ -9,7 +9,7 @@ namespace loot {
 
     MU static constexpr auto igloo
             = LootWrapper<
-                    27,
+                    27, false,
                     TableWrapper<2, 8,
                                  LootItem<15, 1, 3, APPLE.getState()>,
                                  LootItem<15, 1, 4, COAL.getState()>,

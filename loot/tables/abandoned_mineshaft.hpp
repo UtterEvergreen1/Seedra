@@ -12,7 +12,7 @@ namespace loot {
 
     static constexpr auto abandoned_mineshaft =
             LootWrapper<
-                    27,
+                    27, false,
                     TableWrapper<1, 1,
                                  LootItem<20, 1, 1, GOLDEN_APPLE.getState()>,
                                  LootItem< 1, 1, 1, ENCHANTED_GOLDEN_APPLE.getState()>,

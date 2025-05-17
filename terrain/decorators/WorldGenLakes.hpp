@@ -62,7 +62,7 @@ public:
      * @return The position of the water lake.
      */
     ND static Pos3D waterLake(const Generator *g, RNG &rng, const int chunkX, const int chunkZ) {
-        const int biomeAt = g->getBiomeAt(1, (chunkX << 4) + 16, (chunkZ << 4) + 16);
+        const int biomeAt = g->getBiomeIdAt(1, (chunkX << 4) + 16, (chunkZ << 4) + 16);
         if (biomeAt == desert || biomeAt == desert_hills || rng.nextInt(4) != 0) return {};
 
         int xPos = (chunkX << 4) + rng.nextInt(16) + 8;

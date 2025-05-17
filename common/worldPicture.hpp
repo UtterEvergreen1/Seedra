@@ -64,11 +64,13 @@ public:
         unsigned char biomeColors[256][3];
         initBiomeColors(biomeColors);
 
-        c_auto [fst, snd] = g->generateAllBiomes();
+        if (g->getWorldBiomes() == nullptr) {
+            g->generateCaches(4);
+        }
 
         for (u32 y = 0; y < getHeight(); ++y) {
             for (u32 x = 0; x < getWidth(); ++x) {
-                c_int id = snd[getIndex(x, y)];
+                c_int id = *g->getCacheAtBlock(4, x, y);
                 drawPixel(&biomeColors[id][0], x, y);
             }
         }

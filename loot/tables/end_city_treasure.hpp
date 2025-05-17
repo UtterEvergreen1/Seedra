@@ -9,7 +9,7 @@ namespace loot {
 
     MU static constexpr auto end_city_treasure
             = LootWrapper<
-                    27,
+                    27, false,
                     TableWrapper<2, 6,
                                  LootItem< 5, 2, 7, DIAMOND.getState()>,
                                  LootItem<10, 4, 8, IRON_INGOT.getState()>,

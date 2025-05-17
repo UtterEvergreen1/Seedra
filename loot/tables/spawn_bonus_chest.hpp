@@ -9,7 +9,7 @@ namespace loot {
 
     MU static constexpr auto spawn_bonus_chest
             = LootWrapper<
-                    27,
+                    27, false,
                     TableWrapper<1, 1,
                                  LootItem<1, 1, 5, JUNGLE_SAPLING.getState()>
                                  >,

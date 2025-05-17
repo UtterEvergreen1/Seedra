@@ -6,7 +6,9 @@
 #include "common/Pos2DTemplate.hpp"
 #include "common/Pos3DTemplate.hpp"
 #include "common/rng.hpp"
+#include "components/BoundingBox.hpp"
 
+class Biome;
 struct Layer;
 struct LayerStack;
 struct Range;
@@ -14,6 +16,27 @@ struct SurfaceNoise;
 
 #include <cstdio>
 #include <memory>
+
+class BiomeCache {
+    const int scale;
+    const BoundingBox box;
+    int *biomes;
+
+public:
+    BiomeCache(int scale, BoundingBox box, int *biomes)
+        : scale(scale), box(box), biomes(biomes) {
+    }
+
+    ~BiomeCache() {
+        delete biomes;
+    }
+
+    int getScale() const { return scale; }
+
+    const BoundingBox& getBox() const { return box; }
+
+    int* getBiomes() const { return biomes; }
+};
 
 /**
  * @class Generator
@@ -59,10 +82,17 @@ protected:
      */
     i32 worldCoordinateBounds;
 
+    BoundingBox worldBounds;
+
     /**
      * @brief The stack of layers used for biome generation.
      */
     LayerStack layerStack{};
+
+    /**
+     * @brief An array of biome caches used for caching world biomes at certain scales.
+     */
+    std::vector<BiomeCache> biomeCaches;
 
 public:
     ///========================================================================
@@ -116,6 +146,21 @@ public:
      * @param seed The new world seed as a string.
      */
     void applyWorldSeed(const std::string &seed);
+
+    void generateCaches(int maxScale);
+
+    void generateAllCaches();
+
+    void reloadCache();
+
+    /**
+     * @brief Retrieves the biomes at scale 1 for a specific chunk.
+     * @param pos The position of the chunk.
+     * @return Pointer to the array of chunk biomes.
+     */
+    int *getChunkBiomes(const Pos2D &pos) const;
+
+    int* getCacheAtBlock(int scale, int x, int z) const;
 
     /**
      * @brief Increments the world seed by 1.
@@ -181,6 +226,8 @@ public:
      */
     MU ND i32 getWorldCoordinateBounds() const { return this->worldCoordinateBounds; }
 
+    MU ND i32 getWorldChunkBounds() const { return this->worldCoordinateBounds >> 4; }
+
     /**
      * @brief Calculates the minimum cache size for a given scale and dimensions.
      * @param scale The scale of the cache.
@@ -212,7 +259,7 @@ public:
      * @param z The Z-coordinate.
      * @return The biome ID.
      */
-    ND i32 getBiomeAt(i32 scale, i32 x, i32 z) const;
+    ND i32 getBiomeIdAt(i32 scale, i32 x, i32 z) const;
 
     /**
      * @brief Retrieves the biome at a specific scale and 2D position.
@@ -220,7 +267,7 @@ public:
      * @param pos The 2D position.
      * @return The biome ID.
      */
-    MU ND i32 getBiomeAt(c_i32 scale, Pos2D pos) const;
+    MU ND i32 getBiomeIdAt(c_i32 scale, Pos2D pos) const;
 
     /**
      * @brief Retrieves the biome at a specific scale and 3D position.
@@ -228,7 +275,15 @@ public:
      * @param pos The 3D position.
      * @return The biome ID.
      */
-    MU ND i32 getBiomeAt(c_i32 scale, Pos3D pos) const;
+    MU ND i32 getBiomeIdAt(c_i32 scale, Pos3D pos) const;
+
+    /**
+     * @brief Retrieves the biome at the specified coordinates.
+     * @param x The X-coordinate.
+     * @param z The Z-coordinate.
+     * @return Pointer to the Biome.
+     */
+    Biome *getBiomeAt(int scale, int x, int z) const;
 
     /**
      * @brief Retrieves a range of biomes at a specific scale and coordinates.
@@ -242,10 +297,11 @@ public:
     ND i32 *getBiomeRange(i32 scale, i32 x, i32 z, i32 w, i32 h) const;
 
     /**
-     * @brief Generates all biomes and returns them as a pair of size and pointer.
-     * @return A pair containing the size and pointer to the generated biomes.
+     * @brief Retrieves the world biomes at a specific scale.
+     * @param scale The scale of the world biomes.
+     * @return A pointer to the world biomes if it exists in the cache.
      */
-    MU ND std::pair<i32, i32 *> generateAllBiomes() const;
+    int *getWorldBiomes(int scale = 1) const;
 
     /**
      * @brief Retrieves the layer for a specific scale.

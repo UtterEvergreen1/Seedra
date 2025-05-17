@@ -63,6 +63,17 @@ public:
     BoundingBox operator<<(int shiftAmount) const;
 
     /**
+     * @brief Shifts the bounding box by a specified amount in the opposite direction.
+     *
+     * @param shiftAmount The amount to shift.
+     * @return A new bounding box shifted by the specified amount in the opposite direction.
+     */
+    BoundingBox operator>>(int shiftAmount) const {
+        return {minX >> shiftAmount, minY >> shiftAmount, minZ >> shiftAmount, maxX >> shiftAmount, maxY >> shiftAmount,
+                maxZ >> shiftAmount};
+    }
+
+    /**
      * @brief Checks if this bounding box intersects with another bounding box.
      *
      * @param other The other bounding box to check.
