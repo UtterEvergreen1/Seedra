@@ -87,6 +87,31 @@ MU static std::string LceVersionToString(const LCEVERSION version) {
     }
 }
 
+inline LCEVERSION strToLCEVERSION(const std::string& version) {
+    if (version == "PS4_VP") {
+        return LCEVERSION::PILLAGE;
+    }
+    if (version == "AQUATIC") {
+        return LCEVERSION::AQUATIC;
+    }
+    if (version == "ELYTRA") {
+        return LCEVERSION::ELYTRA;
+    }
+    if (version == "BOUNTIFUL") {
+        return LCEVERSION::BOUNTIFUL;
+    }
+    if (version == "HORSE") {
+        return LCEVERSION::HORSE;
+    }
+    if (version == "POTIONS") {
+        return LCEVERSION::POTIONS;
+    }
+    if (version == "ADVENTURE") {
+        return LCEVERSION::ADVENTURE;
+    }
+    return LCEVERSION::NONE;
+}
+
 /**
  * @brief Converts a StructureType enum value to its string representation.
  * @param type The StructureType value to convert.
