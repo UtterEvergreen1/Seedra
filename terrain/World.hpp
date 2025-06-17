@@ -330,6 +330,8 @@ public:
     std::vector<gen::Village> villages; ///< List of generated villages.
     std::vector<gen::Mineshaft> mineshafts; ///< List of generated mineshafts.
     std::vector<gen::Stronghold> strongholds; ///< List of generated strongholds.
+
+    std::vector<ChunkPrimer *> reusableChunks;
     std::unordered_map<Pos2D, ChunkPrimer *, Pos2D::Hasher> chunks; ///< Map of chunks in the world.
     BoundingBox worldBounds; ///< Bounding box of the world.
     std::mutex chunkMutex; ///< Mutex for synchronizing chunk access.

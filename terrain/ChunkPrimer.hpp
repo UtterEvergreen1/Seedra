@@ -90,15 +90,15 @@ public:
      */
     ChunkPrimer &operator=(const ChunkPrimer &) = delete;
 
-    /**
-     * @brief Checks if the given block coordinates are invalid.
-     * @param x X-coordinate.
-     * @param y Y-coordinate.
-     * @param z Z-coordinate.
-     * @return True if the coordinates are invalid, false otherwise.
-     */
-    MU ND static bool isInvalidIndex(c_i64 x, c_i64 y, c_i64 z) {
-        return EXPECT_FALSE(((x | z) & ~15) || (y & ~255));
+    void reset() {
+        stage = Stage::STAGE_TERRAIN;
+        isModifying = false;
+        decorateRng = RNG();
+        std::memset(blocks, 0, STORAGE_SIZE);
+        skyLight.clear();
+        highestYBlock = -1;
+        std::memset(heightMap, 0, 256);
+        precipitationHeightMap = std::vector(256, -999);
     }
 
     /**
@@ -358,6 +358,18 @@ public:
         return 0;
     }
 
+
+    /**
+     * @brief Checks if the given block coordinates are invalid.
+     * @param x X-coordinate.
+     * @param y Y-coordinate.
+     * @param z Z-coordinate.
+     * @return True if the coordinates are invalid, false otherwise.
+     */
+    MU ND static bool isInvalidIndex(c_i64 x, c_i64 y, c_i64 z) {
+        return EXPECT_FALSE(((x | z) & ~15) || (y & ~255));
+    }
+
     /**
      * @brief Calculates the storage index for the given block coordinates.
      * @param x X-coordinate.
@@ -366,8 +378,8 @@ public:
      * @return The storage index.
      */
     static i64 getStorageIndex(c_i64 x, c_i64 y, c_i64 z) {
-        // c_i64 value = x << 12 | z << 8 | y;
-        c_i64 value = y << 8 | x << 4 | z;
+        c_i64 value = x << 12 | z << 8 | y;
+        // c_i64 value = y << 8 | x << 4 | z;
         return value;
     }
 

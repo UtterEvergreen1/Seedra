@@ -16,7 +16,7 @@ public:
     /**
      * @brief The generator used for biome and terrain generation.
      */
-    Generator g;
+    const Generator *g;
 
     /**
      * @brief Random number generator used for chunk generation.
@@ -57,6 +57,8 @@ public:
      * @brief Pointer to the array of biomes used for generation.
      */
     int *biomesForGeneration;
+
+    std::span<int> biomesForGenerationSpan;
 
     /**
      * @brief Buffer for depth region values.

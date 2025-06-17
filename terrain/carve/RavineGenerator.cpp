@@ -58,6 +58,9 @@ void RavineGenerator::addFeature(World& worldIn, Pos2D baseChunk, bool accurate)
 }
 
 
+
+
+
 void RavineGenerator::addTunnel(World& worldIn, i64 randomSeed, Pos2D baseChunk, DoublePos3D tunnel, float angle,
                                 float slope, float curvature, int theStartSegment, int theEndSegment,
                                 double theWidthMultiplier, bool accurate) {
@@ -159,6 +162,7 @@ SEGMENT_FOR_LOOP_START:
         if (!genBounds.isVecInside(min) && !genBounds.isVecInside(max)) {
             continue;
         }
+        
         Pos3D pos;
         for (pos.x = min.x; pos.x < max.x; ++pos.x) {
             for (pos.z = min.z; pos.z < max.z; ++pos.z) {
@@ -213,7 +217,7 @@ SEGMENT_FOR_LOOP_START:
                     c_u16 currentBlock = worldIn.getBlockId(blockPos);
                     c_u16 blockAbove = worldIn.getBlockId(blockPos.up());
 
-                    if (currentBlock == GRASS_ID) {
+                    if EXPECT_FALSE(currentBlock == GRASS_ID) {
                         replaceableBlockDetected = true;
                     }
 
@@ -223,10 +227,9 @@ SEGMENT_FOR_LOOP_START:
                         } else {
                             worldIn.setBlockId(blockPos, AIR_ID);
 
-                            if (replaceableBlockDetected &&
+                            if EXPECT_FALSE(replaceableBlockDetected &&
                                 worldIn.getBlockId(blockPos.down()) == DIRT_ID) {
-                                worldIn.setBlockId(blockPos.down(),
-                                    topBlock(blockPos.x, blockPos.z));
+                                worldIn.setBlockId(blockPos.down(), topBlock(blockPos.x, blockPos.z));
                             }
                         }
                     }

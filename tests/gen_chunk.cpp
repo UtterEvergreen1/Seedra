@@ -1,15 +1,23 @@
+#include "common/timer.hpp"
+#include "common/worldPicture.hpp"
+#include "loot/Tables.hpp"
+#include "structures/placement/DynamicStructures.hpp"
+#include "terrain/Chunk.hpp"
+#include "terrain/biomes/biome.hpp"
+#include "terrain/generator.hpp"
 
+#include <filesystem>
 
-/*namespace fs = std::filesystem;
+namespace fs = std::filesystem;
 
 
 template<typename T>
 void fileWrite(std::ofstream& file, T obj) {
     file.write(reinterpret_cast<const char*>(&obj), sizeof(T));
-}*/
+}
 
 
-/*int main() {
+int main() {
     const char* userProfile = std::getenv("USERPROFILE");
     if (!userProfile) {
         std::cerr << "USERPROFILE environment variable not set!\n";
@@ -32,10 +40,10 @@ void fileWrite(std::ofstream& file, T obj) {
 
     // -1204924307554348042;
     Biome::registerBiomes();
-    c_i64 WORLD_SEED = -1204924307554348042; // 615831156172857837; // 7710511010199114;
+    c_i64 WORLD_SEED = -6651998285536156346LL; // 615831156172857837; // 7710511010199114;
     c_auto CONSOLE = lce::CONSOLE::WIIU;
-    c_auto VERSION = LCEVERSION::AQUATIC;
-    c_auto WORLD_SIZE = lce::WORLDSIZE::MEDIUM;
+    c_auto VERSION = LCEVERSION::ELYTRA;
+    c_auto WORLD_SIZE = lce::WORLDSIZE::CLASSIC;
     c_auto BIOME_SCALE = lce::BIOMESCALE::SMALL;
     // -6651998285536156346
     Generator g(CONSOLE, VERSION, WORLD_SEED, WORLD_SIZE, BIOME_SCALE);
@@ -51,7 +59,6 @@ void fileWrite(std::ofstream& file, T obj) {
 
     auto world = World(&g);
 
-    world.generateWorldBiomes();
     world.generateMineshafts();
     world.generateVillages();
     world.generateStrongholds();
@@ -145,17 +152,11 @@ void fileWrite(std::ofstream& file, T obj) {
     delete biomes;
 
     return 0;
-}*/
+}
 
-#include "common/timer.hpp"
-#include "terrain/Chunk.hpp"
-#include "terrain/generator.hpp"
-#include "common/worldPicture.hpp"
-#include "structures/placement/DynamicStructures.hpp"
-#include "loot/Tables.hpp"
-#include "terrain/biomes/biome.hpp"
 
-/*int main() {
+/*
+int main() {
     // Initialize the generator
     Biome::registerBiomes();
     Generator generator(lce::CONSOLE::XBOX360, LCEVERSION::ELYTRA, 12345, lce::WORLDSIZE::CLASSIC, lce::BIOMESCALE::SMALL);
@@ -190,6 +191,8 @@ void fileWrite(std::ofstream& file, T obj) {
     return 0;
 }*/
 
+
+    /*
 int main() {
     // Initialize the generator
     Biome::registerBiomes();
@@ -230,6 +233,7 @@ int main() {
     // Clean up
     return 0;
 }
+*/
 
 
 /*int main() {
@@ -296,7 +300,7 @@ for (auto block : blocks.REGISTRY.getAllValues()) {
             y+=2;
         }
     }
-}*/
+}
 
 
 

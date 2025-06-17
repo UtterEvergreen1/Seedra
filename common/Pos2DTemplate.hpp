@@ -96,6 +96,13 @@ public:
     Pos2DTemplate operator*(int other) const;
 
     /**
+     * @brief Division operator to divide both coordinates by an integer.
+     * @param other The integer value.
+     * @return A new Pos2DTemplate object with the divided coordinates.
+     */
+    Pos2DTemplate operator/(int other) const;
+
+    /**
      * @brief Subtraction operator to subtract two Pos2DTemplate objects.
      * @param other The other Pos2DTemplate object.
      * @return A new Pos2DTemplate object with the subtracted coordinates.

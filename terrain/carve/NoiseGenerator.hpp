@@ -416,7 +416,7 @@ public:
      * @param noiseScale The overall scale factor for the noise.
      * @return The populated noise array.
      */
-    std::vector<double> populateNoiseArray(Generator *g, std::vector<double> noiseArray, double xOffset, double yOffset,
+    std::vector<double> populateNoiseArray(const Generator *g, std::vector<double> noiseArray, double xOffset, double yOffset,
                                            double zOffset, int xSize, int ySize, int zSize, double xScale,
                                            double yScale, double zScale, double noiseScale) {
         if (ySize == 1) {
@@ -590,7 +590,7 @@ public:
      * @param zScale The scale factor for the Z-dimension.
      * @return A vector containing the generated noise values.
      */
-    std::vector<double> genNoiseOctaves(Generator *g, std::vector<double> noiseArray, c_int xOffset, c_int yOffset,
+    std::vector<double> genNoiseOctaves(const Generator *g, std::vector<double> noiseArray, c_int xOffset, c_int yOffset,
                                         c_int zOffset, c_int xSize, c_int ySize, c_int zSize,
                                         c_double xScale, c_double yScale, c_double zScale) {
         // Ensure the noise array is properly sized and initialized
@@ -644,7 +644,7 @@ public:
      * @param zScale The scale factor for the Z-dimension.
      * @return A vector containing the generated noise values.
      */
-    std::vector<double> genNoiseOctaves(Generator *g, std::vector<double> noiseArray, c_int xOffset, c_int zOffset,
+    std::vector<double> genNoiseOctaves(const Generator *g, std::vector<double> noiseArray, c_int xOffset, c_int zOffset,
                                         c_int xSize, c_int zSize, c_double xScale, c_double zScale) {
         return genNoiseOctaves(g, std::move(noiseArray), xOffset, 10, zOffset, xSize, 1, zSize, xScale, 1.0, zScale);
     }

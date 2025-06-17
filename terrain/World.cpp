@@ -23,8 +23,10 @@ World::~World() {
 }
 
 void World::deleteWorld() {
-    for (auto &chunk : chunks) {
-        delete chunk.second;
+    for (auto& [pos, chunk] : chunks) {
+        if (chunk) {
+            reusableChunks.push_back(chunk); // move to pool instead of deleting
+        }
     }
     chunks.clear();
     villages.clear();

@@ -5,8 +5,8 @@
 #include "common/range.hpp"
 
 
-ChunkGeneratorOverWorld::ChunkGeneratorOverWorld(const Generator& generator) : g(generator) {
-    rng.setSeed(g.getWorldSeed());
+ChunkGeneratorOverWorld::ChunkGeneratorOverWorld(const Generator& generator) : g(&generator) {
+    rng.setSeed(g->getWorldSeed());
     minLimitPerlinNoise.setNoiseGeneratorOctaves(rng, 16);
     maxLimitPerlinNoise.setNoiseGeneratorOctaves(rng, 16);
     mainPerlinNoise.setNoiseGeneratorOctaves(rng, 8);
@@ -46,8 +46,8 @@ void ChunkGeneratorOverWorld::setBiomesForGeneration(c_int x, c_int z, c_int wid
     r.sx = width, r.sz = height; // size (width,height)
     // Set the vertical range as a plane near sea level at scale 1:4.
     // r.y = 1, r.sy = 1;
-    int* biomeIds = g.allocCache(r);
-    g.genBiomes(biomeIds, r);
+    int* biomeIds = g->allocCache(r);
+    g->genBiomes(biomeIds, r);
     if (biomesForGeneration) free(biomesForGeneration);
     biomesForGeneration = biomeIds;
 }
@@ -117,7 +117,7 @@ void ChunkGeneratorOverWorld::replaceBiomeBlocks(c_int x, c_int z, ChunkPrimer* 
     for (int i = 0; i < 16; ++i) {
         for (int j = 0; j < 16; ++j) {
             Biome* biome = Biome::getBiomeForId(biomesIn[j + i * 16]);
-            biome->genTerrainBlocks(g.getWorldSeed(), rng, primer, x * 16 + i, z * 16 + j, depthBuffer[j + i * 16]);
+            biome->genTerrainBlocks(g->getWorldSeed(), rng, primer, x * 16 + i, z * 16 + j, depthBuffer[j + i * 16]);
         }
     }
 }
@@ -133,10 +133,10 @@ void ChunkGeneratorOverWorld::provideChunk(ChunkPrimer *chunkPrimer, c_int x,c_i
 
 
 void ChunkGeneratorOverWorld::generateHeightmap(c_int x, c_int y, c_int z) {
-    depthRegion = depthNoise.genNoiseOctaves(&g, depthRegion, x, z, 5, 5, 200.0, 200.0);
-    mainNoiseRegion = mainPerlinNoise.genNoiseOctaves(&g, mainNoiseRegion, x, y, z, 5, 33, 5, 8.55515, 4.277575, 8.55515);
-    minLimitRegion = minLimitPerlinNoise.genNoiseOctaves(&g, minLimitRegion, x, y, z, 5, 33, 5, 684.412, 684.412, 684.412);
-    maxLimitRegion = maxLimitPerlinNoise.genNoiseOctaves(&g, maxLimitRegion, x, y, z, 5, 33, 5, 684.412, 684.412, 684.412);
+    depthRegion = depthNoise.genNoiseOctaves(g, depthRegion, x, z, 5, 5, 200.0, 200.0);
+    mainNoiseRegion = mainPerlinNoise.genNoiseOctaves(g, mainNoiseRegion, x, y, z, 5, 33, 5, 8.55515, 4.277575, 8.55515);
+    minLimitRegion = minLimitPerlinNoise.genNoiseOctaves(g, minLimitRegion, x, y, z, 5, 33, 5, 684.412, 684.412, 684.412);
+    maxLimitRegion = maxLimitPerlinNoise.genNoiseOctaves(g, maxLimitRegion, x, y, z, 5, 33, 5, 684.412, 684.412, 684.412);
     int i = 0;
     int j = 0;
 

@@ -35,6 +35,13 @@ Pos2DTemplate<T> Pos2DTemplate<T>::operator*(c_int other) const {
     return {x * other, z * other};
 }
 
+
+template<class T>
+Pos2DTemplate<T> Pos2DTemplate<T>::operator/(c_int other) const {
+    return {x / other, z / other};
+}
+
+
 template<class T>
 Pos2DTemplate<T> Pos2DTemplate<T>::operator-(const Pos2DTemplate &other) const {
     return {x - other.x, z - other.z};

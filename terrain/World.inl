@@ -17,8 +17,8 @@ inline ChunkPrimer *World::getChunk(const Pos2D &pos) {
         }
     }
 
-    if (pos.x < worldBounds.minX || pos.x > worldBounds.maxX || pos.z < worldBounds.minZ ||
-        pos.z > worldBounds.maxZ) {
+    if (pos.x < worldBounds.minX || pos.x > worldBounds.maxX ||
+        pos.z < worldBounds.minZ || pos.z > worldBounds.maxZ) {
         return nullptr;
     }
 
@@ -38,12 +38,19 @@ inline ChunkPrimer *World::getOrCreateChunk(const Pos2D &chunkPos) {
         return chunk;
     }
 
-    if (chunkPos.x < worldBounds.minX || chunkPos.x > worldBounds.maxX || chunkPos.z < worldBounds.minZ ||
-        chunkPos.z > worldBounds.maxZ) {
+    if (chunkPos.x < worldBounds.minX || chunkPos.x > worldBounds.maxX ||
+        chunkPos.z < worldBounds.minZ || chunkPos.z > worldBounds.maxZ) {
         return nullptr;
     }
 
-    chunk = new ChunkPrimer();
+    if (!reusableChunks.empty()) {
+        chunk = reusableChunks.back();
+        reusableChunks.pop_back();
+        chunk->reset();
+    } else {
+        chunk = new ChunkPrimer();
+    }
+
     addChunk(chunkPos, chunk);
     Chunk::provideChunk(chunk, *this->g, chunkPos);
     std::lock_guard lock(chunkMutex);
