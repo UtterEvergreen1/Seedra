@@ -16,7 +16,7 @@ public:
     /**
      * @brief The generator used for biome and terrain generation.
      */
-    Generator g;
+    Generator* g;
 
     /**
      * @brief Random number generator used for chunk generation.
