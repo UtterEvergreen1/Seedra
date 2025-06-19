@@ -1,6 +1,8 @@
-/*#include "terrain/Chunk.hpp"
+#include "terrain/Chunk.hpp"
 #include "terrain/ChunkPrimer.hpp"
 #include "terrain/World.hpp"
+#include "terrain/biomes/biome.hpp"
+
 #include <array>
 
 // A 4x4 array of ints:
@@ -202,4 +204,4 @@ int main() {
     }
 
     return 0;
-}*/
+}

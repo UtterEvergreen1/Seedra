@@ -58,8 +58,8 @@ public:
      * which is then drawn pixel by pixel.
      */
     MU void drawBiomes() const {
-        if (myWidth == 0) return;
-        if (myHeight == 0) return;
+        if (m_width == 0) return;
+        if (m_height == 0) return;
 
         unsigned char biomeColors[256][3];
         initBiomeColors(biomeColors);
@@ -68,8 +68,8 @@ public:
             g->generateCaches(4);
         }
 
-        for (u32 y = 0; y < getHeight(); ++y) {
-            for (u32 x = 0; x < getWidth(); ++x) {
+        for (u32 y = 0; y < m_height; ++y) {
+            for (u32 x = 0; x < m_width; ++x) {
                 c_int id = *g->getCacheAtBlock(4, x, y);
                 drawPixel(&biomeColors[id][0], x, y);
             }
@@ -89,22 +89,22 @@ public:
         if (widthIn == 0) return;
         if (heightIn == 0) return;
 
-        myWidth = widthIn;
-        myHeight = heightIn;
+        m_width = widthIn;
+        m_height = heightIn;
 
         allocate(3);
 
         u8 biomeColors[256][3];
         initBiomeColors(biomeColors);
 
-        c_int x = static_cast<int>(myWidth);
-        c_int y = static_cast<int>(myHeight);
-        c_int w = static_cast<int>(myWidth);
-        c_int h = static_cast<int>(myHeight);
+        c_int x = static_cast<int>(m_width);
+        c_int y = static_cast<int>(m_height);
+        c_int w = static_cast<int>(m_width);
+        c_int h = static_cast<int>(m_height);
         c_int *ids = g->getBiomeRange(4, x, y, w, h);
 
-        for (u32 yi = 0; yi < getHeight(); ++yi) {
-            for (u32 xi = 0; xi < getWidth(); ++xi) {
+        for (u32 yi = 0; yi < m_height; ++yi) {
+            for (u32 xi = 0; xi < m_width; ++xi) {
                 c_int id = ids[getIndex(xi, yi)];
                 drawPixel(&biomeColors[id][0], xi, yi);
             }

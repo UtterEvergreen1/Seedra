@@ -1,5 +1,5 @@
 
-/*
+
 #include "terrain/Chunk.hpp"
 #include <fstream>
 #include <immintrin.h>
@@ -123,9 +123,9 @@ struct SharedData {
 
 std::mutex printMutex;
 
-/**
+/*
  * Each thread processes a range [startSeed, endSeed).
- #1#
+ */
 void processSeedRange(
         int64_t startSeed,
         int64_t endSeed,
@@ -330,7 +330,7 @@ int main() {
     // writeChunkToFile();
     return do_stuff();
 
-    /*
+
     std::string filename = R"(C:\Users\jerrin\CLionProjects\LegacyCubiomes\ravine_sorted.txt)";
     std::vector<std::vector<int>> data = readDataFromFile(filename);
 
@@ -406,8 +406,6 @@ int main() {
     std::cout << "Done!" << std::endl;
      #1#
 }
-*/
-
 
 
 

@@ -1,10 +1,9 @@
 #include "worldPicture.hpp"
-#include "lce/include/stb_image_write.h"
+#include "lce/include/stb_image_write.hpp"
 
 
 void WorldPicture::save(const std::string& directory) const {
     const std::string filename = getBiomeImageFileNameFromGenerator(g, directory);
-    stbi_write_png(filename.c_str(), static_cast<int>(myWidth), static_cast<int>(myHeight),
-        static_cast<int>(myRGBSize), myData,
-                   static_cast<int>(myWidth * myRGBSize));
+    stbi_write_png(filename.c_str(), m_width, m_height,
+        m_channels, m_data, m_width * m_channels);
 }
