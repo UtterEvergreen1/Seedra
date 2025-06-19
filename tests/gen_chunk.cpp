@@ -195,28 +195,34 @@ int main() {
     Biome::registerBiomes();
     lce::registry::ItemRegistry::setup();
 
-    Generator generator(lce::CONSOLE::XBOX360, LCEVERSION::AQUATIC, lce::WORLDSIZE::CLASSIC, lce::BIOMESCALE::SMALL);
-    //generator.generateCaches(4);
+    Generator generator(lce::CONSOLE::XBOX360, LCEVERSION::AQUATIC, lce::WORLDSIZE::CLASSIC, lce::BIOMESCALE::MEDIUM);
+    generator.generateCache(4);
 
-    Timer timer;
+    int numRight = 0;
+    RNG rng = RNG::initializeWithRandomSeed();
+    //Timer timer;
+    constexpr int maxSeed = 1000000;
     constexpr int seedInterval = 1000;
-    for (int64_t seed = 830750; seed <= 830750; ++seed) {
-        if EXPECT_FALSE (seed % seedInterval == 0) {
+    for (int64_t counter = 1; counter <= maxSeed; ++counter) {
+        /*if EXPECT_FALSE (seed % seedInterval == 0) {
             std::cout << "Seed: " << seed << std::endl;
             std::cout << "Seeds per second: " << seedInterval / timer.getSeconds() << std::endl;
             timer.reset();
-        }
+        }*/
+        int64_t seed = rng.nextLongI();
         generator.applyWorldSeed(seed);
 
         auto buriedTreasurePositions = Placement::BuriedTreasure::getAllPositions(&generator);
-        if (buriedTreasurePositions.size() < 4) {
+        if (buriedTreasurePositions.size() > 0) {
             continue;
         }
 
-        std::cout << "Found " << buriedTreasurePositions.size() << " buried treasures in the world. Seed: " << seed << std::endl;
+        ++numRight;
+
+        //std::cout << "Found " << buriedTreasurePositions.size() << " buried treasures in the world. Seed: " << seed << std::endl;
 
         // Step 4: Retrieve loot for each buried treasure
-        constexpr auto Mode = loot::GenMode::MODERN;
+        /*constexpr auto Mode = loot::GenMode::MODERN;
         loot::Container<27> container;
 
         for (const auto& pos : buriedTreasurePositions) {
@@ -224,8 +230,11 @@ int main() {
             std::cout << "Loot for buried treasure at (" << pos.x << ", " << pos.z << "):" << std::endl;
             std::cout << container << std::endl;
             container.clear();
-        }
+        }*/
     }
+
+    std::cout << "Total seeds with no buried treasure: " << numRight << std::endl;
+    std::cout << "Percentage of seeds with no buried treasure: " << (static_cast<double>(numRight) / maxSeed) * 100 << "%" << std::endl;
 
     // Clean up
     return 0;

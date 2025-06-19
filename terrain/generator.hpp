@@ -21,10 +21,11 @@ class BiomeCache {
     const int scale;
     const BoundingBox box;
     int *biomes;
+    bool generated;
 
 public:
-    BiomeCache(int scale, BoundingBox box, int *biomes)
-        : scale(scale), box(box), biomes(biomes) {
+    BiomeCache(int scale, BoundingBox box)
+        : scale(scale), box(box), biomes(nullptr), generated(false) {
     }
 
     ~BiomeCache() {
@@ -36,6 +37,14 @@ public:
     const BoundingBox& getBox() const { return box; }
 
     int* getBiomes() const { return biomes; }
+
+    bool isGenerated() const { return generated; }
+
+    void setBiomes(int *biomes) {
+        delete this->biomes;
+        this->generated = true;
+        this->biomes = biomes;
+    }
 };
 
 /**
@@ -147,18 +156,13 @@ public:
      */
     void applyWorldSeed(const std::string &seed);
 
+    void generateCache(int scale);
+
     void generateCaches(int maxScale);
 
     void generateAllCaches();
 
     void reloadCache();
-
-    /**
-     * @brief Retrieves the biomes at scale 1 for a specific chunk.
-     * @param pos The position of the chunk.
-     * @return Pointer to the array of chunk biomes.
-     */
-    int *getChunkBiomes(const Pos2D &pos) const;
 
     int* getCacheAtBlock(int scale, int x, int z) const;
 
