@@ -97,7 +97,7 @@ void Generator::generateCache(int scale) {
     this->biomeCaches[arrIndex].setBiomes(biomes);
 }
 
-void Generator::generateCaches(int maxScale) {
+void Generator::generateCachesUpTo(int maxScale) {
     const int maxScaleTrailingZeros = __builtin_ctz(maxScale);
     if (maxScale >> maxScaleTrailingZeros != 1) {
         std::cout << "generateCaches(): maxScale must be a power of 4" << std::endl;
@@ -105,25 +105,27 @@ void Generator::generateCaches(int maxScale) {
     }
     for (int scale = maxScale; scale >= 1; scale >>= 2) {
         const int trailingZeros = __builtin_ctz(scale);
+        const int arrIndex = trailingZeros >> 1;
         int minBound = -(this->worldCoordinateBounds >> trailingZeros);
         int worldSize = -minBound << 1;
         const Range r = {scale, minBound, minBound, worldSize, worldSize};
         int *ids = allocCache(r);
         // copy over the biomes from the previous scale if it exists
         if (scale <= 64) {
-            const int prevScale = scale << 2;
-            const int prevTrailingZeros = __builtin_ctz(prevScale);
+            const int prevTrailingZeros = __builtin_ctz(scale << 2);
             const int prevArrIndex = prevTrailingZeros >> 1;
-            if (this->biomeCaches[prevArrIndex].isGenerated()) {
-                memcpy(ids, this->biomeCaches[prevArrIndex].getBiomes(), r.sx * r.sz * sizeof(int));
+            const BiomeCache& prevScale  = this->biomeCaches[prevArrIndex];
+            if (prevScale.isGenerated()) {
+                memcpy(ids, prevScale.getBiomes(), prevScale.getBox().getArea() * sizeof(int));
             }
         }
         genBiomes(ids, r);
+        this->biomeCaches[arrIndex].setBiomes(ids);
     }
 }
 
 void Generator::generateAllCaches() {
-    this->generateCaches(256);
+    this->generateCachesUpTo(256);
 }
 
 void Generator::reloadCache() {
@@ -409,14 +411,14 @@ Pos2D Generator::locateBiome(const int x, const int z, const int radius,
     c_int width = x2 - x1 + 1;
     c_int height = z2 - z1 + 1;
 
-    if (this->biomeCaches.size() > 1) {
-        for (; x1 <= x2; x1++) {
-            for (; z1 <= z2; z1++) {
-                const int *id = getCacheAtBlock(4, x1, z1);
+    if (this->biomeCaches[1].isGenerated()) {
+        for (int zPos = z1; zPos <= z2; ++zPos) {
+            for (int xPos = x1; xPos <= x2; ++xPos) {
+                const int *id = getCacheAtBlock(4, xPos, zPos);
                 if (id == nullptr || !id_matches(*id, validBiomes)) continue;
                 if (found == 0 || rng.nextInt(found + 1) == 0) {
-                    out.x = x1 * 4;
-                    out.z = z1 * 4;
+                    out.x = xPos * 4;
+                    out.z = zPos * 4;
                     ++found;
                 }
             }

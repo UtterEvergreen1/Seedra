@@ -65,7 +65,7 @@ public:
         initBiomeColors(biomeColors);
 
         if (g->getWorldBiomes() == nullptr) {
-            g->generateCaches(4);
+            g->generateCache(4);
         }
 
         for (u32 y = 0; y < m_height; ++y) {
