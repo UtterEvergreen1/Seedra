@@ -204,7 +204,7 @@ bool Biome::isSnowyBiome() const {
 }
 
 bool Biome::hasIdealTemperature(const Pos3D& pos) const {
-    if (!SNOW_BIOMES.contains(biomeID))
+    if (!this->isSnowyBiome())
         return false;
 
     int chanceStart = SNOW_BIOMES.at(biomeID);
