@@ -408,8 +408,8 @@ Pos2D Generator::locateBiome(const int x, const int z, const int radius,
     int z1 = (z - radius) >> 2;
     c_int x2 = (x + radius) >> 2;
     c_int z2 = (z + radius) >> 2;
-    c_int width = x2 - x1 + 1;
-    c_int height = z2 - z1 + 1;
+    c_int width = (radius >> 1) + 1;
+    c_int height = (radius >> 1) + 1;
 
     if (this->biomeCaches[1].isGenerated()) {
         for (int zPos = z1; zPos <= z2; ++zPos) {

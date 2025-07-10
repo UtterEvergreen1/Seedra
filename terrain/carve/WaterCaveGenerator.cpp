@@ -112,10 +112,10 @@ void WaterCaveGenerator::addTunnel(World& worldIn, c_i64 seedModifier, Pos2D bas
                 seed2 = rng.nextLongI();
                 tunnelWidth2 = rng.nextFloat();
             }
-            addTunnel(worldIn, seed1, baseChunk, start, tunnelWidth1 * 0.5F + 0.5F, theTunnelDirection - HALF_PI,
+            addTunnel(worldIn, seed1, baseChunk, start, tunnelWidth1 * 0.5F + 0.5F, theTunnelDirection - HALF_PI_FLOAT,
                       theTunnelSlope / 3.0F, theCurrentSegment, theMaxSegment, 1.0);
 
-            addTunnel(worldIn, seed2, baseChunk, start, tunnelWidth2 * 0.5F + 0.5F, theTunnelDirection + HALF_PI,
+            addTunnel(worldIn, seed2, baseChunk, start, tunnelWidth2 * 0.5F + 0.5F, theTunnelDirection + HALF_PI_FLOAT,
                       theTunnelSlope / 3.0F, theCurrentSegment, theMaxSegment, 1.0);
             return;
         }
@@ -360,10 +360,10 @@ void WaterCaveGenerator::addTunnel(ChunkPrimer* chunkPrimer, c_i64 seedModifier,
                 seed2 = rng.nextLongI();
                 tunnelWidth2 = rng.nextFloat();
             }
-            addTunnel(chunkPrimer, seed1, chunk, start, tunnelWidth1 * 0.5F + 0.5F, tunnelDirection - HALF_PI,
+            addTunnel(chunkPrimer, seed1, chunk, start, tunnelWidth1 * 0.5F + 0.5F, tunnelDirection - HALF_PI_FLOAT,
                       tunnelSlope / 3.0F, currentTunnelSegment, maxTunnelSegment, 1.0);
 
-            addTunnel(chunkPrimer, seed2, chunk, start, tunnelWidth2 * 0.5F + 0.5F, tunnelDirection + HALF_PI,
+            addTunnel(chunkPrimer, seed2, chunk, start, tunnelWidth2 * 0.5F + 0.5F, tunnelDirection + HALF_PI_FLOAT,
                       tunnelSlope / 3.0F, currentTunnelSegment, maxTunnelSegment, 1.0);
             return;
         }
