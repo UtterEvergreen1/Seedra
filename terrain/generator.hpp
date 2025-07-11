@@ -21,10 +21,11 @@ class BiomeCache {
     const int scale;
     const BoundingBox box;
     int *biomes;
+    bool generated;
 
 public:
-    BiomeCache(int scale, BoundingBox box, int *biomes)
-        : scale(scale), box(box), biomes(biomes) {
+    BiomeCache(int scale, BoundingBox box)
+        : scale(scale), box(box), biomes(nullptr), generated(false) {
     }
 
     ~BiomeCache() {
@@ -36,6 +37,14 @@ public:
     const BoundingBox& getBox() const { return box; }
 
     int* getBiomes() const { return biomes; }
+
+    bool isGenerated() const { return generated; }
+
+    void setBiomes(int *biomes) {
+        delete this->biomes;
+        this->generated = true;
+        this->biomes = biomes;
+    }
 };
 
 /**
@@ -147,19 +156,39 @@ public:
      */
     void applyWorldSeed(const std::string &seed);
 
-    void generateCaches(int maxScale);
+    /**
+     * @brief Generates a biome cache for the specified scale.
+     * @param scale The scale of the cache to generate.
+     */
+    void generateCache(int scale);
 
+    /**
+     * @brief Generates biome caches for all scales up to the specified maximum scale.
+     * Works differently then just calling generateCache for each scale
+     * as it reuses the upper layers to generate the lower ones and avoids regenerating the upper layers
+     * @param maxScale The maximum scale to generate caches for.
+     */
+    void generateCachesUpTo(int maxScale);
+
+    /**
+     * @brief Generates all biome caches for all scales. (1-256)
+     * This method generates caches for all scales defined in the layer stack.
+     */
     void generateAllCaches();
 
+    /**
+     * @brief Reloads the biome caches.
+     * This method clears and regenerates all biome caches. Internally used when the world seed or settings change.
+     */
     void reloadCache();
 
     /**
-     * @brief Retrieves the biomes at scale 1 for a specific chunk.
-     * @param pos The position of the chunk.
-     * @return Pointer to the array of chunk biomes.
+     * @brief Retrieves the location of the biome cache for the specified scale and coordinates.
+     * @param scale The scale of the cache to retrieve.
+     * @param x The X-coordinate of the cache.
+     * @param z The Z-coordinate of the cache.
+     * @return Pointer to the biome cache at the specified scale and coordinates.
      */
-    int *getChunkBiomes(const Pos2D &pos) const;
-
     int* getCacheAtBlock(int scale, int x, int z) const;
 
     /**

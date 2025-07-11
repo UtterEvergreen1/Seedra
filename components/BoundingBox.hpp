@@ -170,6 +170,12 @@ public:
      */
     MU ND int getLength() const { return std::max(maxX - minX, maxZ - minZ); }
 
+    /*
+     * @brief Gets the area of the bounding box in the X-Z plane.
+     * @return The area of the bounding box.
+     */
+    MU ND int getArea() const { return getXSize() * getZSize(); }
+
     /**
      * @brief Gets the center coordinate in the X dimension.
      *

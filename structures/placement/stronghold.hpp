@@ -57,17 +57,6 @@ namespace Placement {
         ND static Pos2D getWorldPosition(const Generator& g);
 
         /**
-         * @brief Calculates the starting center position of the Stronghold.
-         *
-         * This method determines the starting center position of the Stronghold by offsetting
-         * the world position by 4.
-         *
-         * @param g The generator object containing world seed and other parameters.
-         * @return The starting center position of the Stronghold as a 2D coordinate.
-         */
-        MU ND static Pos2D getStartCenter(const Generator& g) { return getWorldPosition(g) - 4; }
-
-        /**
          * @brief Calculates the starting chunk position of the Stronghold.
          *
          * This method determines the starting chunk position of the Stronghold by dividing

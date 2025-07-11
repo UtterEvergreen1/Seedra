@@ -39,6 +39,9 @@ Generator::Generator(const lce::CONSOLE console, const LCEVERSION version, c_i64
       worldCoordinateBounds(getChunkWorldBounds(size) << 4),
       worldBounds(-worldCoordinateBounds, -worldCoordinateBounds, worldCoordinateBounds, worldCoordinateBounds) {
     this->biomeCaches.reserve(5); // for scales 1, 4, 16, 64, 256
+    for (int cacheScale = 1; cacheScale <= 256; cacheScale <<= 2) {
+        this->biomeCaches.emplace_back(cacheScale, this->worldBounds >> (cacheScale >> 1));
+    }
     setupLayerStack(&this->layerStack, version, scale);
     setLayerSeed(this->layerStack.entry_1, seed);
 }
@@ -84,27 +87,53 @@ void Generator::applyWorldSeed(const std::string &seed) {
     applyWorldSeed(StringHash::hash(seed));
 }
 
-void Generator::generateCaches(int maxScale) {
-    this->biomeCaches.clear();
-    for (int scale = 1; scale <= maxScale; scale *= 4) {
-        int minBound = -(this->worldCoordinateBounds >> (scale / 2));
+void Generator::generateCache(int scale) {
+    if (scale > 256) return;
+    const int trailingZeros = __builtin_ctz(scale);
+    const int arrIndex = trailingZeros >> 1;
+    int minBound = -(this->worldCoordinateBounds >> trailingZeros);
+    int worldSize = -minBound << 1;
+    int *biomes = getBiomeRange(scale, minBound, minBound, worldSize, worldSize);
+    this->biomeCaches[arrIndex].setBiomes(biomes);
+}
+
+void Generator::generateCachesUpTo(int maxScale) {
+    const int maxScaleTrailingZeros = __builtin_ctz(maxScale);
+    if (maxScale >> maxScaleTrailingZeros != 1) {
+        std::cout << "generateCaches(): maxScale must be a power of 4" << std::endl;
+        exit(1);
+    }
+    for (int scale = maxScale; scale >= 1; scale >>= 2) {
+        const int trailingZeros = __builtin_ctz(scale);
+        const int arrIndex = trailingZeros >> 1;
+        int minBound = -(this->worldCoordinateBounds >> trailingZeros);
         int worldSize = -minBound << 1;
-        int *biomes = getBiomeRange(1, minBound, minBound, worldSize, worldSize);
-        this->biomeCaches.emplace_back(scale, this->worldBounds >> (scale / 2), biomes);
+        const Range r = {scale, minBound, minBound, worldSize, worldSize};
+        int *ids = allocCache(r);
+        // copy over the biomes from the previous scale if it exists
+        if (scale <= 64) {
+            const int prevTrailingZeros = __builtin_ctz(scale << 2);
+            const int prevArrIndex = prevTrailingZeros >> 1;
+            const BiomeCache& prevScale  = this->biomeCaches[prevArrIndex];
+            if (prevScale.isGenerated()) {
+                memcpy(ids, prevScale.getBiomes(), prevScale.getBox().getArea() * sizeof(int));
+            }
+        }
+        genBiomes(ids, r);
+        this->biomeCaches[arrIndex].setBiomes(ids);
     }
 }
 
 void Generator::generateAllCaches() {
-    this->generateCaches(256);
+    this->generateCachesUpTo(256);
 }
 
 void Generator::reloadCache() {
-    if (this->biomeCaches.empty()) return;
-    generateCaches((int)std::pow(4, this->biomeCaches.size() - 1));
-}
-
-int *Generator::getChunkBiomes(const Pos2D &pos) const {
-    return getCacheAtBlock(1, pos.x << 4, pos.z << 4);
+    for (auto& cache : this->biomeCaches) {
+        if (cache.isGenerated()) {
+            generateCache(cache.getScale());
+        }
+    }
 }
 
 
@@ -121,6 +150,7 @@ MU void Generator::changeLCEVersion(const LCEVERSION versionIn) {
     setupLayerStack(&this->layerStack, versionIn, this->biomeScale);
     //reapply the layers' seed
     setLayerSeed(this->layerStack.entry_1, this->worldSeed);
+    this->reloadCache();
 }
 
 /**
@@ -136,6 +166,7 @@ MU void Generator::changeBiomeSize(const lce::BIOMESCALE size) {
     setupLayerStack(&this->layerStack, this->version, size);
     //reapply the layers' seed
     setLayerSeed(this->layerStack.entry_1, this->worldSeed);
+    this->reloadCache();
 }
 
 /**
@@ -149,6 +180,9 @@ MU void Generator::changeWorldSize(const lce::WORLDSIZE size) {
 
     this->worldSize = size;
     this->worldCoordinateBounds = getChunkWorldBounds(size) << 4;
+    this->worldBounds = BoundingBox(-this->worldCoordinateBounds, -this->worldCoordinateBounds,
+                                    this->worldCoordinateBounds, this->worldCoordinateBounds);
+    this->reloadCache();
 }
 
 /**
@@ -374,17 +408,17 @@ Pos2D Generator::locateBiome(const int x, const int z, const int radius,
     int z1 = (z - radius) >> 2;
     c_int x2 = (x + radius) >> 2;
     c_int z2 = (z + radius) >> 2;
-    c_int width = x2 - x1 + 1;
-    c_int height = z2 - z1 + 1;
+    c_int width = (radius >> 1) + 1;
+    c_int height = (radius >> 1) + 1;
 
-    if (this->biomeCaches.size() > 1) {
-        for (; x1 <= x2; x1++) {
-            for (; z1 <= z2; z1++) {
-                const int *id = getCacheAtBlock(4, x1, z1);
+    if (this->biomeCaches[1].isGenerated()) {
+        for (int zPos = z1; zPos <= z2; ++zPos) {
+            for (int xPos = x1; xPos <= x2; ++xPos) {
+                const int *id = getCacheAtBlock(4, xPos, zPos);
                 if (id == nullptr || !id_matches(*id, validBiomes)) continue;
                 if (found == 0 || rng.nextInt(found + 1) == 0) {
-                    out.x = x1 * 4;
-                    out.z = z1 * 4;
+                    out.x = xPos * 4;
+                    out.z = zPos * 4;
                     ++found;
                 }
             }

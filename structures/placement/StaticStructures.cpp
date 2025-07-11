@@ -37,8 +37,8 @@ namespace Placement {
 
     template<typename Derived>
     std::vector<Pos2D> StaticStructure<Derived>::getAllPositions(const Generator *g) {
-        return getAllPositionsBounded(g, -g->getWorldChunkBounds(), -g->getWorldChunkBounds(),
-                                      g->getWorldChunkBounds(), g->getWorldChunkBounds());
+        return getAllPositionsBounded(g, -g->getWorldCoordinateBounds(), -g->getWorldCoordinateBounds(),
+                                      g->getWorldCoordinateBounds(), g->getWorldCoordinateBounds());
     }
 
     template<typename Derived>
@@ -46,10 +46,10 @@ namespace Placement {
     StaticStructure<Derived>::getAllPositionsBounded(const Generator *g, int lowerX, int lowerZ, int upperX,
                                                      int upperZ) {
         std::vector<Pos2D> positions;
-        c_int numXRegions = (upperX - lowerX) / REGION_SIZE;
-        c_int numZRegions = (upperZ - lowerZ) / REGION_SIZE;
-        for (int regionX = -numXRegions - 1; regionX <= numXRegions; ++regionX) {
-            for (int regionZ = -numZRegions - 1; regionZ <= numZRegions; ++regionZ) {
+        c_int numXRegions = ((upperX - lowerX) >> 4) / REGION_SIZE;
+        c_int numZRegions = ((upperZ - lowerZ) >> 4) / REGION_SIZE;
+        for (int regionX = -numXRegions; regionX < numXRegions; ++regionX) {
+            for (int regionZ = -numZRegions; regionZ < numZRegions; ++regionZ) {
                 if (const Pos2D structPos = getRegionBlockPosition(g->getWorldSeed(), regionX, regionZ);
                         verifyChunkPosition(g, structPos.toChunkPos()) && structPos.insideBounds(lowerX, lowerZ, upperX, upperZ))
                     positions.push_back(structPos);
@@ -134,10 +134,10 @@ namespace Placement {
     std::vector<FeatureStructurePair>
     Feature::getAllFeaturePositionsBounded(const Generator *g, int lowerX, int lowerZ, int upperX, int upperZ) {
         std::vector<FeatureStructurePair> features;
-        c_int numXRegions = (upperX - lowerX) / REGION_SIZE;
-        c_int numZRegions = (upperZ - lowerZ) / REGION_SIZE;
-        for (int regionX = -numXRegions - 1; regionX <= numXRegions; ++regionX) {
-            for (int regionZ = -numZRegions - 1; regionZ <= numZRegions; ++regionZ) {
+        c_int numXRegions = ((upperX - lowerX) >> 4) / REGION_SIZE;
+        c_int numZRegions = ((upperZ - lowerZ) >> 4) / REGION_SIZE;
+        for (int regionX = -numXRegions; regionX < numXRegions; ++regionX) {
+            for (int regionZ = -numZRegions; regionZ < numZRegions; ++regionZ) {
                 Pos2D structPos = getRegionBlockPosition(g->getWorldSeed(), regionX, regionZ);
                 if (StructureType structureType = getFeatureType(g, structPos); structureType != StructureType::NONE &&
                                                                                 structPos.insideBounds(lowerX, lowerZ,

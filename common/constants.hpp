@@ -11,19 +11,31 @@
  * @def PI
  * @brief The mathematical constant π (pi) with double precision.
  */
-#define PI 3.141592653589793
+constexpr double PI = 3.141592653589793;
 
 /**
  * @def PI_FLOAT
  * @brief The mathematical constant π (pi) with single precision.
  */
-#define PI_FLOAT 3.1415927F
+constexpr float PI_FLOAT = 3.1415927f;
 
 /**
  * @def HALF_PI
  * @brief Half of the mathematical constant π (pi) with single precision.
  */
-#define HALF_PI 1.5707964F
+constexpr float HALF_PI_FLOAT = PI_FLOAT / 2.0f;
+
+/**
+ * @def TWO_PI
+ * @brief Two times the mathematical constant π (pi) with double precision.
+ */
+constexpr double TWO_PI = 2.0 * PI;
+
+/**
+ * @def TWO_PI_FLOAT
+ * @brief Two times the mathematical constant π (pi) with single precision.
+ */
+constexpr float TWO_PI_FLOAT = 2.0f * PI_FLOAT;
 
 /**
  * @def power2_31
