@@ -226,9 +226,9 @@ public:
                     tunnelWidth2 = rng.nextFloat();
                 }
                 addTunnel(results, seedModifier1, currentChunk, startPos, tunnelWidth1 * 0.5F + 0.5F,
-                          theDirection - HALF_PI, theSlope / 3.0F, theCurrentSegment, theMaxSegment, 1.0, accurate);
+                          theDirection - HALF_PI_FLOAT, theSlope / 3.0F, theCurrentSegment, theMaxSegment, 1.0, accurate);
                 addTunnel(results, seedModifier2, currentChunk, startPos, tunnelWidth2 * 0.5F + 0.5F,
-                          theDirection + HALF_PI, theSlope / 3.0F, theCurrentSegment, theMaxSegment, 1.0, accurate);
+                          theDirection + HALF_PI_FLOAT, theSlope / 3.0F, theCurrentSegment, theMaxSegment, 1.0, accurate);
                 return;
             }
 

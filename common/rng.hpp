@@ -237,7 +237,7 @@ public:
         return n;
     }
 
-    MU u64 nextLongI() noexcept {
+    MU i64 nextLongI() noexcept {
         u64 seed1 = (mySeed * RNG_MULT_1 + RNG_ADDEND_1);
         u64 seed2 = (mySeed * RNG_MULT_2 + RNG_ADDEND_2);
 
