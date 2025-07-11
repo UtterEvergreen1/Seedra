@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cmath>
+#include <array>
 #include "lce/processor.hpp"
 
 /**
@@ -10,27 +11,14 @@
 class MathHelper {
     static constexpr int TABLE_SIZE = 65536; ///< Size of the sine table.
     static constexpr int TABLE_WRAP = 65535; ///< Mask for wrapping sine table indices.
-    float SIN_TABLE[TABLE_SIZE]{}; ///< Precomputed sine values.
+
+
+    // float SIN_TABLE[TABLE_SIZE]{}; ///< Precomputed sine values.
+    static const std::array<float, TABLE_SIZE> SIN_TABLE;
     static constexpr float CONVERSION = 10430.378F; ///< Conversion factor for sine table indexing.
 
-public:
-    /**
-     * @brief Constructor that initializes the sine table with precomputed values.
-     */
-    MathHelper() {
-        for (int i = 0; i < TABLE_SIZE; ++i) {
-            SIN_TABLE[i] = sinf(static_cast<float>(i) / CONVERSION);
-        }
-    }
 
-    /**
-     * @brief Provides a singleton instance of MathHelper.
-     * @return Reference to the singleton instance.
-     */
-    static MathHelper& Instance() {
-        static MathHelper instance;
-        return instance;
-    }
+public:
 
     /**
      * @brief Computes the largest integer less than or equal to the given value.
@@ -47,7 +35,7 @@ public:
      * @return The sine of the input value.
      */
     static float sin(c_float value) {
-        return Instance().SIN_TABLE[static_cast<int>(value * CONVERSION) & TABLE_WRAP];
+        return SIN_TABLE[static_cast<int>(value * CONVERSION) & TABLE_WRAP];
     }
 
     /**
@@ -56,7 +44,9 @@ public:
      * @return The cosine of the input value.
      */
     static float cos(c_float value) {
-        return Instance().SIN_TABLE[static_cast<int>(value * CONVERSION + 16384.0F) & TABLE_WRAP];
+        return SIN_TABLE[
+                static_cast<int>(value * CONVERSION + 16384.0F) & TABLE_WRAP
+        ];
     }
 
     /**
@@ -93,7 +83,7 @@ public:
      * @return The interpolated value.
      */
     static double lerp2D(c_double xRatio, c_double yRatio, c_double topLeft,
-        c_double topRight, c_double bottomLeft, c_double bottomRight) {
+                         c_double topRight, c_double bottomLeft, c_double bottomRight) {
         return lerp(yRatio, lerp(xRatio, topLeft, topRight), lerp(xRatio, bottomLeft, bottomRight));
     }
 
@@ -113,9 +103,10 @@ public:
      * @return The interpolated value.
      */
     static double lerp3D(c_double xRatio, c_double yRatio, c_double zRatio,
-        double topFrontLeft, c_double topFrontRight,
-        c_double topBackLeft, c_double topBackRight, double bottomFrontLeft,
-        c_double bottomFrontRight, c_double bottomBackLeft, c_double bottomBackRight) {
+                         double topFrontLeft, c_double topFrontRight,
+                         c_double topBackLeft, c_double topBackRight, double bottomFrontLeft,
+                         c_double bottomFrontRight, c_double bottomBackLeft, c_double bottomBackRight) {
+
         topFrontLeft = lerp2D(xRatio, yRatio, topFrontLeft, topFrontRight, topBackLeft, topBackRight);
         bottomFrontLeft = lerp2D(xRatio, yRatio, bottomFrontLeft, bottomFrontRight, bottomBackLeft, bottomBackRight);
         return lerp(zRatio, topFrontLeft, bottomFrontLeft);

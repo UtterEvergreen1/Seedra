@@ -189,7 +189,9 @@ bool StructureComponent::intersectsWithBlock(const BoundingBox& chunkBoundingBox
 MU bool StructureComponent::validToPlace(const BoundingBox& chunkBoundingBox, const BoundingBox& bb, c_int x, c_int y,
                                          c_int z) {
     if (intersectsWithBlock(chunkBoundingBox, x, y, z)) {
-        return (bb.maxX >= x && bb.minX <= x) && (bb.maxY >= y && bb.minY) <= y && (bb.maxZ >= z && bb.minZ <= z);
+        return (bb.maxX >= x && bb.minX <= x) &&
+               (bb.maxY >= y && bb.minY <= y) &&
+               (bb.maxZ >= z && bb.minZ <= z);
     }
     return false;
 }

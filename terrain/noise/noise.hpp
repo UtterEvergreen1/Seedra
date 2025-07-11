@@ -11,6 +11,8 @@ class Generator;
 
 /// Helper
 
+static constexpr double SQRT_3 = 1.7320508075688772; // sqrt(3.0);
+
 /**
  * @brief Maintains precision for a given double value.
  *
@@ -32,13 +34,54 @@ double maintainPrecision(double x);
  * Perlin noise, which is commonly used in procedural terrain generation.
  */
 struct PerlinNoise {
-    u8 d[512]; ///< Permutation table for Perlin noise.
-    double a; ///< Parameter 'a' for noise generation.
-    double b; ///< Parameter 'b' for noise generation.
-    double c; ///< Parameter 'c' for noise generation.
-    double amplitude; ///< Amplitude of the noise.
-    double lacunarity; ///< Lacunarity of the noise.
+    u8 permutations[512]; ///< Permutation table for Perlin noise.
+    double x;             ///< Parameter 'x' for noise generation.
+    double y;             ///< Parameter 'y' for noise generation.
+    double z;             ///< Parameter 'z' for noise generation.
+    double amplitude;     ///< Amplitude of the noise.
+    double lacunarity;    ///< Lacunarity of the noise.
 };
+
+
+/**
+ * @struct OctaveNoise
+ * @brief Represents octave noise, which combines multiple layers of Perlin noise.
+ *
+ * This structure is used to generate more complex noise patterns by combining
+ * multiple Perlin noise layers (octaves).
+ */
+struct OctaveNoise {
+    int octcnt{};                   ///< Number of octaves.
+    PerlinNoise* octaves = nullptr; ///< Pointer to an array of PerlinNoise structures.
+};
+
+
+/**
+ * @struct SurfaceNoise
+ * @brief Represents surface noise, which combines multiple octave noise layers.
+ *
+ * This structure is used to generate surface noise for terrain generation by
+ * combining multiple octave noise layers with different parameters.
+ */
+struct SurfaceNoise {
+    double xzScale{};                        ///< Scale factor for the XZ plane.
+    double yScale{};                         ///< Scale factor for the Y-axis.
+    double xzFactor{};                       ///< Factor for the XZ plane.
+    double yFactor{};                        ///< Factor for the Y-axis.
+    OctaveNoise octaveMin;                   ///< Octave noise for minimum values.
+    OctaveNoise octaveMax;                   ///< Octave noise for maximum values.
+    OctaveNoise octaveMain;                  ///< Main octave noise.
+    OctaveNoise octaveSurf;                  ///< Surface octave noise.
+    OctaveNoise octaveDepth;                 ///< Depth octave noise.
+    PerlinNoise oct[16 + 16 + 8 + 4 + 16]{}; ///< Array of Perlin noise layers.
+};
+
+
+
+
+
+
+
 
 /**
  * @brief Initializes a PerlinNoise structure with random values.
@@ -64,11 +107,13 @@ void perlinInit(PerlinNoise* noise, RNG& rng);
  * @param yMin Minimum value for the Y-axis.
  * @return The sampled Perlin noise value.
  */
-double samplePerlin(const Generator* g, const PerlinNoise* noise, double x, double y, double z, double yAmp,
-                    double yMin);
+double samplePerlin(const Generator* g, const PerlinNoise* noise,
+                    double x, double y, double z,
+                    double yAmp, double yMin);
 
 /**
  * @brief Samples 2D Simplex noise using Perlin noise parameters.
+ * Used by the End dimension.
  *
  * This function generates a 2D noise value based on the Perlin noise structure.
  *
@@ -80,18 +125,6 @@ double samplePerlin(const Generator* g, const PerlinNoise* noise, double x, doub
 double sampleSimplex2D(const PerlinNoise* noise, double x, double y);
 
 /// Octave noise
-
-/**
- * @struct OctaveNoise
- * @brief Represents octave noise, which combines multiple layers of Perlin noise.
- *
- * This structure is used to generate more complex noise patterns by combining
- * multiple Perlin noise layers (octaves).
- */
-struct OctaveNoise {
-    int octcnt{}; ///< Number of octaves.
-    PerlinNoise* octaves = nullptr; ///< Pointer to an array of PerlinNoise structures.
-};
 
 /**
  * @brief Initializes an OctaveNoise structure with random values.
@@ -118,7 +151,8 @@ void octaveInit(OctaveNoise* noise, RNG& rng, PerlinNoise* octaves, int oMin, in
  * @param z Z-coordinate.
  * @return The sampled octave noise value.
  */
-MU double sampleOctave(const Generator* g, const OctaveNoise* noise, double x, double y, double z);
+MU double sampleOctave(const Generator* g, const OctaveNoise* noise,
+                       double x, double y, double z);
 
 /**
  * @brief Samples octave noise with additional amplitude and minimum Y-axis parameters.
@@ -136,30 +170,11 @@ MU double sampleOctave(const Generator* g, const OctaveNoise* noise, double x, d
  * @param yDefault Default value for the Y-axis.
  * @return The sampled octave noise value.
  */
-double sampleOctaveAmp(const Generator* g, const OctaveNoise* noise, double x, double y, double z, double yAmp,
+double sampleOctaveAmp(const Generator* g, const OctaveNoise* noise,
+                       double x, double y, double z, double yAmp,
                        double yMin, int yDefault);
 
 /// Perlin Octaves
-
-/**
- * @struct SurfaceNoise
- * @brief Represents surface noise, which combines multiple octave noise layers.
- *
- * This structure is used to generate surface noise for terrain generation by
- * combining multiple octave noise layers with different parameters.
- */
-struct SurfaceNoise {
-    double xzScale{}; ///< Scale factor for the XZ plane.
-    double yScale{}; ///< Scale factor for the Y-axis.
-    double xzFactor{}; ///< Factor for the XZ plane.
-    double yFactor{}; ///< Factor for the Y-axis.
-    OctaveNoise octaveMin; ///< Octave noise for minimum values.
-    OctaveNoise octaveMax; ///< Octave noise for maximum values.
-    OctaveNoise octaveMain; ///< Main octave noise.
-    OctaveNoise octaveSurf; ///< Surface octave noise.
-    OctaveNoise octaveDepth; ///< Depth octave noise.
-    PerlinNoise oct[16 + 16 + 8 + 4 + 16]{}; ///< Array of Perlin noise layers.
-};
 
 /**
  * @brief Initializes a SurfaceNoise structure for a specific dimension and world seed.

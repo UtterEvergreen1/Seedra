@@ -4,7 +4,7 @@
 #include <string>
 #include <utility>
 
-#include "terrain/carve/NoiseGenerator.hpp"
+#include "terrain/noise/NoiseGenerator.hpp"
 
 #include "lce/blocks/blockID.hpp"
 #include "lce/blocks/blocksInit.hpp"

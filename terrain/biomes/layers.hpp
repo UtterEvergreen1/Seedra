@@ -10,6 +10,21 @@ struct PerlinNoise;
 struct SurfaceNoise;
 struct Layer;
 
+
+
+
+extern u64 mcFirstInt_Calls;
+extern u64 mcFirstIsZero_Calls;
+
+
+
+
+
+template<int... BiomeIDs>
+constexpr u64 makeBiomeBitmask() {
+    return ((1ULL << BiomeIDs) | ...);
+}
+
 /**
  * @enum LayerId
  * @brief Enumeration of the layer indices in the layer stack.

@@ -165,7 +165,7 @@ namespace gen {
             if (i == 0) { return; }
             c_bool hasRails = rng.nextInt(3) == 0;
             c_bool hasSpiders = !hasRails && rng.nextInt(23) == 0;
-            data |= hasRails;
+            data |= hasRails ? 1 : 0;
             data |= hasSpiders << 1;
             buildComponent(rng, {PT_Mineshaft_Corridor, static_cast<int8_t>(depth + 1), boundingBox, facing, data});
         }

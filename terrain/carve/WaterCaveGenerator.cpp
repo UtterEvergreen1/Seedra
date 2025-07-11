@@ -146,7 +146,7 @@ void WaterCaveGenerator::addTunnel(World& worldIn, c_i64 seedModifier, Pos2D bas
 
         min += baseChunkX16;
         max += baseChunkX16;
-        if (!genBounds.isVecInside(min) && !genBounds.isVecInside(max)) {
+        if (!genBounds.isVecInside(min) || !genBounds.isVecInside(max)) {
             continue;
         }
         min -= baseChunkX16;

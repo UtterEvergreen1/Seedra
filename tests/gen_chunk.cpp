@@ -1,9 +1,12 @@
+#include "common/AreaRange.hpp"
 #include "common/timer.hpp"
 #include "common/worldPicture.hpp"
 #include "loot/Tables.hpp"
 #include "structures/placement/DynamicStructures.hpp"
 #include "terrain/Chunk.hpp"
 #include "terrain/biomes/biome.hpp"
+#include "terrain/carve/CaveGenerator.hpp"
+#include "terrain/finders/LargeCaveFinder.hpp"
 #include "terrain/generator.hpp"
 
 #include <filesystem>
@@ -17,7 +20,10 @@ void fileWrite(std::ofstream& file, T obj) {
 }
 
 
+
+
 int main() {
+
     const char* userProfile = std::getenv("USERPROFILE");
     if (!userProfile) {
         std::cerr << "USERPROFILE environment variable not set!\n";
@@ -28,7 +34,7 @@ int main() {
                        / "LegacyChunkViewer";
     std::string dirName = dirPath.string();
     std::cout << "Using \"" + dirName + "\"...\n\n";
-    fs::path filePath = dirPath / "build" / "chunks" / "chunkdata.bin";
+    fs::path filePath = dirPath / "build" / "chunks" / "chunkdataWRONG2.bin";
 
 
     // auto* primer = new ChunkPrimer;
@@ -40,19 +46,27 @@ int main() {
 
     // -1204924307554348042;
     Biome::registerBiomes();
-    c_i64 WORLD_SEED = -6651998285536156346LL; // 615831156172857837; // 7710511010199114;
+    c_i64 WORLD_SEED = -6651998285536156346; //2026238685186108391; // 615831156172857837; // 7710511010199114;
     c_auto CONSOLE = lce::CONSOLE::WIIU;
-    c_auto VERSION = LCEVERSION::ELYTRA;
+    c_auto VERSION = LCEVERSION::AQUATIC;
     c_auto WORLD_SIZE = lce::WORLDSIZE::CLASSIC;
     c_auto BIOME_SCALE = lce::BIOMESCALE::SMALL;
     // -6651998285536156346
     Generator g(CONSOLE, VERSION, WORLD_SEED, WORLD_SIZE, BIOME_SCALE);
 
+
+
+
+
     // 3 13 for seed -101, 8 15 for seed 1, 11 16 or 15 5 for seed 27184353441555
-    int X_WIDTH  = 54; // 10;
-    int Z_WIDTH  = 54; // 10;
-    int X_CENTER = 0; // 9;
-    int Z_CENTER = 0; // 210 / 16;
+    int RADIUS = 27;
+    Pos2D WIDTH(2 * RADIUS, 2 * RADIUS);
+    Pos2D CENTER(0, 0);
+
+    AreaRange RANGE = {CENTER, RADIUS, false, false};
+
+    std::cout << "Starting...\n";
+
 
     Timer start;
     Timer gen;
@@ -63,16 +77,23 @@ int main() {
     world.generateVillages();
     world.generateStrongholds();
 
-    world.getOrCreateChunk({X_CENTER, Z_CENTER});
+    world.getOrCreateChunk(CENTER);
 
-    world.createChunks({X_CENTER, Z_CENTER}, X_WIDTH);
+    world.createChunks(RANGE);
     std::cout << "Chunk Gen Time: " << gen.getSeconds() << "\n";
     gen.reset();
-    world.decorateCaves({X_CENTER, Z_CENTER}, X_WIDTH, VERSION == LCEVERSION::AQUATIC);
+    world.decorateCaves(RANGE, true);
     std::cout << "Cave Gen Time: " << gen.getSeconds() << "\n";
     gen.reset();
 
-    world.decorateChunks({X_CENTER, Z_CENTER}, X_WIDTH);
+
+    for (auto [key, value] : sectionsInChunk) {
+        std::cout << "key: " << key << " value: " << value << "\n";
+    }
+
+
+
+    world.decorateChunks(RANGE);
 
     std::cout << "Decorate Gen Time: " << gen.getSeconds() << "\n";
     std::cout << "Total world Gen Time: " << start.getSeconds() << "\n";
@@ -87,15 +108,15 @@ int main() {
     int64_t worldSeed = g.getWorldSeed();
 
     fileWrite<i64>(file, worldSeed);
-    fileWrite<int>(file, X_CENTER);
-    fileWrite<int>(file, Z_CENTER);
-    fileWrite<int>(file, X_WIDTH);
-    fileWrite<int>(file, Z_WIDTH);
+    fileWrite<int>(file, CENTER.x);
+    fileWrite<int>(file, CENTER.z);
+    fileWrite<int>(file, WIDTH.x);
+    fileWrite<int>(file, WIDTH.z);
 
-    int sx = (X_CENTER - X_WIDTH) * 16;
-    int sz = (Z_CENTER - Z_WIDTH) * 16;
-    int sw = X_WIDTH * 2 * 16;
-    int sh = Z_WIDTH * 2 * 16;
+    int sx = (CENTER.x - WIDTH.x) * 16;
+    int sz = (CENTER.z - WIDTH.z) * 16;
+    int sw = WIDTH.x * 2 * 16;
+    int sh = WIDTH.z * 2 * 16;
 
     std::cout << "Generating biomes at "
               << sx << ", "
@@ -113,8 +134,11 @@ int main() {
         std::cout << "Loaded Biome Map, writing chunks to file" << std::endl;
     }
 
-    for (int cx = -(X_WIDTH) + X_CENTER; cx < X_WIDTH + X_CENTER - 1; cx++) {
-        for (int cz = -(Z_WIDTH) + Z_CENTER; cz < Z_WIDTH + Z_CENTER - 1; cz++) {
+    const Pos2D lower(world.worldBounds.minX, world.worldBounds.minZ);
+    const Pos2D upper(world.worldBounds.maxX, world.worldBounds.maxZ);
+
+    for (int cx = lower.x; cx < upper.x; cx++) {
+        for (int cz = lower.z; cz < upper.z; cz++) {
             Pos2D chunkPos(cx, cz);
             auto* chunkPrimer = world.getChunk({cx, cz});
 
@@ -127,8 +151,8 @@ int main() {
 
             for (int x = 0; x < 16; x++) {
                 for (int z = 0; z < 16; z++) {
-                    int bx = (chunkPos.x + X_WIDTH) * 16 + x;
-                    int bz = (chunkPos.z + Z_WIDTH) * 16 + z;
+                    int bx = (chunkPos.x + WIDTH.x) * 16 + x;
+                    int bz = (chunkPos.z + WIDTH.z) * 16 + z;
                     biomeChunk[z * 16 + x] = (u8)biomes[bz * sw + bx];
                 }
             }
@@ -136,7 +160,7 @@ int main() {
 
             chunkPrimer->highestYBlock = -1;
             chunkPrimer->highestYBlock = std::min(chunkPrimer->getHighestYBlock() + 1, 255);
-            i64 sizeToWrite = (i64) sizeof(chunkPrimer->blocks[0]) * 256 * chunkPrimer->highestYBlock;
+            i64 sizeToWrite = (i64) sizeof(chunkPrimer->blocks[0]) * 256 * 256;
 
             fileWrite<int>(file, chunkPos.x);
             fileWrite<int>(file, chunkPos.z);
@@ -198,34 +222,28 @@ int main() {
     Biome::registerBiomes();
     lce::registry::ItemRegistry::setup();
 
-    Generator generator(lce::CONSOLE::XBOX360, LCEVERSION::AQUATIC, lce::WORLDSIZE::CLASSIC, lce::BIOMESCALE::MEDIUM);
-    generator.generateCache(4);
+    Generator generator(lce::CONSOLE::XBOX360, LCEVERSION::AQUATIC, lce::WORLDSIZE::CLASSIC, lce::BIOMESCALE::SMALL);
+    //generator.generateCaches(4);
 
-    int numRight = 0;
-    RNG rng = RNG::initializeWithRandomSeed();
-    //Timer timer;
-    constexpr int maxSeed = 1000000;
+    Timer timer;
     constexpr int seedInterval = 1000;
-    for (int64_t counter = 1; counter <= maxSeed; ++counter) {
-        /*if EXPECT_FALSE (seed % seedInterval == 0) {
+    for (int64_t seed = 830750; seed <= 830750; ++seed) {
+        if EXPECT_FALSE (seed % seedInterval == 0) {
             std::cout << "Seed: " << seed << std::endl;
             std::cout << "Seeds per second: " << seedInterval / timer.getSeconds() << std::endl;
             timer.reset();
-        }*/
-        int64_t seed = rng.nextLongI();
+        }
         generator.applyWorldSeed(seed);
 
         auto buriedTreasurePositions = Placement::BuriedTreasure::getAllPositions(&generator);
-        if (buriedTreasurePositions.size() > 0) {
+        if (buriedTreasurePositions.size() < 4) {
             continue;
         }
 
-        ++numRight;
-
-        //std::cout << "Found " << buriedTreasurePositions.size() << " buried treasures in the world. Seed: " << seed << std::endl;
+        std::cout << "Found " << buriedTreasurePositions.size() << " buried treasures in the world. Seed: " << seed << std::endl;
 
         // Step 4: Retrieve loot for each buried treasure
-        /*constexpr auto Mode = loot::GenMode::MODERN;
+        constexpr auto Mode = loot::GenMode::MODERN;
         loot::Container<27> container;
 
         for (const auto& pos : buriedTreasurePositions) {
@@ -233,11 +251,8 @@ int main() {
             std::cout << "Loot for buried treasure at (" << pos.x << ", " << pos.z << "):" << std::endl;
             std::cout << container << std::endl;
             container.clear();
-        }*/
+        }
     }
-
-    std::cout << "Total seeds with no buried treasure: " << numRight << std::endl;
-    std::cout << "Percentage of seeds with no buried treasure: " << (static_cast<double>(numRight) / maxSeed) * 100 << "%" << std::endl;
 
     // Clean up
     return 0;
@@ -310,6 +325,7 @@ for (auto block : blocks.REGISTRY.getAllValues()) {
         }
     }
 }
+ */
 
 
 

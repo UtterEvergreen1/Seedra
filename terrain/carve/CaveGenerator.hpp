@@ -3,6 +3,9 @@
 #include "AbstractMapGen.hpp"
 #include <set>
 
+
+extern std::map<Pos2D, int> sectionsInChunk;
+
 /**
  * @class CaveGenerator
  * @brief Final class for generating cave systems in the world.

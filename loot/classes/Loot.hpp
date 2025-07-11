@@ -44,8 +44,11 @@ namespace loot {
          * This compile-time constant is computed as the sum of maximum item counts from all loot tables.
          * It is calculated by the private member function @c computeMaxItemCount().
          */
+#ifndef _MSC_VER
         static constexpr i32 MAX_ITEM_COUNT = computeMaxItemCount();
-
+#else
+        static constexpr i32 MAX_ITEM_COUNT = 27;
+#endif
     public:
         consteval Loot() = delete;
         consteval explicit Loot(Tables... ts) noexcept;
@@ -64,12 +67,12 @@ namespace loot {
 
         /// loot seeding with stronghold stone rolls
         template<bool checkCaves, bool checkWaterCaves = false>
-        ND static RNG getStrongholdLootSeed(const Generator& g, gen::Stronghold* strongholdGenerator,
+        ND RNG getStrongholdLootSeed(const Generator& g, gen::Stronghold* strongholdGenerator,
                                   const StructureComponent& piece, c_int chestChunkX, c_int chestChunkZ, bool accurate);
 
         /// combine loot seeding and generation to get the stronghold loot
         template<bool checkCaves, bool shuffle>
-        MU ND static Container27 getStrongholdLoot(const Generator& g, gen::Stronghold* strongholdGenerator,
+        MU ND Container27 getStrongholdLoot(const Generator& g, gen::Stronghold* strongholdGenerator,
                                        const StructureComponent& piece, c_int chestChunkX, c_int chestChunkZ,
                                        bool accurate);
     };

@@ -133,10 +133,10 @@ void ChunkGeneratorOverWorld::provideChunk(ChunkPrimer *chunkPrimer, c_int x,c_i
 
 
 void ChunkGeneratorOverWorld::generateHeightmap(c_int x, c_int y, c_int z) {
-    depthRegion = depthNoise.genNoiseOctaves(g, depthRegion, x, z, 5, 5, 200.0, 200.0);
-    mainNoiseRegion = mainPerlinNoise.genNoiseOctaves(g, mainNoiseRegion, x, y, z, 5, 33, 5, 8.55515, 4.277575, 8.55515);
-    minLimitRegion = minLimitPerlinNoise.genNoiseOctaves(g, minLimitRegion, x, y, z, 5, 33, 5, 684.412, 684.412, 684.412);
-    maxLimitRegion = maxLimitPerlinNoise.genNoiseOctaves(g, maxLimitRegion, x, y, z, 5, 33, 5, 684.412, 684.412, 684.412);
+    depthNoise.genNoiseOctaves(g, depthRegion, x, 10, z, 5, 1, 5, 200.0, 1.0, 200.0);
+    mainPerlinNoise.genNoiseOctaves(g, mainNoiseRegion, x, y, z, 5, 33, 5, 8.55515, 4.277575, 8.55515);
+    minLimitPerlinNoise.genNoiseOctaves(g, minLimitRegion, x, y, z, 5, 33, 5, 684.412, 684.412, 684.412);
+    maxLimitPerlinNoise.genNoiseOctaves(g, maxLimitRegion, x, y, z, 5, 33, 5, 684.412, 684.412, 684.412);
     int i = 0;
     int j = 0;
 
@@ -212,7 +212,6 @@ void ChunkGeneratorOverWorld::generateHeightmap(c_int x, c_int y, c_int z) {
                 c_double d2 = minLimitRegion[i] / (double) 512.0; // lowerLimitScale = 512.0
                 c_double d3 = maxLimitRegion[i] / (double) 512.0; // upperLimitScale = 512.0
                 c_double d4 = (mainNoiseRegion[i] / 10.0 + 1.0) / 2.0;
-                // TODO: this could be the problem??? swap to d2, d3, d4
                 double d5 = MathHelper::clampedLerp(d4, d2, d3) - d1;
 
                 if (l1 > 29) {

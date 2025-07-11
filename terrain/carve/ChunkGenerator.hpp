@@ -4,8 +4,8 @@
 #include <string>
 #include <vector>
 
-#include "NoiseGenerator.hpp"
 #include "terrain/ChunkPrimer.hpp"
+#include "terrain/noise/NoiseGenerator.hpp"
 
 /**
  * @class ChunkGeneratorOverWorld

@@ -9,6 +9,7 @@
 #include "structures/gen/mineshaft/mineshaft.hpp"
 #include "structures/gen/stronghold/stronghold.hpp"
 
+#include "common/AreaRange.hpp"
 #include "common/Pos2DTemplate.hpp"
 #include "common/Pos3DTemplate.hpp"
 
@@ -75,7 +76,7 @@ public:
      * @param pos The center position.
      * @param radius The radius around the position.
      */
-    void createChunks(const Pos2D &pos, int radius);
+    void createChunks(AreaRange& range);
 
     /**
      * @brief Decorates caves in the specified area.
@@ -83,14 +84,14 @@ public:
      * @param radius The radius around the starting position.
      * @param hasWaterCaves Whether the caves contain water.
      */
-    void decorateCaves(const Pos2D &theStartPosition, int radius, bool hasWaterCaves);
+    void decorateCaves(AreaRange& range, bool hasWaterCaves);
 
     /**
      * @brief Decorates chunks around the specified position within a given radius.
      * @param pos The center position.
      * @param radius The radius around the position.
      */
-    void decorateChunks(const Pos2D &pos, int radius);
+    void decorateChunks(AreaRange& range);
 
     /**
      * @brief Retrieves the biome at the specified coordinates.

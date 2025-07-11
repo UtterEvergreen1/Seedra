@@ -2,6 +2,7 @@
 
 #include "common/MathHelper.hpp"
 #include "common/constants.hpp"
+#include "scanBoxHull.hpp"
 #include "terrain/World.hpp"
 #include "terrain/biomes/biomeID.hpp"
 
@@ -146,7 +147,7 @@ SEGMENT_FOR_LOOP_START:
             continue;
         }
          */
-        
+
         Pos3D min;
         Pos3D max;
         min.x = (int) floor(tunnel.x - adjustedWidth) - baseChunkX16.x - 1;
@@ -159,11 +160,13 @@ SEGMENT_FOR_LOOP_START:
         if (max.y > 120) max.y = 120;
         min += baseChunkX16;
         max += baseChunkX16;
-        if (!genBounds.isVecInside(min) && !genBounds.isVecInside(max)) {
+        if (!genBounds.isVecInside(min) || !genBounds.isVecInside(max)) {
             continue;
         }
-        
+
+
         Pos3D pos;
+        /*
         for (pos.x = min.x; pos.x < max.x; ++pos.x) {
             for (pos.z = min.z; pos.z < max.z; ++pos.z) {
                 for (pos.y = max.y + 1; pos.y >= min.y - 1; --pos.y) {
@@ -171,9 +174,9 @@ SEGMENT_FOR_LOOP_START:
                     c_u16 blockId = worldIn.getBlockId(pos);
                     if (pos.y != min.y - 1 &&
                         pos.x != min.x &&
-                        pos.x != max.x - 1
-                        && pos.z != min.z
-                        && pos.z != max.z - 1) {
+                        pos.x != max.x - 1 &&
+                        pos.z != min.z &&
+                        pos.z != max.z - 1) {
                         pos.y = min.y;
                     }
                     c_bool hasLiquid = blockId == STILL_WATER_ID ||
@@ -184,6 +187,19 @@ SEGMENT_FOR_LOOP_START:
                 }
             }
         }
+        */
+
+        auto foundLiquid = scanBoxHull(worldIn, min, max,
+                                       [](const Pos3D& p, World& w) -> bool {
+                                           const u16 id = w.getBlockId(p);
+                                           return id == STILL_WATER_ID || id == FLOWING_WATER_ID;
+                                       });
+
+        if (foundLiquid) {
+            goto FOUND_LIQUID;
+        }
+
+
         min -= baseChunkX16;
         max -= baseChunkX16;
 
@@ -195,7 +211,8 @@ SEGMENT_FOR_LOOP_START:
         goto SEGMENT_FOR_LOOP_START;
     JUMP_PAST_FOUND_LIQUID:
 
-        pos.setPos(0, 0, 0);
+        pos = {0, 0, 0};
+        // Pos3D pos(0, 0, 0);
         DoublePos3D dXYZ;
         for (pos.x = min.x; pos.x < max.x; ++pos.x) {
             dXYZ.x = ((double) (pos.x + baseChunkX16.x) + 0.5 - tunnel.x) / adjustedWidth;
@@ -228,7 +245,7 @@ SEGMENT_FOR_LOOP_START:
                             worldIn.setBlockId(blockPos, AIR_ID);
 
                             if EXPECT_FALSE(replaceableBlockDetected &&
-                                worldIn.getBlockId(blockPos.down()) == DIRT_ID) {
+                                             worldIn.getBlockId(blockPos.down()) == DIRT_ID) {
                                 worldIn.setBlockId(blockPos.down(), topBlock(blockPos.x, blockPos.z));
                             }
                         }
@@ -376,7 +393,7 @@ SEGMENT_FOR_LOOP_START:
     for (; theStartSegment < theEndSegment; theStartSegment++) {
 
         double adjustedWidth = 1.5 + (double) (MathHelper::sin(
-            (float) theStartSegment * endSegmentFDivPI) * angle);
+                                                       (float) theStartSegment * endSegmentFDivPI) * angle);
         double adjustedHeight = adjustedWidth * theWidthMultiplier;
 
         adjustedWidth = adjustedWidth * ((double) rng.nextFloat() * 0.25 + 0.75);
@@ -504,7 +521,7 @@ SEGMENT_FOR_LOOP_START:
                             if (replaceableBlockDetected &&
                                 chunkPrimer->getBlockId(pos.down()) == DIRT_ID) {
                                 chunkPrimer->setBlockId(pos.down(),
-                                    topBlock(pos.x + currentChunkX16.x, pos.z + currentChunkX16.z));
+                                                        topBlock(pos.x + currentChunkX16.x, pos.z + currentChunkX16.z));
                             }
                         }
                     }

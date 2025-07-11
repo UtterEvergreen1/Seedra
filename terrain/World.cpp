@@ -7,15 +7,18 @@
 #include "structures/placement/stronghold.hpp"
 #include "terrain/biomes/biome.hpp"
 
+#include "common/AreaRange.hpp"
 #include "terrain/carve/CaveGenerator.hpp"
 #include "terrain/carve/ChunkGenerator.hpp"
 #include "terrain/carve/RavineGenerator.hpp"
 #include "terrain/carve/WaterCaveGenerator.hpp"
 #include "terrain/carve/WaterRavineGenerator.hpp"
 
+
 World::World(Generator *g) : g(g) {
     int worldSize = lce::getChunkWorldBounds(g->getWorldSize());
-    this->worldBounds = BoundingBox(-worldSize, 0, -worldSize, worldSize, 256, worldSize);
+    this->worldBounds = BoundingBox(-worldSize, 0, -worldSize,
+                                    worldSize - 1, 256, worldSize - 1);
 }
 
 World::~World() {
@@ -34,24 +37,22 @@ void World::deleteWorld() {
     mineshafts.clear();
 }
 
-void World::createChunks(const Pos2D &pos, c_int radius) {
-    //std::cout << "Creating chunks around " << pos << " with radius " << radius << std::endl;
-    for (int dx = radius; dx >= -radius; --dx) {
-        for (int dz = radius; dz >= -radius; --dz) {
-            Pos2D chunkPos = pos + Pos2D(dx, dz);
-            this->getOrCreateChunk(chunkPos);
-        }
+
+void World::createChunks(AreaRange& range) {
+    for (Pos2D p : range) {
+        getOrCreateChunk(p);
     }
 }
 
 
-void World::decorateCaves(const Pos2D &theStartPosition, c_int radius, bool hasWaterCaves) {
+void World::decorateCaves(AreaRange& range, bool hasWaterCaves) {
     //std::cout << "Carving chunks around " << theStartPosition << " with radius " << radius << std::endl;
-    Pos2D lower = theStartPosition - radius;
-    Pos2D upper = theStartPosition + radius;
 
-    BoundingBox bounds = BoundingBox::makeChunkBox(lower.x + 1, lower.z + 1);
-    bounds.encompass(BoundingBox::makeChunkBox(upper.x - 1, upper.z - 1));
+    Pos2D lower = range.getLower();
+    Pos2D upper = range.getUpper();
+
+    BoundingBox bounds = BoundingBox::makeChunkBox(lower.x , lower.z);
+    bounds.encompass(BoundingBox::makeChunkBox(upper.x, upper.z));
 
 
     // Water Caves
@@ -110,14 +111,11 @@ void World::decorateCaves(const Pos2D &theStartPosition, c_int radius, bool hasW
 }
 
 
-void World::decorateChunks(const Pos2D &pos, c_int radius) {
+void World::decorateChunks(AreaRange& range) {
     //std::cout << "Decorating chunks around " << pos << " with radius " << radius << std::endl;
-    for (int dx = radius; dx >= -radius; --dx) {
-        for (int dz = radius; dz >= -radius; --dz) {
-            Pos2D chunkPos = pos + Pos2D(dx, dz);
-            if (this->chunkExists(chunkPos))
-                Chunk::populateChunk(*this, chunkPos);
-        }
+    for (Pos2D p : range) {
+        if (this->chunkExists(p))
+            Chunk::populateChunk(*this, p);
     }
 }
 

@@ -137,7 +137,7 @@ void WaterRavineGenerator::addTunnel(World& worldIn, c_i64 randomSeed, const Pos
 
         min += baseChunkX16;
         max += baseChunkX16;
-        if (!genBounds.isVecInside(min) && !genBounds.isVecInside(max)) {
+        if (!genBounds.isVecInside(min) || !genBounds.isVecInside(max)) {
             continue;
         }
         min -= baseChunkX16;

@@ -3,10 +3,25 @@ project(LIB_LegacyCubiomes)
 
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
-set(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} -O3 -s")
-set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O3 -s")
-set(CMAKE_C_FLAGS_DEBUG  "${CMAKE_C_FLAGS_DEBUG} -O0")
-set(CMAKE_CXX_FLAGS_DEBUG  "${CMAKE_CXX_FLAGS_DEBUG} -O0")
+
+if (MSVC)
+    #  /O2  = maximise speed   /GL = link-time-code-gen   /Zi = keep PDB in Debug
+    set(CMAKE_C_FLAGS_RELEASE   "${CMAKE_C_FLAGS_RELEASE} /O2 /GL")
+    set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /O2 /GL")
+    set(CMAKE_C_FLAGS_DEBUG     "${CMAKE_C_FLAGS_DEBUG}  /Od /Zi")
+    set(CMAKE_CXX_FLAGS_DEBUG   "${CMAKE_CXX_FLAGS_DEBUG} /Od /Zi")
+    set(LEGACY_CUBIOMES_COMPILE_OPTIONS /arch:AVX /MP)
+else()
+    set(CMAKE_EXE_LINKER_FLAGS_RELEASE "${CMAKE_EXE_LINKER_FLAGS_RELEASE} -static-libgcc -static-libstdc++")
+    set(CMAKE_C_FLAGS_RELEASE   "${CMAKE_C_FLAGS_RELEASE}   -O3 -s")
+    set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O3 -s")
+    set(CMAKE_C_FLAGS_DEBUG     "${CMAKE_C_FLAGS_DEBUG}   -O0")
+    set(CMAKE_CXX_FLAGS_DEBUG   "${CMAKE_CXX_FLAGS_DEBUG} -O0")
+    set(LEGACY_CUBIOMES_COMPILE_OPTIONS "-mavx2;-msse4.1")
+endif()
+
+
+
 
 # Build lceLib from the submodule
 add_subdirectory(lce)
@@ -16,6 +31,7 @@ file(GLOB_RECURSE LEGACY_CUBIOMES_SOURCES
         # submodule
         "${CMAKE_CURRENT_LIST_DIR}/lce/*.*pp"
         # project
+        "${CMAKE_CURRENT_LIST_DIR}/common/*.*pp"
         "${CMAKE_CURRENT_LIST_DIR}/components/*.*pp"
         "${CMAKE_CURRENT_LIST_DIR}/chunk_detector/*.*pp"
         "${CMAKE_CURRENT_LIST_DIR}/terrain/*.*pp"
@@ -24,12 +40,12 @@ file(GLOB_RECURSE LEGACY_CUBIOMES_SOURCES
         "${CMAKE_CURRENT_LIST_DIR}/include/*.*pp"
         "${CMAKE_CURRENT_LIST_DIR}/loot/*.*pp"
         "${CMAKE_CURRENT_LIST_DIR}/structures/*.*pp"
-        "${CMAKE_CURRENT_LIST_DIR}/common/*.*pp"
         ...
 )
 
 add_library(LIB_LegacyCubiomes STATIC ${LEGACY_CUBIOMES_SOURCES})
 target_compile_features(LIB_LegacyCubiomes PRIVATE cxx_std_20)
+target_compile_options(LIB_LegacyCubiomes PRIVATE ${LEGACY_CUBIOMES_COMPILE_OPTIONS})
 
 
 # Link the lce library
@@ -45,16 +61,12 @@ target_include_directories(LIB_LegacyCubiomes
 set(ASSET_DEST "/assets/lce")
 
 
-
-
-
-
 function(add_cli NAME SRC)
     add_executable(${NAME} "${SRC}")
     target_link_libraries(${NAME} PRIVATE LIB_LegacyCubiomes)
 
     target_include_directories(${NAME} PRIVATE ${LCE_INCLUDE_DIR})
-    target_compile_options(${NAME} PRIVATE ${LCE_COMPILE_OPTIONS})
+    target_compile_options(${NAME} PRIVATE ${LCE_COMPILE_OPTIONS} ${LEGACY_CUBIOMES_COMPILE_OPTIONS})
     target_compile_definitions(${NAME} PRIVATE ${LCE_COMPILE_DEFINITIONS})
 
 

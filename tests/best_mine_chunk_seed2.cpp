@@ -8,20 +8,27 @@
 
 #include "common/MathHelper.hpp"
 #include "common/timer.hpp"
+#include "include/doctest.h"
 #include "terrain/Chunk.hpp"
 #include "terrain/World.hpp"
 #include "terrain/biomes/biome.hpp"
 #include "terrain/carve/CaveGenerator.hpp"
 #include "terrain/carve/RavineGenerator.hpp"
+#include "terrain/finders/LargeCaveFinder.hpp"
 #include "terrain/generator.hpp"
 
 
+bool testOneSeed = true;
 
-static constexpr i64 WORLDSEED = 1526726; // -6651998285536156346LL;
-static constexpr auto CONSOLE = lce::CONSOLE::WIIU;
-static constexpr auto VERSION = LCEVERSION::ELYTRA;
-static constexpr auto WORLDSIZE = lce::WORLDSIZE::CLASSIC;
-static constexpr auto BIOMESCALE = lce::BIOMESCALE::SMALL;
+i64 WORLDSEED = 0; //-6651998285536156346LL;
+i64 SEEDS_TO_TRAVERSE = 100'000'000;
+auto CONSOLE = lce::CONSOLE::WIIU;
+auto VERSION = LCEVERSION::ELYTRA;
+auto WORLDSIZE = lce::WORLDSIZE::CLASSIC;
+auto BIOMESCALE = lce::BIOMESCALE::SMALL;
+
+static i64 WATER_WEIGHT = -2;
+static i64 LAVA_WEIGHT = -8;
 
 static constexpr int LAVA_BUDGET   = 4'000; // max lava inside window
 static constexpr int SEARCH_RAD    = 8;     // chunks around spawn
@@ -72,22 +79,28 @@ struct Score {
 };
 
 
-Score getBest(World& world) {
+Score getBest(World& world, std::vector<LargeCaveFinder::Results>& results) {
+
     Timer start;
 
     RNG rng;
     const Pos2D spawnChunk = world.getGenerator()->estimateSpawn(rng);
+    // AreaRange COMPUTE_RANGE = {results[0].start.asPos2D().asType<int>() / 16,
+    //         SEARCH_RAD, false, false};
+    AreaRange COMPUTE_RANGE = {{0, 0},
+                               27, false, false};
 
-    world.createChunks(spawnChunk / 16, SEARCH_RAD);
+
+    world.createChunks(COMPUTE_RANGE);
     std::cout << "Create World Time: " << start.getSeconds() << "\n";
     start.reset();
 
-    world.decorateCaves(spawnChunk / 16, SEARCH_RAD, false);
+    world.decorateCaves(COMPUTE_RANGE, false);
     std::cout << "Decorate World Time: " << start.getSeconds() << "\n";
     start.reset();
 
-    const Pos2D lower(world.worldBounds.minX, world.worldBounds.minZ);
-    const Pos2D upper(world.worldBounds.maxX, world.worldBounds.maxZ);
+    const Pos2D lower = COMPUTE_RANGE.getLower(); // (world.worldBounds.minX, world.worldBounds.minZ);
+    const Pos2D upper = COMPUTE_RANGE.getUpper(); // (world.worldBounds.maxX, world.worldBounds.maxZ);
 
 
 
@@ -97,16 +110,18 @@ Score getBest(World& world) {
     std::vector<ColStat> grid(colsX * colsZ, {0, 0, 0});
     auto cell = [&](c_i32 gx, c_i32 gz) -> ColStat& { return grid[gz * colsX + gx]; };
 
+    int x = -1;
     for (auto& [pos, chunk] : world.chunks) {
+        x++;
         for (int lx = 0; lx < 16; ++lx) {
             for (int lz = 0; lz < 16; ++lz) {
                 c_i32 gx = (pos.x - lower.x) * 16 + lx;
                 c_i32 gz = (pos.z - lower.z) * 16 + lz;
-                c_u16* col = chunk->blocks + ChunkPrimer::getStorageIndex(lx, 0, lz);
+                c_u16* col = chunk->blocks.data() +
+                             ChunkPrimer::getStorageIndex(lx, 0, lz);
                 cell(gx, gz) = scanColumn(col);
             }
         }
-
     }
 
 
@@ -142,7 +157,7 @@ Score getBest(World& world) {
     Score best{{0, 0}, {0, 0}, 0, 0, UINT32_MAX};
 
     auto scoreVal = [](c_u32 air, c_u32 water, c_u32 lava) {
-        return air - 2 * water - 8 * lava; //  - 8 * water - 16 * lava;
+        return air - WATER_WEIGHT * water - LAVA_WEIGHT * lava;
     };
 
     for (int sx = 0; sx + 15 < colsX; sx += WINDOW_STRIDE) {
@@ -169,24 +184,111 @@ Score getBest(World& world) {
 }
 
 
-int main() {
+int main(int argc, char* argv[]) {
+
+    doctest::Context context;
+    context.applyCommandLine(argc, argv);
+    int res = context.run();  // Runs all tests
+
+    if (context.shouldExit()) return res;
+
+
+
+
+
+    if (testOneSeed) {
+        std::int64_t a, b, c;
+        std::string d, e, f;
+
+        std::cout << "Enter Console: ";
+        if (!(std::cin >> e)) {
+            std::cerr << "Invalid input\n";
+            return 1;
+        }
+        CONSOLE = lce::strToConsole(e);
+
+        std::cout << "Enter Version(aquatic | elytra): ";
+        if (!(std::cin >> f)) {
+            std::cerr << "Invalid input\n";
+            return 1;
+        }
+        VERSION = strToLCEVERSION(f);
+
+        std::cout << "Enter Seed: ";
+        if (!(std::cin >> a)) {
+            std::cerr << "Invalid input\n";
+            return 1;
+        }
+        WORLDSEED = a;
+
+        std::cout << "Enter Biome Scale: ";
+        if (!(std::cin >> d)) {
+            std::cerr << "Invalid input\n";
+            return 1;
+        }
+        BIOMESCALE = lce::strToBiomeScale(d);
+
+        std::cout << "Enter Water Weight: ";
+        if (!(std::cin >> b)) {
+            std::cerr << "Invalid input\n";
+            return 1;
+        }
+        WATER_WEIGHT = b;
+
+        std::cout << "Enter Lava Weight: ";
+        if (!(std::cin >> c)) {
+            std::cerr << "Invalid input\n";
+            return 1;
+        }
+        LAVA_WEIGHT = c;
+
+        SEEDS_TO_TRAVERSE = 1;
+    }
+
+
+
+
+
+    int RADIUS = 27;
+    Pos2D WIDTH(2 * RADIUS, 2 * RADIUS);
+    Pos2D CENTER(0, 0);
+
+    AreaRange CAVE_RANGE = {CENTER, RADIUS, false, false};
+
+
     Biome::registerBiomes();
     Generator g(CONSOLE, VERSION, WORLDSEED, WORLDSIZE, BIOMESCALE);
     World world(&g);
 
-    for (int worldSeed = WORLDSEED; worldSeed < WORLDSEED + 10000; worldSeed++) {
-        world.deleteWorld();
+    for (i64 worldSeed = WORLDSEED; worldSeed > WORLDSEED - SEEDS_TO_TRAVERSE; worldSeed--) {
         world.getGenerator()->applyWorldSeed(worldSeed);
 
-        const Score best = getBest(world);
+        auto results = LargeCaveFinder::findAllLargeCaves(&g, CAVE_RANGE);
+
+        if (!testOneSeed) {
+            if (results.empty())
+                continue;
+        }
+
+        const Score best = getBest(world, results);
 
         // std::cout << "Time : " << start.getSeconds() << "\n";
-        std::cout << "Spawn: C" << best.spawn / 16 << " / B" << best.spawn << "\n";
-        std::cout << "Chunk: C" << best.pos / 16 << " / B" << best.pos << "\n";
+        std::cout << "Seed   : " << worldSeed << "\n";
+        std::cout << "Spawn:  C" << best.spawn / 16 << " / B" << best.spawn << "\n";
+        std::cout << "Chunk:  C" << best.pos / 16 << " / B" << best.pos << "\n";
         std::cout << "Air=" << best.air << "  Water=" << best.water << "  Lava=" << best.lava << "\n\n";
+        std::cout << "Segment: ";
+        for (auto& res : results) {
+            std::cout << res.start << ", ";
+        }
+        std::cout << "\n";
         std::cout << std::endl;
+
+        results.clear();
+        world.deleteWorld();
     }
 
-
+    int x;
+    std::cin >> x;
     return 0;
 }

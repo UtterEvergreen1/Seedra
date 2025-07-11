@@ -179,6 +179,34 @@ MU static MCVERSION getMCVersion(const LCEVERSION lceVersionIn) {
     }
 }
 
+
+/**
+ * @brief Maps an LCEVERSION value to its corresponding MCVERSION.
+ * @param lceVersionIn The LCEVERSION value to map.
+ * @return The corresponding MCVERSION value.
+ */
+template<LCEVERSION LceVersion>
+MU static MCVERSION getMCVersion() {
+    switch (LceVersion) {
+        case LCEVERSION::AQUATIC:
+        default:
+            return MCVERSION::MC_1_13;
+        case LCEVERSION::ELYTRA:
+            return MCVERSION::MC_1_12;
+        case LCEVERSION::BOUNTIFUL:
+            return MCVERSION::MC_1_8;
+        case LCEVERSION::HORSE:
+            return MCVERSION::MC_1_6;
+        case LCEVERSION::POTIONS:
+            return MCVERSION::MC_1_2;
+        case LCEVERSION::ADVENTURE:
+            return MCVERSION::MC_1_0;
+        case LCEVERSION::PILLAGE:
+            return MCVERSION::MC_1_14;
+    }
+}
+
+
 /**
  * @brief Converts an MCVERSION enum value to its string representation.
  * @param version The MCVERSION value to convert.

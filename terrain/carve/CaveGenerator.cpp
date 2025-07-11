@@ -1,4 +1,7 @@
 #include "CaveGenerator.hpp"
+
+#include "scanBoxHull.hpp"
+
 #include <set>
 
 #include "common/MathHelper.hpp"
@@ -10,6 +13,7 @@
 using namespace lce::blocks;
 
 
+std::map<Pos2D, int> sectionsInChunk;
 
 
 MU Pos2DVec_t CaveGenerator::getStartingChunks(const Generator* g, Pos2D lower, Pos2D upper) {
@@ -82,7 +86,7 @@ void CaveGenerator::addFeature(World& worldIn, Pos2D baseChunk, bool accurate) {
 void CaveGenerator::addTunnel(World& worldIn, i64 theSeedModifier, Pos2D currentChunk, DoublePos3D startPos,
                               float theWidth, float theDirection, float theSlope, int theCurrentSegment,
                               int theMaxSegment, double theHeightMultiplier, bool accurate) {
-    
+
     Pos2D currentChunkX16 = currentChunk * 16;
     DoublePos2D currentChunkCenter = (currentChunkX16 + 8).asType<double>();
 
@@ -175,9 +179,9 @@ SEGMENT_FOR_LOOP_START:
         // double segmentsRemaining = theMaxSegment - theCurrentSegment;
         // double maxDistance = theWidth + 18.0F;
 
-        if (accurate &&
-            g->getLCEVersion() == LCEVERSION::AQUATIC &&
-            isOceanic(world.getBiomeIdAt((int)startPos.getX(), (int)startPos.getZ()))) { return; }
+        // if (accurate &&
+        //     g->getLCEVersion() == LCEVERSION::AQUATIC &&
+        //     isOceanic(world.getBiomeIdAt((int)startPos.getX(), (int)startPos.getZ()))) { return; }
 
         if (!isMainTunnel && rng.nextInt(4) == 0) { continue; }
 
@@ -187,7 +191,7 @@ SEGMENT_FOR_LOOP_START:
         //     startPos.z < currentChunkCenter.z - 16.0 - adjustedWidth * 2.0 ||
         //     startPos.x > currentChunkCenter.x + 16.0 + adjustedWidth * 2.0 ||
         //     startPos.z > currentChunkCenter.z + 16.0 + adjustedWidth * 2.0) { continue; }
-        
+
         Pos3D min;
         Pos3D max;
         min.x = static_cast<int>(floor(startPos.x - adjustedWidth)) - currentChunkX16.x - 1;
@@ -202,30 +206,20 @@ SEGMENT_FOR_LOOP_START:
 
         min += currentChunkX16;
         max += currentChunkX16;
-        if (!genBounds.isVecInside(min) && !genBounds.isVecInside(max)) {
+        if (!genBounds.isVecInside(min) || !genBounds.isVecInside(max)) {
             continue;
         }
         Pos3D pos;
-        for (pos.x = min.x; pos.x < max.x; ++pos.x) {
-            for (pos.z = min.z; pos.z < max.z; ++pos.z) {
-                for (pos.y = max.y + 1; pos.y >= min.y - 1; --pos.y) {
 
-                    u16 blockType = worldIn.getBlockId(pos);
-                    if (pos.y != min.y - 1 &&
-                        pos.x != min.x &&
-                        pos.x != max.x - 1 &&
-                        pos.z != min.z &&
-                        pos.z != max.z - 1) {
-                        pos.y = min.y;
-                    }
-                    c_bool hasWater = blockType == STILL_WATER_ID ||
-                                      blockType == FLOWING_WATER_ID;
-                    if (hasWater) {
-                        goto FOUND_WATER;
-                    }
-                }
-            }
+        auto foundLiquid = scanBoxHull(worldIn, min, max,
+                                       [](const Pos3D& p, World& w) -> bool {
+                                           const u16 id = w.getBlockId(p);
+                                           return id == STILL_WATER_ID || id == FLOWING_WATER_ID;
+                                       });
+        if (foundLiquid) {
+            goto FOUND_WATER;
         }
+
         min -= currentChunkX16;
         max -= currentChunkX16;
 
@@ -237,20 +231,46 @@ SEGMENT_FOR_LOOP_START:
         goto SEGMENT_FOR_LOOP_START;
     JUMP_PAST_FOUND_WATER:
 
+
+
+        Pos2D center(startPos.x / 16 + (max.x - min.x) / 2,
+                     startPos.z / 16 + (max.z - min.z) / 2
+        );
+        if (!sectionsInChunk.contains(center)) {
+            sectionsInChunk[center] = 1;
+        } else {
+            sectionsInChunk[center]++;
+        }
+
+        /*
+         * Pos2DTemplate<int>    currentChunkX16, 	4*3
+         * Pos2DTemplate<double> startPos, 	8*3
+         * double                adjustedWidth, 	8
+         * double                adjustedHeight, 	8
+         * Pos3DTemplate<int>    min, 		4*3
+         * Pos3DTemplate<int>    max		4*3
+         */
+
+        c_double invW = 1.0 / adjustedWidth;
+        c_double invH = 1.0 / adjustedHeight;
+
+        // std::cout << "Range: " << max - min << " Pos: " << startPos << ", Adjusted: " << DoublePos2D (invW, invH) << "\n";
+
         pos.setPos(0, 0, 0);
         DoublePos3D scale;
         for (pos.x = min.x; pos.x < max.x; ++pos.x) {
-            scale.x = ((double) (pos.x + currentChunkX16.x) + 0.5 - startPos.x) / adjustedWidth;
+            scale.x = ((double) (pos.x + currentChunkX16.x) + 0.5 - startPos.x) * invW;
 
             for (pos.z = min.z; pos.z < max.z; ++pos.z) {
-                scale.z = ((double) (pos.z + currentChunkX16.z) + 0.5 - startPos.z) / adjustedWidth;
+                scale.z = ((double) (pos.z + currentChunkX16.z) + 0.5 - startPos.z) * invW;
                 bool isTopBlock = false;
 
                 if (scale.distanceSqXZ() >= 1.0) { continue; }
 
                 for (pos.y = max.y - 1; pos.y >= min.y; --pos.y) {
-                    scale.y = ((double) (pos.y - 1) + 0.5 - startPos.y) / adjustedHeight;
+                    scale.y = ((double) (pos.y - 1) + 0.5 - startPos.y) * invH;
 
+                    // 0.7 makes the floor and ceiling flatter
                     if (scale.y <= -0.7 || scale.distanceSq() >= 1.0) { continue; }
 
                     Pos3D blockPos = pos;
@@ -418,15 +438,15 @@ SEGMENT_FOR_LOOP_START:
 
         // setup tunnelWidth + tunnelHeight
         c_double adjustedWidth = 1.5 + (double) (MathHelper::sin(
-            (float) theCurrentSegment * maxSegmentFDivPI) * theWidth);
+                                                         (float) theCurrentSegment * maxSegmentFDivPI) * theWidth);
         c_double adjustedHeight = adjustedWidth * theHeightMultiplier;
 
         // setup tunnel start
         {
-        c_float directionCos = (MathHelper::cos(theSlope));
-        startPos.x += (double) (MathHelper::cos(theDirection) * directionCos);
-        startPos.y += (double) (MathHelper::sin(theSlope));
-        startPos.z += (double) (MathHelper::sin(theDirection) * directionCos);
+            c_float directionCos = (MathHelper::cos(theSlope));
+            startPos.x += (double) (MathHelper::cos(theDirection) * directionCos);
+            startPos.y += (double) (MathHelper::sin(theSlope));
+            startPos.z += (double) (MathHelper::sin(theDirection) * directionCos);
         }
 
         // setup tunnel slope
@@ -438,20 +458,20 @@ SEGMENT_FOR_LOOP_START:
         theSlope = theSlope + slopeModifier * 0.1F;
         slopeModifier = slopeModifier * 0.9F;
         {
-        c_float f1_1 = rng.nextFloat();
-        c_float f1_2 = rng.nextFloat();
-        c_float f1_3 = rng.nextFloat();
-        slopeModifier = slopeModifier + (f1_1 - f1_2) * f1_3 * 2.0F;
+            c_float f1_1 = rng.nextFloat();
+            c_float f1_2 = rng.nextFloat();
+            c_float f1_3 = rng.nextFloat();
+            slopeModifier = slopeModifier + (f1_1 - f1_2) * f1_3 * 2.0F;
         }
 
         // setup tunnel direction
         theDirection += directionModifier * 0.1F;
         directionModifier = directionModifier * 0.75F;
         {
-        c_float f2_1 = rng.nextFloat();
-        c_float f2_2 = rng.nextFloat();
-        c_float f2_3 = rng.nextFloat();
-        directionModifier = directionModifier + (f2_1 - f2_2) * f2_3 * 4.0F;
+            c_float f2_1 = rng.nextFloat();
+            c_float f2_2 = rng.nextFloat();
+            c_float f2_3 = rng.nextFloat();
+            directionModifier = directionModifier + (f2_1 - f2_2) * f2_3 * 4.0F;
         }
 
         // split the tunnel (if not main)
@@ -493,7 +513,7 @@ SEGMENT_FOR_LOOP_START:
             startPos.z < currentChunkCenter.z - 16.0 - adjustedWidth * 2.0 ||
             startPos.x > currentChunkCenter.x + 16.0 + adjustedWidth * 2.0 ||
             startPos.z > currentChunkCenter.z + 16.0 + adjustedWidth * 2.0) { continue; }
-        
+
         Pos3D min;
         Pos3D max;
         min.x = static_cast<int>(floor(startPos.x - adjustedWidth)) - currentChunkX16.x - 1;
@@ -535,10 +555,10 @@ SEGMENT_FOR_LOOP_START:
         // used to make the cpu not have to
         // cache the later code when it finds water
         goto JUMP_PAST_FOUND_WATER;
-        FOUND_WATER:
-            if (isMainTunnel) { return; }
-            goto SEGMENT_FOR_LOOP_START;
-        JUMP_PAST_FOUND_WATER:
+    FOUND_WATER:
+        if (isMainTunnel) { return; }
+        goto SEGMENT_FOR_LOOP_START;
+    JUMP_PAST_FOUND_WATER:
 
         // ((dVar27 = (double)getDepth__5BiomeFv(uVar9), dVar27 < -0.9 && (iVar10 = isSnowCovered__5BiomeFv(uVar9), iVar10 != 0))
         pos.setPos(0, 0, 0);

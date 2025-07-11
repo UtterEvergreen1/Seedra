@@ -258,7 +258,7 @@ namespace loot {
             u64 low = 0;
             u64 high = N;
             while (low < high) {
-                const u64 mid = low + high >> 1;
+                const u64 mid = (low + high) >> 1;
                 if (m_CumulativeWeights[mid] > theWeight) {
                     high = mid;
                 } else {

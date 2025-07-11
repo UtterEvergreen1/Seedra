@@ -1,7 +1,6 @@
 #pragma once
 
 #include "Buffer.hpp"
-#include "Loot.hpp"
 #include "LootTable.hpp"
 #include "common/Pos2DTemplate.hpp"
 #include "terrain/Chunk.hpp"
@@ -95,7 +94,7 @@ namespace loot {
      * places them at random positions in the container.
      */
     template<size_t ContainerSize>
-    static void __attribute((noinline)) processLootTableLegacy(
+    static void NOINLINE processLootTableLegacy(
             Container<ContainerSize> &containerIn, RNG &rng, const auto &table) {
         static constexpr bool Legacy = true;
         const i32 rollCount = table.template getRollCount<Legacy>(rng);
@@ -117,7 +116,7 @@ namespace loot {
      * unrolls a loop to add multiple items, or iterates over a roll count to add items.
      */
     template<size_t ContainerSize>
-    static void __attribute((noinline)) processLootTableModern(
+    static void NOINLINE processLootTableModern(
             Container<ContainerSize> &containerIn, RNG &rng, const auto &table) {
         using table_t = std::decay_t<decltype(table)>;
         static constexpr bool Legacy = false;

@@ -53,7 +53,7 @@ public:
     /**
      * @brief Array storing block IDs and data for the chunk.
      */
-    u16 blocks[STORAGE_SIZE]{};
+    std::vector<u16> blocks = std::vector<u16>(STORAGE_SIZE);
 
     /**
      * @brief Buffer for storing skylight values.
@@ -94,7 +94,7 @@ public:
         stage = Stage::STAGE_TERRAIN;
         isModifying = false;
         decorateRng = RNG();
-        std::memset(blocks, 0, STORAGE_SIZE);
+        std::memset(blocks.data(), 0, STORAGE_SIZE);
         skyLight.clear();
         highestYBlock = -1;
         std::memset(heightMap, 0, 256);
@@ -367,7 +367,7 @@ public:
      * @return True if the coordinates are invalid, false otherwise.
      */
     MU ND static bool isInvalidIndex(c_i64 x, c_i64 y, c_i64 z) {
-        return EXPECT_FALSE(((x | z) & ~15) || (y & ~255));
+        return (((x | z) & ~15) || (y & ~255));
     }
 
     /**

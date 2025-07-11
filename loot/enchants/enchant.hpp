@@ -1,8 +1,5 @@
 #pragma once
 
-#pragma clang diagnostic push
-#pragma ide diagnostic ignored "ConstantFunctionResult"
-
 /**
  * @file enchant.hpp
  * @brief Contains the declaration of the Enchant base class for enchantments.
@@ -196,5 +193,3 @@ namespace enchants {
     };
 
 } // namespace enchants
-
-#pragma clang diagnostic pop
