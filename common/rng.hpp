@@ -94,17 +94,19 @@ public:
         return rng;
     }
 
-
-    MU static RNG getPopulationSeed(c_i64 worldSeed, c_i32 chunkX, c_i32 chunkZ) noexcept {
+    MU static uint64_t getChunkSeed(c_i64 worldSeed, c_i32 chunkX, c_i32 chunkZ) noexcept {
         RNG rng;
         rng.setSeed(worldSeed);
         auto a = (i64) rng.nextLong();
         auto b = (i64) rng.nextLong();
         a = ((a / 2) * 2) + 1;
         b = ((b / 2) * 2) + 1;
-        c_i64 decoratorSeed = (chunkX * a + chunkZ * b) ^ worldSeed;
-        rng.setSeed(decoratorSeed);
-        return rng;
+        return (chunkX * a + chunkZ * b) ^ worldSeed;
+    }
+
+
+    MU static RNG getPopulationSeed(c_i64 worldSeed, c_i32 chunkX, c_i32 chunkZ) noexcept {
+        return RNG(getChunkSeed(worldSeed, chunkX, chunkZ));
     }
 
     // ========================================================================

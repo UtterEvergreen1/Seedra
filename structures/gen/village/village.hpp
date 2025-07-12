@@ -75,6 +75,7 @@ namespace gen {
         int numInvalidPieces = 1; ///< Number of invalid pieces (e.g., roads and wells).
         int myBlackSmithPieceIndex = -1; ///< Index of the blacksmith piece, if present.
 
+        bool useBiomes; ///< Flag indicating whether to check biomes for village generation.
         bool isZombieInfested{}; ///< Flag indicating if the village is a zombie village.
 
     public:
@@ -92,8 +93,9 @@ namespace gen {
         /**
          * @brief Constructs a Village object with the specified generator.
          * @param generator Pointer to the generator.
+         * @param useBiomes Flag indicating whether to check biomes for village generation.
          */
-        explicit Village(const Generator *generator);
+        Village(const Generator *generator, bool useBiomes = true);
 
         /**
          * @brief Destructor for the Village class.

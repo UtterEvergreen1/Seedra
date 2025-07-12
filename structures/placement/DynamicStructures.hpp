@@ -49,20 +49,19 @@ namespace Placement {
     template<typename Derived>
     class DynamicStructure {
     public:
-        static c_u64 MAIN_VALID_BIOMES; ///< Main valid biomes for the structure.
-        MU static c_u64 SECONDARY_VALID_BIOMES; ///< Secondary valid biomes for the structure.
-        MU static c_u64 SECONDARY_VALID_BIOMES_MUTATED; ///< Mutated secondary valid biomes.
+        constexpr static u64 MAIN_VALID_BIOMES = 0; ///< Main valid biomes for the structure.
+        constexpr static u64 SECONDARY_VALID_BIOMES = 0; ///< Secondary valid biomes for the structure.
+        constexpr static u64 SECONDARY_VALID_BIOMES_MUTATED = 0; ///< Mutated secondary valid biomes.
 
-        static c_int SALT; ///< Salt value for structure placement.
-        MU static int REGION_SIZE; ///< Size of the region for structure placement.
+        static int CHUNK_BOUNDS; ///< Bounds for chunk placement.
+        static int REGION_SIZE; ///< Size of the region for structure placement.
         static int CHUNK_RANGE; ///< Range of chunks to consider for placement.
-        MU static int ATTEMPTS; ///< Maximum number of placement attempts.
-        static c_int MAIN_RADIUS; ///< Main radius for structure placement.
-        static c_int SECOND_RADIUS; ///< Secondary radius for structure placement.
-        MU static c_bool HAS_SECOND_BIOME_CHECK; ///< Flag for secondary biome checks.
-        MU static bool HAS_MAX_ATTEMPTS; ///< Flag for maximum attempts.
-        MU static int CHUNK_BOUNDS; ///< Bounds for chunk placement.
-        MU static bool REDUCED_SPACING; ///< Flag for reduced spacing between structures.
+        static int ATTEMPTS; ///< Maximum number of placement attempts.
+        static bool REDUCED_SPACING; ///< Flag for reduced spacing between structures.
+        constexpr static int SALT = 0; ///< Salt value for structure placement.
+        constexpr static int MAIN_RADIUS = 0; ///< Main radius for structure placement.
+        constexpr static int SECOND_RADIUS = 0; ///< Secondary radius for structure placement.
+        constexpr static bool HAS_SECOND_BIOME_CHECK = true; ///< Flag for secondary biome checks.
 
         /**
          * @brief Gets the position of the structure in a region.
@@ -72,6 +71,37 @@ namespace Placement {
          * @return The position of the structure.
          */
         static Pos2D getPosition(const Generator *g, int regionX, int regionZ);
+
+        static Pos2DVec_t getAllPossiblePositions(int64_t worldSeed, int regionX, int regionZ);
+
+        /**
+         * @brief Verifies if the structure can spawn at a specific chunk position.
+         * @param g Pointer to the generator.
+         * @param chunkX The X coordinate of the chunk.
+         * @param chunkZ The Z coordinate of the chunk.
+         * @return True if the structure can spawn, false otherwise.
+         */
+        static bool verifyChunkPosition(const Generator *g, int chunkX, int chunkZ);
+
+        /**
+         * @brief Verifies if the structure can spawn at a specific chunk position.
+         * @param g Pointer to the generator.
+         * @param chunkPos The chunk position as a 2D coordinate.
+         * @return True if the structure can spawn, false otherwise.
+         */
+        static bool verifyChunkPosition(const Generator *g, const Pos2D chunkPos) {
+            return verifyChunkPosition(g, chunkPos.x, chunkPos.z);
+        }
+
+        /**
+         * @brief Checks if a position is a valid chunk position within the 60 rolls for the structure.
+         * @param worldSeed The world seed.
+         * @param regionX The X coordinate of the region.
+         * @param regionZ The Z coordinate of the region.
+         * @param pos The position to check.
+         * @return True if the position is valid, false otherwise.
+         */
+        static bool isPossibleChunkPos(int64_t worldSeed, int regionX, int regionZ, const Pos2D &pos);
 
         /**
          * @brief Gets all positions of the structure.
@@ -113,6 +143,12 @@ namespace Placement {
      */
     class Mansion : public DynamicStructure<Mansion> {
     public:
+        constexpr static int Placement::DynamicStructure<Mansion>::SALT = 10387319;
+        constexpr static int Placement::DynamicStructure<Mansion>::MAIN_RADIUS = 4;
+        constexpr static int Placement::DynamicStructure<Mansion>::SECOND_RADIUS = 32;
+        constexpr static u64 Placement::DynamicStructure<Mansion>::MAIN_VALID_BIOMES = (1ULL << dark_forest);
+        constexpr static u64 Placement::DynamicStructure<Mansion>::SECONDARY_VALID_BIOMES = DEFAULT_SECONDARY_VALID_BIOMES;
+        constexpr static u64 Placement::DynamicStructure<Mansion>::SECONDARY_VALID_BIOMES_MUTATED = DEFAULT_SECONDARY_VALID_BIOMES_MUTATED;
         /**
          * @brief Sets the world size for the Mansion.
          * @param worldSize The world size.
@@ -126,6 +162,16 @@ namespace Placement {
      */
     class Monument : public DynamicStructure<Monument> {
     public:
+        constexpr static int Placement::DynamicStructure<Monument>::SALT = 10387313;
+        constexpr static int Placement::DynamicStructure<Monument>::MAIN_RADIUS = 8;
+        constexpr static int Placement::DynamicStructure<Monument>::SECOND_RADIUS = 29;
+        constexpr static u64 Placement::DynamicStructure<Monument>::MAIN_VALID_BIOMES =
+            1ULL << ocean | 1ULL << river | 1ULL << frozen_river | 1ULL << deep_ocean | 1ULL << warm_ocean |
+            1ULL << deep_warm_ocean | 1ULL << lukewarm_ocean | 1ULL << deep_lukewarm_ocean | 1ULL << cold_ocean |
+            1ULL << deep_cold_ocean | 1ULL << frozen_ocean | 1ULL << deep_frozen_ocean;
+        constexpr static u64 Placement::DynamicStructure<Monument>::SECONDARY_VALID_BIOMES =
+            1ULL << deep_ocean | 1ULL << deep_warm_ocean | 1ULL << deep_lukewarm_ocean | 1ULL << deep_cold_ocean |
+            1ULL << deep_frozen_ocean;
         /**
          * @brief Sets the world size for the Monument.
          * @param worldSize The world size.
@@ -139,6 +185,13 @@ namespace Placement {
      */
     class BuriedTreasure : public DynamicStructure<BuriedTreasure> {
     public:
+        constexpr static int Placement::DynamicStructure<BuriedTreasure>::SALT = 16842397;
+        constexpr static int Placement::DynamicStructure<BuriedTreasure>::MAIN_RADIUS = 0;
+        constexpr static int Placement::DynamicStructure<BuriedTreasure>::SECOND_RADIUS = 16;
+        constexpr static u64 Placement::DynamicStructure<BuriedTreasure>::MAIN_VALID_BIOMES =
+            1ULL << mushroom_island_shore | 1ULL << beach | 1ULL << stone_beach | 1ULL << cold_beach;
+        constexpr static u64 Placement::DynamicStructure<BuriedTreasure>::SECONDARY_VALID_BIOMES = DEFAULT_SECONDARY_VALID_BIOMES;
+        constexpr static u64 Placement::DynamicStructure<BuriedTreasure>::SECONDARY_VALID_BIOMES_MUTATED = DEFAULT_SECONDARY_VALID_BIOMES_MUTATED;
         /**
          * @brief Sets the world size for the Buried Treasure.
          * @param worldSize The world size.
@@ -187,6 +240,13 @@ namespace Placement {
      */
     class Shipwreck : public DynamicStructure<Shipwreck> {
     public:
+        constexpr static int Placement::DynamicStructure<Shipwreck>::SALT = 14357617;
+        constexpr static int Placement::DynamicStructure<Shipwreck>::MAIN_RADIUS = 10;
+        constexpr static bool Placement::DynamicStructure<Shipwreck>::HAS_SECOND_BIOME_CHECK = false;
+        constexpr static u64 Placement::DynamicStructure<Shipwreck>::MAIN_VALID_BIOMES =
+            1ULL << ocean | 1ULL << mushroom_island_shore | 1ULL << beach | 1ULL << snowy_beach | 1ULL << deep_ocean |
+            1ULL << warm_ocean | 1ULL << lukewarm_ocean | 1ULL << deep_lukewarm_ocean | 1ULL << cold_ocean |
+            1ULL << deep_cold_ocean | 1ULL << frozen_ocean | 1ULL << deep_frozen_ocean;
         /**
          * @brief Sets the world size for the Shipwreck.
          * @param worldSize The world size.
@@ -200,6 +260,11 @@ namespace Placement {
      */
     class Outpost : public DynamicStructure<Outpost> {
     public:
+        constexpr static int Placement::DynamicStructure<Outpost>::SALT = 165745296;
+        constexpr static int Placement::DynamicStructure<Outpost>::MAIN_RADIUS = 32;
+        constexpr static bool Placement::DynamicStructure<Outpost>::HAS_SECOND_BIOME_CHECK = false;
+        constexpr static u64 Placement::DynamicStructure<Outpost>::MAIN_VALID_BIOMES =
+            1ULL << plains | 1ULL << desert | 1ULL << taiga | 1ULL << ice_plains | 1ULL << cold_taiga | 1ULL << savanna;
         /**
          * @brief Sets the world size for the Outpost.
          * @param worldSize The world size.

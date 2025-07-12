@@ -46,10 +46,12 @@ namespace Placement {
     StaticStructure<Derived>::getAllPositionsBounded(const Generator *g, int lowerX, int lowerZ, int upperX,
                                                      int upperZ) {
         std::vector<Pos2D> positions;
-        c_int numXRegions = ((upperX - lowerX) >> 4) / REGION_SIZE;
-        c_int numZRegions = ((upperZ - lowerZ) >> 4) / REGION_SIZE;
-        for (int regionX = -numXRegions; regionX < numXRegions; ++regionX) {
-            for (int regionZ = -numZRegions; regionZ < numZRegions; ++regionZ) {
+        c_int lowerXRegion = std::floor((float)(lowerX >> 4) / REGION_SIZE);
+        c_int lowerZRegion = std::floor((float)(lowerZ >> 4) / REGION_SIZE);
+        c_int upperXRegion = std::floor((float)(upperX >> 4) / REGION_SIZE);
+        c_int upperZRegion = std::floor((float)(upperZ >> 4) / REGION_SIZE);
+        for (int regionX = lowerXRegion; regionX <= upperXRegion; ++regionX) {
+            for (int regionZ = lowerZRegion; regionZ <= upperZRegion; ++regionZ) {
                 if (const Pos2D structPos = getRegionBlockPosition(g->getWorldSeed(), regionX, regionZ);
                         verifyChunkPosition(g, structPos.toChunkPos()) && structPos.insideBounds(lowerX, lowerZ, upperX, upperZ))
                     positions.push_back(structPos);
@@ -134,8 +136,8 @@ namespace Placement {
     std::vector<FeatureStructurePair>
     Feature::getAllFeaturePositionsBounded(const Generator *g, int lowerX, int lowerZ, int upperX, int upperZ) {
         std::vector<FeatureStructurePair> features;
-        c_int numXRegions = ((upperX - lowerX) >> 4) / REGION_SIZE;
-        c_int numZRegions = ((upperZ - lowerZ) >> 4) / REGION_SIZE;
+        c_int numXRegions = ((upperX - lowerX) >> 4) / REGION_SIZE - 1;
+        c_int numZRegions = ((upperZ - lowerZ) >> 4) / REGION_SIZE - 1;
         for (int regionX = -numXRegions; regionX < numXRegions; ++regionX) {
             for (int regionZ = -numZRegions; regionZ < numZRegions; ++regionZ) {
                 Pos2D structPos = getRegionBlockPosition(g->getWorldSeed(), regionX, regionZ);

@@ -265,6 +265,25 @@ public:
      */
     MU ND bool insideBounds(classType lowerX, classType lowerZ, classType upperX, classType upperZ) const;
 
+    /*
+     * @brief Checks if the position is inside a chunk defined by its coordinates.
+     * @param chunkX The x-coordinate of the chunk.
+     * @param chunkZ The z-coordinate of the chunk.
+     * @return True if inside the chunk, false otherwise.
+     */
+    MU ND bool insideChunk(int chunkX, int chunkZ) const {
+        return insideBounds(chunkX << 4, chunkZ << 4, (chunkX << 4) + 15, (chunkZ << 4) + 15);
+    }
+
+    /**
+     * @brief Checks if the position is inside a chunk defined by a Pos2DTemplate object.
+     * @param chunkPos The Pos2DTemplate object representing the chunk position.
+     * @return True if inside the chunk, false otherwise.
+     */
+    MU ND bool insideChunk(const Pos2DTemplate &chunkPos) const {
+        return insideChunk(chunkPos.x, chunkPos.z);
+    }
+
     /**
      * @brief Converts the position to a 64-bit integer representation.
      * @return The 64-bit integer representation.

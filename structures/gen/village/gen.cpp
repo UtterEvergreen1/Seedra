@@ -49,7 +49,7 @@ namespace gen {
 
 
 
-    Village::Village(const Generator* generator) { g = generator; }
+    Village::Village(const Generator* generator, bool useBiomes) { g = generator; this->useBiomes = useBiomes; }
 
     Village::~Village() {
         this->reset();
@@ -314,8 +314,8 @@ namespace gen {
             return {};
         }
 
-        if (c_int radius = structureComponent.getLength() / 2 + 4;
-            g->areBiomesViable(structureComponent.getCenterX(),
+        c_int radius = structureComponent.getLength() / 2 + 4;
+        if (!this->useBiomes || g->areBiomesViable(structureComponent.getCenterX(),
                                structureComponent.getCenterZ(),
                                radius,
                                Placement::Village<false>::VALID_BIOMES)) {

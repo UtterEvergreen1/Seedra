@@ -277,7 +277,7 @@ int *Generator::getBiomeRange(c_int scale, c_int x, c_int z, c_int w, c_int h) c
 
 int *Generator::getCacheAtBlock(int scale, int x, int z) const {
     const int cacheVecPos = CTZ(scale) / 2; // Count trailing zeros to get the index
-    if (this->biomeCaches.size() > cacheVecPos) {
+    if (this->biomeCaches[cacheVecPos].isGenerated()) {
         // get the biome stored in the cache
         const BiomeCache& cache = this->biomeCaches[cacheVecPos];
         const BoundingBox &bounds = cache.getBox();
@@ -292,7 +292,7 @@ int *Generator::getCacheAtBlock(int scale, int x, int z) const {
 
 int *Generator::getWorldBiomes(int scale) const {
     const int cacheVecPos = CTZ(scale) / 2; // Count trailing zeros to get the index
-    if (this->biomeCaches.size() > cacheVecPos) {
+    if (this->biomeCaches[cacheVecPos].isGenerated()) {
         // get the biome stored in the cache
         return this->biomeCaches[cacheVecPos].getBiomes();
     }
@@ -360,10 +360,10 @@ bool Generator::areBiomesViable(c_int x, c_int z, c_int rad, c_u64 validBiomes,
     }*/
 
     viable = true; {
-        if (this->biomeCaches.size() > 1) {
-            for (; x1 <= x2; x1++) {
-                for (; z1 <= z2; z1++) {
-                    const int *id = getCacheAtBlock(4, x1, z1);
+        if (this->biomeCaches[1].isGenerated()) {
+            for (int zPos = z1; zPos <= z2; ++zPos) {
+                for (int xPos = x1; xPos <= x2; ++xPos) {
+                    const int *id = getCacheAtBlock(4, xPos, zPos);
                     if (id == nullptr || *id < 0 || !id_matches(*id, validBiomes, mutatedValidBiomes)) goto L_no;
                 }
             }
