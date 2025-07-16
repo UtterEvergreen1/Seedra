@@ -9,18 +9,18 @@ int main() {
     typedef std::vector<std::vector<Pos2D>> RegionPos2D;
     constexpr int ALL_MUTATED_BIOMES[] = {
         sunflower_plains - 128,
-        desert_mutated - 128,
+        // desert_mutated - 128,
         extreme_hills_mutated - 128,
         flower_forest - 128,
-        taiga_mutated - 128,
-        swampland_mutated - 128,
+        // taiga_mutated - 128,
+        // swampland_mutated - 128,
         ice_spikes - 128,
         //jungle_mutated - 128,
         //jungle_edge_mutated - 128,
         tall_birch_forest - 128,
         //tall_birch_hills - 128,
-        roofed_forest_mutated - 128,
-        cold_taiga_mutated - 128,
+        // roofed_forest_mutated - 128,
+        // cold_taiga_mutated - 128,
         mega_spruce_taiga - 128,
         redwood_taiga_hills_mutated - 128,
         modified_gravelly_mountains - 128,
@@ -96,6 +96,7 @@ int main() {
         possibleFeatures.clear();
         possibleVillages.clear();
 
+        // Initialize possible positions for static structures
         for (int regionX = -numXStaticRegions; regionX < numXStaticRegions; ++regionX) {
             for (int regionZ = -numZStaticRegions; regionZ < numZStaticRegions; ++regionZ) {
                 Pos2D featurePos = Placement::Feature::getRegionBlockPosition(g.getWorldSeed(), regionX, regionZ);
@@ -106,6 +107,7 @@ int main() {
             }
         }
 
+        // initialize possible structures for dynamic regions
         for (int regionX = -numXDynamicRegions; regionX < numXDynamicRegions; ++regionX) {
             for (int regionZ = -numZDynamicRegions; regionZ < numZDynamicRegions; ++regionZ) {
                 possibleMansions[regionX + numDynamicRegions][regionZ + numDynamicRegions] =
@@ -162,7 +164,7 @@ int main() {
                     // check mansions
                     if ((hasStructure & 1) == 0) {
                         for (const auto &pos : possibleMansions[regionX + numDynamicRegions][regionZ + numDynamicRegions]) {
-                            if (!Placement::Mansion::verifyChunkPosition(&g, pos)) continue;
+                            if (!Placement::Mansion::verifyBlockPosition(&g, pos.x, pos.z)) continue;
                             hasStructure |= 1;
                             break;
                         }
@@ -171,7 +173,7 @@ int main() {
                     // check monuments
                     if ((hasStructure & 2) == 0) {
                         for (const auto &pos : possibleMonuments[regionX + numDynamicRegions][regionZ + numDynamicRegions]) {
-                            if (!Placement::Monument::verifyChunkPosition(&g, pos)) continue;
+                            if (!Placement::Monument::verifyBlockPosition(&g, pos.x, pos.z)) continue;
                             hasStructure |= 2;
                             break;
                         }
@@ -180,7 +182,7 @@ int main() {
                     // check buried treasures
                     if ((hasStructure & 4) == 0) {
                         for (const auto &pos : possibleTreasures[regionX + numDynamicRegions][regionZ + numDynamicRegions]) {
-                            if (!Placement::BuriedTreasure::verifyChunkPosition(&g, pos)) continue;
+                            if (!Placement::BuriedTreasure::verifyBlockPosition(&g, pos.x, pos.z)) continue;
                             hasStructure |= 4;
                             break;
                         }
@@ -189,7 +191,7 @@ int main() {
                     // check shipwrecks
                     if ((hasStructure & 8) == 0) {
                         for (const auto &pos : possibleShipwrecks[regionX + numDynamicRegions][regionZ + numDynamicRegions]) {
-                            if (!Placement::Shipwreck::verifyChunkPosition(&g, pos)) continue;
+                            if (!Placement::Shipwreck::verifyBlockPosition(&g, pos.x, pos.z)) continue;
                             hasStructure |= 8;
                             break;
                         }
@@ -206,7 +208,7 @@ int main() {
 
             constexpr int mutatedBiomesSize = modified_badlands_plateau - 127;
             bool hasBiomes[ (int)BiomeID::small_end_islands] = {};
-            // bool hasMutatedBiomes[mutatedBiomesSize] = {};
+            bool hasMutatedBiomes[mutatedBiomesSize] = {};
             const int worldSize = g.getWorldCoordinateBounds() * 2; // world size in blocks
             int* biomes = g.getBiomeRange(1, -g.getWorldCoordinateBounds(), -g.getWorldCoordinateBounds(),
                                                             worldSize,
@@ -214,17 +216,16 @@ int main() {
             for (int i = 0; i < CLASSIC_WORLD_SIZE; ++i) {
                 int biome = biomes[i];
                 if (biome > 128) {
-                    /*if (biome <= modified_badlands_plateau) {
+                    if (biome <= modified_badlands_plateau) {
                         hasMutatedBiomes[biome - 128] = true; // mark mutated biomes
-                    }*/
-                    hasBiomes[biome - 128] = true;
+                    }
+                    // hasBiomes[biome - 128] = true;
                     continue;
                 }
                 hasBiomes[biome] = true;
             }
 
             // check if all biomes are present
-            //bool allBiomesPresent = true;
             int totalBiomesPresent = 0;
             for (int i = 0; i < (int)BiomeID::small_end_islands; ++i) {
                 if (i == (int)BiomeID::hell || i == (int)BiomeID::the_end || i == BiomeID::legacy_frozen_ocean) continue; // skip hell and the end biomes, duh!
@@ -233,20 +234,21 @@ int main() {
                 }
             }
             free(biomes);
-            std::cout << "Total biomes present: " << totalBiomesPresent << std::endl;
-            if (totalBiomesPresent < (int)BiomeID::small_end_islands - 3) { // -3 for hell, the end and legacy_frozen_ocean
-                std::cout << "Not all biomes are present, skipping seed: " << sisterSeed << std::endl;
+            // std::cout << "Total biomes present: " << totalBiomesPresent << std::endl;
+            if (totalBiomesPresent < 35/*(int)BiomeID::small_end_islands - 3*/) { // -3 for hell, the end and legacy_frozen_ocean
+                //std::cout << "Not all biomes are present, skipping seed: " << sisterSeed << std::endl;
                 continue; // skip this seed if not all biomes are present
             }
             //if (!allBiomesPresent) continue;
             // check if all mutated biomes are present
-            /*for (int i = 0; i < ALL_MUTATED_BIOMES_SIZE; ++i) {
-                if (!hasMutatedBiomes[ALL_MUTATED_BIOMES[i]]) {
+            bool allBiomesPresent = true;
+            for (int i : ALL_MUTATED_BIOMES) {
+                if (!hasMutatedBiomes[i]) {
                     allBiomesPresent = false;
                     break;
                 }
             }
-            if (!allBiomesPresent) continue;*/
+            if (!allBiomesPresent) continue;
 
             std::cout << "Valid seed found: " << sisterSeed << std::endl;
             results << "Valid seed found: " << sisterSeed << std::endl;
