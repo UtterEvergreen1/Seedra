@@ -38,7 +38,7 @@ namespace Placement {
                 if (xChunk < Derived::CHUNK_BOUNDS && xChunk >= -Derived::CHUNK_BOUNDS
                     && zChunk < Derived::CHUNK_BOUNDS && zChunk >= -Derived::CHUNK_BOUNDS) {
 
-                    if (Derived::verifyChunkPosition(g, xChunk, zChunk)) {
+                    if (Derived::verifyBlockPosition(g, xPos, zPos)) {
                         return {xPos, zPos};
                     }
                 }
@@ -81,10 +81,10 @@ namespace Placement {
     }
 
     template<typename Derived>
-    bool DynamicStructure<Derived>::verifyChunkPosition(const Generator *g, int chunkX, int chunkZ) {
-        if (g->areBiomesViable(chunkX, chunkZ, Derived::MAIN_RADIUS, Derived::MAIN_VALID_BIOMES)) {
+    bool DynamicStructure<Derived>::verifyBlockPosition(const Generator *g, int blockX, int blockZ) {
+        if (g->areBiomesViable(blockX, blockZ, Derived::MAIN_RADIUS, Derived::MAIN_VALID_BIOMES)) {
             if constexpr (!Derived::HAS_SECOND_BIOME_CHECK) { return true; }
-            if (g->areBiomesViable(chunkX, chunkZ, Derived::SECOND_RADIUS, Derived::SECONDARY_VALID_BIOMES,
+            if (g->areBiomesViable(blockX, blockZ, Derived::SECOND_RADIUS, Derived::SECONDARY_VALID_BIOMES,
                                    Derived::SECONDARY_VALID_BIOMES_MUTATED)) {
                 return true;
             }

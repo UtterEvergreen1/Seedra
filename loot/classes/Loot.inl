@@ -292,7 +292,7 @@ namespace loot {
     template<bool checkCaves, bool checkWaterCaves>
     RNG Loot<ContainerSize, Aquatic, Tables...>::getStrongholdLootSeed(const Generator& g, gen::Stronghold* strongholdGenerator,
                                         const StructureComponent& piece, c_int chestChunkX, c_int chestChunkZ,
-                                        bool accurate) {
+                                        bool accurate) const {
          RNG rng = RNG::getPopulationSeed(g.getWorldSeed(), chestChunkX, chestChunkZ);
 
          if constexpr (checkCaves) {
@@ -317,7 +317,7 @@ namespace loot {
     template<bool checkCaves, bool shuffle>
     Container27 Loot<ContainerSize, Aquatic, Tables...>::getStrongholdLoot(const Generator& g, gen::Stronghold* strongholdGenerator,
                                           const StructureComponent& piece, c_int chestChunkX, c_int chestChunkZ,
-                                          const bool accurate) {
+                                          const bool accurate) const {
          u64 lootSeed = getStrongholdLootSeed<checkCaves>(g, strongholdGenerator, piece, chestChunkX,
                                                                             chestChunkZ, accurate);
          if (lootSeed == -1ULL) return {};

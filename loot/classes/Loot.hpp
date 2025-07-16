@@ -68,13 +68,13 @@ namespace loot {
         /// loot seeding with stronghold stone rolls
         template<bool checkCaves, bool checkWaterCaves = false>
         ND RNG getStrongholdLootSeed(const Generator& g, gen::Stronghold* strongholdGenerator,
-                                  const StructureComponent& piece, c_int chestChunkX, c_int chestChunkZ, bool accurate);
+                                  const StructureComponent& piece, c_int chestChunkX, c_int chestChunkZ, bool accurate) const;
 
         /// combine loot seeding and generation to get the stronghold loot
         template<bool checkCaves, bool shuffle>
         MU ND Container27 getStrongholdLoot(const Generator& g, gen::Stronghold* strongholdGenerator,
                                        const StructureComponent& piece, c_int chestChunkX, c_int chestChunkZ,
-                                       bool accurate);
+                                       bool accurate) const;
     };
 
 } // namespace loot

@@ -75,22 +75,23 @@ namespace Placement {
         static Pos2DVec_t getAllPossiblePositions(int64_t worldSeed, int regionX, int regionZ);
 
         /**
+         * @brief Verifies if the structure can spawn at a specific block position.
+         * @param g Pointer to the generator.
+         * @param blockX The X coordinate of the block.
+         * @param blockZ The Z coordinate of the block.
+         * @return True if the structure can spawn, false otherwise.
+         */
+        static bool verifyBlockPosition(const Generator *g, int blockX, int blockZ);
+
+        /**
          * @brief Verifies if the structure can spawn at a specific chunk position.
          * @param g Pointer to the generator.
          * @param chunkX The X coordinate of the chunk.
          * @param chunkZ The Z coordinate of the chunk.
          * @return True if the structure can spawn, false otherwise.
          */
-        static bool verifyChunkPosition(const Generator *g, int chunkX, int chunkZ);
-
-        /**
-         * @brief Verifies if the structure can spawn at a specific chunk position.
-         * @param g Pointer to the generator.
-         * @param chunkPos The chunk position as a 2D coordinate.
-         * @return True if the structure can spawn, false otherwise.
-         */
-        static bool verifyChunkPosition(const Generator *g, const Pos2D chunkPos) {
-            return verifyChunkPosition(g, chunkPos.x, chunkPos.z);
+        static bool verifyChunkPosition(const Generator *g, int chunkX, int chunkZ) {
+            return verifyBlockPosition(g, (chunkX << 4) + 8, (chunkZ << 4) + 8);
         }
 
         /**
