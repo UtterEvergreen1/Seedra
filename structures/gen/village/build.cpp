@@ -597,7 +597,7 @@ namespace build::village {
         piece.fillWithAir(worldIn, chunkBB, 0, 1, 0, 9, 4, 6);
         piece.fillWithBlocks(worldIn, chunkBB, 0, 0, 0, 9, 0, 6, iBlockState, false);
         piece.fillWithBlocks(worldIn, chunkBB, 0, 4, 0, 9, 4, 6, iBlockState, false);
-        piece.fillWithBlocks(worldIn, chunkBB, 0, 5, 0, 9, 5, 6, lce::BlocksInit::STONE_SLAB.getState(), false);
+        piece.fillWithBlocks(worldIn, chunkBB, 0, 5, 0, 9, 5, 6, lce::BlocksInit::LOWER_STONE_SLAB.getState(), false);
         piece.fillWithAir(worldIn, chunkBB, 1, 5, 1, 8, 5, 5);
         piece.fillWithBlocks(worldIn, chunkBB, 1, 1, 0, 2, 3, 0, iBlockState3, false);
         piece.fillWithBlocks(worldIn, chunkBB, 0, 1, 0, 0, 4, 0, iBlockState5, false);
