@@ -103,5 +103,6 @@ if(LC_BUILD_EXECUTABLE)
     add_cli(EXE_CreateHeatMap "tests/create_heat_map.cpp")
     add_cli(EXE_TallCacti "tests/find_tall_cactus.cpp")
     add_cli(EXE_AllBiomes "tests/all_biomes_and_structures.cpp")
+    add_cli(EXE_11Eye "tests/11_eye_filter.cpp")
 
 endif()

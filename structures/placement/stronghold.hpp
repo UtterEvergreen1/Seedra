@@ -20,7 +20,7 @@ namespace Placement {
          * This constant defines the biomes where Strongholds can be placed. Each biome is represented
          * as a bit in the bitmask.
          */
-        static constexpr u64 stronghold_biomes =
+        static constexpr uint64_t stronghold_biomes =
                 1ULL << plains | 1ULL << desert | 1ULL << extreme_hills | 1ULL << forest | 1ULL << taiga |
                 1ULL << hell | 1ULL << the_end | 1ULL << ice_plains | 1ULL << ice_mountains |
                 1ULL << mushroom_island | 1ULL << desert_hills | 1ULL << forest_hills | 1ULL << taiga_hills |
@@ -54,29 +54,6 @@ namespace Placement {
          * @param g The generator object containing world seed and other parameters.
          * @return The position of the Stronghold as a 2D coordinate.
          */
-        ND static Pos2D getWorldPosition(const Generator& g);
-
-        /**
-         * @brief Calculates the starting chunk position of the Stronghold.
-         *
-         * This method determines the starting chunk position of the Stronghold by dividing
-         * the world position by 16 (shifting right by 4).
-         *
-         * @param g The generator object containing world seed and other parameters.
-         * @return The starting chunk position of the Stronghold as a 2D coordinate.
-         */
-        MU ND static Pos2D getStartChunk(const Generator& g) { return getWorldPosition(g) >> 4; }
-
-        /**
-         * @brief Calculates the raw world position of the Stronghold.
-         *
-         * This method determines the raw world position of the Stronghold using the world seed
-         * and a flag indicating whether to use Xbox-specific placement logic.
-         *
-         * @param worldSeed The seed of the world.
-         * @param xboxStronghold Flag indicating whether to use Xbox-specific placement logic.
-         * @return The raw world position of the Stronghold as a 2D coordinate.
-         */
-        MU ND static Pos2D getRawWorldPosition(i64 worldSeed, bool xboxStronghold);
+        ND static std::vector<Pos2D> getWorldPositions(const Generator& g);
     };
 } // namespace Placement

@@ -55,7 +55,6 @@ void ChunkGeneratorOverWorld::setBiomesForGeneration(c_int x, c_int z, c_int wid
 
 void ChunkGeneratorOverWorld::setBlocksInChunk(c_int chunkX, c_int chunkZ, ChunkPrimer* primer) {
 
-    setBiomesForGeneration(chunkX * 4 - 2, chunkZ * 4 - 2, 10, 10, 4);
     generateHeightmap(chunkX * 4, 0, chunkZ * 4);
 
     for (int i = 0; i < 4; ++i) {
@@ -112,11 +111,11 @@ void ChunkGeneratorOverWorld::setBlocksInChunk(c_int chunkX, c_int chunkZ, Chunk
 }
 
 
-void ChunkGeneratorOverWorld::replaceBiomeBlocks(c_int x, c_int z, ChunkPrimer* primer, c_int* biomesIn) {
+void ChunkGeneratorOverWorld::replaceBiomeBlocks(c_int x, c_int z, ChunkPrimer* primer) {
     surfaceNoise.getRegion(depthBuffer, x * 16, z * 16, 16, 16, 0.0625, 0.0625, 1.0);
     for (int i = 0; i < 16; ++i) {
         for (int j = 0; j < 16; ++j) {
-            Biome* biome = Biome::getBiomeForId(biomesIn[j + i * 16]);
+            Biome* biome = Biome::getBiomeForId(biomesForGeneration[j + i * 16]);
             biome->genTerrainBlocks(g->getWorldSeed(), rng, primer, x * 16 + i, z * 16 + j, depthBuffer[j + i * 16]);
         }
     }
@@ -125,9 +124,10 @@ void ChunkGeneratorOverWorld::replaceBiomeBlocks(c_int x, c_int z, ChunkPrimer* 
 
 void ChunkGeneratorOverWorld::provideChunk(ChunkPrimer *chunkPrimer, c_int x,c_int z) {
     rng.setSeed((i64) x * 341873128712LL + (i64) z * 132897987541LL);
+    setBiomesForGeneration(x * 4 - 2, z * 4 - 2, 10, 10, 4);
     setBlocksInChunk(x, z, chunkPrimer);
     setBiomesForGeneration(x * 16, z * 16, 16, 16, 1);
-    replaceBiomeBlocks(x, z, chunkPrimer, biomesForGeneration);
+    replaceBiomeBlocks(x, z, chunkPrimer);
     chunkPrimer->stage = Stage::STAGE_WATER_CAVES;
 }
 

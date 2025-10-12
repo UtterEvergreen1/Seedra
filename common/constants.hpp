@@ -38,6 +38,12 @@ constexpr double TWO_PI = 2.0 * PI;
 constexpr float TWO_PI_FLOAT = 2.0f * PI_FLOAT;
 
 /**
+ * @def TWO_THIRDS_PI_FLOAT
+ * @brief Two-thirds of the mathematical constant π (pi) with single precision. (A third of a circle)
+ */
+constexpr float TWO_THIRDS_PI_FLOAT = 2.0f / 3.0f * PI_FLOAT;
+
+/**
  * @def power2_31
  * @brief The value of 2^31, representing the maximum positive value for a signed 32-bit integer.
  */

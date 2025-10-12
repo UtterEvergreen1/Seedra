@@ -158,8 +158,11 @@ void World::generateVillages() {
 
 
 void World::generateStrongholds() {
-    Pos2D strongholdPos = Placement::Stronghold::getWorldPosition(*g).toChunkPos();
-    strongholds.emplace_back();
-    strongholds[0].generate(g->getWorldSeed(), strongholdPos);
+    std::vector<Pos2D> strongholdPositions = Placement::Stronghold::getWorldPositions(*g);
+    strongholds.reserve(strongholdPositions.size());
+    for (auto& strongholdPos : strongholdPositions) {
+        strongholds.emplace_back(gen::Stronghold());
+        strongholds.back().generate(g->getWorldSeed(), strongholdPos);
+    }
     std::cout << "Stronghold piece count: " << strongholds[0].getPieceCount() << std::endl;
 }

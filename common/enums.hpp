@@ -20,6 +20,12 @@ enum class LCEVERSION : i8 {
     NONE = 7 ///< Represents no specific version.
 };
 
+/// Minecraft world generators
+enum class WORLDGENERATOR : i8 {
+    DEFAULT = 0, ///< Default world generator.
+    FLAT = 1 ///< Flat world generator.
+};
+
 /// Minecraft Java versions
 enum MCVERSION : i8 {
     MC_1_0 = 0, ///< Version 1.0

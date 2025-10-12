@@ -129,9 +129,8 @@ public:
      * @param x The starting X-coordinate.
      * @param z The starting Z-coordinate.
      * @param primer Pointer to the ChunkPrimer to modify.
-     * @param biomesIn Pointer to the array of biome IDs.
      */
-    void replaceBiomeBlocks(int x, int z, ChunkPrimer *primer, c_int *biomesIn);
+    void replaceBiomeBlocks(int x, int z, ChunkPrimer *primer);
 
     /**
      * @brief Provides a chunk at the specified position.

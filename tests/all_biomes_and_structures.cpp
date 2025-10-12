@@ -7,29 +7,65 @@
 #define INIT_DYNAMIC numDynamicRegions + 1, RegionPos2D(numDynamicRegions + 1)
 int main() {
     typedef std::vector<std::vector<Pos2D>> RegionPos2D;
+    constexpr int ALL_BIOMES[] = {
+        plains,
+        desert,
+        forest,
+        taiga,
+        swampland,
+        river,
+        frozen_river,
+        ice_plains,
+        ice_mountains,
+        mushroom_island,
+        mushroom_island_shore,
+        beach,
+        jungle,
+        stone_beach,
+        cold_beach,
+        birch_forest,
+        roofed_forest,
+        cold_taiga,
+        mega_taiga,
+        wooded_mountains,
+        savanna,
+        savanna_plateau,
+        mesa,
+        mesa_plateau_stone,
+        mesa_plateau,
+        // warm_ocean,
+        deep_warm_ocean,
+        // lukewarm_ocean,
+        deep_lukewarm_ocean,
+        // cold_ocean,
+        deep_cold_ocean,
+        // frozen_ocean,
+        deep_frozen_ocean
+    };
     constexpr int ALL_MUTATED_BIOMES[] = {
-        sunflower_plains - 128,
+        // sunflower_plains - 128,
         // desert_mutated - 128,
-        extreme_hills_mutated - 128,
+        // extreme_hills_mutated - 128,
         flower_forest - 128,
         // taiga_mutated - 128,
         // swampland_mutated - 128,
         ice_spikes - 128,
         //jungle_mutated - 128,
         //jungle_edge_mutated - 128,
-        tall_birch_forest - 128,
+        // tall_birch_forest - 128,
         //tall_birch_hills - 128,
         // roofed_forest_mutated - 128,
         // cold_taiga_mutated - 128,
-        mega_spruce_taiga - 128,
-        redwood_taiga_hills_mutated - 128,
-        modified_gravelly_mountains - 128,
-        savanna_mutated - 128,
-        savanna_plateau_mutated - 128,
-        mesa_bryce - 128,
-        mesa_plateau_stone_mutated - 128,
-        mesa_plateau_mutated - 128
+        // mega_spruce_taiga - 128,
+        // giant_spruce_taiga_hills - 128,
+        // modified_gravelly_mountains - 128,
+        // savanna_mutated - 128,
+        // savanna_plateau_mutated - 128,
+        // mesa_bryce - 128,
+        // mesa_plateau_stone_mutated - 128,
+        // mesa_plateau_mutated - 128
     };
+    constexpr int ALL_BIOMES_SIZE = sizeof(ALL_BIOMES) / sizeof(ALL_BIOMES[0]);
     constexpr int ALL_MUTATED_BIOMES_SIZE = sizeof(ALL_MUTATED_BIOMES) / sizeof(ALL_MUTATED_BIOMES[0]);
 
     constexpr int CLASSIC_WORLD_SIZE = 746496; // Classic world size in blocks (area)
@@ -217,31 +253,25 @@ int main() {
                 int biome = biomes[i];
                 if (biome > 128) {
                     if (biome <= modified_badlands_plateau) {
-                        hasMutatedBiomes[biome - 128] = true; // mark mutated biomes
+                        hasMutatedBiomes[biome - 128] = true;
                     }
-                    // hasBiomes[biome - 128] = true;
                     continue;
                 }
                 hasBiomes[biome] = true;
             }
+            free(biomes);
 
             // check if all biomes are present
-            int totalBiomesPresent = 0;
-            for (int i = 0; i < (int)BiomeID::small_end_islands; ++i) {
-                if (i == (int)BiomeID::hell || i == (int)BiomeID::the_end || i == BiomeID::legacy_frozen_ocean) continue; // skip hell and the end biomes, duh!
-                if (hasBiomes[i]) {
-                    totalBiomesPresent++;
+            bool allBiomesPresent = true;
+            for (int i : ALL_BIOMES) {
+                if (!hasBiomes[i]) {
+                    allBiomesPresent = false;
+                    break;
                 }
             }
-            free(biomes);
-            // std::cout << "Total biomes present: " << totalBiomesPresent << std::endl;
-            if (totalBiomesPresent < 35/*(int)BiomeID::small_end_islands - 3*/) { // -3 for hell, the end and legacy_frozen_ocean
-                //std::cout << "Not all biomes are present, skipping seed: " << sisterSeed << std::endl;
-                continue; // skip this seed if not all biomes are present
-            }
-            //if (!allBiomesPresent) continue;
+            if (!allBiomesPresent) continue;
+
             // check if all mutated biomes are present
-            bool allBiomesPresent = true;
             for (int i : ALL_MUTATED_BIOMES) {
                 if (!hasMutatedBiomes[i]) {
                     allBiomesPresent = false;

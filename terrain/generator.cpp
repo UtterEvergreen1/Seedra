@@ -4,38 +4,17 @@
 #include "common/StringHash.hpp"
 #include "common/range.hpp"
 #include "common/rng.hpp"
-#include "terrain/biomes/biomeID.hpp"
 #include "terrain/noise/noise.hpp"
 
-c_u64 Generator::SPAWN_BIOMES = (1ULL << forest) | (1ULL << plains) | (1ULL << taiga) | (1ULL << taiga_hills) |
-                                (1ULL << wooded_hills) | (1ULL << jungle) | (1ULL << jungle_hills);
 
-
-/**
- * Sets up a biome generator for a given LCE version.
- *
- * @param console target console
- * @param version update version
- * @param size the world size for calculating world bounds
- * @param scale the biome size for generating biomes
- */
 Generator::Generator(const lce::CONSOLE console, const LCEVERSION version,
-                     const lce::WORLDSIZE size, const lce::BIOMESCALE scale)
-    : Generator(console, version, 0, size, scale) {
+                     const lce::WORLDSIZE size, const lce::BIOMESCALE scale, WORLDGENERATOR worldGen)
+    : Generator(console, version, 0, size, scale, worldGen) {
 }
 
-/**
- * Sets up a biome generator for a given LCE version.
- *
- * @param console target console
- * @param version update version
- * @param scale the biome size for generating biomes
- * @param size the world size for calculating world bounds
- * @param seed the world seed to apply
- */
 Generator::Generator(const lce::CONSOLE console, const LCEVERSION version, c_i64 seed, const lce::WORLDSIZE size,
-                     const lce::BIOMESCALE scale)
-    : worldSeed(seed), version(version), console(console), biomeScale(scale), worldSize(size),
+                     const lce::BIOMESCALE scale, WORLDGENERATOR worldGen)
+    : worldSeed(seed), version(version), console(console), biomeScale(scale), worldSize(size), worldGen(worldGen),
       worldCoordinateBounds(getChunkWorldBounds(size) << 4),
       worldBounds(-worldCoordinateBounds, -worldCoordinateBounds, worldCoordinateBounds, worldCoordinateBounds) {
     this->biomeCaches.reserve(5); // for scales 1, 4, 16, 64, 256
@@ -46,20 +25,10 @@ Generator::Generator(const lce::CONSOLE console, const LCEVERSION version, c_i64
     setLayerSeed(this->layerStack.entry_1, seed);
 }
 
-
-/**
- * Sets up a biome generator for a given LCE version.
- *
- * @param console target console
- * @param version update version
- * @param scale the biome size for generating biomes
- * @param size the world size for calculating world bounds
- * @param seed the world seed to apply
- */
 Generator::Generator(const lce::CONSOLE console, const LCEVERSION version, const std::string &seed,
                      const lce::WORLDSIZE size,
-                     const lce::BIOMESCALE scale)
-    : Generator(console, version, StringHash::hash(seed), size, scale) {
+                     const lce::BIOMESCALE scale, WORLDGENERATOR worldGen)
+    : Generator(console, version, StringHash::hash(seed), size, scale, worldGen) {
 }
 
 
@@ -92,8 +61,8 @@ void Generator::generateCache(int scale) {
     const int trailingZeros = __builtin_ctz(scale);
     const int arrIndex = trailingZeros >> 1;
     int minBound = -(this->worldCoordinateBounds >> trailingZeros);
-    int worldSize = -minBound << 1;
-    int *biomes = getBiomeRange(scale, minBound, minBound, worldSize, worldSize);
+    int worldSizeBounds = -minBound << 1;
+    int *biomes = getBiomeRange(scale, minBound, minBound, worldSizeBounds, worldSizeBounds);
     this->biomeCaches[arrIndex].setBiomes(biomes);
 }
 
@@ -107,14 +76,14 @@ void Generator::generateCachesUpTo(int maxScale) {
         const int trailingZeros = __builtin_ctz(scale);
         const int arrIndex = trailingZeros >> 1;
         int minBound = -(this->worldCoordinateBounds >> trailingZeros);
-        int worldSize = -minBound << 1;
-        const Range r = {scale, minBound, minBound, worldSize, worldSize};
+        int worldSizeBounds = -minBound << 1;
+        const Range r = {scale, minBound, minBound, worldSizeBounds, worldSizeBounds};
         int *ids = allocCache(r);
         // copy over the biomes from the previous scale if it exists
         if (scale <= 64) {
             const int prevTrailingZeros = __builtin_ctz(scale << 2);
             const int prevArrIndex = prevTrailingZeros >> 1;
-            const BiomeCache& prevScale  = this->biomeCaches[prevArrIndex];
+            const BiomeCache &prevScale = this->biomeCaches[prevArrIndex];
             if (prevScale.isGenerated()) {
                 memcpy(ids, prevScale.getBiomes(), prevScale.getBox().getArea() * sizeof(int));
             }
@@ -129,19 +98,13 @@ void Generator::generateAllCaches() {
 }
 
 void Generator::reloadCache() {
-    for (auto& cache : this->biomeCaches) {
+    for (auto &cache: this->biomeCaches) {
         if (cache.isGenerated()) {
             generateCache(cache.getScale());
         }
     }
 }
 
-
-/**
- * Change the version of LCE.
- *
- * @param versionIn new LCE version to apply
- */
 MU void Generator::changeLCEVersion(const LCEVERSION versionIn) {
     // avoid setting up again when it's the same
     if (this->version == versionIn) return;
@@ -279,7 +242,7 @@ int *Generator::getCacheAtBlock(int scale, int x, int z) const {
     const int cacheVecPos = CTZ(scale) / 2; // Count trailing zeros to get the index
     if (this->biomeCaches[cacheVecPos].isGenerated()) {
         // get the biome stored in the cache
-        const BiomeCache& cache = this->biomeCaches[cacheVecPos];
+        const BiomeCache &cache = this->biomeCaches[cacheVecPos];
         const BoundingBox &bounds = cache.getBox();
         if (!bounds.isVecInside({x, 0, z})) {
             return nullptr;
@@ -400,6 +363,20 @@ L_ok:
 Pos2D Generator::locateBiome(const int x, const int z, const int radius,
                              const u64 validBiomes, RNG &rng, int *passes) const {
     Pos2D out = {x, z};
+    if (this->getWorldGenerator() == WORLDGENERATOR::FLAT) {
+        if (!id_matches(this->getFixedBiome(), validBiomes)) return out;
+        if (passes != nullptr) *passes = 1;
+        int rx = 0, rz = 0;
+        const int randomRange = radius * 2 + 1;
+        if (lce::isXbox(this->getConsole())) {
+            rz = rng.nextInt(randomRange);
+            rx = rng.nextInt(randomRange);
+        } else {
+            rx = rng.nextInt(randomRange);
+            rz = rng.nextInt(randomRange);
+        }
+        return {(x - radius) + rx, (z - radius) + rz};
+    }
 
     int found = 0;
 
