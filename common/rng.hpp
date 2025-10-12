@@ -43,7 +43,6 @@ class RNG final {
     u64 mySeed = 0;
 
 public:
-    int rolls = 0;
     RNG() = default;
 
     explicit RNG(c_u64 seedIn) { this->setSeed(seedIn); }
@@ -119,7 +118,6 @@ public:
         constexpr u64 multiplier = computeMultiplier(amount);
         constexpr u64 addend = computeAddend(amount);
         mySeed = (mySeed * multiplier + addend) & RNG_MASK;
-        rolls += amount;
     }
 
     /// Jumps forwards in the random number sequence by simulating 'n' calls to next.
@@ -143,7 +141,6 @@ public:
     template<int BITS>
     MU i32 next() noexcept {
         mySeed = (mySeed * RNG_MULT_1 + RNG_ADDEND_1) & RNG_MASK;
-        ++rolls;
         return (i32) ((i64) mySeed >> (48 - BITS));
     }
 
@@ -160,7 +157,6 @@ public:
 
     MU FORCEINLINE i32 nextInt() noexcept {
         mySeed = (mySeed * RNG_MULT_1 + RNG_ADDEND_1) & RNG_MASK;
-        ++rolls;
         return (i32) (mySeed >> 16);
 
     }
@@ -172,7 +168,6 @@ public:
             c_i32 k = CTZ(n);
             mySeed = (mySeed * RNG_MULT_1 + RNG_ADDEND_1) & RNG_MASK;
             c_i32 result = (i32) ((i64) mySeed >> (48 - k));
-            ++rolls;
             return result;
         }
 
@@ -195,7 +190,6 @@ public:
             mySeed = (mySeed * RNG_MULT_1 + RNG_ADDEND_1) & RNG_MASK;
             constexpr i32 k = std::countr_zero((u32)N);
             c_i32 result = (i32) (mySeed >> (48 - k));
-            ++rolls;
             return result;
         } else {
             int val, bits;
@@ -242,7 +236,6 @@ public:
         u64 n2 = (i32) ((seed2 & RNG_MASK) >> 16);
 
         u64 n = (n1 << 32) + n2;
-        rolls += 2;
         return n;
     }
 
@@ -256,7 +249,6 @@ public:
         u64 n2 = (i32) ((seed2 & RNG_MASK) >> 16);
 
         u64 n = (n1 << 32) + n2;
-        rolls += 2;
         return (i64)n;
     }
 
@@ -267,7 +259,6 @@ public:
     MU FORCEINLINE float nextFloat() noexcept {
         constexpr float INV_2POW24 = 1.0f / 16777216.0f;
         mySeed = (mySeed * RNG_MULT_1 + RNG_ADDEND_1) & RNG_MASK;
-        ++rolls;
         return static_cast<float>(mySeed >> 24) * INV_2POW24;
     }
 
@@ -292,7 +283,6 @@ public:
         u64 n = n1 + n2;
 
         constexpr double INV_2POW53 = 1.0 / 9007199254740992.0;
-        rolls += 2;
         return static_cast<double>(n) * INV_2POW53;
 
 
