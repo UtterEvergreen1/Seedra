@@ -14,12 +14,10 @@ Generator::Generator(const lce::CONSOLE console, const LCEVERSION version,
 
 Generator::Generator(const lce::CONSOLE console, const LCEVERSION version, c_i64 seed, const lce::WORLDSIZE size,
                      const lce::BIOMESCALE scale, WORLDGENERATOR worldGen)
-    : worldSeed(seed), version(version), console(console), biomeScale(scale), worldSize(size), worldGen(worldGen),
-      worldCoordinateBounds(getChunkWorldBounds(size) << 4),
-      worldBounds(-worldCoordinateBounds, -worldCoordinateBounds, worldCoordinateBounds, worldCoordinateBounds) {
+    : config(seed, console, version, size, scale, worldGen) {
     this->biomeCaches.reserve(5); // for scales 1, 4, 16, 64, 256
     for (int cacheScale = 1; cacheScale <= 256; cacheScale <<= 2) {
-        this->biomeCaches.emplace_back(cacheScale, this->worldBounds >> (cacheScale >> 1));
+        this->biomeCaches.emplace_back(cacheScale, this->config.getWorldBounds() >> (cacheScale >> 1));
     }
     setupLayerStack(&this->layerStack, version, scale);
     setLayerSeed(this->layerStack.entry_1, seed);
@@ -31,6 +29,12 @@ Generator::Generator(const lce::CONSOLE console, const LCEVERSION version, const
     : Generator(console, version, StringHash::hash(seed), size, scale, worldGen) {
 }
 
+Generator::Generator(const Generator &other) {
+    *this = other; // use the compiler-generated copy-assignment for a default-like copy
+    setupLayerStack(&this->layerStack, this->getLCEVersion(), this->getBiomeScale());
+    setLayerSeed(this->layerStack.entry_1, this->getWorldSeed());
+}
+
 
 /**
  * Initializes the generator for a given world seed in the overworld.
@@ -39,9 +43,9 @@ Generator::Generator(const lce::CONSOLE console, const LCEVERSION version, const
  */
 void Generator::applyWorldSeed(c_i64 seed) {
     // avoid setting up again when it's the same
-    if (this->worldSeed == seed) return;
+    if (this->config.getWorldSeed() == seed) return;
 
-    this->worldSeed = seed;
+    this->config.setWorldSeed(seed);
     setLayerSeed(this->layerStack.entry_1, seed);
     this->reloadCache();
 }
@@ -60,7 +64,7 @@ void Generator::generateCache(int scale) {
     if (scale > 256) return;
     const int trailingZeros = __builtin_ctz(scale);
     const int arrIndex = trailingZeros >> 1;
-    int minBound = -(this->worldCoordinateBounds >> trailingZeros);
+    int minBound = -(this->config.getWorldCoordinateBounds() >> trailingZeros);
     int worldSizeBounds = -minBound << 1;
     int *biomes = getBiomeRange(scale, minBound, minBound, worldSizeBounds, worldSizeBounds);
     this->biomeCaches[arrIndex].setBiomes(biomes);
@@ -75,7 +79,7 @@ void Generator::generateCachesUpTo(int maxScale) {
     for (int scale = maxScale; scale >= 1; scale >>= 2) {
         const int trailingZeros = __builtin_ctz(scale);
         const int arrIndex = trailingZeros >> 1;
-        int minBound = -(this->worldCoordinateBounds >> trailingZeros);
+        int minBound = -(this->config.getWorldCoordinateBounds() >> trailingZeros);
         int worldSizeBounds = -minBound << 1;
         const Range r = {scale, minBound, minBound, worldSizeBounds, worldSizeBounds};
         int *ids = allocCache(r);
@@ -107,12 +111,12 @@ void Generator::reloadCache() {
 
 MU void Generator::changeLCEVersion(const LCEVERSION versionIn) {
     // avoid setting up again when it's the same
-    if (this->version == versionIn) return;
+    if (this->config.getLCEVersion() == versionIn) return;
 
-    this->version = versionIn;
-    setupLayerStack(&this->layerStack, versionIn, this->biomeScale);
+    this->config.setLCEVersion(versionIn);
+    setupLayerStack(&this->layerStack, versionIn, this->config.getBiomeScale());
     //reapply the layers' seed
-    setLayerSeed(this->layerStack.entry_1, this->worldSeed);
+    setLayerSeed(this->layerStack.entry_1, this->config.getWorldSeed());
     this->reloadCache();
 }
 
@@ -123,12 +127,12 @@ MU void Generator::changeLCEVersion(const LCEVERSION versionIn) {
  */
 MU void Generator::changeBiomeSize(const lce::BIOMESCALE size) {
     // avoid setting up again when it's the same
-    if (this->biomeScale == size) return;
+    if (this->config.getBiomeScale() == size) return;
 
-    this->biomeScale = size;
-    setupLayerStack(&this->layerStack, this->version, size);
+    this->config.setBiomeScale(size);
+    setupLayerStack(&this->layerStack, this->config.getLCEVersion(), size);
     //reapply the layers' seed
-    setLayerSeed(this->layerStack.entry_1, this->worldSeed);
+    setLayerSeed(this->layerStack.entry_1, this->config.getWorldSeed());
     this->reloadCache();
 }
 
@@ -139,12 +143,9 @@ MU void Generator::changeBiomeSize(const lce::BIOMESCALE size) {
  */
 MU void Generator::changeWorldSize(const lce::WORLDSIZE size) {
     // avoid recalculating when it's the same
-    if (this->worldSize == size) return;
+    if (this->config.getWorldSize() == size) return;
 
-    this->worldSize = size;
-    this->worldCoordinateBounds = getChunkWorldBounds(size) << 4;
-    this->worldBounds = BoundingBox(-this->worldCoordinateBounds, -this->worldCoordinateBounds,
-                                    this->worldCoordinateBounds, this->worldCoordinateBounds);
+    this->config.setWorldSize(size);
     this->reloadCache();
 }
 
@@ -301,8 +302,8 @@ Layer *Generator::getLayerForScale(c_int scale) const {
  */
 bool Generator::areBiomesViable(c_int x, c_int z, c_int rad, c_u64 validBiomes,
                                 c_u64 mutatedValidBiomes) const {
-    if (x - rad < -this->worldCoordinateBounds || x + rad >= this->worldCoordinateBounds ||
-        z - rad < -this->worldCoordinateBounds || z + rad >= this->worldCoordinateBounds) {
+    if (x - rad < -this->config.getWorldCoordinateBounds() || x + rad >= this->config.getWorldCoordinateBounds() ||
+        z - rad < -this->config.getWorldCoordinateBounds() || z + rad >= this->config.getWorldCoordinateBounds()) {
         return false;
     }
 
@@ -565,9 +566,11 @@ MU Pos2D Generator::getSpawnBlock() const {
         spawn.x += rng.nextInt(64) - rng.nextInt(64);
         spawn.z += rng.nextInt(64) - rng.nextInt(64);
 
-        if (spawn.x > worldCoordinateBounds || spawn.x < -worldCoordinateBounds) spawn.x = 0;
+        if (spawn.x > this->config.getWorldCoordinateBounds() || spawn.x < -this->config.getWorldCoordinateBounds())
+            spawn.x = 0;
 
-        if (spawn.z > worldCoordinateBounds || spawn.z < -worldCoordinateBounds) spawn.z = 0;
+        if (spawn.z > this->config.getWorldCoordinateBounds() || spawn.z < -this->config.getWorldCoordinateBounds())
+            spawn.z = 0;
     }
 
     return spawn;
