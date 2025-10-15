@@ -128,18 +128,17 @@ namespace Placement {
     template<typename Derived>
     std::vector<Pos2D>
     DynamicStructure<Derived>::getAllPositionsBounded(const Generator *g, int lowerX, int lowerZ, int upperX,
-                                                      int upperZ, std::atomic_bool *terminateFlag) {
+                                                      int upperZ, const std::atomic_bool *terminateFlag) {
         std::vector<Pos2D> positions;
-        c_int lowerXRegion = std::floor((float)(lowerX >> 4) / REGION_SIZE);
-        c_int lowerZRegion = std::floor((float)(lowerZ >> 4) / REGION_SIZE);
-        c_int upperXRegion = std::floor((float)(upperX >> 4) / REGION_SIZE);
-        c_int upperZRegion = std::floor((float)(upperZ >> 4) / REGION_SIZE);
+        c_int lowerXRegion = static_cast<const int>(std::floor(static_cast<float>(lowerX >> 4) / static_cast<float>(REGION_SIZE)));
+        c_int lowerZRegion = static_cast<const int>(std::floor(static_cast<float>(lowerZ >> 4) / static_cast<float>(REGION_SIZE)));
+        c_int upperXRegion = static_cast<const int>(std::floor(static_cast<float>(upperX >> 4) / static_cast<float>(REGION_SIZE)));
+        c_int upperZRegion = static_cast<const int>(std::floor(static_cast<float>(upperZ >> 4) / static_cast<float>(REGION_SIZE)));
         for (int regionX = lowerXRegion; regionX <= upperXRegion; ++regionX) {
             for (int regionZ = lowerZRegion; regionZ <= upperZRegion; ++regionZ) {
-                if (terminateFlag && terminateFlag->load()) return positions;
-                if (Pos2D structPos = getPosition(g, regionX, regionZ); structPos != 0 &&
-                                                                        structPos.insideBounds(lowerX, lowerZ, upperX,
-                                                                            upperZ))
+                if (terminateFlag != nullptr && terminateFlag->load()) return positions;
+                Pos2D structPos = getPosition(g, regionX, regionZ);
+                if (structPos != 0 && structPos.insideBounds(lowerX, lowerZ, upperX, upperZ))
                     positions.push_back(structPos);
             }
         }

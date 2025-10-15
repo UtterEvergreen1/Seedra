@@ -352,7 +352,7 @@ public:
      */
     BiomeDesert(MU std::string biomeName, c_float baseHeight, c_float heightVariation, c_bool enableSnow,
                 c_float temperature, c_u32 waterColor = 0xA5F5AF44)
-        : Biome(std::move(biomeName), baseHeight, heightVariation, enableSnow, temperature, 0.0f,
+        : Biome(std::move(biomeName), baseHeight, heightVariation, enableSnow, temperature, 0.0F,
                 lce::BlocksInit::SAND.getState(),
                 lce::BlocksInit::SAND.getState()) {
         this->waterColor = waterColor;
@@ -833,7 +833,7 @@ public:
      */
     BiomeMushroomIsland(MU std::string biomeName, c_float baseHeight, c_float heightVariation,
                         c_bool enableSnow, c_float temperature, c_u32 waterColor = 0xA5F5AF44)
-        : Biome(std::move(biomeName), baseHeight, heightVariation, enableSnow, temperature, 1.0f,
+        : Biome(std::move(biomeName), baseHeight, heightVariation, enableSnow, temperature, 1.0F,
                 lce::BlocksInit::MYCELIUM.getState()) {
         this->waterColor = waterColor;
         this->decorator->treesPerChunk = -100;
@@ -972,7 +972,7 @@ public:
      */
     BiomeSavanna(MU std::string biomeName, c_float baseHeight, c_float heightVariation, c_bool enableSnow,
                  c_float temperature, c_u32 waterColor = 0xA5F5AF44)
-        : Biome(std::move(biomeName), baseHeight, heightVariation, enableSnow, temperature, 0.0f, waterColor) {
+        : Biome(std::move(biomeName), baseHeight, heightVariation, enableSnow, temperature, 0.0F, waterColor) {
         this->decorator->treesPerChunk = 1; ///< Number of trees generated per chunk.
         this->decorator->flowersPerChunk = 4; ///< Number of flowers generated per chunk.
         this->decorator->grassPerChunk = 20; ///< Number of grass patches generated per chunk.
@@ -1024,7 +1024,7 @@ public:
      */
     BiomeMesa(c_bool hasBrycePillars, c_bool hasForest, MU std::string biomeName, c_float baseHeight,
               c_float heightVariation, c_bool enableSnow, c_float temperature, c_u32 waterColor = 0x80CA8900)
-        : Biome(std::move(biomeName), baseHeight, heightVariation, enableSnow, temperature, 0.0f, waterColor),
+        : Biome(std::move(biomeName), baseHeight, heightVariation, enableSnow, temperature, 0.0F, waterColor),
           brycePillars(hasBrycePillars),
           hasForest(hasForest) {
         this->topBlock = lce::BlocksInit::RED_SAND.getState();

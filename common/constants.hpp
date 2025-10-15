@@ -23,7 +23,7 @@ constexpr float PI_FLOAT = 3.1415927f;
  * @def HALF_PI
  * @brief Half of the mathematical constant π (pi) with single precision.
  */
-constexpr float HALF_PI_FLOAT = PI_FLOAT / 2.0f;
+constexpr float HALF_PI_FLOAT = PI_FLOAT / 2.0F;
 
 /**
  * @def TWO_PI
@@ -35,13 +35,13 @@ constexpr double TWO_PI = 2.0 * PI;
  * @def TWO_PI_FLOAT
  * @brief Two times the mathematical constant π (pi) with single precision.
  */
-constexpr float TWO_PI_FLOAT = 2.0f * PI_FLOAT;
+constexpr float TWO_PI_FLOAT = 2.0F * PI_FLOAT;
 
 /**
  * @def TWO_THIRDS_PI_FLOAT
  * @brief Two-thirds of the mathematical constant π (pi) with single precision. (A third of a circle)
  */
-constexpr float TWO_THIRDS_PI_FLOAT = 2.0f / 3.0f * PI_FLOAT;
+constexpr float TWO_THIRDS_PI_FLOAT = 2.0F / 3.0F * PI_FLOAT;
 
 /**
  * @def power2_31

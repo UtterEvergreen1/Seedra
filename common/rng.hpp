@@ -257,7 +257,7 @@ public:
     // ========================================================================
 
     MU FORCEINLINE float nextFloat() noexcept {
-        constexpr float INV_2POW24 = 1.0f / 16777216.0f;
+        constexpr float INV_2POW24 = 1.0F / 16777216.0F;
         mySeed = (mySeed * RNG_MULT_1 + RNG_ADDEND_1) & RNG_MASK;
         return static_cast<float>(mySeed >> 24) * INV_2POW24;
     }

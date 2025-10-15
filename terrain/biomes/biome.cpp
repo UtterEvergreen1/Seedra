@@ -111,8 +111,8 @@ void Biome::registerBiomes() {
     registerBiome(5, new BiomeTaiga(BiomeTaiga::Type::NORMAL, "Taiga", 0.2F, 0.2F, false, 0.25F, 0xA5827028));
     registerBiome(6, new BiomeSwamp("Swampland", -0.2, 0.1F, false, 0.8F, 0xFF59654C));
     registerBiome(7, new BiomeRiver("River", -0.5F, 0.0F, false, 0.5F, 0xA5FF8400));
-    registerBiome(8, new Biome("Nether", 0.1F, 0.2F, false, 2.0F, 0.0f, 0xA5575990));
-    registerBiome(9, new Biome("The End", 0.1F, 0.2F, false, 0.5F, 0.0f, 0xA59E5262));
+    registerBiome(8, new Biome("Nether", 0.1F, 0.2F, false, 2.0F, 0.0F, 0xA5575990));
+    registerBiome(9, new Biome("The End", 0.1F, 0.2F, false, 0.5F, 0.0F, 0xA59E5262));
     registerBiome(10, new BiomeOcean("Frozen Ocean", -1.0F, 0.1F, true, 0.0F, 0xA5B57025));
     registerBiome(11, new BiomeRiver("Frozen River", -0.5F, 0.0F, true, 0.0F, 0xA5905318));
     registerBiome(12, new BiomeSnow(false, "Ice Plains", 0.125F, 0.05F, true, 0.0F, 0xA59B5514));
@@ -941,14 +941,14 @@ void BiomeMesa::Decorator::generateOres(World *world, RNG &rng) {
 #pragma region BiomeColors
 
 uint32_t Biome::getGrassColor(const Pos3D &pos) const {
-    const double _temperature = std::clamp(getFloatTemperature(pos), 0.0f, 1.0f);
-    const double _rainFall = std::clamp(getRainfall(), 0.0f, 1.0f);
+    const double _temperature = std::clamp(getFloatTemperature(pos), 0.0F, 1.0F);
+    const double _rainFall = std::clamp(getRainfall(), 0.0F, 1.0F);
     return Colors::getGrassColor(_temperature, _rainFall);
 }
 
 MU uint32_t Biome::getFoliageColor(const Pos3D &pos) const {
-    const double _temperature = std::clamp(getFloatTemperature(pos), 0.0f, 1.0f);
-    const double _rainFall = std::clamp(getRainfall(), 0.0f, 1.0f);
+    const double _temperature = std::clamp(getFloatTemperature(pos), 0.0F, 1.0F);
+    const double _rainFall = std::clamp(getRainfall(), 0.0F, 1.0F);
     return Colors::getFoliageColor(_temperature, _rainFall);
 }
 

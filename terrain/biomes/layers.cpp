@@ -1073,7 +1073,7 @@ float getEndHeightNoise(const EndNoise* en, c_int x, c_int z) {
 
 void sampleNoiseColumnEnd(const Generator* g, double column[], const SurfaceNoise* sn, const EndNoise* en, c_int x,
                           c_int z, c_int colymin, c_int colymax) {
-    c_double depth = getEndHeightNoise(en, x, z) - 8.0f;
+    c_double depth = getEndHeightNoise(en, x, z) - 8.0F;
     for (int y = colymin; y <= colymax; y++) {
         double noise = sampleSurfaceNoise(g, sn, x, y, z);
         noise += depth; // falloff for the End is just the depth

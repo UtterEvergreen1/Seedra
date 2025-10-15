@@ -124,7 +124,7 @@ namespace Placement {
          */
         static std::vector<Pos2D>
         getAllPositionsBounded(const Generator *g, int lowerX, int lowerZ, int upperX, int upperZ,
-                               std::atomic_bool *terminateFlag = nullptr);
+                               const std::atomic_bool *terminateFlag = nullptr);
 
         /**
          * @brief Checks if the structure can spawn at a specific chunk.
