@@ -63,22 +63,24 @@ class Generator {
     /**
      * @brief The world config containing settings for world generation.
      */
-    WorldConfig config;
+    WorldConfig m_config;
 
     /**
      * @brief The stack of layers used for biome generation.
      */
-    LayerStack layerStack{};
+    LayerStack m_layerStack{};
 
     /**
      * @brief An array of biome caches used for caching world biomes at certain scales.
      */
-    std::vector<BiomeCache> biomeCaches;
+    std::vector<BiomeCache> m_biomeCaches;
 
 public:
-    ///========================================================================
-    /// Biome Generation
-    ///========================================================================
+    /**
+     * @brief Constructs a Generator with the specified world configuration. (Useful for reusing the same config)
+     * @param config The world configuration.
+     */
+    explicit Generator(const WorldConfig& config);
 
     /**
      * @brief Constructs a Generator with the specified console, version, world size, and biome scale.
@@ -125,7 +127,7 @@ public:
      * @brief Retrieves the stored world seed.
      * @return The world seed.
      */
-    ND i64 getWorldSeed() const { return this->config.getWorldSeed(); }
+    ND i64 getWorldSeed() const { return this->m_config.getWorldSeed(); }
 
     /**
      * @brief Applies a new world seed.
@@ -188,7 +190,7 @@ public:
      * @brief Retrieves the stored LCE version.
      * @return The LCE version.
      */
-    ND LCEVERSION getLCEVersion() const { return this->config.getLCEVersion(); }
+    ND LCEVERSION getLCEVersion() const { return this->m_config.getLCEVersion(); }
 
     /**
      * @brief Changes the LCE version.
@@ -200,19 +202,19 @@ public:
      * @brief Retrieves the stored LCE console type.
      * @return The LCE console type.
      */
-    ND lce::CONSOLE getConsole() const { return this->config.getConsole(); }
+    ND lce::CONSOLE getConsole() const { return this->m_config.getConsole(); }
 
     /**
      * @brief Changes the LCE console type.
      * @param consoleIn The new LCE console type.
      */
-    void changeConsole(const lce::CONSOLE consoleIn) { this->config.setConsole(consoleIn); }
+    void changeConsole(const lce::CONSOLE consoleIn) { this->m_config.setConsole(consoleIn); }
 
     /**
      * @brief Retrieves the stored biome scale.
      * @return The biome scale.
      */
-    ND lce::BIOMESCALE getBiomeScale() const { return this->config.getBiomeScale(); }
+    ND lce::BIOMESCALE getBiomeScale() const { return this->m_config.getBiomeScale(); }
 
     /**
      * @brief Changes the biome scale.
@@ -224,7 +226,7 @@ public:
      * @brief Retrieves the stored world size.
      * @return The world size.
      */
-    ND lce::WORLDSIZE getWorldSize() const { return this->config.getWorldSize(); }
+    ND lce::WORLDSIZE getWorldSize() const { return this->m_config.getWorldSize(); }
 
     /**
      * @brief Changes the world size.
@@ -236,49 +238,53 @@ public:
      * @brief Retrieves the world generator enum.
      * @return The world generator enum.
      */
-    ND WORLDGENERATOR getWorldGenerator() const { return this->config.getWorldGenerator(); }
+    ND WORLDGENERATOR getWorldGenerator() const { return this->m_config.getWorldGenerator(); }
 
     /**
      * @brief Sets the world generator enum.
      * @param gen The new world generator enum.
      */
-    void setWorldGenerator(const WORLDGENERATOR gen) { this->config.setWorldGenerator(gen); }
+    void setWorldGenerator(const WORLDGENERATOR gen) { this->m_config.setWorldGenerator(gen); }
 
     /**
      * @brief Sets the fixed biome for superflat worlds.
      * @param b The fixed biome ID.
      */
-    void setFixedBiome(const BiomeID b) { this->config.setFixedBiome(b); }
+    void setFixedBiome(const BiomeID b) { this->m_config.setFixedBiome(b); }
 
     /**
      * @brief Retrieves the fixed biome for superflat worlds.
      * @return The fixed biome ID.
      */
-    BiomeID getFixedBiome() const { return this->config.getFixedBiome(); }
+    ND BiomeID getFixedBiome() const { return this->m_config.getFixedBiome(); }
 
     /**
      * @brief Sets the number of strongholds to generate in the world.
      * @param count The number of strongholds.
      */
-    void setStrongholdCount(const int count) { this->config.setStrongholdCount(count); }
+    void setStrongholdCount(const int count) { this->m_config.setStrongholdCount(count); }
 
     /**
      * @brief Retrieves the number of strongholds to generate in the world.
      * @return The number of strongholds.
      */
-    int getStrongholdCount() const { return this->config.getStrongholdCount(); }
+    ND int getStrongholdCount() const { return this->m_config.getStrongholdCount(); }
 
     /**
      * @brief Retrieves the world coordinate bounds.
      * @return The world coordinate bounds.
      */
-    ND i32 getWorldCoordinateBounds() const { return this->config.getWorldCoordinateBounds(); }
+    ND i32 getWorldCoordinateBounds() const { return this->m_config.getWorldCoordinateBounds(); }
 
     /**
      * @brief Retrieves the world chunk bounds.
      * @return The world chunk bounds.
      */
-    ND i32 getWorldChunkBounds() const { return this->config.getWorldChunkBounds(); }
+    ND i32 getWorldChunkBounds() const { return this->m_config.getWorldChunkBounds(); }
+
+    //========================================================================
+    // Biome Generation
+    //========================================================================
 
     /**
      * @brief Calculates the minimum cache size for a given scale and dimensions.
@@ -335,7 +341,7 @@ public:
      * @param z The Z-coordinate.
      * @return Pointer to the Biome.
      */
-    Biome *getBiomeAt(int scale, int x, int z) const;
+    ND Biome *getBiomeAt(int scale, int x, int z) const;
 
     /**
      * @brief Retrieves a range of biomes at a specific scale and coordinates.
@@ -353,7 +359,7 @@ public:
      * @param scale The scale of the world biomes.
      * @return A pointer to the world biomes if it exists in the cache.
      */
-    int *getWorldBiomes(int scale = 1) const;
+    ND int *getWorldBiomes(int scale = 1) const;
 
     /**
      * @brief Retrieves the layer for a specific scale.
@@ -397,7 +403,7 @@ public:
      * @param passes The number of passes to perform.
      * @return The position of the located biome.
      */
-    Pos2D locateBiome(i32 x, i32 z, i32 radius, u64 validBiomes, RNG &rng, i32 *passes) const;
+    ND Pos2D locateBiome(i32 x, i32 z, i32 radius, u64 validBiomes, RNG &rng, i32 *passes) const;
 
     /**
      * @brief Locates a biome within a given range using a 2D position.
@@ -408,7 +414,7 @@ public:
      * @param passes The number of passes to perform.
      * @return The position of the located biome.
      */
-    Pos2D locateBiome(Pos2D pos, i32 radius, u64 validBiomes, RNG &rng, i32 *passes) const;
+    ND Pos2D locateBiome(Pos2D pos, i32 radius, u64 validBiomes, RNG &rng, i32 *passes) const;
 
     /**
      * @brief Maps approximate height values for a given range.
@@ -421,7 +427,7 @@ public:
      * @param h The height of the range.
      * @return The number of heights mapped.
      */
-    i32 mapApproxHeight(float *y, i32 *ids, const SurfaceNoise *sn, i32 x, i32 z, i32 w, i32 h) const;
+    ND i32 mapApproxHeight(float *y, i32 *ids, const SurfaceNoise *sn, i32 x, i32 z, i32 w, i32 h) const;
 
     /**
      * @brief Estimates the spawn position using a random number generator.
@@ -443,5 +449,11 @@ public:
      * @param mutatedValidBiomes The mutated valid biomes as a 64-bit value (optional).
      * @return True if the biome ID matches, false otherwise.
      */
-    static bool id_matches(i32 id, u64 validBiomes, u64 mutatedValidBiomes = 0);
+    ND static bool id_matches(i32 id, u64 validBiomes, u64 mutatedValidBiomes = 0);
+
+private:
+    /**
+     * @brief Sets up the generator. (Called by constructors)
+     */
+    void setup();
 };
