@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.24)
-project(LIB_LegacyCubiomes)
+project(LIB_Seedra)
 
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -10,14 +10,14 @@ if (MSVC)
     set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /O2 /GL")
     set(CMAKE_C_FLAGS_DEBUG     "${CMAKE_C_FLAGS_DEBUG}  /Od /Zi")
     set(CMAKE_CXX_FLAGS_DEBUG   "${CMAKE_CXX_FLAGS_DEBUG} /Od /Zi")
-    set(LEGACY_CUBIOMES_COMPILE_OPTIONS /arch:AVX /MP)
+    set(SEEDRA_COMPILE_OPTIONS /arch:AVX /MP)
 else()
     set(CMAKE_EXE_LINKER_FLAGS_RELEASE "${CMAKE_EXE_LINKER_FLAGS_RELEASE} -static-libgcc -static-libstdc++")
     set(CMAKE_C_FLAGS_RELEASE   "${CMAKE_C_FLAGS_RELEASE}   -O3 -s")
     set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O3 -s")
     set(CMAKE_C_FLAGS_DEBUG     "${CMAKE_C_FLAGS_DEBUG}   -O0")
     set(CMAKE_CXX_FLAGS_DEBUG   "${CMAKE_CXX_FLAGS_DEBUG} -O0")
-    set(LEGACY_CUBIOMES_COMPILE_OPTIONS "-mavx2;-msse4.1")
+    set(SEEDRA_COMPILE_OPTIONS "-mavx2;-msse4.1")
 endif()
 
 
@@ -26,16 +26,14 @@ endif()
 # Build lceLib from the submodule
 add_subdirectory(lce)
 
-# Gather all the .cpp/.hpp for LegacyCubiomes
-file(GLOB_RECURSE LEGACY_CUBIOMES_SOURCES
+# Gather all the .cpp/.hpp for Seedra
+file(GLOB_RECURSE SEEDRA_SOURCES
         # submodule
         "${CMAKE_CURRENT_LIST_DIR}/lce/*.*pp"
         # project
         "${CMAKE_CURRENT_LIST_DIR}/common/*.*pp"
         "${CMAKE_CURRENT_LIST_DIR}/components/*.*pp"
-        "${CMAKE_CURRENT_LIST_DIR}/chunk_detector/*.*pp"
         "${CMAKE_CURRENT_LIST_DIR}/terrain/*.*pp"
-        "${CMAKE_CURRENT_LIST_DIR}/cubiomes/*.*pp"
         "${CMAKE_CURRENT_LIST_DIR}/enchants/*.*pp"
         "${CMAKE_CURRENT_LIST_DIR}/include/*.*pp"
         "${CMAKE_CURRENT_LIST_DIR}/loot/*.*pp"
@@ -43,9 +41,9 @@ file(GLOB_RECURSE LEGACY_CUBIOMES_SOURCES
         ...
 )
 
-add_library(LIB_LegacyCubiomes STATIC ${LEGACY_CUBIOMES_SOURCES})
-target_compile_features(LIB_LegacyCubiomes PRIVATE cxx_std_20)
-target_compile_options(LIB_LegacyCubiomes PRIVATE ${LEGACY_CUBIOMES_COMPILE_OPTIONS})
+add_library(LIB_Seedra STATIC ${SEEDRA_SOURCES})
+target_compile_features(LIB_Seedra PRIVATE cxx_std_20)
+target_compile_options(LIB_Seedra PRIVATE ${SEEDRA_COMPILE_OPTIONS})
 
 
 # Link the lce library
@@ -53,7 +51,7 @@ target_compile_options(LIB_LegacyCubiomes PRIVATE ${LEGACY_CUBIOMES_COMPILE_OPTI
 
 # If your code does #include "LegacyCubiomes/xyz.hpp",
 # you need the parent of this folder on the path:
-target_include_directories(LIB_LegacyCubiomes
+target_include_directories(LIB_Seedra
         PUBLIC
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/>
 )
@@ -63,10 +61,10 @@ set(ASSET_DEST "/assets/lce")
 
 function(add_cli NAME SRC)
     add_executable(${NAME} "${SRC}")
-    target_link_libraries(${NAME} PRIVATE LIB_LegacyCubiomes)
+    target_link_libraries(${NAME} PRIVATE LIB_Seedra)
 
     target_include_directories(${NAME} PRIVATE ${LCE_INCLUDE_DIR})
-    target_compile_options(${NAME} PRIVATE ${LCE_COMPILE_OPTIONS} ${LEGACY_CUBIOMES_COMPILE_OPTIONS})
+    target_compile_options(${NAME} PRIVATE ${LCE_COMPILE_OPTIONS} ${SEEDRA_COMPILE_OPTIONS})
     target_compile_definitions(${NAME} PRIVATE ${LCE_COMPILE_DEFINITIONS})
 
 
@@ -84,9 +82,9 @@ endfunction()
 
 
 
-# (Optional) If you want a standalone LegacyCubiomesExe for testing:
+# (Optional) If you want a standalone Seedra exe for testing:
 unset(LC_BUILD_EXECUTABLE CACHE)
-option(LC_BUILD_EXECUTABLE "Build LegacyCubiomes standalone executable" ON)
+option(LC_BUILD_EXECUTABLE "Build Seedra standalone executable" ON)
 if(LC_BUILD_EXECUTABLE)
 
     add_cli(EXE_GenCreateWorld "tests/gen_chunk.cpp")

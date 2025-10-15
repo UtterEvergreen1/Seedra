@@ -1,9 +1,100 @@
-# Legacy Cubiomes
+# Seedra
 
-Modified Cubiomes library in C++ to generate chunks, check biomes, find structure positions, and find structure loot for
-Minecraft Legacy Console Edition.
+Library in C++ to find structure positions, biomes, generate chunks, structures, and even find loot for
+Minecraft Legacy Console Edition. Based on works of [Cubiomes](https://github.com/Cubitect/cubiomes).
 
-## Usages
+# Disclaimer
+
+This project is an independent reimplementation of Minecraft: Legacy Console Edition's
+world generation behavior. It is not affiliated with, endorsed by, or approved by Mojang, Microsoft, or 4J Studios.
+
+# Contributing to Seedra
+
+By following this short guide, you will help keep the project organized,
+maintainable, and safe. Thank you for considering contributing!
+
+## Table of Contents
+
+- [How to Contribute](#how-to-contribute)
+- [Pull Request Workflow](#pull-request-workflow)
+- [Coding Standards](#coding-standards)
+- [License for Contributions](#license-for-contributions)
+
+---
+
+## How to Contribute
+
+Clone the repository:
+   ```bash
+   # Clone the main repo
+   git clone https://github.com/UtterEvergreen1/Seedra.git
+   cd Seedra
+
+   # Initialize and pull all submodules
+   git submodule update --init --recursive
+   ```
+
+All contributions are welcome, including:
+
+- Bug fixes
+- Documentation improvements
+- New features
+- Tests or examples
+
+Please make sure your changes are relevant to the project goals
+(world generation, seed-finding, biomes, structures, loot, etc.).
+
+---
+
+## Pull Request Workflow
+
+All code changes must be made in a separate branch and submitted via a pull request:
+
+1. **Create a new branch** for your feature or bugfix:
+   ```bash
+   git checkout -b feature/my-feature
+   ```
+
+2. Make your changes.
+
+3. Commit with clear, descriptive messages:
+
+   ```bash
+   git commit -m "Added a file that searches for big boi cacti."
+   ```
+
+4. Push your branch to the repository:
+
+   ```bash
+   git push origin feature/my-feature
+   ```
+   
+5. Open a pull request against the main branch.
+
+6. Wait for review and approval from a maintainer/admin. PRs cannot be merged without approval.
+
+---
+
+## Coding Standards
+
+- Follow consistent format (ex. 4 spaces NO TABS). See [`.clang-format`](.clang-format).
+
+- Use clear variable and function names.
+
+- Comment complex algorithms.
+
+- Keep commits small and logically grouped if possible.
+
+---
+
+## License for Contributions
+
+By contributing to this project, you agree that your contributions will be licensed under the same terms
+as the project (Apache License 2.0). See [`LICENSE`](LICENSE) for full details.
+
+---
+
+# Usages
 
 ### Chunk Generation
 ```c++
@@ -25,6 +116,7 @@ int main() {
 ```
 
 ### Saving a World's Biomes to a png
+
 ```c++
 #include "common/worldPicture.hpp"
 #include "terrain/generator.hpp"
@@ -42,6 +134,7 @@ int main() {
 ```
 
 ### Finding Structures
+
 ```c++
 #include "structures/placement/DynamicStructures.hpp"
 #include "terrain/generator.hpp"
@@ -60,6 +153,7 @@ int main() {
 ```
 
 ### Finding Spawn
+
 ```c++
 #include "terrain/generator.hpp"
 
@@ -75,6 +169,7 @@ int main() {
 ```
 
 ### Resuse a generator object with a different seed
+
 ```c++
 #include "terrain/generator.hpp"
 
@@ -92,8 +187,9 @@ int main() {
 ```
 
 ### Loot Usage
+
 ```c++
-#include "LegacyCubiomes/loot/Tables.hpp"
+#include "Seedra/loot/Tables.hpp"
 
 int main(int argc, char* argv[]) {
     // Set up the items
@@ -110,7 +206,8 @@ int main(int argc, char* argv[]) {
 }
 ```
 
-## Example Usage 
+## Example Usage
+
 ```c++
 #include "terrain/generator.hpp"
 #include "common/worldPicture.hpp"
@@ -156,24 +253,11 @@ int main() {
 
 Refer to the `tests/` directory to see many other ways the code can be used.
 
-## Submodules
+## Using as a Submodule
 
-This project uses a [separate project](https://github.com/zugebot/lce.git).
-Set this up by doing:
-
-```bash
-git init
-git submodule add https://github.com/lce-resources/lceLIB.git
-git submodule update --init
-```
-
-To use this as a submodule in another project, you can do
+To use this as a submodule in another project, you can do:
 
 ```bash
-git submodule add https://github.com/UtterEvergreen1/LegacyCubiomes.git
-git submodule update --init
+git submodule add https://github.com/UtterEvergreen1/Seedra.git
+git submodule update --init --recursive
 ```
-
-## License
-
-[Apache 2.0](https://www.apache.org/licenses/LICENSE-2.0)
