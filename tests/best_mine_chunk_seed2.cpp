@@ -8,7 +8,7 @@
 
 #include "common/MathHelper.hpp"
 #include "common/timer.hpp"
-#include "include/doctest.h"
+// #include "include/doctest.h"
 #include "terrain/Chunk.hpp"
 #include "terrain/World.hpp"
 #include "terrain/biomes/biome.hpp"
@@ -79,7 +79,7 @@ struct Score {
 };
 
 
-Score getBest(World& world, std::vector<LargeCaveFinder::Results>& results) {
+Score getBest(World& world, std::vector<finders::LargeCaveResult>& results) {
 
     Timer start;
 
@@ -186,11 +186,11 @@ Score getBest(World& world, std::vector<LargeCaveFinder::Results>& results) {
 
 int main(int argc, char* argv[]) {
 
-    doctest::Context context;
-    context.applyCommandLine(argc, argv);
-    int res = context.run();  // Runs all tests
+    // doctest::Context context;
+    // context.applyCommandLine(argc, argv);
+    // int res = context.run();  // Runs all tests
 
-    if (context.shouldExit()) return res;
+    // if (context.shouldExit()) return res;
 
 
 
@@ -263,7 +263,12 @@ int main(int argc, char* argv[]) {
     for (i64 worldSeed = WORLDSEED; worldSeed > WORLDSEED - SEEDS_TO_TRAVERSE; worldSeed--) {
         world.getGenerator()->applyWorldSeed(worldSeed);
 
-        auto results = LargeCaveFinder::findAllLargeCaves(&g, CAVE_RANGE);
+        std::vector<finders::LargeCaveResult> results;
+        if (lce::is_any_xbox(CONSOLE)) {
+            results = finders::LargeCaveFinder<true>::findAllLargeCaves(g.getWorldSeed(), CAVE_RANGE);
+        } else {
+            results = finders::LargeCaveFinder<false>::findAllLargeCaves(g.getWorldSeed(), CAVE_RANGE);
+        }
 
         if (!testOneSeed) {
             if (results.empty())
