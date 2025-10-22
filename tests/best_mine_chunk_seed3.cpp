@@ -116,6 +116,7 @@ private:
     static constexpr double Y_TOP  = 64.0;
     static constexpr double Y_BOT  = 12.0;
     static constexpr double NEED_R = 11.313708498984760390413; // sqrt(8^2 + 8^2)
+    static constexpr double EPS    = 0.25;                     // small safety margin
 
     void addFeature(const Pos2D baseChunk, std::vector<VerticalCaveHit>& out) {
         const int tunnelCount = rng.nextInt(rng.nextInt(rng.nextInt<40>() + 1) + 1);
@@ -131,8 +132,12 @@ private:
 
             if (rng.nextInt<4>() == 0) {
                 const i64 seedMod = rng.nextLongI();
-                addTunnel(out, seedMod, baseChunk, start,
-                          1.0F + rng.nextFloat() * 6.0F, 0.0F, 0.0F, -1, -1, 0.5);
+
+                // don't bother exploring shitty caves
+                float w0 = 1.0F + rng.nextFloat() * 6.0F;
+                if (1.5 + static_cast<double>(w0) >= NEED_R - EPS) {
+                    addTunnel(out, seedMod, baseChunk, start, w0, 0.0F, 0.0F, -1, -1, 0.5);
+                }
                 segmentCount = rng.nextInt<4>() + 1;
             }
 
@@ -140,7 +145,19 @@ private:
                 const float yaw   = rng.nextFloat() * (PI_FLOAT * 2.0F);
                 const float pitch = (rng.nextFloat() - 0.5F) * 2.0F / 8.0F;
                 float width       = rng.nextFloat() * 2.0F + rng.nextFloat();
+
+
                 if (rng.nextInt(10) == 0) { width *= rng.nextFloat() * rng.nextFloat() * 3.0F + 1.0F; }
+
+                // if (baseChunk.x == 6 && baseChunk.z == -9) {
+                //     std::cout << "(" << baseChunk.x << "," << baseChunk.z << "): w=" << width << " | yaw=" << yaw << " | pitch=" << pitch << "\n";
+                // }
+
+                // EARLY BREAK FOR SHITTY SMALL CAVES
+                if (1.5 + static_cast<double>(width) < NEED_R - EPS) {
+                    rng.nextLongI();
+                    continue; // can't ever fully cover a 16x16 ⇒ not worth scoring
+                }
 
                 addTunnel(out, rng.nextLongI(), baseChunk, start, width, yaw, pitch, 0, 0, 1.0);
             }
@@ -152,9 +169,18 @@ private:
                    c_float theWidth, float theTunnelYaw, float theTunnelPitch, int theCurrentSegment,
                    int theMaxSegment, c_double theHeightMultiplier) {
 
+        if (1.5 + static_cast<double>(theWidth) < NEED_R - EPS) {
+            return;
+        }
+
         float yawModifier   = 0.0F;
         float pitchModifier = 0.0F;
         RNG localRng; localRng.setSeed(theSeedModifier);
+
+        const double minX8 = static_cast<double>(genBounds.minX) + 8.0;
+        const double maxX8 = static_cast<double>(genBounds.maxX) - 8.0;
+        const double minZ8 = static_cast<double>(genBounds.minZ) + 8.0;
+        const double maxZ8 = static_cast<double>(genBounds.maxZ) - 8.0;
 
         if (theMaxSegment <= 0) {
             constexpr int RANGE_BOUNDARY = CHUNK_RANGE * 16 - 16;
@@ -197,18 +223,22 @@ private:
         };
 
         for (; theCurrentSegment < theMaxSegment; ++theCurrentSegment) {
+
             // width/height at this step
             const double adjustedWidth  = 1.5 + static_cast<double>(
                 MathHelper::sin(static_cast<float>(theCurrentSegment) * segFDivPI) * theWidth);
+
             const double adjustedHeight = adjustedWidth * theHeightMultiplier;
 
+            const float sPitch = MathHelper::sin(theTunnelPitch);
+            const float cPitch = MathHelper::cos(theTunnelPitch);
+            const float sYaw   = MathHelper::sin(theTunnelYaw);
+            const float cYaw   = MathHelper::cos(theTunnelYaw);
+
             // advance position
-            {
-                const float c = MathHelper::cos(theTunnelPitch);
-                theStart.x += static_cast<double>(MathHelper::cos(theTunnelYaw) * c);
-                theStart.y += static_cast<double>(MathHelper::sin(theTunnelPitch));
-                theStart.z += static_cast<double>(MathHelper::sin(theTunnelYaw) * c);
-            }
+            theStart.x += static_cast<double>(cYaw * cPitch);
+            theStart.y += static_cast<double>(sPitch);
+            theStart.z += static_cast<double>(sYaw * cPitch);
 
             // slope integration (order preserved)
             if (widePattern) theTunnelPitch = theTunnelPitch * 0.92F;
@@ -258,7 +288,7 @@ private:
             }
 
             // accumulate verticality for counted steps
-            sumAbsSin += std::abs(static_cast<double>(MathHelper::sin(theTunnelPitch)));
+            sumAbsSin += std::abs(static_cast<double>(sPitch));
             ++countVert;
 
             // debug spans
@@ -282,14 +312,9 @@ private:
 
             // Best-case 16×16 square centered at current cave center (offset-agnostic).
             // Only count it if that whole square lies within the original world window.
-            const double sxm = theStart.x - 8.0;
-            const double sxp = theStart.x + 8.0;
-            const double szm = theStart.z - 8.0;
-            const double szp = theStart.z + 8.0;
-
             const bool squareInside =
-                (sxm >= genBounds.minX) && (sxp <= genBounds.maxX) &&
-                (szm >= genBounds.minZ) && (szp <= genBounds.maxZ);
+                    (theStart.x >= minX8) & (theStart.x <= maxX8) &
+                    (theStart.z >= minZ8) & (theStart.z <= maxZ8);
 
             // Margin vs. the radius required to cover the 16×16 square this step
             const double margin = adjustedWidth - NEED_R;
@@ -364,9 +389,9 @@ int main() {
     AreaRange range(Pos2D(0, 0), 16);
 
     // -6651998285536156346
-    constexpr i64 seedStart = 1'000'000'100'000;
-    constexpr i64 seedCount = 1'000;   // per request: 1,000 seeds
-    constexpr int topN      = 50;      // show top 20
+    constexpr i64 seedStart = 1'000'000'000'000;
+    constexpr i64 seedCount = 1'000'000;   // per request: 1,000 seeds
+    constexpr int topN      = 10'000;       // show top 20
 
     Timer timer;
     auto best = scanSeedsTopN</*IsXbox=*/false>(range, seedStart, seedCount, topN);
@@ -377,15 +402,15 @@ int main() {
     std::printf("Found %zu vertical mega-cave candidates (top %d):\n\n", best.size(), topN);
     for (const auto& h : best) {
         std::printf(
-            "score=%8.3f  seed=%lld  chunk=(%d,%d)  maxR=%.2f  coverY=%.1f  marginMax=%.2f\n"
-            "avgVert=%.3f  spanY=%.1f  start=(%.1f,%.1f,%.1f)  range=(%d,%d,%d)\n\n",
+            "score=%6.3f seed=%lld cnk=(%d,%d) maxR=%5.2f cvrY=%4.1f mMax=%3.2f "
+                "avgVert=%5.3f spanY=%4.1f s=(%d,%d,%d)\n", // r=(%d,%d,%d)
             h.score(),
             h.worldSeed,
             h.chunk.x, h.chunk.z,
             h.maxWidth, h.coverY, h.marginMax,
             h.avgVertical, h.spanY,
-            h.approxStart.x, h.approxStart.y, h.approxStart.z,
-            h.range.x, h.range.y, h.range.z
+            (int)h.approxStart.x, (int)h.approxStart.y, (int)h.approxStart.z
+            // h.range.x, h.range.y, h.range.z
         );
     }
     return 0;
