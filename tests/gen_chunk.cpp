@@ -34,7 +34,7 @@ int main() {
                        / "LegacyChunkViewer";
     std::string dirName = dirPath.string();
     std::cout << "Using \"" + dirName + "\"...\n\n";
-    fs::path filePath = dirPath / "build" / "chunks" / "chunkdataWRONG2.bin";
+    fs::path filePath = dirPath / "build" / "chunks" / "chunkdata.bin";
 
 
     // auto* primer = new ChunkPrimer;
@@ -46,11 +46,11 @@ int main() {
 
     // -1204924307554348042;
     Biome::registerBiomes();
-    c_i64 WORLD_SEED = -6651998285536156346; //2026238685186108391; // 615831156172857837; // 7710511010199114;
+    c_i64 WORLD_SEED = 2143553818; //2026238685186108391; // 615831156172857837; // 7710511010199114;
     c_auto CONSOLE = lce::CONSOLE::WIIU;
-    c_auto VERSION = LCEVERSION::AQUATIC;
+    c_auto VERSION = LCEVERSION::ELYTRA;
     c_auto WORLD_SIZE = lce::WORLDSIZE::CLASSIC;
-    c_auto BIOME_SCALE = lce::BIOMESCALE::SMALL;
+    c_auto BIOME_SCALE = lce::BIOMESCALE::MEDIUM;
     // -6651998285536156346
     Generator g(CONSOLE, VERSION, WORLD_SEED, WORLD_SIZE, BIOME_SCALE);
 
@@ -91,9 +91,15 @@ int main() {
         std::cout << "key: " << key << " value: " << value << "\n";
     }
 
-
-
-    world.decorateChunks(RANGE);
+    // const Pos2DTemplate<i64> seedMultiplierCave = CaveGenerator::getSeedMultiplier(&g);
+    // for (int x = -27; x < 27; x++) {
+    //     for (int z = -27; z < 27; z++) {
+    //         CaveGenerator caveGen(world);
+    //         caveGen.setupRNG(seedMultiplierCave, {x, z});
+    //         ChunkPrimer* chunk = world.getChunk({x, z});
+    //         caveGen.generate(chunk, {x, z}, true);
+    //     }
+    // }
 
     std::cout << "Decorate Gen Time: " << gen.getSeconds() << "\n";
     std::cout << "Total world Gen Time: " << start.getSeconds() << "\n";
