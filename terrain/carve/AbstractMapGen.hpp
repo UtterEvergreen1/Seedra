@@ -96,7 +96,7 @@ public:
         const Pos2D upper = target + CHUNK_RANGE;
         Pos2D chunkPos;
         for (chunkPos.x = lower.x; chunkPos.x <= upper.x; ++chunkPos.x) {
-            for (chunkPos.z = lower.x; chunkPos.z <= upper.x; ++chunkPos.z) {
+            for (chunkPos.z = lower.z; chunkPos.z <= upper.z; ++chunkPos.z) {
                 setupRNG(seedMultiplier, chunkPos);
                 addFeature(primer, chunkPos, target, accurate);
             }

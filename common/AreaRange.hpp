@@ -40,8 +40,8 @@ public:
         last .z = reverseZ ? lower.z : upper.z;
     }
 
-    MU Pos2D getLower() { return lower; }
-    MU Pos2D getUpper() { return upper; }
+    MU ND Pos2D getLower() const { return lower; }
+    MU ND Pos2D getUpper() const { return upper; }
 
     ND iterator begin() const { return {first, first, last, step}; }
     ND iterator end()   const { return {Pos2D{last.x+step.x, 0}, first, last, step}; }

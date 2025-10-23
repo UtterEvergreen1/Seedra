@@ -5,14 +5,6 @@
 // - Spawns N worker threads, time-sliced (~slice_seconds) work chunks.
 // - Maintains global Top-N across threads; writes best.json periodically.
 // - Writes state.json atomically via tmp+rotate (Windows-safe if same dir).
-//
-// Assumptions (same as your original):
-// - MU / ND / c_* typedefs/macros, i64
-// - Pos2D, Pos3D, DoublePos2D, DoublePos3D, AreaRange, BoundingBox
-// - RNG with setSeed(), nextInt<T>(), nextFloat(), nextLongI()
-// - MathHelper::{sin,cos} and constants: PI_FLOAT, HALF_PI_FLOAT
-// - BoundingBox::makeChunkBox(), ::isVecInside()
-// - lce/processor.hpp wiring
 
 #include "include/json.hpp"
 
@@ -25,14 +17,12 @@
 
 #include <algorithm>
 #include <atomic>
-#include <chrono>
 #include <cmath>
 #include <cctype>
 #include <cstdio>
 #include <ctime>
 #include <filesystem>
 #include <fstream>
-#include <iomanip>
 #include <mutex>
 #include <optional>
 #include <queue>
@@ -113,7 +103,6 @@ namespace finders {
 
             std::vector<VerticalCaveHit> out;
 
-            // Generation area extends by ±8 chunks because each chunk's cave pass looks that far
             const SeedMul mul = getSeedMultiplier(worldSeed);
             lower = lower - CHUNK_RANGE;
             upper = upper + CHUNK_RANGE;
@@ -147,7 +136,7 @@ namespace finders {
 
         void addFeature(const Pos2D baseChunk, std::vector<VerticalCaveHit>& out) {
             const int tunnelCount = rng.nextInt(rng.nextInt(rng.nextInt<40>() + 1) + 1);
-            if EXPECT_TRUE (rng.nextInt<15>() != 0) { return; } // match vanilla spawn chance
+            if EXPECT_TRUE (rng.nextInt<15>() != 0) { return; }
 
             for (int currentTunnel = 0; currentTunnel < tunnelCount; ++currentTunnel) {
                 DoublePos3D start;
@@ -173,7 +162,6 @@ namespace finders {
 
                     if (rng.nextInt(10) == 0) { width *= rng.nextFloat() * rng.nextFloat() * 3.0F + 1.0F; }
 
-                    // RNG-order-safe prune: consume the child seed even if we skip
                     if (1.5 + static_cast<double>(width) < NEED_R - EPS) {
                         rng.nextLongI();
                         continue;
@@ -213,7 +201,6 @@ namespace finders {
             const float segFDivPI   = PI_FLOAT / static_cast<float>(theMaxSegment);
             const bool  widePattern = localRng.nextInt<6>() == 0;
 
-            // --- FULL-branch accumulators ---
             DoublePos3D prev = theStart;
             double coverY    = 0.0;
             double maxWidth  = 0.0;
@@ -339,11 +326,10 @@ namespace finders {
         }
     };
 
-    // ----------------------- Top-N aggregator (thread-safe) ------------------
     struct HitNode {
         double score{};
         VerticalCaveHit hit{};
-        bool operator<(const HitNode& o) const { return score > o.score; } // min-heap
+        bool operator<(const HitNode& o) const { return score > o.score; }
     };
 
     class GlobalTopN {
@@ -428,7 +414,7 @@ namespace finders {
         i64   center_z = 0;
         i64   radius   = 27;
         i64   current_seed = 0;
-        i64   seed_count   = 0;     // 0 = infinite
+        i64   seed_count   = 0;  // 0 = infinite
         int   threads      = std::max(1u, std::thread::hardware_concurrency());
         int   top_n        = 10000;
         double slice_seconds = 30.0;
@@ -585,8 +571,7 @@ namespace finders {
                                      RunnerStats& stats,
                                      std::atomic<bool>& stopFlag)
     {
-        // Per-thread adaptive block size targeting ~sliceSeconds per chunk.
-        i64 block = 25000; // tweak to your HW if desired
+        i64 block = 25000;
 
         while (!stopFlag.load(std::memory_order_relaxed)) {
             const i64 start = nextSeed.fetch_add(block, std::memory_order_relaxed);
@@ -621,7 +606,8 @@ namespace finders {
     }
 } // namespace finders
 
-// ---------------------------- Demo main ---------------------------------
+
+
 int main(int argc, char** argv) {
 #ifdef _WIN32
     enable_vt_mode();
@@ -677,8 +663,7 @@ int main(int argc, char** argv) {
         std::this_thread::sleep_for(250ms);
         const double now = wall.getSeconds();
 
-        // progress logging ~1s
-        static int lastBlockLines = 0;  // how many lines the previous redraw used
+        static int lastBlockLines = 0;
 
         if (now - lastLog >= 1.0) {
             lastLog = now;
@@ -693,11 +678,11 @@ int main(int argc, char** argv) {
 
             // 1) Move cursor up to the start of the old block and clear it line-by-line
             if (lastBlockLines > 0) {
-                std::printf("\033[%dA", lastBlockLines); // move up N lines
+                std::printf("\033[%dA", lastBlockLines);
                 for (int i = 0; i < lastBlockLines; ++i) {
-                    std::printf("\033[2K\r\n");          // clear entire line, move down one
+                    std::printf("\033[2K\r\n");
                 }
-                std::printf("\033[%dA", lastBlockLines); // move back up to where we started
+                std::printf("\033[%dA", lastBlockLines);
             }
 
             // 2) Print the new block
@@ -732,7 +717,7 @@ int main(int argc, char** argv) {
             std::fflush(stdout);
 
             // 3) Remember how many lines we drew this time:
-            lastBlockLines = 2 + showN; // header + blank + N lines
+            lastBlockLines = 2 + showN;
         }
 
         // periodic save
@@ -777,7 +762,7 @@ int main(int argc, char** argv) {
     }
     {
         RunnerConfig snapshot = cfg;
-        json jstate = make_json_state(snapshot, curNext, /*use last instantaneous if desired*/ 0.0);
+        json jstate = make_json_state(snapshot, curNext, 0.0);
         save_json_atomic(cfg.state_path, jstate, cfg.backup_path, /*rotate_backup=*/true);
     }
 

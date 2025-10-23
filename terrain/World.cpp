@@ -38,14 +38,14 @@ void World::deleteWorld() {
 }
 
 
-void World::createChunks(AreaRange& range) {
+void World::createChunks(const AreaRange& range) {
     for (Pos2D p : range) {
         getOrCreateChunk(p);
     }
 }
 
 
-void World::decorateCaves(AreaRange& range, bool hasWaterCaves) {
+void World::decorateCaves(const AreaRange& range, bool hasWaterCaves) {
     //std::cout << "Carving chunks around " << theStartPosition << " with radius " << radius << std::endl;
 
     Pos2D lower = range.getLower();
@@ -111,7 +111,7 @@ void World::decorateCaves(AreaRange& range, bool hasWaterCaves) {
 }
 
 
-void World::decorateChunks(AreaRange& range) {
+void World::decorateChunks(const AreaRange& range) {
     //std::cout << "Decorating chunks around " << pos << " with radius " << radius << std::endl;
     for (Pos2D p : range) {
         if (this->chunkExists(p))
