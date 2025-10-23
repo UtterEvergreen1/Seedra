@@ -25,6 +25,8 @@ public:
         bool operator!=(const iterator& other) const { return p.x != other.p.x; }
     };
 
+    AreaRange() = default;
+
     AreaRange(Pos2D centre, int radius,
               bool reverseX = true, bool reverseZ = true) {
         lower = centre - radius;
@@ -38,6 +40,25 @@ public:
 
         first.z = reverseZ ? upper.z : lower.z;
         last .z = reverseZ ? lower.z : upper.z;
+    }
+
+    AreaRange(Pos2D min, Pos2D max) {
+        lower = min;
+        upper = max;
+
+        step.x = 1;
+        step.z = 1;
+
+        first.x = lower.x;
+        last .x = upper.x;
+
+        first.z = lower.z;
+        last .z = upper.z;
+    }
+
+    bool isInside(const Pos2D& pos) const {
+        return pos.x >= lower.x && pos.x <= upper.x &&
+               pos.z >= lower.z && pos.z <= upper.z;
     }
 
     MU ND Pos2D getLower() const { return lower; }
