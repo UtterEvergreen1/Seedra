@@ -94,7 +94,7 @@ public:
         stage = Stage::STAGE_TERRAIN;
         isModifying = false;
         decorateRng = RNG();
-        std::memset(blocks.data(), 0, STORAGE_SIZE);
+        std::memset(blocks.data(), 0, STORAGE_SIZE * sizeof(u16));
         skyLight.clear();
         highestYBlock = -1;
         std::memset(heightMap, 0, 256);
