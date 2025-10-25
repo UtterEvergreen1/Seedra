@@ -434,6 +434,15 @@ public:
     ND bool canSnowAt(const Pos3D &pos) const;
 
     /**
+     * @brief Calculates the memory footprint size of the ChunkPrimer in constant expression time.
+     * @return The memory footprint size in bytes.
+     */
+    ND constexpr static size_t getFootprintSize() {
+        constexpr size_t size = sizeof(ChunkPrimer) + sizeof(u16) * STORAGE_SIZE + 256 * sizeof(int);
+        return size;
+    }
+
+    /**
      * @brief Overloads the output stream operator to print the chunk data.
      * @param out The output stream.
      * @param chunkPrimer The chunk primer to print.

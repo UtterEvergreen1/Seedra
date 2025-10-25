@@ -3,8 +3,10 @@
 #include <unordered_map>
 #include <atomic>
 #include <mutex>
+#include <vector>
 
 #include "Chunk.hpp"
+#include "common/MemPool.hpp"
 #include "structures/gen/village/village.hpp"
 #include "structures/gen/mineshaft/mineshaft.hpp"
 #include "structures/gen/stronghold/stronghold.hpp"
@@ -76,7 +78,7 @@ public:
      * @param pos The center position.
      * @param radius The radius around the position.
      */
-    void createChunks(const AreaRange& range);
+    void createChunks(const AreaRange &range);
 
     /**
      * @brief Decorates caves in the specified area.
@@ -84,14 +86,14 @@ public:
      * @param radius The radius around the starting position.
      * @param hasWaterCaves Whether the caves contain water.
      */
-    void decorateCaves(const AreaRange& range, bool hasWaterCaves);
+    void decorateCaves(const AreaRange &range, bool hasWaterCaves);
 
     /**
      * @brief Decorates chunks around the specified position within a given radius.
      * @param pos The center position.
      * @param radius The radius around the position.
      */
-    void decorateChunks(const AreaRange& range);
+    void decorateChunks(const AreaRange &range);
 
     /**
      * @brief Retrieves the biome at the specified coordinates.
@@ -332,12 +334,12 @@ public:
     std::vector<gen::Mineshaft> mineshafts; ///< List of generated mineshafts.
     std::vector<gen::Stronghold> strongholds; ///< List of generated strongholds.
 
-    std::vector<ChunkPrimer *> reusableChunks;
     std::unordered_map<Pos2D, ChunkPrimer *, Pos2D::Hasher> chunks; ///< Map of chunks in the world.
     BoundingBox worldBounds; ///< Bounding box of the world.
     std::mutex chunkMutex; ///< Mutex for synchronizing chunk access.
 
 private:
+    MemPool<ChunkPrimer> chunkPool; ///< Pool for managing ChunkPrimer objects.
     std::atomic<ChunkPrimer *> lastChunk = nullptr; ///< Pointer to the last accessed chunk.
     std::atomic<Pos2D> lastChunkCoords = Pos2D(-100000, -100000); ///< Coordinates of the last accessed chunk.
 

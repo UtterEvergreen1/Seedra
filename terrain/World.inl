@@ -43,10 +43,8 @@ inline ChunkPrimer *World::getOrCreateChunk(const Pos2D &chunkPos) {
         return nullptr;
     }
 
-    if (!reusableChunks.empty()) {
-        chunk = reusableChunks.back();
-        reusableChunks.pop_back();
-        chunk->reset();
+    if (ChunkPrimer* pooled = chunkPool.acquireFromPool()) {
+        chunk = pooled; // already reset when released to pool
     } else {
         chunk = new ChunkPrimer();
     }

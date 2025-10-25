@@ -72,6 +72,26 @@ public:
         setCoordMode(facing);
     }
 
+    // Safe copy constructor
+    StructureComponent(const StructureComponent& other) {
+        usingPiece(other);
+        // ensure coord-mode matches facing
+        setCoordMode(other.facing);
+    }
+
+    // Safe copy assignment
+    StructureComponent& operator=(const StructureComponent& other) {
+        if (this != &other) {
+            usingPiece(other);
+            setCoordMode(other.facing);
+        }
+        return *this;
+    }
+
+    // Default move constructor and assignment
+    StructureComponent(StructureComponent&&) noexcept = default;
+    StructureComponent& operator=(StructureComponent&&) noexcept = default;
+
     /**
      * @brief Sets the rotation and mirroring mode based on the given orientation.
      *

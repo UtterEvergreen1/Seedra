@@ -172,7 +172,7 @@ namespace gen {
     }
 
 
-    void Mineshaft::buildComponent(RNG& rng, StructureComponent p) {
+    void Mineshaft::buildComponent(RNG& rng, const StructureComponent& p) {
         pieceArray[pieceArraySize++] = p;
 
         switch (p.type) {
