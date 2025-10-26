@@ -109,7 +109,7 @@ public:
      * @param z The Z-coordinate.
      * @return The biome ID.
      */
-    int getBiomeIdAt(int x, int z) const;
+    biome_t getBiomeIdAt(int x, int z) const;
 
     /**
      * @brief Retrieves all chunks in the world.

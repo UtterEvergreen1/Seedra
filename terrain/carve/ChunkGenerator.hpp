@@ -56,7 +56,7 @@ public:
     /**
      * @brief Pointer to the array of biomes used for generation.
      */
-    int *biomesForGeneration;
+    biome_t *biomesForGeneration;
 
     std::span<int> biomesForGenerationSpan;
 

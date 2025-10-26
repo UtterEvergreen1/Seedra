@@ -46,7 +46,8 @@ void ChunkGeneratorOverWorld::setBiomesForGeneration(c_int x, c_int z, c_int wid
     r.sx = width, r.sz = height; // size (width,height)
     // Set the vertical range as a plane near sea level at scale 1:4.
     // r.y = 1, r.sy = 1;
-    int* biomeIds = g->allocCache(r);
+
+    biome_t* biomeIds = g->allocCache(r);
     g->genBiomes(biomeIds, r);
     if (biomesForGeneration) free(biomesForGeneration);
     biomesForGeneration = biomeIds;
@@ -145,11 +146,11 @@ void ChunkGeneratorOverWorld::generateHeightmap(c_int x, c_int y, c_int z) {
             float f2 = 0.0F;
             float f3 = 0.0F;
             float f4 = 0.0F;
-            c_int biome = biomesForGeneration[k + 2 + (l + 2) * 10];
+            const biome_t biome = biomesForGeneration[k + 2 + (l + 2) * 10];
 
             for (int j1 = -2; j1 <= 2; ++j1) {
                 for (int k1 = -2; k1 <= 2; ++k1) {
-                    c_int biome1 = biomesForGeneration[k + j1 + 2 + (l + k1 + 2) * 10];
+                    const biome_t biome1 = biomesForGeneration[k + j1 + 2 + (l + k1 + 2) * 10];
                     double f5;
                     double f6;
                     getBiomeDepthAndScale(biome1, &f5, &f6, nullptr);

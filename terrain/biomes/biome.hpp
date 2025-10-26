@@ -50,7 +50,7 @@ public:
      * Biomes not in this map will never snow. The map is generated based on the output
      * of `get_min_temp_biomes.cpp` in the tests directory.
      */
-    static const std::map<int, int> SNOW_BIOMES;
+    static const std::map<biome_t, int> SNOW_BIOMES;
 
     static const NoiseGeneratorPerlin TEMPERATURE_NOISE; ///< Noise generator for temperature.
     static const NoiseGeneratorPerlin INFO_NOISE; ///< Noise generator for biome information.
@@ -59,9 +59,9 @@ public:
     static const WorldGenTrees TREE_FEATURE; ///< Generator for standard trees.
     static const WorldGenBigTree BIG_TREE_FEATURE; ///< Generator for big trees.
 
-    static std::map<int, Biome *> registry; ///< Registry of all biomes by ID.
+    static std::map<biome_t, Biome *> registry; ///< Registry of all biomes by ID.
 
-    int biomeID = 0; ///< Unique ID of the biome.
+    biome_t biomeID = biome_t::ocean; ///< Unique ID of the biome.
     std::string biomeName; ///< Name of the biome.
 
     MU float baseHeight; ///< Base height of the biome. Default is 0.1.
@@ -81,7 +81,7 @@ public:
      * @param id The ID of the biome.
      * @return Pointer to the biome.
      */
-    static Biome *getBiomeForId(c_int id) {
+    static Biome *getBiomeForId(const biome_t id) {
         return registry.at(id);
     }
 
@@ -91,8 +91,8 @@ public:
      * @param biome Pointer to the biome to register.
      */
     static void registerBiome(int id, Biome *biome) {
-        biome->biomeID = id;
-        registry.emplace(id, biome);
+        biome->biomeID = static_cast<biome_t>(id);
+        registry.emplace(biome->biomeID, biome);
     }
 
     /**
@@ -262,6 +262,28 @@ public:
      */
     static void registerBiomes();
 };
+
+/**
+ * @class BiomeOcean
+ * @brief Represents an ocean biome with specific properties.
+ */
+class BiomeNone final : public Biome {
+public:
+    /**
+     * @brief Constructs a BiomeOcean instance.
+     * @param biomeName Name of the biome.
+     * @param baseHeight Base height of the biome.
+     * @param heightVariation Height variation of the biome.
+     * @param enableSnow Whether snow is enabled in the biome.
+     * @param temperature Temperature of the biome.
+     * @param waterColor Color of the water in the biome.
+     */
+    BiomeNone(MU std::string biomeName, c_float baseHeight, c_float heightVariation, c_bool enableSnow,
+               c_float temperature, c_u32 waterColor)
+        : Biome(std::move(biomeName), 0, 0, false, 0, 0.0f, waterColor) {
+    }
+};
+
 
 /**
  * @class BiomeOcean

@@ -1,4 +1,17 @@
+#include "common/worldPicture.hpp"
+#include "terrain/generator.hpp"
 
+int main() {
+    Generator generator(lce::CONSOLE::XBOX360, LCEVERSION::ELYTRA,
+                        2143553818, lce::WORLDSIZE::CLASSIC, lce::BIOMESCALE::MEDIUM);
+    WorldPicture worldPicture(&generator);
+
+    // Draw and save the biomes
+    worldPicture.drawBiomes();
+    worldPicture.save("uint16_t2_");
+
+    return 0;
+}
 /*
 #include <fstream>
 #include <iostream>

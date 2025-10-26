@@ -90,7 +90,7 @@ option(LC_BUILD_EXECUTABLE "Build Seedra standalone executable" ON)
 if(LC_BUILD_EXECUTABLE)
 
     add_cli(EXE_GenCreateWorld "tests/gen_chunk.cpp")
-    add_cli(EXE_DrawImages "tests/draw_images.cpp")
+    add_cli(EXE_DrawBiomes "tests/draw_biomes.cpp")
     add_cli(EXE_GetMaxTempBiomes "tests/get_min_temp_biomes.cpp")
     add_cli(EXE_MineAChunkSF "tests/best_mine_chunk_seed.cpp")
     add_cli(EXE_MineAChunkSF2 "tests/best_mine_chunk_seed2.cpp")

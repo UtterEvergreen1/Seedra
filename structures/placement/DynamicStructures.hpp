@@ -1,7 +1,7 @@
 #pragma once
 
 #include "common/Pos2DTemplate.hpp"
-#include "terrain/biomes/biomeID.hpp"
+#include "terrain/biomes/biome_t.hpp"
 #include "terrain/biomes/layers.hpp"
 #include "terrain/generator.hpp"
 #include <atomic>
@@ -13,29 +13,35 @@ namespace Placement {
      *
      * This constant defines a bitmask of biomes that are considered valid for secondary structures.
      */
-    static constexpr u64 DEFAULT_SECONDARY_VALID_BIOMES =
-            1ULL << ocean | 1ULL << plains | 1ULL << desert | 1ULL << forest | 1ULL << taiga | 1ULL << swampland |
-            1ULL << river | 1ULL << hell | 1ULL << the_end | 1ULL << legacy_frozen_ocean |
-            1ULL << frozen_river | 1ULL << ice_plains | 1ULL << ice_mountains | 1ULL << mushroom_island |
-            1ULL << mushroom_island_shore | 1ULL << beach | 1ULL << desert_hills | 1ULL << forest_hills |
-            1ULL << taiga_hills | 1ULL << extreme_hills_edge | 1ULL << jungle | 1ULL << jungle_hills |
-            1ULL << jungle_edge | 1ULL << deep_ocean | 1ULL << cold_beach | 1ULL << birch_forest | 1ULL << birch_forest_hills |
-            1ULL << roofed_forest | 1ULL << cold_taiga | 1ULL << cold_taiga_hills | 1ULL << mega_taiga |
-            1ULL << mega_taiga_hills | 1ULL << savanna | 1ULL << savanna_plateau | 1ULL << mesa |
-            1ULL << mesa_plateau_stone | 1ULL << mesa_plateau | 1ULL << warm_ocean | 1ULL << deep_warm_ocean |
-            1ULL << lukewarm_ocean | 1ULL << deep_lukewarm_ocean | 1ULL << cold_ocean | 1ULL << deep_cold_ocean |
-            1ULL << frozen_ocean | 1ULL << deep_frozen_ocean;
+    static constexpr u64 DEFAULT_SECONDARY_VALID_BIOMES = makeBiomeBitmask<
+            biome_t::ocean, biome_t::plains, biome_t::desert, biome_t::forest, biome_t::taiga, biome_t::swampland,
+            biome_t::river, biome_t::hell, biome_t::the_end, biome_t::legacy_frozen_ocean,
+            biome_t::frozen_river, biome_t::ice_plains, biome_t::ice_mountains, biome_t::mushroom_island,
+            biome_t::mushroom_island_shore, biome_t::beach, biome_t::desert_hills, biome_t::forest_hills,
+            biome_t::taiga_hills, biome_t::extreme_hills_edge, biome_t::jungle, biome_t::jungle_hills,
+            biome_t::jungle_edge, biome_t::deep_ocean, biome_t::cold_beach, biome_t::birch_forest, biome_t::birch_forest_hills,
+            biome_t::roofed_forest, biome_t::cold_taiga, biome_t::cold_taiga_hills, biome_t::mega_taiga,
+            biome_t::mega_taiga_hills, biome_t::savanna, biome_t::savanna_plateau, biome_t::mesa,
+            biome_t::mesa_plateau_stone, biome_t::mesa_plateau, biome_t::warm_ocean, biome_t::deep_warm_ocean,
+            biome_t::lukewarm_ocean, biome_t::deep_lukewarm_ocean, biome_t::cold_ocean, biome_t::deep_cold_ocean,
+            biome_t::frozen_ocean, biome_t::deep_frozen_ocean>();
 
     /**
      * @brief Default valid mutated biomes for secondary structures.
      *
      * This constant defines a bitmask of mutated biomes that are considered valid for secondary structures.
      */
-    static constexpr u64 DEFAULT_SECONDARY_VALID_BIOMES_MUTATED =
-            1ULL << (sunflower_plains - 128) | 1ULL << (desert_mutated - 128) |
-            1ULL << (swampland_mutated - 128) | 1ULL << (mega_spruce_taiga - 128) |
-            1ULL << (redwood_taiga_hills_mutated - 128) | 1ULL << (mesa_bryce - 128) |
-            1ULL << (mesa_plateau_stone_mutated - 128) | 1ULL << (mesa_plateau_mutated - 128);
+    static constexpr u64 DEFAULT_SECONDARY_VALID_BIOMES_MUTATED = makeBiomeBitmask<
+        static_cast<biome_t>(static_cast<biome_u>(biome_t::sunflower_plains) - 128),
+        static_cast<biome_t>(static_cast<biome_u>(biome_t::desert_mutated) - 128),
+        static_cast<biome_t>(static_cast<biome_u>(biome_t::swampland_mutated) - 128),
+        static_cast<biome_t>(static_cast<biome_u>(biome_t::mega_spruce_taiga) - 128),
+        static_cast<biome_t>(static_cast<biome_u>(biome_t::redwood_taiga_hills_mutated) - 128),
+        static_cast<biome_t>(static_cast<biome_u>(biome_t::mesa_bryce) - 128),
+        static_cast<biome_t>(static_cast<biome_u>(biome_t::mesa_plateau_stone_mutated) - 128),
+        static_cast<biome_t>(static_cast<biome_u>(biome_t::mesa_plateau_mutated) - 128)
+    >();
+
 
     /**
      * @class DynamicStructure
@@ -147,7 +153,7 @@ namespace Placement {
         constexpr static int Placement::DynamicStructure<Mansion>::SALT = 10387319;
         constexpr static int Placement::DynamicStructure<Mansion>::MAIN_RADIUS = 4;
         constexpr static int Placement::DynamicStructure<Mansion>::SECOND_RADIUS = 32;
-        constexpr static u64 Placement::DynamicStructure<Mansion>::MAIN_VALID_BIOMES = (1ULL << dark_forest);
+        constexpr static u64 Placement::DynamicStructure<Mansion>::MAIN_VALID_BIOMES = makeBiomeBitmask<biome_t::dark_forest>();
         constexpr static u64 Placement::DynamicStructure<Mansion>::SECONDARY_VALID_BIOMES = DEFAULT_SECONDARY_VALID_BIOMES;
         constexpr static u64 Placement::DynamicStructure<Mansion>::SECONDARY_VALID_BIOMES_MUTATED = DEFAULT_SECONDARY_VALID_BIOMES_MUTATED;
         /**
@@ -166,13 +172,13 @@ namespace Placement {
         constexpr static int Placement::DynamicStructure<Monument>::SALT = 10387313;
         constexpr static int Placement::DynamicStructure<Monument>::MAIN_RADIUS = 8;
         constexpr static int Placement::DynamicStructure<Monument>::SECOND_RADIUS = 29;
-        constexpr static u64 Placement::DynamicStructure<Monument>::MAIN_VALID_BIOMES =
-            1ULL << ocean | 1ULL << river | 1ULL << frozen_river | 1ULL << deep_ocean | 1ULL << warm_ocean |
-            1ULL << deep_warm_ocean | 1ULL << lukewarm_ocean | 1ULL << deep_lukewarm_ocean | 1ULL << cold_ocean |
-            1ULL << deep_cold_ocean | 1ULL << frozen_ocean | 1ULL << deep_frozen_ocean;
-        constexpr static u64 Placement::DynamicStructure<Monument>::SECONDARY_VALID_BIOMES =
-            1ULL << deep_ocean | 1ULL << deep_warm_ocean | 1ULL << deep_lukewarm_ocean | 1ULL << deep_cold_ocean |
-            1ULL << deep_frozen_ocean;
+        constexpr static u64 Placement::DynamicStructure<Monument>::MAIN_VALID_BIOMES = makeBiomeBitmask<
+            biome_t::ocean, biome_t::river, biome_t::frozen_river, biome_t::deep_ocean, biome_t::warm_ocean,
+            biome_t::deep_warm_ocean, biome_t::lukewarm_ocean, biome_t::deep_lukewarm_ocean, biome_t::cold_ocean,
+            biome_t::deep_cold_ocean, biome_t::frozen_ocean, biome_t::deep_frozen_ocean>();
+        constexpr static u64 Placement::DynamicStructure<Monument>::SECONDARY_VALID_BIOMES = makeBiomeBitmask<
+            biome_t::deep_ocean, biome_t::deep_warm_ocean, biome_t::deep_lukewarm_ocean, biome_t::deep_cold_ocean,
+            biome_t::deep_frozen_ocean>();
         /**
          * @brief Sets the world size for the Monument.
          * @param worldSize The world size.
@@ -189,8 +195,8 @@ namespace Placement {
         constexpr static int Placement::DynamicStructure<BuriedTreasure>::SALT = 16842397;
         constexpr static int Placement::DynamicStructure<BuriedTreasure>::MAIN_RADIUS = 0;
         constexpr static int Placement::DynamicStructure<BuriedTreasure>::SECOND_RADIUS = 16;
-        constexpr static u64 Placement::DynamicStructure<BuriedTreasure>::MAIN_VALID_BIOMES =
-            1ULL << mushroom_island_shore | 1ULL << beach | 1ULL << stone_beach | 1ULL << cold_beach;
+        constexpr static u64 Placement::DynamicStructure<BuriedTreasure>::MAIN_VALID_BIOMES = makeBiomeBitmask<
+                biome_t::mushroom_island_shore, biome_t::beach, biome_t::stone_beach, biome_t::cold_beach>();
         constexpr static u64 Placement::DynamicStructure<BuriedTreasure>::SECONDARY_VALID_BIOMES = DEFAULT_SECONDARY_VALID_BIOMES;
         constexpr static u64 Placement::DynamicStructure<BuriedTreasure>::SECONDARY_VALID_BIOMES_MUTATED = DEFAULT_SECONDARY_VALID_BIOMES_MUTATED;
         /**
@@ -244,10 +250,10 @@ namespace Placement {
         constexpr static int Placement::DynamicStructure<Shipwreck>::SALT = 14357617;
         constexpr static int Placement::DynamicStructure<Shipwreck>::MAIN_RADIUS = 10;
         constexpr static bool Placement::DynamicStructure<Shipwreck>::HAS_SECOND_BIOME_CHECK = false;
-        constexpr static u64 Placement::DynamicStructure<Shipwreck>::MAIN_VALID_BIOMES =
-            1ULL << ocean | 1ULL << mushroom_island_shore | 1ULL << beach | 1ULL << snowy_beach | 1ULL << deep_ocean |
-            1ULL << warm_ocean | 1ULL << lukewarm_ocean | 1ULL << deep_lukewarm_ocean | 1ULL << cold_ocean |
-            1ULL << deep_cold_ocean | 1ULL << frozen_ocean | 1ULL << deep_frozen_ocean;
+        constexpr static u64 Placement::DynamicStructure<Shipwreck>::MAIN_VALID_BIOMES = makeBiomeBitmask<
+            biome_t::ocean, biome_t::mushroom_island_shore, biome_t::beach, biome_t::snowy_beach, biome_t::deep_ocean,
+            biome_t::warm_ocean, biome_t::lukewarm_ocean, biome_t::deep_lukewarm_ocean, biome_t::cold_ocean,
+            biome_t::deep_cold_ocean, biome_t::frozen_ocean, biome_t::deep_frozen_ocean>();
         /**
          * @brief Sets the world size for the Shipwreck.
          * @param worldSize The world size.
@@ -264,8 +270,8 @@ namespace Placement {
         constexpr static int Placement::DynamicStructure<Outpost>::SALT = 165745296;
         constexpr static int Placement::DynamicStructure<Outpost>::MAIN_RADIUS = 32;
         constexpr static bool Placement::DynamicStructure<Outpost>::HAS_SECOND_BIOME_CHECK = false;
-        constexpr static u64 Placement::DynamicStructure<Outpost>::MAIN_VALID_BIOMES =
-            1ULL << plains | 1ULL << desert | 1ULL << taiga | 1ULL << ice_plains | 1ULL << cold_taiga | 1ULL << savanna;
+        constexpr static u64 Placement::DynamicStructure<Outpost>::MAIN_VALID_BIOMES = makeBiomeBitmask<
+            biome_t::plains, biome_t::desert, biome_t::taiga, biome_t::ice_plains, biome_t::cold_taiga, biome_t::savanna>();
         /**
          * @brief Sets the world size for the Outpost.
          * @param worldSize The world size.

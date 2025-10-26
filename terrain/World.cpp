@@ -132,7 +132,7 @@ Biome* World::getBiomeAt(int x, int z) const {
     return Biome::getBiomeForId(this->getBiomeIdAt(x, z));
 }
 
-int World::getBiomeIdAt(int x, int z) const {
+biome_t World::getBiomeIdAt(int x, int z) const {
     return g->getBiomeIdAt(1, x, z);
 }
 

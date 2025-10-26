@@ -74,7 +74,7 @@ void Generator::generateCache(int scale) {
     const int arrIndex = trailingZeros >> 1;
     int minBound = -(this->getWorldCoordinateBounds() >> trailingZeros);
     int worldSizeBounds = -minBound << 1;
-    int *biomes = getBiomeRange(scale, minBound, minBound, worldSizeBounds, worldSizeBounds);
+    biome_t *biomes = getBiomeRange(scale, minBound, minBound, worldSizeBounds, worldSizeBounds);
     this->m_biomeCaches[arrIndex].setBiomes(biomes);
 }
 
@@ -90,14 +90,14 @@ void Generator::generateCachesUpTo(int maxScale) {
         int minBound = -(this->getWorldCoordinateBounds() >> trailingZeros);
         int worldSizeBounds = -minBound << 1;
         const Range r = {scale, minBound, minBound, worldSizeBounds, worldSizeBounds};
-        int *ids = allocCache(r);
+        biome_t *ids = allocCache(r);
         // copy over the biomes from the previous scale if it exists
         if (scale <= 64) {
             const int prevTrailingZeros = __builtin_ctz(scale << 2);
             const int prevArrIndex = prevTrailingZeros >> 1;
             const BiomeCache &prevScale = this->m_biomeCaches[prevArrIndex];
             if (prevScale.isGenerated()) {
-                memcpy(ids, prevScale.getBiomes(), prevScale.getBox().getArea() * sizeof(int));
+                memcpy(ids, prevScale.getBiomes(), prevScale.getBox().getArea() * sizeof(biome_t));
             }
         }
         genBiomes(ids, r);
@@ -183,9 +183,9 @@ size_t Generator::getMinCacheSize(c_int scale, c_int sx, c_int sz) const {
  * @param range
  * @return pointer to the biome cache
  */
-int *Generator::allocCache(const Range &range) const {
+biome_t *Generator::allocCache(const Range &range) const {
     const size_t len = getMinCacheSize(range.scale, range.sx, range.sz);
-    return static_cast<int *>(calloc(len, sizeof(int)));
+    return static_cast<biome_t *>(calloc(len, sizeof(biome_t)));
 }
 
 /**
@@ -199,12 +199,10 @@ int *Generator::allocCache(const Range &range) const {
  * @param[in] range the range to generate the biomes in
  * @return zero upon success
  */
-int Generator::genBiomes(int *cache, const Range &range) const {
+i32 Generator::genBiomes(biome_t *cache, const Range &range) const {
     const Layer *layerForScale = getLayerForScale(range.scale);
-    if (!layerForScale) return -1;
-    c_int err = genArea(layerForScale, cache, range.x, range.z, range.sx, range.sz);
-    if (err) return err;
-
+    if (!layerForScale) return false;
+    genArea(layerForScale, cache, range.x, range.z, range.sx, range.sz);
     return 0;
 }
 
@@ -217,16 +215,19 @@ int Generator::genBiomes(int *cache, const Range &range) const {
  * @param x, z coordinates to generate the biome at
  * @return biome id or -1 if failed
  */
-int Generator::getBiomeIdAt(c_int scale, c_int x, c_int z) const {
-    if (int *biomeCache = getCacheAtBlock(scale, x, z)) return *biomeCache;
+biome_t Generator::getBiomeIdAt(c_int scale, c_int x, c_int z) const {
+    if (biome_t *biomeCache = getCacheAtBlock(scale, x, z)) return *biomeCache;
 
     const Range r = {scale, x, z, 1, 1};
-    int *ids = allocCache(r);
-    int id = genBiomes(ids, r);
+    biome_t *ids = allocCache(r);
+    bool status = genBiomes(ids, r);
+    biome_t id;
 
-    if (id == 0) id = ids[0];
+    if (status == 0)
+        id = ids[0];
     else
-        id = BiomeID::none;
+        id = biome_t::none;
+
     free(ids);
     return id;
 }
@@ -239,15 +240,15 @@ int Generator::getBiomeIdAt(c_int scale, c_int x, c_int z) const {
  * @param w, h width and height to generate
  * @return Cache of generated biomes.
  */
-int *Generator::getBiomeRange(c_int scale, c_int x, c_int z, c_int w, c_int h) const {
+biome_t *Generator::getBiomeRange(c_int scale, c_int x, c_int z, c_int w, c_int h) const {
     const Range r = {scale, x, z, w, h};
-    int *ids = allocCache(r);
+    biome_t *ids = allocCache(r);
     genBiomes(ids, r);
     return ids;
 }
 
 
-int *Generator::getCacheAtBlock(int scale, int x, int z) const {
+biome_t *Generator::getCacheAtBlock(int scale, int x, int z) const {
     const int cacheVecPos = CTZ(scale) / 2; // Count trailing zeros to get the index
     if (this->m_biomeCaches[cacheVecPos].isGenerated()) {
         // get the biome stored in the cache
@@ -262,7 +263,7 @@ int *Generator::getCacheAtBlock(int scale, int x, int z) const {
     return nullptr;
 }
 
-int *Generator::getWorldBiomes(int scale) const {
+biome_t *Generator::getWorldBiomes(int scale) const {
     const int cacheVecPos = CTZ(scale) / 2; // Count trailing zeros to get the index
     if (this->m_biomeCaches[cacheVecPos].isGenerated()) {
         // get the biome stored in the cache
@@ -316,7 +317,7 @@ bool Generator::areBiomesViable(c_int x, c_int z, c_int rad, c_u64 validBiomes,
     }
 
 
-    int *ids = nullptr;
+    biome_t *ids = nullptr;
     int x1 = (x - rad) >> 2, x2 = (x + rad) >> 2;
     int z1 = (z - rad) >> 2, z2 = (z + rad) >> 2;
 
@@ -335,8 +336,8 @@ bool Generator::areBiomesViable(c_int x, c_int z, c_int rad, c_u64 validBiomes,
         if (this->m_biomeCaches[1].isGenerated()) {
             for (int zPos = z1; zPos <= z2; ++zPos) {
                 for (int xPos = x1; xPos <= x2; ++xPos) {
-                    const int *id = getCacheAtBlock(4, xPos, zPos);
-                    if (id == nullptr || *id < 0 || !id_matches(*id, validBiomes, mutatedValidBiomes)) goto L_no;
+                    const biome_t *id = getCacheAtBlock(4, xPos, zPos);
+                    if (id == nullptr || *id == biome_t::none || !id_matches(*id, validBiomes, mutatedValidBiomes)) goto L_no;
                 }
             }
         } else {
@@ -389,7 +390,7 @@ Pos2D Generator::locateBiome(const int x, const int z, const int radius,
 
     int found = 0;
 
-    int *ids = nullptr;
+    biome_t *ids = nullptr;
     int x1 = (x - radius) >> 2;
     int z1 = (z - radius) >> 2;
     c_int x2 = (x + radius) >> 2;
@@ -400,7 +401,7 @@ Pos2D Generator::locateBiome(const int x, const int z, const int radius,
     if (this->m_biomeCaches[1].isGenerated()) {
         for (int zPos = z1; zPos <= z2; ++zPos) {
             for (int xPos = x1; xPos <= x2; ++xPos) {
-                const int *id = getCacheAtBlock(4, xPos, zPos);
+                const biome_t *id = getCacheAtBlock(4, xPos, zPos);
                 if (id == nullptr || !id_matches(*id, validBiomes)) continue;
                 if (found == 0 || rng.nextInt(found + 1) == 0) {
                     out.x = xPos * 4;
@@ -438,7 +439,7 @@ Pos2D Generator::locateBiome(const int x, const int z, const int radius,
  * @param[in] w, h width and height to generate
  * @return zero on success
  */
-int Generator::mapApproxHeight(float *y, int *ids, const SurfaceNoise *sn,
+int Generator::mapApproxHeight(float *y, biome_t *ids, const SurfaceNoise *sn,
                                c_int x, c_int z, c_int w, c_int h) const {
     // with 10 / (sqrt(i**2 + j**2) + 0.2)
     constexpr float biome_kernel[25] = {
@@ -454,20 +455,20 @@ int Generator::mapApproxHeight(float *y, int *ids, const SurfaceNoise *sn,
 
     const Range r = {4, x - 2, z - 2, w + 5, h + 5};
 
-    int *cache = allocCache(r);
+    biome_t *cache = allocCache(r);
     genBiomes(cache, r);
 
     for (j = 0; j < h; j++) {
         for (i = 0; i < w; i++) {
             double d0, s0;
             double wt = 0, ws = 0, wd = 0;
-            c_int id0 = cache[(j + 2) * r.sx + (i + 2)];
+            const biome_t id0 = cache[(j + 2) * r.sx + (i + 2)];
             getBiomeDepthAndScale(id0, &d0, &s0, nullptr);
 
             for (int jj = 0; jj < 5; jj++) {
                 for (int ii = 0; ii < 5; ii++) {
                     double d, s;
-                    const int id = cache[(j + jj) * r.sx + (i + ii)];
+                    const biome_t id = cache[(j + jj) * r.sx + (i + ii)];
                     getBiomeDepthAndScale(id, &d, &s, nullptr);
                     // TODO: should this stay float, or become double?
                     float weight = biome_kernel[jj * 5 + ii] / (d + 2);
@@ -564,10 +565,15 @@ MU Pos2D Generator::getSpawnBlock() const {
     initSurfaceNoise(&sn, lce::DIMENSION::OVERWORLD, getWorldSeed());
 
     float y;
-    int id = -1, grass = 0;
+    biome_t id = biome_t::none;
+    int grass = 0;
+
     for (int i = 0; i < 1000; i++) {
         int res = mapApproxHeight(&y, &id, &sn, spawn.x >> 2, spawn.z >> 2, 1, 1);
         getBiomeDepthAndScale(id, nullptr, nullptr, &grass);
+
+        printf("res=%d, id=%d, spawn=(%d, %d), y=%.2f grass=%d\n",
+               res, id, spawn.x, spawn.z, y, grass);
 
         if (grass > 0 && y >= static_cast<float>(grass)) break;
 
@@ -623,8 +629,12 @@ MU bool Generator::areBiomesViable(const Pos2D pos, const int rad, const uint64_
  * @param mutatedValidBiomes u64 value of the valid mutated biomes
  * @return true if the biome id exists in the valid biomes
  */
-bool Generator::id_matches(const int id, const uint64_t validBiomes, const uint64_t mutatedValidBiomes) {
-    return id < 128 ? (validBiomes & (1ULL << id)) != 0 : (mutatedValidBiomes & (1ULL << (id - 128))) != 0;
+bool Generator::id_matches(const biome_t id, c_u64 validBiomes, c_u64 mutatedValidBiomes) {
+    if (id == biome_t::none) return false;
+    const int _id = static_cast<int>(id);
+    return _id < 128
+        ? (validBiomes & (1ULL << _id)) != 0
+        : (mutatedValidBiomes & (1ULL << (_id - 128))) != 0;
 }
 
 /**
@@ -635,7 +645,7 @@ bool Generator::id_matches(const int id, const uint64_t validBiomes, const uint6
  * @param pos coordinates to generate the biome at
  * @return biome id or -1 if failed
  */
-int Generator::getBiomeIdAt(const int scale, const Pos2D pos) const { return getBiomeIdAt(scale, pos.x, pos.z); }
+biome_t Generator::getBiomeIdAt(const int scale, const Pos2D pos) const { return getBiomeIdAt(scale, pos.x, pos.z); }
 
 
 /**
@@ -646,7 +656,7 @@ int Generator::getBiomeIdAt(const int scale, const Pos2D pos) const { return get
  * @param pos coordinates to generate the biome at
  * @return biome id or -1 if failed
  */
-int Generator::getBiomeIdAt(const int scale, const Pos3D pos) const { return getBiomeIdAt(scale, pos.x, pos.z); }
+biome_t Generator::getBiomeIdAt(const int scale, const Pos3D pos) const { return getBiomeIdAt(scale, pos.x, pos.z); }
 
 Biome *Generator::getBiomeAt(int scale, int x, int z) const {
     return Biome::getBiomeForId(this->getBiomeIdAt(scale, x, z));

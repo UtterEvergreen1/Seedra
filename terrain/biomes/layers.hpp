@@ -4,6 +4,7 @@
 
 #include "lce/enums.hpp"
 #include "lce/processor.hpp"
+#include "terrain/biomes/biome_t.hpp"
 
 class Generator;
 struct PerlinNoise;
@@ -20,7 +21,7 @@ extern u64 mcFirstIsZero_Calls;
 
 
 
-template<int... BiomeIDs>
+template<biome_t... BiomeIDs>
 constexpr u64 makeBiomeBitmask() {
     return ((1ULL << BiomeIDs) | ...);
 }
@@ -105,7 +106,7 @@ enum LayerId {
  * @param height Height of the area being processed.
  * @return An integer status code indicating success or failure.
  */
-typedef int(mapFunc_t)(const Layer*, int*, int, int, int, int);
+typedef void(mapFunc_t)(const Layer*, biome_t*, int, int, int, int);
 
 /**
  * @struct Layer
@@ -190,7 +191,7 @@ double sampleSurfaceNoise(const Generator *g, const SurfaceNoise *rnd, int x, in
  * @param grass Pointer to store the grass value.
  * @return Status code indicating success or failure.
  */
-int getBiomeDepthAndScale(int id, double *depth, double *scale, int *grass);
+int getBiomeDepthAndScale(biome_t id, double *depth, double *scale, int *grass);
 
 /**
  * @brief Sets the seed for End biome noise generation.
@@ -216,7 +217,7 @@ MU int getSurfaceHeightEnd(const Generator *g, MCVERSION mc, u64 seed, int x, in
  * @param id The biome ID.
  * @return 1 if the biome exists, 0 otherwise.
  */
-MU int biomeExists(MCVERSION mc, int id);
+MU int biomeExists(MCVERSION mc, biome_t id);
 
 /**
  * @brief Checks if a biome is part of the Overworld.
@@ -224,7 +225,7 @@ MU int biomeExists(MCVERSION mc, int id);
  * @param id The biome ID.
  * @return 1 if the biome is in the Overworld, 0 otherwise.
  */
-MU int isOverworld(MCVERSION mc, int id);
+MU int isOverworld(MCVERSION mc, biome_t id);
 
 /**
  * @brief Retrieves the mutated variant of a biome.
@@ -232,7 +233,7 @@ MU int isOverworld(MCVERSION mc, int id);
  * @param id The biome ID.
  * @return The ID of the mutated biome.
  */
-int getMutated(MCVERSION mc, int id);
+biome_t getMutated(MCVERSION mc, biome_t id);
 
 /**
  * @brief Retrieves the category of a biome.
@@ -240,7 +241,7 @@ int getMutated(MCVERSION mc, int id);
  * @param id The biome ID.
  * @return The category of the biome.
  */
-int getCategory(MCVERSION mc, int id);
+int getCategory(MCVERSION mc, biome_t id);
 
 /**
  * @brief Checks if two biomes are similar.
@@ -249,42 +250,42 @@ int getCategory(MCVERSION mc, int id);
  * @param id2 The second biome ID.
  * @return 1 if the biomes are similar, 0 otherwise.
  */
-int areSimilar(MCVERSION mc, int id1, int id2);
+int areSimilar(MCVERSION mc, biome_t id1, biome_t id2);
 
 /**
  * @brief Checks if a biome is a mesa biome.
  * @param id The biome ID.
  * @return 1 if the biome is a mesa biome, 0 otherwise.
  */
-int isMesa(int id);
+int isMesa(biome_t id);
 
 /**
  * @brief Checks if a biome is a shallow ocean biome.
  * @param id The biome ID.
  * @return 1 if the biome is a shallow ocean biome, 0 otherwise.
  */
-int isShallowOcean(int id);
+int isShallowOcean(biome_t id);
 
 /**
  * @brief Checks if a biome is a deep ocean biome.
  * @param id The biome ID.
  * @return 1 if the biome is a deep ocean biome, 0 otherwise.
  */
-int isDeepOcean(int id);
+int isDeepOcean(biome_t id);
 
 /**
  * @brief Checks if a biome is oceanic.
  * @param id The biome ID.
  * @return 1 if the biome is oceanic, 0 otherwise.
  */
-int isOceanic(int id);
+int isOceanic(biome_t id);
 
 /**
  * @brief Checks if a biome is snowy.
  * @param id The biome ID.
  * @return 1 if the biome is snowy, 0 otherwise.
  */
-int isSnowy(int id);
+int isSnowy(biome_t id);
 
 /**
  * @brief Sets up a layer with the specified parameters.
@@ -315,9 +316,8 @@ void setupScale(Layer *l, int scale);
  * @param areaZ Z-coordinate of the area.
  * @param areaWidth Width of the area.
  * @param areaHeight Height of the area.
- * @return Status code indicating success or failure.
  */
-int genArea(const Layer *layer, int *out, int areaX, int areaZ, int areaWidth, int areaHeight);
+void genArea(const Layer *layer, biome_t *out, int areaX, int areaZ, int areaWidth, int areaHeight);
 
 /**
  * @brief Sets up the layer stack for biome generation.
