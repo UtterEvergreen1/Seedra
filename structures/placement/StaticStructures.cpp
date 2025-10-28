@@ -1,7 +1,7 @@
 #include "StaticStructures.hpp"
 
 #include "common/rng.hpp"
-#include "terrain/biomes/biomeID.hpp"
+#include "terrain/biomes/biome_t.hpp"
 
 
 namespace Placement {
@@ -93,18 +93,18 @@ namespace Placement {
             return StructureType::NONE;
         }
         switch (g->getBiomeIdAt(1, blockX, blockZ)) {
-            case desert:
-            case desert_hills:
+            case biome_t::desert:
+            case biome_t::desert_hills:
                 return StructureType::DesertPyramid;
-            case jungle:
-            case jungle_hills:
-            case bamboo_jungle:
-            case bamboo_jungle_hills:
+            case biome_t::jungle:
+            case biome_t::jungle_hills:
+            case biome_t::bamboo_jungle:
+            case biome_t::bamboo_jungle_hills:
                 return StructureType::JunglePyramid;
-            case swamp:
+            case biome_t::swamp:
                 return StructureType::SwampHut;
-            case snowy_tundra:
-            case snowy_taiga:
+            case biome_t::snowy_tundra:
+            case biome_t::snowy_taiga:
                 return StructureType::Igloo;
             default:
                 return StructureType::NONE;
@@ -158,16 +158,20 @@ namespace Placement {
     template<>
     MU c_int StaticStructure<Village<false>>::SALT = 10387312;
     template<>
-    c_u64 StaticStructure<Village<false>>::VALID_BIOMES =
-            1ULL << plains | 1ULL << desert | 1ULL << taiga | 1ULL << ice_plains | 1ULL << cold_taiga | 1ULL << savanna;
+    c_u64 StaticStructure<Village<false>>::VALID_BIOMES = makeBiomeBitmask<
+        biome_t::plains, biome_t::desert, biome_t::taiga,
+        biome_t::ice_plains, biome_t::cold_taiga, biome_t::savanna
+    >();
 
     template<>
     MU c_int StaticStructure<Village<true>>::SALT = 10387312;
     template<>
     MU int StaticStructure<Village<true>>::CHUNK_RANGE = 7;
     template<>
-    c_u64 StaticStructure<Village<true>>::VALID_BIOMES =
-            1ULL << plains | 1ULL << desert | 1ULL << taiga | 1ULL << ice_plains | 1ULL << cold_taiga | 1ULL << savanna;
+    c_u64 StaticStructure<Village<true>>::VALID_BIOMES = makeBiomeBitmask<
+        biome_t::plains, biome_t::desert, biome_t::taiga,
+        biome_t::ice_plains, biome_t::cold_taiga, biome_t::savanna
+    >();
 
     template<bool PS4Village>
     void Village<PS4Village>::setWorldSize(const lce::WORLDSIZE worldSize) {
@@ -191,10 +195,11 @@ namespace Placement {
     template<>
     MU int StaticStructure<OceanRuin>::CHUNK_RANGE = 6;
     template<>
-    c_u64 StaticStructure<OceanRuin>::VALID_BIOMES =
-            1ULL << ocean | 1ULL << deep_ocean | 1ULL << warm_ocean | 1ULL << deep_warm_ocean |
-            1ULL << lukewarm_ocean | 1ULL << deep_lukewarm_ocean | 1ULL << cold_ocean |
-            1ULL << deep_cold_ocean | 1ULL << frozen_ocean | 1ULL << deep_frozen_ocean;
+    c_u64 StaticStructure<OceanRuin>::VALID_BIOMES = makeBiomeBitmask<
+        biome_t::ocean, biome_t::deep_ocean, biome_t::warm_ocean, biome_t::deep_warm_ocean,
+        biome_t::lukewarm_ocean, biome_t::deep_lukewarm_ocean, biome_t::cold_ocean,
+        biome_t::deep_cold_ocean, biome_t::frozen_ocean, biome_t::deep_frozen_ocean
+    >();
 
     void OceanRuin::setWorldSize(const lce::WORLDSIZE worldSize) { CHUNK_BOUNDS = getChunkWorldBounds(worldSize); }
 

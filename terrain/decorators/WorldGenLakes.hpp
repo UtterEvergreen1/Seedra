@@ -1,7 +1,7 @@
 #pragma once
 
 #include "terrain/biomes/biome.hpp"
-#include "terrain/biomes/biomeID.hpp"
+#include "terrain/biomes/biome_t.hpp"
 #include "terrain/generator.hpp"
 
 class World;
@@ -62,8 +62,8 @@ public:
      * @return The position of the water lake.
      */
     ND static Pos3D waterLake(const Generator *g, RNG &rng, const int chunkX, const int chunkZ) {
-        const int biomeAt = g->getBiomeIdAt(1, (chunkX << 4) + 16, (chunkZ << 4) + 16);
-        if (biomeAt == desert || biomeAt == desert_hills || rng.nextInt(4) != 0) return {};
+        const biome_t biomeAt = g->getBiomeIdAt(1, (chunkX << 4) + 16, (chunkZ << 4) + 16);
+        if (biomeAt == biome_t::desert || biomeAt == biome_t::desert_hills || rng.nextInt(4) != 0) return {};
 
         int xPos = (chunkX << 4) + rng.nextInt(16) + 8;
         int yPos = rng.nextInt(128);

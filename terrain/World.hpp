@@ -78,7 +78,7 @@ public:
      * @param pos The center position.
      * @param radius The radius around the position.
      */
-    void createChunks(const AreaRange &range);
+    void createChunks(const AreaRange& range);
 
     /**
      * @brief Decorates caves in the specified area.
@@ -86,14 +86,14 @@ public:
      * @param radius The radius around the starting position.
      * @param hasWaterCaves Whether the caves contain water.
      */
-    void decorateCaves(const AreaRange &range, bool hasWaterCaves);
+    void decorateCaves(const AreaRange& range, bool hasWaterCaves);
 
     /**
      * @brief Decorates chunks around the specified position within a given radius.
      * @param pos The center position.
      * @param radius The radius around the position.
      */
-    void decorateChunks(const AreaRange &range);
+    void decorateChunks(const AreaRange& range);
 
     /**
      * @brief Retrieves the biome at the specified coordinates.
@@ -109,7 +109,7 @@ public:
      * @param z The Z-coordinate.
      * @return The biome ID.
      */
-    int getBiomeIdAt(int x, int z) const;
+    biome_t getBiomeIdAt(int x, int z) const;
 
     /**
      * @brief Retrieves all chunks in the world.

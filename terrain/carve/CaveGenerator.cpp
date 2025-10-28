@@ -6,7 +6,7 @@
 
 #include "common/MathHelper.hpp"
 #include "common/constants.hpp"
-#include "terrain/biomes/biomeID.hpp"
+#include "terrain/biomes/biome_t.hpp"
 
 #include "lce/blocks/__include.hpp"
 
@@ -323,20 +323,20 @@ void CaveGenerator::addRoom(World& worldIn, i64 seedModifier, Pos2D currentChunk
 
 unsigned char CaveGenerator::topBlock(c_int x, c_int z) const {
     switch (world.getBiomeIdAt(x, z)) {
-        case beach:
-        case desert:
-        case mesa:
+        case biome_t::beach:
+        case biome_t::desert:
+        case biome_t::mesa:
             return SAND_ID;
-        case mushroom_field_shore:
-        case mushroom_fields:
+        case biome_t::mushroom_field_shore:
+        case biome_t::mushroom_fields:
             return MYCELIUM_ID;
-        case snowy_beach:
-        case snowy_mountains:
-        case snowy_taiga:
-        case snowy_taiga_hills:
-        case snowy_tundra:
+        case biome_t::snowy_beach:
+        case biome_t::snowy_mountains:
+        case biome_t::snowy_taiga:
+        case biome_t::snowy_taiga_hills:
+        case biome_t::snowy_tundra:
             return SNOW_BLOCK_ID;
-        case stone_beach:
+        case biome_t::stone_beach:
             return STONE_ID;
         default:
             return 2;

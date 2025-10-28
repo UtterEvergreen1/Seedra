@@ -10,7 +10,7 @@
 #include "common/rng.hpp"
 #include "layers.hpp"
 
-#include "terrain/biomes/biomeID.hpp"
+#include "terrain/biomes/biome_t.hpp"
 #include "terrain/noise/noise.hpp"
 
 
@@ -111,7 +111,14 @@ MU static u64 getStartSeed(c_u64 ws, c_u64 ls) {
 // Essentials
 //==============================================================================
 
-int biomeExists(c_int mc, c_int id) {
+
+/**
+ * @brief Checks if a biome exists for a given Minecraft version and ID.
+ * @param mc Minecraft version.
+ * @param id The biome ID.
+ * @return 1 if the biome exists, 0 otherwise.
+ */
+int biomeExists(const MCVERSION mc, const biome_t id) {
     if (id >= ocean && id <= mountain_edge) return 1;
     if (id >= jungle && id <= jungle_hills) return mc >= MC_1_2;
     if (id >= jungle_edge && id <= badlands_plateau) return mc >= MC_1_7;
@@ -151,7 +158,13 @@ int biomeExists(c_int mc, c_int id) {
     }
 }
 
-int isOverworld(c_int mc, c_int id) {
+/**
+ * @brief Checks if a biome is part of the Overworld.
+ * @param mc Minecraft version.
+ * @param id The biome ID.
+ * @return 1 if the biome is in the Overworld, 0 otherwise.
+ */
+int isOverworld(const MCVERSION mc, const biome_t id) {
     if (!biomeExists(mc, id)) return 0;
 
     if (id >= small_end_islands && id <= end_barrens) return 0;
@@ -174,7 +187,13 @@ int isOverworld(c_int mc, c_int id) {
     }
 }
 
-int getMutated(c_int mc, c_int id) {
+/**
+ * @brief Retrieves the mutated variant of a biome.
+ * @param mc Minecraft version.
+ * @param id The biome ID.
+ * @return The ID of the mutated biome.
+ */
+biome_t getMutated(const MCVERSION mc, const biome_t id) {
     switch (id) {
         case plains:
             return sunflower_plains;
@@ -224,7 +243,13 @@ int getMutated(c_int mc, c_int id) {
     }
 }
 
-int getCategory(MU int mc, c_int id) {
+/**
+ * @brief Retrieves the category of a biome.
+ * @param mc Minecraft version.
+ * @param id The biome ID.
+ * @return The category of the biome.
+ */
+int getCategory(MU MCVERSION mc, const biome_t id) {
     switch (id) {
         case beach:
         case snowy_beach:
@@ -330,7 +355,14 @@ int getCategory(MU int mc, c_int id) {
     }
 }
 
-int areSimilar(c_int mc, c_int id1, c_int id2) {
+/**
+ * @brief Checks if two biomes are similar.
+ * @param mc Minecraft version.
+ * @param id1 The first biome ID.
+ * @param id2 The second biome ID.
+ * @return 1 if the biomes are similar, 0 otherwise.
+ */
+int areSimilar(const MCVERSION mc, const biome_t id1, const biome_t id2) {
     if (id1 == id2) return 1;
 
     if (id1 == wooded_badlands_plateau || id1 == badlands_plateau)
@@ -339,7 +371,12 @@ int areSimilar(c_int mc, c_int id1, c_int id2) {
     return getCategory(mc, id1) == getCategory(mc, id2);
 }
 
-int isMesa(c_int id) {
+/**
+ * @brief Checks if a biome is a mesa biome.
+ * @param id The biome ID.
+ * @return 1 if the biome is a mesa biome, 0 otherwise.
+ */
+int isMesa(const biome_t id) {
     switch (id) {
         case badlands:
         case eroded_badlands:
@@ -353,26 +390,50 @@ int isMesa(c_int id) {
     }
 }
 
-int isShallowOcean(c_int id) {
+/**
+ * @brief Checks if a biome is a shallow ocean biome.
+ * @param id The biome ID.
+ * @return 1 if the biome is a shallow ocean biome, 0 otherwise.
+ */
+int isShallowOcean(const biome_t id) {
     static constexpr u64 shallow_bits = makeBiomeBitmask<
             ocean, frozen_ocean, warm_ocean, lukewarm_ocean, cold_ocean>();
-    return static_cast<u32>(id) < 64 && ((1ULL << id) & shallow_bits);
+    const u32 uid = static_cast<u32>(id);
+    return uid < 64 && ((1ULL << uid) & shallow_bits);
 }
 
-int isDeepOcean(c_int id) {
+/**
+ * @brief Checks if a biome is a deep ocean biome.
+ * @param id The biome ID.
+ * @return 1 if the biome is a deep ocean biome, 0 otherwise.
+ */
+int isDeepOcean(const biome_t id) {
     static constexpr u64 deep_bits = makeBiomeBitmask<
-            deep_ocean, deep_warm_ocean, deep_lukewarm_ocean, deep_cold_ocean, deep_frozen_ocean>();
-    return static_cast<u32>(id) < 64 && ((1ULL << id) & deep_bits);
+            deep_ocean, deep_warm_ocean, deep_lukewarm_ocean,
+            deep_cold_ocean, deep_frozen_ocean>();
+    const u32 uid = static_cast<u32>(id);
+    return uid < 64 && ((1ULL << uid) & deep_bits);
 }
 
-int isOceanic(c_int id) {
+/**
+ * @brief Checks if a biome is oceanic.
+ * @param id The biome ID.
+ * @return 1 if the biome is oceanic, 0 otherwise.
+ */
+int isOceanic(const biome_t id) {
     static constexpr u64 ocean_bits = makeBiomeBitmask<
-            ocean, frozen_ocean, warm_ocean, lukewarm_ocean, cold_ocean, deep_ocean, 
+            ocean, frozen_ocean, warm_ocean, lukewarm_ocean, cold_ocean, deep_ocean,
             deep_warm_ocean, deep_lukewarm_ocean, deep_cold_ocean, deep_frozen_ocean>();
-    return static_cast<u32>(id) < 64 && ((1ULL << id) & ocean_bits);
+    const u32 uid = static_cast<u32>(id);
+    return uid < 64 && ((1ULL << uid) & ocean_bits);
 }
 
-int isSnowy(c_int id) {
+/**
+ * @brief Checks if a biome is snowy.
+ * @param id The biome ID.
+ * @return 1 if the biome is snowy, 0 otherwise.
+ */
+int isSnowy(const biome_t id) {
     switch (id) {
         case frozen_ocean:
         case frozen_river:
@@ -389,6 +450,12 @@ int isSnowy(c_int id) {
     }
 }
 
+
+/**
+ * @brief Applies the given world seed to the layer and all dependent layers.
+ * @param layer Pointer to the layer.
+ * @param worldSeed The world seed to apply.
+ */
 void setLayerSeed(Layer* layer, c_u64 worldSeed) {
     if (layer->p2 != nullptr) setLayerSeed(layer->p2, worldSeed);
 
@@ -410,11 +477,19 @@ void setLayerSeed(Layer* layer, c_u64 worldSeed) {
 }
 
 
-///=============================================================================
-/// Layered Biome const Generation (old interface up to 1.17)
-///=============================================================================
 
-/* Set up custom layers. */
+/**
+ * @brief Sets up a layer with the specified parameters.
+ * @param l Pointer to the layer.
+ * @param map Function pointer for the layer's mapping function.
+ * @param theMc Minecraft version.
+ * @param zoom Zoom factor for the layer.
+ * @param edge Maximum border required from the parent layer.
+ * @param saltBase Base salt for the layer.
+ * @param p Pointer to the first parent layer.
+ * @param p2 Pointer to the second parent layer.
+ * @return Pointer to the configured layer.
+ */
 Layer* setupLayer(Layer* l, mapFunc_t* map, const MCVERSION theMc, c_i8 zoom, c_i8 edge,
                   c_u64 saltBase, Layer* p, Layer* p2) {
     //Layer *l = g->layers + layerId;
@@ -433,6 +508,12 @@ Layer* setupLayer(Layer* l, mapFunc_t* map, const MCVERSION theMc, c_i8 zoom, c_
     return l;
 }
 
+
+/**
+ * @brief Sets up the scale for a layer.
+ * @param l Pointer to the layer.
+ * @param scale The scale to set.
+ */
 void setupScale(Layer* l, c_int scale) {
     l->scale = scale;
     if (l->p1) setupScale(l->p1, scale * l->zoom);
@@ -440,6 +521,12 @@ void setupScale(Layer* l, c_int scale) {
 }
 
 // TODO: BIOMES FOR EARLY VERSIONS (before elytra)
+/**
+ * @brief Sets up the layer stack for biome generation.
+ * @param layerStack Pointer to the LayerStack structure.
+ * @param lceVersion LCE version.
+ * @param biomeSize Biome size scale.
+ */
 void setupLayerStack(LayerStack* layerStack, const LCEVERSION lceVersion, const lce::BIOMESCALE biomeSize) {
 
     const MCVERSION mc = getMCVersion(lceVersion);
@@ -467,8 +554,8 @@ void setupLayerStack(LayerStack* layerStack, const LCEVERSION lceVersion, const 
     p = setupLayer(l + L_ISLAND_1024, mapIsland, mc, 1, 2, 2, p, nullptr);
     p = setupLayer(l + L_SNOW_1024, mapSnow, mc, 1, 2, 2, p, nullptr);
     p = setupLayer(l + L_LAND_1024_D, mapLand, mc, 1, 2, 3, p, nullptr);
-    p = setupLayer(l + L_COOL_1024, mapCool, mc, 1, 2, 2, p, nullptr);
-    p = setupLayer(l + L_HEAT_1024, mapHeat, mc, 1, 2, 2, p, nullptr);
+    p = setupLayer(l + L_COOL_1024, mapCoolWarm, mc, 1, 2, 2, p, nullptr);
+    p = setupLayer(l + L_HEAT_1024, mapHeatIce, mc, 1, 2, 2, p, nullptr);
     p = setupLayer(l + L_SPECIAL_1024, mapSpecial, mc, 1, 2, 3, p, nullptr);
     p = setupLayer(l + L_ZOOM_512, mapZoom, mc, 2, 3, 2002, p, nullptr);
     p = setupLayer(l + L_ZOOM_256, mapZoom, mc, 2, 3, 2003, p, nullptr);
@@ -483,7 +570,7 @@ void setupLayerStack(LayerStack* layerStack, const LCEVERSION lceVersion, const 
 
     p = setupLayer(l + L_BIOME_EDGE_64, mapBiomeEdge, mc, 1, 2, 1000, p, nullptr);
     // river noise layer chain, also used to determine where hills const generate
-    p = setupLayer(l + L_RIVER_INIT_256, mapNoise, mc, 1, 0, 100, l + L_DEEP_OCEAN_256, nullptr);
+    p = setupLayer(l + L_RIVER_INIT_256, mapRiverInit, mc, 1, 0, 100, l + L_DEEP_OCEAN_256, nullptr);
 
     // latest WII U has oceans, so I use 1.13 but these salts are 0 so this works like 1.12-
     // if (mc <= MC_1_12)
@@ -511,7 +598,7 @@ void setupLayerStack(LayerStack* layerStack, const LCEVERSION lceVersion, const 
 
     // iteration 1
     p = setupLayer(l + L_ZOOM_16, mapZoom, mc, 2, 3, 1001, p, nullptr);
-    if (biomeSize == lce::BIOMESCALE::SMALL) p = setupLayer(l + L_G_MUSHROOM_16, mapGMushroom, mc, 1, 2, 5, p, nullptr);
+    if (biomeSize == lce::BIOMESCALE::SMALL) p = setupLayer(l + L_G_MUSHROOM_16, mapGiantMushroom, mc, 1, 2, 5, p, nullptr);
     p = setupLayer(l + L_SHORE_16, mapShore, mc, 1, 2, 1000, p, nullptr);
 
     // iteration 2
@@ -566,363 +653,16 @@ void setupLayerStack(LayerStack* layerStack, const LCEVERSION lceVersion, const 
     setupScale(layerStack->entry_1, 1);
 }
 
-
-int getBiomeDepthAndScale(int id, double* depth, double* scale, int* grass) {
-    constexpr int dh = 62; // default height
-    double s, d, g;
-    switch (id) {
-        case ocean:
-            s = 0.100;
-            d = -1.000;
-            g = dh;
-            break;
-        case plains:
-            s = 0.050;
-            d = 0.125;
-            g = dh;
-            break;
-        case desert:
-            s = 0.050;
-            d = 0.125;
-            g = 0;
-            break;
-        case mountains:
-            s = 0.500;
-            d = 1.000;
-            g = dh;
-            break;
-        case forest:
-            s = 0.200;
-            d = 0.100;
-            g = dh;
-            break;
-        case taiga:
-            s = 0.200;
-            d = 0.200;
-            g = dh;
-            break;
-        case swamp:
-            s = 0.100;
-            d = -0.200;
-            g = dh;
-            break;
-        case river:
-            s = 0.000;
-            d = -0.500;
-            g = 60;
-            break;
-        case frozen_ocean:
-            s = 0.100;
-            d = -1.000;
-            g = dh;
-            break;
-        case frozen_river:
-            s = 0.000;
-            d = -0.500;
-            g = 60;
-            break;
-        case snowy_tundra:
-            s = 0.050;
-            d = 0.125;
-            g = dh;
-            break;
-        case snowy_mountains:
-            s = 0.300;
-            d = 0.450;
-            g = dh;
-            break;
-        case mushroom_fields:
-            s = 0.300;
-            d = 0.200;
-            g = 0;
-            break;
-        case mushroom_field_shore:
-            s = 0.025;
-            d = 0.000;
-            g = 0;
-            break;
-        case beach:
-            s = 0.025;
-            d = 0.000;
-            g = 64;
-            break;
-        case desert_hills:
-            s = 0.300;
-            d = 0.450;
-            g = 0;
-            break;
-        case wooded_hills:
-            s = 0.300;
-            d = 0.450;
-            g = dh;
-            break;
-        case taiga_hills:
-            s = 0.300;
-            d = 0.450;
-            g = dh;
-            break;
-        case mountain_edge:
-            s = 0.300;
-            d = 0.800;
-            g = dh;
-            break;
-        case jungle:
-            s = 0.200;
-            d = 0.100;
-            g = dh;
-            break;
-        case jungle_hills:
-            s = 0.300;
-            d = 0.450;
-            g = dh;
-            break;
-        case jungle_edge:
-            s = 0.200;
-            d = 0.100;
-            g = dh;
-            break;
-        case deep_ocean:
-            s = 0.100;
-            d = -1.800;
-            g = dh;
-            break;
-        case stone_shore:
-            s = 0.800;
-            d = 0.100;
-            g = 64;
-            break;
-        case snowy_beach:
-            s = 0.025;
-            d = 0.000;
-            g = 64;
-            break;
-        case birch_forest:
-            s = 0.200;
-            d = 0.100;
-            g = dh;
-            break;
-        case birch_forest_hills:
-            s = 0.300;
-            d = 0.450;
-            g = dh;
-            break;
-        case dark_forest:
-            s = 0.200;
-            d = 0.100;
-            g = dh;
-            break;
-        case snowy_taiga:
-            s = 0.200;
-            d = 0.200;
-            g = dh;
-            break;
-        case snowy_taiga_hills:
-            s = 0.300;
-            d = 0.450;
-            g = dh;
-            break;
-        case giant_tree_taiga:
-            s = 0.200;
-            d = 0.200;
-            g = dh;
-            break;
-        case giant_tree_taiga_hills:
-            s = 0.300;
-            d = 0.450;
-            g = dh;
-            break;
-        case wooded_mountains:
-            s = 0.500;
-            d = 1.000;
-            g = dh;
-            break;
-        case savanna:
-            s = 0.050;
-            d = 0.125;
-            g = dh;
-            break;
-        case savanna_plateau:
-            s = 0.025;
-            d = 1.500;
-            g = dh;
-            break;
-        case badlands:
-            s = 0.200;
-            d = 0.100;
-            g = 0;
-            break;
-        case wooded_badlands_plateau:
-            s = 0.025;
-            d = 1.500;
-            g = 0;
-            break;
-        case badlands_plateau:
-            s = 0.025;
-            d = 1.500;
-            g = 0;
-            break;
-        case warm_ocean:
-            s = 0.100;
-            d = -1.000;
-            g = 0;
-            break;
-        case lukewarm_ocean:
-            s = 0.100;
-            d = -1.000;
-            g = dh;
-            break;
-        case cold_ocean:
-            s = 0.100;
-            d = -1.000;
-            g = dh;
-            break;
-        case deep_warm_ocean:
-            s = 0.100;
-            d = -1.800;
-            g = 0;
-            break;
-        case deep_lukewarm_ocean:
-            s = 0.100;
-            d = -1.800;
-            g = dh;
-            break;
-        case deep_cold_ocean:
-            s = 0.100;
-            d = -1.800;
-            g = dh;
-            break;
-        case deep_frozen_ocean:
-            s = 0.100;
-            d = -1.800;
-            g = dh;
-            break;
-        case sunflower_plains:
-            s = 0.050;
-            d = 0.125;
-            g = dh;
-            break;
-        case desert_lakes:
-            s = 0.250;
-            d = 0.225;
-            g = 0;
-            break;
-        case gravelly_mountains:
-            s = 0.500;
-            d = 1.000;
-            g = dh;
-            break;
-        case flower_forest:
-            s = 0.400;
-            d = 0.100;
-            g = dh;
-            break;
-        case taiga_mountains:
-            s = 0.400;
-            d = 0.300;
-            g = dh;
-            break;
-        case swamp_hills:
-            s = 0.300;
-            d = -0.100;
-            g = dh;
-            break;
-        case ice_spikes:
-            s = 0.450;
-            d = 0.425;
-            g = 0;
-            break;
-        case modified_jungle:
-            s = 0.400;
-            d = 0.200;
-            g = dh;
-            break;
-        case modified_jungle_edge:
-            s = 0.400;
-            d = 0.200;
-            g = dh;
-            break;
-        case tall_birch_forest:
-            s = 0.400;
-            d = 0.200;
-            g = dh;
-            break;
-        case tall_birch_hills:
-            s = 0.500;
-            d = 0.550;
-            g = dh;
-            break;
-        case dark_forest_hills:
-            s = 0.400;
-            d = 0.200;
-            g = dh;
-            break;
-        case snowy_taiga_mountains:
-            s = 0.400;
-            d = 0.300;
-            g = dh;
-            break;
-        case giant_spruce_taiga:
-            s = 0.200;
-            d = 0.200;
-            g = dh;
-            break;
-        case giant_spruce_taiga_hills:
-            s = 0.200;
-            d = 0.200;
-            g = dh;
-            break;
-        case modified_gravelly_mountains:
-            s = 0.500;
-            d = 1.000;
-            g = dh;
-            break;
-        case shattered_savanna:
-            s = 1.225;
-            d = 0.3625;
-            g = dh;
-            break;
-        case shattered_savanna_plateau:
-            s = 1.212;
-            d = 1.050;
-            g = dh;
-            break;
-        case eroded_badlands:
-            s = 0.200;
-            d = 0.100;
-            g = 0;
-            break;
-        case modified_wooded_badlands_plateau:
-            s = 0.300;
-            d = 0.450;
-            g = 0;
-            break;
-        case modified_badlands_plateau:
-            s = 0.300;
-            d = 0.450;
-            g = 0;
-            break;
-        case bamboo_jungle:
-            s = 0.200;
-            d = 0.100;
-            g = dh;
-            break;
-        case bamboo_jungle_hills:
-            s = 0.300;
-            d = 0.450;
-            g = dh;
-            break;
-        default:
-            return 0;
-    }
-    if (scale) *scale = s;
-    if (depth) *depth = d;
-    if (grass) *grass = g;
-    return 1;
-}
-
-
-/* Recursively calculates the minimum buffer size required to const generate an area
+/**
+ * @brief Retrieves the maximum area for a layer.
+ * Recursively calculates the minimum buffer size required to const generate an area
  * of the specified size from the current layer onwards.
+ * @param layer Pointer to the layer.
+ * @param areaX X-coordinate of the area.
+ * @param areaZ Z-coordinate of the area.
+ * @param maxX Pointer to store the maximum X-coordinate.
+ * @param maxZ Pointer to store the maximum Z-coordinate.
+ * @param siz Pointer to store the size of the area.
  */
 void getMaxArea(const Layer* layer, int areaX, int areaZ, int* maxX, int* maxZ, size_t* siz) {
     if (layer == nullptr) return;
@@ -950,7 +690,14 @@ void getMaxArea(const Layer* layer, int areaX, int areaZ, int* maxX, int* maxZ, 
     if (layer->p2) getMaxArea(layer->p2, areaX, areaZ, maxX, maxZ, siz);
 }
 
-size_t getMinLayerCacheSize(const Layer* layer, c_int sizeX, int const sizeZ) {
+/**
+ * @brief Retrieves the minimum cache size for a layer.
+ * @param layer Pointer to the layer.
+ * @param sizeX Size of the area in the X direction.
+ * @param sizeZ Size of the area in the Z direction.
+ * @return The minimum cache size.
+ */
+size_t getMinLayerCacheSize(const Layer* layer, c_int sizeX, c_int sizeZ) {
     int maxX = sizeX;
     int maxZ = sizeZ;
     size_t bufferSize = 0;
@@ -958,16 +705,25 @@ size_t getMinLayerCacheSize(const Layer* layer, c_int sizeX, int const sizeZ) {
     return bufferSize + maxX * static_cast<size_t>(maxZ);
 }
 
-/** const Generates the specified area using the current const generator settings and stores
+/**
+ * @brief Generates an area for the specified layer.
+ * const Generates the specified area using the current const generator settings and stores
  * the biomeIDs in 'out'.
  * The biomeIDs will be indexed in the form: out[x + z*areaWidth]
  * It is recommended that 'out' is allocated using allocCache() for the correct
  * buffer size.
+ *
+ * @param layer Pointer to the layer.
+ * @param out Pointer to the output area.
+ * @param areaX X-coordinate of the area.
+ * @param areaZ Z-coordinate of the area.
+ * @param areaWidth Width of the area.
+ * @param areaHeight Height of the area.
  */
-int genArea(const Layer* layer, int* out, c_int areaX, c_int areaZ, c_int areaWidth, c_int areaHeight) {
+void genArea(const Layer* layer, biome_t* out, c_int areaX, c_int areaZ, c_int areaWidth, c_int areaHeight) {
     // TODO: this could be calloc because it's initializing to 0
     memset(out, 0, areaWidth * areaHeight * sizeof(*out));
-    return layer->getMap(layer, out, areaX, areaZ, areaWidth, areaHeight);
+    layer->getMap(layer, out, areaX, areaZ, areaWidth, areaHeight);
 }
 
 
@@ -976,8 +732,17 @@ int genArea(const Layer* layer, int* out, c_int areaX, c_int areaZ, c_int areaWi
 //==============================================================================
 
 
+/**
+ * @brief Initializes surface noise for older versions.
+ * @param rnd Pointer to the SurfaceNoise structure.
+ * @param seed Pointer to the seed.
+ * @param xzScale Scale factor for the XZ plane.
+ * @param yScale Scale factor for the Y axis.
+ * @param xzFactor Factor for the XZ plane.
+ * @param yFactor Factor for the Y axis.
+ */
 void initSurfaceNoiseOld(SurfaceNoise* rnd, RNG& seed,
-    const double xzScale, const double yScale, const double xzFactor, const double yFactor) {
+                         const double xzScale, const double yScale, const double xzFactor, const double yFactor) {
     rnd->xzScale = xzScale;
     rnd->yScale = yScale;
     rnd->xzFactor = xzFactor;
@@ -987,12 +752,27 @@ void initSurfaceNoiseOld(SurfaceNoise* rnd, RNG& seed,
     octaveInit(&rnd->octaveMain, seed, rnd->oct + 32, -7, 8);
 }
 
+/**
+ * @brief Initializes surface noise for the End biome.
+ * @param rnd Pointer to the SurfaceNoise structure.
+ * @param seed The seed to initialize with.
+ */
 void initSurfaceNoiseEnd(SurfaceNoise* rnd, c_u64 seed) {
     RNG rng;
     rng.setSeed(seed);
     initSurfaceNoiseOld(rnd, rng, 2.0, 1.0, 80.0, 160.0);
 }
 
+
+/**
+ * @brief Samples surface noise at a specific position.
+ * @param g Pointer to the generator.
+ * @param rnd Pointer to the SurfaceNoise structure.
+ * @param x X-coordinate.
+ * @param y Y-coordinate.
+ * @param z Z-coordinate.
+ * @return The sampled noise value.
+ */
 double sampleSurfaceNoise(const Generator* g, const SurfaceNoise* rnd, c_int x, c_int y, c_int z) {
     c_double xzScale = 684.412 * rnd->xzScale;
     c_double yScale = 684.412 * rnd->yScale;
@@ -1032,6 +812,12 @@ double sampleSurfaceNoise(const Generator* g, const SurfaceNoise* rnd, c_int x, 
 // End const Generation
 //==============================================================================
 
+
+/**
+ * @brief Sets the seed for End biome noise generation.
+ * @param en Pointer to the EndNoise structure.
+ * @param seed The seed to set.
+ */
 void setEndSeed(EndNoise* en, const u64 seed) {
     RNG rng;
     rng.setSeed(seed);
@@ -1054,7 +840,7 @@ float getEndHeightNoise(const EndNoise* en, c_int x, c_int z) {
             i64 rz = hz + j;
             u16 v = 0;
             if (rx * rx + rz * rz > 4096 && sampleSimplex2D(en,
-                static_cast<double>(rx), static_cast<double>(rz)) < -0.9f) {
+                                                            static_cast<double>(rx), static_cast<double>(rz)) < -0.9f) {
                 v = (llabs(rx) * 3439 + llabs(rz) * 147) % 13 + 9;
                 rx = (oddX - i * 2);
                 rz = (oddZ - j * 2);
@@ -1106,7 +892,7 @@ int getSurfaceHeight(c_double ncol00[], c_double ncol01[], c_double ncol10[], c_
         for (int y = blockspercell - 1; y >= 0; y--) {
             const double dy = y / static_cast<double>(blockspercell);
             const double noise = MathHelper::lerp3D(dy, dx, dz, // Note: not x, y, z
-                                              v000, v010, v100, v110, v001, v011, v101, v111);
+                                                    v000, v010, v100, v110, v001, v011, v101, v111);
             if (noise > 0) return celly * blockspercell + y;
         }
     }
@@ -1114,8 +900,16 @@ int getSurfaceHeight(c_double ncol00[], c_double ncol01[], c_double ncol10[], c_
     return 0;
 }
 
-
-MU int getSurfaceHeightEnd(const Generator* g, c_int mc, c_u64 seed, c_int x, c_int z) {
+/**
+ * @brief Retrieves the surface height for the End biome.
+ * @param g Pointer to the generator.
+ * @param mc Minecraft version.
+ * @param seed The world seed.
+ * @param x X-coordinate.
+ * @param z Z-coordinate.
+ * @return The surface height.
+ */
+MU int getSurfaceHeightEnd(const Generator* g, const MCVERSION mc, c_u64 seed, c_int x, c_int z) {
     (void) mc;
 
     EndNoise en;
@@ -1154,33 +948,45 @@ static int isAny4(c_int id, c_int a, c_int b, c_int c, c_int d) {
 }
 
 
-int mapContinent(const Layer* l, int* out, c_int x, c_int z, c_int w, c_int h) {
+/**
+ * @var mapContinent
+ * @brief Mapping function for the continent layer.
+ *        Previously known as mapIsland.
+ * @BufferIn  reads nothing
+ * @BufferOut writes { 0: ocean, 1: land }
+ */
+void mapContinent(const Layer* l, biome_t* out, c_int x, c_int z, c_int w, c_int h) {
     c_u64 ss = l->startSeed;
 
     for (int j = 0; j < h; j++) {
         for (int i = 0; i < w; i++) {
             const u64 cs = getChunkSeed(ss, i + x, j + z);
-            out[i + j * w] = mcFirstIsZero<10>(cs);
+            out[i + j * w] = static_cast<biome_t>(mcFirstIsZero<10>(cs));
         }
     }
 
-    if (x > -w && x <= 0 && z > -h && z <= 0) { out[-x + -z * w] = 1; }
-
-    return 0;
+    if (x > -w && x <= 0 && z > -h && z <= 0) { out[-x + -z * w] = biome_t::plains; }
 }
 
-int mapZoomFuzzy(const Layer* l, int* out, c_int x, c_int z, c_int w, c_int h) {
+
+/**
+ * @var mapZoomFuzzy
+ * @brief Mapping function for applying a fuzzy zoom effect.
+ * @BufferIn  reads whatever parent has
+ * @BufferOut writes whatever parent has, just smoothed.
+ */
+void mapZoomFuzzy(const Layer* l, biome_t* out, c_int x, c_int z, c_int w, c_int h) {
     c_int pX = x >> 1;
     c_int pZ = z >> 1;
     c_int pW = ((x + w) >> 1) - pX + 1;
     c_int pH = ((z + h) >> 1) - pZ + 1;
 
-    c_int err = l->p1->getMap(l->p1, out, pX, pZ, pW, pH);
-    if EXPECT_FALSE (err != 0) return err;
+    l->p1->getMap(l->p1, out, pX, pZ, pW, pH);
+
 
     c_int newW = pW << 1;
-    int v10, v11;
-    int* buf = out + pW * pH;
+    biome_t v10, v11;
+    biome_t* buf = out + pW * pH;
 
     c_auto st = static_cast<u32>(l->startSalt);
     c_auto ss = static_cast<u32>(l->startSeed);
@@ -1188,8 +994,8 @@ int mapZoomFuzzy(const Layer* l, int* out, c_int x, c_int z, c_int w, c_int h) {
     for (int j = 0; j < pH; j++) {
         int idx = (j << 1) * newW;
 
-        int v00 = out[(j + 0) * pW];
-        int v01 = out[(j + 1) * pW];
+        biome_t v00 = out[(j + 0) * pW];
+        biome_t v01 = out[(j + 1) * pW];
 
         for (int i = 0; i < pW; i++, v00 = v10, v01 = v11) {
             v10 = out[i + 1 + (j + 0) * pW];
@@ -1233,15 +1039,13 @@ int mapZoomFuzzy(const Layer* l, int* out, c_int x, c_int z, c_int w, c_int h) {
     }
 
     for (int j = 0; j < h; j++) {
-        memmove(&out[j * w], &buf[(j + (z & 1)) * newW + (x & 1)], w * sizeof(int));
+        memmove(&out[j * w], &buf[(j + (z & 1)) * newW + (x & 1)], w * sizeof(biome_t));
     }
-
-    return 0;
 }
 
 
-static int select4(u32 cs, c_u32 st, c_int v00, c_int v01, c_int v10, c_int v11) {
-    int v;
+static biome_t select4(u32 cs, c_u32 st, const biome_t v00, const biome_t v01, const biome_t v10, const biome_t v11) {
+    biome_t v;
     c_int cv00 = (v00 == v10) + (v00 == v01) + (v00 == v11);
     c_int cv10 = (v10 == v01) + (v10 == v11);
     c_int cv01 = (v01 == v11);
@@ -1260,20 +1064,27 @@ static int select4(u32 cs, c_u32 st, c_int v00, c_int v01, c_int v10, c_int v11)
     return v;
 }
 
-/// This is the most common layer, and generally the second most performance
-/// critical after mapAddIsland.
-int mapZoom(const Layer* l, int* out, c_int x, c_int z, c_int w, c_int h) {
+
+/**
+ * @var mapZoom
+ * @brief Mapping function for applying a standard zoom effect.
+ * This is the most common layer, and generally the second most performance
+ * critical after mapAddIsland.
+ * @BufferIn  reads whatever parent has
+ * @BufferOut writes whatever parent has, just up-sampled.
+ */
+void mapZoom(const Layer* l, biome_t* out, c_int x, c_int z, c_int w, c_int h) {
     c_int pX = x >> 1;
     c_int pZ = z >> 1;
     c_int pW = ((x + w) >> 1) - pX + 1; // (w >> 1) + 2;
     c_int pH = ((z + h) >> 1) - pZ + 1; // (h >> 1) + 2;
 
-    c_int err = l->p1->getMap(l->p1, out, pX, pZ, pW, pH);
-    if EXPECT_FALSE (err != 0) return err;
+    l->p1->getMap(l->p1, out, pX, pZ, pW, pH);
+
 
     c_int newW = pW << 1;
-    int v10, v11;
-    int* buf = out + pW * pH;
+    biome_t v10, v11;
+    biome_t* buf = out + pW * pH;
 
     c_auto st = static_cast<u32>(l->startSalt);
     c_auto ss = static_cast<u32>(l->startSeed);
@@ -1281,8 +1092,8 @@ int mapZoom(const Layer* l, int* out, c_int x, c_int z, c_int w, c_int h) {
     for (int j = 0; j < pH; j++) {
         int idx = (j << 1) * newW;
 
-        int v00 = out[(j + 0) * pW];
-        int v01 = out[(j + 1) * pW];
+        biome_t v00 = out[(j + 0) * pW];
+        biome_t v01 = out[(j + 1) * pW];
 
         for (int i = 0; i < pW; i++, v00 = v10, v01 = v11) {
             v10 = out[i + 1 + (j + 0) * pW];
@@ -1324,39 +1135,44 @@ int mapZoom(const Layer* l, int* out, c_int x, c_int z, c_int w, c_int h) {
     }
 
     for (int j = 0; j < h; j++) {
-        memmove(&out[j * w], &buf[(j + (z & 1)) * newW + (x & 1)], w * sizeof(int));
+        memmove(&out[j * w], &buf[(j + (z & 1)) * newW + (x & 1)], w * sizeof(biome_t));
     }
-
-    return 0;
 }
 
-/// This is the most performance critical layer, especially for getBiomeAtPos.
-int mapLand(const Layer* l, int* out, c_int x, c_int z, c_int w, c_int h) {
+/**
+ * @var mapLand
+ * @brief Mapping function for adding land to the layer.
+ *        Previously known as mapAddIsland.
+ * This is the most performance critical layer, especially for getBiomeAtPos.
+ * @BufferIn  reads { 0: ocean, 1: land, with exceptions }
+ * @BufferOut writes
+ */
+void mapLand(const Layer* l, biome_t* out, c_int x, c_int z, c_int w, c_int h) {
     c_int pX = x - 1;
     c_int pZ = z - 1;
     c_int pW = w + 2;
     c_int pH = h + 2;
 
-    c_int err = l->p1->getMap(l->p1, out, pX, pZ, pW, pH);
-    if EXPECT_FALSE (err != 0) return err;
+    l->p1->getMap(l->p1, out, pX, pZ, pW, pH);
+
 
     const u64 st = l->startSalt;
     const u64 ss = l->startSeed;
     u64 cs;
 
     for (int j = 0; j < h; j++) {
-        c_int* vz0 = out + (j + 0) * pW;
-        c_int* vz1 = out + (j + 1) * pW;
-        c_int* vz2 = out + (j + 2) * pW;
+        const biome_t* vz0 = out + (j + 0) * pW;
+        const biome_t* vz1 = out + (j + 1) * pW;
+        const biome_t* vz2 = out + (j + 2) * pW;
 
-        int v00 = vz0[0], vt0 = vz0[1];
-        int v02 = vz2[0], vt2 = vz2[1];
+        biome_t v00 = vz0[0], vt0 = vz0[1];
+        biome_t v02 = vz2[0], vt2 = vz2[1];
 
         for (int i = 0; i < w; i++) {
-            c_int v11 = vz1[i + 1];
-            c_int v20 = vz0[i + 2];
-            c_int v22 = vz2[i + 2];
-            int v = v11;
+            const biome_t v11 = vz1[i + 1];
+            const biome_t v20 = vz0[i + 2];
+            const biome_t v22 = vz2[i + 2];
+            biome_t v = v11;
 
             switch (v11) {
                 case ocean:
@@ -1375,7 +1191,7 @@ int mapLand(const Layer* l, int* out, c_int x, c_int z, c_int w, c_int h) {
 
                         cs = getChunkSeed(ss, i + x, j + z);
                         int inc = 0;
-                        v = 1;
+                        v = biome_t::plains;
 
                         if (v00 != ocean) {
                             ++inc;
@@ -1428,7 +1244,7 @@ int mapLand(const Layer* l, int* out, c_int x, c_int z, c_int w, c_int h) {
                 default:
                     if (v00 == 0 || v20 == 0 || v02 == 0 || v22 == 0) {
                         cs = getChunkSeed(ss, i + x, j + z);
-                        if (mcFirstIsZero<5>(cs)) v = 0;
+                        if (mcFirstIsZero<5>(cs)) v = biome_t::ocean;
                     }
             }
 
@@ -1439,56 +1255,62 @@ int mapLand(const Layer* l, int* out, c_int x, c_int z, c_int w, c_int h) {
             vt2 = v22;
         }
     }
-
-    return 0;
 }
 
 
-int mapIsland(const Layer* l, int* out, c_int x, c_int z, c_int w, c_int h) {
+/**
+ * @var mapIsland
+ * @brief Mapping function for removing excessive ocean areas.
+ *        Previously known as mapRemoveTooMuchOcean.
+ */
+void mapIsland(const Layer* l, biome_t* out, c_int x, c_int z, c_int w, c_int h) {
     c_int pX = x - 1;
     c_int pZ = z - 1;
     c_int pW = w + 2;
     c_int pH = h + 2;
 
-    c_int err = l->p1->getMap(l->p1, out, pX, pZ, pW, pH);
-    if EXPECT_FALSE (err != 0) return err;
+    l->p1->getMap(l->p1, out, pX, pZ, pW, pH);
+
 
     c_u64 ss = l->startSeed;
 
     for (int j = 0; j < h; j++) {
         for (int i = 0; i < w; i++) {
-            c_int v11 = out[i + 1 + (j + 1) * pW];
+            const biome_t v11 = out[i + 1 + (j + 1) * pW];
             out[i + j * w] = v11;
 
-            if (v11 == Oceanic) {
-                if (out[i + 1 + (j + 0) * pW] != Oceanic) continue;
-                if (out[i + 2 + (j + 1) * pW] != Oceanic) continue;
-                if (out[i + 0 + (j + 1) * pW] != Oceanic) continue;
-                if (out[i + 1 + (j + 2) * pW] != Oceanic) continue;
+            if (v11 == oceanic) {
+                if (out[i + 1 + (j + 0) * pW] != oceanic) continue;
+                if (out[i + 2 + (j + 1) * pW] != oceanic) continue;
+                if (out[i + 0 + (j + 1) * pW] != oceanic) continue;
+                if (out[i + 1 + (j + 2) * pW] != oceanic) continue;
 
                 const u64 cs = getChunkSeed(ss, i + x, j + z);
-                if (mcFirstIsZero<2>(cs)) { out[i + j * w] = 1; }
+                if (mcFirstIsZero<2>(cs)) { out[i + j * w] = biome_t::plains; }
             }
         }
     }
-
-    return 0;
 }
 
-int mapSnow(const Layer* l, int* out, c_int x, c_int z, c_int w, c_int h) {
+/**
+ * @var mapSnow
+ * @brief Mapping function for adding snow to the layer.
+ *        Previously known as mapAddSnow.
+ */
+void mapSnow(const Layer* l, biome_t* out, c_int x, c_int z, c_int w, c_int h) {
     c_int pX = x - 1;
     c_int pZ = z - 1;
     c_int pW = w + 2;
     c_int pH = h + 2;
 
-    c_int err = l->p1->getMap(l->p1, out, pX, pZ, pW, pH);
-    if EXPECT_FALSE (err != 0) return err;
+    l->p1->getMap(l->p1, out, pX, pZ, pW, pH);
+
 
     c_u64 ss = l->startSeed;
 
     for (int j = 0; j < h; j++) {
         for (int i = 0; i < w; i++) {
-            c_int v11 = out[i + 1 + (j + 1) * pW];
+            const biome_t v11 = out[i + 1 + (j + 1) * pW];
 
             if (isShallowOcean(v11)) {
                 out[i + j * w] = v11;
@@ -1497,90 +1319,97 @@ int mapSnow(const Layer* l, int* out, c_int x, c_int z, c_int w, c_int h) {
                 c_int r = mcFirstInt<6>(cs);
                 int v;
 
-                if (r == 0) v = Freezing;
+                if (r == 0) v = freezing;
                 else if (r <= 1)
-                    v = Cold;
+                    v = cold;
                 else
-                    v = Warm;
+                    v = warm;
                 // u8 temps[] = {Freezing, Cold, Warm, Warm, Warm, Warm};
                 // v = temps[mcFirstInt<6>(cs)];
 
-                out[i + j * w] = v;
+                out[i + j * w] = static_cast<biome_t>(v);
             }
         }
     }
-
-    return 0;
 }
 
 
-int mapCool(const Layer* l, int* out, c_int x, c_int z, c_int w, c_int h) {
+
+/**
+ * @var mapCoolWarm
+ * @brief Mapping function for adjusting cool and warm areas.
+ */
+void mapCoolWarm(const Layer* l, biome_t* out, c_int x, c_int z, c_int w, c_int h) {
     c_int pX = x - 1;
     c_int pZ = z - 1;
     c_int pW = w + 2;
     c_int pH = h + 2;
 
-    c_int err = l->p1->getMap(l->p1, out, pX, pZ, pW, pH);
-    if EXPECT_FALSE (err != 0) return err;
+    l->p1->getMap(l->p1, out, pX, pZ, pW, pH);
+
 
     for (int j = 0; j < h; j++) {
         for (int i = 0; i < w; i++) {
-            int v11 = out[i + 1 + (j + 1) * pW];
+            biome_t v11 = out[i + 1 + (j + 1) * pW];
 
-            if (v11 == Warm) {
+            if (v11 == warm) {
                 c_int v10 = out[i + 1 + (j + 0) * pW];
                 c_int v21 = out[i + 2 + (j + 1) * pW];
                 c_int v01 = out[i + 0 + (j + 1) * pW];
                 c_int v12 = out[i + 1 + (j + 2) * pW];
 
-                if (isAny4(Cold, v10, v21, v01, v12) || isAny4(Freezing, v10, v21, v01, v12)) {
-                    v11 = Lush;
+                if (isAny4(cold, v10, v21, v01, v12) || isAny4(freezing, v10, v21, v01, v12)) {
+                    v11 = static_cast<biome_t>(lush);
                 }
             }
 
             out[i + j * w] = v11;
         }
     }
-
-    return 0;
 }
 
 
-int mapHeat(const Layer* l, int* out, c_int x, c_int z, c_int w, c_int h) {
+/**
+ * @var mapHeatIce
+ * @brief Mapping function for adjusting heat and ice areas.
+ */
+void mapHeatIce(const Layer* l, biome_t* out, c_int x, c_int z, c_int w, c_int h) {
     c_int pX = x - 1;
     c_int pZ = z - 1;
     c_int pW = w + 2;
     c_int pH = h + 2;
 
-    c_int err = l->p1->getMap(l->p1, out, pX, pZ, pW, pH);
-    if EXPECT_FALSE (err != 0) return err;
+    l->p1->getMap(l->p1, out, pX, pZ, pW, pH);
+
 
     for (int j = 0; j < h; j++) {
         for (int i = 0; i < w; i++) {
-            int v11 = out[i + 1 + (j + 1) * pW];
+            biome_t v11 = out[i + 1 + (j + 1) * pW];
 
-            if (v11 == Freezing) {
+            if (v11 == freezing) {
                 c_int v10 = out[i + 1 + (j + 0) * pW];
                 c_int v21 = out[i + 2 + (j + 1) * pW];
                 c_int v01 = out[i + 0 + (j + 1) * pW];
                 c_int v12 = out[i + 1 + (j + 2) * pW];
 
-                if (isAny4(Warm, v10, v21, v01, v12) || isAny4(Lush, v10, v21, v01, v12)) {
-                    v11 = Cold;
+                if (isAny4(warm, v10, v21, v01, v12) || isAny4(lush, v10, v21, v01, v12)) {
+                    v11 = static_cast<biome_t>(cold);
                 }
             }
 
             out[i + j * w] = v11;
         }
     }
-
-    return 0;
 }
 
 
-int mapSpecial(const Layer* l, int* out, c_int x, c_int z, c_int w, c_int h) {
-    c_int err = l->p1->getMap(l->p1, out, x, z, w, h);
-    if EXPECT_FALSE (err != 0) return err;
+/**
+ * @var mapSpecial
+ * @brief Mapping function for adding special features to the layer.
+ */
+void mapSpecial(const Layer* l, biome_t* out, c_int x, c_int z, c_int w, c_int h) {
+    l->p1->getMap(l->p1, out, x, z, w, h);
+
 
     const u64 st = l->startSalt;
     const u64 ss = l->startSeed;
@@ -1596,29 +1425,32 @@ int mapSpecial(const Layer* l, int* out, c_int x, c_int z, c_int w, c_int h) {
                 cs = mcStepSeed(cs, st);
                 v |= (1 + mcFirstInt<15>(cs)) << 8 & 0xf00;
                 // 1 to 1 mapping so 'out' can be overwritten immediately
-                out[i + j * w] = v;
+                out[i + j * w] = static_cast<biome_t>(v);
             }
         }
     }
-
-    return 0;
 }
 
 
-int mapMushroom(const Layer* l, int* out, c_int x, c_int z, c_int w, c_int h) {
+/**
+ * @var mapMushroom
+ * @brief Mapping function for adding mushroom islands.
+ *        Previously known as mapAddMushroomIsland.
+ */
+void mapMushroom(const Layer* l, biome_t* out, c_int x, c_int z, c_int w, c_int h) {
     c_int pX = x - 1;
     c_int pZ = z - 1;
     c_int pW = w + 2;
     c_int pH = h + 2;
 
-    c_int err = l->p1->getMap(l->p1, out, pX, pZ, pW, pH);
-    if EXPECT_FALSE (err != 0) return err;
+    l->p1->getMap(l->p1, out, pX, pZ, pW, pH);
+
 
     const u64 ss = l->startSeed;
 
     for (int j = 0; j < h; j++) {
         for (int i = 0; i < w; i++) {
-            int v11 = out[i + 1 + (j + 1) * pW];
+            biome_t v11 = out[i + 1 + (j + 1) * pW];
 
             // surrounded by ocean?
             if (v11 == 0 &&
@@ -1633,23 +1465,25 @@ int mapMushroom(const Layer* l, int* out, c_int x, c_int z, c_int w, c_int h) {
             out[i + j * w] = v11;
         }
     }
-
-    return 0;
 }
 
 
-int mapDeepOcean(const Layer* l, int* out, c_int x, c_int z, c_int w, c_int h) {
+/**
+ * @var mapDeepOcean
+ * @brief Mapping function for adding deep ocean areas.
+ */
+void mapDeepOcean(const Layer* l, biome_t* out, c_int x, c_int z, c_int w, c_int h) {
     c_int pX = x - 1;
     c_int pZ = z - 1;
     c_int pW = w + 2;
     c_int pH = h + 2;
 
-    c_int err = l->p1->getMap(l->p1, out, pX, pZ, pW, pH);
-    if EXPECT_FALSE (err != 0) return err;
+    l->p1->getMap(l->p1, out, pX, pZ, pW, pH);
+
 
     for (int j = 0; j < h; j++) {
         for (int i = 0; i < w; i++) {
-            int v11 = out[(i + 1) + (j + 1) * pW];
+            biome_t v11 = out[(i + 1) + (j + 1) * pW];
 
             if (isShallowOcean(v11)) {
                 // count adjacent oceans
@@ -1685,23 +1519,26 @@ int mapDeepOcean(const Layer* l, int* out, c_int x, c_int z, c_int w, c_int h) {
             out[i + j * w] = v11;
         }
     }
-
-    return 0;
 }
 
 
-constexpr int warmBiomes[] = {desert, desert, desert, savanna, savanna, plains};
-constexpr int lushBiomes[] = {forest, dark_forest, mountains, plains, birch_forest, swamp};
-constexpr int coldBiomes[] = {forest, mountains, taiga, plains};
-constexpr int snowBiomes[] = {snowy_tundra, snowy_tundra, snowy_tundra, snowy_taiga};
+constexpr biome_t warmBiomes[] = {desert, desert, desert, savanna, savanna, plains};
+constexpr biome_t lushBiomes[] = {forest, dark_forest, mountains, plains, birch_forest, swamp};
+constexpr biome_t coldBiomes[] = {forest, mountains, taiga, plains};
+constexpr biome_t snowBiomes[] = {snowy_tundra, snowy_tundra, snowy_tundra, snowy_taiga};
 
-constexpr int oldBiomes[] = {desert, forest, mountains, swamp, plains, taiga, jungle};
-constexpr int oldBiomes11[] = {desert, forest, mountains, swamp, plains, taiga};
+constexpr biome_t oldBiomes[] = {desert, forest, mountains, swamp, plains, taiga, jungle};
+constexpr biome_t oldBiomes11[] = {desert, forest, mountains, swamp, plains, taiga};
 //c_int lushBiomesBE[] = {forest, dark_forest, mountains, plains, plains, plains, birch_forest, swamp};
 
-int mapBiome(const Layer* l, int* out, c_int x, c_int z, c_int w, c_int h) {
-    c_int err = l->p1->getMap(l->p1, out, x, z, w, h);
-    if EXPECT_FALSE (err != 0) return err;
+
+/**
+ * @var mapBiome
+ * @brief Mapping function for assigning biomes to the layer.
+ */
+void mapBiome(const Layer* l, biome_t* out, c_int x, c_int z, c_int w, c_int h) {
+    l->p1->getMap(l->p1, out, x, z, w, h);
+
 
     c_i8 mc = l->mc;
     c_u64 ss = l->startSeed;
@@ -1709,7 +1546,7 @@ int mapBiome(const Layer* l, int* out, c_int x, c_int z, c_int w, c_int h) {
 
     for (int j = 0; j < h; j++) {
         for (int i = 0; i < w; i++) {
-            int v;
+            biome_t v;
             c_int idx = i + j * w;
             int id = out[idx];
             c_int hasHighBit = (id & 0xf00);
@@ -1717,7 +1554,7 @@ int mapBiome(const Layer* l, int* out, c_int x, c_int z, c_int w, c_int h) {
 
             if (mc <= MC_1_6) {
                 if (id == ocean || id == mushroom_fields) {
-                    out[idx] = id;
+                    out[idx] = static_cast<biome_t>(id);
                     continue;
                 }
 
@@ -1729,30 +1566,30 @@ int mapBiome(const Layer* l, int* out, c_int x, c_int z, c_int w, c_int h) {
 
                 if (id != plains && (v != taiga || mc <= MC_1_2)) v = snowy_tundra;
             } else {
-                if (isOceanic(id) || id == mushroom_fields) {
-                    out[idx] = id;
+                if (isOceanic(static_cast<biome_t>(id)) || id == mushroom_fields) {
+                    out[idx] = static_cast<biome_t>(id);
                     continue;
                 }
 
                 cs = getChunkSeed(ss, i + x, j + z);
 
                 switch (id) {
-                    case Warm:
+                    case warm:
                         if (hasHighBit) v = mcFirstIsZero<3>(cs) ? badlands_plateau : wooded_badlands_plateau;
                         else
                             v = warmBiomes[mcFirstInt<6>(cs)];
                         break;
-                    case Lush:
+                    case lush:
                         if (hasHighBit) v = jungle;
                         else
                             v = lushBiomes[mcFirstInt<6>(cs)];
                         break;
-                    case Cold:
+                    case cold:
                         if (hasHighBit) v = giant_tree_taiga;
                         else
                             v = coldBiomes[mcFirstInt<4>(cs)];
                         break;
-                    case Freezing:
+                    case freezing:
                         v = snowBiomes[mcFirstInt<4>(cs)];
                         break;
                     default:
@@ -1763,36 +1600,42 @@ int mapBiome(const Layer* l, int* out, c_int x, c_int z, c_int w, c_int h) {
             out[idx] = v;
         }
     }
-
-    return 0;
 }
 
 
-int mapNoise(const Layer* l, int* out, c_int x, c_int z, c_int w, c_int h) {
-    c_int err = l->p1->getMap(l->p1, out, x, z, w, h);
-    if EXPECT_FALSE (err != 0) return err;
+/**
+ * @var mapRiverInit
+ * @brief Mapping function for initializing river noise.
+ */
+void mapRiverInit(const Layer* l, biome_t* out, c_int x, c_int z, c_int w, c_int h) {
+    l->p1->getMap(l->p1, out, x, z, w, h);
+
 
     c_u64 ss = l->startSeed;
     c_int mod = (l->mc <= MC_1_6) ? 2 : 299999;
 
     for (int j = 0; j < h; j++) {
         for (int i = 0; i < w; i++) {
-            if (out[i + j * w] > 0) {
+            const biome_t var = out[i + j * w];
+            if (var != biome_t::ocean && var != biome_t::none) {
                 const u64 cs = getChunkSeed(ss, i + x, j + z);
-                out[i + j * w] = mcFirstInt(cs, mod) + 2;
+                out[i + j * w] = static_cast<biome_t>(mcFirstInt(cs, mod) + 2);
             } else {
-                out[i + j * w] = 0;
+                out[i + j * w] = static_cast<biome_t>(0);
             }
         }
     }
-
-    return 0;
 }
 
 
-int mapBamboo(const Layer* l, int* out, c_int x, c_int z, c_int w, c_int h) {
-    c_int err = l->p1->getMap(l->p1, out, x, z, w, h);
-    if EXPECT_FALSE (err != 0) return err;
+/**
+ * @var mapBamboo
+ * @brief Mapping function for adding bamboo areas.
+ *        Previously known as mapAddBamboo.
+ */
+void mapBamboo(const Layer* l, biome_t* out, c_int x, c_int z, c_int w, c_int h) {
+    l->p1->getMap(l->p1, out, x, z, w, h);
+
 
     c_u64 ss = l->startSeed;
 
@@ -1805,13 +1648,11 @@ int mapBamboo(const Layer* l, int* out, c_int x, c_int z, c_int w, c_int h) {
             if (mcFirstIsZero<10>(cs)) { out[idx] = bamboo_jungle; }
         }
     }
-
-    return 0;
 }
 
 
-static int replaceEdge(int* out, c_int idx, c_int mc, c_int v10, c_int v21, c_int v01,
-                       c_int v12, c_int id, c_int baseID, c_int edgeID) {
+static int replaceEdge(biome_t* out, c_int idx, const MCVERSION mc, const biome_t v10, const biome_t v21, const biome_t v01,
+                       const biome_t v12, const biome_t id, const biome_t baseID, const biome_t edgeID) {
     if (id != baseID) return 0;
 
     if (areSimilar(mc, v10, baseID) &&
@@ -1826,28 +1667,32 @@ static int replaceEdge(int* out, c_int idx, c_int mc, c_int v10, c_int v21, c_in
 }
 
 
-int mapBiomeEdge(const Layer* l, int* out, c_int x, c_int z, c_int w, c_int h) {
+/**
+ * @var mapBiomeEdge
+ * @brief Mapping function for defining biome edges.
+ */
+void mapBiomeEdge(const Layer* l, biome_t* out, c_int x, c_int z, c_int w, c_int h) {
     c_int pX = x - 1;
     c_int pZ = z - 1;
     c_int pW = w + 2;
     c_int pH = h + 2;
 
-    c_i8 mc = l->mc;
+    const MCVERSION mc = l->mc;
 
-    c_int err = l->p1->getMap(l->p1, out, pX, pZ, pW, pH);
-    if EXPECT_FALSE (err != 0) return err;
+    l->p1->getMap(l->p1, out, pX, pZ, pW, pH);
+
 
     for (int j = 0; j < h; j++) {
-        c_int* vz0 = out + (j + 0) * pW;
-        c_int* vz1 = out + (j + 1) * pW;
-        c_int* vz2 = out + (j + 2) * pW;
+        const biome_t* vz0 = out + (j + 0) * pW;
+        const biome_t* vz1 = out + (j + 1) * pW;
+        const biome_t* vz2 = out + (j + 2) * pW;
 
         for (int i = 0; i < w; i++) {
-            c_int v11 = vz1[i + 1];
-            c_int v10 = vz0[i + 1];
-            c_int v21 = vz1[i + 2];
-            c_int v01 = vz1[i + 0];
-            c_int v12 = vz2[i + 1];
+            const biome_t v11 = vz1[i + 1];
+            const biome_t v10 = vz0[i + 1];
+            const biome_t v21 = vz1[i + 2];
+            const biome_t v01 = vz1[i + 0];
+            const biome_t v12 = vz2[i + 1];
 
             if (!replaceEdge(out, i + j * w, mc, v10, v21, v01, v12, v11, wooded_badlands_plateau, badlands) &&
                 !replaceEdge(out, i + j * w, mc, v10, v21, v01, v12, v11, badlands_plateau, badlands) &&
@@ -1874,12 +1719,14 @@ int mapBiomeEdge(const Layer* l, int* out, c_int x, c_int z, c_int w, c_int h) {
             }
         }
     }
-
-    return 0;
 }
 
 
-int mapHills(const Layer* l, int* out, c_int x, c_int z, c_int w, c_int h) {
+/**
+ * @var mapHills
+ * @brief Mapping function for adding hills to the layer.
+ */
+void mapHills(const Layer* l, biome_t* out, c_int x, c_int z, c_int w, c_int h) {
     c_int pX = x - 1;
     c_int pZ = z - 1;
     c_int pW = w + 2;
@@ -1890,36 +1737,45 @@ int mapHills(const Layer* l, int* out, c_int x, c_int z, c_int w, c_int h) {
         exit(1);
     }
 
-    int err = l->p1->getMap(l->p1, out, pX, pZ, pW, pH);
-    if EXPECT_FALSE (err != 0) return err;
+    l->p1->getMap(l->p1, out, pX, pZ, pW, pH);
 
-    int* riv = out + pW * pH;
-    err = l->p2->getMap(l->p2, riv, pX, pZ, pW, pH);
-    if EXPECT_FALSE (err != 0) return err;
 
-    c_i8 mc = l->mc;
+    biome_t* riv = out + pW * pH;
+    l->p2->getMap(l->p2, riv, pX, pZ, pW, pH);
+
+
+    const MCVERSION mc = l->mc;
     c_u64 st = l->startSalt;
     c_u64 ss = l->startSeed;
 
 
     for (int j = 0; j < h; j++) {
         for (int i = 0; i < w; i++) {
-            c_int a11 = out[i + 1 + (j + 1) * pW]; // biome branch
-            c_int b11 = riv[i + 1 + (j + 1) * pW]; // river branch
-            c_int idx = i + j * w;
-            int bn = -1;
+            const biome_t a11 = out[i + 1 + (j + 1) * pW]; // biome branch
+            const biome_t b11 = riv[i + 1 + (j + 1) * pW]; // river branch
+            const int idx = i + j * w;
 
+            // volatile int kill_myself_1 = -1;
+            // volatile int kill_myself_2 = 255;
+            // if (((kill_myself_1 - 2) % 29) != ((kill_myself_2 - 2) % 29)) {
+            //     printf("KILL MYSELF, -1: %d, 255: %d\n",
+            //            ((kill_myself_1 - 2) % 29),
+            //            ((kill_myself_2 - 2) % 29));
+            //     exit(1);
+            // }
+
+            int bn = biome_t::none;
             if (mc >= MC_1_7) bn = (b11 - 2) % 29;
 
             if (bn == 1 && b11 >= 2 && !isShallowOcean(a11)) {
-                c_int m = getMutated(mc, a11);
-                if (m > 0) out[idx] = m;
+                const biome_t m = getMutated(mc, a11);
+                if (m != biome_t::ocean && m != biome_t::none) out[idx] = m;
                 else
                     out[idx] = a11;
             } else {
                 u64 cs = getChunkSeed(ss, i + x, j + z);
                 if (bn == 0 || mcFirstIsZero<3>(cs)) {
-                    int hillID = a11;
+                    biome_t hillID = a11;
 
                     switch (a11) {
                         case desert:
@@ -1983,14 +1839,14 @@ int mapHills(const Layer* l, int* out, c_int x, c_int z, c_int w, c_int h) {
 
                     if (bn == 0 && hillID != a11) {
                         hillID = getMutated(mc, hillID);
-                        if (hillID < 0) hillID = a11;
+                        if (hillID == biome_t::none) hillID = a11;
                     }
 
                     if (hillID != a11) {
-                        c_int a10 = out[i + 1 + (j + 0) * pW];
-                        c_int a21 = out[i + 2 + (j + 1) * pW];
-                        c_int a01 = out[i + 0 + (j + 1) * pW];
-                        c_int a12 = out[i + 1 + (j + 2) * pW];
+                        const biome_t a10 = out[i + 1 + (j + 0) * pW];
+                        const biome_t a21 = out[i + 2 + (j + 1) * pW];
+                        const biome_t a01 = out[i + 0 + (j + 1) * pW];
+                        const biome_t a12 = out[i + 1 + (j + 2) * pW];
                         int equals = 0;
 
                         if (areSimilar(mc, a10, a11)) equals++;
@@ -2010,35 +1866,42 @@ int mapHills(const Layer* l, int* out, c_int x, c_int z, c_int w, c_int h) {
             }
         }
     }
-
-    return 0;
 }
 
 
-static int reduceID(c_int id) { return id >= 2 ? 2 + (id & 1) : id; }
+static biome_t reduceID(c_int id) {
+    if (id == biome_t::none) return biome_t::none;
+    const int v = static_cast<int>(id);
+    return static_cast<biome_t>(v >= 2 ? 2 + (v & 1) : v);
+}
 
-int mapRiver(const Layer* l, int* out, c_int x, c_int z, c_int w, c_int h) {
+
+/**
+ * @var mapRiver
+ * @brief Mapping function for generating rivers.
+ */
+void mapRiver(const Layer* l, biome_t* out, c_int x, c_int z, c_int w, c_int h) {
     c_int pX = x - 1;
     c_int pZ = z - 1;
     c_int pW = w + 2;
     c_int pH = h + 2;
 
-    c_int err = l->p1->getMap(l->p1, out, pX, pZ, pW, pH);
-    if EXPECT_FALSE (err != 0) return err;
+    l->p1->getMap(l->p1, out, pX, pZ, pW, pH);
+
 
     c_i8 mc = l->mc;
 
     for (int j = 0; j < h; j++) {
-        c_int* vz0 = out + (j + 0) * pW;
-        c_int* vz1 = out + (j + 1) * pW;
-        c_int* vz2 = out + (j + 2) * pW;
+        const biome_t* vz0 = out + (j + 0) * pW;
+        const biome_t* vz1 = out + (j + 1) * pW;
+        const biome_t* vz2 = out + (j + 2) * pW;
 
         for (int i = 0; i < w; i++) {
-            int v01 = vz1[i + 0];
-            int v11 = vz1[i + 1];
-            int v21 = vz1[i + 2];
-            int v10 = vz0[i + 1];
-            int v12 = vz2[i + 1];
+            biome_t v01 = vz1[i + 0];
+            biome_t v11 = vz1[i + 1];
+            biome_t v21 = vz1[i + 2];
+            biome_t v10 = vz0[i + 1];
+            biome_t v12 = vz2[i + 1];
 
             if (mc >= MC_1_7) {
                 v01 = reduceID(v01);
@@ -2052,37 +1915,39 @@ int mapRiver(const Layer* l, int* out, c_int x, c_int z, c_int w, c_int h) {
             }
 
             if (v11 == v01 && v11 == v10 && v11 == v12 && v11 == v21) {
-                out[i + j * w] = -1;
+                out[i + j * w] = biome_t::none;
             } else {
                 out[i + j * w] = river;
             }
         }
     }
-
-    return 0;
 }
 
 
-int mapSmooth(const Layer* l, int* out, c_int x, c_int z, c_int w, c_int h) {
+/**
+ * @var mapSmooth
+ * @brief Mapping function for smoothing transitions between areas.
+ */
+void mapSmooth(const Layer* l, biome_t* out, c_int x, c_int z, c_int w, c_int h) {
     c_int pX = x - 1;
     c_int pZ = z - 1;
     c_int pW = w + 2;
     c_int pH = h + 2;
 
-    c_int err = l->p1->getMap(l->p1, out, pX, pZ, pW, pH);
-    if EXPECT_FALSE (err != 0) return err;
+    l->p1->getMap(l->p1, out, pX, pZ, pW, pH);
+
 
     c_u64 ss = l->startSeed;
 
     for (int j = 0; j < h; j++) {
-        c_int* vz0 = out + (j + 0) * pW;
-        c_int* vz1 = out + (j + 1) * pW;
-        c_int* vz2 = out + (j + 2) * pW;
+        const biome_t* vz0 = out + (j + 0) * pW;
+        const biome_t* vz1 = out + (j + 1) * pW;
+        const biome_t* vz2 = out + (j + 2) * pW;
 
         for (int i = 0; i < w; i++) {
-            int v11 = vz1[i + 1];
-            c_int v01 = vz1[i + 0];
-            c_int v10 = vz0[i + 1];
+            biome_t v11 = vz1[i + 1];
+            const biome_t v01 = vz1[i + 0];
+            const biome_t v10 = vz0[i + 1];
 
             if (v11 != v01 || v11 != v10) {
                 c_int v21 = vz1[i + 2];
@@ -2101,14 +1966,17 @@ int mapSmooth(const Layer* l, int* out, c_int x, c_int z, c_int w, c_int h) {
             out[i + j * w] = v11;
         }
     }
-
-    return 0;
 }
 
 
-int mapSunflower(const Layer* l, int* out, c_int x, c_int z, c_int w, c_int h) {
-    c_int err = l->p1->getMap(l->p1, out, x, z, w, h);
-    if EXPECT_FALSE (err != 0) return err;
+/**
+ * @var mapSunflower
+ * @brief Mapping function for adding rare biomes like sunflower plains.
+ *        Previously known as mapRareBiome.
+ */
+void mapSunflower(const Layer* l, biome_t* out, c_int x, c_int z, c_int w, c_int h) {
+    l->p1->getMap(l->p1, out, x, z, w, h);
+
 
     c_u64 ss = l->startSeed;
 
@@ -2122,13 +1990,11 @@ int mapSunflower(const Layer* l, int* out, c_int x, c_int z, c_int w, c_int h) {
             }
         }
     }
-
-    return 0;
 }
 
 
-static int replaceOcean(int* out, c_int idx, c_int v10, c_int v21, c_int v01, c_int v12,
-                        c_int id, c_int replaceID) {
+static int replaceOcean(biome_t* out, c_int idx, const biome_t v10, const biome_t v21, const biome_t v01, const biome_t v12,
+                        const biome_t id, const biome_t replaceID) {
     if (isOceanic(id)) return 0;
 
     if (isOceanic(v10) || isOceanic(v21) || isOceanic(v01) || isOceanic(v12))
@@ -2139,39 +2005,44 @@ static int replaceOcean(int* out, c_int idx, c_int v10, c_int v21, c_int v01, c_
     return 1;
 }
 
-static int isAll4JFTO(c_int mc, c_int a, c_int b, c_int c, c_int d) {
+static int isAll4JFTO(const MCVERSION mc, const biome_t a, const biome_t b, const biome_t c, const biome_t d) {
     return (getCategory(mc, a) == jungle || a == forest || a == taiga || isOceanic(a)) &&
            (getCategory(mc, b) == jungle || b == forest || b == taiga || isOceanic(b)) &&
            (getCategory(mc, c) == jungle || c == forest || c == taiga || isOceanic(c)) &&
            (getCategory(mc, d) == jungle || d == forest || d == taiga || isOceanic(d));
 }
 
-static int isAny4Oceanic(c_int a, c_int b, c_int c, c_int d) {
+static int isAny4Oceanic(const biome_t a, const biome_t b, const biome_t c, const biome_t d) {
     return isOceanic(a) || isOceanic(b) || isOceanic(c) || isOceanic(d);
 }
 
-int mapShore(const Layer* l, int* out, c_int x, c_int z, c_int w, c_int h) {
+
+/**
+ * @var mapShore
+ * @brief Mapping function for defining shorelines.
+ */
+void mapShore(const Layer* l, biome_t* out, c_int x, c_int z, c_int w, c_int h) {
     c_int pX = x - 1;
     c_int pZ = z - 1;
     c_int pW = w + 2;
     c_int pH = h + 2;
 
-    c_int err = l->p1->getMap(l->p1, out, pX, pZ, pW, pH);
-    if EXPECT_FALSE (err != 0) return err;
+    l->p1->getMap(l->p1, out, pX, pZ, pW, pH);
 
-    c_i8 mc = l->mc;
+
+    const MCVERSION mc = l->mc;
 
     for (int j = 0; j < h; j++) {
-        c_int* vz0 = out + (j + 0) * pW;
-        c_int* vz1 = out + (j + 1) * pW;
-        c_int* vz2 = out + (j + 2) * pW;
+        const biome_t* vz0 = out + (j + 0) * pW;
+        const biome_t* vz1 = out + (j + 1) * pW;
+        const biome_t* vz2 = out + (j + 2) * pW;
 
         for (int i = 0; i < w; i++) {
-            int v11 = vz1[i + 1];
-            c_int v10 = vz0[i + 1];
-            c_int v21 = vz1[i + 2];
-            c_int v01 = vz1[i + 0];
-            c_int v12 = vz2[i + 1];
+            biome_t v11 = vz1[i + 1];
+            const biome_t v10 = vz0[i + 1];
+            const biome_t v21 = vz1[i + 2];
+            const biome_t v01 = vz1[i + 0];
+            const biome_t v12 = vz2[i + 1];
 
             if (v11 == mushroom_fields) {
                 if (isAny4(ocean, v10, v21, v01, v12))
@@ -2224,30 +2095,32 @@ int mapShore(const Layer* l, int* out, c_int x, c_int z, c_int w, c_int h) {
             }
         }
     }
-
-    return 0;
 }
 
 
-int mapRiverMix(const Layer* l, int* out, c_int x, c_int z, c_int w, c_int h) {
+/**
+ * @var mapRiverMix
+ * @brief Mapping function for mixing river and land layers.
+ */
+void mapRiverMix(const Layer* l, biome_t* out, c_int x, c_int z, c_int w, c_int h) {
     if EXPECT_FALSE (l->p2 == nullptr) {
         printf("mapRiverMix() requires two parents! Use setupMultiLayer()\n");
         exit(1);
     }
 
-    int err = l->p1->getMap(l->p1, out, x, z, w, h); // biome chain
-    if EXPECT_FALSE (err != 0) return err;
+    l->p1->getMap(l->p1, out, x, z, w, h); // biome chain
 
-    c_int mc = static_cast<u8>(l->mc);
+
+    const MCVERSION mc = l->mc;
     c_int len = w * h;
-    int* buf = out + len;
+    biome_t* buf = out + len;
 
-    err = l->p2->getMap(l->p2, buf, x, z, w, h); // rivers
-    if EXPECT_FALSE (err != 0) return err;
+    l->p2->getMap(l->p2, buf, x, z, w, h); // rivers
+
 
 
     for (int idx = 0; idx < len; idx++) {
-        int v = out[idx];
+        biome_t v = out[idx];
 
         if (buf[idx] == river && v != ocean && (mc < MC_1_7 || !isOceanic(v))) {
             if (v == snowy_tundra)
@@ -2260,12 +2133,14 @@ int mapRiverMix(const Layer* l, int* out, c_int x, c_int z, c_int w, c_int h) {
 
         out[idx] = v;
     }
-
-    return 0;
 }
 
 
-int mapOceanTemp(const Layer* l, int* out, c_int x, c_int z, c_int w, c_int h) {
+/**
+ * @var mapOceanTemp
+ * @brief Mapping function for defining ocean temperature zones.
+ */
+void mapOceanTemp(const Layer* l, biome_t* out, c_int x, c_int z, c_int w, c_int h) {
 
     // const PerlinNoise *rnd = (const PerlinNoise*) l->noise;
 
@@ -2317,12 +2192,14 @@ int mapOceanTemp(const Layer* l, int* out, c_int x, c_int z, c_int w, c_int h) {
             //     out[i + j*w] = ocean;
         }
     }
-
-    return 0;
 }
 
 
-int mapOceanMix(const Layer* l, int* out, c_int x, c_int z, c_int w, c_int h) {
+/**
+ * @var mapOceanMix
+ * @brief Mapping function for mixing ocean layers.
+ */
+void mapOceanMix(const Layer* l, biome_t* out, c_int x, c_int z, c_int w, c_int h) {
     int i, j;
 
     if EXPECT_FALSE (l->p2 == nullptr) {
@@ -2330,8 +2207,8 @@ int mapOceanMix(const Layer* l, int* out, c_int x, c_int z, c_int w, c_int h) {
         exit(1);
     }
 
-    int err = l->p2->getMap(l->p2, out, x, z, w, h);
-    if EXPECT_FALSE (err != 0) return err;
+    l->p2->getMap(l->p2, out, x, z, w, h);
+
 
     // determine the minimum required land area: (x+lx0, z+lz0), (lw, lh)
     // (the extra border is only required if there is warm or frozen ocean)
@@ -2354,17 +2231,17 @@ int mapOceanMix(const Layer* l, int* out, c_int x, c_int z, c_int w, c_int h) {
         }
     }
 
-    int* land = out + w * h;
+    biome_t* land = out + w * h;
     c_int lw = lx1 - lx0;
     c_int lh = lz1 - lz0;
-    err = l->p1->getMap(l->p1, land, x + lx0, z + lz0, lw, lh);
-    if EXPECT_FALSE (err != 0) return err;
+    l->p1->getMap(l->p1, land, x + lx0, z + lz0, lw, lh);
+
 
     for (j = 0; j < h; j++) {
         for (i = 0; i < w; i++) {
-            c_int landID = land[(i - lx0) + (j - lz0) * lw];
-            int oceanID = out[i + j * w];
-            int replaceID = 0;
+            const biome_t landID = land[(i - lx0) + (j - lz0) * lw];
+            biome_t oceanID = out[i + j * w];
+            biome_t replaceID = biome_t::ocean;
 
             if (!isOceanic(landID)) {
                 out[i + j * w] = landID;
@@ -2376,7 +2253,7 @@ int mapOceanMix(const Layer* l, int* out, c_int x, c_int z, c_int w, c_int h) {
             if (replaceID) {
                 for (int ii = -8; ii <= 8; ii += 4) {
                     for (int jj = -8; jj <= 8; jj += 4) {
-                        c_int id = land[(i + ii - lx0) + (j + jj - lz0) * lw];
+                        const biome_t id = land[(i + ii - lx0) + (j + jj - lz0) * lw];
                         if (!isOceanic(id)) {
                             out[i + j * w] = replaceID;
                             goto loop_x;
@@ -2409,22 +2286,26 @@ int mapOceanMix(const Layer* l, int* out, c_int x, c_int z, c_int w, c_int h) {
         loop_x:;
         }
     }
-
-    return 0;
 }
 
-int mapGMushroom(const Layer* l, int* out, c_int x, c_int z, c_int w, c_int h) {
+
+/**
+ * @var mapGMushroom
+ * @brief Mapping function for adding giant mushroom areas.
+ *        Specific to LCE.
+ */
+void mapGiantMushroom(const Layer* l, biome_t* out, c_int x, c_int z, c_int w, c_int h) {
     c_int pX = x - 1;
     c_int pZ = z - 1;
     c_int pW = w + 2;
     c_int pH = h + 2;
 
-    c_int err = l->p1->getMap(l->p1, out, pX, pZ, pW, pH);
-    if EXPECT_FALSE (err != 0) return err;
+    l->p1->getMap(l->p1, out, pX, pZ, pW, pH);
+
 
     for (int j = 0; j < h; j++) {
         for (int i = 0; i < w; i++) {
-            int v11 = out[i + 1 + (j + 1) * pW];
+            biome_t v11 = out[i + 1 + (j + 1) * pW];
 
             if (out[i + 0 + (j + 0) * pW] == mushroom_fields || out[i + 2 + (j + 0) * pW] == mushroom_fields ||
                 out[i + 0 + (j + 2) * pW] == mushroom_fields || out[i + 2 + (j + 2) * pW] == mushroom_fields) {
@@ -2434,30 +2315,34 @@ int mapGMushroom(const Layer* l, int* out, c_int x, c_int z, c_int w, c_int h) {
             out[i + j * w] = v11;
         }
     }
-
-    return 0;
 }
 
-int mapOceanEdge(const Layer* l, int* out, c_int x, c_int z, c_int w, c_int h) {
+
+/**
+ * @var mapOceanEdge
+ * @brief Mapping function for defining ocean edges.
+ *        Specific to LCE.
+ */
+void mapOceanEdge(const Layer* l, biome_t* out, c_int x, c_int z, c_int w, c_int h) {
     c_int pX = x - 1;
     c_int pZ = z - 1;
     c_int pW = w + 2;
     c_int pH = h + 2;
 
-    c_int err = l->p1->getMap(l->p1, out, pX, pZ, pW, pH);
-    if EXPECT_FALSE (err != 0) return err;
+    l->p1->getMap(l->p1, out, pX, pZ, pW, pH);
+
 
     for (int j = 0; j < h; j++) {
-        c_int* vz0 = out + (j + 0) * pW;
-        c_int* vz1 = out + (j + 1) * pW;
-        c_int* vz2 = out + (j + 2) * pW;
+        const biome_t* vz0 = out + (j + 0) * pW;
+        const biome_t* vz1 = out + (j + 1) * pW;
+        const biome_t* vz2 = out + (j + 2) * pW;
 
         for (int i = 0; i < w; i++) {
-            int v11 = vz1[i + 1];
-            c_int v10 = vz0[i + 1];
-            c_int v21 = vz1[i + 2];
-            c_int v01 = vz1[i + 0];
-            c_int v12 = vz2[i + 1];
+            biome_t v11 = vz1[i + 1];
+            const biome_t v10 = vz0[i + 1];
+            const biome_t v21 = vz1[i + 2];
+            const biome_t v01 = vz1[i + 0];
+            const biome_t v12 = vz2[i + 1];
 
             if ((v11 == warm_ocean && isAny4(frozen_ocean, v10, v21, v01, v12)) ||
                 (v11 == frozen_ocean && isAny4(warm_ocean, v10, v21, v01, v12))) {
@@ -2467,8 +2352,6 @@ int mapOceanEdge(const Layer* l, int* out, c_int x, c_int z, c_int w, c_int h) {
             out[i + j * w] = v11;
         }
     }
-
-    return 0;
 }
 
 
@@ -2488,7 +2371,12 @@ MU static void getVoronoiCell(c_u64 sha, c_int a, c_int b, c_int c, int* x, int*
     *z = (int)((((s >> 24) & 1023) - 512) * 36);
 }
 
-int mapVoronoi114(const Layer* l, int* out, int x, int z, int w, int h) {
+
+/**
+ * @var mapVoronoi114
+ * @brief Mapping function for the final Voronoi layer at 1:1 scale.
+ */
+void mapVoronoi114(const Layer* l, biome_t* out, int x, int z, int w, int h) {
     x -= 2;
     z -= 2;
     int pX = x >> 2;
@@ -2497,15 +2385,14 @@ int mapVoronoi114(const Layer* l, int* out, int x, int z, int w, int h) {
     int pH = ((z + h) >> 2) - pZ + 2;
 
     if (l->p1) {
-        int err = l->p1->getMap(l->p1, out, pX, pZ, pW, pH);
-        if (err != 0) return err;
+        l->p1->getMap(l->p1, out, pX, pZ, pW, pH);
     }
 
     int i, j, ii, jj, pi, pj, pix, pjz, i4, j4, mi, mj;
-    int v00, v01, v10, v11, v;
+    biome_t v00, v01, v10, v11, v;
     i64 da1, da2, db1, db2, dc1, dc2, dd1, dd2;
     i64 sja, sjb, sjc, sjd, da, db, dc, dd;
-    int* buf = out + pW * pH;
+    biome_t* buf = out + pW * pH;
 
     u64 st = l->startSalt;
     u64 ss = l->startSeed;
@@ -2598,6 +2485,4 @@ int mapVoronoi114(const Layer* l, int* out, int x, int z, int w, int h) {
     }
 
     memmove(out, buf, w * h * sizeof(*buf));
-
-    return 0;
 }

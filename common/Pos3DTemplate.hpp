@@ -221,7 +221,7 @@ public:
      * @param zOff The z offset.
      * @return A new Pos3DTemplate object with the updated coordinates.
      */
-    Pos3DTemplate add(T xOff, T yOff, T zOff) const {
+    ND Pos3DTemplate add(T xOff, T yOff, T zOff) const {
         return {x + xOff, y + yOff, z + zOff};
     }
 
@@ -230,42 +230,42 @@ public:
      * @param yOff The offset (default is 1).
      * @return A new Pos3DTemplate object with the updated coordinates.
      */
-    Pos3DTemplate down(T yOff = 1) const { return {x, y - yOff, z}; }
+    ND Pos3DTemplate down(T yOff = 1) const { return {x, y - yOff, z}; }
 
     /**
      * @brief Moves the position up by a specified offset.
      * @param yOff The offset (default is 1).
      * @return A new Pos3DTemplate object with the updated coordinates.
      */
-    Pos3DTemplate up(T yOff = 1) const { return {x, y + yOff, z}; }
+    ND Pos3DTemplate up(T yOff = 1) const { return {x, y + yOff, z}; }
 
     /**
      * @brief Moves the position east by a specified offset.
      * @param xOff The offset (default is 1).
      * @return A new Pos3DTemplate object with the updated coordinates.
      */
-    Pos3DTemplate east(T xOff = 1) const { return {x + xOff, y, z}; }
+    ND Pos3DTemplate east(T xOff = 1) const { return {x + xOff, y, z}; }
 
     /**
      * @brief Moves the position west by a specified offset.
      * @param xOff The offset (default is 1).
      * @return A new Pos3DTemplate object with the updated coordinates.
      */
-    Pos3DTemplate west(T xOff = 1) const { return {x - xOff, y, z}; }
+    ND Pos3DTemplate west(T xOff = 1) const { return {x - xOff, y, z}; }
 
     /**
      * @brief Moves the position north by a specified offset.
      * @param zOff The offset (default is 1).
      * @return A new Pos3DTemplate object with the updated coordinates.
      */
-    Pos3DTemplate north(T zOff = 1) const { return {x, y, z - zOff}; }
+    ND Pos3DTemplate north(T zOff = 1) const { return {x, y, z - zOff}; }
 
     /**
      * @brief Moves the position south by a specified offset.
      * @param zOff The offset (default is 1).
      * @return A new Pos3DTemplate object with the updated coordinates.
      */
-    Pos3DTemplate south(T zOff = 1) const { return {x, y, z + zOff}; }
+    ND Pos3DTemplate south(T zOff = 1) const { return {x, y, z + zOff}; }
 
     /**
      * @brief Offsets the position in a specified direction.
@@ -318,6 +318,33 @@ public:
      * @return A vector of Pos3DTemplate objects within the box.
      */
     static std::vector<Pos3DTemplate> getAllInBox(const Pos3DTemplate &from, const Pos3DTemplate &to);
+
+
+    /**
+     * @brief Dot product with another 3D position (treated as a vector).
+     * @param other The other 3D vector.
+     * @return The dot product as double.
+     */
+    ND double dot(const Pos3DTemplate &other) const;
+
+    /**
+     * @brief Closest point on a line segment [segStart, segEnd] to this point.
+     *        Computed in double precision; returns a double-typed position.
+     * @param segStart Segment start.
+     * @param segEnd   Segment end.
+     * @return The closest point on the segment as Pos3DTemplate<double>.
+     */
+    MU ND Pos3DTemplate<double> closestPointOnSegment(const Pos3DTemplate &segStart,
+                                                      const Pos3DTemplate &segEnd) const;
+
+    /**
+     * @brief Euclidean distance from this point to a segment [segStart, segEnd].
+     * @param segStart Segment start.
+     * @param segEnd   Segment end.
+     * @return The distance as double.
+     */
+    ND double distanceToSegment(const Pos3DTemplate &segStart,
+                                const Pos3DTemplate &segEnd) const;
 };
 
 /** @typedef Pos3D
@@ -328,7 +355,7 @@ typedef Pos3DTemplate<int> Pos3D;
 /** @typedef Pos3DVec_t
  *  @brief Alias for a vector of Pos3D objects.
  */
-typedef std::vector<Pos3D> Pos3DVec_t;
+MU typedef std::vector<Pos3D> Pos3DVec_t;
 
 /** @typedef DoublePos3D
  *  @brief Alias for Pos3DTemplate with double coordinates.

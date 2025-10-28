@@ -1,9 +1,7 @@
 #include "DynamicStructures.hpp"
 
-#include "common/rng.hpp"
-
-
 #include <unordered_set>
+
 
 namespace Placement {
 
@@ -13,9 +11,9 @@ namespace Placement {
     template<typename Derived>
     int DynamicStructure<Derived>::CHUNK_RANGE = 16;
     template<typename Derived>
-    int DynamicStructure<Derived>::ATTEMPTS = 60;
+    MU int DynamicStructure<Derived>::ATTEMPTS = 60;
     template<typename Derived>
-    int DynamicStructure<Derived>::CHUNK_BOUNDS = 24;
+    MU int DynamicStructure<Derived>::CHUNK_BOUNDS = 24;
     template<typename Derived>
     bool DynamicStructure<Derived>::REDUCED_SPACING = true;
 

@@ -220,35 +220,35 @@ MU static MCVERSION getMCVersion() {
  */
 MU static std::string mcVersionToString(const MCVERSION version) {
     switch (version) {
-        case MC_1_0:
+        case MCVERSION::MC_1_0:
             return "1.0";
-        case MC_1_1:
+        case MCVERSION::MC_1_1:
             return "1.1";
-        case MC_1_2:
+        case MCVERSION::MC_1_2:
             return "1.2";
-        case MC_1_3:
+        case MCVERSION::MC_1_3:
             return "1.3";
-        case MC_1_4:
+        case MCVERSION::MC_1_4:
             return "1.4";
-        case MC_1_5:
+        case MCVERSION::MC_1_5:
             return "1.5";
-        case MC_1_6:
+        case MCVERSION::MC_1_6:
             return "1.6";
-        case MC_1_7:
+        case MCVERSION::MC_1_7:
             return "1.7";
-        case MC_1_8:
+        case MCVERSION::MC_1_8:
             return "1.8";
-        case MC_1_9:
+        case MCVERSION::MC_1_9:
             return "1.9";
-        case MC_1_10:
+        case MCVERSION::MC_1_10:
             return "1.10";
-        case MC_1_11:
+        case MCVERSION::MC_1_11:
             return "1.11";
-        case MC_1_12:
+        case MCVERSION::MC_1_12:
             return "1.12";
-        case MC_1_13:
+        case MCVERSION::MC_1_13:
             return "1.13";
-        case MC_1_14:
+        case MCVERSION::MC_1_14:
             return "1.14";
         default:
             return "NONE";

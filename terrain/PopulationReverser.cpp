@@ -27,7 +27,7 @@ void PopulationReverser::addWorldSeed(i64 firstAddend, int multTrailingZeroes, i
                                       int z, i64 chunkSeed, std::vector<i64> &worldSeeds) {
     i64 bottom32BitsChunkSeed = chunkSeed & MASK_32;
 
-    if (__builtin_ctzll(firstAddend) >= multTrailingZeroes) {
+    if (CTZLL(firstAddend) >= multTrailingZeroes) {
         i64 b = (((firstMultInv * firstAddend) >> multTrailingZeroes) ^ (JAVA_LCG::MULTIPLIER >> 16)) & ((1ULL << (16 - multTrailingZeroes)) - 1);
 
         if (multTrailingZeroes != 0) {
@@ -65,11 +65,11 @@ std::vector<i64> PopulationReverser::getSeedsFromChunkSeed(u64 chunkSeed, int x,
 
     u64 f = chunkSeed & MASK_16;
     u64 firstMultiplier = (JAVA_LCG::M2 * x + JAVA_LCG::M4 * z) & MASK_16;
-    int trailingZeroes = __builtin_ctzll(firstMultiplier);
+    int trailingZeroes = CTZLL(firstMultiplier);
     u64 inv = modInverse(firstMultiplier >> trailingZeroes);
-    int xCount = __builtin_ctzll(x);
-    int zCount = __builtin_ctzll(z);
-    int totalCount = __builtin_ctzll(x | z);
+    int xCount = CTZLL(x);
+    int zCount = CTZLL(z);
+    int totalCount = CTZLL(x | z);
 
     std::unordered_set<int> possibleRoundingOffsets;
     for (int i = 0; i < 3; ++i)
