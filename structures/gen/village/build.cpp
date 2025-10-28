@@ -435,9 +435,9 @@ namespace build::village {
         piece.setBlockState(worldIn, iBlockState4, 1, 1, 4, chunkBB);
         piece.setBlockState(worldIn, iBlockState7, 2, 1, 4, chunkBB);
         piece.setBlockState(worldIn, iBlockState3, 1, 1, 3, chunkBB);
-        piece.fillWithBlocks(worldIn, chunkBB, 5, 0, 1, 7, 0, 3, lce::BlocksInit::DOUBLE_STONE_SLAB.getState(), false);
-        piece.setBlockState(worldIn, lce::BlocksInit::DOUBLE_STONE_SLAB.getState(), 6, 1, 1, chunkBB);
-        piece.setBlockState(worldIn, lce::BlocksInit::DOUBLE_STONE_SLAB.getState(), 6, 1, 2, chunkBB);
+        piece.fillWithBlocks(worldIn, chunkBB, 5, 0, 1, 7, 0, 3, lce::BlocksInit::DOUBLE_OLD_STONE_SLAB.getState(), false);
+        piece.setBlockState(worldIn, lce::BlocksInit::DOUBLE_OLD_STONE_SLAB.getState(), 6, 1, 1, chunkBB);
+        piece.setBlockState(worldIn, lce::BlocksInit::DOUBLE_OLD_STONE_SLAB.getState(), 6, 1, 2, chunkBB);
         piece.setBlockState(worldIn, lce::BlocksInit::AIR.getState(), 2, 1, 0, chunkBB);
         piece.setBlockState(worldIn, lce::BlocksInit::AIR.getState(), 2, 2, 0, chunkBB);
 
@@ -619,7 +619,7 @@ namespace build::village {
         piece.setBlockState(worldIn, iBlockState, 6, 1, 3, chunkBB);
         piece.setBlockState(worldIn, lce::BlocksInit::FURNACE.getState(), 6, 2, 3, chunkBB);
         piece.setBlockState(worldIn, lce::BlocksInit::FURNACE.getState(), 6, 3, 3, chunkBB);
-        piece.setBlockState(worldIn, lce::BlocksInit::DOUBLE_STONE_SLAB.getState(), 8, 1, 1, chunkBB);
+        piece.setBlockState(worldIn, lce::BlocksInit::DOUBLE_OLD_STONE_SLAB.getState(), 8, 1, 1, chunkBB);
         constexpr lce::BlockState glassPane = lce::BlocksInit::GLASS_PANE.getState();
         piece.setBlockState(worldIn, glassPane, 0, 2, 2, chunkBB);
         piece.setBlockState(worldIn, glassPane, 0, 2, 4, chunkBB);

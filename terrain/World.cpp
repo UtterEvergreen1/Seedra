@@ -170,8 +170,8 @@ void World::generateStrongholds() {
     std::vector<Pos2D> strongholdPositions = Placement::Stronghold::getWorldPositions(*g);
     strongholds.reserve(strongholdPositions.size());
     for (auto& strongholdPos : strongholdPositions) {
-        strongholds.emplace_back(gen::Stronghold());
-        strongholds.back().generate(g->getWorldSeed(), strongholdPos);
+        strongholds.emplace_back();
+        strongholds.back().generate(g->getWorldSeed(), strongholdPos.toChunkPos());
     }
     std::cout << "Stronghold piece count: " << strongholds[0].getPieceCount() << std::endl;
 }

@@ -49,9 +49,9 @@ target_compile_options(LIB_Seedra PRIVATE ${SEEDRA_COMPILE_OPTIONS})
 
 
 # Link the lce library
-# target_link_libraries(LIB_LegacyCubiomes PRIVATE LIB_lce)
+# target_link_libraries(LIB_Seedra PRIVATE LIB_lce)
 
-# If your code does #include "LegacyCubiomes/xyz.hpp",
+# If your code does #include "Seedra/xyz.hpp",
 # you need the parent of this folder on the path:
 target_include_directories(LIB_Seedra
         PUBLIC

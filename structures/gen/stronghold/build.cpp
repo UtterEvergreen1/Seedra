@@ -182,7 +182,7 @@ namespace build::stronghold {
         piece.fillWithBlocks(worldIn, chunkBB, 5, 2, 7, 7, 2, 7, lce::BlocksInit::LOWER_STONE_SLAB.getState(), false);
         piece.fillWithBlocks(worldIn, chunkBB, 4, 5, 7, 4, 5, 9, lce::BlocksInit::LOWER_STONE_SLAB.getState(), false);
         piece.fillWithBlocks(worldIn, chunkBB, 8, 5, 7, 8, 5, 9, lce::BlocksInit::LOWER_STONE_SLAB.getState(), false);
-        piece.fillWithBlocks(worldIn, chunkBB, 5, 5, 7, 7, 5, 9, lce::BlocksInit::DOUBLE_STONE_SLAB.getState(), false);
+        piece.fillWithBlocks(worldIn, chunkBB, 5, 5, 7, 7, 5, 9, lce::BlocksInit::DOUBLE_OLD_STONE_SLAB.getState(), false);
 
         const lce::BlockState torchSouth = lce::BlocksInit::TORCH.getStateFromMeta(
                 states::Torch::withProperty(piece.rotation.apply(piece.mirror, EnumFacing::SOUTH)));
