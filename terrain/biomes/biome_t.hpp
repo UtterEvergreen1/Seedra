@@ -2,25 +2,40 @@
 
 #include <cstdint>
 
+#define biome_u int
+
+
+
+
+enum class land_mask : uint8_t {
+    ocean = 0,
+    land = 1
+};
+
+
+
+
 /**
  * @enum BiomeTempCategory
  * @brief Represents the temperature categories for biomes.
  */
-enum BiomeTempCategory : uint8_t {
-    Oceanic, ///< Biomes with oceanic temperature.
-    Warm,    ///< Biomes with warm temperature.
-    Lush,    ///< Biomes with lush temperature.
-    Cold,    ///< Biomes with cold temperature.
-    Freezing,///< Biomes with freezing temperature.
-    Special  ///< Special biomes with unique temperature characteristics.
+enum biome_category_t : uint8_t {
+    oceanic,  ///< Biomes with oceanic temperature.
+    warm,     ///< Biomes with warm temperature.
+    lush,     ///< Biomes with lush temperature.
+    cold,     ///< Biomes with cold temperature.
+    freezing, ///< Biomes with freezing temperature.
+    special   ///< Special biomes with unique temperature characteristics.
 };
+
+
 
 /**
  * @enum BiomeID
  * @brief Represents the unique identifiers for different biomes.
  */
-enum BiomeID {
-    none = -1, ///< No biome.
+enum biome_t : biome_u {
+    none = 255, ///< No biome.
     // 0
     ocean = 0, ///< Ocean biome.
     plains, ///< Plains biome.

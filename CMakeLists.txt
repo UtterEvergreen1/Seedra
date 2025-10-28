@@ -5,20 +5,37 @@ set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 if (MSVC)
-    #  /O2  = maximise speed   /GL = link-time-code-gen   /Zi = keep PDB in Debug
-    set(CMAKE_C_FLAGS_RELEASE   "${CMAKE_C_FLAGS_RELEASE} /O2 /GL")
-    set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /O2 /GL")
+    # DEBUG
     set(CMAKE_C_FLAGS_DEBUG     "${CMAKE_C_FLAGS_DEBUG}  /Od /Zi")
     set(CMAKE_CXX_FLAGS_DEBUG   "${CMAKE_CXX_FLAGS_DEBUG} /Od /Zi")
+
+    # RELEASE
+    set(CMAKE_C_FLAGS_RELEASE   "${CMAKE_C_FLAGS_RELEASE} /O2 /GL")
+    set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /O2 /GL")
+
+    # RELWITHDEBINFO
+    set(CMAKE_C_FLAGS_RELWITHDEBINFO   "${CMAKE_C_FLAGS_RELWITHDEBINFO} /O2 /Zi /Zo /Oy- /FC")
+    set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "${CMAKE_CXX_FLAGS_RELWITHDEBINFO} /O2 /Zi /Zo /Oy- /FC")
+    add_link_options($<$<CONFIG:RelWithDebInfo>:/DEBUG:FULL>)
+
+    # PDB
+    set(CMAKE_PDB_OUTPUT_DIRECTORY_RELWITHDEBINFO "${CMAKE_BINARY_DIR}/pdb")
+    set(CMAKE_COMPILE_PDB_OUTPUT_DIRECTORY_RELWITHDEBINFO "${CMAKE_BINARY_DIR}/pdb")
+    file(MAKE_DIRECTORY "${CMAKE_BINARY_DIR}/pdb")
+
     set(SEEDRA_COMPILE_OPTIONS /arch:AVX /MP)
 else()
     set(CMAKE_EXE_LINKER_FLAGS_RELEASE "${CMAKE_EXE_LINKER_FLAGS_RELEASE} -static-libgcc -static-libstdc++")
+
     set(CMAKE_C_FLAGS_RELEASE   "${CMAKE_C_FLAGS_RELEASE}   -O3 -s")
     set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O3 -s")
+
     set(CMAKE_C_FLAGS_DEBUG     "${CMAKE_C_FLAGS_DEBUG}   -O0")
     set(CMAKE_CXX_FLAGS_DEBUG   "${CMAKE_CXX_FLAGS_DEBUG} -O0")
+
     set(CMAKE_C_FLAGS_RELWITHDEBINFO   "-O2 -g -fno-omit-frame-pointer -fno-optimize-sibling-calls")
     set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "-O2 -g -fno-omit-frame-pointer -fno-optimize-sibling-calls")
+
     set(SEEDRA_COMPILE_OPTIONS "-mavx2;-msse4.1")
 endif()
 
@@ -57,6 +74,9 @@ target_include_directories(LIB_Seedra
         PUBLIC
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/>
 )
+set_target_properties(LIB_Seedra PROPERTIES
+        COMPILE_PDB_OUTPUT_DIRECTORY "${CMAKE_COMPILE_PDB_OUTPUT_DIRECTORY_RELWITHDEBINFO}"
+)
 
 set(ASSET_DEST "/assets/lce")
 
@@ -68,6 +88,10 @@ function(add_cli NAME SRC)
     target_include_directories(${NAME} PRIVATE ${LCE_INCLUDE_DIR})
     target_compile_options(${NAME} PRIVATE ${LCE_COMPILE_OPTIONS} ${SEEDRA_COMPILE_OPTIONS})
     target_compile_definitions(${NAME} PRIVATE ${LCE_COMPILE_DEFINITIONS})
+    set_target_properties(${NAME} PROPERTIES
+            PDB_OUTPUT_DIRECTORY "${CMAKE_PDB_OUTPUT_DIRECTORY_RELWITHDEBINFO}"
+            COMPILE_PDB_OUTPUT_DIRECTORY "${CMAKE_COMPILE_PDB_OUTPUT_DIRECTORY_RELWITHDEBINFO}"
+    )
 
 
     # add_custom_command(TARGET ${NAME} POST_BUILD
@@ -90,7 +114,7 @@ option(LC_BUILD_EXECUTABLE "Build Seedra standalone executable" ON)
 if(LC_BUILD_EXECUTABLE)
 
     add_cli(EXE_GenCreateWorld "tests/gen_chunk.cpp")
-    add_cli(EXE_DrawImages "tests/draw_images.cpp")
+    add_cli(EXE_DrawBiomes "tests/draw_biomes.cpp")
     add_cli(EXE_GetMaxTempBiomes "tests/get_min_temp_biomes.cpp")
     add_cli(EXE_MineAChunkSF "tests/best_mine_chunk_seed.cpp")
     add_cli(EXE_MineAChunkSF2 "tests/best_mine_chunk_seed2.cpp")
@@ -107,5 +131,7 @@ if(LC_BUILD_EXECUTABLE)
     add_cli(EXE_TallCacti "tests/find_tall_cactus.cpp")
     add_cli(EXE_AllBiomes "tests/all_biomes_and_structures.cpp")
     add_cli(EXE_11Eye "tests/11_eye_filter.cpp")
+    add_cli(EXE_StructureSanity "tests/structure_sanity.cpp")
+    add_cli(EXE_GetBiomeDepthAndScaleOptimizer "tests/getBiomeDepthAndScaleOptimizer.cpp")
 
 endif()

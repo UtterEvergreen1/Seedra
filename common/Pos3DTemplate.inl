@@ -106,7 +106,7 @@ ND double Pos3DTemplate<T>::distanceSq() const {
 
 
 template<class T>
-double Pos3DTemplate<T>::distanceSq(c_double toX, c_double toY, c_double toZ) const {
+MU double Pos3DTemplate<T>::distanceSq(c_double toX, c_double toY, c_double toZ) const {
     /*
     c_double d0 = static_cast<double>(x) - toX;
     c_double d1 = static_cast<double>(y) - toY;
@@ -156,6 +156,71 @@ std::vector<Pos3DTemplate<T>> Pos3DTemplate<T>::getAllInBox(
     }
     return positions;
 }
+
+
+
+template<class T>
+ND double Pos3DTemplate<T>::dot(const Pos3DTemplate &other) const {
+    using ValueType = std::conditional_t<std::is_same_v<T, double>, T, double>;
+    const auto ax = static_cast<ValueType>(x);
+    const auto ay = static_cast<ValueType>(y);
+    const auto az = static_cast<ValueType>(z);
+    const auto bx = static_cast<ValueType>(other.x);
+    const auto by = static_cast<ValueType>(other.y);
+    const auto bz = static_cast<ValueType>(other.z);
+    return static_cast<double>(ax * bx + ay * by + az * bz);
+}
+
+template<class T>
+MU ND Pos3DTemplate<double>
+Pos3DTemplate<T>::closestPointOnSegment(const Pos3DTemplate &segStart,
+                                        const Pos3DTemplate &segEnd) const {
+    // Cast everything to double for robust geometry
+    const auto sx = static_cast<double>(segStart.x);
+    const auto sy = static_cast<double>(segStart.y);
+    const auto sz = static_cast<double>(segStart.z);
+
+    const auto ex = static_cast<double>(segEnd.x);
+    const auto ey = static_cast<double>(segEnd.y);
+    const auto ez = static_cast<double>(segEnd.z);
+
+    const auto px = static_cast<double>(x);
+    const auto py = static_cast<double>(y);
+    const auto pz = static_cast<double>(z);
+
+    // v1 = P - S, v2 = E - S
+    const double v1x = px - sx, v1y = py - sy, v1z = pz - sz;
+    const double v2x = ex - sx, v2y = ey - sy, v2z = ez - sz;
+
+    const double dot = v1x * v2x + v1y * v2y + v1z * v2z;
+    const double len2 = v2x * v2x + v2y * v2y + v2z * v2z;
+
+    // Degenerate segment (S==E) or projects before start
+    if (len2 <= 0.0 || dot <= 0.0) {
+        return {sx, sy, sz};
+    }
+
+    // Projects beyond end
+    if (dot >= len2) {
+        return {ex, ey, ez};
+    }
+
+    // Interior projection
+    const double t = dot / len2;
+    return {sx + t * v2x, sy + t * v2y, sz + t * v2z};
+}
+
+template<class T>
+ND double Pos3DTemplate<T>::distanceToSegment(const Pos3DTemplate &segStart,
+                                              const Pos3DTemplate &segEnd) const {
+    const auto cp = closestPointOnSegment(segStart, segEnd);
+    return std::sqrt(distanceSq(cp.x, cp.y, cp.z));
+}
+
+
+
+
+
 
 
 template

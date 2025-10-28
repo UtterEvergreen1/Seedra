@@ -1,6 +1,6 @@
 #pragma once
 
-#include "terrain/biomes/biomeID.hpp"
+#include "terrain/biomes/biome_t.hpp"
 #include "terrain/generator.hpp"
 
 namespace Placement {
@@ -20,15 +20,15 @@ namespace Placement {
          * This constant defines the biomes where Strongholds can be placed. Each biome is represented
          * as a bit in the bitmask.
          */
-        static constexpr uint64_t stronghold_biomes =
-                1ULL << plains | 1ULL << desert | 1ULL << extreme_hills | 1ULL << forest | 1ULL << taiga |
-                1ULL << hell | 1ULL << the_end | 1ULL << ice_plains | 1ULL << ice_mountains |
-                1ULL << mushroom_island | 1ULL << desert_hills | 1ULL << forest_hills | 1ULL << taiga_hills |
-                1ULL << extreme_hills_edge | 1ULL << jungle | 1ULL << jungle_hills | 1ULL << jungle_edge |
-                1ULL << stone_beach | 1ULL << birch_forest | 1ULL << birch_forest_hills |
-                1ULL << roofed_forest | 1ULL << cold_taiga | 1ULL << cold_taiga_hills | 1ULL << mega_taiga |
-                1ULL << mega_taiga_hills | 1ULL << extreme_hills_plus_trees | 1ULL << savanna |
-                1ULL << savanna_plateau | 1ULL << mesa | 1ULL << mesa_plateau_stone | 1ULL << mesa_plateau;
+        static constexpr uint64_t stronghold_biomes = makeBiomeBitmask<
+                biome_t::plains, biome_t::desert, biome_t::extreme_hills, biome_t::forest, biome_t::taiga,
+                biome_t::hell, biome_t::the_end, biome_t::ice_plains, biome_t::ice_mountains,
+                biome_t::mushroom_island, biome_t::desert_hills, biome_t::forest_hills, biome_t::taiga_hills,
+                biome_t::extreme_hills_edge, biome_t::jungle, biome_t::jungle_hills, biome_t::jungle_edge,
+                biome_t::stone_beach, biome_t::birch_forest, biome_t::birch_forest_hills,
+                biome_t::roofed_forest, biome_t::cold_taiga, biome_t::cold_taiga_hills, biome_t::mega_taiga,
+                biome_t::mega_taiga_hills, biome_t::extreme_hills_plus_trees, biome_t::savanna,
+                biome_t::savanna_plateau, biome_t::mesa, biome_t::mesa_plateau_stone, biome_t::mesa_plateau>();
 
         /**
          * @brief Flag indicating whether to use far Stronghold placement logic.

@@ -56,7 +56,7 @@ public:
     /**
      * @brief Pointer to the array of biomes used for generation.
      */
-    int *biomesForGeneration;
+    biome_t *biomesForGeneration;
 
     std::span<int> biomesForGenerationSpan;
 
@@ -126,11 +126,11 @@ public:
 
     /**
      * @brief Replaces biome blocks in a chunk based on the biome data.
-     * @param x The starting X-coordinate.
-     * @param z The starting Z-coordinate.
+     * @param chunkX The starting X-coordinate.
+     * @param chunkZ The starting Z-coordinate.
      * @param primer Pointer to the ChunkPrimer to modify.
      */
-    void replaceBiomeBlocks(int x, int z, ChunkPrimer *primer);
+    void replaceBiomeBlocks(int chunkX, int chunkZ, ChunkPrimer *primer);
 
     /**
      * @brief Provides a chunk at the specified position.
@@ -175,4 +175,7 @@ public:
      * @param z The starting Z-coordinate.
      */
     void generateHeightmap(int x, int y, int z);
+
+    double getHeightFalloff(int blockX, int blockZ, int* distance) const;
+
 };

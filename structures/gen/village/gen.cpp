@@ -4,7 +4,7 @@
 
 #include "components/StructureComponent.hpp"
 #include "terrain/World.hpp"
-#include "terrain/biomes/biomeID.hpp"
+#include "terrain/biomes/biome_t.hpp"
 #include "terrain/generator.hpp"
 
 namespace gen {
@@ -440,19 +440,19 @@ namespace gen {
 
     MU void Village::setVillageBiomeType() {
         switch (g->getBiomeIdAt(1, startPos)) {
-            case BiomeID::plains:
+            case biome_t::plains:
             default:
                 myVariant = StructureVariant::SV_Village_Plains;
                 break;
-            case BiomeID::desert:
+            case biome_t::desert:
                 myVariant = StructureVariant::SV_Village_Desert;
                 break;
-            case BiomeID::savanna:
+            case biome_t::savanna:
                 myVariant = StructureVariant::SV_Village_Savanna;
                 break;
-            case BiomeID::taiga:
-            case BiomeID::ice_plains:
-            case BiomeID::cold_taiga:
+            case biome_t::taiga:
+            case biome_t::ice_plains:
+            case biome_t::cold_taiga:
                 myVariant = StructureVariant::SV_Village_Taiga;
                 break;
         }
