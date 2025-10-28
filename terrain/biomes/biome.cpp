@@ -3,7 +3,7 @@
 #include "terrain/World.hpp"
 
 #include "BiomeDecorator.hpp"
-#include "biomeID.hpp"
+#include "biome_t.hpp"
 #include "terrain/color/Colors.hpp"
 #include "terrain/decorators/WorldGenBigMushroom.hpp"
 #include "terrain/decorators/WorldGenBigTree.hpp"
@@ -26,32 +26,32 @@
 
 #pragma region Definitions
 
-const std::map<int, int> Biome::SNOW_BIOMES = {
-    {extreme_hills, 90},
-    {taiga, 120},
-    {taiga_hills, 120},
-    {extreme_hills_edge, 90},
-    {stone_beach, 90},
-    {cold_beach, 0},
-    {mega_taiga, 150},
-    {mega_taiga_hills, 150},
-    {extreme_hills, 90},
-    {extreme_hills_plus_trees, 90},
-    {extreme_hills_mutated, 90},
-    {taiga_mutated, 120},
-    {mega_spruce_taiga, 120},
-    {mega_taiga_hills, 120},
-    // Biomes that always snow
-    {legacy_frozen_ocean, -10},
-    {frozen_river, -10},
-    {ice_plains, -10},
-    {ice_mountains, -10},
-    {cold_taiga, -10},
-    {cold_taiga_hills, -10},
-    {frozen_ocean, -10},
-    {deep_frozen_ocean, -10},
-    {ice_plains_spikes, -10},
-    {cold_taiga_mutated, -10},
+const std::map<biome_t, int> Biome::SNOW_BIOMES = {
+        {biome_t::extreme_hills, 90},
+        {biome_t::taiga, 120},
+        {biome_t::taiga_hills, 120},
+        {biome_t::extreme_hills_edge, 90},
+        {biome_t::stone_beach, 90},
+        {biome_t::cold_beach, 0},
+        {biome_t::mega_taiga, 150},
+        {biome_t::mega_taiga_hills, 150},
+        {biome_t::extreme_hills, 90},
+        {biome_t::extreme_hills_plus_trees, 90},
+        {biome_t::extreme_hills_mutated, 90},
+        {biome_t::taiga_mutated, 120},
+        {biome_t::mega_spruce_taiga, 120},
+        {biome_t::mega_taiga_hills, 120},
+        // Biomes that always snow
+        {biome_t::legacy_frozen_ocean, -10},
+        {biome_t::frozen_river, -10},
+        {biome_t::ice_plains, -10},
+        {biome_t::ice_mountains, -10},
+        {biome_t::cold_taiga, -10},
+        {biome_t::cold_taiga_hills, -10},
+        {biome_t::frozen_ocean, -10},
+        {biome_t::deep_frozen_ocean, -10},
+        {biome_t::ice_plains_spikes, -10},
+        {biome_t::cold_taiga_mutated, -10},
 };
 
 const NoiseGeneratorPerlin Biome::TEMPERATURE_NOISE = NoiseGeneratorPerlin(RNG(1234ULL), 1);
@@ -77,8 +77,7 @@ const WorldGenBlockBlob BiomeTaiga::FOREST_ROCK_GENERATOR =
 
 const WorldGenSwamp BiomeSwamp::SWAMP_FEATURE;
 
-const WorldGenMegaJungle BiomeJungle::MEGA_JUNGLE_FEATURE = WorldGenMegaJungle(
-    10, 20, lce::BlocksInit::JUNGLE_WOOD.getState(), lce::BlocksInit::JUNGLE_LEAVES.getState());
+const WorldGenMegaJungle BiomeJungle::MEGA_JUNGLE_FEATURE = WorldGenMegaJungle(10, 20, lce::BlocksInit::JUNGLE_WOOD.getState(), lce::BlocksInit::JUNGLE_LEAVES.getState());
 const WorldGenTrees BiomeJungle::JUNGLE_TREES[BiomeJungle::JUNGLE_TREE_HEIGHT_VARIATION] = {
     WorldGenTrees(4, lce::BlocksInit::JUNGLE_WOOD.getState(), lce::BlocksInit::JUNGLE_LEAVES.getState(), true),
     WorldGenTrees(5, lce::BlocksInit::JUNGLE_WOOD.getState(), lce::BlocksInit::JUNGLE_LEAVES.getState(), true),
@@ -91,7 +90,7 @@ const WorldGenTrees BiomeJungle::JUNGLE_TREES[BiomeJungle::JUNGLE_TREE_HEIGHT_VA
 
 const WorldGenSavannaTree BiomeSavanna::SAVANNA_TREE;
 
-std::map<int, Biome *> Biome::registry;
+std::map<biome_t, Biome *> Biome::registry;
 #pragma endregion
 
 Biome::~Biome() { delete decorator; }
@@ -103,6 +102,7 @@ BiomeDecorator *Biome::createBiomeDecorator() const {
 }
 
 void Biome::registerBiomes() {
+    registerBiome(255, new BiomeNone("None", -1.0F, 0.1F, false, 0.5F, 0xA5333333));
     registerBiome(0, new BiomeOcean("Ocean", -1.0F, 0.1F, false, 0.5F, 0xA5D48717));
     registerBiome(1, new BiomePlains(false, "Plains", 0.125F, 0.05F, false, 0.8F));
     registerBiome(2, new BiomeDesert("Desert", 0.125F, 0.05F, false, 2.0F, 0xA598A532));

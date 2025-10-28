@@ -1,7 +1,7 @@
 #pragma once
 #include <cstdint>
 
-#include "biomes/biomeID.hpp"
+#include "biomes/biome_t.hpp"
 #include "common/enums.hpp"
 #include "components/BoundingBox.hpp"
 #include "lce/enums.hpp"
@@ -12,7 +12,7 @@
  * @brief Options for world generation, such as fixed biome for superflat and stronghold count.
  */
 struct WorldSettings {
-    BiomeID fixedBiome = BiomeID::plains; ///< Fixed biome for superflat worlds.
+    biome_t fixedBiome = biome_t::plains; ///< Fixed biome for superflat worlds.
     int strongholdCount = 1;         ///< Number of strongholds to generate in the world.
 };
 
@@ -182,13 +182,13 @@ public:
      * @brief Sets the fixed biome for superflat worlds.
      * @param b The fixed biome ID.
      */
-    void setFixedBiome(const BiomeID b) { this->worldOptions.fixedBiome = b; }
+    void setFixedBiome(const biome_t b) { this->worldOptions.fixedBiome = b; }
 
     /**
      * @brief Retrieves the fixed biome for superflat worlds.
      * @return The fixed biome ID.
      */
-    ND BiomeID getFixedBiome() const { return this->worldOptions.fixedBiome; }
+    ND biome_t getFixedBiome() const { return this->worldOptions.fixedBiome; }
 
     /**
      * @brief Sets the number of strongholds to generate in the world.

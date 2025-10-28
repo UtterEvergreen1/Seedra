@@ -19,7 +19,7 @@
 World::World(Generator *g) : g(g), chunkPool(ChunkPrimer::getFootprintSize()) {
     int worldSize = lce::getChunkWorldBounds(g->getWorldSize());
     this->worldBounds = BoundingBox(-worldSize, 0, -worldSize,
-                                    worldSize - 1, 256, worldSize - 1);
+                                    worldSize, 256, worldSize);
 }
 
 World::~World() {
@@ -132,7 +132,7 @@ Biome* World::getBiomeAt(int x, int z) const {
     return Biome::getBiomeForId(this->getBiomeIdAt(x, z));
 }
 
-int World::getBiomeIdAt(int x, int z) const {
+biome_t World::getBiomeIdAt(int x, int z) const {
     return g->getBiomeIdAt(1, x, z);
 }
 

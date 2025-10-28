@@ -1,7 +1,7 @@
 #pragma once
 
 #include "WorldConfig.hpp"
-#include "biomes/biomeID.hpp"
+#include "biomes/biome_t.hpp"
 #include "terrain/biomes/layers.hpp"
 
 #include "common/Pos2DTemplate.hpp"
@@ -18,7 +18,7 @@ struct SurfaceNoise;
 class BiomeCache {
     int scale;
     BoundingBox box;
-    int *biomes;
+    biome_t *biomes;
     bool generated;
 
 public:
@@ -34,14 +34,14 @@ public:
 
     ND const BoundingBox &getBox() const { return box; }
 
-    ND int *getBiomes() const { return biomes; }
+    ND biome_t *getBiomes() const { return biomes; }
 
     ND bool isGenerated() const { return generated; }
 
-    void setBiomes(int *biomes) {
+    void setBiomes(biome_t *_biomes) {
         delete this->biomes;
         this->generated = true;
-        this->biomes = biomes;
+        this->biomes = _biomes;
     }
 };
 
@@ -56,9 +56,10 @@ class Generator {
     /**
      * @brief Valid spawn biomes represented as a 64-bit value.
      */
-    static constexpr uint64_t SPAWN_BIOMES = (1ULL << forest) | (1ULL << plains) | (1ULL << taiga) | (
-                                                 1ULL << taiga_hills) |
-                                             (1ULL << wooded_hills) | (1ULL << jungle) | (1ULL << jungle_hills);
+
+    static constexpr u64 SPAWN_BIOMES
+            = makeBiomeBitmask<biome_t::forest, biome_t::plains, biome_t::taiga, biome_t::taiga_hills,
+                               biome_t::wooded_hills, biome_t::jungle, biome_t::jungle_hills>();
 
     /**
      * @brief The world config containing settings for world generation.
@@ -174,7 +175,7 @@ public:
      * @param z The Z-coordinate of the cache.
      * @return Pointer to the biome cache at the specified scale and coordinates.
      */
-    ND int *getCacheAtBlock(int scale, int x, int z) const;
+    ND biome_t *getCacheAtBlock(int scale, int x, int z) const;
 
     /**
      * @brief Increments the world seed by 1.
@@ -250,13 +251,13 @@ public:
      * @brief Sets the fixed biome for superflat worlds.
      * @param b The fixed biome ID.
      */
-    void setFixedBiome(const BiomeID b) { this->m_config.setFixedBiome(b); }
+    void setFixedBiome(const biome_t b) { this->m_config.setFixedBiome(b); }
 
     /**
      * @brief Retrieves the fixed biome for superflat worlds.
      * @return The fixed biome ID.
      */
-    ND BiomeID getFixedBiome() const { return this->m_config.getFixedBiome(); }
+    ND biome_t getFixedBiome() const { return this->m_config.getFixedBiome(); }
 
     /**
      * @brief Sets the number of strongholds to generate in the world.
@@ -300,7 +301,7 @@ public:
      * @param range The range of the cache.
      * @return A pointer to the allocated cache.
      */
-    ND i32 *allocCache(const Range &range) const;
+    ND biome_t *allocCache(const Range &range) const;
 
     /**
      * @brief Generates biomes for a given range and stores them in the cache.
@@ -308,7 +309,7 @@ public:
      * @param range The range of biomes to generate.
      * @return The number of biomes generated.
      */
-    i32 genBiomes(i32 *cache, const Range &range) const;
+    i32 genBiomes(biome_t *cache, const Range &range) const;
 
     /**
      * @brief Retrieves the biome at a specific scale and coordinates.
@@ -317,7 +318,7 @@ public:
      * @param z The Z-coordinate.
      * @return The biome ID.
      */
-    ND i32 getBiomeIdAt(i32 scale, i32 x, i32 z) const;
+    ND biome_t getBiomeIdAt(i32 scale, i32 x, i32 z) const;
 
     /**
      * @brief Retrieves the biome at a specific scale and 2D position.
@@ -325,7 +326,7 @@ public:
      * @param pos The 2D position.
      * @return The biome ID.
      */
-    ND i32 getBiomeIdAt(c_i32 scale, Pos2D pos) const;
+    ND biome_t getBiomeIdAt(i32 scale, Pos2D pos) const;
 
     /**
      * @brief Retrieves the biome at a specific scale and 3D position.
@@ -333,7 +334,7 @@ public:
      * @param pos The 3D position.
      * @return The biome ID.
      */
-    ND i32 getBiomeIdAt(c_i32 scale, Pos3D pos) const;
+    ND biome_t getBiomeIdAt(i32 scale, Pos3D pos) const;
 
     /**
      * @brief Retrieves the biome at the specified coordinates.
@@ -352,14 +353,14 @@ public:
      * @param h The height of the range.
      * @return A pointer to the range of biomes.
      */
-    ND i32 *getBiomeRange(i32 scale, i32 x, i32 z, i32 w, i32 h) const;
+    ND biome_t *getBiomeRange(i32 scale, i32 x, i32 z, i32 w, i32 h) const;
 
     /**
      * @brief Retrieves the world biomes at a specific scale.
      * @param scale The scale of the world biomes.
      * @return A pointer to the world biomes if it exists in the cache.
      */
-    ND int *getWorldBiomes(int scale = 1) const;
+    ND biome_t *getWorldBiomes(int scale = 1) const;
 
     /**
      * @brief Retrieves the layer for a specific scale.
@@ -427,7 +428,7 @@ public:
      * @param h The height of the range.
      * @return The number of heights mapped.
      */
-    ND i32 mapApproxHeight(float *y, i32 *ids, const SurfaceNoise *sn, i32 x, i32 z, i32 w, i32 h) const;
+    ND i32 mapApproxHeight(float *y, biome_t *ids, const SurfaceNoise *sn, i32 x, i32 z, i32 w, i32 h) const;
 
     /**
      * @brief Estimates the spawn position using a random number generator.
@@ -449,7 +450,7 @@ public:
      * @param mutatedValidBiomes The mutated valid biomes as a 64-bit value (optional).
      * @return True if the biome ID matches, false otherwise.
      */
-    ND static bool id_matches(i32 id, u64 validBiomes, u64 mutatedValidBiomes = 0);
+    ND static bool id_matches(biome_t id, u64 validBiomes, u64 mutatedValidBiomes = 0);
 
 private:
     /**

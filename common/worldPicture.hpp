@@ -40,7 +40,7 @@ public:
      * @param width The width of the picture.
      * @param height The height of the picture.
      */
-    MU WorldPicture(Generator *g, c_int width, c_int height) : Picture(width, height), g(g) {
+    MU WorldPicture(Generator *g, c_int width, c_int height) : Picture(width, height, 3), g(g) {
     }
 
     /**
@@ -48,7 +48,8 @@ public:
      *
      * @param g Pointer to the Generator object.
      */
-    MU explicit WorldPicture(Generator *g) : Picture(g->getWorldCoordinateBounds() >> 1), g(g) {
+    MU explicit WorldPicture(Generator *g) : Picture(
+        g->getWorldCoordinateBounds() << 1, g->getWorldCoordinateBounds() << 1, 3), g(g) {
     }
 
     /**
@@ -65,13 +66,13 @@ public:
         initBiomeColors(biomeColors);
 
         if (g->getWorldBiomes() == nullptr) {
-            g->generateCache(4);
+            g->generateCache(1);
         }
 
-        for (u32 y = 0; y < m_height; ++y) {
-            for (u32 x = 0; x < m_width; ++x) {
-                c_int id = *g->getCacheAtBlock(4, x, y);
-                drawPixel(&biomeColors[id][0], x, y);
+        for (i32 y = 0; y < m_height; ++y) {
+            for (i32 x = 0; x < m_width; ++x) {
+                const biome_t id = *g->getCacheAtBlock(1, x - m_width / 2, y - m_height / 2);
+                drawPixel(&biomeColors[static_cast<size_t>(id)][0], x, y);
             }
         }
     }
@@ -101,12 +102,12 @@ public:
         c_int y = static_cast<int>(m_height);
         c_int w = static_cast<int>(m_width);
         c_int h = static_cast<int>(m_height);
-        c_int *ids = g->getBiomeRange(4, x, y, w, h);
+        const biome_t *ids = g->getBiomeRange(4, x, y, w, h);
 
-        for (u32 yi = 0; yi < m_height; ++yi) {
-            for (u32 xi = 0; xi < m_width; ++xi) {
-                c_int id = ids[getIndex(xi, yi)];
-                drawPixel(&biomeColors[id][0], xi, yi);
+        for (i32 yi = 0; yi < m_height; ++yi) {
+            for (i32 xi = 0; xi < m_width; ++xi) {
+                const biome_t id = ids[getIndex(xi, yi)];
+                drawPixel(&biomeColors[static_cast<size_t>(id)][0], xi, yi);
             }
         }
     }
