@@ -55,19 +55,20 @@ namespace Placement {
     template<typename Derived>
     class DynamicStructure {
     public:
-        constexpr static u64 MAIN_VALID_BIOMES = 0; ///< Main valid biomes for the structure.
-        constexpr static u64 SECONDARY_VALID_BIOMES = 0; ///< Secondary valid biomes for the structure.
-        constexpr static u64 SECONDARY_VALID_BIOMES_MUTATED = 0; ///< Mutated secondary valid biomes.
+        static constexpr u64 MAIN_VALID_BIOMES              = 0; ///< Main valid biomes for the structure.
+        static constexpr u64 SECONDARY_VALID_BIOMES         = 0; ///< Secondary valid biomes for the structure.
+        static constexpr u64 SECONDARY_VALID_BIOMES_MUTATED = 0; ///< Mutated secondary valid biomes.
 
         static int CHUNK_BOUNDS; ///< Bounds for chunk placement.
         static int REGION_SIZE; ///< Size of the region for structure placement.
         static int CHUNK_RANGE; ///< Range of chunks to consider for placement.
         static int ATTEMPTS; ///< Maximum number of placement attempts.
-        static bool REDUCED_SPACING; ///< Flag for reduced spacing between structures.
-        constexpr static int SALT = 0; ///< Salt value for structure placement.
-        constexpr static int MAIN_RADIUS = 0; ///< Main radius for structure placement.
-        constexpr static int SECOND_RADIUS = 0; ///< Secondary radius for structure placement.
-        constexpr static bool HAS_SECOND_BIOME_CHECK = true; ///< Flag for secondary biome checks.
+        MU static bool REDUCED_SPACING; ///< Flag for reduced spacing between structures.
+
+        static constexpr int  SALT                        = 0; ///< Salt value for structure placement.
+        static constexpr int  MAIN_RADIUS                 = 0; ///< Main radius for structure placement.
+        static constexpr int  SECOND_RADIUS               = 0; ///< Secondary radius for structure placement.
+        static constexpr bool HAS_SECOND_BIOME_CHECK      = true; ///< Flag for secondary biome checks.
 
         /**
          * @brief Gets the position of the structure in a region.
@@ -96,7 +97,7 @@ namespace Placement {
          * @param chunkZ The Z coordinate of the chunk.
          * @return True if the structure can spawn, false otherwise.
          */
-        static bool verifyChunkPosition(const Generator *g, int chunkX, int chunkZ) {
+        MU static bool verifyChunkPosition(const Generator *g, int chunkX, int chunkZ) {
             return verifyBlockPosition(g, (chunkX << 4) + 8, (chunkZ << 4) + 8);
         }
 
@@ -150,12 +151,15 @@ namespace Placement {
      */
     class Mansion : public DynamicStructure<Mansion> {
     public:
-        constexpr static int Placement::DynamicStructure<Mansion>::SALT = 10387319;
-        constexpr static int Placement::DynamicStructure<Mansion>::MAIN_RADIUS = 4;
-        constexpr static int Placement::DynamicStructure<Mansion>::SECOND_RADIUS = 32;
-        constexpr static u64 Placement::DynamicStructure<Mansion>::MAIN_VALID_BIOMES = makeBiomeBitmask<biome_t::dark_forest>();
-        constexpr static u64 Placement::DynamicStructure<Mansion>::SECONDARY_VALID_BIOMES = DEFAULT_SECONDARY_VALID_BIOMES;
-        constexpr static u64 Placement::DynamicStructure<Mansion>::SECONDARY_VALID_BIOMES_MUTATED = DEFAULT_SECONDARY_VALID_BIOMES_MUTATED;
+        static constexpr int  SALT                   = 10387319;
+        static constexpr int  MAIN_RADIUS            = 4;
+        static constexpr int  SECOND_RADIUS          = 32;
+        static constexpr bool HAS_SECOND_BIOME_CHECK = true;
+
+        static constexpr u64  MAIN_VALID_BIOMES =
+                makeBiomeBitmask<biome_t::dark_forest>();
+        static constexpr u64  SECONDARY_VALID_BIOMES         = DEFAULT_SECONDARY_VALID_BIOMES;
+        static constexpr u64  SECONDARY_VALID_BIOMES_MUTATED = DEFAULT_SECONDARY_VALID_BIOMES_MUTATED;
         /**
          * @brief Sets the world size for the Mansion.
          * @param worldSize The world size.
@@ -169,16 +173,20 @@ namespace Placement {
      */
     class Monument : public DynamicStructure<Monument> {
     public:
-        constexpr static int Placement::DynamicStructure<Monument>::SALT = 10387313;
-        constexpr static int Placement::DynamicStructure<Monument>::MAIN_RADIUS = 8;
-        constexpr static int Placement::DynamicStructure<Monument>::SECOND_RADIUS = 29;
-        constexpr static u64 Placement::DynamicStructure<Monument>::MAIN_VALID_BIOMES = makeBiomeBitmask<
-            biome_t::ocean, biome_t::river, biome_t::frozen_river, biome_t::deep_ocean, biome_t::warm_ocean,
-            biome_t::deep_warm_ocean, biome_t::lukewarm_ocean, biome_t::deep_lukewarm_ocean, biome_t::cold_ocean,
-            biome_t::deep_cold_ocean, biome_t::frozen_ocean, biome_t::deep_frozen_ocean>();
-        constexpr static u64 Placement::DynamicStructure<Monument>::SECONDARY_VALID_BIOMES = makeBiomeBitmask<
-            biome_t::deep_ocean, biome_t::deep_warm_ocean, biome_t::deep_lukewarm_ocean, biome_t::deep_cold_ocean,
-            biome_t::deep_frozen_ocean>();
+        static constexpr int  SALT                   = 10387313;
+        static constexpr int  MAIN_RADIUS            = 8;
+        static constexpr int  SECOND_RADIUS          = 29;
+        static constexpr bool HAS_SECOND_BIOME_CHECK = true;
+
+        static constexpr u64  MAIN_VALID_BIOMES =
+                makeBiomeBitmask<biome_t::ocean, biome_t::river, biome_t::frozen_river, biome_t::deep_ocean,
+                                 biome_t::warm_ocean, biome_t::deep_warm_ocean, biome_t::lukewarm_ocean,
+                                 biome_t::deep_lukewarm_ocean, biome_t::cold_ocean, biome_t::deep_cold_ocean,
+                                 biome_t::frozen_ocean, biome_t::deep_frozen_ocean>();
+        static constexpr u64  SECONDARY_VALID_BIOMES =
+                makeBiomeBitmask<biome_t::deep_ocean, biome_t::deep_warm_ocean, biome_t::deep_lukewarm_ocean,
+                                 biome_t::deep_cold_ocean, biome_t::deep_frozen_ocean>();
+
         /**
          * @brief Sets the world size for the Monument.
          * @param worldSize The world size.
@@ -192,13 +200,16 @@ namespace Placement {
      */
     class BuriedTreasure : public DynamicStructure<BuriedTreasure> {
     public:
-        constexpr static int Placement::DynamicStructure<BuriedTreasure>::SALT = 16842397;
-        constexpr static int Placement::DynamicStructure<BuriedTreasure>::MAIN_RADIUS = 0;
-        constexpr static int Placement::DynamicStructure<BuriedTreasure>::SECOND_RADIUS = 16;
-        constexpr static u64 Placement::DynamicStructure<BuriedTreasure>::MAIN_VALID_BIOMES = makeBiomeBitmask<
-                biome_t::mushroom_island_shore, biome_t::beach, biome_t::stone_beach, biome_t::cold_beach>();
-        constexpr static u64 Placement::DynamicStructure<BuriedTreasure>::SECONDARY_VALID_BIOMES = DEFAULT_SECONDARY_VALID_BIOMES;
-        constexpr static u64 Placement::DynamicStructure<BuriedTreasure>::SECONDARY_VALID_BIOMES_MUTATED = DEFAULT_SECONDARY_VALID_BIOMES_MUTATED;
+        static constexpr int  SALT                   = 16842397;
+        static constexpr int  MAIN_RADIUS            = 0;
+        static constexpr int  SECOND_RADIUS          = 16;
+        static constexpr bool HAS_SECOND_BIOME_CHECK = true;
+
+        static constexpr u64  MAIN_VALID_BIOMES =
+                makeBiomeBitmask<biome_t::mushroom_island_shore, biome_t::beach, biome_t::stone_beach, biome_t::cold_beach>();
+        static constexpr u64  SECONDARY_VALID_BIOMES         = DEFAULT_SECONDARY_VALID_BIOMES;
+        static constexpr u64  SECONDARY_VALID_BIOMES_MUTATED = DEFAULT_SECONDARY_VALID_BIOMES_MUTATED;
+
         /**
          * @brief Sets the world size for the Buried Treasure.
          * @param worldSize The world size.
@@ -247,13 +258,16 @@ namespace Placement {
      */
     class Shipwreck : public DynamicStructure<Shipwreck> {
     public:
-        constexpr static int Placement::DynamicStructure<Shipwreck>::SALT = 14357617;
-        constexpr static int Placement::DynamicStructure<Shipwreck>::MAIN_RADIUS = 10;
-        constexpr static bool Placement::DynamicStructure<Shipwreck>::HAS_SECOND_BIOME_CHECK = false;
-        constexpr static u64 Placement::DynamicStructure<Shipwreck>::MAIN_VALID_BIOMES = makeBiomeBitmask<
-            biome_t::ocean, biome_t::mushroom_island_shore, biome_t::beach, biome_t::snowy_beach, biome_t::deep_ocean,
-            biome_t::warm_ocean, biome_t::lukewarm_ocean, biome_t::deep_lukewarm_ocean, biome_t::cold_ocean,
-            biome_t::deep_cold_ocean, biome_t::frozen_ocean, biome_t::deep_frozen_ocean>();
+        static constexpr int  SALT                   = 14357617;
+        static constexpr int  MAIN_RADIUS            = 10;
+        static constexpr bool HAS_SECOND_BIOME_CHECK = false;
+
+        static constexpr u64  MAIN_VALID_BIOMES =
+                makeBiomeBitmask<biome_t::ocean, biome_t::mushroom_island_shore, biome_t::beach, biome_t::snowy_beach,
+                                 biome_t::deep_ocean, biome_t::warm_ocean, biome_t::lukewarm_ocean,
+                                 biome_t::deep_lukewarm_ocean, biome_t::cold_ocean, biome_t::deep_cold_ocean,
+                                 biome_t::frozen_ocean, biome_t::deep_frozen_ocean>();
+
         /**
          * @brief Sets the world size for the Shipwreck.
          * @param worldSize The world size.
@@ -267,15 +281,78 @@ namespace Placement {
      */
     class Outpost : public DynamicStructure<Outpost> {
     public:
-        constexpr static int Placement::DynamicStructure<Outpost>::SALT = 165745296;
-        constexpr static int Placement::DynamicStructure<Outpost>::MAIN_RADIUS = 32;
-        constexpr static bool Placement::DynamicStructure<Outpost>::HAS_SECOND_BIOME_CHECK = false;
-        constexpr static u64 Placement::DynamicStructure<Outpost>::MAIN_VALID_BIOMES = makeBiomeBitmask<
-            biome_t::plains, biome_t::desert, biome_t::taiga, biome_t::ice_plains, biome_t::cold_taiga, biome_t::savanna>();
+        static constexpr int  SALT                   = 165745296;
+        static constexpr int  MAIN_RADIUS            = 32;
+        static constexpr bool HAS_SECOND_BIOME_CHECK = false;
+
+        static constexpr u64  MAIN_VALID_BIOMES =
+                makeBiomeBitmask<biome_t::plains, biome_t::desert, biome_t::taiga,
+                                 biome_t::ice_plains, biome_t::cold_taiga, biome_t::savanna>();
+
         /**
          * @brief Sets the world size for the Outpost.
          * @param worldSize The world size.
          */
         static void setWorldSize(lce::WORLDSIZE worldSize);
     };
+
+
+
+    // Mansion
+    // template<> inline constexpr int  DynamicStructure<Mansion>::SALT = 10387319;
+    // template<> inline constexpr int  DynamicStructure<Mansion>::MAIN_RADIUS = 4;
+    // template<> inline constexpr int  DynamicStructure<Mansion>::SECOND_RADIUS = 32;
+    // template<> inline constexpr bool DynamicStructure<Mansion>::HAS_SECOND_BIOME_CHECK = true;
+    // template<> MU inline constexpr u64 DynamicStructure<Mansion>::MAIN_VALID_BIOMES =
+    //         makeBiomeBitmask<biome_t::dark_forest>();
+    // template<> MU inline constexpr u64 DynamicStructure<Mansion>::SECONDARY_VALID_BIOMES =
+    //         DEFAULT_SECONDARY_VALID_BIOMES;
+    // template<> MU inline constexpr u64 DynamicStructure<Mansion>::SECONDARY_VALID_BIOMES_MUTATED =
+    //         DEFAULT_SECONDARY_VALID_BIOMES_MUTATED;
+
+    // Monument
+    // template<> inline constexpr int  DynamicStructure<Monument>::SALT = 10387313;
+    // template<> inline constexpr int  DynamicStructure<Monument>::MAIN_RADIUS = 8;
+    // template<> inline constexpr int  DynamicStructure<Monument>::SECOND_RADIUS = 29;
+    // template<> inline constexpr bool DynamicStructure<Monument>::HAS_SECOND_BIOME_CHECK = true;
+    // template<> MU inline constexpr u64 DynamicStructure<Monument>::MAIN_VALID_BIOMES =
+    //         makeBiomeBitmask<biome_t::ocean, biome_t::river, biome_t::frozen_river, biome_t::deep_ocean,
+    //                          biome_t::warm_ocean, biome_t::deep_warm_ocean, biome_t::lukewarm_ocean,
+    //                          biome_t::deep_lukewarm_ocean, biome_t::cold_ocean, biome_t::deep_cold_ocean,
+    //                          biome_t::frozen_ocean, biome_t::deep_frozen_ocean>();
+    // template<> MU inline constexpr u64 DynamicStructure<Monument>::SECONDARY_VALID_BIOMES =
+    //         makeBiomeBitmask<biome_t::deep_ocean, biome_t::deep_warm_ocean, biome_t::deep_lukewarm_ocean,
+    //                          biome_t::deep_cold_ocean, biome_t::deep_frozen_ocean>();
+
+    // // BuriedTreasure
+    // template<> inline constexpr int  DynamicStructure<BuriedTreasure>::SALT = 16842397;
+    // template<> inline constexpr int  DynamicStructure<BuriedTreasure>::MAIN_RADIUS = 0;
+    // template<> inline constexpr int  DynamicStructure<BuriedTreasure>::SECOND_RADIUS = 16;
+    // template<> inline constexpr bool DynamicStructure<BuriedTreasure>::HAS_SECOND_BIOME_CHECK = true;
+    // template<> MU inline constexpr u64 DynamicStructure<BuriedTreasure>::MAIN_VALID_BIOMES =
+    //         makeBiomeBitmask<biome_t::mushroom_island_shore, biome_t::beach, biome_t::stone_beach, biome_t::cold_beach>();
+    // template<> MU inline constexpr u64 DynamicStructure<BuriedTreasure>::SECONDARY_VALID_BIOMES =
+    //         DEFAULT_SECONDARY_VALID_BIOMES;
+    // template<> MU inline constexpr u64 DynamicStructure<BuriedTreasure>::SECONDARY_VALID_BIOMES_MUTATED =
+    //         DEFAULT_SECONDARY_VALID_BIOMES_MUTATED;
+
+    // // Shipwreck
+    // template<> inline constexpr int  DynamicStructure<Shipwreck>::SALT = 14357617;
+    // template<> inline constexpr int  DynamicStructure<Shipwreck>::MAIN_RADIUS = 10;
+    // template<> inline constexpr bool DynamicStructure<Shipwreck>::HAS_SECOND_BIOME_CHECK = false;
+    // template<> MU inline constexpr u64 DynamicStructure<Shipwreck>::MAIN_VALID_BIOMES =
+    //         makeBiomeBitmask<biome_t::ocean, biome_t::mushroom_island_shore, biome_t::beach, biome_t::snowy_beach,
+    //                          biome_t::deep_ocean, biome_t::warm_ocean, biome_t::lukewarm_ocean,
+    //                          biome_t::deep_lukewarm_ocean, biome_t::cold_ocean, biome_t::deep_cold_ocean,
+    //                          biome_t::frozen_ocean, biome_t::deep_frozen_ocean>();
+
+    // // Outpost
+    // template<> inline constexpr int  DynamicStructure<Outpost>::SALT = 165745296;
+    // template<> inline constexpr int  DynamicStructure<Outpost>::MAIN_RADIUS = 32;
+    // template<> inline constexpr bool DynamicStructure<Outpost>::HAS_SECOND_BIOME_CHECK = false;
+    // template<> MU inline constexpr u64 DynamicStructure<Outpost>::MAIN_VALID_BIOMES =
+    //         makeBiomeBitmask<biome_t::plains, biome_t::desert, biome_t::taiga,
+    //                          biome_t::ice_plains, biome_t::cold_taiga, biome_t::savanna>();
+
+
 } // namespace Placement

@@ -4,6 +4,7 @@
 #include "common/StringHash.hpp"
 #include "common/range.hpp"
 #include "common/rng.hpp"
+#include "terrain/biomes/biomeDepthAndScale.hpp"
 #include "terrain/noise/noise.hpp"
 
 
@@ -70,7 +71,7 @@ void Generator::applyWorldSeed(const std::string &seed) {
 
 void Generator::generateCache(int scale) {
     if (scale > 256) return;
-    const int trailingZeros = __builtin_ctz(scale);
+    const int trailingZeros = CTZ(scale);
     const int arrIndex = trailingZeros >> 1;
     int minBound = -(this->getWorldCoordinateBounds() >> trailingZeros);
     int worldSizeBounds = -minBound << 1;
@@ -79,13 +80,13 @@ void Generator::generateCache(int scale) {
 }
 
 void Generator::generateCachesUpTo(int maxScale) {
-    const int maxScaleTrailingZeros = __builtin_ctz(maxScale);
+    const int maxScaleTrailingZeros = CTZ(maxScale);
     if (maxScale >> maxScaleTrailingZeros != 1) {
         std::cout << "generateCaches(): maxScale must be a power of 4" << std::endl;
         exit(1);
     }
     for (int scale = maxScale; scale >= 1; scale >>= 2) {
-        const int trailingZeros = __builtin_ctz(scale);
+        const int trailingZeros = CTZ(scale);
         const int arrIndex = trailingZeros >> 1;
         int minBound = -(this->getWorldCoordinateBounds() >> trailingZeros);
         int worldSizeBounds = -minBound << 1;
@@ -93,7 +94,7 @@ void Generator::generateCachesUpTo(int maxScale) {
         biome_t *ids = allocCache(r);
         // copy over the biomes from the previous scale if it exists
         if (scale <= 64) {
-            const int prevTrailingZeros = __builtin_ctz(scale << 2);
+            const int prevTrailingZeros = CTZ(scale << 2);
             const int prevArrIndex = prevTrailingZeros >> 1;
             const BiomeCache &prevScale = this->m_biomeCaches[prevArrIndex];
             if (prevScale.isGenerated()) {
@@ -463,15 +464,16 @@ int Generator::mapApproxHeight(float *y, biome_t *ids, const SurfaceNoise *sn,
             double d0, s0;
             double wt = 0, ws = 0, wd = 0;
             const biome_t id0 = cache[(j + 2) * r.sx + (i + 2)];
-            getBiomeDepthAndScale(id0, &d0, &s0, nullptr);
+            getBiomeDepthAndScale<true, true, false, false>(id0, &d0, &s0, nullptr, nullptr);
+            // getBiomeDepthAndScale(id0, &d0, &s0, nullptr);
 
             for (int jj = 0; jj < 5; jj++) {
                 for (int ii = 0; ii < 5; ii++) {
-                    double d, s;
+                    double d, s, inv;
                     const biome_t id = cache[(j + jj) * r.sx + (i + ii)];
-                    getBiomeDepthAndScale(id, &d, &s, nullptr);
-                    // TODO: should this stay float, or become double?
-                    float weight = biome_kernel[jj * 5 + ii] / (d + 2);
+                    getBiomeDepthAndScale<true, true, false, true>(id, &d, &s, nullptr, &inv);
+                    // getBiomeDepthAndScale(id, &d, &s, nullptr);
+                    float weight = biome_kernel[jj * 5 + ii] * inv; // / (d + 2.0F);
                     if (d > d0) weight *= 0.5;
                     ws += s * weight;
                     wd += d * weight;
@@ -570,7 +572,8 @@ MU Pos2D Generator::getSpawnBlock() const {
 
     for (int i = 0; i < 1000; i++) {
         int res = mapApproxHeight(&y, &id, &sn, spawn.x >> 2, spawn.z >> 2, 1, 1);
-        getBiomeDepthAndScale(id, nullptr, nullptr, &grass);
+        // getBiomeDepthAndScale(id, nullptr, nullptr, &grass);
+        getBiomeDepthAndScale<false, false, true, false>(id, nullptr, nullptr, &grass, nullptr);
 
         printf("res=%d, id=%d, spawn=(%d, %d), y=%.2f grass=%d\n",
                res, id, spawn.x, spawn.z, y, grass);

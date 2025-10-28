@@ -17,7 +17,6 @@ protected:
     int collisionChecks = 0;
 
 public:
-    Structure() = default;
 
     /// getter
     MU ND StructureComponent& getPiece(int index) { return pieceArray[index]; }

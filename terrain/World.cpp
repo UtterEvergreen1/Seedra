@@ -13,13 +13,12 @@
 #include "terrain/carve/RavineGenerator.hpp"
 #include "terrain/carve/WaterCaveGenerator.hpp"
 #include "terrain/carve/WaterRavineGenerator.hpp"
-#include <algorithm>
 
 
-World::World(Generator *g) : g(g), chunkPool(ChunkPrimer::getFootprintSize()) {
+World::World(Generator *g) : g(g) {
     int worldSize = lce::getChunkWorldBounds(g->getWorldSize());
     this->worldBounds = BoundingBox(-worldSize, 0, -worldSize,
-                                    worldSize - 1, 256, worldSize - 1);
+                                    worldSize, 256, worldSize);
 }
 
 World::~World() {
@@ -27,23 +26,15 @@ World::~World() {
 }
 
 void World::deleteWorld() {
-    // Free or pool all live chunks
-    for (auto &entry : chunks) {
-        ChunkPrimer *chunk = entry.second;
+    for (auto& [pos, chunk] : chunks) {
         if (chunk) {
-            chunk->reset();
-            chunkPool.releaseToPool(chunk);
+            reusableChunks.push_back(chunk); // move to pool instead of deleting
         }
     }
     chunks.clear();
-
     villages.clear();
     strongholds.clear();
     mineshafts.clear();
-
-    // Reset last-chunk caches
-    lastChunk.store(nullptr);
-    lastChunkCoords.store(Pos2D(-100000, -100000));
 }
 
 

@@ -6,25 +6,22 @@
 #include "lce/processor.hpp"
 #include "terrain/biomes/biome_t.hpp"
 
+
 class Generator;
 struct PerlinNoise;
 struct SurfaceNoise;
 struct Layer;
 
 
-
-
 extern u64 mcFirstInt_Calls;
 extern u64 mcFirstIsZero_Calls;
-
-
-
 
 
 template<biome_t... BiomeIDs>
 constexpr u64 makeBiomeBitmask() {
     return ((1ULL << BiomeIDs) | ...);
 }
+
 
 /**
  * @enum LayerId
@@ -146,374 +143,90 @@ struct LayerStack {
  */
 typedef PerlinNoise EndNoise;
 
-/**
- * @brief Applies the given world seed to the layer and all dependent layers.
- * @param layer Pointer to the layer.
- * @param worldSeed The world seed to apply.
- */
+
 void setLayerSeed(Layer *layer, u64 worldSeed);
 
-/**
- * @brief Initializes surface noise for older versions.
- * @param rnd Pointer to the SurfaceNoise structure.
- * @param seed Pointer to the seed.
- * @param xzScale Scale factor for the XZ plane.
- * @param yScale Scale factor for the Y axis.
- * @param xzFactor Factor for the XZ plane.
- * @param yFactor Factor for the Y axis.
- */
+
 MU void initSurfaceNoiseOld(SurfaceNoise *rnd, u64 *seed, double xzScale, double yScale, double xzFactor,
                             double yFactor);
 
-/**
- * @brief Initializes surface noise for the End biome.
- * @param rnd Pointer to the SurfaceNoise structure.
- * @param seed The seed to initialize with.
- */
+
 void initSurfaceNoiseEnd(SurfaceNoise *rnd, u64 seed);
 
-/**
- * @brief Samples surface noise at a specific position.
- * @param g Pointer to the generator.
- * @param rnd Pointer to the SurfaceNoise structure.
- * @param x X-coordinate.
- * @param y Y-coordinate.
- * @param z Z-coordinate.
- * @return The sampled noise value.
- */
+
 double sampleSurfaceNoise(const Generator *g, const SurfaceNoise *rnd, int x, int y, int z);
 
-/**
- * @brief Retrieves biome depth and scale based on the biome ID.
- * @param id The biome ID.
- * @param depth Pointer to store the depth value.
- * @param scale Pointer to store the scale value.
- * @param grass Pointer to store the grass value.
- * @return Status code indicating success or failure.
- */
-int getBiomeDepthAndScale(biome_t id, double *depth, double *scale, int *grass);
 
-/**
- * @brief Sets the seed for End biome noise generation.
- * @param en Pointer to the EndNoise structure.
- * @param seed The seed to set.
- */
 void setEndSeed(EndNoise *en, u64 seed);
 
-/**
- * @brief Retrieves the surface height for the End biome.
- * @param g Pointer to the generator.
- * @param mc Minecraft version.
- * @param seed The world seed.
- * @param x X-coordinate.
- * @param z Z-coordinate.
- * @return The surface height.
- */
+
 MU int getSurfaceHeightEnd(const Generator *g, MCVERSION mc, u64 seed, int x, int z);
 
-/**
- * @brief Checks if a biome exists for a given Minecraft version and ID.
- * @param mc Minecraft version.
- * @param id The biome ID.
- * @return 1 if the biome exists, 0 otherwise.
- */
+
 MU int biomeExists(MCVERSION mc, biome_t id);
 
-/**
- * @brief Checks if a biome is part of the Overworld.
- * @param mc Minecraft version.
- * @param id The biome ID.
- * @return 1 if the biome is in the Overworld, 0 otherwise.
- */
+
 MU int isOverworld(MCVERSION mc, biome_t id);
 
-/**
- * @brief Retrieves the mutated variant of a biome.
- * @param mc Minecraft version.
- * @param id The biome ID.
- * @return The ID of the mutated biome.
- */
+
 biome_t getMutated(MCVERSION mc, biome_t id);
 
-/**
- * @brief Retrieves the category of a biome.
- * @param mc Minecraft version.
- * @param id The biome ID.
- * @return The category of the biome.
- */
+
 int getCategory(MCVERSION mc, biome_t id);
 
-/**
- * @brief Checks if two biomes are similar.
- * @param mc Minecraft version.
- * @param id1 The first biome ID.
- * @param id2 The second biome ID.
- * @return 1 if the biomes are similar, 0 otherwise.
- */
+
 int areSimilar(MCVERSION mc, biome_t id1, biome_t id2);
 
-/**
- * @brief Checks if a biome is a mesa biome.
- * @param id The biome ID.
- * @return 1 if the biome is a mesa biome, 0 otherwise.
- */
 int isMesa(biome_t id);
 
-/**
- * @brief Checks if a biome is a shallow ocean biome.
- * @param id The biome ID.
- * @return 1 if the biome is a shallow ocean biome, 0 otherwise.
- */
+
 int isShallowOcean(biome_t id);
 
-/**
- * @brief Checks if a biome is a deep ocean biome.
- * @param id The biome ID.
- * @return 1 if the biome is a deep ocean biome, 0 otherwise.
- */
 int isDeepOcean(biome_t id);
 
-/**
- * @brief Checks if a biome is oceanic.
- * @param id The biome ID.
- * @return 1 if the biome is oceanic, 0 otherwise.
- */
 int isOceanic(biome_t id);
 
-/**
- * @brief Checks if a biome is snowy.
- * @param id The biome ID.
- * @return 1 if the biome is snowy, 0 otherwise.
- */
 int isSnowy(biome_t id);
 
-/**
- * @brief Sets up a layer with the specified parameters.
- * @param l Pointer to the layer.
- * @param map Function pointer for the layer's mapping function.
- * @param theMc Minecraft version.
- * @param zoom Zoom factor for the layer.
- * @param edge Maximum border required from the parent layer.
- * @param saltBase Base salt for the layer.
- * @param p Pointer to the first parent layer.
- * @param p2 Pointer to the second parent layer.
- * @return Pointer to the configured layer.
- */
-Layer *setupLayer(Layer *l, mapFunc_t *map, MCVERSION theMc, i8 zoom, i8 edge, u64 saltBase, Layer *p, Layer *p2);
+Layer *setupLayer(Layer *layer, mapFunc_t *map, MCVERSION theMc, i8 zoom, i8 edge, u64 saltBase, Layer *p, Layer *p2);
 
-/**
- * @brief Sets up the scale for a layer.
- * @param l Pointer to the layer.
- * @param scale The scale to set.
- */
-void setupScale(Layer *l, int scale);
+void setupScale(Layer *layer, int scale);
 
-/**
- * @brief Generates an area for the specified layer.
- * @param layer Pointer to the layer.
- * @param out Pointer to the output area.
- * @param areaX X-coordinate of the area.
- * @param areaZ Z-coordinate of the area.
- * @param areaWidth Width of the area.
- * @param areaHeight Height of the area.
- */
 void genArea(const Layer *layer, biome_t *out, int areaX, int areaZ, int areaWidth, int areaHeight);
 
-/**
- * @brief Sets up the layer stack for biome generation.
- * @param layerStack Pointer to the LayerStack structure.
- * @param lceVersion LCE version.
- * @param biomeSize Biome size scale.
- */
 void setupLayerStack(LayerStack *layerStack, LCEVERSION lceVersion, lce::BIOMESCALE biomeSize);
 
-/**
- * @brief Retrieves the maximum area for a layer.
- * @param layer Pointer to the layer.
- * @param areaX X-coordinate of the area.
- * @param areaZ Z-coordinate of the area.
- * @param maxX Pointer to store the maximum X-coordinate.
- * @param maxZ Pointer to store the maximum Z-coordinate.
- * @param siz Pointer to store the size of the area.
- */
 void getMaxArea(const Layer *layer, int areaX, int areaZ, int *maxX, int *maxZ, size_t *siz);
 
-/**
- * @brief Retrieves the minimum cache size for a layer.
- * @param layer Pointer to the layer.
- * @param sizeX Size of the area in the X direction.
- * @param sizeZ Size of the area in the Z direction.
- * @return The minimum cache size.
- */
 size_t getMinLayerCacheSize(const Layer *layer, int sizeX, int sizeZ);
+
 //==============================================================================
 // Layers
 //==============================================================================
 
-/**
- * @var mapContinent
- * @brief Mapping function for the continent layer.
- *        Previously known as mapIsland.
- */
 mapFunc_t mapContinent;
-
-/**
- * @var mapZoomFuzzy
- * @brief Mapping function for applying a fuzzy zoom effect.
- */
 mapFunc_t mapZoomFuzzy;
-
-/**
- * @var mapZoom
- * @brief Mapping function for applying a standard zoom effect.
- */
 mapFunc_t mapZoom;
-
-/**
- * @var mapLand
- * @brief Mapping function for adding land to the layer.
- *        Previously known as mapAddIsland.
- */
 mapFunc_t mapLand;
-
-/**
- * @var mapIsland
- * @brief Mapping function for removing excessive ocean areas.
- *        Previously known as mapRemoveTooMuchOcean.
- */
 mapFunc_t mapIsland;
-
-/**
- * @var mapSnow
- * @brief Mapping function for adding snow to the layer.
- *        Previously known as mapAddSnow.
- */
 mapFunc_t mapSnow;
-
-/**
- * @var mapCool
- * @brief Mapping function for adjusting cool and warm areas.
- *        Previously known as mapCoolWarm.
- */
-mapFunc_t mapCool;
-
-/**
- * @var mapHeat
- * @brief Mapping function for adjusting heat and ice areas.
- *        Previously known as mapHeatIce.
- */
-mapFunc_t mapHeat;
-
-/**
- * @var mapSpecial
- * @brief Mapping function for adding special features to the layer.
- */
+mapFunc_t mapCoolWarm;
+mapFunc_t mapHeatIce;
 mapFunc_t mapSpecial;
-
-/**
- * @var mapMushroom
- * @brief Mapping function for adding mushroom islands.
- *        Previously known as mapAddMushroomIsland.
- */
 mapFunc_t mapMushroom;
-
-/**
- * @var mapDeepOcean
- * @brief Mapping function for adding deep ocean areas.
- */
 mapFunc_t mapDeepOcean;
-
-/**
- * @var mapBiome
- * @brief Mapping function for assigning biomes to the layer.
- */
 mapFunc_t mapBiome;
-
-/**
- * @var mapBamboo
- * @brief Mapping function for adding bamboo areas.
- *        Previously known as mapAddBamboo.
- */
 mapFunc_t mapBamboo;
-
-/**
- * @var mapNoise
- * @brief Mapping function for initializing river noise.
- *        Previously known as mapRiverInit.
- */
-mapFunc_t mapNoise;
-
-/**
- * @var mapBiomeEdge
- * @brief Mapping function for defining biome edges.
- */
+mapFunc_t mapRiverInit;
 mapFunc_t mapBiomeEdge;
-
-/**
- * @var mapHills
- * @brief Mapping function for adding hills to the layer.
- */
 mapFunc_t mapHills;
-
-/**
- * @var mapRiver
- * @brief Mapping function for generating rivers.
- */
 mapFunc_t mapRiver;
-
-/**
- * @var mapSmooth
- * @brief Mapping function for smoothing transitions between areas.
- */
 mapFunc_t mapSmooth;
-
-/**
- * @var mapSunflower
- * @brief Mapping function for adding rare biomes like sunflower plains.
- *        Previously known as mapRareBiome.
- */
 mapFunc_t mapSunflower;
-
-/**
- * @var mapShore
- * @brief Mapping function for defining shorelines.
- */
 mapFunc_t mapShore;
-
-/**
- * @var mapRiverMix
- * @brief Mapping function for mixing river and land layers.
- */
 mapFunc_t mapRiverMix;
-
-/**
- * @var mapOceanTemp
- * @brief Mapping function for defining ocean temperature zones.
- */
 mapFunc_t mapOceanTemp;
-
-/**
- * @var mapOceanMix
- * @brief Mapping function for mixing ocean layers.
- */
 mapFunc_t mapOceanMix;
-
-/**
- * @var mapGMushroom
- * @brief Mapping function for adding giant mushroom areas.
- *        Specific to LCE.
- */
-mapFunc_t mapGMushroom;
-
-/**
- * @var mapOceanEdge
- * @brief Mapping function for defining ocean edges.
- *        Specific to LCE.
- */
+mapFunc_t mapGiantMushroom;
 mapFunc_t mapOceanEdge;
-
-/**
- * @var mapVoronoi114
- * @brief Mapping function for the final Voronoi layer at 1:1 scale.
- */
 mapFunc_t mapVoronoi114;

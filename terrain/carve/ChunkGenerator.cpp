@@ -3,6 +3,7 @@
 #include "terrain/biomes/biome.hpp"
 
 #include "common/range.hpp"
+#include "terrain/biomes/biomeDepthAndScale.hpp"
 
 
 ChunkGeneratorOverWorld::ChunkGeneratorOverWorld(const Generator& generator) : g(&generator) {
@@ -58,53 +59,105 @@ void ChunkGeneratorOverWorld::setBlocksInChunk(c_int chunkX, c_int chunkZ, Chunk
 
     generateHeightmap(chunkX * 4, 0, chunkZ * 4);
 
-    for (int i = 0; i < 4; ++i) {
-        int j = i * 5;
-        int k = (i + 1) * 5;
+    for (int subX = 0; subX < 4; ++subX) {
+        int j = subX * 5;
+        int k = (subX + 1) * 5;
 
-        for (int l = 0; l < 4; ++l) {
-            c_int i1 = (j + l) * 33;
-            c_int j1 = (j + l + 1) * 33;
-            c_int k1 = (k + l) * 33;
-            c_int l1 = (k + l + 1) * 33;
+        for (int subZ = 0; subZ < 4; ++subZ) {
+            c_int i1 = (j + subZ) * 33;
+            c_int j1 = (j + subZ + 1) * 33;
+            c_int k1 = (k + subZ) * 33;
+            c_int l1 = (k + subZ + 1) * 33;
 
-            for (int i2 = 0; i2 < 32; ++i2) {
-                double d1 = heightMap[i1 + i2];
-                double d2 = heightMap[j1 + i2];
-                double d3 = heightMap[k1 + i2];
-                double d4 = heightMap[l1 + i2];
-                double d5 = (heightMap[i1 + i2 + 1] - d1) * 0.125;
-                double d6 = (heightMap[j1 + i2 + 1] - d2) * 0.125;
-                double d7 = (heightMap[k1 + i2 + 1] - d3) * 0.125;
-                double d8 = (heightMap[l1 + i2 + 1] - d4) * 0.125;
+            for (int subY = 0; subY < 32; ++subY) {
 
-                for (int j2 = 0; j2 < 8; ++j2) {
-                    double d10 = d1;
-                    double d11 = d2;
-                    c_double d12 = (d3 - d1) * 0.25;
-                    c_double d13 = (d4 - d2) * 0.25;
+                double h00 = heightMap[i1 + subY];
+                double h10 = heightMap[j1 + subY];
+                double h01 = heightMap[k1 + subY];
+                double h11 = heightMap[l1 + subY];
 
-                    for (int k2 = 0; k2 < 4; ++k2) {
-                        double d16 = (d11 - d10) * 0.25;
-                        double lvt_45_1_ = d10 - d16;
+                double iy00 = (heightMap[i1 + subY + 1] - h00) * 0.125;
+                double iy10 = (heightMap[j1 + subY + 1] - h10) * 0.125;
+                double iy01 = (heightMap[k1 + subY + 1] - h01) * 0.125;
+                double iy11 = (heightMap[l1 + subY + 1] - h11) * 0.125;
 
-                        static constexpr int SEA_LEVEL = 63;
-                        for (int l2 = 0; l2 < 4; ++l2) {
-                            if ((lvt_45_1_ += d16) > 0.0) {
-                                primer->setBlockId(i * 4 + k2, i2 * 8 + j2, l * 4 + l2, lce::blocks::STONE_ID);
-                            } else if (i2 * 8 + j2 < SEA_LEVEL) {
-                                primer->setBlockId(i * 4 + k2, i2 * 8 + j2, l * 4 + l2, lce::blocks::STILL_WATER_ID);
+                for (int ym = 0; ym < 8; ++ym) {
+                    double heightAtXZ0 = h00;
+                    double heightAtXZ1 = h10;
+
+                    c_double xiZ0 = (h01 - h00) * 0.25;
+                    c_double xzZ1 = (h11 - h10) * 0.25;
+
+                    static constexpr int SEA_LEVEL = 63;
+
+                    for (int xm = 0; xm < 4; ++xm) {
+
+                        double _hStep = (heightAtXZ1 - heightAtXZ0) * 0.25;
+                        double lvt_45_1_ = heightAtXZ0 - _hStep;
+                        // int defaultId = (subY * 8 + ym < SEA_LEVEL) ? 9 : 0;
+
+                        for (int zm = 0; zm < 4; ++zm) {
+                            int x = subX * 4 + xm;
+                            int y = subY * 8 + ym;
+                            int z = subZ * 4 + zm;
+                            int distance;
+
+
+                            int worldX = chunkX * 16 + x;
+                            int worldZ = chunkZ * 16 + z;
+                            double heightFalloff = getHeightFalloff(worldX, worldZ, &distance);
+
+                            if (distance == 0) {
+                                if (y <= SEA_LEVEL - 10)
+                                    primer->setBlockId(x, y, z, 1);
+                                else if (y < SEA_LEVEL)
+                                    primer->setBlockId(x, y, z, 9);
+
+                            } else {
+                                if ((lvt_45_1_ += _hStep) > heightFalloff) {
+                                    primer->setBlockId(x, y, z, 1);
+                                } else if (y < SEA_LEVEL) {
+                                    primer->setBlockId(x, y, z, 9);
+                                }
                             }
+
+
+//                            int blockId = defaultId;
+//                            int distance;
+//
+//                            double heightFallOff = getHeightFallOff(chunkX * 16  + x, chunkZ * 16 + z, &distance);
+//                            if (heightFallOff < (lvt_45_1_ += _hStep)) {
+//                                blockId = 1;
+//                            } else {
+//                                blockId = defaultId;
+//                            }
+//
+//                            if (distance == 0) {
+//                                if (y <= SEA_LEVEL - 10)
+//                                    blockId = 1;
+//                                else if (y < SEA_LEVEL)
+//                                    blockId = 9;
+//                            }
+//
+//                            // if ((lvt_45_1_ += _hStep) > 0.0) {
+//                            //     blockId = lce::blocks::STONE_ID;
+//                            // } else if (y < SEA_LEVEL) {
+//                            //     blockId = lce::blocks::STILL_WATER_ID;
+//                            // }
+//
+//
+//
+//                            primer->setBlockId(x, y, z, blockId);
                         }
 
-                        d10 += d12;
-                        d11 += d13;
+                        heightAtXZ0 += xiZ0;
+                        heightAtXZ1 += xzZ1;
                     }
 
-                    d1 += d5;
-                    d2 += d6;
-                    d3 += d7;
-                    d4 += d8;
+                    h00 += iy00;
+                    h10 += iy10;
+                    h01 += iy01;
+                    h11 += iy11;
                 }
             }
         }
@@ -112,12 +165,12 @@ void ChunkGeneratorOverWorld::setBlocksInChunk(c_int chunkX, c_int chunkZ, Chunk
 }
 
 
-void ChunkGeneratorOverWorld::replaceBiomeBlocks(c_int x, c_int z, ChunkPrimer* primer) {
-    surfaceNoise.getRegion(depthBuffer, x * 16, z * 16, 16, 16, 0.0625, 0.0625, 1.0);
+void ChunkGeneratorOverWorld::replaceBiomeBlocks(c_int chunkX, c_int chunkZ, ChunkPrimer* primer) {
+    surfaceNoise.getRegion(depthBuffer, chunkX * 16, chunkZ * 16, 16, 16, 0.0625, 0.0625, 1.0);
     for (int i = 0; i < 16; ++i) {
         for (int j = 0; j < 16; ++j) {
             Biome* biome = Biome::getBiomeForId(biomesForGeneration[j + i * 16]);
-            biome->genTerrainBlocks(g->getWorldSeed(), rng, primer, x * 16 + i, z * 16 + j, depthBuffer[j + i * 16]);
+            biome->genTerrainBlocks(g->getWorldSeed(), rng, primer, chunkX * 16 + i, chunkZ * 16 + j, depthBuffer[j + i * 16]);
         }
     }
 }
@@ -138,90 +191,96 @@ void ChunkGeneratorOverWorld::generateHeightmap(c_int x, c_int y, c_int z) {
     mainPerlinNoise.genNoiseOctaves(g, mainNoiseRegion, x, y, z, 5, 33, 5, 8.55515, 4.277575, 8.55515);
     minLimitPerlinNoise.genNoiseOctaves(g, minLimitRegion, x, y, z, 5, 33, 5, 684.412, 684.412, 684.412);
     maxLimitPerlinNoise.genNoiseOctaves(g, maxLimitRegion, x, y, z, 5, 33, 5, 684.412, 684.412, 684.412);
-    int i = 0;
-    int j = 0;
+    int noiseIdx = 0;
+    int depthIdx = 0;
 
-    for (int k = 0; k < 5; ++k) {
-        for (int l = 0; l < 5; ++l) {
-            float f2 = 0.0F;
-            float f3 = 0.0F;
-            float f4 = 0.0F;
-            const biome_t biome = biomesForGeneration[k + 2 + (l + 2) * 10];
+    for (int cellX = 0; cellX < 5; ++cellX) {
+        for (int cellZ = 0; cellZ < 5; ++cellZ) {
+            float scaleAvg = 0.0F;
+            float depthAvg = 0.0F;
+            float weightSum = 0.0F;
+            const biome_t centerBiome = biomesForGeneration[cellX + 2 + (cellZ + 2) * 10];
 
-            for (int j1 = -2; j1 <= 2; ++j1) {
-                for (int k1 = -2; k1 <= 2; ++k1) {
-                    const biome_t biome1 = biomesForGeneration[k + j1 + 2 + (l + k1 + 2) * 10];
-                    double f5;
-                    double f6;
-                    getBiomeDepthAndScale(biome1, &f5, &f6, nullptr);
-                    /* if (this->terrainType == WorldType.AMPLIFIED && f5 > 0.0F)
-                     {
-                         f5 = 1.0F + f5 * 2.0F;
-                         f6 = 1.0F + f6 * 4.0F;
-                     }
-                     */
+            for (int nbDX = -2; nbDX <= 2; ++nbDX) {
+                for (int nbDZ = -2; nbDZ <= 2; ++nbDZ) {
+                    const biome_t neighborBiome = biomesForGeneration[cellX + nbDX + 2 + (cellZ + nbDZ + 2) * 10];
+                    double neighborDepth;
+                    double neighborScale;
+                    double neighborInvDPlus2;
+                    // getBiomeDepthAndScale
+                    //         (neighborBiome, &neighborDepth, &neighborScale, nullptr);
+                    getBiomeDepthAndScale<true, true, false, true>
+                            (neighborBiome, &neighborDepth, &neighborScale, nullptr, &neighborInvDPlus2);
+                    /*
+                    if (this->terrainType == WorldType.AMPLIFIED && f5 > 0.0F) {
+                        f5 = 1.0F + f5 * 2.0F;
+                        f6 = 1.0F + f6 * 4.0F;
+                    }
+                    */
                     // TODO: double being casted to float?
-                    float f7 = biomeWeights[j1 + 2 + (k1 + 2) * 5] / (f5 + 2.0F);
+                    float w = biomeWeights[nbDX + 2 + (nbDZ + 2) * 5] * neighborInvDPlus2; // / (neighborDepth + 2.0F);
 
-                    double biomeBaseHeight;
-                    double biome1BaseHeight;
-                    getBiomeDepthAndScale(biome, &biomeBaseHeight, nullptr, nullptr);
-                    getBiomeDepthAndScale(biome1, &biome1BaseHeight, nullptr, nullptr);
-                    if (biome1BaseHeight > biomeBaseHeight) f7 /= 2.0F;
+                    double centerDepth;
+                    double neighborBaseDepth;
+                    // getBiomeDepthAndScale(centerBiome, &centerDepth, nullptr, nullptr);
+                    // getBiomeDepthAndScale(neighborBiome, &neighborBaseDepth, nullptr, nullptr);
+                    getBiomeDepthAndScale<true, false, false, false>(centerBiome, &centerDepth, nullptr, nullptr, nullptr);
+                    getBiomeDepthAndScale<true, false, false, false>(neighborBiome, &neighborBaseDepth, nullptr, nullptr, nullptr);
+                    if (neighborBaseDepth > centerDepth) w /= 2.0F;
 
-                    f2 += f6 * f7;
-                    f3 += f5 * f7;
-                    f4 += f7;
+                    scaleAvg += neighborScale * w;
+                    depthAvg += neighborDepth * w;
+                    weightSum += w;
                 }
             }
 
-            f2 = f2 / f4;
-            f3 = f3 / f4;
-            f2 = f2 * 0.9F + 0.1F;
-            f3 = (f3 * 4.0F - 1.0F) / 8.0F;
-            double d7 = depthRegion[j] / 8000.0;
+            scaleAvg = scaleAvg / weightSum;
+            depthAvg = depthAvg / weightSum;
+            scaleAvg = scaleAvg * 0.9F + 0.1F;
+            depthAvg = (depthAvg * 4.0F - 1.0F) / 8.0F;
+            double depthNoiseOffset = depthRegion[depthIdx] / 8000.0;
 
-            if (d7 < 0.0) d7 = -d7 * 0.3;
+            if (depthNoiseOffset < 0.0) {
+                depthNoiseOffset = -depthNoiseOffset * 0.3;
+            }
+            depthNoiseOffset = depthNoiseOffset * 3.0 - 2.0;
 
-            d7 = d7 * 3.0 - 2.0;
-
-            if (d7 < 0.0) {
-                d7 = d7 / 2.0;
-
-                if (d7 < -1.0) d7 = -1.0;
-
-                d7 = d7 / 1.4;
-                d7 = d7 / 2.0;
+            if (depthNoiseOffset < 0.0) {
+                depthNoiseOffset = depthNoiseOffset / 2.0;
+                if (depthNoiseOffset < -1.0)
+                    depthNoiseOffset = -1.0;
+                depthNoiseOffset = depthNoiseOffset / 1.4;
+                depthNoiseOffset = depthNoiseOffset / 2.0;
             } else {
-                if (d7 > 1.0) d7 = 1.0;
-
-                d7 = d7 / 8.0;
+                if (depthNoiseOffset > 1.0)
+                    depthNoiseOffset = 1.0;
+                depthNoiseOffset = depthNoiseOffset / 8.0;
             }
 
-            ++j;
-            auto d8 = (double) f3;
-            c_auto d9 = (double) f2;
-            d8 = d8 + d7 * 0.2;
-            d8 = d8 * (double) 8.5 / 8.0; //baseSize = 8.5
-            c_double d0 = (double) 8.5 + d8 * 4.0;
+            ++depthIdx;
+            auto depthBlend = (double) depthAvg;
+            c_auto scaleAvgD = (double) scaleAvg;
+            depthBlend = depthBlend + depthNoiseOffset * 0.2;
+            depthBlend = depthBlend * (double) 8.5 / 8.0; // baseSize = 8.5
+            c_double heightCenter = (double) 8.5 + depthBlend * 4.0;
 
-            for (int l1 = 0; l1 < 33; ++l1) {
-                double d1 = ((double) l1 - d0) * (double) 12.0 * 128.0 / 256.0 / d9;
+            for (int yIdx = 0; yIdx < 33; ++yIdx) {
+                double densityFalloff = ((double) yIdx - heightCenter) * (double) 12.0 * 128.0 / 256.0 / scaleAvgD;
 
-                if (d1 < 0.0) d1 *= 4.0;
+                if (densityFalloff < 0.0) densityFalloff *= 4.0;
 
-                c_double d2 = minLimitRegion[i] / (double) 512.0; // lowerLimitScale = 512.0
-                c_double d3 = maxLimitRegion[i] / (double) 512.0; // upperLimitScale = 512.0
-                c_double d4 = (mainNoiseRegion[i] / 10.0 + 1.0) / 2.0;
-                double d5 = MathHelper::clampedLerp(d4, d2, d3) - d1;
+                c_double minNoise = minLimitRegion[noiseIdx] / (double) 512.0; // lowerLimitScale = 512.0
+                c_double maxNoise = maxLimitRegion[noiseIdx] / (double) 512.0; // upperLimitScale = 512.0
+                c_double mainBlend = (mainNoiseRegion[noiseIdx] / 10.0 + 1.0) / 2.0;
+                double density = MathHelper::clampedLerp(mainBlend, minNoise, maxNoise) - densityFalloff;
 
-                if (l1 > 29) {
-                    c_auto d6 = (double) ((float) (l1 - 29) / 3.0F);
-                    d5 = d5 * (1.0 - d6) + -10.0 * d6;
+                if (yIdx > 29) {
+                    c_auto topFade = (double) ((float) (yIdx - 29) / 3.0F);
+                    density = density * (1.0 - topFade) + -10.0 * topFade;
                 }
 
-                heightMap[i] = d5;
-                ++i;
+                heightMap[noiseIdx] = density;
+                ++noiseIdx;
             }
         }
     }
@@ -230,3 +289,97 @@ void ChunkGeneratorOverWorld::generateHeightmap(c_int x, c_int y, c_int z) {
 
 
 
+// NON_MATCHING | Score: 1630 (lower is better)
+static int distanceToEdge(float a, int, int x, int z, int size) {
+    using Pos3D_t = Pos3DTemplate<double>;
+
+    int halfSize = size / 2;
+
+    int minCoord = -halfSize;
+    int maxCoord = halfSize - 1;
+
+    auto topLeft = Pos3D_t(minCoord, 0.0f, minCoord);
+    auto topRight = Pos3D_t(maxCoord, 0.0f, minCoord);
+    auto bottomLeft = Pos3D_t(minCoord, 0.0f, maxCoord);
+    auto bottomRight = Pos3D_t(maxCoord, 0.0f, maxCoord);
+
+    float leftBound = minCoord - a;
+    float rightBound = minCoord + a;
+
+    float distance = a;
+
+    bool inLeftBand = (x > leftBound) && (x < rightBound);
+    bool inRightBand = (!inLeftBand) && (x > (maxCoord - a)) && (x < (maxCoord + a));
+
+    if (inLeftBand || inRightBand) {
+        auto p = Pos3D_t(x, 0.0f, z);
+        auto edgeStart = (x < 1) ? topLeft : topRight;
+        auto edgeEnd = (x < 1) ? bottomLeft : bottomRight;
+
+        distance = p.distanceToSegment(edgeStart, edgeEnd);
+    }
+
+    if (((z > leftBound) && (z < rightBound)) || ((z > (maxCoord - a)) && (z < (maxCoord + a)))) {
+        auto p = Pos3D_t(x, 0.0f, z);
+        auto edgeStart = (z < 1) ? topLeft : topRight;
+        auto edgeEnd = (z < 1) ? bottomLeft : bottomRight;
+
+        float verticalDistance = p.distanceToSegment(edgeStart, edgeEnd);
+
+        if (verticalDistance < distance) {
+            distance = verticalDistance;
+        }
+    }
+
+    return distance;
+}
+
+
+
+
+/*
+double ChunkGeneratorOverWorld::getHeightFallOff(int blockX, int blockZ, int* distance) const {
+    int size = 54 * 16;
+    int nearestDist = distanceToEdge(32.0f, 0, blockX, blockZ, size);
+
+
+
+    // MoatCheck moatChecks[] = {{mIsClassicMoat, 864}, {mIsSmallMoat, 1024}, {mIsMediumMoat, 3072}};
+
+
+    if (size > 864 - 64) {
+        int d = distanceToEdge(32.0f, nearestDist, blockX, blockZ, 864);
+        if (d < nearestDist) {
+            nearestDist = d;
+        }
+    }
+
+
+    float result = 0.0f;
+    if (nearestDist < 32) {
+        result = (32 - nearestDist) * 0.03125f * 128.0f;
+    }
+
+    *distance = nearestDist;
+    return result;
+}*/
+
+
+#include <algorithm>
+
+double ChunkGeneratorOverWorld::getHeightFalloff(int blockX, int blockZ, int* distance) const {
+
+    const int bounds = g->getWorldCoordinateBounds(); // (/*this->worldSize*/54 << 4) >> 1;
+
+    const int distToMinX = std::max(0, blockX + bounds);
+    const int distToMaxX = std::max(0, bounds - blockX - 1);
+    const int distToMinZ = std::max(0, blockZ + bounds);
+    const int distToMaxZ = std::max(0, bounds - blockZ - 1);
+
+    const int nearestDist = std::min(std::min(distToMinX, distToMaxX),
+                                     std::min(distToMinZ, distToMaxZ));
+
+    const float heightFalloff = static_cast<float>(std::max(0, 32 - nearestDist)) * 0.03125f * 128.0f;
+    *distance = nearestDist;
+    return static_cast<double>(heightFalloff);
+}

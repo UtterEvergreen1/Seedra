@@ -4,16 +4,27 @@
 
 #define biome_u int
 
+
+
+
+enum class land_mask : uint8_t {
+    ocean = 0,
+    land = 1
+};
+
+
+
+
 /**
  * @enum BiomeTempCategory
  * @brief Represents the temperature categories for biomes.
  */
 enum biome_category_t : uint8_t {
-    oceanic, ///< Biomes with oceanic temperature.
-    warm,    ///< Biomes with warm temperature.
-    lush,    ///< Biomes with lush temperature.
-    cold,    ///< Biomes with cold temperature.
-    freezing,///< Biomes with freezing temperature.
+    oceanic,  ///< Biomes with oceanic temperature.
+    warm,     ///< Biomes with warm temperature.
+    lush,     ///< Biomes with lush temperature.
+    cold,     ///< Biomes with cold temperature.
+    freezing, ///< Biomes with freezing temperature.
     special   ///< Special biomes with unique temperature characteristics.
 };
 

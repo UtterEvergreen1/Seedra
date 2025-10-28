@@ -18,16 +18,13 @@
  * @brief Generates 2D simplex noise for terrain generation.
  */
 class NoiseGeneratorSimplex : public PerlinNoise {
-    // Skewing and unskewing factors (2D simplex)
-    static constexpr double SKEW_FACTOR = 0.5 * (SQRT_3 - 1.0);
-    static constexpr double UNSKEW_FACTOR = (3.0 - SQRT_3) / 6.0;
-
     static constexpr int GRAD3[12][3] = {
         {1, 1, 0}, {-1, 1, 0}, {1, -1, 0}, {-1, -1, 0}, {1, 0, 1}, {-1, 0, 1},
         {1, 0, -1}, {-1, 0, -1}, {0, 1, 1}, {0, -1, 1}, {0, 1, -1}, {0, -1, -1}
     };
 
 public:
+
     /**
      * @brief Computes the floor of a value quickly.
      * @param value The input value.
@@ -68,7 +65,7 @@ public:
      * @param noiseScale The noise scale.
      * @return The vector with added noise values.
      */
-    void add(std::vector<double> &noiseValues,
+    void add(std::vector<double>& noiseValues,
              double xOffset, double zOffset, int width, int height,
              double xScale, double zScale, double noiseScale);
 };
@@ -137,11 +134,11 @@ public:
      * @param persistence The persistence factor for scaling.
      * @param lacunarity The lacunarity factor for scaling.
      */
-    void getRegion(std::vector<double> &noiseValues, double xOffset, double zOffset,
+    void getRegion(std::vector<double>& noiseValues, double xOffset, double zOffset,
                    int width, int height, double xScale, double zScale,
                    double persistence, double lacunarity = 0.5) {
         // Ensure the vector is properly sized and initialized
-        if (noiseValues.size() < (u64) width * (u64) height) {
+        if (noiseValues.size() < (u64)width * (u64)height) {
             noiseValues.assign(width * height, 0.0);
         } else {
             std::fill(noiseValues.begin(), noiseValues.end(), 0.0);
@@ -158,6 +155,7 @@ public:
             amplitude *= persistence;
         }
     }
+
 };
 
 /**
@@ -166,6 +164,7 @@ public:
  */
 class NoiseGeneratorImproved : public PerlinNoise {
 public:
+
     /**
      * @brief Computes the gradient dot product for 3D noise.
      * @param hash The hash value used to select the gradient.
@@ -175,15 +174,9 @@ public:
      * @return The dot product of the gradient and the input vector.
      */
     ND static double grad(int hash, double x, double y, double z) {
-        static constexpr double GRAD_X[16] = {
-            1.0, -1.0, 1.0, -1.0, 1.0, -1.0, 1.0, -1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, -1.0, 0.0
-        };
-        static constexpr double GRAD_Y[16] = {
-            1.0, 1.0, -1.0, -1.0, 0.0, 0.0, 0.0, 0.0, 1.0, -1.0, 1.0, -1.0, 1.0, -1.0, 1.0, -1.0
-        };
-        static constexpr double GRAD_Z[16] = {
-            0.0, 0.0, 0.0, 0.0, 1.0, 1.0, -1.0, -1.0, 1.0, 1.0, -1.0, -1.0, 0.0, 1.0, 0.0, -1.0
-        };
+        static constexpr double GRAD_X[16] = {1.0, -1.0, 1.0, -1.0, 1.0, -1.0, 1.0, -1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, -1.0, 0.0};
+        static constexpr double GRAD_Y[16] = {1.0, 1.0, -1.0, -1.0, 0.0, 0.0, 0.0, 0.0, 1.0, -1.0, 1.0, -1.0, 1.0, -1.0, 1.0, -1.0};
+        static constexpr double GRAD_Z[16] = {0.0, 0.0, 0.0, 0.0, 1.0, 1.0, -1.0, -1.0, 1.0, 1.0, -1.0, -1.0, 0.0, 1.0, 0.0, -1.0};
 
         int i = hash & 15;
         return GRAD_X[i] * x + GRAD_Y[i] * y + GRAD_Z[i] * z;
@@ -197,12 +190,8 @@ public:
      * @return The dot product of the gradient and the input vector.
      */
     ND static double grad2(int hash, double x, double z) {
-        static constexpr double GRAD_2X[16] = {
-            1.0, -1.0, 1.0, -1.0, 1.0, -1.0, 1.0, -1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, -1.0, 0.0
-        };
-        static constexpr double GRAD_2Z[16] = {
-            0.0, 0.0, 0.0, 0.0, 1.0, 1.0, -1.0, -1.0, 1.0, 1.0, -1.0, -1.0, 0.0, 1.0, 0.0, -1.0
-        };
+        static constexpr double GRAD_2X[16] = {1.0, -1.0, 1.0, -1.0, 1.0, -1.0, 1.0, -1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, -1.0, 0.0};
+        static constexpr double GRAD_2Z[16] = {0.0, 0.0, 0.0, 0.0, 1.0, 1.0, -1.0, -1.0, 1.0, 1.0, -1.0, -1.0, 0.0, 1.0, 0.0, -1.0};
 
         int i = hash & 15;
         return GRAD_2X[i] * x + GRAD_2Z[i] * z;
@@ -224,7 +213,7 @@ public:
      * @param noiseScale The overall scale factor for the noise.
      * @return The populated noise array.
      */
-    void populateNoiseArray(const Generator *g, std::vector<double> &noiseArray,
+    void populateNoiseArray(const Generator *g, std::vector<double>& noiseArray,
                             double xOffset, double yOffset, double zOffset,
                             int xSize, int ySize, int zSize, double xScale,
                             double yScale, double zScale, double noiseScale);
@@ -245,8 +234,8 @@ class NoiseGeneratorOctaves {
      * @brief The number of octaves used in noise generation.
      */
     int octaves;
-
 public:
+
     /**
      * @brief Initializes the noise generator with the specified number of octaves.
      * @param rng The random number generator used for initializing each octave.
@@ -277,8 +266,9 @@ public:
      * @return A vector containing the generated noise values.
      */
     void genNoiseOctaves(const Generator *g,
-                         std::vector<double> &noiseArray,
+                         std::vector<double>& noiseArray,
                          c_int xOffset, c_int yOffset, c_int zOffset,
                          c_int xSize, c_int ySize, c_int zSize,
                          c_double xScale, c_double yScale, c_double zScale);
+
 };

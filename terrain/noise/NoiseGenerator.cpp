@@ -2,139 +2,113 @@
 
 
 double NoiseGeneratorSimplex::getValue(c_double posX, c_double posZ) const {
-    // Skew the input space to determine which simplex cell we're in
-    const double skew = (posX + posZ) * SKEW_FACTOR;
-    const int cellX = fastFloor(posX + skew);
-    const int cellZ = fastFloor(posZ + skew);
+    // Skewing and unskewing factors
+    static constexpr double SKEW_FACTOR = 0.5 * (SQRT_3 - 1.0);
+    static constexpr double UNSKEW_FACTOR = (3.0 - SQRT_3) / 6.0;
 
-    // Unskew the cell origin back to (x,z) space
-    const double unskew = (cellX + cellZ) * UNSKEW_FACTOR;
-    const double cellOriginX = cellX - unskew;
-    const double cellOriginZ = cellZ - unskew;
+    // Skew the input space
+    double skew = (posX + posZ) * SKEW_FACTOR;
+    int skewedX = fastFloor(posX + skew);
+    int skewedZ = fastFloor(posZ + skew);
+
+    // Unskew the cell origin
+    double unskew = (skewedX + skewedZ) * UNSKEW_FACTOR;
+    double cellOriginX = skewedX - unskew;
+    double cellOriginZ = skewedZ - unskew;
 
     // Distances from the cell origin
-    const double dx0 = posX - cellOriginX;
-    const double dz0 = posZ - cellOriginZ;
+    double xDist = posX - cellOriginX;
+    double zDist = posZ - cellOriginZ;
 
-    // Determine simplex corner ordering
-    const int stepX = (dx0 > dz0) ? 1 : 0;
-    const int stepZ = (dx0 > dz0) ? 0 : 1;
+    // Determine simplex corner offsets
+    int offsetX = (xDist > zDist) ? 1 : 0;
+    int offsetZ = (xDist > zDist) ? 0 : 1;
 
-    // Corner offsets in (x,z)
-    const double dx1 = dx0 - stepX + UNSKEW_FACTOR;
-    const double dz1 = dz0 - stepZ + UNSKEW_FACTOR;
-    const double dx2 = dx0 - 1.0 + 2.0 * UNSKEW_FACTOR;
-    const double dz2 = dz0 - 1.0 + 2.0 * UNSKEW_FACTOR;
+    // Calculate the positions of the simplex corners
+    double x1 = xDist - offsetX + UNSKEW_FACTOR;
+    double z1 = zDist - offsetZ + UNSKEW_FACTOR;
+    double x2 = xDist - 1.0 + 2.0 * UNSKEW_FACTOR;
+    double z2 = zDist - 1.0 + 2.0 * UNSKEW_FACTOR;
 
-    // Hash the coordinates to get gradient indices (wrap 0..255)
-    const int pX = cellX & 255;
-    const int pZ = cellZ & 255;
-    const int gi0 = permutations[pX + permutations[pZ]] % 12;
-    const int gi1 = permutations[pX + stepX + permutations[pZ + stepZ]] % 12;
-    const int gi2 = permutations[pX + 1 + permutations[pZ + 1]] % 12;
+    // Hash the coordinates to get gradient indices
+    int permX = skewedX & 255;
+    int permZ = skewedZ & 255;
+    int gradIndex0 = permutations[permX + permutations[permZ]] % 12;
+    int gradIndex1 = permutations[permX + offsetX + permutations[permZ + offsetZ]] % 12;
+    int gradIndex2 = permutations[permX + 1 + permutations[permZ + 1]] % 12;
 
-    // Contribution from each corner, with quartic attenuation
-    double n0 = 0.0, n1 = 0.0, n2 = 0.0;
+    // Calculate contributions from each corner
+    double contribution0 = 0.5 - xDist * xDist - zDist * zDist;
+    double noise0 = (contribution0 < 0) ? 0 : pow(contribution0, 4) * dot(GRAD3[gradIndex0], xDist, zDist);
 
-    double t0 = 0.5 - dx0 * dx0 - dz0 * dz0;
-    if (t0 > 0.0) {
-        // t0^4 faster than pow(t0, 4)
-        t0 *= t0;
-        t0 *= t0;
-        n0 = t0 * dot(GRAD3[gi0], dx0, dz0);
-    }
+    double contribution1 = 0.5 - x1 * x1 - z1 * z1;
+    double noise1 = (contribution1 < 0) ? 0 : pow(contribution1, 4) * dot(GRAD3[gradIndex1], x1, z1);
 
-    double t1 = 0.5 - dx1 * dx1 - dz1 * dz1;
-    if (t1 > 0.0) {
-        t1 *= t1;
-        t1 *= t1;
-        n1 = t1 * dot(GRAD3[gi1], dx1, dz1);
-    }
-
-    double t2 = 0.5 - dx2 * dx2 - dz2 * dz2;
-    if (t2 > 0.0) {
-        t2 *= t2;
-        t2 *= t2;
-        n2 = t2 * dot(GRAD3[gi2], dx2, dz2);
-    }
+    double contribution2 = 0.5 - x2 * x2 - z2 * z2;
+    double noise2 = (contribution2 < 0) ? 0 : pow(contribution2, 4) * dot(GRAD3[gradIndex2], x2, z2);
 
     // Combine contributions and scale the result
-    return 70.0 * (n0 + n1 + n2);
+    return 70.0 * (noise0 + noise1 + noise2);
 }
 
 
-void NoiseGeneratorSimplex::add(std::vector<double> &noiseValues,
-                                double xOffset, double zOffset,
-                                int width, int height,
-                                double xScale, double zScale,
-                                double noiseScale) {
-    int writeIndex = 0;
+void NoiseGeneratorSimplex::add(std::vector<double>& noiseValues, double xOffset, double zOffset,
+                                int width, int height, double xScale, double zScale, double noiseScale) {
+    static constexpr double F2 = 0.5 * (SQRT_3 - 1.0);
+    static constexpr double G2 = (3.0 - SQRT_3) / 6.0;
 
-    for (int zi = 0; zi < height; ++zi) {
-        // Per-row z coordinate
-        const double zCoord = (zOffset + zi) * zScale + this->y; // use per-instance offset
+    int index = 0;
 
-        for (int xi = 0; xi < width; ++xi) {
-            const double xCoord = (xOffset + xi) * xScale + this->x; // use per-instance offset
+    for (int z = 0; z < height; ++z) {
+        double zCoord = (zOffset + z) * zScale + y;
 
-            // Skew to find simplex cell
-            const double skew = (xCoord + zCoord) * SKEW_FACTOR;
-            const int cellX = fastFloor(xCoord + skew);
-            const int cellZ = fastFloor(zCoord + skew);
+        for (int x = 0; x < width; ++x) {
+            double xCoord = (xOffset + x) * xScale + x;
+            double skew = (xCoord + zCoord) * F2;
+            int skewedX = fastFloor(xCoord + skew);
+            int skewedZ = fastFloor(zCoord + skew);
+            double unskew = (skewedX + skewedZ) * G2;
+            double xUnskewed = xCoord - (skewedX - unskew);
+            double zUnskewed = zCoord - (skewedZ - unskew);
 
-            // Unskew back to (x,z)
-            const double unskew = (cellX + cellZ) * UNSKEW_FACTOR;
-            const double dx0 = xCoord - (cellX - unskew);
-            const double dz0 = zCoord - (cellZ - unskew);
-
-            // Determine simplex corner ordering
-            const int stepX = (dx0 > dz0) ? 1 : 0;
-            const int stepZ = (dx0 > dz0) ? 0 : 1;
-
-            // Corner offsets in (x,z)
-            const double dx1 = dx0 - stepX + UNSKEW_FACTOR;
-            const double dz1 = dz0 - stepZ + UNSKEW_FACTOR;
-            const double dx2 = dx0 - 1.0 + 2.0 * UNSKEW_FACTOR;
-            const double dz2 = dz0 - 1.0 + 2.0 * UNSKEW_FACTOR;
-
-            // Hash to pick gradient indices
-            const int pX = cellX & 255;
-            const int pZ = cellZ & 255;
-            const int gi0 = permutations[pX + permutations[pZ]] % 12;
-            const int gi1 = permutations[pX + stepX + permutations[pZ + stepZ]] % 12;
-            const int gi2 = permutations[pX + 1 + permutations[pZ + 1]] % 12;
-
-            // Corner contributions with quartic attenuation
-            double n0 = 0.0, n1 = 0.0, n2 = 0.0;
-
-            double t0 = 0.5 - dx0 * dx0 - dz0 * dz0;
-            if (t0 > 0.0) {
-                t0 *= t0;
-                t0 *= t0;
-                n0 = t0 * dot(GRAD3[gi0], dx0, dz0);
+            int offsetX, offsetZ;
+            if (xUnskewed > zUnskewed) {
+                offsetX = 1;
+                offsetZ = 0;
+            } else {
+                offsetX = 0;
+                offsetZ = 1;
             }
 
-            double t1 = 0.5 - dx1 * dx1 - dz1 * dz1;
-            if (t1 > 0.0) {
-                t1 *= t1;
-                t1 *= t1;
-                n1 = t1 * dot(GRAD3[gi1], dx1, dz1);
-            }
+            double x1 = xUnskewed - offsetX + G2;
+            double z1 = zUnskewed - offsetZ + G2;
+            double x2 = xUnskewed - 1.0 + 2.0 * G2;
+            double z2 = zUnskewed - 1.0 + 2.0 * G2;
 
-            double t2 = 0.5 - dx2 * dx2 - dz2 * dz2;
-            if (t2 > 0.0) {
-                t2 *= t2;
-                t2 *= t2;
-                n2 = t2 * dot(GRAD3[gi2], dx2, dz2);
-            }
+            int permX = skewedX & 255;
+            int permZ = skewedZ & 255;
+            int gradIndex0 = permutations[permX + permutations[permZ]] % 12;
+            int gradIndex1 = permutations[permX + offsetX + permutations[permZ + offsetZ]] % 12;
+            int gradIndex2 = permutations[permX + 1 + permutations[permZ + 1]] % 12;
 
-            noiseValues[writeIndex++] += 70.0 * (n0 + n1 + n2) * noiseScale;
+            double contribution0 = 0.5 - xUnskewed * xUnskewed - zUnskewed * zUnskewed;
+            double noise0 = (contribution0 < 0)
+                            ? 0
+                            : pow(contribution0, 4) * dot(GRAD3[gradIndex0], xUnskewed, zUnskewed);
+
+            double contribution1 = 0.5 - x1 * x1 - z1 * z1;
+            double noise1 = (contribution1 < 0) ? 0 : pow(contribution1, 4) * dot(GRAD3[gradIndex1], x1, z1);
+
+            double contribution2 = 0.5 - x2 * x2 - z2 * z2;
+            double noise2 = (contribution2 < 0) ? 0 : pow(contribution2, 4) * dot(GRAD3[gradIndex2], x2, z2);
+
+            noiseValues[index++] += 70.0 * (noise0 + noise1 + noise2) * noiseScale;
         }
     }
 }
 
 
-void NoiseGeneratorPerlin::setNoiseGeneratorPerlin(RNG &rng, c_i32 levelsIn) {
+void NoiseGeneratorPerlin::setNoiseGeneratorPerlin(RNG& rng, c_i32 levelsIn) {
     levels = levelsIn;
     noiseLevels = std::vector<NoiseGeneratorSimplex>(levelsIn);
 
@@ -144,130 +118,128 @@ void NoiseGeneratorPerlin::setNoiseGeneratorPerlin(RNG &rng, c_i32 levelsIn) {
 }
 
 
-void NoiseGeneratorImproved::populateNoiseArray(const Generator *g, std::vector<double> &noiseArray,
+void NoiseGeneratorImproved::populateNoiseArray(const Generator* g, std::vector<double>& noiseArray,
                                                 double xOffset, double yOffset, double zOffset,
                                                 int xSize, int ySize, int zSize,
                                                 double xScale, double yScale, double zScale,
                                                 double noiseScale) {
     if (ySize == 1) {
         // Special case for 2D noise generation.
-        int permX0 = 0;
-        int permRow0 = 0;
-        int permX1 = 0;
-        int permRow1 = 0;
-        double nA = 0.0;
-        double nB = 0.0;
-        int writeIndex = 0;
-        const double invScale = 1.0 / noiseScale;
+        int i5 = 0;
+        int j5 = 0;
+        int j = 0;
+        int k5 = 0;
+        double d14 = 0.0;
+        double d15 = 0.0;
+        int l5 = 0;
+        double d16 = 1.0 / noiseScale;
 
-        double xCoord = xOffset + x;
-        for (int xi = 0; xi < xSize; ++xi) {
-            int xInt = static_cast<int>(xCoord);
-            if (xCoord < static_cast<double>(xInt)) { --xInt; }
+        double d17 = xOffset + x;
+        for (int j2 = 0; j2 < xSize; ++j2) {
+            int i6 = (int) d17;
 
-            const int permX = xInt & 255;
+            if (d17 < (double) i6) { --i6; }
+
+            int k2 = i6 & 255;
             if (g->getConsole() != lce::CONSOLE::WIIU) {
-                xCoord = xCoord - static_cast<double>(xInt);
+                d17 = d17 - (double) i6;
             }
-            const double fadeX = xCoord * xCoord * xCoord * (xCoord * (xCoord * 6.0 - 15.0) + 10.0);
+            double d18 = d17 * d17 * d17 * (d17 * (d17 * 6.0 - 15.0) + 10.0);
 
-            for (int zi = 0; zi < zSize; ++zi) {
-                double zCoord = zOffset + static_cast<double>(zi) * zScale + z;
-                int zInt = static_cast<int>(zCoord);
-                if (zCoord < static_cast<double>(zInt)) { --zInt; }
+            for (int j6 = 0; j6 < zSize; ++j6) {
+                double d19 = zOffset + (double) j6 * zScale + z;
+                int k6 = (int) d19;
 
-                const int permZ = zInt & 255;
+                if (d19 < (double) k6) { --k6; }
+
+                int l6 = k6 & 255;
                 if (g->getConsole() != lce::CONSOLE::WIIU) {
-                    zCoord = zCoord - static_cast<double>(zInt);
+                    d19 = d19 - (double) k6;
                 }
-                const double fadeZ = zCoord * zCoord * zCoord * (zCoord * (zCoord * 6.0 - 15.0) + 10.0);
-
-                permX0 = permutations[permX] + 0;
-                permRow0 = permutations[permX0] + permZ;
-                permX1 = permutations[permX + 1] + 0;
-                permRow1 = permutations[permX1] + permZ;
-
-                nA = MathHelper::lerp(fadeX,
-                                      grad2(permutations[permRow0], xCoord, zCoord),
-                                      grad(permutations[permRow1], xCoord - 1.0, 0.0, zCoord));
-                nB = MathHelper::lerp(fadeX,
-                                      grad(permutations[permRow0 + 1], xCoord, 0.0, zCoord - 1.0),
-                                      grad(permutations[permRow1 + 1], xCoord - 1.0, 0.0, zCoord - 1.0));
-                const double n = MathHelper::lerp(fadeZ, nA, nB);
-                noiseArray[writeIndex++] += n * invScale;
+                double d20 = d19 * d19 * d19 * (d19 * (d19 * 6.0 - 15.0) + 10.0);
+                i5 = permutations[k2] + 0;
+                j5 = permutations[i5] + l6;
+                j = permutations[k2 + 1] + 0;
+                k5 = permutations[j] + l6;
+                d14 = MathHelper::lerp(d18, grad2(permutations[j5], d17, d19),
+                                       grad(permutations[k5], d17 - 1.0, 0.0, d19));
+                d15 = MathHelper::lerp(d18, grad(permutations[j5 + 1], d17, 0.0, d19 - 1.0),
+                                       grad(permutations[k5 + 1], d17 - 1.0, 0.0, d19 - 1.0));
+                double d21 = MathHelper::lerp(d20, d14, d15);
+                int i7 = l5++;
+                noiseArray[i7] += d21 * d16;
             }
-            xCoord += xInt + xScale;
+            d17 += i6 + xScale;
         }
     } else {
         // General case for 3D noise generation.
-        int writeIndex = 0;
-        const double invScale = 1.0 / noiseScale;
-        int lastYInt = -1;
-        int permBase0 = 0;
-        int permXZ00 = 0;
-        int permXZ01 = 0;
-        int permBase1 = 0;
-        int permXZ10 = 0;
-        int permXZ12 = 0;
-        double n000 = 0.0;
-        double n010 = 0.0;
-        double n001 = 0.0;
-        double n011 = 0.0;
+        int i = 0;
+        double d0 = 1.0 / noiseScale;
+        int k = -1;
+        int l = 0;
+        int i1 = 0;
+        int j1 = 0;
+        int k1 = 0;
+        int l1 = 0;
+        int i2 = 0;
+        double d1 = 0.0;
+        double d2 = 0.0;
+        double d3 = 0.0;
+        double d4 = 0.0;
 
-        for (int xi = 0; xi < xSize; ++xi) {
-            double xCoord = xOffset + static_cast<double>(xi) * xScale + x;
-            int xInt = static_cast<int>(xCoord);
-            if (xCoord < static_cast<double>(xInt)) { --xInt; }
+        for (int l2 = 0; l2 < xSize; ++l2) {
+            double d5 = xOffset + (double) l2 * xScale + x;
+            int i3 = (int) d5;
 
-            const int permX = xInt & 255;
-            xCoord = xCoord - static_cast<double>(xInt);
-            const double fadeX = xCoord * xCoord * xCoord * (xCoord * (xCoord * 6.0 - 15.0) + 10.0);
+            if (d5 < (double) i3) { --i3; }
 
-            for (int zi = 0; zi < zSize; ++zi) {
-                double zCoord = zOffset + static_cast<double>(zi) * zScale + z;
-                int zInt = static_cast<int>(zCoord);
-                if (zCoord < static_cast<double>(zInt)) { --zInt; }
+            int j3 = i3 & 255;
+            d5 = d5 - (double) i3;
+            double d6 = d5 * d5 * d5 * (d5 * (d5 * 6.0 - 15.0) + 10.0);
 
-                const int permZ = zInt & 255;
-                zCoord = zCoord - static_cast<double>(zInt);
-                const double fadeZ = zCoord * zCoord * zCoord * (zCoord * (zCoord * 6.0 - 15.0) + 10.0);
+            for (int k3 = 0; k3 < zSize; ++k3) {
+                double d7 = zOffset + (double) k3 * zScale + z;
+                int l3 = (int) d7;
 
-                for (int yi = 0; yi < ySize; yi++) {
-                    double yCoord = yOffset + static_cast<double>(yi) * yScale + y;
-                    int yInt = static_cast<int>(yCoord);
-                    if (yCoord < static_cast<double>(yInt)) { --yInt; }
+                if (d7 < (double) l3) { --l3; }
 
-                    const int permY = yInt & 255;
-                    yCoord = yCoord - static_cast<double>(yInt);
-                    const double fadeY = yCoord * yCoord * yCoord * (yCoord * (yCoord * 6.0 - 15.0) + 10.0);
+                int i4 = l3 & 255;
+                d7 = d7 - (double) l3;
+                double d8 = d7 * d7 * d7 * (d7 * (d7 * 6.0 - 15.0) + 10.0);
 
-                    if (yi == 0 || permY != lastYInt) {
-                        lastYInt = permY;
-                        permBase0 = permutations[permX] + permY;
-                        permXZ00 = permutations[permBase0] + permZ;
-                        permXZ01 = permutations[permBase0 + 1] + permZ;
-                        permBase1 = permutations[permX + 1] + permY;
-                        permXZ10 = permutations[permBase1] + permZ;
-                        permXZ12 = permutations[permBase1 + 1] + permZ; // same as permXZ11 + 1 in original code
-                        n000 = MathHelper::lerp(fadeX,
-                                                grad(permutations[permXZ00], xCoord, yCoord, zCoord),
-                                                grad(permutations[permXZ10], xCoord - 1.0, yCoord, zCoord));
-                        n010 = MathHelper::lerp(fadeX,
-                                                grad(permutations[permXZ01], xCoord, yCoord - 1.0, zCoord),
-                                                grad(permutations[permXZ12], xCoord - 1.0, yCoord - 1.0, zCoord));
-                        n001 = MathHelper::lerp(fadeX,
-                                                grad(permutations[permXZ00 + 1], xCoord, yCoord, zCoord - 1.0),
-                                                grad(permutations[permXZ10 + 1], xCoord - 1.0, yCoord, zCoord - 1.0));
-                        n011 = MathHelper::lerp(fadeX,
-                                                grad(permutations[permXZ01 + 1], xCoord, yCoord - 1.0, zCoord - 1.0),
-                                                grad(permutations[permXZ12 + 1], xCoord - 1.0, yCoord - 1.0,
-                                                     zCoord - 1.0));
+                for (int j4 = 0; j4 < ySize; j4++) {
+                    double d9 = yOffset + (double) j4 * yScale + y;
+                    int k4 = (int) d9;
+
+                    if (d9 < (double) k4) { --k4; }
+
+                    int l4 = k4 & 255;
+                    d9 = d9 - (double) k4;
+                    double d10 = d9 * d9 * d9 * (d9 * (d9 * 6.0 - 15.0) + 10.0);
+
+                    if (j4 == 0 || l4 != k) {
+                        k = l4;
+                        l = permutations[j3] + l4;
+                        i1 = permutations[l] + i4;
+                        j1 = permutations[l + 1] + i4;
+                        k1 = permutations[j3 + 1] + l4;
+                        l1 = permutations[k1] + i4;
+                        i2 = permutations[k1 + 1] + i4;
+                        d1 = MathHelper::lerp(d6, grad(permutations[i1], d5, d9, d7),
+                                              grad(permutations[l1], d5 - 1.0, d9, d7));
+                        d2 = MathHelper::lerp(d6, grad(permutations[j1], d5, d9 - 1.0, d7),
+                                              grad(permutations[i2], d5 - 1.0, d9 - 1.0, d7));
+                        d3 = MathHelper::lerp(d6, grad(permutations[i1 + 1], d5, d9, d7 - 1.0),
+                                              grad(permutations[l1 + 1], d5 - 1.0, d9, d7 - 1.0));
+                        d4 = MathHelper::lerp(d6, grad(permutations[j1 + 1], d5, d9 - 1.0, d7 - 1.0),
+                                              grad(permutations[i2 + 1], d5 - 1.0, d9 - 1.0, d7 - 1.0));
                     }
 
-                    const double n0 = MathHelper::lerp(fadeY, n000, n010);
-                    const double n1 = MathHelper::lerp(fadeY, n001, n011);
-                    const double n = MathHelper::lerp(fadeZ, n0, n1);
-                    noiseArray[writeIndex++] += n * invScale;
+                    double d11 = MathHelper::lerp(d10, d1, d2);
+                    double d12 = MathHelper::lerp(d10, d3, d4);
+                    double d13 = MathHelper::lerp(d8, d11, d12);
+                    int j7 = i++;
+                    noiseArray[j7] += d13 * d0;
                 }
             }
         }
@@ -286,13 +258,13 @@ static i64 lfloor(c_double value) {
 }
 
 
-void NoiseGeneratorOctaves::genNoiseOctaves(const Generator *g, std::vector<double> &noiseArray,
+void NoiseGeneratorOctaves::genNoiseOctaves(const Generator* g, std::vector<double>& noiseArray,
                                             c_i32 xOffset, c_i32 yOffset, c_i32 zOffset,
                                             c_i32 xSize, c_i32 ySize, c_i32 zSize,
                                             c_double xScale, c_double yScale, c_double zScale) {
     // Ensure the noise array is properly sized and initialized
     if EXPECT_TRUE(noiseArray.empty()) {
-        noiseArray.resize(static_cast<size_t>(xSize) * static_cast<size_t>(ySize) * static_cast<size_t>(zSize), 0.0);
+        noiseArray.resize(xSize * ySize * zSize, 0.0);
     } else {
         std::fill(noiseArray.begin(), noiseArray.end(), 0.0);
     }
@@ -300,31 +272,31 @@ void NoiseGeneratorOctaves::genNoiseOctaves(const Generator *g, std::vector<doub
     double amplitude = 1.0;
 
     // Generate noise for each octave
-    for (int octave = 0; octave < octaves; ++octave) {
-        const double sx = xOffset * amplitude * xScale;
-        const double sy = yOffset * amplitude * yScale;
-        const double sz = zOffset * amplitude * zScale;
+    for (int i = 0; i < octaves; ++i) {
+        double scaledXOffset = xOffset * amplitude * xScale;
+        double scaledYOffset = yOffset * amplitude * yScale;
+        double scaledZOffset = zOffset * amplitude * zScale;
 
-        i64 flooredX = lfloor(sx);
-        i64 flooredZ = lfloor(sz);
+        i64 flooredX = lfloor(scaledXOffset);
+        i64 flooredZ = lfloor(scaledZOffset);
 
-        double xFrac = sx - static_cast<double>(flooredX);
-        double zFrac = sz - static_cast<double>(flooredZ);
+        scaledXOffset -= (double)flooredX;
+        scaledZOffset -= (double)flooredZ;
 
         flooredX %= 16777216LL;
         flooredZ %= 16777216LL;
 
-        xFrac += static_cast<double>(flooredX);
-        zFrac += static_cast<double>(flooredZ);
+        scaledXOffset += (double)flooredX;
+        scaledZOffset += (double)flooredZ;
 
-        generatorCollection[octave].populateNoiseArray(g, noiseArray,
-                                                       xFrac, sy, zFrac,
-                                                       xSize, ySize, zSize,
-                                                       xScale * amplitude,
-                                                       yScale * amplitude,
-                                                       zScale * amplitude,
-                                                       amplitude);
+        generatorCollection[i].populateNoiseArray(g, noiseArray,
+                                                  scaledXOffset, scaledYOffset, scaledZOffset,
+                                                  xSize, ySize, zSize,
+                                                  xScale * amplitude,
+                                                  yScale * amplitude,
+                                                  zScale * amplitude,
+                                                  amplitude);
 
-        amplitude *= 0.5;
+        amplitude /= 2.0;
     }
 }

@@ -15,7 +15,7 @@ class ChunkPrimer;
 
 namespace gen {
 
-    static constexpr u32 MINESHAFT_ARRAY_SIZE = 512;
+    static constexpr u32 MINESHAFT_ARRAY_SIZE = 1024;
 
     /**
      * @class Mineshaft
@@ -29,8 +29,6 @@ namespace gen {
         StructureVariant myVariant = StructureVariant::SV_Mineshaft_Normal; ///< The variant of the mineshaft.
 
         MU static std::string PIECE_TYPE_NAMES[5]; ///< Names of the different piece types in the mineshaft.
-
-        Mineshaft() = default; ///< Default constructor for the Mineshaft class.
 
         ~Mineshaft(); ///< Destructor for the Mineshaft class.
 
@@ -99,7 +97,7 @@ namespace gen {
          * @param rng The random number generator.
          * @param p The structure component to build.
          */
-        void buildComponent(RNG& rng, const StructureComponent& p);
+        void buildComponent(RNG& rng, StructureComponent p);
     };
 
 } // namespace gen
