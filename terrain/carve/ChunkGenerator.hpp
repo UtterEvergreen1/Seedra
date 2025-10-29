@@ -12,6 +12,8 @@
  * @brief Handles the generation of overworld chunks, including terrain, biomes, and heightmaps.
  */
 class ChunkGeneratorOverWorld {
+    static constexpr int HEIGHT_FALLOFF_BORDER = 32;
+    static constexpr int HEIGHT_FALLOFF_BORDER_CHUNKS = (HEIGHT_FALLOFF_BORDER + 15) / 16; // in chunk coordinates (rounded up)
 public:
     /**
      * @brief The generator used for biome and terrain generation.
@@ -176,6 +178,8 @@ public:
      */
     void generateHeightmap(int x, int y, int z);
 
-    double getHeightFalloff(int blockX, int blockZ, int* distance) const;
+    bool hasHeightFalloff(int chunkX, int chunkZ) const;
+
+    double getHeightFalloff(int blockX, int blockZ) const;
 
 };
