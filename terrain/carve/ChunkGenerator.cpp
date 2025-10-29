@@ -58,6 +58,7 @@ void ChunkGeneratorOverWorld::setBiomesForGeneration(c_int x, c_int z, c_int wid
 void ChunkGeneratorOverWorld::setBlocksInChunk(c_int chunkX, c_int chunkZ, ChunkPrimer* primer) {
 
     generateHeightmap(chunkX * 4, 0, chunkZ * 4);
+    bool chunkHasHeightFalloff = hasHeightFalloff(chunkX, chunkZ);
 
     for (int subX = 0; subX < 4; ++subX) {
         int j = subX * 5;
@@ -92,62 +93,30 @@ void ChunkGeneratorOverWorld::setBlocksInChunk(c_int chunkX, c_int chunkZ, Chunk
 
                     for (int xm = 0; xm < 4; ++xm) {
 
-                        double _hStep = (heightAtXZ1 - heightAtXZ0) * 0.25;
-                        double lvt_45_1_ = heightAtXZ0 - _hStep;
+                        double hStep = (heightAtXZ1 - heightAtXZ0) * 0.25;
+                        double density = heightAtXZ0 - hStep;
                         // int defaultId = (subY * 8 + ym < SEA_LEVEL) ? 9 : 0;
 
                         for (int zm = 0; zm < 4; ++zm) {
                             int x = subX * 4 + xm;
                             int y = subY * 8 + ym;
                             int z = subZ * 4 + zm;
-                            int distance;
-
-
                             int worldX = chunkX * 16 + x;
                             int worldZ = chunkZ * 16 + z;
-                            double heightFalloff = getHeightFalloff(worldX, worldZ, &distance);
+                            double heightFalloff = chunkHasHeightFalloff ? getHeightFalloff(worldX, worldZ) : 0.0;
 
-                            if (distance == 0) {
+                            if (static_cast<int>(heightFalloff) == 128) {
                                 if (y <= SEA_LEVEL - 10)
                                     primer->setBlockId(x, y, z, 1);
                                 else if (y < SEA_LEVEL)
                                     primer->setBlockId(x, y, z, 9);
-
                             } else {
-                                if ((lvt_45_1_ += _hStep) > heightFalloff) {
+                                if ((density += hStep) > heightFalloff) {
                                     primer->setBlockId(x, y, z, 1);
                                 } else if (y < SEA_LEVEL) {
                                     primer->setBlockId(x, y, z, 9);
                                 }
                             }
-
-
-//                            int blockId = defaultId;
-//                            int distance;
-//
-//                            double heightFallOff = getHeightFallOff(chunkX * 16  + x, chunkZ * 16 + z, &distance);
-//                            if (heightFallOff < (lvt_45_1_ += _hStep)) {
-//                                blockId = 1;
-//                            } else {
-//                                blockId = defaultId;
-//                            }
-//
-//                            if (distance == 0) {
-//                                if (y <= SEA_LEVEL - 10)
-//                                    blockId = 1;
-//                                else if (y < SEA_LEVEL)
-//                                    blockId = 9;
-//                            }
-//
-//                            // if ((lvt_45_1_ += _hStep) > 0.0) {
-//                            //     blockId = lce::blocks::STONE_ID;
-//                            // } else if (y < SEA_LEVEL) {
-//                            //     blockId = lce::blocks::STILL_WATER_ID;
-//                            // }
-//
-//
-//
-//                            primer->setBlockId(x, y, z, blockId);
                         }
 
                         heightAtXZ0 += xiZ0;
@@ -286,100 +255,28 @@ void ChunkGeneratorOverWorld::generateHeightmap(c_int x, c_int y, c_int z) {
     }
 }
 
+inline bool ChunkGeneratorOverWorld::hasHeightFalloff(int chunkX, int chunkZ) const {
+    const int b = g->getWorldChunkBounds(); // half-size (world in [-b, b-1])
 
-
-
-// NON_MATCHING | Score: 1630 (lower is better)
-static int distanceToEdge(float a, int, int x, int z, int size) {
-    using Pos3D_t = Pos3DTemplate<double>;
-
-    int halfSize = size / 2;
-
-    int minCoord = -halfSize;
-    int maxCoord = halfSize - 1;
-
-    auto topLeft = Pos3D_t(minCoord, 0.0f, minCoord);
-    auto topRight = Pos3D_t(maxCoord, 0.0f, minCoord);
-    auto bottomLeft = Pos3D_t(minCoord, 0.0f, maxCoord);
-    auto bottomRight = Pos3D_t(maxCoord, 0.0f, maxCoord);
-
-    float leftBound = minCoord - a;
-    float rightBound = minCoord + a;
-
-    float distance = a;
-
-    bool inLeftBand = (x > leftBound) && (x < rightBound);
-    bool inRightBand = (!inLeftBand) && (x > (maxCoord - a)) && (x < (maxCoord + a));
-
-    if (inLeftBand || inRightBand) {
-        auto p = Pos3D_t(x, 0.0f, z);
-        auto edgeStart = (x < 1) ? topLeft : topRight;
-        auto edgeEnd = (x < 1) ? bottomLeft : bottomRight;
-
-        distance = p.distanceToSegment(edgeStart, edgeEnd);
-    }
-
-    if (((z > leftBound) && (z < rightBound)) || ((z > (maxCoord - a)) && (z < (maxCoord + a)))) {
-        auto p = Pos3D_t(x, 0.0f, z);
-        auto edgeStart = (z < 1) ? topLeft : topRight;
-        auto edgeEnd = (z < 1) ? bottomLeft : bottomRight;
-
-        float verticalDistance = p.distanceToSegment(edgeStart, edgeEnd);
-
-        if (verticalDistance < distance) {
-            distance = verticalDistance;
-        }
-    }
-
-    return distance;
+    // Fast interior reject: strictly >31 from all 4 edges => falloff is 0.
+    return b - std::abs(chunkX + (chunkX > 0)) < HEIGHT_FALLOFF_BORDER_CHUNKS ||
+           b - std::abs(chunkZ + (chunkZ > 0)) < HEIGHT_FALLOFF_BORDER_CHUNKS;
 }
 
+inline double ChunkGeneratorOverWorld::getHeightFalloff(int blockX, int blockZ) const {
+    // BORDER = 32; result = max(0, 32 - nearestDist) * 4
 
+    const int b = g->getWorldCoordinateBounds(); // half-size (world in [-b, b-1])
 
-
-/*
-double ChunkGeneratorOverWorld::getHeightFallOff(int blockX, int blockZ, int* distance) const {
-    int size = 54 * 16;
-    int nearestDist = distanceToEdge(32.0f, 0, blockX, blockZ, size);
-
-
-
-    // MoatCheck moatChecks[] = {{mIsClassicMoat, 864}, {mIsSmallMoat, 1024}, {mIsMediumMoat, 3072}};
-
-
-    if (size > 864 - 64) {
-        int d = distanceToEdge(32.0f, nearestDist, blockX, blockZ, 864);
-        if (d < nearestDist) {
-            nearestDist = d;
-        }
-    }
-
-
-    float result = 0.0f;
-    if (nearestDist < 32) {
-        result = (32 - nearestDist) * 0.03125f * 128.0f;
-    }
-
-    *distance = nearestDist;
-    return result;
-}*/
-
-
-#include <algorithm>
-
-double ChunkGeneratorOverWorld::getHeightFalloff(int blockX, int blockZ, int* distance) const {
-
-    const int bounds = g->getWorldCoordinateBounds(); // (/*this->worldSize*/54 << 4) >> 1;
-
-    const int distToMinX = std::max(0, blockX + bounds);
-    const int distToMaxX = std::max(0, bounds - blockX - 1);
-    const int distToMinZ = std::max(0, blockZ + bounds);
-    const int distToMaxZ = std::max(0, bounds - blockZ - 1);
+    const int distToMinX = std::max(0, blockX + b);
+    const int distToMaxX = std::max(0, b - blockX - 1);
+    const int distToMinZ = std::max(0, blockZ + b);
+    const int distToMaxZ = std::max(0, b - blockZ - 1);
 
     const int nearestDist = std::min(std::min(distToMinX, distToMaxX),
                                      std::min(distToMinZ, distToMaxZ));
 
-    const float heightFalloff = static_cast<float>(std::max(0, 32 - nearestDist)) * 0.03125f * 128.0f;
-    *distance = nearestDist;
-    return static_cast<double>(heightFalloff);
+    int h = HEIGHT_FALLOFF_BORDER - nearestDist;
+    if (h <= 0) return 0.0;
+    return static_cast<double>(h << 2); // *4 via shift
 }
