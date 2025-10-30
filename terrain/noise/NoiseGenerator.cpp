@@ -68,7 +68,9 @@ void NoiseGeneratorSimplex::add(std::vector<double> &noiseValues,
                                 int width, int height,
                                 double xScale, double zScale,
                                 double noiseScale) {
-    int writeIndex = 0;
+    // int writeIndex = 0;
+    double* __restrict out = noiseValues.data();
+    const double K = 70.0 * noiseScale;
 
     for (int zi = 0; zi < height; ++zi) {
         // Per-row z coordinate
@@ -128,7 +130,7 @@ void NoiseGeneratorSimplex::add(std::vector<double> &noiseValues,
                 n2 = t2 * dot(GRAD3[gi2], dx2, dz2);
             }
 
-            noiseValues[writeIndex++] += 70.0 * (n0 + n1 + n2) * noiseScale;
+            *out++ += K * (n0 + n1 + n2);
         }
     }
 }
@@ -149,16 +151,13 @@ void NoiseGeneratorImproved::populateNoiseArray(const Generator *g, std::vector<
                                                 int xSize, int ySize, int zSize,
                                                 double xScale, double yScale, double zScale,
                                                 double noiseScale) {
+    const double invScale = 1.0 / noiseScale;
+    double* __restrict out = noiseArray.data();
+    const u8* __restrict P = permutations;
+
     if (ySize == 1) {
         // Special case for 2D noise generation.
-        int permX0 = 0;
-        int permRow0 = 0;
-        int permX1 = 0;
-        int permRow1 = 0;
-        double nA = 0.0;
-        double nB = 0.0;
-        int writeIndex = 0;
-        const double invScale = 1.0 / noiseScale;
+        const bool isWiiU = (g->getConsole() == lce::CONSOLE::WIIU);
 
         double xCoord = xOffset + x;
         for (int xi = 0; xi < xSize; ++xi) {
@@ -166,10 +165,8 @@ void NoiseGeneratorImproved::populateNoiseArray(const Generator *g, std::vector<
             if (xCoord < static_cast<double>(xInt)) { --xInt; }
 
             const int permX = xInt & 255;
-            if (g->getConsole() != lce::CONSOLE::WIIU) {
-                xCoord = xCoord - static_cast<double>(xInt);
-            }
-            const double fadeX = xCoord * xCoord * xCoord * (xCoord * (xCoord * 6.0 - 15.0) + 10.0);
+            if (!isWiiU) { xCoord = xCoord - static_cast<double>(xInt); }
+            const double fadeX = xCoord*xCoord*xCoord * (xCoord*(xCoord*6.0 - 15.0) + 10.0);
 
             for (int zi = 0; zi < zSize; ++zi) {
                 double zCoord = zOffset + static_cast<double>(zi) * zScale + z;
@@ -177,31 +174,27 @@ void NoiseGeneratorImproved::populateNoiseArray(const Generator *g, std::vector<
                 if (zCoord < static_cast<double>(zInt)) { --zInt; }
 
                 const int permZ = zInt & 255;
-                if (g->getConsole() != lce::CONSOLE::WIIU) {
-                    zCoord = zCoord - static_cast<double>(zInt);
-                }
-                const double fadeZ = zCoord * zCoord * zCoord * (zCoord * (zCoord * 6.0 - 15.0) + 10.0);
+                if (!isWiiU) { zCoord = zCoord - static_cast<double>(zInt); }
+                const double fadeZ = zCoord*zCoord*zCoord * (zCoord * (zCoord*6.0 - 15.0) + 10.0);
 
-                permX0 = permutations[permX] + 0;
-                permRow0 = permutations[permX0] + permZ;
-                permX1 = permutations[permX + 1] + 0;
-                permRow1 = permutations[permX1] + permZ;
+                int permX0 = P[permX] + 0;
+                int permRow0 = P[permX0] + permZ;
+                int permX1 = P[permX + 1] + 0;
+                int permRow1 = P[permX1] + permZ;
 
-                nA = MathHelper::lerp(fadeX,
-                                      grad2(permutations[permRow0], xCoord, zCoord),
-                                      grad(permutations[permRow1], xCoord - 1.0, 0.0, zCoord));
-                nB = MathHelper::lerp(fadeX,
-                                      grad(permutations[permRow0 + 1], xCoord, 0.0, zCoord - 1.0),
-                                      grad(permutations[permRow1 + 1], xCoord - 1.0, 0.0, zCoord - 1.0));
-                const double n = MathHelper::lerp(fadeZ, nA, nB);
-                noiseArray[writeIndex++] += n * invScale;
+                double nA = MathHelper::lerp(fadeX,
+                                      grad2(P[permRow0], xCoord, zCoord),
+                                      grad(P[permRow1], xCoord - 1.0, 0.0, zCoord));
+                double nB = MathHelper::lerp(fadeX,
+                                      grad(P[permRow0 + 1], xCoord, 0.0, zCoord - 1.0),
+                                      grad(P[permRow1 + 1], xCoord - 1.0, 0.0, zCoord - 1.0));
+                *out++ += MathHelper::lerp(fadeZ, nA, nB) * invScale;
             }
             xCoord += xInt + xScale;
         }
     } else {
         // General case for 3D noise generation.
         int writeIndex = 0;
-        const double invScale = 1.0 / noiseScale;
         int lastYInt = -1;
         int permBase0 = 0;
         int permXZ00 = 0;
@@ -209,6 +202,7 @@ void NoiseGeneratorImproved::populateNoiseArray(const Generator *g, std::vector<
         int permBase1 = 0;
         int permXZ10 = 0;
         int permXZ12 = 0;
+
         double n000 = 0.0;
         double n010 = 0.0;
         double n001 = 0.0;
@@ -221,7 +215,7 @@ void NoiseGeneratorImproved::populateNoiseArray(const Generator *g, std::vector<
 
             const int permX = xInt & 255;
             xCoord = xCoord - static_cast<double>(xInt);
-            const double fadeX = xCoord * xCoord * xCoord * (xCoord * (xCoord * 6.0 - 15.0) + 10.0);
+            const double fadeX = xCoord*xCoord*xCoord * (xCoord*(xCoord*6.0 - 15.0) + 10.0);
 
             for (int zi = 0; zi < zSize; ++zi) {
                 double zCoord = zOffset + static_cast<double>(zi) * zScale + z;
@@ -230,7 +224,7 @@ void NoiseGeneratorImproved::populateNoiseArray(const Generator *g, std::vector<
 
                 const int permZ = zInt & 255;
                 zCoord = zCoord - static_cast<double>(zInt);
-                const double fadeZ = zCoord * zCoord * zCoord * (zCoord * (zCoord * 6.0 - 15.0) + 10.0);
+                const double fadeZ = zCoord*zCoord*zCoord * (zCoord * (zCoord*6.0 - 15.0) + 10.0);
 
                 for (int yi = 0; yi < ySize; yi++) {
                     double yCoord = yOffset + static_cast<double>(yi) * yScale + y;
@@ -239,28 +233,28 @@ void NoiseGeneratorImproved::populateNoiseArray(const Generator *g, std::vector<
 
                     const int permY = yInt & 255;
                     yCoord = yCoord - static_cast<double>(yInt);
-                    const double fadeY = yCoord * yCoord * yCoord * (yCoord * (yCoord * 6.0 - 15.0) + 10.0);
+                    const double fadeY = yCoord*yCoord*yCoord * (yCoord*(yCoord*6.0 - 15.0) + 10.0);
 
                     if (yi == 0 || permY != lastYInt) {
                         lastYInt = permY;
-                        permBase0 = permutations[permX] + permY;
-                        permXZ00 = permutations[permBase0] + permZ;
-                        permXZ01 = permutations[permBase0 + 1] + permZ;
-                        permBase1 = permutations[permX + 1] + permY;
-                        permXZ10 = permutations[permBase1] + permZ;
-                        permXZ12 = permutations[permBase1 + 1] + permZ; // same as permXZ11 + 1 in original code
+                        permBase0 = P[permX] + permY;
+                        permXZ00 = P[permBase0] + permZ;
+                        permXZ01 = P[permBase0 + 1] + permZ;
+                        permBase1 = P[permX + 1] + permY;
+                        permXZ10 = P[permBase1] + permZ;
+                        permXZ12 = P[permBase1 + 1] + permZ; // same as permXZ11 + 1 in original code
                         n000 = MathHelper::lerp(fadeX,
-                                                grad(permutations[permXZ00], xCoord, yCoord, zCoord),
-                                                grad(permutations[permXZ10], xCoord - 1.0, yCoord, zCoord));
+                                                grad(P[permXZ00], xCoord, yCoord, zCoord),
+                                                grad(P[permXZ10], xCoord - 1.0, yCoord, zCoord));
                         n010 = MathHelper::lerp(fadeX,
-                                                grad(permutations[permXZ01], xCoord, yCoord - 1.0, zCoord),
-                                                grad(permutations[permXZ12], xCoord - 1.0, yCoord - 1.0, zCoord));
+                                                grad(P[permXZ01], xCoord, yCoord - 1.0, zCoord),
+                                                grad(P[permXZ12], xCoord - 1.0, yCoord - 1.0, zCoord));
                         n001 = MathHelper::lerp(fadeX,
-                                                grad(permutations[permXZ00 + 1], xCoord, yCoord, zCoord - 1.0),
-                                                grad(permutations[permXZ10 + 1], xCoord - 1.0, yCoord, zCoord - 1.0));
+                                                grad(P[permXZ00 + 1], xCoord, yCoord, zCoord - 1.0),
+                                                grad(P[permXZ10 + 1], xCoord - 1.0, yCoord, zCoord - 1.0));
                         n011 = MathHelper::lerp(fadeX,
-                                                grad(permutations[permXZ01 + 1], xCoord, yCoord - 1.0, zCoord - 1.0),
-                                                grad(permutations[permXZ12 + 1], xCoord - 1.0, yCoord - 1.0,
+                                                grad(P[permXZ01 + 1], xCoord, yCoord - 1.0, zCoord - 1.0),
+                                                grad(P[permXZ12 + 1], xCoord - 1.0, yCoord - 1.0,
                                                      zCoord - 1.0));
                     }
 
