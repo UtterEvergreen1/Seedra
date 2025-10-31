@@ -29,6 +29,17 @@ public:
         return static_cast<int>(std::floor(value));
     }
 
+
+    /**
+     * @brief Computes the largest integer larger than or equal to the given value.
+     * @param value The input value.
+     * @return The ceil'ed integer value.
+     */
+    static int ceil(c_double value) {
+        return static_cast<int>(-MathHelper::floor(-value));
+    }
+
+
     /**
      * @brief Computes the sine of a value using the precomputed sine table.
      * @param value The input value in radians (range: 0-2π).

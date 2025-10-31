@@ -27,7 +27,7 @@ public:
     }
 
     ~BiomeCache() {
-        delete biomes;
+        free(biomes);
     }
 
     ND int getScale() const { return scale; }
@@ -39,7 +39,7 @@ public:
     ND bool isGenerated() const { return generated; }
 
     void setBiomes(biome_t *_biomes) {
-        delete this->biomes;
+        free(this->biomes);
         this->generated = true;
         this->biomes = _biomes;
     }
