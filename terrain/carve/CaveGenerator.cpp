@@ -105,6 +105,7 @@ void CaveGenerator::addTunnel(World& worldIn, i64 theSeedModifier, Pos2D current
     int splitPoint = rng.nextInt(theMaxSegment / 2) + theMaxSegment / 4;
     float theMaxSegmentFDivPI = PI_FLOAT / (float)(theMaxSegment);
     bool isTunnelWide = rng.nextInt(6) == 0;
+    c_int yScaleOffset = g->getLCEVersion() == LCEVERSION::AQUATIC ? 1 : 0;
 
     for (; theCurrentSegment < theMaxSegment; ++theCurrentSegment) {
 
@@ -239,7 +240,7 @@ void CaveGenerator::addTunnel(World& worldIn, i64 theSeedModifier, Pos2D current
                 if (scale.distanceSqXZ() >= 1.0) { continue; }
 
                 for (pos.y = max.y - 1; pos.y >= min.y; --pos.y) {
-                    scale.y = ((double) (pos.y - 1) + 0.5 - startPos.y) * invH;
+                    scale.y = ((double) (pos.y - yScaleOffset) + 0.5 - startPos.y) * invH;
 
                     // 0.7 makes the floor and ceiling flatter
                     if (scale.y <= -0.7 || scale.distanceSq() >= 1.0) { continue; }
@@ -388,6 +389,7 @@ void CaveGenerator::addTunnel(ChunkPrimer *chunkPrimer, i64 theSeedModifier, Pos
     int splitPoint = rng.nextInt(theMaxSegment / 2) + theMaxSegment / 4;
     float maxSegmentFDivPI = PI_FLOAT / (float)(theMaxSegment);
     bool isTunnelWide = rng.nextInt(6) == 0;
+    c_int yScaleOffset = g->getLCEVersion() == LCEVERSION::AQUATIC ? 1 : 0;
 
     for (; theCurrentSegment < theMaxSegment; ++theCurrentSegment) {
 
@@ -527,7 +529,7 @@ void CaveGenerator::addTunnel(ChunkPrimer *chunkPrimer, i64 theSeedModifier, Pos
                 if (scale.distanceSqXZ() >= 1.0) { continue; }
 
                 for (pos.y = max.y - 1; pos.y >= min.y; --pos.y) {
-                    scale.y = ((double) (pos.y - 1) + 0.5 - startPos.y) / adjustedHeight;
+                    scale.y = ((double) (pos.y - yScaleOffset) + 0.5 - startPos.y) / adjustedHeight;
 
                     if (scale.y <= -0.7 || scale.distanceSq() >= 1.0) { continue; }
 
@@ -535,18 +537,6 @@ void CaveGenerator::addTunnel(ChunkPrimer *chunkPrimer, i64 theSeedModifier, Pos
                     u16 blockAbove = chunkPrimer->getBlockId(pos.up());
 
                     if (currentBlock == GRASS_ID || currentBlock == MYCELIUM_ID) { isTopBlock = true; }
-                    //50.5486,17.4165,-93.0026
-                    /*if (pos.x + currentChunkX16.x == 50 && pos.y == 27 && pos.z + currentChunkX16.z == -93) {
-
-                        std::cout << "ChunkPrimer cave carve at (50,20,-90): "
-                                  << " scale=(" << scale.x << "," << scale.y << "," << scale.z << ")"
-                                  << " distSq=" << scale.distanceSq()
-                                  << " currBlock=" << (int)currentBlock
-                                  << " blockAbove=" << (int)blockAbove
-                                  << " currentChunk=(" << currentChunk.x << "," << currentChunk.z << ")"
-                                  << " startPos=(" << startPos.x << "," << startPos.y << "," << startPos.z << ")"
-                                  << std::endl;
-                    }*/
 
                     if (canReplaceBlock(currentBlock, blockAbove)) {
                         if (pos.y < 11) {
