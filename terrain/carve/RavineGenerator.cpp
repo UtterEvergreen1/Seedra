@@ -100,7 +100,6 @@ void RavineGenerator::addTunnel(World& worldIn, i64 randomSeed, Pos2D baseChunk,
 
     float theEndSegmentFDivPI = PI_FLOAT / (float)(theEndSegment);
 
-SEGMENT_FOR_LOOP_START:
     for (; theStartSegment < theEndSegment; theStartSegment++) {
 
         double adjustedWidth = 1.5 + (double) (MathHelper::sin(
@@ -196,20 +195,12 @@ SEGMENT_FOR_LOOP_START:
                                        });
 
         if (foundLiquid) {
-            goto FOUND_LIQUID;
+            continue;
         }
 
 
         min -= baseChunkX16;
         max -= baseChunkX16;
-
-        // used to make the cpu not have to
-        // cache the later code when it finds water
-        goto JUMP_PAST_FOUND_LIQUID;
-    FOUND_LIQUID:
-        if (isSegmentAtCenter) { return; }
-        goto SEGMENT_FOR_LOOP_START;
-    JUMP_PAST_FOUND_LIQUID:
 
         pos = {0, 0, 0};
         // Pos3D pos(0, 0, 0);
@@ -389,7 +380,6 @@ void RavineGenerator::addTunnel(ChunkPrimer* chunkPrimer, i64 randomSeed, Pos2D 
 
     float endSegmentFDivPI = PI_FLOAT / (float)(theEndSegment);
 
-SEGMENT_FOR_LOOP_START:
     for (; theStartSegment < theEndSegment; theStartSegment++) {
 
         double adjustedWidth = 1.5 + (double) (MathHelper::sin(
@@ -482,8 +472,7 @@ SEGMENT_FOR_LOOP_START:
         // cache the later code when it finds water
         goto JUMP_PAST_FOUND_LIQUID;
     FOUND_LIQUID:
-        if (isSegmentAtCenter) { return; }
-        goto SEGMENT_FOR_LOOP_START;
+        continue;
     JUMP_PAST_FOUND_LIQUID:
 
 

@@ -32,7 +32,7 @@ namespace Chunk {
 
     MU void populateCaves(World& world, Pos2D chunkPos) {
         ChunkPrimer* chunkPrimer = world.getChunk(chunkPos);
-        if (chunkPrimer->isModifying.load() || chunkPrimer->stage != Stage::STAGE_WATER_CAVES) {
+        if (chunkPrimer == nullptr || chunkPrimer->isModifying.load() || chunkPrimer->stage != Stage::STAGE_WATER_CAVES) {
             return;
         }
 
