@@ -97,6 +97,7 @@ void RavineGenerator::addTunnel(World& worldIn, i64 randomSeed, Pos2D baseChunk,
         }
         rs[segment] = tunnelRadiusMultiplier * tunnelRadiusMultiplier;
     }
+    c_int yScaleOffset = g->getLCEVersion() == LCEVERSION::AQUATIC ? 1 : 0;
 
     float theEndSegmentFDivPI = PI_FLOAT / (float)(theEndSegment);
 
@@ -215,7 +216,7 @@ void RavineGenerator::addTunnel(World& worldIn, i64 randomSeed, Pos2D baseChunk,
                 if (sqXZ >= 1.0) { continue; }
 
                 for (pos.y = max.y - 1; pos.y >= min.y; --pos.y) {
-                    dXYZ.y = ((double) pos.y + 0.5 - tunnel.y) / adjustedHeight;
+                    dXYZ.y = ((double) (pos.y - yScaleOffset) + 0.5 - tunnel.y) / adjustedHeight;
 
                     if ((sqXZ) * (double) rs[pos.y] + dXYZ.y * dXYZ.y / 6.0 >= 1.0) { continue; }
 
@@ -377,6 +378,7 @@ void RavineGenerator::addTunnel(ChunkPrimer* chunkPrimer, i64 randomSeed, Pos2D 
         }
         rs[segment] = tunnelRadiusMultiplier * tunnelRadiusMultiplier;
     }
+    c_int yScaleOffset = g->getLCEVersion() == LCEVERSION::AQUATIC ? 1 : 0;
 
     float endSegmentFDivPI = PI_FLOAT / (float)(theEndSegment);
 
@@ -490,7 +492,7 @@ void RavineGenerator::addTunnel(ChunkPrimer* chunkPrimer, i64 randomSeed, Pos2D 
                 if (scaleDXDZSq >= 1.0) { continue; }
 
                 for (pos.y = max.y - 1; pos.y >= min.y; --pos.y) {
-                    dXYZ.y = ((double) pos.y + 0.5 - tunnel.y) / adjustedHeight;
+                    dXYZ.y = ((double) (pos.y - yScaleOffset) + 0.5 - tunnel.y) / adjustedHeight;
 
                     if ((scaleDXDZSq) * (double) rs[pos.y] + dXYZ.y * dXYZ.y / 6.0 >= 1.0) { continue; }
 
