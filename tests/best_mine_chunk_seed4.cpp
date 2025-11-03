@@ -46,6 +46,9 @@ namespace fs = std::filesystem;
 using namespace std::chrono_literals;
 using nlohmann::json;
 
+inline constexpr int64_t STARTING_SEED = 2'200'000'000;
+inline constexpr int STARTING_THREADS  = 4;
+
 namespace finders {
 
     // -------------------- Shared small helpers/constants --------------------
@@ -67,21 +70,45 @@ namespace finders {
         DoublePos3D approxStart{};     // snapshot position at branch end
 
         // Core metrics
-        double      coverY{};          // vertical coverage inside [12,64] while a 16×16 square fits fully in the cave
         double      maxWidth{};        // max radius (blocks) seen on this branch
         double      marginMax{};       // max(adjustedRadius - NEED_R) where NEED_R is radius to contain a 16×16
-
-        // Extras (debug/printing)
         double      avgVertical{};     // mean |sin(pitch)| over counted steps
-        double      spanY{};           // y_max - y_min
-        Pos3D       range{};           // last step's (max - min) voxel span (debug)
+
+        int         minYBlock = 256;
+        int         maxYBlock = 0;
 
         MU ND inline double score() const {
-            static constexpr double NEED_R = 11.313708498984760390413; // sqrt(8^2 + 8^2)
-            return 1.00 * coverY
-                   + 0.35 * std::max(0.0, maxWidth - NEED_R)
-                   + 0.75 * std::max(0.0, marginMax);
+            static constexpr double NEED_R       = 11.313708498984760390413;
+            static constexpr int    HARD_FLOOR   = 10;
+            static constexpr int    HARD_CEILING = 20;
+            static constexpr int    MIN_Y        = 12;
+            static constexpr int    MAX_Y        = 70;
+
+            // tie-breaker strength: must be < 1 so span always dominates
+            static constexpr double START_BIAS = 0.20;  // tweak: 0.02–0.10
+
+            if (minYBlock <= HARD_FLOOR) return std::numeric_limits<double>::lowest();
+            if (minYBlock >= HARD_CEILING) return std::numeric_limits<double>::lowest();
+
+            const int y0   = std::max(minYBlock, MIN_Y);
+            const int y1   = std::min(maxYBlock, MAX_Y);
+            const int span = std::max(0, y1 - y0);
+
+            double base =
+                    1.00 * span +
+                    0.35 * std::max(0.0, maxWidth - NEED_R) +
+                    0.75 * std::max(0.0, marginMax);
+
+            // Lower y0 ⇒ larger bonus. For equal span: 12–52 > 22–62 > 32–72
+            const double start_bonus = START_BIAS * (MAX_Y - y0);
+
+            return base + start_bonus;
         }
+    };
+
+    struct BranchAgg {
+        int minYAny = 256;  // lowest carved Y reachable anywhere along this branch or its children
+        int maxYAny = 0;    // not used by scoring now, but handy to keep
     };
 
     // --------------- Finder that scores the WHOLE branch (no CUT_OFF gates) -
@@ -172,13 +199,15 @@ namespace finders {
             }
         }
 
-        void addTunnel(std::vector<VerticalCaveHit>& out,
-                       c_i64 theSeedModifier, const Pos2D theCurrentChunk, DoublePos3D theStart,
-                       c_float theWidth, float theTunnelYaw, float theTunnelPitch, int theCurrentSegment,
-                       int theMaxSegment, c_double theHeightMultiplier) {
+        BranchAgg addTunnel(std::vector<VerticalCaveHit>& out,
+                            c_i64 theSeedModifier, const Pos2D theCurrentChunk, DoublePos3D theStart,
+                            c_float theWidth, float theTunnelYaw, float theTunnelPitch, int theCurrentSegment,
+                            int theMaxSegment, c_double theHeightMultiplier) {
+
+            BranchAgg agg{}; // we'll always return the "any-width" reach, even if we don't emit a hit
 
             if (1.5 + static_cast<double>(theWidth) < NEED_R - EPS) {
-                return;
+                return agg;
             }
 
             float yawModifier   = 0.0F;
@@ -201,26 +230,55 @@ namespace finders {
             const float segFDivPI   = PI_FLOAT / static_cast<float>(theMaxSegment);
             const bool  widePattern = localRng.nextInt<6>() == 0;
 
-            DoublePos3D prev = theStart;
-            double coverY    = 0.0;
+            // ---------- (1) PRE-CHECK: first-step carve window ----------
+            {
+                const int   s0      = theCurrentSegment;                   // already set to mid if main
+                const float sinArg  = static_cast<float>(s0) * segFDivPI;
+                const double adjW0  = 1.5 + static_cast<double>(MathHelper::sin(sinArg) * theWidth);
+                const double H0     = adjW0 * theHeightMultiplier;
+                const int carveMin0 = std::max(1, (int)std::floor(theStart.y - 0.7 * H0 + 0.5) + 1);
+                if (carveMin0 < (int)Y_BOT) {
+                    // definitely intersects lava band; prune this branch entirely
+                    agg.minYAny = carveMin0;
+                    agg.maxYAny = carveMin0;
+                    return agg;
+                }
+            }
+
+            // --- Big-section carve-consistent tracking (for score Y-range only) ---
+            bool hadBig = false;
+            int  minYCarveBig = 256;
+            int  maxYCarveBig = 0;
+
+            // --- "Any-width" reach across this branch (used to veto lava leaks) ---
+            int  minYAny = 256;
+            int  maxYAny = 0;
+
             double maxWidth  = 0.0;
             double marginMax = 0.0;
             double sumAbsSin = 0.0;
             int    countVert = 0;
-            double yMin      =  1e9, yMax = -1e9;
-            Pos3D  lastRange{};
 
-            auto finalize_emit = [&](const DoublePos3D& pos) {
+            // Precompute interior (big-section) XZ bounds once
+            const double minX8 = static_cast<double>(genBounds.minX) + 8.0;
+            const double maxX8 = static_cast<double>(genBounds.maxX) - 8.0;
+            const double minZ8 = static_cast<double>(genBounds.minZ) + 8.0;
+            const double maxZ8 = static_cast<double>(genBounds.maxZ) - 8.0;
+
+            auto emit_if_ok = [&](const DoublePos3D& pos, int minYAnyCombined) {
+                // If the connected branch (this + children) reaches below Y_BOT, drop the hit.
+                if (!hadBig || minYCarveBig > maxYCarveBig) return;    // not a “big section” branch at all
+                if (minYAnyCombined < static_cast<int>(Y_BOT)) return; // leaks to lava depth -> reject
+
                 VerticalCaveHit hit;
                 hit.worldSeed   = worldSeed;
                 hit.chunk       = theCurrentChunk;
                 hit.approxStart = pos;
-                hit.coverY      = coverY;
                 hit.maxWidth    = maxWidth;
                 hit.marginMax   = marginMax;
                 hit.avgVertical = (countVert > 0) ? (sumAbsSin / static_cast<double>(countVert)) : 0.0;
-                hit.spanY       = (yMax > yMin) ? (yMax - yMin) : 0.0;
-                hit.range       = lastRange;
+                hit.minYBlock   = minYCarveBig;
+                hit.maxYBlock   = maxYCarveBig;
                 out.emplace_back(hit);
             };
 
@@ -229,6 +287,7 @@ namespace finders {
                                                            MathHelper::sin(static_cast<float>(theCurrentSegment) * segFDivPI) * theWidth);
                 const double adjustedHeight = adjustedWidth * theHeightMultiplier;
 
+                // Advance parametric position
                 const float sPitch = MathHelper::sin(theTunnelPitch);
                 const float cPitch = MathHelper::cos(theTunnelPitch);
                 const float sYaw   = MathHelper::sin(theTunnelYaw);
@@ -238,6 +297,7 @@ namespace finders {
                 theStart.y += static_cast<double>(sPitch);
                 theStart.z += static_cast<double>(sYaw * cPitch);
 
+                // Evolve slope/yaw
                 if (widePattern) theTunnelPitch = theTunnelPitch * 0.92F;
                 else             theTunnelPitch = theTunnelPitch * 0.7F;
                 theTunnelPitch = theTunnelPitch + pitchModifier * 0.1F;
@@ -258,54 +318,29 @@ namespace finders {
                     yawModifier = yawModifier + (f2_1 - f2_2) * f2_3 * 4.0F;
                 }
 
-                if (!isMain && theCurrentSegment == splitPoint && theWidth > 1.0F && theMaxSegment > 0) {
-                    finalize_emit(theStart);
-
-                    float w1, w2; i64 s1, s2;
-                    if constexpr (IsXbox) {
-                        w1 = localRng.nextFloat(); s1 = localRng.nextLongI();
-                        w2 = localRng.nextFloat(); s2 = localRng.nextLongI();
-                    } else {
-                        s1 = localRng.nextLongI(); w1 = localRng.nextFloat();
-                        s2 = localRng.nextLongI(); w2 = localRng.nextFloat();
-                    }
-                    addTunnel(out, s1, theCurrentChunk, theStart, w1 * 0.5F + 0.5F,
-                              theTunnelYaw - HALF_PI_FLOAT, theTunnelPitch / 3.0F, theCurrentSegment, theMaxSegment, 1.0);
-                    addTunnel(out, s2, theCurrentChunk, theStart, w2 * 0.5F + 0.5F,
-                              theTunnelYaw + HALF_PI_FLOAT, theTunnelPitch / 3.0F, theCurrentSegment, theMaxSegment, 1.0);
-                    return;
-                }
-
-                if (!isMain && localRng.nextInt<4>() == 0) {
-                    prev = theStart;
-                    continue;
-                }
-
+                // ---- Update aggregates ----
                 sumAbsSin += std::abs(static_cast<double>(sPitch));
                 ++countVert;
-
-                if (theStart.y < yMin) yMin = theStart.y;
-                if (theStart.y > yMax) yMax = theStart.y;
                 if (adjustedWidth > maxWidth) maxWidth = adjustedWidth;
 
-                {
-                    Pos3D mn, mx;
-                    mn.x = static_cast<int>(std::floor(theStart.x - adjustedWidth)) - 1;
-                    mx.x = static_cast<int>(std::floor(theStart.x + adjustedWidth)) + 1;
-                    mn.y = static_cast<int>(std::floor(theStart.y - adjustedHeight)) - 1;
-                    mx.y = static_cast<int>(std::floor(theStart.y + adjustedHeight)) + 1;
-                    mn.z = static_cast<int>(std::floor(theStart.z - adjustedWidth)) - 1;
-                    mx.z = static_cast<int>(std::floor(theStart.z + adjustedWidth)) + 1;
-                    if (mn.y < 1)   mn.y = 1;
-                    if (mx.y > 120) mx.y = 120;
-                    lastRange = (mx - mn);
+                const double H = adjustedHeight;
+
+                // "Any-width" carve reach (no big-section gate). Matches carve math vertically.
+                const int carveMinAny = std::max(1,   (int)std::floor(theStart.y - 0.7 * H + 0.5) + 1);
+                const int carveMaxAny = std::min(120, (int)std::ceil (theStart.y + 1.0 * H + 0.5) - 1);
+                if (carveMinAny < minYAny) minYAny = carveMinAny;
+                if (carveMaxAny > maxYAny) maxYAny = carveMaxAny;
+
+                // ---------- (2) LOOP SHORT-CIRCUIT ----------
+                if (minYAny < (int)Y_BOT) {
+                    // no need to simulate/split further; this branch (or its future children)
+                    // already reaches lava band
+                    agg.minYAny = minYAny;
+                    agg.maxYAny = maxYAny;
+                    return agg;
                 }
 
-                const double minX8 = static_cast<double>(genBounds.minX) + 8.0;
-                const double maxX8 = static_cast<double>(genBounds.maxX) - 8.0;
-                const double minZ8 = static_cast<double>(genBounds.minZ) + 8.0;
-                const double maxZ8 = static_cast<double>(genBounds.maxZ) - 8.0;
-
+                // Big-section gate: 16×16 fits & inside the interior scan bounds
                 const bool squareInside =
                         (theStart.x >= minX8) & (theStart.x <= maxX8) &
                         (theStart.z >= minZ8) & (theStart.z <= maxZ8);
@@ -314,15 +349,56 @@ namespace finders {
                 if (margin > marginMax) marginMax = margin;
 
                 if (squareInside && margin >= 0.0) {
-                    const double y0 = clampd(prev.y, Y_BOT, Y_TOP);
-                    const double y1 = clampd(theStart.y, Y_BOT, Y_TOP);
-                    coverY += std::abs(y1 - y0);
+                    const int carveMinBig = std::max(1,   (int)std::floor(theStart.y - 0.7 * H + 0.5) + 1);
+                    const int carveMaxBig = std::min(120, (int)std::ceil (theStart.y + 1.0 * H + 0.5) - 1);
+                    if (carveMinBig <= carveMaxBig) {
+                        hadBig = true;
+                        if (carveMinBig < minYCarveBig) minYCarveBig = carveMinBig;
+                        if (carveMaxBig > maxYCarveBig) maxYCarveBig = carveMaxBig;
+                    }
                 }
 
-                prev = theStart;
+                // ---- Split into children ----
+                if (!isMain && theCurrentSegment == splitPoint && theWidth > 1.0F && theMaxSegment > 0) {
+                    // Recurse to children FIRST to learn their "any-width" minima,
+                    // then decide whether to emit this parent hit (veto lava leaks).
+                    float w1, w2; i64 s1, s2;
+                    if constexpr (IsXbox) {
+                        w1 = localRng.nextFloat(); s1 = localRng.nextLongI();
+                        w2 = localRng.nextFloat(); s2 = localRng.nextLongI();
+                    } else {
+                        s1 = localRng.nextLongI(); w1 = localRng.nextFloat();
+                        s2 = localRng.nextLongI(); w2 = localRng.nextFloat();
+                    }
+
+                    BranchAgg a1 = addTunnel(out, s1, theCurrentChunk, theStart, w1 * 0.5F + 0.5F,
+                                             theTunnelYaw - HALF_PI_FLOAT, theTunnelPitch / 3.0F,
+                                             theCurrentSegment, theMaxSegment, 1.0);
+                    BranchAgg a2 = addTunnel(out, s2, theCurrentChunk, theStart, w2 * 0.5F + 0.5F,
+                                             theTunnelYaw + HALF_PI_FLOAT, theTunnelPitch / 3.0F,
+                                             theCurrentSegment, theMaxSegment, 1.0);
+
+                    const int minYAnyCombined = std::min(minYAny, std::min(a1.minYAny, a2.minYAny));
+                    emit_if_ok(theStart, minYAnyCombined);
+
+                    // Return aggregate upward
+                    agg.minYAny = minYAnyCombined;
+                    agg.maxYAny = std::max(maxYAny, std::max(a1.maxYAny, a2.maxYAny));
+                    return agg;
+                }
+
+                // "random skip" like original; we already updated 'any-width' reach above
+                if (!isMain && localRng.nextInt<4>() == 0) {
+                    continue;
+                }
             }
 
-            finalize_emit(theStart);
+            // Normal end of branch: emit after loop, using this branch's any-width minima
+            emit_if_ok(theStart, minYAny);
+
+            agg.minYAny = minYAny;
+            agg.maxYAny = maxYAny;
+            return agg;
         }
     };
 
@@ -354,6 +430,19 @@ namespace finders {
                 if (heap_.size() < cap_) heap_.push({sc,*it});
                 else if (sc > heap_.top().score) { heap_.pop(); heap_.push({sc,*it}); }
             }
+        }
+
+        std::vector<VerticalCaveHit> snapshot_top_k(size_t k) const {
+            std::lock_guard<std::mutex> lk(m_);
+            std::priority_queue<HitNode> tmp = heap_;   // O(N) copy
+            std::vector<VerticalCaveHit> v;
+            v.reserve(std::min(k, tmp.size()));
+            for (size_t i = 0; i < k && !tmp.empty(); ++i) {
+                v.push_back(tmp.top().hit);
+                tmp.pop();
+            }
+            std::reverse(v.begin(), v.end()); // highest score last -> first
+            return v;
         }
 
         std::vector<VerticalCaveHit> snapshot_sorted() const {
@@ -390,7 +479,7 @@ namespace finders {
             {
                 std::ofstream out(tmp, std::ios::binary | std::ios::trunc);
                 if (!out) return false;
-                out << j.dump(2);
+                out << j.dump();
                 out.flush();
             }
             if (rotate_backup) {
@@ -413,9 +502,9 @@ namespace finders {
         i64   center_x = 0;
         i64   center_z = 0;
         i64   radius   = 27;
-        i64   current_seed = 0;
+        i64   current_seed = STARTING_SEED;
         i64   seed_count   = 0;  // 0 = infinite
-        int   threads      = std::max(1u, std::thread::hardware_concurrency());
+        int   threads      = std::max(1, STARTING_THREADS); // std::thread::hardware_concurrency()
         int   top_n        = 10000;
         double slice_seconds = 30.0;
         double save_interval_seconds = 10.0;
@@ -483,13 +572,13 @@ namespace finders {
             item["seed"]      = h.worldSeed;
             item["chunk"]     = { {"x", h.chunk.x}, {"z", h.chunk.z} };
             item["maxR"]      = h.maxWidth;
-            item["coverY"]    = h.coverY;
             item["marginMax"] = h.marginMax;
             item["avgVert"]   = h.avgVertical;
-            item["spanY"]     = h.spanY;
+            item["minY"]      = h.minYBlock;
+            item["maxY"]      = h.maxYBlock;
             item["start"]     = { {"x", (int)h.approxStart.x},
-                             {"y", (int)h.approxStart.y},
-                             {"z", (int)h.approxStart.z} };
+                                  {"y", (int)h.approxStart.y},
+                                  {"z", (int)h.approxStart.z} };
             arr.push_back(std::move(item));
         }
         return o;
@@ -528,25 +617,23 @@ namespace finders {
         size_t loaded = 0;
         for (const auto& obj : j["top"]) {
             VerticalCaveHit h{};
-            h.worldSeed   = (i64) obj.value("seed", 0LL);
-            h.coverY      =        obj.value("coverY", 0.0);
-            h.maxWidth    =        obj.value("maxR", 0.0);
-            h.marginMax   =        obj.value("marginMax", 0.0);
-            h.avgVertical =        obj.value("avgVert", 0.0);
-            h.spanY       =        obj.value("spanY", 0.0);
-
+            h.worldSeed   = (i64)  obj.value("seed", 0LL);
             if (obj.contains("chunk")) {
                 const auto& ch = obj["chunk"];
                 h.chunk.x = ch.value("x", 0);
                 h.chunk.z = ch.value("z", 0);
             }
+            h.maxWidth    =        obj.value("maxR", 0.0);
+            h.marginMax   =        obj.value("marginMax", 0.0);
+            h.avgVertical =        obj.value("avgVert", 0.0);
+            h.minYBlock   =        obj.value("minY", 0);
+            h.maxYBlock   =        obj.value("maxY", 0);
             if (obj.contains("start")) {
                 const auto& st = obj["start"];
                 h.approxStart.x = st.value("x", 0);
                 h.approxStart.y = st.value("y", 0);
                 h.approxStart.z = st.value("z", 0);
             }
-
             globalTop.push(h);
             ++loaded;
         }
@@ -707,10 +794,10 @@ int main(int argc, char** argv) {
             for (int i = 0; i < showN; ++i) {
                 const auto& h = best[i];
                 std::printf(
-                        "\033[2K\r  #%02d  score=%6.3f  seed=%lld  cnk=(%d,%d)  cvrY=%4.1f  mMax=%4.2f  s=(%d,%d,%d)\n",
+                        "\033[2K\r  #%02d  sc=%6.3f  seed=%lld  c=(%3d,%3d) mMax=%4.2f  sp=(%4d,%3d,%4d) YRange=(%d-%d)\n",
                         i+1, h.score(), h.worldSeed, h.chunk.x, h.chunk.z,
-                        h.coverY, h.marginMax,
-                        (int)h.approxStart.x, (int)h.approxStart.y, (int)h.approxStart.z
+                        h.marginMax, (int)h.approxStart.x, (int)h.approxStart.y, (int)h.approxStart.z,
+                        h.minYBlock, h.maxYBlock
                 );
             }
 
@@ -748,6 +835,7 @@ int main(int argc, char** argv) {
             if (now - graceStart > 2.0) { stopFlag.store(true); break; }
         }
     }
+
 
     // Join workers
     stopFlag.store(true);

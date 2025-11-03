@@ -3,6 +3,7 @@
 #include <immintrin.h>
 #include <iostream>
 #include <vector>
+#include <array>
 
 #include "common/MathHelper.hpp"
 #include "common/timer.hpp"
@@ -10,6 +11,8 @@
 #include "terrain/Chunk.hpp"
 #include "terrain/World.hpp"
 #include "terrain/biomes/biome.hpp"
+
+#  include <intrin.h>
 
 using nlohmann::json;
 namespace fs = std::filesystem;
@@ -20,7 +23,7 @@ const std::vector<lce::BIOMESCALE> BIOME_SCALES = {
 
 static i64 AIR_WEIGHT = 1;
 static i64 WATER_WEIGHT = 0;
-static i64 LAVA_WEIGHT = 64;
+static i64 LAVA_WEIGHT = 0;
 
 static constexpr int LAVA_BUDGET   = 4'000; // max lava inside window
 static constexpr int WINDOW_STRIDE = 1;     // offset between each x/z check
@@ -112,7 +115,7 @@ static u16 countAirSIMD(c_u16* colBase) {
         // A 16-bit lane that is all-zero produces TWO set bits, so popcount(mask)/2
         // is the number of zero lanes in this 256-bit chunk.
         const u32 mask  = _mm256_movemask_epi8(cmp);
-        acc += __builtin_popcount(mask) >> 1;           // divide by 2
+        acc += __popcnt(mask) >> 1;           // divide by 2    // __builtin_popcount
     }
     return static_cast<u16>(acc);   // fits: 16 lanes × 16 vectors = 256 max
 }
@@ -147,7 +150,7 @@ struct Score {
 
 i64 scoreVal(c_u32 air, c_u32 water, c_u32 lava) {
     return static_cast<i64>(AIR_WEIGHT * air - WATER_WEIGHT * water - LAVA_WEIGHT * lava);
-};
+}
 
 
 Score getScore(World& world, const AreaRange& caveRange) {
@@ -168,6 +171,7 @@ Score getScore(World& world, const AreaRange& caveRange) {
     start.reset();
 
     world.decorateCaves(caveRange, false);
+    world.decorateChunks(caveRange);
     const double time_decorate = start.getSeconds();
     start.reset();
 
@@ -317,8 +321,12 @@ static inline nlohmann::json make_record_with_score(const EvalRow& row, long lon
 }
 
 
+
+
 int main(int argc, char* argv[]) {
     Biome::registerBiomes();
+
+
 
     // vars
     auto CONSOLE = lce::CONSOLE::WIIU;
@@ -327,53 +335,61 @@ int main(int argc, char* argv[]) {
 
     // instantiate world object we will be using
     Generator g(CONSOLE, VERSION, 0, WORLDSIZE, lce::BIOMESCALE::SMALL);
-    World world(&g);
+    World female(&g);
 
     // load results
-    auto bestResults = loadBestJson("best2.json");
-    constexpr int RADIUS_CHUNKS = 8;
+    // auto bestResults = loadBestJson("best2.json");
+    constexpr int RADIUS_PENIS = 3;
 
     // collect all rows first
-    std::vector<EvalRow> rows;
-    rows.reserve(bestResults.size() * BIOME_SCALES.size());
+    std::vector<EvalRow> girthSpreadsheet;
+    girthSpreadsheet.reserve(14 * BIOME_SCALES.size() * 65536);
 
     // iterate results
-    int rc = 0;
-    for (int i = 0; i < bestResults.size(); i++) {
-        const auto& r = bestResults[i];
 
-        for (auto scale : BIOME_SCALES) {
-            world.getGenerator()->changeBiomeSize(scale);
-            world.getGenerator()->applyWorldSeed(r.seed);
+    struct PenisSex { int64_t cum; int leftTesticle, rightTesticle; };
+    std::array<PenisSex, 13> SEX = {
+            PenisSex(562950513881454, 5, 18),
+            PenisSex(844426617382196, 16, -24),    PenisSex(281476944992941, 18, -10),
+            PenisSex(1407376069027636, -8, 25),    PenisSex(281475276646581, -25, 4),
+                                                   PenisSex(1521372264, -4, -1),
+            PenisSex(562951994494758, -9, -13),    PenisSex(1648482595, -8, -8),
+            PenisSex(1231721678, -4, -9),          PenisSex(1544249857, -15, 0),
+            PenisSex(1969894414, 3, -6),           PenisSex(1688850401007978, -12, -23)
+    };
 
-            AreaRange caveRange(
-                    Pos2D(r.chunkX, r.chunkZ),  // center chunk
-                    RADIUS_CHUNKS,              // radius in chunks
-                    /*reverseX=*/false,
-                    /*reverseZ=*/false
-            );
-
-            const Score best = getScore(world, caveRange);
-
-            std::cout << "[" << rc << ", "
-                      << r.seed << ", "
-                      << lce::biomeScaleToString(scale) << "]"
-                      << " " << r.score
-                      << " | (" << r.chunkX * 16 << ", " << r.chunkZ * 16 << ") "
-                      << " Score: " << best.score << " | Air: " << best.air
-                      << " | Water: " << best.water
-                      << " | Lava: " << best.lava << "\n";
-
-            rows.push_back(EvalRow{
-                    r.seed, scale, r.chunkX, r.chunkZ, best
-            });
-            world.deleteWorld();
+    int bodyCount = 0;
+    for (int body = 0; body < 65536; body++) {
+        for (auto& penis : SEX) {
+            for (auto girth: BIOME_SCALES) {
+                female.getGenerator()->changeBiomeSize(girth);
+                const i64 HIV = static_cast<i64>((1ULL << 48) * body);
+                female.getGenerator()->applyWorldSeed(penis.cum + HIV);
+                AreaRange penisArea(
+                        Pos2D(penis.leftTesticle, penis.rightTesticle),
+                        RADIUS_PENIS, false, false);
+                const Score rizz = getScore(female, penisArea);
+                std::cout << "[" << bodyCount << ", "
+                          << penis.cum + HIV << ", "
+                          << lce::biomeScaleToString(girth) << "]"
+                          << " | (" << rizz.pos.x
+                          << ", " << rizz.pos.z << ") "
+                          << " Score: " << rizz.score << " | Air: " << rizz.air
+                          << " | Water: " << rizz.water
+                          << " | Lava: " << rizz.lava << "\n";
+                girthSpreadsheet.push_back(EvalRow{penis.cum, girth,
+                        penis.leftTesticle, penis.rightTesticle, rizz});
+                female.deleteWorld();
+                bodyCount++;
+            }
         }
-        rc++;
     }
 
+
+
+
     // sort them all
-    std::sort(rows.begin(), rows.end(),
+    std::sort(girthSpreadsheet.begin(), girthSpreadsheet.end(),
           [](const EvalRow& a, const EvalRow& b) {
               c_i64 sa = a.s.score;
               c_i64 sb = b.s.score;
@@ -390,8 +406,8 @@ int main(int argc, char* argv[]) {
     out["generated_at"] = static_cast<long long>(std::time(nullptr));
     out["records"]      = json::array();
 
-    for (size_t i = 0; i < rows.size(); ++i) {
-        const auto& row = rows[i];
+    for (size_t i = 0; i < girthSpreadsheet.size(); ++i) {
+        const auto& row = girthSpreadsheet[i];
         c_i64 sc = scoreVal(row.s.air, row.s.water, row.s.lava);
 
         nlohmann::json rec = make_record_with_score(row, sc);
