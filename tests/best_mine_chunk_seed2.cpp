@@ -51,7 +51,7 @@ static u16 countAirSIMD(c_u16* colBase) {
         // A 16-bit lane that is all-zero produces TWO set bits, so popcount(mask)/2
         // is the number of zero lanes in this 256-bit chunk.
         const u32 mask  = _mm256_movemask_epi8(cmp);
-        acc += __builtin_popcount(mask) >> 1;           // divide by 2
+        acc += __popcnt(mask) >> 1;           // divide by 2    // __builtin_popcount
     }
     return static_cast<u16>(acc);   // fits: 16 lanes × 16 vectors = 256 max
 }
