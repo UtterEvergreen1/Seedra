@@ -127,21 +127,8 @@ public:
      */
     void unlockChunks() { chunkMutex.unlock(); }
 
-    /**
-     * @brief Retrieves the block ID at the specified coordinates.
-     * @param x The X-coordinate.
-     * @param y The Y-coordinate.
-     * @param z The Z-coordinate.
-     * @return The block ID.
-     */
-    int getBlockId(int x, int y, int z);
 
-    /**
-     * @brief Retrieves the block ID at the specified position.
-     * @param pos The position.
-     * @return The block ID.
-     */
-    int getBlockId(const Pos3D &pos);
+
 
     /**
      * @brief Retrieves the block state at the specified coordinates.
@@ -150,7 +137,7 @@ public:
      * @param z The Z-coordinate.
      * @return The block state.
      */
-    lce::BlockState getBlock(int x, int y, int z);
+    lce::BlockState getBlock(i32 x, i32 y, i32 z);
 
     /**
      * @brief Retrieves the block state at the specified position.
@@ -160,28 +147,36 @@ public:
     lce::BlockState getBlock(const Pos3D &pos);
 
     /**
-     * @brief Notifies neighboring blocks of a change at the specified coordinates.
+     * @brief Retrieves the block ID at the specified coordinates.
      * @param x The X-coordinate.
      * @param y The Y-coordinate.
      * @param z The Z-coordinate.
+     * @return The block ID.
      */
-    void notifyNeighbors(int x, int y, int z);
+    u16 getBlockId(i32 x, i32 y, i32 z);
 
     /**
-     * @brief Sets the block ID at the specified coordinates.
-     * @param x The X-coordinate.
-     * @param y The Y-coordinate.
-     * @param z The Z-coordinate.
-     * @param blockId The block ID to set.
-     */
-    void setBlock(int x, int y, int z, int blockId);
-
-    /**
-     * @brief Sets the block ID at the specified position.
+     * @brief Retrieves the block ID at the specified position.
      * @param pos The position.
-     * @param blockId The block ID to set.
+     * @return The block ID.
      */
-    void setBlockId(const Pos3D &pos, int blockId);
+    u16 getBlockId(const Pos3D &pos);
+
+    /**
+     * @brief Sets the block state at the specified coordinates.
+     * @param x The X-coordinate.
+     * @param y The Y-coordinate.
+     * @param z The Z-coordinate.
+     * @param blockstate The block state to set.
+     */
+    void setBlock(i32 x, i32 y, i32 z, lce::BlockState blockState);
+
+    /**
+     * @brief Sets the block state at the specified position.
+     * @param pos The position.
+     * @param blockstate The block state to set.
+     */
+    void setBlock(const Pos3D &pos, lce::BlockState blockState);
 
     /**
      * @brief Sets the block ID and metadata at the specified coordinates.
@@ -191,7 +186,7 @@ public:
      * @param blockId The block ID to set.
      * @param meta The metadata to set.
      */
-    void setBlock(int x, int y, int z, int blockId, int meta);
+    void setBlockAndData(i32 x, i32 y, i32 z, u16 blockId, u8 meta);
 
     /**
      * @brief Sets the block ID and metadata at the specified position.
@@ -199,23 +194,46 @@ public:
      * @param blockId The block ID to set.
      * @param meta The metadata to set.
      */
-    void setBlock(const Pos3D &pos, int blockId, int meta);
+    void setBlockAndData(const Pos3D &pos, u16 blockId, u8 meta);
 
     /**
-     * @brief Sets the block state at the specified coordinates.
+     * @brief Sets the block ID at the specified coordinates.
      * @param x The X-coordinate.
      * @param y The Y-coordinate.
      * @param z The Z-coordinate.
-     * @param blockstate The block state to set.
+     * @param blockId The block ID to set.
      */
-    void setBlock(int x, int y, int z, lce::BlockState blockState);
+    void setBlockId(i32 x, i32 y, i32 z, u16 blockId);
 
     /**
-     * @brief Sets the block state at the specified position.
+     * @brief Sets the block ID at the specified position.
      * @param pos The position.
-     * @param blockstate The block state to set.
+     * @param blockId The block ID to set.
      */
-    void setBlock(const Pos3D &pos, lce::BlockState blockState);
+    void setBlockId(const Pos3D &pos, u16 blockId);
+
+    u16* mutBlockPtr(i32 x, i32 y, i32 z);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    /**
+     * @brief Notifies neighboring blocks of a change at the specified coordinates.
+     * @param x The X-coordinate.
+     * @param y The Y-coordinate.
+     * @param z The Z-coordinate.
+     */
+    void notifyNeighbors(int x, int y, int z);
 
     /**
      * @brief Checks if the block at the specified coordinates is air.

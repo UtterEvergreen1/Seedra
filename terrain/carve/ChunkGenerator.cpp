@@ -6,6 +6,23 @@
 #include "terrain/biomes/biomeDepthAndScale.hpp"
 
 
+/*
+for (int i = -2; i <= 2; ++i) {
+    for (int j = -2; j <= 2; ++j) {
+        c_float f = 10.0F / sqrt(static_cast<float>(i * i + j * j) + 0.2F);
+        biomeWeights[i + 2 + (j + 2) * 5] = f;
+    }
+}
+ */
+static constexpr std::array<uint32_t, 25> BIOME_WEIGHTS = {
+        0x405F7F69, 0x408C544C, 0x409C24DE, 0x408C544C, 0x405F7F69,
+        0x408C544C, 0x40D7BE74, 0x41120F31, 0x40D7BE74, 0x408C544C,
+        0x409C24DE, 0x41120F31, 0x41B2E2AC, 0x41120F31, 0x409C24DE,
+        0x408C544C, 0x40D7BE74, 0x41120F31, 0x40D7BE74, 0x408C544C,
+        0x405F7F69, 0x408C544C, 0x409C24DE, 0x408C544C, 0x405F7F69,
+};
+
+
 ChunkGeneratorOverWorld::ChunkGeneratorOverWorld(const Generator& generator) : g(&generator) {
     rng.setSeed(g->getWorldSeed());
     minLimitPerlinNoise.setNoiseGeneratorOctaves(rng, 16);
@@ -19,12 +36,7 @@ ChunkGeneratorOverWorld::ChunkGeneratorOverWorld(const Generator& generator) : g
     heightMap.resize(825);
     biomeWeights.resize(25);
 
-    for (int i = -2; i <= 2; ++i) {
-        for (int j = -2; j <= 2; ++j) {
-            c_float f = 10.0F / sqrt(static_cast<float>(i * i + j * j) + 0.2F);
-            biomeWeights[i + 2 + (j + 2) * 5] = f;
-        }
-    }
+    std::memcpy(biomeWeights.data(), BIOME_WEIGHTS.data(), sizeof(BIOME_WEIGHTS));
     biomesForGeneration = nullptr;
 }
 
@@ -97,24 +109,42 @@ void ChunkGeneratorOverWorld::setBlocksInChunk(c_int chunkX, c_int chunkZ, Chunk
                         double density = heightAtXZ0 - hStep;
                         // int defaultId = (subY * 8 + ym < SEA_LEVEL) ? 9 : 0;
 
-                        for (int zm = 0; zm < 4; ++zm) {
-                            int x = subX * 4 + xm;
-                            int y = subY * 8 + ym;
-                            int z = subZ * 4 + zm;
-                            int worldX = chunkX * 16 + x;
-                            int worldZ = chunkZ * 16 + z;
-                            double heightFalloff = chunkHasHeightFalloff ? getHeightFalloff(worldX, worldZ) : 0.0;
+                        if (chunkHasHeightFalloff) {
+                            // Slower path with height falloff
+                            for (int zm = 0; zm < 4; ++zm) {
+                                int x = subX * 4 + xm;
+                                int y = subY * 8 + ym;
+                                int z = subZ * 4 + zm;
+                                int worldX = chunkX * 16 + x;
+                                int worldZ = chunkZ * 16 + z;
+                                double heightFalloff = getHeightFalloff(worldX, worldZ);
 
-                            if (static_cast<int>(heightFalloff) == 128) {
-                                if (y <= SEA_LEVEL - 10)
-                                    primer->setBlockId(x, y, z, 1);
-                                else if (y < SEA_LEVEL)
-                                    primer->setBlockId(x, y, z, 9);
-                            } else {
-                                if ((density += hStep) > heightFalloff) {
-                                    primer->setBlockId(x, y, z, 1);
-                                } else if (y < SEA_LEVEL) {
-                                    primer->setBlockId(x, y, z, 9);
+                                density += hStep;
+
+                                u16 blockId;
+                                if (static_cast<int>(heightFalloff) == 128) {
+                                    blockId = (y <= SEA_LEVEL - 10) ? 1 : ((y < SEA_LEVEL) ? 9 : 0);
+                                } else {
+                                    blockId = (density > heightFalloff) ? 1 : ((y < SEA_LEVEL) ? 9 : 0);
+                                }
+
+                                if (blockId != 0) {
+                                    primer->setBlockId(x, y, z, blockId);
+                                }
+                            }
+                        } else {
+                            // Fast path: no height falloff, no world coordinate calculation
+                            for (int zm = 0; zm < 4; ++zm) {
+                                int x = subX * 4 + xm;
+                                int y = subY * 8 + ym;
+                                int z = subZ * 4 + zm;
+
+                                density += hStep;
+
+                                u16 blockId = (density > 0.0) ? 1 : ((y < SEA_LEVEL) ? 9 : 0);
+
+                                if (blockId != 0) {
+                                    primer->setBlockId(x, y, z, blockId);
                                 }
                             }
                         }
@@ -156,10 +186,10 @@ void ChunkGeneratorOverWorld::provideChunk(ChunkPrimer *chunkPrimer, c_int x,c_i
 
 
 void ChunkGeneratorOverWorld::generateHeightmap(c_int x, c_int y, c_int z) {
-    depthNoise.genNoiseOctaves(g, depthRegion, x, 10, z, 5, 1, 5, 200.0, 1.0, 200.0);
-    mainPerlinNoise.genNoiseOctaves(g, mainNoiseRegion, x, y, z, 5, 33, 5, 8.55515, 4.277575, 8.55515);
-    minLimitPerlinNoise.genNoiseOctaves(g, minLimitRegion, x, y, z, 5, 33, 5, 684.412, 684.412, 684.412);
-    maxLimitPerlinNoise.genNoiseOctaves(g, maxLimitRegion, x, y, z, 5, 33, 5, 684.412, 684.412, 684.412);
+    depthNoise.         genNoiseOctaves(g, depthRegion,     x, 10, z, 5,  1, 5, 200.0,   1.0,      200.0);
+    mainPerlinNoise.    genNoiseOctaves(g, mainNoiseRegion, x,  y, z, 5, 33, 5, 8.55515, 4.277575, 8.55515);
+    minLimitPerlinNoise.genNoiseOctaves(g, minLimitRegion,  x,  y, z, 5, 33, 5, 684.412, 684.412,  684.412);
+    maxLimitPerlinNoise.genNoiseOctaves(g, maxLimitRegion,  x,  y, z, 5, 33, 5, 684.412, 684.412,  684.412);
     int noiseIdx = 0;
     int depthIdx = 0;
 

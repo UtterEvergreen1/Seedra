@@ -10,7 +10,7 @@ bool WorldGenCucurbitsBlock::generate(World* worldIn, RNG &rng, const Pos3D &pos
 
         if (lce::blocks::isReplaceableBlock(worldIn->getBlockId(blockPos)) &&
             worldIn->getBlockId(blockPos.down()) == lce::blocks::GRASS_ID) {
-            worldIn->setBlock(blockPos, this->blockId, this->hasRotation ? getRandomRotationMetaData(rng) : 0);
+            worldIn->setBlockAndData(blockPos, this->blockId, this->hasRotation ? getRandomRotationMetaData(rng) : 0);
         }
     }
 

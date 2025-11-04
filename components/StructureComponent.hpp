@@ -73,7 +73,7 @@ public:
     }
 
     // Safe copy constructor
-    StructureComponent(const StructureComponent& other) {
+    StructureComponent(const StructureComponent& other) : Piece() {
         usingPiece(other);
         // ensure coord-mode matches facing
         setCoordMode(other.facing);

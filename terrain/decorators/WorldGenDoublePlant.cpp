@@ -11,8 +11,8 @@ bool BlockDoublePlant::canPlaceBlockAt(World* chunk, const Pos3D& pos) {
 }
 
 void BlockDoublePlant::placeAt(World* chunk, const Pos3D& lowerPos, const EnumPlantType variant) {
-    chunk->setBlock(lowerPos, DOUBLE_PLANT_ID, static_cast<int>(variant));
-    chunk->setBlock(lowerPos.up(), DOUBLE_PLANT_ID, 10); // 8 is the top | 2 is facing north
+    chunk->setBlockAndData(lowerPos, DOUBLE_PLANT_ID, static_cast<int>(variant));
+    chunk->setBlockAndData(lowerPos.up(), DOUBLE_PLANT_ID, 10); // 8 is the top | 2 is facing north
 }
 
 bool WorldGenDoublePlant::generate(World* worldIn, RNG& rng, const Pos3D& pos) const {

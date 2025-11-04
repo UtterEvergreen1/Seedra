@@ -105,7 +105,7 @@ bool WorldGenBigMushroom::generate(World* worldIn, RNG& rand, const Pos3D& posit
                 if (position.getY() >= maxY - 1 || hugeMushroomMetaData != BlockHugeMushroom::EnumType::ALL_INSIDE) {
                     Pos3D blockPos(xPos, yPos, zPos);
                     if (!lce::blocks::isFullBlock(worldIn->getBlockId(blockPos))) {
-                        worldIn->setBlock(position.up(yPos), block.getID(), (int) hugeMushroomMetaData);
+                        worldIn->setBlockAndData(position.up(yPos), block.getID(), (int) hugeMushroomMetaData);
                     }
                 }
             }
@@ -114,7 +114,7 @@ bool WorldGenBigMushroom::generate(World* worldIn, RNG& rand, const Pos3D& posit
 
     for (int y_off = 0; y_off < height; ++y_off) {
         if (lce::blocks::isFullBlock(!worldIn->getBlockId(position.up(y_off)))) {
-            worldIn->setBlock(position.up(y_off), block.getID(), (int) BlockHugeMushroom::EnumType::STEM);
+            worldIn->setBlockAndData(position.up(y_off), block.getID(), (int) BlockHugeMushroom::EnumType::STEM);
         }
     }
 

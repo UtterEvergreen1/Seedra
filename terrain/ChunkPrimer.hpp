@@ -6,10 +6,11 @@
 #include <string>
 #include <vector>
 
+#include "generator.hpp"
+#include "BlockAccess.hpp"
 #include "lce/blocks/__include.hpp"
 #include "lce/registry/blockRegistry.hpp"
 #include "components/BoundingBox.hpp"
-#include "generator.hpp"
 #include "common/Pos3DTemplate.hpp"
 
 /**
@@ -27,6 +28,14 @@ enum class Stage : u8 {
     STAGE_DONE = 64 ///< Final stage, generation complete.
 };
 
+
+enum class BlockOrder : u8 {
+    XZY,
+    OTHER,
+};
+
+static constexpr BlockOrder CHUNK_PRIMER_BLOCK_ORDER = BlockOrder::XZY;
+
 /**
  * @class ChunkPrimer
  * @brief Represents a chunk and provides utilities for managing its blocks, data, and generation stages.
@@ -35,60 +44,28 @@ class ChunkPrimer {
     static constexpr int STORAGE_SIZE = 16 * (256) * 16; ///< Total storage size for blocks in the chunk.
 
 public:
-    /**
-     * @brief Current stage of chunk generation.
-     */
-    std::atomic<Stage> stage = Stage::STAGE_TERRAIN;
 
-    /**
-     * @brief Indicates whether the chunk is being modified.
-     */
-    std::atomic_bool isModifying = false;
+    std::atomic<Stage> stage = Stage::STAGE_TERRAIN; ///< Current stage of chunk generation.
 
-    /**
-     * @brief Random number generator used for decoration.
-     */
-    RNG decorateRng;
+    std::atomic_bool isModifying = false; ///< Indicates whether the chunk is being modified.
 
-    /**
-     * @brief Array storing block IDs and data for the chunk.
-     */
-    std::vector<u16> blocks = std::vector<u16>(STORAGE_SIZE);
+    RNG decorateRng; ///< Random number generator used for decoration.
 
-    /**
-     * @brief Buffer for storing skylight values.
-     */
-    std::vector<u8> skyLight;
+    std::vector<u16> blocks = std::vector<u16>(STORAGE_SIZE); ///< Array storing block IDs and data for the chunk.
 
-    /**
-     * @brief The highest Y-coordinate of a non-air block in the chunk.
-     */
-    int highestYBlock = -1;
+    std::vector<u8> skyLight; ///< Buffer for storing skylight values.
 
-    /**
-     * @brief Height map for the chunk.
-     */
-    MU u8 heightMap[16][16]{};
+    int highestYBlock = -1; ///< The highest Y-coordinate of a non-air block in the chunk.
 
-    /**
-     * @brief Precipitation height map for the chunk.
-     */
-    std::vector<int> precipitationHeightMap = std::vector(256, -999);
+    MU u8 heightMap[16][16]{}; ///< Height map for the chunk.
 
-    /**
-     * @brief Default constructor.
-     */
-    ChunkPrimer() = default;
+    std::vector<int> precipitationHeightMap = std::vector(256, -999); ///< Precipitation height map for the chunk.
 
-    /**
-     * @brief Deleted copy constructor to prevent copying.
-     */
-    ChunkPrimer(const ChunkPrimer &) = delete;
+    ChunkPrimer() = default; ///< Default constructor.
 
-    /**
-     * @brief Deleted copy assignment operator to prevent copying.
-     */
-    ChunkPrimer &operator=(const ChunkPrimer &) = delete;
+    ChunkPrimer(const ChunkPrimer &) = delete; ///< Deleted copy constructor to prevent copying.
+
+    ChunkPrimer &operator=(const ChunkPrimer &) = delete; ///< Deleted copy assignment operator to prevent copying.
 
     void reset() {
         stage = Stage::STAGE_TERRAIN;
@@ -102,13 +79,35 @@ public:
     }
 
     /**
+     * @brief Retrieves the block state at the specified coordinates.
+     * @param x X-coordinate.
+     * @param y Y-coordinate.
+     * @param z Z-coordinate.
+     * @return The block state.
+     */
+    ND inline lce::BlockState getBlock(c_i32 x, c_i32 y, c_i32 z) const {
+        if EXPECT_FALSE(isInvalidIndex(x, y, z)) { return lce::BlocksInit::AIR.getState(); }
+        u16 block = blocks[getStorageIndex(x, y, z)];
+        return lce::BlockState(block >> 4,  block & 15);
+    }
+
+    /**
+     * @brief Retrieves the block state at the specified position.
+     * @param pos The position.
+     * @return The block state.
+     */
+    ND inline lce::BlockState getBlock(const Pos3D &pos) const {
+        return getBlock(pos.x, pos.y, pos.z);
+    }
+
+    /**
      * @brief Retrieves the block ID at the specified coordinates.
      * @param x X-coordinate.
      * @param y Y-coordinate.
      * @param z Z-coordinate.
      * @return The block ID.
      */
-    ND u16 getBlockId(c_i64 x, c_i64 y, c_i64 z) const {
+    ND inline u16 getBlockId(c_i32 x, c_i32 y, c_i32 z) const {
         if EXPECT_FALSE(isInvalidIndex(x, y, z)) { return 0; }
         return blocks[getStorageIndex(x, y, z)] >> 4;
     }
@@ -118,8 +117,53 @@ public:
      * @param pos The position.
      * @return The block ID.
      */
-    ND u16 getBlockId(const Pos3D &pos) const {
+    ND inline u16 getBlockId(const Pos3D &pos) const {
         return this->getBlockId(pos.x, pos.y, pos.z);
+    }
+
+    /**
+     * @brief Sets the block state at the specified coordinates.
+     * @param x X-coordinate.
+     * @param y Y-coordinate.
+     * @param z Z-coordinate.
+     * @param block The block state to set.
+     */
+    inline void setBlock(c_i32 x, c_i32 y, c_i32 z, const lce::BlockState block) {
+        if EXPECT_FALSE(isInvalidIndex(x, y, z)) { return; }
+        // TODO: optimize this
+        blocks[getStorageIndex(x, y, z)] = ((block.getID() << 4) | block.getDataTag());
+    }
+
+    /**
+     * @brief Sets the block state at the specified position.
+     * @param pos The position.
+     * @param block The block state to set.
+     */
+    inline void setBlock(const Pos3D &pos, const lce::BlockState block) {
+        this->setBlock(pos.x, pos.y, pos.z, block);
+    }
+
+    /**
+     * @brief Sets both the block ID and data at the specified coordinates.
+     * @param x X-coordinate.
+     * @param y Y-coordinate.
+     * @param z Z-coordinate.
+     * @param id The block ID to set.
+     * @param data The block data to set.
+     */
+    MU inline void setBlockAndData(c_i32 x, c_i32 y, c_i32 z, c_u16 id, c_u8 data) {
+        if EXPECT_FALSE(isInvalidIndex(x, y, z)) { return; }
+        blocks[getStorageIndex(x, y, z)] = ((id << 4) | data);
+    }
+
+    /**
+     * @brief Sets both the block ID and data at the specified position.
+     * @param pos The position.
+     * @param id The block ID to set.
+     * @param data The block data to set.
+     */
+    MU inline void setBlockAndData(const Pos3D &pos, c_u16 id, c_u8 data) {
+        this->setBlockAndData(pos.x, pos.y, pos.z, id, data);
     }
 
     /**
@@ -129,7 +173,7 @@ public:
      * @param z Z-coordinate.
      * @param block The block ID to set.
      */
-    MU void setBlockId(c_i64 x, c_i64 y, c_i64 z, c_u16 block) {
+    MU inline void setBlockId(c_i32 x, c_i32 y, c_i32 z, c_u16 block) {
         if EXPECT_FALSE(isInvalidIndex(x, y, z)) { return; }
         blocks[getStorageIndex(x, y, z)] = block << 4;
     }
@@ -139,70 +183,13 @@ public:
      * @param pos The position.
      * @param block The block ID to set.
      */
-    MU void setBlockId(const Pos3D &pos, c_u16 block) {
+    MU inline void setBlockId(const Pos3D &pos, c_u16 block) {
         this->setBlockId(pos.x, pos.y, pos.z, block);
     }
 
-    /**
-     * @brief Retrieves the block data at the specified coordinates.
-     * @param x X-coordinate.
-     * @param y Y-coordinate.
-     * @param z Z-coordinate.
-     * @return The block data.
-     */
-    MU ND u8 getData(c_i64 x, c_i64 y, c_i64 z) const {
-        if EXPECT_FALSE(isInvalidIndex(x, y, z)) { return 0; }
-        return blocks[getStorageIndex(x, y, z)] & 15;
-    }
-
-    /**
-     * @brief Retrieves the block data at the specified position.
-     * @param pos The position.
-     * @return The block data.
-     */
-    MU ND u8 getData(const Pos3D &pos) const {
-        return this->getData(pos.x, pos.y, pos.z);
-    }
-
-    /**
-     * @brief Sets the block data at the specified coordinates.
-     * @param x X-coordinate.
-     * @param y Y-coordinate.
-     * @param z Z-coordinate.
-     * @param data The block data to set.
-     */
-    MU void setData(c_i64 x, c_i64 y, c_i64 z, c_u8 data) {
-        if EXPECT_FALSE(isInvalidIndex(x, y, z)) { return; }
-        blocks[getStorageIndex(x, y, z)] |= data;
-    }
-
-    /**
-     * @brief Sets the block data at the specified position.
-     * @param pos The position.
-     * @param data The block data to set.
-     */
-    MU void setData(const Pos3D &pos, c_u8 data) {
-        this->setData(pos.x, pos.y, pos.z, data);
-    }
-
-    /**
-     * @brief Retrieves the block state at the specified coordinates.
-     * @param x X-coordinate.
-     * @param y Y-coordinate.
-     * @param z Z-coordinate.
-     * @return The block state.
-     */
-    ND lce::BlockState getBlock(c_i64 x, c_i64 y, c_i64 z) const {
-        return {getBlockId(x, y, z), getData(x, y, z)};
-    }
-
-    /**
-     * @brief Retrieves the block state at the specified position.
-     * @param pos The position.
-     * @return The block state.
-     */
-    ND lce::BlockState getBlock(const Pos3D &pos) const {
-        return getBlock(pos.x, pos.y, pos.z);
+    ND inline u16* mutBlockPtr(c_i32 x, c_i32 y, c_i32 z) {
+        if EXPECT_FALSE(isInvalidIndex(x, y, z)) return nullptr;
+        return &blocks[getStorageIndex(x, y, z)];
     }
 
     /**
@@ -212,7 +199,7 @@ public:
      * @param z Z-coordinate.
      * @return The skylight value.
      */
-    ND u16 getSkyLight(c_i64 x, c_i64 y, c_i64 z) const {
+    ND u16 getSkyLight(c_i32 x, c_i32 y, c_i32 z) const {
         if EXPECT_FALSE(isInvalidIndex(x, y, z)) { return 0; }
         return blocks[getStorageIndex(x, y, z)];
     }
@@ -224,54 +211,9 @@ public:
      * @param z Z-coordinate.
      * @param lightValue The skylight value to set.
      */
-    void setSkyLight(c_i64 x, c_i64 y, c_i64 z, c_u8 lightValue) {
+    void setSkyLight(c_i32 x, c_i32 y, c_i32 z, c_u8 lightValue) {
         if EXPECT_FALSE(isInvalidIndex(x, y, z)) { return; }
         skyLight[getStorageIndex(x, y, z)] = lightValue;
-    }
-
-    /**
-     * @brief Sets both the block ID and data at the specified coordinates.
-     * @param x X-coordinate.
-     * @param y Y-coordinate.
-     * @param z Z-coordinate.
-     * @param id The block ID to set.
-     * @param data The block data to set.
-     */
-    MU void setBlockAndData(c_i64 x, c_i64 y, c_i64 z, c_int id, c_int data) {
-        if EXPECT_FALSE(isInvalidIndex(x, y, z)) { return; }
-        blocks[getStorageIndex(x, y, z)] = ((id << 4) | data);
-    }
-
-    /**
-     * @brief Sets both the block ID and data at the specified position.
-     * @param pos The position.
-     * @param id The block ID to set.
-     * @param data The block data to set.
-     */
-    MU void setBlockAndData(const Pos3D &pos, c_int id, c_int data) {
-        this->setBlockAndData(pos.x, pos.y, pos.z, id, data);
-    }
-
-    /**
-     * @brief Sets the block state at the specified coordinates.
-     * @param x X-coordinate.
-     * @param y Y-coordinate.
-     * @param z Z-coordinate.
-     * @param block The block state to set.
-     */
-    void setBlock(c_i64 x, c_i64 y, c_i64 z, const lce::BlockState block) {
-        if EXPECT_FALSE(isInvalidIndex(x, y, z)) { return; }
-        // TODO: optimize this
-        blocks[getStorageIndex(x, y, z)] = ((block.getID() << 4) | block.getDataTag());
-    }
-
-    /**
-     * @brief Sets the block state at the specified position.
-     * @param pos The position.
-     * @param block The block state to set.
-     */
-    void setBlock(const Pos3D &pos, const lce::BlockState block) {
-        this->setBlock(pos.x, pos.y, pos.z, block);
     }
 
     /**
@@ -281,7 +223,7 @@ public:
      * @param z Z-coordinate.
      * @return True if the block is air, false otherwise.
      */
-    ND bool isAirBlock(c_i64 x, c_i64 y, c_i64 z) const {
+    ND bool isAirBlock(c_i32 x, c_i32 y, c_i32 z) const {
         return getBlockId(x, y, z) == lce::blocks::AIR_ID;
     }
 
@@ -300,6 +242,7 @@ public:
      */
     ND int getHighestYBlock() {
         if (highestYBlock != -1) return highestYBlock;
+
         for (int y = 255; y >= 0; y--) {
             for (int x = 0; x < 16; x++) {
                 for (int z = 0; z < 16; z++) {
@@ -319,7 +262,7 @@ public:
      * @param z Z-coordinate.
      * @return The height of the terrain.
      */
-    ND int getHeight(c_i64 x, c_i64 z) const {
+    ND int getHeight(c_i32 x, c_i32 z) const {
         for (int y = 255; y >= 0; y--) {
             if (lce::blocks::hasLightOpacity(getBlockId(x, y - 1, z))) return y;
         }
@@ -350,7 +293,7 @@ public:
      * @param z Z-coordinate.
      * @return The Y-coordinate of the top solid or liquid block.
      */
-    ND int getTopSolidOrLiquidBlock(c_i64 x, c_i64 z) const {
+    ND int getTopSolidOrLiquidBlock(c_i32 x, c_i32 z) const {
         for (int i = 255; i >= 0; i--) {
             c_int blockId = getBlockId(x, i - 1, z);
             if (lce::blocks::blocksMovement(blockId) && !lce::blocks::isLeavesBlock(blockId)) return i;
@@ -366,7 +309,7 @@ public:
      * @param z Z-coordinate.
      * @return True if the coordinates are invalid, false otherwise.
      */
-    MU ND static bool isInvalidIndex(c_i64 x, c_i64 y, c_i64 z) {
+    MU ND static bool isInvalidIndex(c_i32 x, c_i32 y, c_i32 z) {
         return (((x | z) & ~15) || (y & ~255));
     }
 
@@ -377,9 +320,9 @@ public:
      * @param z Z-coordinate.
      * @return The storage index.
      */
-    static i64 getStorageIndex(c_i64 x, c_i64 y, c_i64 z) {
-        c_i64 value = x << 12 | z << 8 | y;
-        // c_i64 value = y << 8 | x << 4 | z;
+    static i64 getStorageIndex(c_i32 x, c_i32 y, c_i32 z) {
+        c_i32 value = x << 12 | z << 8 | y;
+        // c_i32 value = y << 8 | x << 4 | z;
         return value;
     }
 
@@ -455,4 +398,7 @@ public:
         }
         return out;
     }
+
 };
+
+static_assert(BlockAccess<ChunkPrimer>, "ChunkPrimer must satisfy BlockAccess concept");
