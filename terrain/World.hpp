@@ -57,7 +57,7 @@ public:
      * @param pos The position of the chunk.
      * @return True if the chunk exists, false otherwise.
      */
-    bool chunkExists(const Pos2D &pos) const;
+    bool chunkExists(const Pos2D &pos);
 
     /**
      * @brief Retrieves the chunk at the specified position.

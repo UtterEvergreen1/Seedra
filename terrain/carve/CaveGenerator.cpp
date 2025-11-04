@@ -13,9 +13,6 @@
 using namespace lce::blocks;
 
 
-std::map<Pos2D, int> sectionsInChunk;
-
-
 MU Pos2DVec_t CaveGenerator::getStartingChunks(const Generator *g, Pos2D lower, Pos2D upper) {
     RNG rng;
     Pos2DTemplate<i64> seedMultiplier = getSeedMultiplier(g);
@@ -197,7 +194,14 @@ void CaveGenerator::addTunnel(World& worldIn, i64 theSeedModifier, Pos2D current
 
         min += currentChunkX16;
         max += currentChunkX16;
-        if (!genBounds.isVecInside(min) || !genBounds.isVecInside(max)) {
+        // New: AABB intersects genBounds?
+        auto insideRange = [](int aMin, int aMax, int bMin, int bMax) {
+            return aMin <= bMax && bMin <= aMax;
+        };
+
+        if (!(insideRange(min.x, max.x, genBounds.minX, genBounds.maxX) &&
+              insideRange(min.y, max.y, genBounds.minY, genBounds.maxY) &&
+              insideRange(min.z, max.z, genBounds.minZ, genBounds.maxZ))) {
             continue;
         }
         Pos3D pos;
@@ -213,15 +217,6 @@ void CaveGenerator::addTunnel(World& worldIn, i64 theSeedModifier, Pos2D current
 
         min -= currentChunkX16;
         max -= currentChunkX16;
-
-        Pos2D center(startPos.x / 16 + (max.x - min.x) / 2,
-                     startPos.z / 16 + (max.z - min.z) / 2
-        );
-        if (!sectionsInChunk.contains(center)) {
-            sectionsInChunk[center] = 1;
-        } else {
-            sectionsInChunk[center]++;
-        }
 
         c_double invW = 1.0 / adjustedWidth;
         c_double invH = 1.0 / adjustedHeight;

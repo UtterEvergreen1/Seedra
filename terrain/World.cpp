@@ -55,8 +55,6 @@ void World::createChunks(const AreaRange& range) {
 
 
 void World::decorateCaves(const AreaRange& range, bool hasWaterCaves) {
-    //std::cout << "Carving chunks around " << theStartPosition << " with radius " << radius << std::endl;
-
     Pos2D lower = range.getLower();
     Pos2D upper = range.getUpper();
 
@@ -112,8 +110,8 @@ void World::decorateCaves(const AreaRange& range, bool hasWaterCaves) {
         }
     }
 
-    for (auto [pos, chunkPrimer] : chunks) {
-        if (chunkPrimer != nullptr) {
+    for (auto chunk : range) {
+        if (ChunkPrimer* chunkPrimer = getChunk(chunk); chunkPrimer != nullptr) {
             chunkPrimer->stage = Stage::STAGE_STRUCTURE;
         }
     }
@@ -121,7 +119,6 @@ void World::decorateCaves(const AreaRange& range, bool hasWaterCaves) {
 
 
 void World::decorateChunks(const AreaRange& range) {
-    //std::cout << "Decorating chunks around " << pos << " with radius " << radius << std::endl;
     for (Pos2D p : range) {
         if (this->chunkExists(p))
             Chunk::populateChunk(*this, p);
