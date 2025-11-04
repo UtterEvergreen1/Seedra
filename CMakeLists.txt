@@ -134,5 +134,6 @@ if(LC_BUILD_EXECUTABLE)
     add_cli(EXE_StructureSanity "tests/structure_sanity.cpp")
     add_cli(EXE_GetBiomeDepthAndScaleOptimizer "tests/getBiomeDepthAndScaleOptimizer.cpp")
     add_cli(EXE_FindSlowGenCode "tests/find_gen_slow_code.cpp")
+    add_cli(EXE_NoisePopulateParityTest "tests/NoisePopulateParityTest.cpp")
 
 endif()
