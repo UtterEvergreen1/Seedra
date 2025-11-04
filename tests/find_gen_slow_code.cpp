@@ -107,8 +107,5 @@ int main(int argc, char* argv[]) {
     }
 #endif
 
-    std::cout << "Chunk Locks                : " << chunkLocks << "\n";
-    std::cout << "worldGenMinableBlockCalls  : " << worldGenMinableBlockCalls << "\n";
-
     return 0;
 }

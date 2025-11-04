@@ -13,21 +13,54 @@
 #include <array>
 
 
-/**
- * @class NoiseGeneratorSimplex
- * @brief Generates 2D simplex noise for terrain generation.
- */
-class NoiseGeneratorSimplex : public PerlinNoise {
-    // Skewing and unskewing factors (2D simplex)
-    static constexpr double SKEW_FACTOR = 0.5 * (SQRT_3 - 1.0);
-    static constexpr double UNSKEW_FACTOR = (3.0 - SQRT_3) / 6.0;
 
-    static constexpr int GRAD3[12][3] = {
-        {1, 1, 0}, {-1, 1, 0}, {1, -1, 0}, {-1, -1, 0}, {1, 0, 1}, {-1, 0, 1},
-        {1, 0, -1}, {-1, 0, -1}, {0, 1, 1}, {0, -1, 1}, {0, 1, -1}, {0, -1, -1}
+
+
+namespace noise_values {
+    // Skewing and unskewing factors (2D simplex)
+    static constexpr double NOISE_SIMPLEX_SKEW_FACTOR = 0.5 * (SQRT_3 - 1.0);
+    static constexpr double NOISE_SIMPLEX_UNSKEW_FACTOR = (3.0 - SQRT_3) / 6.0;
+
+    static constexpr int NOISE_SIMPLEX_GRAD3[12][3] = {
+            {1, 1, 0}, {-1, 1, 0}, {1, -1, 0}, {-1, -1, 0}, {1, 0, 1}, {-1, 0, 1},
+            {1, 0, -1}, {-1, 0, -1}, {0, 1, 1}, {0, -1, 1}, {0, 1, -1}, {0, -1, -1}
     };
 
-public:
+
+
+    /**
+     * @brief Computes the gradient dot product for 3D noise.
+     * @param hash The hash value used to select the gradient.
+     * @param x The X-coordinate of the input vector.
+     * @param y The Y-coordinate of the input vector.
+     * @param z The Z-coordinate of the input vector.
+     * @return The dot product of the gradient and the input vector.
+     */
+    ND static double grad(int hash, double x, double y, double z) {
+        static constexpr double GRAD_X[16] = { 1.0, -1.0, 1.0, -1.0, 1.0, -1.0, 1.0, -1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, -1.0, 0.0 };
+        static constexpr double GRAD_Y[16] = { 1.0, 1.0, -1.0, -1.0, 0.0, 0.0, 0.0, 0.0, 1.0, -1.0, 1.0, -1.0, 1.0, -1.0, 1.0, -1.0 };
+        static constexpr double GRAD_Z[16] = { 0.0, 0.0, 0.0, 0.0, 1.0, 1.0, -1.0, -1.0, 1.0, 1.0, -1.0, -1.0, 0.0, 1.0, 0.0, -1.0 };
+
+        int i = hash & 15;
+        return GRAD_X[i] * x + GRAD_Y[i] * y + GRAD_Z[i] * z;
+    }
+
+    /**
+     * @brief Computes the gradient dot product for 2D noise.
+     * @param hash The hash value used to select the gradient.
+     * @param x The X-coordinate of the input vector.
+     * @param z The Z-coordinate of the input vector.
+     * @return The dot product of the gradient and the input vector.
+     */
+    ND static double grad2(int hash, double x, double z) {
+        static constexpr double GRAD_2X[16] = { 1.0, -1.0, 1.0, -1.0, 1.0, -1.0, 1.0, -1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, -1.0, 0.0 };
+        static constexpr double GRAD_2Z[16] = { 0.0, 0.0, 0.0, 0.0, 1.0, 1.0, -1.0, -1.0, 1.0, 1.0, -1.0, -1.0, 0.0, 1.0, 0.0, -1.0 };
+
+        int i = hash & 15;
+        return GRAD_2X[i] * x + GRAD_2Z[i] * z;
+    }
+
+
     /**
      * @brief Computes the floor of a value quickly.
      * @param value The input value.
@@ -48,26 +81,25 @@ public:
         return gradient[0] * x + gradient[1] * y;
     }
 
-    /**
-     * @brief Generates simplex noise for a given 2D position.
-     * @param posX The X-coordinate of the position.
-     * @param posZ The Z-coordinate of the position.
-     * @return The noise value at the given position.
-     */
+
+}
+
+
+
+
+
+/**
+ * @class NoiseGeneratorSimplex
+ * @brief Generates 2D simplex noise for terrain generation.
+ */
+class NoiseGeneratorSimplex : public PerlinNoise {
+public:
+
+
+
     ND double getValue(c_double posX, c_double posZ) const;
 
-    /**
-     * @brief Adds simplex noise to a region.
-     * @param noiseValues The vector to store noise values.
-     * @param xOffset The X-offset.
-     * @param zOffset The Z-offset.
-     * @param width The width of the region.
-     * @param height The height of the region.
-     * @param xScale The X-scale.
-     * @param zScale The Z-scale.
-     * @param noiseScale The noise scale.
-     * @return The vector with added noise values.
-     */
+
     void add(std::vector<double> &noiseValues,
              double xOffset, double zOffset, int width, int height,
              double xScale, double zScale, double noiseScale);
@@ -80,26 +112,13 @@ public:
  */
 class NoiseGeneratorPerlin {
 public:
-    /**
-     * @brief A vector of simplex noise generators for each level.
-     */
-    std::vector<NoiseGeneratorSimplex> noiseLevels;
 
-    /**
-     * @brief The number of levels of noise.
-     */
-    int levels{};
+    std::vector<NoiseGeneratorSimplex> noiseLevels; ///< A vector of simplex noise generators for each level.
 
-    /**
-     * @brief Default constructor for NoiseGeneratorPerlin.
-     */
-    NoiseGeneratorPerlin() = default;
+    int levels{}; ///< The number of levels of noise.
 
-    /**
-     * @brief Initializes the Perlin noise generator with the specified number of levels.
-     * @param rng The random number generator.
-     * @param levelsIn The number of levels of noise to generate.
-     */
+    NoiseGeneratorPerlin() = default; ///< Default constructor for NoiseGeneratorPerlin.
+
     void setNoiseGeneratorPerlin(RNG &rng, int levelsIn);
 
     NoiseGeneratorPerlin(RNG rng, const int levelsIn) {
@@ -166,68 +185,16 @@ public:
  */
 class NoiseGeneratorImproved : public PerlinNoise {
 public:
-    /**
-     * @brief Computes the gradient dot product for 3D noise.
-     * @param hash The hash value used to select the gradient.
-     * @param x The X-coordinate of the input vector.
-     * @param y The Y-coordinate of the input vector.
-     * @param z The Z-coordinate of the input vector.
-     * @return The dot product of the gradient and the input vector.
-     */
-    ND static double grad(int hash, double x, double y, double z) {
-        static constexpr double GRAD_X[16] = {
-            1.0, -1.0, 1.0, -1.0, 1.0, -1.0, 1.0, -1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, -1.0, 0.0
-        };
-        static constexpr double GRAD_Y[16] = {
-            1.0, 1.0, -1.0, -1.0, 0.0, 0.0, 0.0, 0.0, 1.0, -1.0, 1.0, -1.0, 1.0, -1.0, 1.0, -1.0
-        };
-        static constexpr double GRAD_Z[16] = {
-            0.0, 0.0, 0.0, 0.0, 1.0, 1.0, -1.0, -1.0, 1.0, 1.0, -1.0, -1.0, 0.0, 1.0, 0.0, -1.0
-        };
 
-        int i = hash & 15;
-        return GRAD_X[i] * x + GRAD_Y[i] * y + GRAD_Z[i] * z;
-    }
-
-    /**
-     * @brief Computes the gradient dot product for 2D noise.
-     * @param hash The hash value used to select the gradient.
-     * @param x The X-coordinate of the input vector.
-     * @param z The Z-coordinate of the input vector.
-     * @return The dot product of the gradient and the input vector.
-     */
-    ND static double grad2(int hash, double x, double z) {
-        static constexpr double GRAD_2X[16] = {
-            1.0, -1.0, 1.0, -1.0, 1.0, -1.0, 1.0, -1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, -1.0, 0.0
-        };
-        static constexpr double GRAD_2Z[16] = {
-            0.0, 0.0, 0.0, 0.0, 1.0, 1.0, -1.0, -1.0, 1.0, 1.0, -1.0, -1.0, 0.0, 1.0, 0.0, -1.0
-        };
-
-        int i = hash & 15;
-        return GRAD_2X[i] * x + GRAD_2Z[i] * z;
-    }
-
-    /**
-     * @brief Populates a noise array with generated noise values.
-     * @param g The generator object used for console-specific behavior.
-     * @param noiseArray The array to store the generated noise values.
-     * @param xOffset The X-offset for noise generation.
-     * @param yOffset The Y-offset for noise generation.
-     * @param zOffset The Z-offset for noise generation.
-     * @param xSize The size of the noise array in the X-dimension.
-     * @param ySize The size of the noise array in the Y-dimension.
-     * @param zSize The size of the noise array in the Z-dimension.
-     * @param xScale The scale factor for the X-dimension.
-     * @param yScale The scale factor for the Y-dimension.
-     * @param zScale The scale factor for the Z-dimension.
-     * @param noiseScale The overall scale factor for the noise.
-     * @return The populated noise array.
-     */
     void populateNoiseArray(const Generator *g, std::vector<double> &noiseArray,
                             double xOffset, double yOffset, double zOffset,
                             int xSize, int ySize, int zSize, double xScale,
                             double yScale, double zScale, double noiseScale);
+
+    void populateNoiseArrayNew(const Generator *g, std::vector<double> &noiseArray,
+                               double xOffset, double yOffset, double zOffset,
+                               int xSize, int ySize, int zSize, double xScale,
+                               double yScale, double zScale, double noiseScale);
 };
 
 /**
@@ -241,10 +208,7 @@ class NoiseGeneratorOctaves {
      */
     std::vector<NoiseGeneratorImproved> generatorCollection;
 
-    /**
-     * @brief The number of octaves used in noise generation.
-     */
-    int octaves;
+    int octaves; ///< The number of octaves used in noise generation.
 
 public:
     /**
@@ -261,24 +225,10 @@ public:
         }
     }
 
-    /**
-     * @brief Generates noise values for a 3D region using multiple octaves.
-     * @param g The generator object used for console-specific behavior.
-     * @param noiseArray The array to store the generated noise values.
-     * @param xOffset The X-offset for noise generation.
-     * @param yOffset The Y-offset for noise generation.
-     * @param zOffset The Z-offset for noise generation.
-     * @param xSize The size of the region in the X-dimension.
-     * @param ySize The size of the region in the Y-dimension.
-     * @param zSize The size of the region in the Z-dimension.
-     * @param xScale The scale factor for the X-dimension.
-     * @param yScale The scale factor for the Y-dimension.
-     * @param zScale The scale factor for the Z-dimension.
-     * @return A vector containing the generated noise values.
-     */
+
     void genNoiseOctaves(const Generator *g,
                          std::vector<double> &noiseArray,
-                         c_int xOffset, c_int yOffset, c_int zOffset,
-                         c_int xSize, c_int ySize, c_int zSize,
-                         c_double xScale, c_double yScale, c_double zScale);
+                         int xOffset, int yOffset, int zOffset,
+                         int xSize, int ySize, int zSize,
+                         double xScale, double yScale, double zScale);
 };

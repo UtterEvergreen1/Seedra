@@ -1,3 +1,4 @@
+// Seedra/terrain/decorators/WorldGenMinable.hpp
 #pragma once
 
 #include "AbstractWorldGenerator.hpp"
@@ -19,8 +20,7 @@ public:
      * @param block The block state representing the type of ore to generate.
      * @param blockCount The number of blocks in the ore vein.
      */
-    WorldGenMinable(const lce::BlockState block, const int blockCount) : oreBlock(block), blockCount(blockCount) {
-    }
+    WorldGenMinable(lce::BlockState block, int blockCount);
 
     /**
      * @brief Generates an ore vein at the specified position in the world.
