@@ -539,11 +539,11 @@ void Biome::decorate(World *worldIn, RNG &rng, const Pos2D &pos) {
     this->decorator->decorate(worldIn, this, rng, pos);
 }
 
-uint32_t Biome::getWaterColor() const {
+inline uint32_t Biome::getWaterColor() const {
     return this->waterColor;
 }
 
-float Biome::getRainfall() const {
+inline float Biome::getRainfall() const {
     return this->rainFall;
 }
 
