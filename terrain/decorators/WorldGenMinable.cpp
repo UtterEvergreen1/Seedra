@@ -1,8 +1,8 @@
+// Seedra/terrain/decorators/WorldGenMinable.cpp
 #include "WorldGenMinable.hpp"
 
 #include "common/MathHelper.hpp"
 #include "common/constants.hpp"
-#include "lce/blocks/__include.hpp"
 #include "terrain/ChunkQuadAccessor.hpp"
 #include "terrain/World.hpp"
 
@@ -10,10 +10,16 @@
 #define USE_CHUNK_QUAD
 
 
+
+WorldGenMinable::WorldGenMinable(const lce::BlockState block, const int blockCount)
+    : oreBlock(block), blockCount(blockCount) {
+}
+
+
 #ifdef USE_CHUNK_QUAD
 static inline void computeVeinBounds(const Pos3D& pos, int blockCount, float theta, int& minX, int& maxX, int& minZ,
                                      int& maxZ) {
-    // Endpoints along the line (same math as the generator):
+    // Endpoints along the line
     const float halfSpan = static_cast<float>(blockCount) / 8.0f;
     const double x0 = static_cast<double>(pos.getX() + 8) + MathHelper::sin(theta) * halfSpan;
     const double x1 = static_cast<double>(pos.getX() + 8) - MathHelper::sin(theta) * halfSpan;
@@ -37,6 +43,8 @@ static inline void computeVeinBounds(const Pos3D& pos, int blockCount, float the
 #endif
 
 
+
+
 bool WorldGenMinable::generate(World* world, RNG& rng, const Pos3D& pos) const {
     // TODO: jerrin changed PI -> PI_FLOAT to silence warning
     c_float theta = rng.nextFloat() * PI_FLOAT;
@@ -55,14 +63,20 @@ bool WorldGenMinable::generate(World* world, RNG& rng, const Pos3D& pos) const {
         int minX, maxX, minZ, maxZ;
         computeVeinBounds(pos, this->blockCount, theta, minX, maxX, minZ, maxZ);
 
-        const int baseChunkX = (minX >> 4); // left chunk
-        const int baseChunkZ = (minZ >> 4); // top chunk (depending on coordinate system)
+        const int baseChunkX = (minX >> 4);
+        const int baseChunkZ = (minZ >> 4);
         const bool needXPlus = ((maxX >> 4) > baseChunkX);
         const bool needZPlus = ((maxZ >> 4) > baseChunkZ);
 
         quad = {world, baseChunkX, baseChunkZ, needXPlus, needZPlus};
     }
 #endif
+    int h00 = 128, h01 = 128, h10 = 128, h11 = 128;
+    if (auto* c00 = quad.pick(0, 0)) h00 = c00->getHighestYBlock();
+    if (auto* c01 = quad.pick(0, 1)) h01 = c01->getHighestYBlock();
+    if (auto* c10 = quad.pick(1, 0)) h10 = c10->getHighestYBlock();
+    if (auto* c11 = quad.pick(1, 1)) h11 = c11->getHighestYBlock();
+    int maxHeight = std::min(  std::max(std::max(h00, h01), std::max(h10, h11)), 128 ) + 5;
 
 
     for (int i = 0; i <= this->blockCount; ++i) {
@@ -71,6 +85,8 @@ bool WorldGenMinable::generate(World* world, RNG& rng, const Pos3D& pos) const {
         c_double centerY = y0 + (y1 - y0) * (double) t;
         c_double centerZ = z0 + (z1 - z0) * (double) t;
         c_double randScale = rng.nextDouble() * (double) this->blockCount / 16.0;
+        if (centerY >= maxHeight) continue;
+
         c_double radius = ((MathHelper::sin(PI_FLOAT * t) + 1.0F) * randScale + 1.0) / 2.0;
         c_int minX = MathHelper::floor(centerX - radius);
         c_int minY = MathHelper::floor(centerY - radius);
@@ -84,7 +100,7 @@ bool WorldGenMinable::generate(World* world, RNG& rng, const Pos3D& pos) const {
 
         // start X at minX, normalized nx for (minX + 0.5)
         double nx  = ( (double)minX + 0.5 - centerX ) * invR;
-        const double dN = invR;                 // increment for nx/ny/nz when index++
+        const double dN = invR; // increment for nx/ny/nz when index++
 
         for (int voxelX = minX; voxelX <= maxX; ++voxelX, nx += dN) {
             const double nx2 = nx * nx;
@@ -152,3 +168,4 @@ bool WorldGenMinable::generate(World* world, RNG& rng, const Pos3D& pos) const {
 
     return true;
 }
+
