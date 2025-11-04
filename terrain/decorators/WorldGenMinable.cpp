@@ -97,37 +97,37 @@ bool WorldGenMinable::generate(World* world, RNG& rng, const Pos3D& pos) const {
 
 
         const double invR = (radius != 0.0) ? (1.0 / radius) : 0.0;
-
-        // start X at minX, normalized nx for (minX + 0.5)
-        double nx  = ( (double)minX + 0.5 - centerX ) * invR;
         const double dN = invR; // increment for nx/ny/nz when index++
 
-        for (int voxelX = minX; voxelX <= maxX; ++voxelX, nx += dN) {
-            const double nx2 = nx * nx;
-            if (nx2 >= 1.0) continue;
+        // start Y at minY, normalized ny for (minY + 0.5)
+        double ny = ( (double)minY + 0.5 - centerY ) * invR;
 
-            // exact Y radius for this X slice (circle cross-section)
-            const double yRad = radius * std::sqrt(1.0 - nx2);
+        for (int voxelY = minY; voxelY <= maxY; ++voxelY, ny += dN) {
+            const double ny2 = ny * ny;
+            if (ny2 >= 1.0) continue;
 
-            // open interval on cell centers: |(y+0.5) - centerY| < yRad
-            int yLo = MathHelper::floor((centerY - 0.5) - yRad) + 1; // ceil(open left)
-            int yHi = MathHelper::ceil ((centerY - 0.5) + yRad) - 1; // floor(open right)
+            // exact X radius for this Y slice (circle cross-section)
+            const double xRad = radius * std::sqrt(1.0 - ny2);
 
-            // clamp to previous AABB + world
-            if (yLo < minY) yLo = minY;
-            if (yHi > maxY) yHi = maxY;
-            if (yLo > yHi) continue;
+            // open interval on cell centers: |(x+0.5) - centerX| < xRad
+            int xLo = MathHelper::floor((centerX - 0.5) - xRad) + 1; // ceil(open left)
+            int xHi = MathHelper::ceil ((centerX - 0.5) + xRad) - 1; // floor(open right)
 
-            // normalized ny for yLo
-            double ny = ( (double)yLo + 0.5 - centerY ) * invR;
+            // clamp to previous AABB
+            if (xLo < minX) xLo = minX;
+            if (xHi > maxX) xHi = maxX;
+            if (xLo > xHi) continue;
 
-            for (int voxelY = yLo; voxelY <= yHi; ++voxelY, ny += dN) {
-                const double ny2   = ny * ny;
-                const double nx2y2 = nx2 + ny2;
-                if (nx2y2 >= 1.0) continue;
+            // normalized nx for xLo
+            double nx = ( (double)xLo + 0.5 - centerX ) * invR;
 
-                // exact Z radius for this (X,Y) row
-                const double zRad = radius * std::sqrt(1.0 - nx2y2);
+            for (int voxelX = xLo; voxelX <= xHi; ++voxelX, nx += dN) {
+                const double nx2   = nx * nx;
+                const double ny2x2 = ny2 + nx2;
+                if (ny2x2 >= 1.0) continue;
+
+                // exact Z radius for this (Y,X) row
+                const double zRad = radius * std::sqrt(1.0 - ny2x2);
 
                 // open interval on cell centers: |(z+0.5) - centerZ| < zRad
                 int zLo = MathHelper::floor((centerZ - 0.5) - zRad) + 1;
@@ -143,7 +143,7 @@ bool WorldGenMinable::generate(World* world, RNG& rng, const Pos3D& pos) const {
                 for (int voxelZ = zLo; voxelZ <= zHi; ++voxelZ, nz += dN) {
                     // keep the exact acceptance check for bit-identical behavior
                     const double nz2 = nz * nz;
-                    if (nx2y2 + nz2 >= 1.0) continue;
+                    if (ny2x2 + nz2 >= 1.0) continue;
 
 #ifdef USE_CHUNK_QUAD
                     const int blockId = quad.getBlockId(voxelX, voxelY, voxelZ);
@@ -156,7 +156,7 @@ bool WorldGenMinable::generate(World* world, RNG& rng, const Pos3D& pos) const {
 #ifdef USE_CHUNK_QUAD
                         quad.setBlock(voxelX, voxelY, voxelZ, this->oreBlock);
 #else
-                    world->setBlock(blockPos, this->oreBlock);
+                        world->setBlock(blockPos, this->oreBlock);
 #endif
                     }
 

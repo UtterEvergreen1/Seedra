@@ -108,11 +108,11 @@ bool WorldGenSwamp::generate(World* worldIn, RNG& rand, const Pos3D& position) c
 
 void WorldGenSwamp::addVine(World* worldIn, const Pos3D& pos, const EnumFacing facing) {
     c_int vineMetaData = states::Vine::withProperty(facing);
-    worldIn->setBlock(pos, VINES_ID, vineMetaData);
+    worldIn->setBlockAndData(pos, VINES_ID, vineMetaData);
 
     int i = 4;
     for (Pos3D blockPos = pos.down(); worldIn->isAirBlock(blockPos) && i > 0; --i) {
-        worldIn->setBlock(pos, VINES_ID, vineMetaData);
+        worldIn->setBlockAndData(pos, VINES_ID, vineMetaData);
         blockPos = blockPos.down();
     }
 }

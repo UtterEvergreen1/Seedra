@@ -28,8 +28,7 @@ bool WorldGenAbstractTree::canGrowInto(const int blockId) {
 }
 
 void WorldGenAbstractTree::addVine(World* worldIn, const Pos3D& pos, const EnumFacing facing) {
-    worldIn->setBlock(pos, VINES_ID,
-        states::Vine::withProperty(facing));
+    worldIn->setBlockAndData(pos, VINES_ID, states::Vine::withProperty(facing));
 }
 
 void WorldGenAbstractTree::placeFallenTrunk(World* worldIn, RNG& rand, const Pos3D& pos, const int height,

@@ -15,87 +15,40 @@ class ChunkGeneratorOverWorld {
     static constexpr int HEIGHT_FALLOFF_BORDER = 32;
     static constexpr int HEIGHT_FALLOFF_BORDER_CHUNKS = (HEIGHT_FALLOFF_BORDER + 15) / 16; // in chunk coordinates (rounded up)
 public:
-    /**
-     * @brief The generator used for biome and terrain generation.
-     */
-    const Generator *g;
 
-    /**
-     * @brief Random number generator used for chunk generation.
-     */
-    RNG rng{};
+    const Generator *g; ///< The generator used for biome and terrain generation.
 
-    /**
-     * @brief Noise generator for minimum limit Perlin noise.
-     */
-    NoiseGeneratorOctaves minLimitPerlinNoise;
+    RNG rng{}; ///< Random number generator used for chunk generation.
 
-    /**
-     * @brief Noise generator for maximum limit Perlin noise.
-     */
-    NoiseGeneratorOctaves maxLimitPerlinNoise;
-
-    /**
-     * @brief Noise generator for main Perlin noise.
-     */
-    NoiseGeneratorOctaves mainPerlinNoise;
-
-    /**
-     * @brief Noise generator for surface noise.
-     */
-    NoiseGeneratorPerlin surfaceNoise;
-
-    /**
-     * @brief Noise generator for scale noise (currently unused).
-     */
-    NoiseGeneratorOctaves scaleNoise;
-
-    /**
-     * @brief Noise generator for depth noise.
-     */
-    NoiseGeneratorOctaves depthNoise;
-
-    /**
-     * @brief Pointer to the array of biomes used for generation.
-     */
-    biome_t *biomesForGeneration;
+    biome_t *biomesForGeneration; ///< Pointer to the array of biomes used for generation.
 
     std::span<int> biomesForGenerationSpan;
 
-    /**
-     * @brief Buffer for depth region values.
-     */
-    std::vector<double> depthRegion;
+    NoiseGeneratorOctaves minLimitPerlinNoise; ///< Noise generator for minimum limit Perlin noise.
 
-    /**
-     * @brief Buffer for depth values.
-     */
-    std::vector<double> depthBuffer;
+    NoiseGeneratorOctaves maxLimitPerlinNoise; ///< Noise generator for maximum limit Perlin noise.
 
-    /**
-     * @brief Buffer for heightmap values.
-     */
-    std::vector<double> heightMap;
+    NoiseGeneratorOctaves mainPerlinNoise; ///< Noise generator for main Perlin noise.
 
-    /**
-     * @brief Weights for biome generation.
-     */
-    std::vector<float> biomeWeights;
+    NoiseGeneratorPerlin surfaceNoise; ///< Noise generator for surface noise.
 
-    /**
-     * @brief Buffer for main noise region values.
-     */
-    std::vector<double> mainNoiseRegion;
+    NoiseGeneratorOctaves scaleNoise; ///< Noise generator for scale noise (currently unused).
 
-    /**
-     * @brief Buffer for minimum limit region values.
-     */
-    std::vector<double> minLimitRegion;
+    NoiseGeneratorOctaves depthNoise; ///< Noise generator for depth noise.
 
-    /**
-     * @brief Buffer for maximum limit region values.
-     */
-    std::vector<double> maxLimitRegion;
+    std::vector<double> depthRegion; ///< Buffer for depth region values.
+
+    std::vector<double> depthBuffer; ///< Buffer for depth values.
+
+    std::vector<double> heightMap; ///< Buffer for heightmap values.
+
+    std::vector<float> biomeWeights; ///< Weights for biome generation.
+
+    std::vector<double> mainNoiseRegion; ///< Buffer for main noise region values.
+
+    std::vector<double> minLimitRegion; ///< Buffer for minimum limit region values.
+
+    std::vector<double> maxLimitRegion; ///< Buffer for maximum limit region values.
 
     /**
      * @brief Constructs a ChunkGeneratorOverWorld object with the specified generator.
@@ -158,7 +111,7 @@ public:
      * @return Pointer to the newly created ChunkPrimer.
      */
     ChunkPrimer *provideNewChunk(int x, int z) {
-        ChunkPrimer *chunkPrimer = new ChunkPrimer();
+        auto *chunkPrimer = new ChunkPrimer();
         provideChunk(chunkPrimer, x, z);
         return chunkPrimer;
     }

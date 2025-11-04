@@ -74,58 +74,68 @@ inline bool World::isAirBlock(const Pos3D &pos) {
     return this->isAirBlock(pos.x, pos.y, pos.z);
 }
 
-inline int World::getBlockId(const Pos3D &pos) {
-    return this->getBlockId(pos.x, pos.y, pos.z);
-}
+
+
 
 inline lce::BlockState World::getBlock(const Pos3D &pos) {
     return this->getBlock(pos.x, pos.y, pos.z);
 }
 
-inline void World::setBlockId(const Pos3D &pos, int blockId) {
-    this->setBlock(pos.x, pos.y, pos.z, blockId);
-}
-
-inline int World::getBlockId(c_int x, c_int y, c_int z) {
-    if (const ChunkPrimer *chunk = this->getOrCreateChunk({x >> 4, z >> 4})) {
-        return chunk->getBlockId(x & 15, y, z & 15);
-    }
-    return 0;
-}
-
-inline lce::BlockState World::getBlock(c_int x, c_int y, c_int z) {
+inline lce::BlockState World::getBlock(c_i32 x, c_i32 y, c_i32 z) {
     if (const ChunkPrimer *chunk = this->getOrCreateChunk({x >> 4, z >> 4})) {
         return chunk->getBlock(x & 15, y, z & 15);
     }
     return lce::BlocksInit::AIR.getState();
 }
 
-inline void World::setBlock(c_int x, c_int y, c_int z, c_int blockId) {
-    ChunkPrimer *chunk = this->getOrCreateChunk({x >> 4, z >> 4});
-    if (chunk == nullptr) return;
-    chunk->setBlockId(x & 15, y, z & 15, blockId);
-    notifyNeighbors(x, y, z);
+inline u16 World::getBlockId(c_i32 x, c_i32 y, c_i32 z) {
+    if (const ChunkPrimer *chunk = this->getOrCreateChunk({x >> 4, z >> 4})) {
+        return chunk->getBlockId(x & 15, y, z & 15);
+    }
+    return 0;
+}
+
+inline u16 World::getBlockId(const Pos3D &pos) {
+    return this->getBlockId(pos.x, pos.y, pos.z);
+}
+
+inline void World::setBlock(c_int x, c_int y, c_int z, const lce::BlockState blockState) {
+    this->setBlockAndData(x, y, z, blockState.getID(), blockState.getDataTag());
+}
+
+inline void World::setBlock(const Pos3D &pos, const lce::BlockState blockState) {
+    this->setBlockAndData(pos.x, pos.y, pos.z, blockState.getID(), blockState.getDataTag());
 }
 
 // TODO: remove
-inline void World::setBlock(c_int x, c_int y, c_int z, c_int blockId, c_int meta) {
+inline void World::setBlockAndData(c_i32 x, c_i32 y, c_i32 z, c_u16 blockId, c_u8 meta) {
     ChunkPrimer *chunk = getOrCreateChunk({x >> 4, z >> 4});
     if (chunk == nullptr) return;
     chunk->setBlockAndData(x & 15, y, z & 15, blockId, meta);
     notifyNeighbors(x, y, z);
 }
 
-inline void World::setBlock(const Pos3D &pos, c_int blockId, c_int meta) {
-    this->setBlock(pos.x, pos.y, pos.z, blockId, meta);
+inline void World::setBlockAndData(const Pos3D &pos, c_u16 blockId, c_u8 meta) {
+    this->setBlockAndData(pos.x, pos.y, pos.z, blockId, meta);
 }
 
-inline void World::setBlock(c_int x, c_int y, c_int z, const lce::BlockState blockState) {
-    this->setBlock(x, y, z, blockState.getID(), blockState.getDataTag());
+inline void World::setBlockId(c_i32 x, c_i32 y, c_i32 z, c_u16 blockId) {
+    ChunkPrimer *chunk = this->getOrCreateChunk({x >> 4, z >> 4});
+    if (chunk == nullptr) return;
+    chunk->setBlockId(x & 15, y, z & 15, blockId);
+    notifyNeighbors(x, y, z);
 }
 
-inline void World::setBlock(const Pos3D &pos, const lce::BlockState blockState) {
-    this->setBlock(pos.x, pos.y, pos.z, blockState.getID(), blockState.getDataTag());
+inline void World::setBlockId(const Pos3D &pos, u16 blockId) {
+    this->setBlockId(pos.x, pos.y, pos.z, blockId);
 }
+
+inline u16* World::mutBlockPtr(i32 x, i32 y, i32 z) {
+    ChunkPrimer *chunk = getOrCreateChunk({x >> 4, z >> 4});
+    if (chunk == nullptr) return nullptr;
+    return chunk->mutBlockPtr(x, y, z);
+}
+
 
 
 inline void World::notifyNeighbors(MU c_int x, MU c_int y, MU c_int z) {
@@ -213,3 +223,6 @@ inline bool World::canSnowAt(const Pos3D &pos, const bool checkLight) {
     }
     return false;
 }
+
+
+static_assert(BlockAccess<World>, "ChunkPrimer must satisfy BlockAccess concept");
