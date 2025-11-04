@@ -1,11 +1,12 @@
 #pragma once
 
-inline bool World::chunkExists(const Pos2D &pos) const {
+inline bool World::chunkExists(const Pos2D &pos) {
     if (pos.x < worldBounds.minX || pos.x > worldBounds.maxX || pos.z < worldBounds.minZ ||
         pos.z > worldBounds.maxZ) {
         return false;
     }
 
+    std::lock_guard lock(chunkMutex);
     return chunks.contains(pos);
 }
 

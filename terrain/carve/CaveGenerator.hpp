@@ -4,7 +4,6 @@
 #include <set>
 
 
-extern std::map<Pos2D, int> sectionsInChunk;
 
 /**
  * @class CaveGenerator
