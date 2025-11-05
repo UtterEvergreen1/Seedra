@@ -14,6 +14,7 @@ for (int i = -2; i <= 2; ++i) {
     }
 }
  */
+static_assert(sizeof(float) == sizeof(uint32_t), "float and uint32_t must be the same size");
 static constexpr std::array<uint32_t, 25> BIOME_WEIGHTS = {
         0x405F7F69, 0x408C544C, 0x409C24DE, 0x408C544C, 0x405F7F69,
         0x408C544C, 0x40D7BE74, 0x41120F31, 0x40D7BE74, 0x408C544C,
@@ -34,9 +35,6 @@ ChunkGeneratorOverWorld::ChunkGeneratorOverWorld(const Generator& generator) : g
     // forestNoise.setNoiseGeneratorOctaves(&rng, 8);
     depthBuffer.resize(256);
     heightMap.resize(825);
-    biomeWeights.resize(25);
-
-    std::memcpy(biomeWeights.data(), BIOME_WEIGHTS.data(), sizeof(BIOME_WEIGHTS));
     biomesForGeneration = nullptr;
 }
 
@@ -217,7 +215,7 @@ void ChunkGeneratorOverWorld::generateHeightmap(c_int x, c_int y, c_int z) {
                     }
                     */
                     // TODO: double being casted to float?
-                    float w = biomeWeights[nbDX + 2 + (nbDZ + 2) * 5] * neighborInvDPlus2; // / (neighborDepth + 2.0F);
+                    float w = *reinterpret_cast<const float*>(&BIOME_WEIGHTS[nbDX + 2 + (nbDZ + 2) * 5]) * neighborInvDPlus2; // / (neighborDepth + 2.0F);
 
                     double centerDepth;
                     double neighborBaseDepth;

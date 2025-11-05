@@ -42,8 +42,6 @@ public:
 
     std::vector<double> heightMap; ///< Buffer for heightmap values.
 
-    std::vector<float> biomeWeights; ///< Weights for biome generation.
-
     std::vector<double> mainNoiseRegion; ///< Buffer for main noise region values.
 
     std::vector<double> minLimitRegion; ///< Buffer for minimum limit region values.
