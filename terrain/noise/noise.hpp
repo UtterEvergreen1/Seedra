@@ -103,13 +103,13 @@ void perlinInit(PerlinNoise* noise, RNG& rng);
  * @param x X-coordinate.
  * @param y Y-coordinate.
  * @param z Z-coordinate.
- * @param yAmp Amplitude for the Y-axis.
- * @param yMin Minimum value for the Y-axis.
+ * @param yAmplitude Amplitude for the Y-axis.
+ * @param yMinimum Minimum value for the Y-axis.
  * @return The sampled Perlin noise value.
  */
 double samplePerlin(const Generator* g, const PerlinNoise* noise,
                     double x, double y, double z,
-                    double yAmp, double yMin);
+                    double yAmplitude, double yMinimum);
 
 /**
  * @brief Samples 2D Simplex noise using Perlin noise parameters.
@@ -134,10 +134,10 @@ double sampleSimplex2D(const PerlinNoise* noise, double x, double y);
  * @param noise Pointer to the OctaveNoise structure to initialize.
  * @param rng Reference to the random number generator.
  * @param octaves Pointer to an array of PerlinNoise structures.
- * @param oMin Minimum octave index.
- * @param len Number of octaves to initialize.
+ * @param octaveMin Minimum octave index.
+ * @param octaveCount Number of octaves to initialize.
  */
-void octaveInit(OctaveNoise* noise, RNG& rng, PerlinNoise* octaves, int oMin, int len);
+void octaveInit(OctaveNoise* noise, RNG& rng, PerlinNoise* octaves, int octaveMin, int octaveCount);
 
 /**
  * @brief Samples octave noise at a specific 3D position.
