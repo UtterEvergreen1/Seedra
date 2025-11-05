@@ -71,59 +71,71 @@ void perlinInit(PerlinNoise* noise, RNG& rng) {
 
 double samplePerlin(const Generator* g, const PerlinNoise* noise,
                     double x, double y, double z,
-                    c_double yAmp, c_double yMin) {
+                    c_double yAmplitude, c_double yMinimum) {
+    // apply random offset to make this noise unique
     x += noise->x;
     y += noise->y;
     z += noise->z;
 
-    int i1 = static_cast<int>(x) - static_cast<int>(x < 0);
-    int i2 = static_cast<int>(y) - static_cast<int>(y < 0);
-    int i3 = static_cast<int>(z) - static_cast<int>(z < 0);
+    // find the unit cube that contains the point (floor)
+    int cubeX = static_cast<int>(x) - static_cast<int>(x < 0);
+    int cubeY = static_cast<int>(y) - static_cast<int>(y < 0);
+    int cubeZ = static_cast<int>(z) - static_cast<int>(z < 0);
 
+    // get position within the unit cube [0, 1)
     if (g->getConsole() != lce::CONSOLE::WIIU) {
-        x -= i1;
-        y -= i2;
-        z -= i3;
+        x -= cubeX;
+        y -= cubeY;
+        z -= cubeZ;
     }
 
-    c_double t1 = x * x * x * (x * (x * 6.0 - 15.0) + 10.0);
-    c_double t2 = y * y * y * (y * (y * 6.0 - 15.0) + 10.0);
-    c_double t3 = z * z * z * (z * (z * 6.0 - 15.0) + 10.0);
+    // compute smoothstep/fade curves for smooth interpolation
+    c_double fadeX = x * x * x * (x * (x * 6.0 - 15.0) + 10.0);
+    c_double fadeY = y * y * y * (y * (y * 6.0 - 15.0) + 10.0);
+    c_double fadeZ = z * z * z * (z * (z * 6.0 - 15.0) + 10.0);
 
-    if (yAmp != 0.0) {
-        c_double yClamp = yMin < y ? yMin : y;
-        y -= floor(yClamp / yAmp) * yAmp;
+    // Optional: Make noise repeat in Y direction
+    if (yAmplitude != 0.0) {
+        c_double yClamp = yMinimum < y ? yMinimum : y;
+        y -= floor(yClamp / yAmplitude) * yAmplitude;
     }
 
-    i1 &= 0xFF;
-    i2 &= 0xFF;
-    i3 &= 0xFF;
+    // wrap cube coordinates to [0, 255] for permutation table lookup
+    cubeX &= 0xFF;
+    cubeY &= 0xFF;
+    cubeZ &= 0xFF;
 
-    c_int a1 = noise->permutations[i1] + i2;
-    c_int a2 = noise->permutations[a1] + i3;
-    c_int a3 = noise->permutations[a1 + 1] + i3;
-    c_int b1 = noise->permutations[i1 + 1] + i2;
-    c_int b2 = noise->permutations[b1] + i3;
-    c_int b3 = noise->permutations[b1 + 1] + i3;
+    // Hash coordinates of the 8 cube corners
+    // These create unique indices into the permutation table
+    c_int hashXY = noise->permutations[cubeX] + cubeY;
+    c_int hashXYZ_000 = noise->permutations[hashXY] + cubeZ;
+    c_int hashXYZ_010 = noise->permutations[hashXY + 1] + cubeZ;
+    c_int hashX1Y = noise->permutations[cubeX + 1] + cubeY;
+    c_int hashXYZ_100 = noise->permutations[hashX1Y] + cubeZ;
+    c_int hashXYZ_110 = noise->permutations[hashX1Y + 1] + cubeZ;
 
-    double l1   = indexedLerp(noise->permutations[a2], x, y, z);
-    c_double l2 = indexedLerp(noise->permutations[b2], x - 1, y, z);
-    double l3   = indexedLerp(noise->permutations[a3], x, y - 1, z);
-    c_double l4 = indexedLerp(noise->permutations[b3], x - 1, y - 1, z);
-    double l5   = indexedLerp(noise->permutations[a2 + 1], x, y, z - 1);
-    c_double l6 = indexedLerp(noise->permutations[b2 + 1], x - 1, y, z - 1);
-    double l7   = indexedLerp(noise->permutations[a3 + 1], x, y - 1, z - 1);
-    c_double l8 = indexedLerp(noise->permutations[b3 + 1], x - 1, y - 1, z - 1);
+    double gradCorner000   = indexedLerp(noise->permutations[hashXYZ_000], x, y, z);
+    c_double gradCorner100 = indexedLerp(noise->permutations[hashXYZ_100], x - 1, y, z);
+    double gradCorner010   = indexedLerp(noise->permutations[hashXYZ_010], x, y - 1, z);
+    c_double gradCorner110 = indexedLerp(noise->permutations[hashXYZ_110], x - 1, y - 1, z);
+    double gradCorner001   = indexedLerp(noise->permutations[hashXYZ_000 + 1], x, y, z - 1);
+    c_double gradCorner101 = indexedLerp(noise->permutations[hashXYZ_100 + 1], x - 1, y, z - 1);
+    double gradCorner011   = indexedLerp(noise->permutations[hashXYZ_010 + 1], x, y - 1, z - 1);
+    c_double gradCorner111 = indexedLerp(noise->permutations[hashXYZ_110 + 1], x - 1, y - 1, z - 1);
 
-    l1 = MathHelper::lerp(t1, l1, l2);
-    l3 = MathHelper::lerp(t1, l3, l4);
-    l5 = MathHelper::lerp(t1, l5, l6);
-    l7 = MathHelper::lerp(t1, l7, l8);
+    // Trilinear interpolation
+    // Step 1: Interpolate along X axis (4 edges)
+    gradCorner000 = MathHelper::lerp(fadeX, gradCorner000, gradCorner100);
+    gradCorner010 = MathHelper::lerp(fadeX, gradCorner010, gradCorner110);
+    gradCorner001 = MathHelper::lerp(fadeX, gradCorner001, gradCorner101);
+    gradCorner011 = MathHelper::lerp(fadeX, gradCorner011, gradCorner111);
 
-    l1 = MathHelper::lerp(t2, l1, l3);
-    l5 = MathHelper::lerp(t2, l5, l7);
+    // Step 2: Interpolate along Y axis (2 edges)
+    gradCorner000 = MathHelper::lerp(fadeY, gradCorner000, gradCorner010);
+    gradCorner001 = MathHelper::lerp(fadeY, gradCorner001, gradCorner011);
 
-    return MathHelper::lerp(t3, l1, l5);
+    // Step 3: Interpolate along Z axis (final result)
+    return MathHelper::lerp(fadeZ, gradCorner000, gradCorner001);
 }
 
 
@@ -147,81 +159,103 @@ double sampleSimplex2D(const PerlinNoise* noise, c_double x, c_double y) {
     static constexpr double SKEW = 0.5 * (SQRT_3 - 1.0);
     static constexpr double UNSKEW = (3.0 - SQRT_3) / 6.0;
 
-    c_double hf = (x + y) * SKEW;
-    c_int hx = static_cast<int>(floor(x + hf));
-    c_int hz = static_cast<int>(floor(y + hf));
-    c_double mhxz = (hx + hz) * UNSKEW;
-    c_double x0 = x - (hx - mhxz);
-    c_double y0 = y - (hz - mhxz);
-    c_int offx = (x0 > y0);
-    c_int offz = !offx;
-    c_double x1 = x0 - offx + UNSKEW;
-    c_double y1 = y0 - offz + UNSKEW;
-    c_double x2 = x0 - 1.0 + 2.0 * UNSKEW;
-    c_double y2 = y0 - 1.0 + 2.0 * UNSKEW;
-    int gi0 = noise->permutations[0xFF & (hz)];
-    int gi1 = noise->permutations[0xFF & (hz + offz)];
-    int gi2 = noise->permutations[0xFF & (hz + 1)];
-    gi0 = noise->permutations[0xFF & (gi0 + hx)];
-    gi1 = noise->permutations[0xFF & (gi1 + hx + offx)];
-    gi2 = noise->permutations[0xFF & (gi2 + hx + 1)];
-    double t = 0;
-    t += simplexGrad_HARDCODED(gi0 % 12, x0, y0); // , 0.0, 0.5
-    t += simplexGrad_HARDCODED(gi1 % 12, x1, y1); // , 0.0, 0.5
-    t += simplexGrad_HARDCODED(gi2 % 12, x2, y2); // , 0.0, 0.5
-    return 70.0 * t;
+    // Skew input space to determine which simplex cell we're in
+    c_double skewOffset = (x + y) * SKEW;
+    c_int skewedX = static_cast<int>(floor(x + skewOffset));
+    c_int skewedY = static_cast<int>(floor(y + skewOffset));
+
+    // Unskew the cell origin back to (x,y) space
+    c_double unskewOffset = (skewedX + skewedY) * UNSKEW;
+    c_double corner0_x = x - (skewedX - unskewOffset);
+    c_double corner0_y = y - (skewedY - unskewOffset);
+
+    // Determine which simplex we're in (upper or lower triangle)
+    c_int middleCornerOffsetX = (corner0_x > corner0_y);
+    c_int middleCornerOffsetY = !middleCornerOffsetX;
+
+    // Offsets for middle and last corner in unskewed (x,y) coords
+    c_double corner1_x = corner0_x - middleCornerOffsetX + UNSKEW;
+    c_double corner1_y = corner0_y - middleCornerOffsetY + UNSKEW;
+    c_double corner2_x = corner0_x - 1.0 + 2.0 * UNSKEW;
+    c_double corner2_y = corner0_y - 1.0 + 2.0 * UNSKEW;
+
+    // Hash coordinates to get gradient indices
+    int gi0 = noise->permutations[0xFF & (skewedY)];
+    int gi1 = noise->permutations[0xFF & (skewedY + middleCornerOffsetY)];
+    int gi2 = noise->permutations[0xFF & (skewedY + 1)];
+    gi0 = noise->permutations[0xFF & (gi0 + skewedX)];
+    gi1 = noise->permutations[0xFF & (gi1 + skewedX + middleCornerOffsetX)];
+    gi2 = noise->permutations[0xFF & (gi2 + skewedX + 1)];
+
+    // Calculate noise contributions from each corner
+    double noiseSum = 0;
+    noiseSum += simplexGrad_HARDCODED(gi0 % 12, corner0_x, corner0_y); // , 0.0, 0.5
+    noiseSum += simplexGrad_HARDCODED(gi1 % 12, corner1_x, corner1_y); // , 0.0, 0.5
+    noiseSum += simplexGrad_HARDCODED(gi2 % 12, corner2_x, corner2_y); // , 0.0, 0.5
+
+
+    return 70.0 * noiseSum;
 }
 
 
-void octaveInit(OctaveNoise* noise, RNG& rng, PerlinNoise* octaves, c_int oMin, c_int len) {
-    int i;
-    c_int end = oMin + len - 1;
-    double persist = 1.0 / (static_cast<double>(1LL << len) - 1.0);
-    double lacuna = pow(2.0, end);
+void octaveInit(OctaveNoise* noise, RNG& rng, PerlinNoise* octaves, c_int octaveMin, c_int octaveCount) {
+    int currentIndex;
+    c_int octaveMax = octaveMin + octaveCount - 1;
 
-    if (len < 1 || end > 0) {
+    // Calculate initial persistence (normalization factor)
+    double persistence = 1.0 / (static_cast<double>(1LL << octaveCount) - 1.0);
+
+    // Calculate initial lacunarity (frequency multiplier)
+    double lacunarity = pow(2.0, octaveMax);
+
+    // Validate octave range (must end at or below octave 0)
+    if EXPECT_FALSE(octaveCount < 1 || octaveMax > 0) {
         printf("octavePerlinInit(): unsupported octave range\n");
         return;
     }
 
-    if (end == 0) {
+    // Special case: if range includes octave 0, initialize it first
+    if (octaveMax == 0) {
         perlinInit(&octaves[0], rng);
-        octaves[0].amplitude = persist;
-        octaves[0].lacunarity = lacuna;
-        persist *= 2.0;
-        lacuna *= 0.5;
-        i = 1;
+        octaves[0].amplitude = persistence;
+        octaves[0].lacunarity = lacunarity;
+        persistence *= 2.0; // Next octave has double amplitude
+        lacunarity *= 0.5; // Next octave has half frequency
+        currentIndex = 1;
     } else {
-        rng.skipNextN(-end * 262);
-        i = 0;
+        // Skip RNG calls for "missing" octaves to maintain determinism
+        // Each perlinInit makes 262 RNG calls
+        rng.skipNextN(-octaveMax * 262);
+        currentIndex = 0;
     }
 
-    for (; i < len; i++) {
-        perlinInit(&octaves[i], rng);
-        octaves[i].amplitude = persist;
-        octaves[i].lacunarity = lacuna;
-        persist *= 2.0;
-        lacuna *= 0.5;
+    // Initialize remaining octaves
+    for (; currentIndex < octaveCount; currentIndex++) {
+        perlinInit(&octaves[currentIndex], rng);
+        octaves[currentIndex].amplitude = persistence;
+        octaves[currentIndex].lacunarity = lacunarity;
+        persistence *= 2.0; // Amplitude increases for lower-frequency octaves
+        lacunarity *= 0.5; // Frequency decreases for lower-frequency octaves
     }
 
     noise->octaves = octaves;
-    noise->octcnt = len;
+    noise->octcnt = octaveCount;
 }
 
 
 MU double sampleOctave(const Generator* g, const OctaveNoise* noise,
                        c_double x, c_double y, c_double z) {
-    double v = 0;
+    double noiseSum = 0;
     for (int i = 0; i < noise->octcnt; i++) {
-        const PerlinNoise* p = noise->octaves + i;
-        c_double lf = p->lacunarity;
-        c_double ax = maintainPrecision(x * lf);
-        c_double ay = maintainPrecision(y * lf);
-        c_double az = maintainPrecision(z * lf);
-        c_double pv = samplePerlin(g, p, ax, ay, az, 0, 0);
-        v += p->amplitude * pv;
+        const PerlinNoise* octave = noise->octaves + i;
+        c_double frequencyMultiplier = octave->lacunarity;
+        c_double scaledX = maintainPrecision(x * frequencyMultiplier);
+        c_double scaledY = maintainPrecision(y * frequencyMultiplier);
+        c_double scaledZ = maintainPrecision(z * frequencyMultiplier);
+        c_double octaveValue = samplePerlin(g, octave, scaledX, scaledY, scaledZ, 0, 0);
+        noiseSum += octave->amplitude * octaveValue;
     }
-    return v;
+    return noiseSum;
 }
 
 
