@@ -214,6 +214,14 @@ namespace Chunk {
             }
         }
 
+        if (GENERATE_SCATTERED_FEATURES) {
+            for (auto& feature : world.scattered_features) {
+                if (feature->intersects(chunkBB)) {
+                    feature->addComponentParts(world, chunk->decorateRng, chunkBB);
+                }
+            }
+        }
+
 
         chunk->stage = Stage::STAGE_DECORATE;
         chunk->isModifying.store(false);

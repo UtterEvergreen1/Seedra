@@ -62,7 +62,7 @@ public:
      */
     ~ChunkGeneratorOverWorld();
 
-    /*
+
     void generateHeightmap3(int x, int y, int z) {
         auto t0 = std::chrono::high_resolution_clock::now();
 
@@ -84,7 +84,7 @@ public:
         printf("MaxLim: %lld ns\n", (t4-t3).count());
     }
 
-
+    /*
     void genNoiseOctavesPaired(int x, int y, int z) {
         constexpr int xSize = 5, ySize = 33, zSize = 5;
         constexpr double xScale = 684.412, yScale = 684.412, zScale = 684.412;

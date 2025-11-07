@@ -8,6 +8,7 @@
 #include "terrain/biomes/biome.hpp"
 
 #include "common/AreaRange.hpp"
+#include "structures/gen/ScatteredFeature.hpp"
 #include "terrain/carve/CaveGenerator.hpp"
 #include "terrain/carve/ChunkGenerator.hpp"
 #include "terrain/carve/RavineGenerator.hpp"
@@ -40,6 +41,11 @@ void World::deleteWorld() {
     villages.clear();
     strongholds.clear();
     mineshafts.clear();
+    for (auto* feature : scattered_features) {
+        delete feature;
+        feature = nullptr;
+    }
+    scattered_features.clear();
 
     // Reset last-chunk caches
     lastChunk.store(nullptr);
@@ -158,7 +164,9 @@ void World::generateVillages() {
     for (auto& village_pos : village_locations) {
         auto village_gen = gen::Village(g);
         village_gen.generate(village_pos.toChunkPos());
-        villages.emplace_back(village_gen);
+        if (village_gen.hasMoreThanTwoComponents()) {
+            villages.emplace_back(village_gen);
+        }
     }
 }
 
@@ -170,5 +178,16 @@ void World::generateStrongholds() {
         strongholds.emplace_back();
         strongholds.back().generate(g->getWorldSeed(), strongholdPos.toChunkPos());
     }
-    std::cout << "Stronghold piece count: " << strongholds[0].getPieceCount() << std::endl;
+    // std::cout << "Stronghold piece count: " << strongholds[0].getPieceCount() << std::endl;
+}
+
+
+void World::generateScatteredFeatures() {
+    auto features = Placement::Feature::getAllFeaturePositions(g);
+
+    for (auto& feature : features) {
+        std::cout << "Placing Feature at " << feature.pos << "\n";
+        scattered_features.emplace_back(scattered_features::ScatteredFeatureFactory(g, feature));
+    }
+
 }

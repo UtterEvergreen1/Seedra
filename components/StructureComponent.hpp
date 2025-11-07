@@ -19,7 +19,7 @@ class World;
 class ChunkPrimer;
 class RNG;
 
-class StructureComponent final : public Piece {
+class StructureComponent : public Piece {
 public:
     mutable StructureVariant variant{}; ///< The variant of the structure component.
     Rotation rotation = Rotation::NONE; ///< The rotation of the structure component.
@@ -98,6 +98,7 @@ public:
      * @param facing The orientation of the structure component.
      */
     void setCoordMode(const EnumFacing facing) {
+
         switch (facing) {
             case EnumFacing::NORTH:
             default:
@@ -118,6 +119,8 @@ public:
                 break;
         }
     }
+
+
 
     /**
      * @brief Copies the properties of another structure component.
@@ -417,6 +420,24 @@ public:
     void fillWithRandomizedStrongholdStones(World &worldIn, const BoundingBox &structureBB, int minX, int minY,
                                             int minZ, int maxX, int maxY, int maxZ, bool alwaysReplace,
                                             RNG &rng) const;
+
+    /**
+     * @brief Fills a specified area within a bounding box with randomized jungle pyramid stones.
+     *
+     * @param worldIn The world where the blocks will be placed.
+     * @param structureBB The bounding box defining the area to fill.
+     * @param minX Minimum X coordinate of the area.
+     * @param minY Minimum Y coordinate of the area.
+     * @param minZ Minimum Z coordinate of the area.
+     * @param maxX Maximum X coordinate of the area.
+     * @param maxY Maximum Y coordinate of the area.
+     * @param maxZ Maximum Z coordinate of the area.
+     * @param alwaysReplace If true, always replace existing blocks.
+     * @param rng The random number generator to use.
+     */
+    void fillWithRandomizedJunglePyramidStones(World &worldIn, const BoundingBox &structureBB, int minX, int minY,
+                                               int minZ, int maxX, int maxY, int maxZ, bool alwaysReplace,
+                                               RNG &rng) const;
 
     /**
      * @brief Outputs the structure component to an output stream.
