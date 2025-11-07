@@ -73,6 +73,8 @@ public:
                 maxZ >> shiftAmount};
     }
 
+    void setBoundingBox(BoundingBox boundingBox);
+
     /**
      * @brief Checks if this bounding box intersects with another bounding box.
      *

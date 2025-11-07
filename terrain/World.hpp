@@ -14,6 +14,7 @@
 #include "common/AreaRange.hpp"
 #include "common/Pos2DTemplate.hpp"
 #include "common/Pos3DTemplate.hpp"
+#include "structures/gen/ScatteredFeature.hpp"
 
 class Biome;
 
@@ -339,6 +340,11 @@ public:
     void generateMineshafts();
 
     /**
+     * @brief Generates scattered features in the world.
+     */
+    void generateScatteredFeatures();
+
+    /**
      * @brief Generates villages in the world.
      */
     void generateVillages();
@@ -351,6 +357,7 @@ public:
     std::vector<gen::Village> villages; ///< List of generated villages.
     std::vector<gen::Mineshaft> mineshafts; ///< List of generated mineshafts.
     std::vector<gen::Stronghold> strongholds; ///< List of generated strongholds.
+    std::vector<scattered_features::ScatteredFeature*> scattered_features; ///< List of generated strongholds.
 
     std::unordered_map<Pos2D, ChunkPrimer *, Pos2D::Hasher> chunks; ///< Map of chunks in the world.
     BoundingBox worldBounds; ///< Bounding box of the world.

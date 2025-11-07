@@ -35,6 +35,14 @@ namespace Chunk {
     MU static bool GENERATE_STRONGHOLDS = true;
 
     /**
+     * @brief Flag to enable or disable scattered feature generation.
+     *
+     * This static variable determines whether scattered features should be generated
+     * in the chunk.
+     */
+    MU static bool GENERATE_SCATTERED_FEATURES = true;
+
+    /**
      * @brief Provides a chunk by populating the given ChunkPrimer.
      *
      * This function generates the terrain and features for a chunk at the

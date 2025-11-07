@@ -9,6 +9,7 @@
 #include "common/rng.hpp"
 
 #include "lce/blocks/__include.hpp"
+#include "structures/gen/scattered_features/JungleStones.hpp"
 
 
 MU void StructureComponent::setBlockStateWithoutOffset(World& worldIn, const lce::BlockState blockStateIn, c_int x,
@@ -336,6 +337,23 @@ void StructureComponent::fillWithBlocksRandomLightCheck(World& world, const Boun
                     } else {
                         setBlockState(world, blockState1, j, i, k, structureBB);
                     }
+                }
+            }
+        }
+    }
+}
+
+
+void StructureComponent::fillWithRandomizedJunglePyramidStones(World& worldIn, const BoundingBox& structureBB, c_int minX,
+                                                               c_int minY, c_int minZ, c_int maxX, c_int maxY, c_int maxZ,
+                                                               c_bool alwaysReplace, RNG& rng) const {
+    for (int i = minY; i <= maxY; ++i) {
+        for (int j = minX; j <= maxX; ++j) {
+            for (int k = minZ; k <= maxZ; ++k) {
+                if (!alwaysReplace || !lce::blocks::isReplaceableBlock(
+                                              getBlockStateFromPos(worldIn, j, i, k, structureBB).getID())) {
+                    const lce::BlockState block = JunglePyramidStones::selectBlocks(rng);
+                    setBlockState(worldIn, block, j, i, k, structureBB);
                 }
             }
         }
