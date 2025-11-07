@@ -13,10 +13,10 @@ void Colors::setFoliageBiomeColorizer(int foliageBufferIn[FOLIAGE_BUFFER_SIZE]) 
 }
 
 int Colors::getGrassColor(double temperature, double humidity) {
-    int bufferIndex = (int)(-(humidity * temperature - 1.0) * 255.0) << 8
-                            | (int)((1.0 - temperature) * 255.0);
-    int grassColor = -65281;
-    if(bufferIndex >= 0 && bufferIndex < FOLIAGE_BUFFER_SIZE) {
+    int bufferIndex = (int) (-(humidity * temperature - 1.0) * 255.0) << 8
+                      | (int) ((1.0 - temperature) * 255.0);
+    int grassColor = 0xFFFF00FF; // Default magenta color for out-of-bounds
+    if (bufferIndex >= 0 && bufferIndex < FOLIAGE_BUFFER_SIZE) {
         grassColor = grassBuffer[bufferIndex];
     }
     return grassColor;

@@ -539,14 +539,6 @@ void Biome::decorate(World *worldIn, RNG &rng, const Pos2D &pos) {
     this->decorator->decorate(worldIn, this, rng, pos);
 }
 
-uint32_t Biome::getWaterColor() const {
-    return this->waterColor;
-}
-
-float Biome::getRainfall() const {
-    return this->rainFall;
-}
-
 void BiomePlains::decorate(World *worldIn, RNG &rng, const Pos2D &pos) {
     c_double d0 = INFO_NOISE.getValue(
         static_cast<double>(pos.x + 8) / 200.0,

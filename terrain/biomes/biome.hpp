@@ -213,13 +213,13 @@ public:
      * @brief Retrieves the water color of the biome.
      * @return The water color as a 32-bit integer.
      */
-    uint32_t getWaterColor() const;
+    uint32_t getWaterColor() const { return this->waterColor; }
 
     /**
      * @brief Retrieves the rainfall of the biome.
      * @return The rainfall as a float.
      */
-    float getRainfall() const;
+    float getRainfall() const { return this->rainFall; }
 
     /**
      * @brief Retrieves the grass color at a position.
