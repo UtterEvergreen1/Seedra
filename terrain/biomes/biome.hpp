@@ -4,7 +4,7 @@
 #include <string>
 #include <utility>
 
-#include "terrain/noise/NoiseGenerator.hpp"
+#include "terrain/noise/NoiseGen.hpp"
 
 #include "lce/blocks/blockID.hpp"
 #include "lce/blocks/blocksInit.hpp"
@@ -52,8 +52,8 @@ public:
      */
     static const std::map<biome_t, int> SNOW_BIOMES;
 
-    static const NoiseGeneratorPerlin TEMPERATURE_NOISE; ///< Noise generator for temperature.
-    static const NoiseGeneratorPerlin INFO_NOISE; ///< Noise generator for biome information.
+    static const NoiseGeneratorPerlin<1> TEMPERATURE_NOISE; ///< Noise generator for temperature.
+    static const NoiseGeneratorPerlin<1> INFO_NOISE; ///< Noise generator for biome information.
     static const WorldGenDoublePlant DOUBLE_PLANT_GENERATOR; ///< Generator for double plants.
 
     static const WorldGenTrees TREE_FEATURE; ///< Generator for standard trees.
@@ -1027,9 +1027,9 @@ class BiomeMesa final : public Biome {
 public:
     i64 worldSeed = 0; ///< The world seed used for terrain generation.
     std::vector<lce::BlockState> clayBands{}; ///< A collection of clay bands for the mesa biome.
-    NoiseGeneratorPerlin pillarNoise{}; ///< Noise generator for mesa pillars.
-    NoiseGeneratorPerlin pillarRoofNoise{}; ///< Noise generator for mesa pillar roofs.
-    NoiseGeneratorPerlin clayBandsOffsetNoise{}; ///< Noise generator for clay band offsets.
+    NoiseGeneratorPerlin<4> pillarNoise{}; ///< Noise generator for mesa pillars.
+    NoiseGeneratorPerlin<1> pillarRoofNoise{}; ///< Noise generator for mesa pillar roofs.
+    NoiseGeneratorPerlin<1> clayBandsOffsetNoise{}; ///< Noise generator for clay band offsets.
     bool brycePillars = false; ///< Indicates if the biome has Bryce-like pillars.
     bool hasForest = false; ///< Indicates if the biome contains forested areas.
 

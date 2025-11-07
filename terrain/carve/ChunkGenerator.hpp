@@ -6,7 +6,12 @@
 #include <chrono>
 
 #include "terrain/ChunkPrimer.hpp"
-#include "terrain/noise/NoiseGenerator.hpp"
+#include "terrain/noise/NoiseGen.hpp"
+
+
+class WorldNoise;
+extern double timeNoiseSetup;
+
 
 /**
  * @class ChunkGeneratorOverWorld
@@ -19,35 +24,20 @@ public:
 
     const Generator *g; ///< The generator used for biome and terrain generation.
 
+    const ChunkNoise& chunkNoise; ///< reference to the world noise from generator.
+
     RNG rng{}; ///< Random number generator used for chunk generation.
 
     biome_t *biomesForGeneration; ///< Pointer to the array of biomes used for generation.
 
     std::span<int> biomesForGenerationSpan;
 
-    NoiseGeneratorOctaves minLimitPerlinNoise; ///< Noise generator for minimum limit Perlin noise.
-
-    NoiseGeneratorOctaves maxLimitPerlinNoise; ///< Noise generator for maximum limit Perlin noise.
-
-    NoiseGeneratorOctaves mainPerlinNoise; ///< Noise generator for main Perlin noise.
-
-    NoiseGeneratorPerlin surfaceNoise; ///< Noise generator for surface noise.
-
-    NoiseGeneratorOctaves scaleNoise; ///< Noise generator for scale noise (currently unused).
-
-    NoiseGeneratorOctaves depthNoise; ///< Noise generator for depth noise.
-
-    std::vector<double> depthRegion; ///< Buffer for depth region values.
-
-    std::vector<double> depthBuffer; ///< Buffer for depth values.
-
-    std::vector<double> heightMap; ///< Buffer for heightmap values.
-
-    std::vector<double> mainNoiseRegion; ///< Buffer for main noise region values.
-
-    std::vector<double> minLimitRegion; ///< Buffer for minimum limit region values.
-
-    std::vector<double> maxLimitRegion; ///< Buffer for maximum limit region values.
+    std::array<double, 25> depthRegion;     ///< Buffer for depth region values.
+    std::array<double, 256> depthBuffer;     ///< Buffer for depth values.
+    std::array<double, 825> heightMap;       ///< Buffer for heightmap values.
+    std::array<double, 825> mainNoiseRegion; ///< Buffer for main noise region values.
+    std::array<double, 825> minLimitRegion;  ///< Buffer for minimum limit region values.
+    std::array<double, 825> maxLimitRegion;  ///< Buffer for maximum limit region values.
 
     /**
      * @brief Constructs a ChunkGeneratorOverWorld object with the specified generator.
@@ -55,10 +45,7 @@ public:
      */
     explicit ChunkGeneratorOverWorld(const Generator &generator);
 
-    /**
-     * @brief Destructor for the ChunkGeneratorOverWorld class.
-     */
-    ~ChunkGeneratorOverWorld();
+    ~ChunkGeneratorOverWorld(); ///< @brief Destructor for the ChunkGeneratorOverWorld class.
 
 
     void generateHeightmap3(int x, int y, int z) {

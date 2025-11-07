@@ -3,7 +3,9 @@
 #include "terrain/biomes/biome.hpp"
 
 #include "common/range.hpp"
+#include "common/timer.hpp"
 #include "terrain/biomes/biomeDepthAndScale.hpp"
+#include "terrain/noise/NoiseGen.hpp"
 
 
 /*
@@ -14,6 +16,9 @@ for (int i = -2; i <= 2; ++i) {
     }
 }
  */
+
+double timeNoiseSetup = 0;
+
 static_assert(sizeof(float) == sizeof(uint32_t), "float and uint32_t must be the same size");
 static constexpr std::array<uint32_t, 25> BIOME_WEIGHTS = {
         0x405F7F69, 0x408C544C, 0x409C24DE, 0x408C544C, 0x405F7F69,
@@ -24,17 +29,22 @@ static constexpr std::array<uint32_t, 25> BIOME_WEIGHTS = {
 };
 
 
-ChunkGeneratorOverWorld::ChunkGeneratorOverWorld(const Generator& generator) : g(&generator) {
-    rng.setSeed(g->getWorldSeed());
-    minLimitPerlinNoise.setNoiseGeneratorOctaves(rng, 16);
-    maxLimitPerlinNoise.setNoiseGeneratorOctaves(rng, 16);
-    mainPerlinNoise.setNoiseGeneratorOctaves(rng, 8);
-    surfaceNoise.setNoiseGeneratorPerlin(rng, 4);
-    scaleNoise.setNoiseGeneratorOctaves(rng, 10);
-    depthNoise.setNoiseGeneratorOctaves(rng, 16);
+ChunkGeneratorOverWorld::ChunkGeneratorOverWorld(const Generator& generator)
+    : g(&generator), chunkNoise(g->getChunkNoise()), rng(g->getChunkNoise().rng), depthRegion(), depthBuffer(),
+      heightMap(), mainNoiseRegion(), minLimitRegion(), maxLimitRegion() {
+
+    // rng.setSeed(g->getWorldSeed());
+    // Timer time;
+    // minLimitPerlinNoise.setNoiseGeneratorOctaves(rng, 16);
+    // maxLimitPerlinNoise.setNoiseGeneratorOctaves(rng, 16);
+    // mainPerlinNoise.setNoiseGeneratorOctaves(rng, 8);
+    // surfaceNoise.setNoiseGeneratorPerlin(rng, 4);
+    // scaleNoise.setNoiseGeneratorOctaves(rng, 10);
+    // depthNoise.setNoiseGeneratorOctaves(rng, 16);
+    // timeNoiseSetup += time.getSeconds();
+
     // forestNoise.setNoiseGeneratorOctaves(&rng, 8);
-    depthBuffer.resize(256);
-    heightMap.resize(825);
+
     biomesForGeneration = nullptr;
 }
 
@@ -68,11 +78,11 @@ void ChunkGeneratorOverWorld::setBiomesForGeneration(c_int x, c_int z, c_int wid
 void ChunkGeneratorOverWorld::setBlocksInChunk(c_int chunkX, c_int chunkZ, ChunkPrimer* primer) {
 
     generateHeightmap(chunkX * 4, 0, chunkZ * 4);
-    bool chunkHasHeightFalloff = hasHeightFalloff(chunkX, chunkZ);
+    c_bool chunkHasHeightFalloff = hasHeightFalloff(chunkX, chunkZ);
 
     for (int subX = 0; subX < 4; ++subX) {
-        int j = subX * 5;
-        int k = (subX + 1) * 5;
+        c_int j = subX * 5;
+        c_int k = (subX + 1) * 5;
 
         for (int subZ = 0; subZ < 4; ++subZ) {
             c_int i1 = (j + subZ) * 33;
@@ -87,12 +97,14 @@ void ChunkGeneratorOverWorld::setBlocksInChunk(c_int chunkX, c_int chunkZ, Chunk
                 double h01 = heightMap[k1 + subY];
                 double h11 = heightMap[l1 + subY];
 
-                double iy00 = (heightMap[i1 + subY + 1] - h00) * 0.125;
-                double iy10 = (heightMap[j1 + subY + 1] - h10) * 0.125;
-                double iy01 = (heightMap[k1 + subY + 1] - h01) * 0.125;
-                double iy11 = (heightMap[l1 + subY + 1] - h11) * 0.125;
+                c_double iy00 = (heightMap[i1 + subY + 1] - h00) * 0.125;
+                c_double iy10 = (heightMap[j1 + subY + 1] - h10) * 0.125;
+                c_double iy01 = (heightMap[k1 + subY + 1] - h01) * 0.125;
+                c_double iy11 = (heightMap[l1 + subY + 1] - h11) * 0.125;
 
                 for (int ym = 0; ym < 8; ++ym) {
+                    c_int y = subY * 8 + ym;
+
                     double heightAtXZ0 = h00;
                     double heightAtXZ1 = h10;
 
@@ -102,20 +114,20 @@ void ChunkGeneratorOverWorld::setBlocksInChunk(c_int chunkX, c_int chunkZ, Chunk
                     static constexpr int SEA_LEVEL = 63;
 
                     for (int xm = 0; xm < 4; ++xm) {
+                        c_int x = subX * 4 + xm;
 
-                        double hStep = (heightAtXZ1 - heightAtXZ0) * 0.25;
+                        c_double hStep = (heightAtXZ1 - heightAtXZ0) * 0.25;
                         double density = heightAtXZ0 - hStep;
                         // int defaultId = (subY * 8 + ym < SEA_LEVEL) ? 9 : 0;
 
                         if (chunkHasHeightFalloff) {
                             // Slower path with height falloff
                             for (int zm = 0; zm < 4; ++zm) {
-                                int x = subX * 4 + xm;
-                                int y = subY * 8 + ym;
-                                int z = subZ * 4 + zm;
-                                int worldX = chunkX * 16 + x;
-                                int worldZ = chunkZ * 16 + z;
-                                double heightFalloff = getHeightFalloff(worldX, worldZ);
+                                c_int z = subZ * 4 + zm;
+                                c_int worldX = chunkX * 16 + x;
+                                c_int worldZ = chunkZ * 16 + z;
+
+                                c_double heightFalloff = getHeightFalloff(worldX, worldZ);
 
                                 density += hStep;
 
@@ -133,13 +145,11 @@ void ChunkGeneratorOverWorld::setBlocksInChunk(c_int chunkX, c_int chunkZ, Chunk
                         } else {
                             // Fast path: no height falloff, no world coordinate calculation
                             for (int zm = 0; zm < 4; ++zm) {
-                                int x = subX * 4 + xm;
-                                int y = subY * 8 + ym;
-                                int z = subZ * 4 + zm;
+                                c_int z = subZ * 4 + zm;
 
                                 density += hStep;
 
-                                u16 blockId = (density > 0.0) ? 1 : ((y < SEA_LEVEL) ? 9 : 0);
+                                c_u16 blockId = (density > 0.0) ? 1 : ((y < SEA_LEVEL) ? 9 : 0);
 
                                 if (blockId != 0) {
                                     primer->setBlockId(x, y, z, blockId);
@@ -163,11 +173,13 @@ void ChunkGeneratorOverWorld::setBlocksInChunk(c_int chunkX, c_int chunkZ, Chunk
 
 
 void ChunkGeneratorOverWorld::replaceBiomeBlocks(c_int chunkX, c_int chunkZ, ChunkPrimer* primer) {
-    surfaceNoise.getRegion(depthBuffer, chunkX * 16, chunkZ * 16, 16, 16, 0.0625, 0.0625, 1.0);
+    c_int blockX = chunkX * 16;
+    c_int blockZ = chunkZ * 16;
+    chunkNoise.surfaceNoise.getRegion<16, 16, 0.0625, 0.0625, 1.0>(depthBuffer, blockX, blockZ);
     for (int i = 0; i < 16; ++i) {
         for (int j = 0; j < 16; ++j) {
             Biome* biome = Biome::getBiomeForId(biomesForGeneration[j + i * 16]);
-            biome->genTerrainBlocks(g->getWorldSeed(), rng, primer, chunkX * 16 + i, chunkZ * 16 + j, depthBuffer[j + i * 16]);
+            biome->genTerrainBlocks(g->getWorldSeed(), rng, primer, blockX + i, blockZ + j, depthBuffer[j + i * 16]);
         }
     }
 }
@@ -184,10 +196,10 @@ void ChunkGeneratorOverWorld::provideChunk(ChunkPrimer *chunkPrimer, c_int x,c_i
 
 
 void ChunkGeneratorOverWorld::generateHeightmap(c_int x, c_int y, c_int z) {
-    depthNoise.         genNoiseOctaves(g, depthRegion,     x, 10, z, 5,  1, 5, 200.0,   1.0,      200.0);
-    mainPerlinNoise.    genNoiseOctaves(g, mainNoiseRegion, x,  y, z, 5, 33, 5, 8.55515, 4.277575, 8.55515);
-    minLimitPerlinNoise.genNoiseOctaves(g, minLimitRegion,  x,  y, z, 5, 33, 5, 684.412, 684.412,  684.412);
-    maxLimitPerlinNoise.genNoiseOctaves(g, maxLimitRegion,  x,  y, z, 5, 33, 5, 684.412, 684.412,  684.412);
+    chunkNoise.depthNoise.         genNoiseOctavesImpl<double, 5,  1, 5, 200.0,   1.0,      200.0  >(g, depthRegion,     x, 10, z);
+    chunkNoise.mainPerlinNoise.    genNoiseOctavesImpl<double, 5, 33, 5, 8.55515, 4.277575, 8.55515>(g, mainNoiseRegion, x,  y, z);
+    chunkNoise.minLimitPerlinNoise.genNoiseOctavesImpl<double, 5, 33, 5, 684.412, 684.412,  684.412>(g, minLimitRegion,  x,  y, z);
+    chunkNoise.maxLimitPerlinNoise.genNoiseOctavesImpl<double, 5, 33, 5, 684.412, 684.412,  684.412>(g, maxLimitRegion,  x,  y, z);
     int noiseIdx = 0;
     int depthIdx = 0;
 
@@ -201,11 +213,7 @@ void ChunkGeneratorOverWorld::generateHeightmap(c_int x, c_int y, c_int z) {
             for (int nbDX = -2; nbDX <= 2; ++nbDX) {
                 for (int nbDZ = -2; nbDZ <= 2; ++nbDZ) {
                     const biome_t neighborBiome = biomesForGeneration[cellX + nbDX + 2 + (cellZ + nbDZ + 2) * 10];
-                    double neighborDepth;
-                    double neighborScale;
-                    double neighborInvDPlus2;
-                    // getBiomeDepthAndScale
-                    //         (neighborBiome, &neighborDepth, &neighborScale, nullptr);
+                    double neighborDepth, neighborScale, neighborInvDPlus2;
                     getBiomeDepthAndScale<true, true, false, true>
                             (neighborBiome, &neighborDepth, &neighborScale, nullptr, &neighborInvDPlus2);
                     /*
@@ -215,12 +223,9 @@ void ChunkGeneratorOverWorld::generateHeightmap(c_int x, c_int y, c_int z) {
                     }
                     */
                     // TODO: double being casted to float?
-                    float w = *reinterpret_cast<const float*>(&BIOME_WEIGHTS[nbDX + 2 + (nbDZ + 2) * 5]) * neighborInvDPlus2; // / (neighborDepth + 2.0F);
+                    float w = *reinterpret_cast<const float*>(&BIOME_WEIGHTS[nbDX + 2 + (nbDZ + 2) * 5]) * neighborInvDPlus2;
 
-                    double centerDepth;
-                    double neighborBaseDepth;
-                    // getBiomeDepthAndScale(centerBiome, &centerDepth, nullptr, nullptr);
-                    // getBiomeDepthAndScale(neighborBiome, &neighborBaseDepth, nullptr, nullptr);
+                    double centerDepth, neighborBaseDepth;
                     getBiomeDepthAndScale<true, false, false, false>(centerBiome, &centerDepth, nullptr, nullptr, nullptr);
                     getBiomeDepthAndScale<true, false, false, false>(neighborBiome, &neighborBaseDepth, nullptr, nullptr, nullptr);
                     if (neighborBaseDepth > centerDepth) w /= 2.0F;
@@ -283,28 +288,28 @@ void ChunkGeneratorOverWorld::generateHeightmap(c_int x, c_int y, c_int z) {
     }
 }
 
-inline bool ChunkGeneratorOverWorld::hasHeightFalloff(int chunkX, int chunkZ) const {
-    const int b = g->getWorldChunkBounds(); // half-size (world in [-b, b-1])
+inline bool ChunkGeneratorOverWorld::hasHeightFalloff(c_int chunkX, c_int chunkZ) const {
+    c_int b = g->getWorldChunkBounds(); // half-size (world in [-b, b-1])
 
     // Fast interior reject: strictly >31 from all 4 edges => falloff is 0.
     return b - std::abs(chunkX + (chunkX > 0)) < HEIGHT_FALLOFF_BORDER_CHUNKS ||
            b - std::abs(chunkZ + (chunkZ > 0)) < HEIGHT_FALLOFF_BORDER_CHUNKS;
 }
 
-inline double ChunkGeneratorOverWorld::getHeightFalloff(int blockX, int blockZ) const {
+inline double ChunkGeneratorOverWorld::getHeightFalloff(c_int blockX, c_int blockZ) const {
     // BORDER = 32; result = max(0, 32 - nearestDist) * 4
 
     const int b = g->getWorldCoordinateBounds(); // half-size (world in [-b, b-1])
 
-    const int distToMinX = std::max(0, blockX + b);
-    const int distToMaxX = std::max(0, b - blockX - 1);
-    const int distToMinZ = std::max(0, blockZ + b);
-    const int distToMaxZ = std::max(0, b - blockZ - 1);
+    c_int distToMinX = std::max(0, blockX + b);
+    c_int distToMaxX = std::max(0, b - blockX - 1);
+    c_int distToMinZ = std::max(0, blockZ + b);
+    c_int distToMaxZ = std::max(0, b - blockZ - 1);
 
-    const int nearestDist = std::min(std::min(distToMinX, distToMaxX),
-                                     std::min(distToMinZ, distToMaxZ));
+    c_int nearestDist = std::min(std::min(distToMinX, distToMaxX),
+                                 std::min(distToMinZ, distToMaxZ));
 
-    int h = HEIGHT_FALLOFF_BORDER - nearestDist;
+    c_int h = HEIGHT_FALLOFF_BORDER - nearestDist;
     if (h <= 0) return 0.0;
     return static_cast<double>(h << 2); // *4 via shift
 }

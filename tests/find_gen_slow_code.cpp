@@ -4,9 +4,9 @@
 #include "common/timer.hpp"
 #include "terrain/biomes/biome.hpp"
 #include "terrain/carve/CaveGenerator.hpp"
+#include "terrain/carve/ChunkGenerator.hpp"
 #include "terrain/finders/LargeCaveFinder.hpp"
 #include "terrain/generator.hpp"
-
 
 
 // #define TEST_PER_WORLD
@@ -84,7 +84,10 @@ int main(int argc, char* argv[]) {
                 world.getOrCreateChunk({x, z});
             }
         }
-        std::cout << "    Chunk Gen Time: " << gen.getSeconds() << "\n";
+        const auto chunkTime = gen.getSeconds();
+        std::cout << "    Chunk Gen Time: " << chunkTime << "\n";
+        std::cout << "  Time Noise Setup: " << timeNoiseSetup << "\n";
+        std::cout << "    Chunks Per Sec: " << 54 * 54 / chunkTime << "\n";
         gen.reset();
 
         for (int x = -27; x < 27; x++) {

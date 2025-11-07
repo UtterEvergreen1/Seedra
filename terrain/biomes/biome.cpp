@@ -54,8 +54,8 @@ const std::map<biome_t, int> Biome::SNOW_BIOMES = {
         {biome_t::cold_taiga_mutated, -10},
 };
 
-const NoiseGeneratorPerlin Biome::TEMPERATURE_NOISE = NoiseGeneratorPerlin(RNG(1234ULL), 1);
-const NoiseGeneratorPerlin Biome::INFO_NOISE = NoiseGeneratorPerlin(RNG(2345ULL), 1);
+const NoiseGeneratorPerlin<1> Biome::TEMPERATURE_NOISE = NoiseGeneratorPerlin<1>(RNG(1234ULL));
+const NoiseGeneratorPerlin<1> Biome::INFO_NOISE = NoiseGeneratorPerlin<1>(RNG(2345ULL));
 
 const WorldGenDoublePlant Biome::DOUBLE_PLANT_GENERATOR;
 const WorldGenTrees Biome::TREE_FEATURE;
@@ -358,8 +358,8 @@ void BiomeMesa::genTerrainBlocks(c_i64 worldSeedIn, RNG &rng, ChunkPrimer *chunk
     if (this->pillarNoise.noiseLevels.empty() || this->pillarRoofNoise.noiseLevels.empty()) {
         RNG rng1;
         rng1.setSeed(worldSeedIn);
-        this->pillarNoise.setNoiseGeneratorPerlin(rng, 4);
-        this->pillarRoofNoise.setNoiseGeneratorPerlin(rng, 1);
+        this->pillarNoise.setNoiseGeneratorPerlin(rng);
+        this->pillarRoofNoise.setNoiseGeneratorPerlin(rng);
     }
     double d4 = 0.0;
 
@@ -458,7 +458,7 @@ void BiomeMesa::generateClayBands(c_i64 seed) {
     this->clayBands.resize(64, lce::BlocksInit::HARDENED_CLAY.getState());
     RNG rng;
     rng.setSeed(seed);
-    this->clayBandsOffsetNoise.setNoiseGeneratorPerlin(rng, 1);
+    this->clayBandsOffsetNoise.setNoiseGeneratorPerlin(rng);
 
     for (int index = 0; index < 64; ++index) {
         index += rng.nextInt(5) + 1;

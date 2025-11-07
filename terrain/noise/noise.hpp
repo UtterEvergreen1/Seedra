@@ -9,9 +9,7 @@
  */
 class Generator;
 
-/// Helper
 
-static constexpr double SQRT_3 = 1.7320508075688772; // sqrt(3.0);
 
 /**
  * @brief Maintains precision for a given double value.

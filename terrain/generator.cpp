@@ -42,6 +42,7 @@ void Generator::setup() {
     }
     setupLayerStack(&this->m_layerStack, this->getLCEVersion(), this->getBiomeScale());
     setLayerSeed(this->m_layerStack.entry_1, this->getWorldSeed());
+    setupNoiseStack();
 }
 
 
@@ -56,6 +57,7 @@ void Generator::applyWorldSeed(c_i64 seed) {
 
     this->m_config.setWorldSeed(seed);
     setLayerSeed(this->m_layerStack.entry_1, seed);
+    setupNoiseStack();
     this->reloadCache();
 }
 
@@ -117,6 +119,22 @@ void Generator::reloadCache() {
         }
     }
 }
+
+void Generator::setupNoiseStack() {
+    m_chunk_noise.rng.setSeed(this->getWorldSeed());
+    m_chunk_noise.minLimitPerlinNoise.setNoiseGeneratorOctaves(m_chunk_noise.rng);
+    m_chunk_noise.maxLimitPerlinNoise.setNoiseGeneratorOctaves(m_chunk_noise.rng);
+    m_chunk_noise.mainPerlinNoise.setNoiseGeneratorOctaves(m_chunk_noise.rng);
+    m_chunk_noise.surfaceNoise.setNoiseGeneratorPerlin(m_chunk_noise.rng);
+    m_chunk_noise.scaleNoise.setNoiseGeneratorOctaves(m_chunk_noise.rng);
+    m_chunk_noise.depthNoise.setNoiseGeneratorOctaves(m_chunk_noise.rng);
+}
+
+
+const ChunkNoise& Generator::getChunkNoise() const {
+    return m_chunk_noise;
+}
+
 
 MU void Generator::changeLCEVersion(const LCEVERSION versionIn) {
     // avoid setting up again when it's the same

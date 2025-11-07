@@ -8,12 +8,14 @@
 #include "common/Pos3DTemplate.hpp"
 #include "common/rng.hpp"
 #include "components/BoundingBox.hpp"
+#include "noise/NoiseGen.hpp"
+
 
 class Biome;
 struct Layer;
 struct LayerStack;
 struct Range;
-struct SurfaceNoise;
+struct ChunkNoise;
 
 class BiomeCache {
     int scale;
@@ -45,6 +47,9 @@ public:
     }
 };
 
+
+
+
 /**
  * @class Generator
  * @brief Handles biome and terrain generation for a world.
@@ -70,6 +75,11 @@ class Generator {
      * @brief The stack of layers used for biome generation.
      */
     LayerStack m_layerStack{};
+
+    /**
+     * @brief The noise used by ChunkGenerator.
+     */
+    ChunkNoise m_chunk_noise;
 
     /**
      * @brief An array of biome caches used for caching world biomes at certain scales.
@@ -167,6 +177,16 @@ public:
      * This method clears and regenerates all biome caches. Internally used when the world seed or settings change.
      */
     void reloadCache();
+
+    /**
+     * Setups up the perlin noise layers that will be used by ChunkGenerator.
+     */
+    void setupNoiseStack();
+
+    /**
+     * @brief returns the noise (used by ChunkGenerator)
+     */
+    const ChunkNoise& getChunkNoise() const;
 
     /**
      * @brief Retrieves the location of the biome cache for the specified scale and coordinates.

@@ -8,6 +8,7 @@
 #include "common/rng.hpp"
 #include "terrain/generator.hpp"
 
+static constexpr double SQRT_3 = 1.7320508075688772; // sqrt(3.0);
 
 double maintainPrecision(c_double x) { return x - floor(x / 33554432.0 + 0.5) * 33554432.0; }
 
