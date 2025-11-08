@@ -81,9 +81,7 @@ public:
      * @param id The ID of the biome.
      * @return Pointer to the biome.
      */
-    static Biome *getBiomeForId(const biome_t id) {
-        return registry.at(id);
-    }
+    static Biome *getBiomeForId(const biome_t id);
 
     /**
      * @brief Registers a biome with a specific ID.

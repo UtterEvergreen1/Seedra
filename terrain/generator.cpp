@@ -268,18 +268,21 @@ biome_t *Generator::getBiomeRange(c_int scale, c_int x, c_int z, c_int w, c_int 
 
 
 biome_t *Generator::getCacheAtBlock(int scale, int x, int z) const {
+    static biome_t outside_world = biome_t::ocean;
+
     const int cacheVecPos = CTZ(scale) / 2; // Count trailing zeros to get the index
+    // std::cout << cacheVecPos << std::endl;
     if (this->m_biomeCaches[cacheVecPos].isGenerated()) {
         // get the biome stored in the cache
         const BiomeCache &cache = this->m_biomeCaches[cacheVecPos];
         const BoundingBox &bounds = cache.getBox();
         if (!bounds.isVecInside({x, 0, z})) {
-            return nullptr;
+            return &outside_world;
         }
         return &cache.getBiomes()[(z + bounds.maxZ) * (bounds.maxX * 2) + (x + bounds.maxX)];
     }
 
-    return nullptr;
+    return &outside_world;
 }
 
 biome_t *Generator::getWorldBiomes(int scale) const {

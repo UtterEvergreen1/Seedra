@@ -11,6 +11,7 @@
 #include "terrain/carve/WaterCaveGenerator.hpp"
 #include "terrain/carve/WaterRavineGenerator.hpp"
 
+#include "common/timer.hpp"
 #include "terrain/decorators/WorldGenDungeons.hpp"
 #include "terrain/decorators/WorldGenLakes.hpp"
 
@@ -31,6 +32,8 @@ namespace Chunk {
 
 
     MU void populateCaves(World& world, Pos2D chunkPos) {
+        // Timer start;
+        // std::cout << "[Start] CavePop: " << chunkPos << "\n";
         ChunkPrimer* chunkPrimer = world.getChunk(chunkPos);
         if (chunkPrimer == nullptr || chunkPrimer->isModifying.load() || chunkPrimer->stage != Stage::STAGE_WATER_CAVES) {
             return;
@@ -39,10 +42,6 @@ namespace Chunk {
         chunkPrimer->isModifying.store(true);
         bool accurate = true;
 
-
-
-        
-        
         if (world.getGenerator()->getLCEVersion() != LCEVERSION::AQUATIC &&
             (chunkPrimer->stage == Stage::STAGE_TERRAIN ||
             chunkPrimer->stage == Stage::STAGE_WATER_CAVES || 
@@ -83,6 +82,7 @@ namespace Chunk {
         }
         chunkPrimer->isModifying.store(false);
 
+        // std::cout << "[Stop ] CavePop: " << chunkPos << " | " << start.getSeconds() << "\n";
         // chunkPrimer->generateSkylightMap();
     }
 

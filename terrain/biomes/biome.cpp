@@ -95,6 +95,15 @@ std::map<biome_t, Biome *> Biome::registry;
 
 Biome::~Biome() { delete decorator; }
 
+Biome* Biome::getBiomeForId(const biome_t id) {
+    auto it = registry.find(id);
+    if (it != registry.end()) {
+        return it->second;
+    }
+    static Biome defaultBiome = BiomeNone("None", -1.0F, 0.1F, false, 0.5F, 0xA5333333);
+    return &defaultBiome;
+}
+
 #pragma region BiomeDefaults
 
 BiomeDecorator *Biome::createBiomeDecorator() const {
