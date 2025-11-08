@@ -147,16 +147,16 @@ int main() {
         for (int regionX = -numXDynamicRegions; regionX < numXDynamicRegions; ++regionX) {
             for (int regionZ = -numZDynamicRegions; regionZ < numZDynamicRegions; ++regionZ) {
                 possibleMansions[regionX + numDynamicRegions][regionZ + numDynamicRegions] =
-                    Placement::Mansion::getAllPossiblePositions(g.getWorldSeed(), regionX, regionZ);
+                    Placement::Mansion::getAllPossibleChunks(g.getWorldSeed(), regionX, regionZ);
 
                 possibleMonuments[regionX + numDynamicRegions][regionZ + numDynamicRegions] =
-                    Placement::Monument::getAllPossiblePositions(g.getWorldSeed(), regionX, regionZ);
+                    Placement::Monument::getAllPossibleChunks(g.getWorldSeed(), regionX, regionZ);
 
                 possibleTreasures[regionX + numDynamicRegions][regionZ + numDynamicRegions] =
-                    Placement::BuriedTreasure::getAllPossiblePositions(g.getWorldSeed(), regionX, regionZ);
+                    Placement::BuriedTreasure::getAllPossibleChunks(g.getWorldSeed(), regionX, regionZ);
 
                 possibleShipwrecks[regionX + numDynamicRegions][regionZ + numDynamicRegions] =
-                    Placement::Shipwreck::getAllPossiblePositions(g.getWorldSeed(), regionX, regionZ);
+                    Placement::Shipwreck::getAllPossibleChunks(g.getWorldSeed(), regionX, regionZ);
             }
         }
 

@@ -13,7 +13,7 @@ namespace scattered_features {
     using namespace lce::blocks::states;
 
 
-    ScatteredFeature::ScatteredFeature(Generator* g, RNG& rng, int x, int y, int z, int sizeX, int sizeY, int sizeZ)
+    ScatteredFeature::ScatteredFeature(Generator* g, RNG& rng, int chunkX, int y, int chunkZ, int sizeX, int sizeY, int sizeZ)
         : StructureComponent() {
         this->scatteredFeatureSizeX = sizeX;
         this->scatteredFeatureSizeY = sizeY;
@@ -21,6 +21,9 @@ namespace scattered_features {
         EnumFacing direction = FACING_HORIZONTAL[rng.nextInt(4)];
         this->facing = direction;
         this->setCoordMode(direction);
+
+        c_int x = chunkX << 4;
+        c_int z = chunkZ << 4;
 
         if (g->getLCEVersion() == LCEVERSION::AQUATIC) {
             if (direction == EnumFacing::NORTH) {
@@ -32,11 +35,9 @@ namespace scattered_features {
             }
         } else {
             if (direction == EnumFacing::NORTH || direction == EnumFacing::SOUTH) {
-                setBoundingBox(BoundingBox(x, y, z, x + sizeX - 1, y + sizeY - 1, z + sizeZ - 1)); // original
-                //this.boundingBox = new StructureBoundingBox(x, y, z - sizeZ, x + sizeX - 1, y + sizeY - 1, z);
+                setBoundingBox(BoundingBox(x, y, z, x + sizeX - 1, y + sizeY - 1, z + sizeZ - 1));
             } else {
-                setBoundingBox(BoundingBox(x, y, z, x + sizeZ - 1, y + sizeY - 1, z + sizeX - 1)); // original
-                //this.boundingBox = new StructureBoundingBox(x - sizeX, y, z - sizeZ, x, y + sizeY - 1, z);
+                setBoundingBox(BoundingBox(x, y, z, x + sizeZ - 1, y + sizeY - 1, z + sizeX - 1));
             }
         }
     }
@@ -73,18 +74,19 @@ namespace scattered_features {
     }
 
     ScatteredFeature* ScatteredFeatureFactory(Generator* g, const Placement::FeatureStructurePair& pair) {
-        RNG rng = RNG::getLargeFeatureSeed(g->getWorldSeed(), pair.pos.x, pair.pos.z);
+        Pos2D structChunkPos = pair.pos.toChunkPos();
+        RNG rng = RNG::getLargeFeatureSeed(g->getWorldSeed(), structChunkPos.x, structChunkPos.z);
         rng.advance();
 
         switch(pair.type) {
             case StructureType::DesertPyramid:
-                return new DesertPyramid(g, rng, pair.pos.x, pair.pos.z);
+                return new DesertPyramid(g, rng, structChunkPos.x, structChunkPos.z);
             case StructureType::JunglePyramid:
-                return new JunglePyramid(g, rng, pair.pos.x, pair.pos.z);
+                return new JunglePyramid(g, rng, structChunkPos.x, structChunkPos.z);
             case StructureType::SwampHut:
-                return new SwampHut(g, rng, pair.pos.x, pair.pos.z);
+                return new SwampHut(g, rng, structChunkPos.x, structChunkPos.z);
             case StructureType::Igloo:
-                return new Igloo(g, rng, pair.pos.x, pair.pos.z);
+                return new Igloo(g, rng, structChunkPos.x, structChunkPos.z);
             default:
                 return nullptr;
         }

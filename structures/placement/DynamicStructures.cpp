@@ -49,7 +49,7 @@ namespace Placement {
 
     template<typename Derived>
     Pos2DVec_t DynamicStructure<Derived>::
-    getAllPossiblePositions(int64_t worldSeed, int regionX, int regionZ) {
+    getAllPossibleChunks(int64_t worldSeed, int regionX, int regionZ) {
         RNG rnds;
         c_i64 featureSeed = static_cast<i64>(regionX * Derived::REGION_SIZE) * 341873128712ULL +
                             static_cast<i64>(regionZ * Derived::REGION_SIZE) * 132897987541ULL + worldSeed + Derived::SALT;
@@ -65,11 +65,9 @@ namespace Placement {
                 // successfully placed
                 xChunk = regionX * Derived::REGION_SIZE + xChunk;
                 zChunk = regionZ * Derived::REGION_SIZE + zChunk;
-                int xPos = (xChunk << 4) + 8;
-                int zPos = (zChunk << 4) + 8;
                 if (xChunk < Derived::CHUNK_BOUNDS && xChunk >= -Derived::CHUNK_BOUNDS &&
                     zChunk < Derived::CHUNK_BOUNDS && zChunk >= -Derived::CHUNK_BOUNDS) {
-                    positions.emplace_back(xPos, zPos);
+                    positions.emplace_back(xChunk, zChunk);
                 }
             } else {
                 attempts--;

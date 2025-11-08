@@ -136,15 +136,18 @@ namespace Placement {
     std::vector<FeatureStructurePair>
     Feature::getAllFeaturePositionsBounded(const Generator *g, int lowerX, int lowerZ, int upperX, int upperZ) {
         std::vector<FeatureStructurePair> features;
-        c_int numXRegions = ((upperX - lowerX) >> 4) / REGION_SIZE - 1;
-        c_int numZRegions = ((upperZ - lowerZ) >> 4) / REGION_SIZE - 1;
-        for (int regionX = -numXRegions; regionX < numXRegions; ++regionX) {
-            for (int regionZ = -numZRegions; regionZ < numZRegions; ++regionZ) {
+        c_int lowerXRegion = std::floor((float)(lowerX >> 4) / REGION_SIZE);
+        c_int lowerZRegion = std::floor((float)(lowerZ >> 4) / REGION_SIZE);
+        c_int upperXRegion = std::floor((float)(upperX >> 4) / REGION_SIZE);
+        c_int upperZRegion = std::floor((float)(upperZ >> 4) / REGION_SIZE);
+        for (int regionX = lowerXRegion; regionX <= upperXRegion; ++regionX) {
+            for (int regionZ = lowerZRegion; regionZ <= upperZRegion; ++regionZ) {
                 Pos2D structPos = getRegionBlockPosition(g->getWorldSeed(), regionX, regionZ);
-                if (StructureType structureType = getFeatureType(g, structPos); structureType != StructureType::NONE &&
-                                                                                structPos.insideBounds(lowerX, lowerZ,
-                                                                                                       upperX, upperZ))
-                    features.emplace_back(structPos, structureType);
+                if (structPos.insideBounds(lowerX, lowerZ, upperX, upperZ)) {
+                    StructureType structureType = getFeatureType(g, structPos);
+                    if (structureType != StructureType::NONE)
+                        features.emplace_back(structPos, structureType);
+                }
             }
         }
         return features;

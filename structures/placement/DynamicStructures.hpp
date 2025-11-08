@@ -79,7 +79,7 @@ namespace Placement {
          */
         static Pos2D getPosition(const Generator *g, int regionX, int regionZ);
 
-        static Pos2DVec_t getAllPossiblePositions(int64_t worldSeed, int regionX, int regionZ);
+        static Pos2DVec_t getAllPossibleChunks(int64_t worldSeed, int regionX, int regionZ);
 
         /**
          * @brief Verifies if the structure can spawn at a specific block position.
