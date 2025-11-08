@@ -81,6 +81,7 @@ void CaveGenerator::addTunnel(World& worldIn, i64 theSeedModifier, Pos2D current
 
     Pos2D currentChunkX16 = currentChunk * 16;
     DoublePos2D currentChunkCenter = (currentChunkX16 + 8).asType<double>();
+    const Pos3D temp = startPos.asType<int>();
 
     float directionModifier = 0.0F;
     float slopeModifier = 0.0F;
@@ -195,13 +196,16 @@ void CaveGenerator::addTunnel(World& worldIn, i64 theSeedModifier, Pos2D current
         min += currentChunkX16;
         max += currentChunkX16;
         // New: AABB intersects genBounds?
-        auto insideRange = [](int aMin, int aMax, int bMin, int bMax) {
-            return aMin <= bMax && bMin <= aMax;
-        };
-
-        if (!(insideRange(min.x, max.x, genBounds.minX, genBounds.maxX) &&
-              insideRange(min.y, max.y, genBounds.minY, genBounds.maxY) &&
-              insideRange(min.z, max.z, genBounds.minZ, genBounds.maxZ))) {
+        // auto insideRange = [](int aMin, int aMax, int bMin, int bMax) {
+        //     return aMin <= bMax && bMin <= aMax;
+        // };
+//
+        // if (!(insideRange(min.x, max.x, genBounds.minX, genBounds.maxX) &&
+        //       insideRange(min.y, max.y, genBounds.minY, genBounds.maxY) &&
+        //       insideRange(min.z, max.z, genBounds.minZ, genBounds.maxZ))) {
+        //     continue;
+        // }
+        if (!genBounds.isVecInside(min) || !genBounds.isVecInside(max)) {
             continue;
         }
         Pos3D pos;
@@ -363,6 +367,7 @@ void CaveGenerator::addTunnel(ChunkPrimer *chunkPrimer, i64 theSeedModifier, Pos
 
     Pos2D currentChunkX16 = currentChunk * 16;
     DoublePos2D currentChunkCenter = (currentChunkX16 + 8).asType<double>();
+    const Pos3D temp = startPos.asType<int>();
 
     float directionModifier = 0.0F;
     float slopeModifier = 0.0F;

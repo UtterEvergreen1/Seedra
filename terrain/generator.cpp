@@ -42,6 +42,7 @@ void Generator::setup() {
     }
     setupLayerStack(&this->m_layerStack, this->getLCEVersion(), this->getBiomeScale());
     setLayerSeed(this->m_layerStack.entry_1, this->getWorldSeed());
+    setupNoiseStack();
 }
 
 
@@ -56,6 +57,7 @@ void Generator::applyWorldSeed(c_i64 seed) {
 
     this->m_config.setWorldSeed(seed);
     setLayerSeed(this->m_layerStack.entry_1, seed);
+    setupNoiseStack();
     this->reloadCache();
 }
 
@@ -117,6 +119,22 @@ void Generator::reloadCache() {
         }
     }
 }
+
+void Generator::setupNoiseStack() {
+    m_chunk_noise.rng.setSeed(this->getWorldSeed());
+    m_chunk_noise.minLimitPerlinNoise.setNoiseGeneratorOctaves(m_chunk_noise.rng);
+    m_chunk_noise.maxLimitPerlinNoise.setNoiseGeneratorOctaves(m_chunk_noise.rng);
+    m_chunk_noise.mainPerlinNoise.setNoiseGeneratorOctaves(m_chunk_noise.rng);
+    m_chunk_noise.surfaceNoise.setNoiseGeneratorPerlin(m_chunk_noise.rng);
+    m_chunk_noise.scaleNoise.setNoiseGeneratorOctaves(m_chunk_noise.rng);
+    m_chunk_noise.depthNoise.setNoiseGeneratorOctaves(m_chunk_noise.rng);
+}
+
+
+const ChunkNoise& Generator::getChunkNoise() const {
+    return m_chunk_noise;
+}
+
 
 MU void Generator::changeLCEVersion(const LCEVERSION versionIn) {
     // avoid setting up again when it's the same
@@ -250,18 +268,21 @@ biome_t *Generator::getBiomeRange(c_int scale, c_int x, c_int z, c_int w, c_int 
 
 
 biome_t *Generator::getCacheAtBlock(int scale, int x, int z) const {
+    static biome_t outside_world = biome_t::ocean;
+
     const int cacheVecPos = CTZ(scale) / 2; // Count trailing zeros to get the index
+    // std::cout << cacheVecPos << std::endl;
     if (this->m_biomeCaches[cacheVecPos].isGenerated()) {
         // get the biome stored in the cache
         const BiomeCache &cache = this->m_biomeCaches[cacheVecPos];
         const BoundingBox &bounds = cache.getBox();
         if (!bounds.isVecInside({x, 0, z})) {
-            return nullptr;
+            return &outside_world;
         }
         return &cache.getBiomes()[(z + bounds.maxZ) * (bounds.maxX * 2) + (x + bounds.maxX)];
     }
 
-    return nullptr;
+    return &outside_world;
 }
 
 biome_t *Generator::getWorldBiomes(int scale) const {

@@ -87,9 +87,9 @@ int main() {
     gen.reset();
 
 
-    for (auto [key, value] : sectionsInChunk) {
-        std::cout << "key: " << key << " value: " << value << "\n";
-    }
+    // for (auto [key, value] : sectionsInChunk) {
+    //     std::cout << "key: " << key << " value: " << value << "\n";
+    // }
 
     // const Pos2DTemplate<i64> seedMultiplierCave = CaveGenerator::getSeedMultiplier(&g);
     // for (int x = -27; x < 27; x++) {
@@ -130,7 +130,7 @@ int main() {
               << sx + sw <<  ", "
               << sz + sh << std::endl;
 
-    int* biomes = world.getGenerator()
+    biome_t* biomes = world.getGenerator()
         ->getBiomeRange(1, sx, sz, sw, sh);
 
     if (biomes == nullptr) {

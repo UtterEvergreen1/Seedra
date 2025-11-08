@@ -16,9 +16,9 @@
 #include <cmath>
 #include <algorithm>
 
-#include "terrain/noise/NoiseGenerator.hpp"   // NoiseGeneratorImproved, RNG, perlinInit
-#include "lce/enums.hpp"                      // lce::CONSOLE
-#include "terrain/generator.hpp"              // Generator
+#include "lce/enums.hpp"              // lce::CONSOLE
+#include "terrain/generator.hpp"      // Generator
+#include "terrain/noise/NoiseGen.hpp" // NoiseGeneratorImproved, RNG, perlinInit
 
 // ---------- Config (no CLI) ----------
 static constexpr double   TOTAL_BUDGET_MS   = 10000.0;    // ~10s total
