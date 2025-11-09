@@ -148,6 +148,7 @@ public:
 
     /**
      * @brief Generates a region of Perlin noise values.
+     * @param console The console type (LCE console).
      * @param noiseValues The vector to store noise values.
      * @param xOffset The X-offset of the region.
      * @param zOffset The Z-offset of the region.
@@ -158,15 +159,17 @@ public:
      * @tparam Persistence The persistence factor for scaling.
      * @tparam Lacunarity The lacunarity factor for scaling.
      */
-    template<int Width, int Height, double XScale, double ZScale, double Persistence, double Lacunarity = 0.5>
-    void getRegion(std::array<double, Width * Height> &noiseValues, double xOffset, double zOffset) const {
+    template<int Width, int Height, double XScale, double ZScale, double Persistence = 0.5, double Lacunarity = 2.0>
+    void getRegion(lce::CONSOLE console, std::array<double, Width * Height> &noiseValues, double xOffset, double zOffset) const {
         memset(noiseValues.data(), 0, sizeof(noiseValues));
         double amplitude = 1.0, frequency = 1.0;
+        bool isWiiU = console == lce::CONSOLE::WIIU;
 
         // Add noise from each level
         for (int i = 0; i < Levels; ++i) {
+            c_double coordinateMultiplier = isWiiU ? (frequency / 1.5) : (frequency * amplitude);
             noiseLevels[i].template add<Width, Height>(noiseValues, xOffset, zOffset,
-                               XScale * frequency, ZScale * frequency, 0.55 / amplitude);
+                               XScale * coordinateMultiplier, ZScale * coordinateMultiplier, 0.55 / amplitude);
             frequency *= Lacunarity;
             amplitude *= Persistence;
         }
@@ -181,7 +184,7 @@ class NoiseGeneratorImproved : public PerlinNoise {
 public:
 
     template<int XSize, int YSize, int ZSize>
-    void populateNoiseArrayImpl(const Generator *g, std::array<double, XSize * YSize * ZSize> &noiseArray,
+    void add(const Generator *g, std::array<double, XSize * YSize * ZSize> &noiseArray,
                                 double xOffset, double yOffset, double zOffset,
                                 double xScale, double yScale, double zScale, double noiseScale) const;
 };
@@ -211,7 +214,7 @@ public:
     }
 
     template<typename Container, int XSize, int YSize, int ZSize, double XScale, double YScale, double ZScale>
-    void genNoiseOctavesImpl(const Generator *g,
+    void getRegion(const Generator *g,
                              std::array<Container, XSize * YSize * ZSize> &noiseArray,
                              int xOffset, int yOffset, int zOffset) const;
 };

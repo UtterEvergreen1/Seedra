@@ -240,8 +240,11 @@ public:
      * @param x X-coordinate.
      * @param z Z-coordinate.
      * @param noiseVal Noise value for terrain generation.
+     * @param topBlockIn Top block state.
+     * @param fillerBlockIn Filler block state.
      */
-    void generateBiomeTerrain(RNG &rng, ChunkPrimer *chunkPrimerIn, int x, int z, double noiseVal) const;
+    void generateBiomeTerrain(RNG &rng, ChunkPrimer *chunkPrimerIn, int x, int z, double noiseVal,
+                              lce::BlockState topBlockIn, lce::BlockState fillerBlockIn) const;
 
     /**
      * @brief Generates terrain blocks for the biome.
@@ -251,9 +254,11 @@ public:
      * @param x X-coordinate.
      * @param z Z-coordinate.
      * @param noiseVal Noise value for terrain generation.
+     * @param topBlockIn Top block state.
+     * @param fillerBlockIn Filler block state.
      */
     virtual void genTerrainBlocks(i64 worldSeed, RNG &rng, ChunkPrimer *chunkPrimerIn, c_int x, c_int z,
-                                  c_double noiseVal);
+                                  c_double noiseVal, lce::BlockState topBlockIn, lce::BlockState fillerBlockIn);
 
     /**
      * @brief Registers all biomes.
@@ -442,9 +447,11 @@ public:
      * @param x X-coordinate.
      * @param z Z-coordinate.
      * @param noiseVal Noise value for terrain generation.
+     * @param topBlockIn Top block state.
+     * @param fillerBlockIn Filler block state.
      */
     void genTerrainBlocks(i64 worldSeed, RNG &rng, ChunkPrimer *chunkPrimerIn, c_int x, c_int z,
-                          c_double noiseVal) override;
+                          c_double noiseVal, lce::BlockState topBlockIn, lce::BlockState fillerBlockIn) override;
 
     /**
      * @brief Decorates the biome at a specific position.
@@ -649,9 +656,11 @@ public:
      * @param x X-coordinate.
      * @param z Z-coordinate.
      * @param noiseVal Noise value for terrain generation.
+     * @param topBlockIn Top block state.
+     * @param fillerBlockIn Filler block state.
      */
     void genTerrainBlocks(i64 worldSeed, RNG &rng, ChunkPrimer *chunkPrimerIn, c_int x, c_int z,
-                          c_double noiseVal) override;
+                          c_double noiseVal, lce::BlockState topBlockIn, lce::BlockState fillerBlockIn) override;
 
     /**
      * @brief Decorates the taiga biome at a specific position.
@@ -725,9 +734,11 @@ public:
      * @param x X-coordinate.
      * @param z Z-coordinate.
      * @param noiseVal Noise value for terrain generation.
+     * @param topBlockIn Top block state.
+     * @param fillerBlockIn Filler block state.
      */
     void genTerrainBlocks(i64 worldSeed, RNG &rng, ChunkPrimer *chunkPrimerIn, c_int x, c_int z,
-                          c_double noiseVal) override;
+                          c_double noiseVal, lce::BlockState topBlockIn, lce::BlockState fillerBlockIn) override;
 
     /**
      * @brief Decorates the swamp biome at a specific position.
@@ -1068,9 +1079,11 @@ public:
      * @param x X-coordinate.
      * @param z Z-coordinate.
      * @param noiseVal Noise value for terrain generation.
+     * @param topBlockIn Top block state.
+     * @param fillerBlockIn Filler block state.
      */
     void genTerrainBlocks(i64 worldSeedIn, RNG &rng, ChunkPrimer *chunkPrimerIn, int x, int z,
-                          double noiseVal) override;
+                          double noiseVal, lce::BlockState topBlockIn, lce::BlockState fillerBlockIn) override;
 
     /**
      * @brief Generates the clay bands for the mesa biome.
@@ -1159,9 +1172,11 @@ public:
      * @param x X-coordinate.
      * @param z Z-coordinate.
      * @param noiseVal Noise value for terrain generation.
+     * @param topBlockIn Top block state.
+     * @param fillerBlockIn Filler block state.
      */
     void genTerrainBlocks(i64 worldSeed, RNG &rng, ChunkPrimer *chunkPrimerIn, c_int x, c_int z,
-                          c_double noiseVal) override;
+                          c_double noiseVal, lce::BlockState topBlockIn, lce::BlockState fillerBlockIn) override;
 
     /**
      * @brief Decorates the mutated savanna biome at a specific position.

@@ -175,11 +175,12 @@ void ChunkGeneratorOverWorld::setBlocksInChunk(c_int chunkX, c_int chunkZ, Chunk
 void ChunkGeneratorOverWorld::replaceBiomeBlocks(c_int chunkX, c_int chunkZ, ChunkPrimer* primer) {
     c_int blockX = chunkX * 16;
     c_int blockZ = chunkZ * 16;
-    chunkNoise.surfaceNoise.getRegion<16, 16, 0.0625, 0.0625, 1.0>(depthBuffer, blockX, blockZ);
+    chunkNoise.surfaceNoise.getRegion<16, 16, 0.0625, 0.0625, 0.5, 1.0>(g->getConsole(), depthBuffer, blockX, blockZ);
     for (int i = 0; i < 16; ++i) {
         for (int j = 0; j < 16; ++j) {
             Biome* biome = Biome::getBiomeForId(biomesForGeneration[j + i * 16]);
-            biome->genTerrainBlocks(g->getWorldSeed(), rng, primer, blockX + i, blockZ + j, depthBuffer[j + i * 16]);
+            biome->genTerrainBlocks(g->getWorldSeed(), rng, primer, blockX + i, blockZ + j, depthBuffer[j + i * 16],
+                                    biome->topBlock, biome->fillerBlock);
         }
     }
 }
@@ -196,10 +197,10 @@ void ChunkGeneratorOverWorld::provideChunk(ChunkPrimer *chunkPrimer, c_int x,c_i
 
 
 void ChunkGeneratorOverWorld::generateHeightmap(c_int x, c_int y, c_int z) {
-    chunkNoise.depthNoise.         genNoiseOctavesImpl<double, 5,  1, 5, 200.0,   1.0,      200.0  >(g, depthRegion,     x, 10, z);
-    chunkNoise.mainPerlinNoise.    genNoiseOctavesImpl<double, 5, 33, 5, 8.55515, 4.277575, 8.55515>(g, mainNoiseRegion, x,  y, z);
-    chunkNoise.minLimitPerlinNoise.genNoiseOctavesImpl<double, 5, 33, 5, 684.412, 684.412,  684.412>(g, minLimitRegion,  x,  y, z);
-    chunkNoise.maxLimitPerlinNoise.genNoiseOctavesImpl<double, 5, 33, 5, 684.412, 684.412,  684.412>(g, maxLimitRegion,  x,  y, z);
+    chunkNoise.depthNoise.         getRegion<double, 5,  1, 5, 200.0,   1.0,      200.0  >(g, depthRegion,     x, 10, z);
+    chunkNoise.mainPerlinNoise.    getRegion<double, 5, 33, 5, 8.55515, 4.277575, 8.55515>(g, mainNoiseRegion, x,  y, z);
+    chunkNoise.minLimitPerlinNoise.getRegion<double, 5, 33, 5, 684.412, 684.412,  684.412>(g, minLimitRegion,  x,  y, z);
+    chunkNoise.maxLimitPerlinNoise.getRegion<double, 5, 33, 5, 684.412, 684.412,  684.412>(g, maxLimitRegion,  x,  y, z);
     int noiseIdx = 0;
     int depthIdx = 0;
 

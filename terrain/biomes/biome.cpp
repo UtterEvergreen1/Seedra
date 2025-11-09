@@ -235,10 +235,11 @@ float Biome::getFloatTemperature(const Pos3D &pos) const {
     return this->temperature;
 }
 
-void Biome::generateBiomeTerrain(RNG &rng, ChunkPrimer *chunkPrimerIn, int x, int z, double noiseVal) const {
+void Biome::generateBiomeTerrain(RNG &rng, ChunkPrimer *chunkPrimerIn, int x, int z, double noiseVal,
+                                 lce::BlockState topBlockIn, lce::BlockState fillerBlockIn) const {
     constexpr int seaLevel = 63; // sea level
-    lce::BlockState top = this->topBlock;
-    lce::BlockState filler = this->fillerBlock;
+    lce::BlockState top = topBlockIn;
+    lce::BlockState filler = fillerBlockIn;
     int j = -1;
     c_int k = (int) (noiseVal / 3.0 + 3.0 + rng.nextDouble() * 0.25);
     c_int l = x & 15;
@@ -260,8 +261,8 @@ void Biome::generateBiomeTerrain(RNG &rng, ChunkPrimer *chunkPrimerIn, int x, in
                         top = lce::BlocksInit::AIR.getState();
                         filler = lce::BlocksInit::STONE.getState();
                     } else if (j1 >= seaLevel - 4 && j1 <= seaLevel + 1) {
-                        top = this->topBlock;
-                        filler = this->fillerBlock;
+                        top = topBlockIn;
+                        filler = fillerBlockIn;
                     }
 
                     if (j1 < seaLevel && top == lce::BlocksInit::AIR.getState()) {
@@ -301,40 +302,40 @@ void Biome::generateBiomeTerrain(RNG &rng, ChunkPrimer *chunkPrimerIn, int x, in
 #pragma region TerrainBlocks
 
 void Biome::genTerrainBlocks(MU i64 worldSeed, RNG &rng, ChunkPrimer *chunkPrimerIn, c_int x, c_int z,
-                             c_double noiseVal) {
-    this->generateBiomeTerrain(rng, chunkPrimerIn, x, z, noiseVal);
+                             c_double noiseVal, lce::BlockState topBlockIn, lce::BlockState fillerBlockIn) {
+    this->generateBiomeTerrain(rng, chunkPrimerIn, x, z, noiseVal, topBlockIn, fillerBlockIn);
 }
 
 void BiomeHills::genTerrainBlocks(MU i64 worldSeed, RNG &rng, ChunkPrimer *chunkPrimerIn, c_int x, c_int z,
-                                  c_double noiseVal) {
-    this->topBlock = lce::BlocksInit::GRASS.getState();
-    this->fillerBlock = lce::BlocksInit::DIRT.getState();
+                                  c_double noiseVal, lce::BlockState topBlockIn, lce::BlockState fillerBlockIn) {
+    topBlockIn = lce::BlocksInit::GRASS.getState();
+    fillerBlockIn = lce::BlocksInit::DIRT.getState();
     if ((noiseVal < -1.0 || noiseVal > 2.0) && this->type == BiomeHills::Type::MUTATED) {
-        this->topBlock = lce::BlocksInit::GRAVEL.getState();
-        this->fillerBlock = lce::BlocksInit::GRAVEL.getState();
+        topBlockIn = lce::BlocksInit::GRAVEL.getState();
+        fillerBlockIn = lce::BlocksInit::GRAVEL.getState();
     } else if (noiseVal > 1.0 && this->type != BiomeHills::Type::EXTRA_TREES) {
-        this->topBlock = lce::BlocksInit::STONE.getState();
-        this->fillerBlock = lce::BlocksInit::STONE.getState();
+        topBlockIn = lce::BlocksInit::STONE.getState();
+        fillerBlockIn = lce::BlocksInit::STONE.getState();
     }
 
-    this->generateBiomeTerrain(rng, chunkPrimerIn, x, z, noiseVal);
+    this->generateBiomeTerrain(rng, chunkPrimerIn, x, z, noiseVal, topBlockIn, fillerBlockIn);
 }
 
 void BiomeTaiga::genTerrainBlocks(MU i64 worldSeed, RNG &rng, ChunkPrimer *chunkPrimerIn, c_int x, c_int z,
-                                  c_double noiseVal) {
+                                  c_double noiseVal, lce::BlockState topBlockIn, lce::BlockState fillerBlockIn) {
     if (this->type == BiomeTaiga::Type::MEGA || this->type == BiomeTaiga::Type::MEGA_SPRUCE) {
         if (noiseVal > 1.75) {
-            this->topBlock = lce::BlocksInit::COARSE_DIRT.getState();
+            topBlockIn = lce::BlocksInit::COARSE_DIRT.getState();
         } else if (noiseVal > -0.95) {
-            this->topBlock = lce::BlocksInit::PODZOL.getState();
+            topBlockIn = lce::BlocksInit::PODZOL.getState();
         }
     }
 
-    this->generateBiomeTerrain(rng, chunkPrimerIn, x, z, noiseVal);
+    this->generateBiomeTerrain(rng, chunkPrimerIn, x, z, noiseVal, topBlockIn, fillerBlockIn);
 }
 
 void BiomeSwamp::genTerrainBlocks(MU i64 worldSeed, RNG &rng, ChunkPrimer *chunkPrimerIn, c_int x, c_int z,
-                                  c_double noiseVal) {
+                                  c_double noiseVal, lce::BlockState topBlockIn, lce::BlockState fillerBlockIn) {
     c_double d0 = INFO_NOISE.getValue(static_cast<double>(x) * 0.25, static_cast<double>(z) * 0.25);
 
     if (d0 > 0.0) {
@@ -356,15 +357,15 @@ void BiomeSwamp::genTerrainBlocks(MU i64 worldSeed, RNG &rng, ChunkPrimer *chunk
         }
     }
 
-    this->generateBiomeTerrain(rng, chunkPrimerIn, x, z, noiseVal);
+    this->generateBiomeTerrain(rng, chunkPrimerIn, x, z, noiseVal, topBlockIn, fillerBlockIn);
 }
 
 void BiomeMesa::genTerrainBlocks(c_i64 worldSeedIn, RNG &rng, ChunkPrimer *chunkPrimerIn, c_int x,
-                                 c_int z, c_double noiseVal) {
+                                 c_int z, c_double noiseVal, lce::BlockState topBlockIn, lce::BlockState fillerBlockIn) {
     this->worldSeed = worldSeedIn;
     if (this->clayBands.empty()) { this->generateClayBands(worldSeedIn); }
 
-    if (this->pillarNoise.noiseLevels.empty() || this->pillarRoofNoise.noiseLevels.empty()) {
+    if (this->pillarRoofNoise.noiseLevels.empty()) {
         RNG rng1;
         rng1.setSeed(worldSeedIn);
         this->pillarNoise.setNoiseGeneratorPerlin(rng);
@@ -393,7 +394,7 @@ void BiomeMesa::genTerrainBlocks(c_i64 worldSeedIn, RNG &rng, ChunkPrimer *chunk
     c_int k1 = x & 15;
     c_int l1 = z & 15;
     constexpr int seaLevel = 63; // sea level
-    lce::BlockState filler = this->fillerBlock;
+    lce::BlockState filler = fillerBlockIn;
     c_int k = static_cast<int>(noiseVal / 3.0 + 3.0 + rng.nextDouble() * 0.25);
     c_bool flag = cos(noiseVal / 3.0 * PI) > 0.0;
     int l = -1;
@@ -418,7 +419,7 @@ void BiomeMesa::genTerrainBlocks(c_i64 worldSeedIn, RNG &rng, ChunkPrimer *chunk
                     if (k <= 0) {
                         filler = lce::BlocksInit::STONE.getState();
                     } else if (j1 >= seaLevel - 4 && j1 <= seaLevel + 1) {
-                        filler = this->fillerBlock;
+                        filler = fillerBlockIn;
                     }
 
                     l = k + std::max(0, j1 - seaLevel);
@@ -440,7 +441,7 @@ void BiomeMesa::genTerrainBlocks(c_i64 worldSeedIn, RNG &rng, ChunkPrimer *chunk
 
                             chunkPrimerIn->setBlock(l1, j1, k1, iBlockState2);
                         } else {
-                            chunkPrimerIn->setBlock(l1, j1, k1, this->topBlock);
+                            chunkPrimerIn->setBlock(l1, j1, k1, topBlockIn);
                             flag1 = true;
                         }
                     } else {
@@ -530,14 +531,14 @@ lce::BlockState BiomeMesa::getClayBand(c_int x, c_int y) {
 }
 
 void BiomeSavannaMutated::genTerrainBlocks(MU i64 worldSeed, RNG &rng, ChunkPrimer *chunkPrimerIn, c_int x, c_int z,
-                                           c_double noiseVal) {
+                                           c_double noiseVal, lce::BlockState topBlockIn, lce::BlockState fillerBlockIn) {
     if (noiseVal > 1.75) {
-        this->topBlock = lce::BlocksInit::STONE.getState();
-        this->fillerBlock = lce::BlocksInit::STONE.getState();
+        topBlockIn = lce::BlocksInit::STONE.getState();
+        fillerBlockIn = lce::BlocksInit::STONE.getState();
     } else if (noiseVal > -0.5)
-        this->topBlock = lce::BlocksInit::COARSE_DIRT.getState();
+        topBlockIn = lce::BlocksInit::COARSE_DIRT.getState();
 
-    this->generateBiomeTerrain(rng, chunkPrimerIn, x, z, noiseVal);
+    this->generateBiomeTerrain(rng, chunkPrimerIn, x, z, noiseVal, topBlockIn, fillerBlockIn);
 }
 
 #pragma endregion

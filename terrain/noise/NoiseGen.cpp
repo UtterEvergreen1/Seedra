@@ -370,7 +370,7 @@ void NoiseGeneratorImproved::populateNoiseArray(const Generator *g, std::vector<
  * @return The populated noise array.
  */
 template<int XSize, int YSize, int ZSize>
-    void NoiseGeneratorImproved::populateNoiseArrayImpl(
+    void NoiseGeneratorImproved::add(
         const Generator *g, std::array<double, XSize * YSize * ZSize> &noiseArray,
         double xOffset, double yOffset, double zOffset,
         double xScale, double yScale, double zScale, double noiseScale) const {
@@ -640,7 +640,7 @@ void NoiseGeneratorOctaves::genNoiseOctaves(const Generator *g, std::vector<doub
  */
 template<int Octaves>
 template<typename Container, int XSize, int YSize, int ZSize, double XScale, double YScale, double ZScale>
-void NoiseGeneratorOctaves<Octaves>::genNoiseOctavesImpl(
+void NoiseGeneratorOctaves<Octaves>::getRegion(
     const Generator *g, std::array<Container, XSize * YSize * ZSize> &noiseArray,
     c_int xOffset, c_int yOffset, c_int zOffset) const {
 
@@ -665,7 +665,7 @@ void NoiseGeneratorOctaves<Octaves>::genNoiseOctavesImpl(
         xFrac += static_cast<double>(flooredX);
         zFrac += static_cast<double>(flooredZ);
 
-        generatorCollection[octave].template populateNoiseArrayImpl<XSize, YSize, ZSize>(
+        generatorCollection[octave].template add<XSize, YSize, ZSize>(
             g, noiseArray,
             xFrac, sy, zFrac,
             XScale * amplitude,
@@ -682,12 +682,12 @@ template class NoiseGeneratorPerlin<4>;
 
 template void NoiseGeneratorSimplex::add<16, 16>(std::array<double, 256>&, double, double, double, double, double) const;
 
-template void NoiseGeneratorImproved::populateNoiseArrayImpl<5, 1, 5>(const Generator *, std::array<double, 25> &, double, double, double, double, double, double, double) const;
-template void NoiseGeneratorImproved::populateNoiseArrayImpl<5, 33, 5>(const Generator *, std::array<double, 825> &, double, double, double, double, double, double, double) const;
+template void NoiseGeneratorImproved::add<5, 1, 5>(const Generator *, std::array<double, 25> &, double, double, double, double, double, double, double) const;
+template void NoiseGeneratorImproved::add<5, 33, 5>(const Generator *, std::array<double, 825> &, double, double, double, double, double, double, double) const;
 
 template class NoiseGeneratorOctaves<8>;
 template class NoiseGeneratorOctaves<16>;
 
-template void NoiseGeneratorOctaves<16>::genNoiseOctavesImpl<double, 5,  1, 5, 200.0,   1.0,      200.0  >(const Generator *, std::array<double, 25> &, int, int, int) const;
-template void NoiseGeneratorOctaves<8>::genNoiseOctavesImpl<double, 5, 33, 5, 8.55515, 4.277575, 8.55515>(const Generator *, std::array<double, 825> &, int, int, int) const;
-template void NoiseGeneratorOctaves<16>::genNoiseOctavesImpl<double, 5, 33, 5, 684.412, 684.412,  684.412>(const Generator *, std::array<double, 825> &, int, int, int) const;
+template void NoiseGeneratorOctaves<16>::getRegion<double, 5,  1, 5, 200.0,   1.0,      200.0  >(const Generator *, std::array<double, 25> &, int, int, int) const;
+template void NoiseGeneratorOctaves<8>::getRegion<double, 5, 33, 5, 8.55515, 4.277575, 8.55515>(const Generator *, std::array<double, 825> &, int, int, int) const;
+template void NoiseGeneratorOctaves<16>::getRegion<double, 5, 33, 5, 684.412, 684.412,  684.412>(const Generator *, std::array<double, 825> &, int, int, int) const;
