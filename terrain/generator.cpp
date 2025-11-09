@@ -42,7 +42,6 @@ void Generator::setup() {
     }
     setupLayerStack(&this->m_layerStack, this->getLCEVersion(), this->getBiomeScale());
     setLayerSeed(this->m_layerStack.entry_1, this->getWorldSeed());
-    setupNoiseStack();
 }
 
 
@@ -57,7 +56,7 @@ void Generator::applyWorldSeed(c_i64 seed) {
 
     this->m_config.setWorldSeed(seed);
     setLayerSeed(this->m_layerStack.entry_1, seed);
-    setupNoiseStack();
+    m_chunk_noise.initialized = false; // will be setup on next access
     this->reloadCache();
 }
 
@@ -120,7 +119,7 @@ void Generator::reloadCache() {
     }
 }
 
-void Generator::setupNoiseStack() {
+void Generator::setupNoiseStack() const {
     m_chunk_noise.rng.setSeed(this->getWorldSeed());
     m_chunk_noise.minLimitPerlinNoise.setNoiseGeneratorOctaves(m_chunk_noise.rng);
     m_chunk_noise.maxLimitPerlinNoise.setNoiseGeneratorOctaves(m_chunk_noise.rng);
@@ -128,10 +127,13 @@ void Generator::setupNoiseStack() {
     m_chunk_noise.surfaceNoise.setNoiseGeneratorPerlin(m_chunk_noise.rng);
     m_chunk_noise.scaleNoise.setNoiseGeneratorOctaves(m_chunk_noise.rng);
     m_chunk_noise.depthNoise.setNoiseGeneratorOctaves(m_chunk_noise.rng);
+    m_chunk_noise.initialized = true;
 }
 
 
 const ChunkNoise& Generator::getChunkNoise() const {
+    // if noise is accessed without this generator first being passed to a world object (which calls setupNoiseStack())
+    if (!m_chunk_noise.initialized) this->setupNoiseStack();
     return m_chunk_noise;
 }
 

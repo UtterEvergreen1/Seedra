@@ -19,6 +19,7 @@
 
 World::World(Generator *g) : g(g), chunkPool(ChunkPrimer::getFootprintSize()) {
     int worldSize = lce::getChunkWorldBounds(g->getWorldSize());
+    this->g->setupNoiseStack(); // setup noise for the world to avoid future data races
     this->worldBounds = BoundingBox(-worldSize, 0, -worldSize,
                                     worldSize, 256, worldSize);
 }

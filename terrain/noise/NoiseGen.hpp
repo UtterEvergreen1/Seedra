@@ -222,6 +222,7 @@ public:
 
 
 struct ChunkNoise {
+    bool initialized = false; ///< Indicates if the noise generators have been initialized.
     RNG rng; ///< The RNG state after setting up the scales.
     NoiseGeneratorOctaves<16> minLimitPerlinNoise; ///< Noise generator for minimum limit Perlin noise.
     NoiseGeneratorOctaves<16> maxLimitPerlinNoise; ///< Noise generator for maximum limit Perlin noise.

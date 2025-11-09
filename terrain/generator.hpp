@@ -79,7 +79,7 @@ class Generator {
     /**
      * @brief The noise used by ChunkGenerator.
      */
-    ChunkNoise m_chunk_noise;
+    mutable ChunkNoise m_chunk_noise;
 
     /**
      * @brief An array of biome caches used for caching world biomes at certain scales.
@@ -181,7 +181,7 @@ public:
     /**
      * Setups up the perlin noise layers that will be used by ChunkGenerator.
      */
-    void setupNoiseStack();
+    void setupNoiseStack() const;
 
     /**
      * @brief returns the noise (used by ChunkGenerator)
