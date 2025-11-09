@@ -216,11 +216,11 @@ bool Biome::hasIdealTemperature(const Pos3D& pos) const {
     if (!this->isSnowyBiome())
         return false;
 
-    int chanceStart = SNOW_BIOMES.at(biomeID);
-    if (pos.getY() < chanceStart)
+    int max_no_snow = SNOW_BIOMES.at(biomeID);
+    if (pos.getY() <= max_no_snow)
         return false;
 
-    int alwaysStart = chanceStart + SNOW_CHANCE_HEIGHT;
+    int alwaysStart = max_no_snow + SNOW_CHANCE_HEIGHT;
     if (pos.getY() >= alwaysStart)
         return true;
 

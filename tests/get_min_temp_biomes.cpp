@@ -1,10 +1,14 @@
 #include "terrain/biomes/biome.hpp"
 float getMinTemperature(const Biome* biome, int y) {
-    return biome->temperature - (4.0f + y - 64.0F) * 0.05F / 30.0F;
+    constexpr double noiseVal = -0.707106781186548; // -sqrt(2/4)
+    constexpr double f = noiseVal * 4.0;
+    return biome->temperature - (f + y - 64.0F) * 0.05F / 30.0F;
 }
 
 float getMaxTemperature(const Biome* biome, int y) {
-    return biome->temperature - (y - 64.0F - 4.0f) * 0.05F / 30.0F;
+    constexpr double noiseVal = 0.707106781186548; // sqrt(2/4)
+    constexpr double f = noiseVal * 4.0;
+    return biome->temperature - (f + y - 64.0F) * 0.05F / 30.0F;
 }
 
 struct MinMaxTemp {
@@ -31,7 +35,7 @@ int main() {
         std::ranges::transform(biomeString, biomeString.begin(), ::toupper);
         std::ranges::replace(biomeString, ' ', '_');
         for (int i = 255; i >= 0; i--) {
-            float temp = getMinTemperature(biome.second, i);
+            float temp = getMaxTemperature(biome.second, i);
             if (temp >= 0.15F) {
                 // Upper case all letters and replace spaces with underscores
                 //std::cout << biomeString << " y <= " << i << std::endl;
@@ -41,7 +45,7 @@ int main() {
         }
 
         for (int i = 0; i < 256; i++) {
-            float temp = getMaxTemperature(biome.second, i);
+            float temp = getMinTemperature(biome.second, i);
             if (temp < 0.15F) {
                 //std::cout << biomeString << " y >= " << i << std::endl;
                 yMax = i;

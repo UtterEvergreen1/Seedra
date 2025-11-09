@@ -42,13 +42,14 @@ class ChunkPrimer;
  */
 class Biome {
 public:
-    static constexpr int SNOW_CHANCE_HEIGHT = 10; ///< Height threshold for snow chance.
+    static constexpr int SNOW_CHANCE_HEIGHT = 7; ///< Height threshold for snow chance.
 
     /**
      * @brief Map of biomes with snowing conditions based on height.
      *
+     * Stores the y value of the last possible y level before snow might appear.
      * Biomes not in this map will never snow. The map is generated based on the output
-     * of `get_min_temp_biomes.cpp` in the tests directory.
+     * of `get_min_temp_biomes.cpp` in the `tests` directory.
      */
     static const std::map<biome_t, int> SNOW_BIOMES;
 
