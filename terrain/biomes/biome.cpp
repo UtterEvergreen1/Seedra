@@ -90,15 +90,16 @@ const WorldGenTrees BiomeJungle::JUNGLE_TREES[BiomeJungle::JUNGLE_TREE_HEIGHT_VA
 
 const WorldGenSavannaTree BiomeSavanna::SAVANNA_TREE;
 
-std::map<biome_t, Biome *> Biome::registry;
+static_assert((Biome::MAX_BIOMES >> CTZ(Biome::MAX_BIOMES)) == 1, "Biome::MAX_BIOMES must be a power of two");
+std::array<Biome *, Biome::MAX_BIOMES> Biome::registry;
 #pragma endregion
 
 Biome::~Biome() { delete decorator; }
 
 Biome* Biome::getBiomeForId(const biome_t id) {
-    auto it = registry.find(id);
-    if (it != registry.end()) {
-        return it->second;
+    auto biomeForId = registry[id & Biome::MAX_BIOME_MASK];
+    if (biomeForId != nullptr) {
+        return biomeForId;
     }
     static Biome defaultBiome = BiomeNone("None", -1.0F, 0.1F, false, 0.5F, 0xA5333333);
     return &defaultBiome;

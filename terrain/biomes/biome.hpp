@@ -60,7 +60,9 @@ public:
     static const WorldGenTrees TREE_FEATURE; ///< Generator for standard trees.
     static const WorldGenBigTree BIG_TREE_FEATURE; ///< Generator for big trees.
 
-    static std::map<biome_t, Biome *> registry; ///< Registry of all biomes by ID.
+    static constexpr size_t MAX_BIOMES = 256; ///< Maximum number of biomes.
+    static constexpr size_t MAX_BIOME_MASK = MAX_BIOMES - 1; ///< Maximum biome mask.
+    static std::array<Biome *, MAX_BIOMES> registry; ///< Registry of all biomes by ID.
 
     biome_t biomeID = biome_t::ocean; ///< Unique ID of the biome.
     std::string biomeName; ///< Name of the biome.
@@ -91,7 +93,7 @@ public:
      */
     static void registerBiome(int id, Biome *biome) {
         biome->biomeID = static_cast<biome_t>(id);
-        registry.emplace(biome->biomeID, biome);
+        registry[biome->biomeID & MAX_BIOME_MASK] = biome;
     }
 
     /**
