@@ -6,9 +6,6 @@
  * for a given world seed. The noise is used in terrain generation.
  */
 
-// STB image write for PNG output
-#define STB_IMAGE_WRITE_IMPLEMENTATION
-#include "lce/include/stb_image_write.hpp"
 
 #include <iostream>
 #include <vector>
@@ -18,7 +15,9 @@
 #include "terrain/noise/NoiseGen.hpp"
 #include "common/rng.hpp"
 
-
+// STB image write for PNG output
+#define STB_IMAGE_WRITE_IMPLEMENTATION
+#include "lce/include/stb_image_write.hpp"
 
 /**
  * @brief Main function to generate and visualize surface noise
