@@ -32,6 +32,7 @@ namespace scattered_features {
         bool offsetToAverageGroundLevel(World& worldIn, BoundingBox structureBB, int yOffset);
 
     public:
+        virtual ~ScatteredFeature() = default;
         virtual bool addComponentParts(World& worldIn, RNG& rng, const BoundingBox& chunkBB) = 0;
     };
 
@@ -43,23 +44,23 @@ namespace scattered_features {
         DesertPyramid(Generator* g, RNG& rng, int chunkX, int chunkZ)
             : ScatteredFeature(g, rng, chunkX, 64, chunkZ, 21, 15, 21) {
         }
-        ~DesertPyramid() = default;
+        ~DesertPyramid() override = default;
         bool addComponentParts(
                 World& worldIn, MU RNG& rng, const BoundingBox& chunkBB) override;
     };
 
 
     class JunglePyramid : public ScatteredFeature {
-        bool placedMainChest;
-        bool placedHiddenChest;
-        bool placedTrap1;
-        bool placedTrap2;
+        bool placedMainChest = false;
+        bool placedHiddenChest = false;
+        bool placedTrap1 = false;
+        bool placedTrap2 = false;
     public:
         JunglePyramid() = default;
         JunglePyramid(Generator* g, RNG& rng, int chunkX, int chunkZ)
             : ScatteredFeature(g, rng, chunkX, 64, chunkZ, 12, 10, 15) {
         }
-        ~JunglePyramid() = default;
+        ~JunglePyramid() override = default;
         bool addComponentParts(
                 World& worldIn, MU RNG& rng, const BoundingBox& chunkBB) override;
     };
@@ -73,7 +74,7 @@ namespace scattered_features {
         Igloo(Generator* g, RNG& rng, int chunkX, int chunkZ)
             : ScatteredFeature(g, rng, chunkX, 64, chunkZ, 7, 5, 8) {
         }
-        ~Igloo() = default;
+        ~Igloo() override = default;
         bool addComponentParts(
                 World& worldIn, MU RNG& rng, const BoundingBox& chunkBB) override;
     };
@@ -86,7 +87,7 @@ namespace scattered_features {
         SwampHut(Generator* g, RNG& rng, int chunkX, int chunkZ)
             : ScatteredFeature(g, rng, chunkX, 64, chunkZ, 7, 7, 9) {
         }
-        ~SwampHut() = default;
+        ~SwampHut() override = default;
         bool addComponentParts(
                 World& worldIn, MU RNG& rng, const BoundingBox& chunkBB) override;
     };
