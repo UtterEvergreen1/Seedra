@@ -9,7 +9,7 @@
 #include "common/rng.hpp"
 
 #include "lce/blocks/__include.hpp"
-#include "structures/gen/scattered_features/JungleStones.hpp"
+#include "structures/gen/jungle_temple/JungleStones.hpp"
 
 
 MU void StructureComponent::setBlockStateWithoutOffset(World& worldIn, const lce::BlockState blockStateIn, c_int x,
@@ -20,8 +20,8 @@ MU void StructureComponent::setBlockStateWithoutOffset(World& worldIn, const lce
 }
 
 
-MU void StructureComponent::setBlockState(World& worldIn, const lce::BlockState blockStateIn, c_int x, c_int y,
-                                          c_int z, const BoundingBox& structureBB) const {
+MU void StructureComponent::setBlockState(World& worldIn, const BoundingBox& structureBB, int x, int y, int z,
+                                          lce::BlockState blockStateIn) const {
     if (const auto blockPos = Pos3D(getWorldX(x, z), getWorldY(y), getWorldZ(x, z));
         structureBB.isVecInside(blockPos)) {
         worldIn.setBlock(blockPos, blockStateIn);
@@ -91,9 +91,9 @@ void StructureComponent::fillWithBlocks(World& worldIn, const BoundingBox& bbIn,
                     // TODO: probably replace with is MATERIAL::AIR? I cannot remember
                     if (!existingOnly || worldIn.getBlock(wX, wY, wZ).getID() != lce::blocks::AIR_ID) {
                         if (y != minY && y != maxY && x != minX && x != maxX && z != minZ && z != maxZ) {
-                            setBlockState(worldIn, insideBlockState, x, y, z, bbIn);
+                            setBlockState(worldIn, bbIn, x, y, z, insideBlockState);
                         } else {
-                            setBlockState(worldIn, boundaryBlockState, x, y, z, bbIn);
+                            setBlockState(worldIn, bbIn, x, y, z, boundaryBlockState);
                         }
                     }
                 }
@@ -119,7 +119,7 @@ void StructureComponent::fillWithBlocks(World& worldIn, const BoundingBox& bbIn,
                 if (bbIn.isVecInside({wX, wY, wZ})) {
 
                     if (!existingOnly || worldIn.getBlock(wX, wY, wZ).getID() != lce::blocks::AIR_ID) {
-                        setBlockState(worldIn, theBlockState, x, y, z, bbIn);
+                        setBlockState(worldIn, bbIn, x, y, z, theBlockState);
                     }
                 }
             }
@@ -142,7 +142,7 @@ void StructureComponent::fillWithAir(World& worldIn, const BoundingBox& bbIn,
                 c_int wZ = getWorldZ(x, z);
 
                 if (bbIn.isVecInside({wX, wY, wZ})) {
-                    setBlockState(worldIn, lce::BlocksInit::AIR.getState(), x, y, z, bbIn);
+                    setBlockState(worldIn, bbIn, x, y, z, lce::BlocksInit::AIR.getState());
                 }
             }
         }
@@ -287,7 +287,7 @@ void StructureComponent::randomlyRareFillWithBlocks(World& worldIn, const Boundi
                     !lce::blocks::isReplaceableBlock(getBlockStateFromPos(worldIn, j, i, k, bbIn).getID())) {
                     c_auto f8 = f6 * f6 + f5 * f5 + f7 * f7;
 
-                    if (f8 <= 1.05F) { setBlockState(worldIn, blockStateIn, j, i, k, bbIn); }
+                    if (f8 <= 1.05F) { setBlockState(worldIn, bbIn, j, i, k, blockStateIn); }
                 }
             }
         }
@@ -310,7 +310,7 @@ int StructureComponent::getLightLevelAtBlock(MU World& world, MU int x, MU int y
 
 void StructureComponent::randomlyPlaceBlock(World& worldIn, const BoundingBox& bbIn, RNG& rand, c_float chance, c_int x,
                                             c_int y, c_int z, const lce::BlockState blockStateIn) const {
-    if (rand.nextFloat() < chance) { setBlockState(worldIn, blockStateIn, x, y, z, bbIn); }
+    if (rand.nextFloat() < chance) { setBlockState(worldIn, bbIn, x, y, z, blockStateIn); }
 }
 
 
@@ -333,9 +333,9 @@ void StructureComponent::fillWithBlocksRandomLightCheck(World& world, const Boun
                         && j != maxX
                         && k != minZ
                         && k != maxZ) {
-                        setBlockState(world, blockState2, j, i, k, structureBB);
+                        setBlockState(world, structureBB, j, i, k, blockState2);
                     } else {
-                        setBlockState(world, blockState1, j, i, k, structureBB);
+                        setBlockState(world, structureBB, j, i, k, blockState1);
                     }
                 }
             }
@@ -353,7 +353,7 @@ void StructureComponent::fillWithRandomizedJunglePyramidStones(World& worldIn, c
                 if (!alwaysReplace || !lce::blocks::isReplaceableBlock(
                                               getBlockStateFromPos(worldIn, j, i, k, structureBB).getID())) {
                     const lce::BlockState block = JunglePyramidStones::selectBlocks(rng);
-                    setBlockState(worldIn, block, j, i, k, structureBB);
+                    setBlockState(worldIn, structureBB, j, i, k, block);
                 }
             }
         }
@@ -371,7 +371,7 @@ void StructureComponent::fillWithRandomizedStrongholdStones(World& worldIn, cons
                                               getBlockStateFromPos(worldIn, j, i, k, structureBB).getID())) {
                     const lce::BlockState block = StrongholdStones::selectBlocks(
                             rng, i == minY || i == maxY || j == minX || j == maxX || k == minZ || k == maxZ);
-                    setBlockState(worldIn, block, j, i, k, structureBB);
+                    setBlockState(worldIn, structureBB, j, i, k, block);
                 }
             }
         }

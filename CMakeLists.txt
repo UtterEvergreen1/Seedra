@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.24)
 project(LIB_Seedra)
 
-set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 if (MSVC)
@@ -85,6 +85,7 @@ function(add_cli NAME SRC)
     add_executable(${NAME} "${SRC}")
     target_link_libraries(${NAME} PRIVATE LIB_Seedra)
 
+
     target_include_directories(${NAME} PRIVATE ${LCE_INCLUDE_DIR})
     target_compile_options(${NAME} PRIVATE ${LCE_COMPILE_OPTIONS} ${SEEDRA_COMPILE_OPTIONS})
     target_compile_definitions(${NAME} PRIVATE ${LCE_COMPILE_DEFINITIONS})
@@ -137,4 +138,5 @@ if(LC_BUILD_EXECUTABLE)
     add_cli(EXE_NoisePopulateParityTest "tests/NoisePopulateParityTest.cpp")
     add_cli(EXE_NoiseProfiler "tests/noiseProfiler.cpp")
     add_cli(EXE_DrawSurfaceNoise "tests/surface_noise_visualizer.cpp")
+    add_cli(EXE_StructureReader "tests/structureReader.cpp")
 endif()

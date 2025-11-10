@@ -37,62 +37,6 @@ namespace scattered_features {
     };
 
 
-    class DesertPyramid : public ScatteredFeature {
-        std::array<bool, 4> hasPlacedChest{};
-    public:
-        DesertPyramid() = default;
-        DesertPyramid(Generator* g, RNG& rng, int chunkX, int chunkZ)
-            : ScatteredFeature(g, rng, chunkX, 64, chunkZ, 21, 15, 21) {
-        }
-        ~DesertPyramid() override = default;
-        bool addComponentParts(
-                World& worldIn, MU RNG& rng, const BoundingBox& chunkBB) override;
-    };
-
-
-    class JunglePyramid : public ScatteredFeature {
-        bool placedMainChest = false;
-        bool placedHiddenChest = false;
-        bool placedTrap1 = false;
-        bool placedTrap2 = false;
-    public:
-        JunglePyramid() = default;
-        JunglePyramid(Generator* g, RNG& rng, int chunkX, int chunkZ)
-            : ScatteredFeature(g, rng, chunkX, 64, chunkZ, 12, 10, 15) {
-        }
-        ~JunglePyramid() override = default;
-        bool addComponentParts(
-                World& worldIn, MU RNG& rng, const BoundingBox& chunkBB) override;
-    };
-
-
-
-    class Igloo : public ScatteredFeature {
-        std::array<bool, 4> hasPlacedChest{};
-    public:
-        Igloo() = default;
-        Igloo(Generator* g, RNG& rng, int chunkX, int chunkZ)
-            : ScatteredFeature(g, rng, chunkX, 64, chunkZ, 7, 5, 8) {
-        }
-        ~Igloo() override = default;
-        bool addComponentParts(
-                World& worldIn, MU RNG& rng, const BoundingBox& chunkBB) override;
-    };
-
-
-    class SwampHut : public ScatteredFeature {
-        std::array<bool, 4> hasPlacedChest{};
-    public:
-        SwampHut() = default;
-        SwampHut(Generator* g, RNG& rng, int chunkX, int chunkZ)
-            : ScatteredFeature(g, rng, chunkX, 64, chunkZ, 7, 7, 9) {
-        }
-        ~SwampHut() override = default;
-        bool addComponentParts(
-                World& worldIn, MU RNG& rng, const BoundingBox& chunkBB) override;
-    };
-
-
     ScatteredFeature* ScatteredFeatureFactory(
             Generator* g,
             const Placement::FeatureStructurePair& pair

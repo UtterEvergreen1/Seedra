@@ -3,6 +3,8 @@
 #include <algorithm>
 
 #include "terrain/World.hpp"
+#include "structures/gen/FeaturePiece.hpp"
+#include "components/StructureComponent.hpp"
 
 #include "lce/blocks/__include.hpp"
 
@@ -10,6 +12,21 @@
 
 
 namespace build::village {
+
+    FeaturePiece(Path);
+    FeaturePiece(Church);
+    FeaturePiece(Field1);
+    FeaturePiece(Field2);
+    FeaturePiece(Hall);
+    FeaturePiece(House1);
+    FeaturePiece(House2);
+    FeaturePiece(House3);
+    FeaturePiece(House4Garden);
+    FeaturePiece(Torch);
+    FeaturePiece(WoodHut);
+    FeaturePiece(Well);
+
+
 
     using namespace lce::blocks;
     using namespace lce::blocks::states;
@@ -40,10 +57,10 @@ namespace build::village {
                         EnumFacing facing, const lce::BlockState doorBlock) {
 
         auto doorBlockLower = doorBlock.getStateFromMeta(DoorLower::withProperty(piece.rotation.apply(piece.mirror, facing)));
-        piece.setBlockState(world, doorBlockLower, x, y, z, chunkBB);
+        piece.setBlockState(world, chunkBB, x, y, z, doorBlockLower);
 
         auto doorBlockUpper = doorBlock.getStateFromMeta(DoorUpper::withProperty());
-        piece.setBlockState(world, doorBlockUpper, x, y + 1, z, chunkBB);
+        piece.setBlockState(world, chunkBB, x, y + 1, z, doorBlockUpper);
     }
 
     // TODO: JAVA code sucks, maybe replace 'enumFacing::NORTH' with 'facing'?
@@ -62,7 +79,7 @@ namespace build::village {
                        MU int x, MU int y, MU int z, MU BoundingBox chunkBB) {
         // if (!villageIn->isZombieInfested) {
         auto torch = lce::BlocksInit::TORCH.getStateFromMeta(states::Torch::withProperty(piece.rotation.apply(piece.mirror, facing)));
-        piece.setBlockState(world, torch, x, y, z, chunkBB);
+        piece.setBlockState(world, chunkBB, x, y, z, torch);
         // }
     }
 
@@ -138,7 +155,7 @@ namespace build::village {
     }
 
 
-    bool Church::addComponentParts(World& worldIn, RNG& rng, BoundingBox& chunkBB, StructureComponent& piece) {
+    bool Church::addComponentParts(World& worldIn, RNG& rng, const BoundingBox& chunkBB, StructureComponent& piece) {
         if ((piece.data >> 16 & 1) == 0) {
             c_int averageGroundLvl = getAverageGroundLevel(worldIn, chunkBB, piece);
             if (averageGroundLvl < 0) { return true; }
@@ -165,37 +182,37 @@ namespace build::village {
         piece.fillWithBlocks(worldIn, chunkBB, 1, 5, 5, 3, 5, 7, cobblestone, false);
         piece.fillWithBlocks(worldIn, chunkBB, 0, 9, 0, 4, 9, 4, cobblestone, false);
         piece.fillWithBlocks(worldIn, chunkBB, 0, 4, 0, 4, 4, 4, cobblestone, false);
-        piece.setBlockState(worldIn, cobblestone, 0, 11, 2, chunkBB);
-        piece.setBlockState(worldIn, cobblestone, 4, 11, 2, chunkBB);
-        piece.setBlockState(worldIn, cobblestone, 2, 11, 0, chunkBB);
-        piece.setBlockState(worldIn, cobblestone, 2, 11, 4, chunkBB);
-        piece.setBlockState(worldIn, cobblestone, 1, 1, 6, chunkBB);
-        piece.setBlockState(worldIn, cobblestone, 1, 1, 7, chunkBB);
-        piece.setBlockState(worldIn, cobblestone, 2, 1, 7, chunkBB);
-        piece.setBlockState(worldIn, cobblestone, 3, 1, 6, chunkBB);
-        piece.setBlockState(worldIn, cobblestone, 3, 1, 7, chunkBB);
-        piece.setBlockState(worldIn, cobbleStairsNorth, 1, 1, 5, chunkBB);
-        piece.setBlockState(worldIn, cobbleStairsNorth, 2, 1, 6, chunkBB);
-        piece.setBlockState(worldIn, cobbleStairsNorth, 3, 1, 5, chunkBB);
-        piece.setBlockState(worldIn, cobbleStairsWest, 1, 2, 7, chunkBB);
-        piece.setBlockState(worldIn, cobbleStairsEast, 3, 2, 7, chunkBB);
+        piece.setBlockState(worldIn, chunkBB, 0, 11, 2, cobblestone);
+        piece.setBlockState(worldIn, chunkBB, 4, 11, 2, cobblestone);
+        piece.setBlockState(worldIn, chunkBB, 2, 11, 0, cobblestone);
+        piece.setBlockState(worldIn, chunkBB, 2, 11, 4, cobblestone);
+        piece.setBlockState(worldIn, chunkBB, 1, 1, 6, cobblestone);
+        piece.setBlockState(worldIn, chunkBB, 1, 1, 7, cobblestone);
+        piece.setBlockState(worldIn, chunkBB, 2, 1, 7, cobblestone);
+        piece.setBlockState(worldIn, chunkBB, 3, 1, 6, cobblestone);
+        piece.setBlockState(worldIn, chunkBB, 3, 1, 7, cobblestone);
+        piece.setBlockState(worldIn, chunkBB, 1, 1, 5, cobbleStairsNorth);
+        piece.setBlockState(worldIn, chunkBB, 2, 1, 6, cobbleStairsNorth);
+        piece.setBlockState(worldIn, chunkBB, 3, 1, 5, cobbleStairsNorth);
+        piece.setBlockState(worldIn, chunkBB, 1, 2, 7, cobbleStairsWest);
+        piece.setBlockState(worldIn, chunkBB, 3, 2, 7, cobbleStairsEast);
 
         constexpr lce::BlockState glassPane = lce::BlocksInit::GLASS_PANE.getState();
-        piece.setBlockState(worldIn, glassPane, 0, 2, 2, chunkBB);
-        piece.setBlockState(worldIn, glassPane, 0, 3, 2, chunkBB);
-        piece.setBlockState(worldIn, glassPane, 4, 2, 2, chunkBB);
-        piece.setBlockState(worldIn, glassPane, 4, 3, 2, chunkBB);
-        piece.setBlockState(worldIn, glassPane, 0, 6, 2, chunkBB);
-        piece.setBlockState(worldIn, glassPane, 0, 7, 2, chunkBB);
-        piece.setBlockState(worldIn, glassPane, 4, 6, 2, chunkBB);
-        piece.setBlockState(worldIn, glassPane, 4, 7, 2, chunkBB);
-        piece.setBlockState(worldIn, glassPane, 2, 6, 0, chunkBB);
-        piece.setBlockState(worldIn, glassPane, 2, 7, 0, chunkBB);
-        piece.setBlockState(worldIn, glassPane, 2, 6, 4, chunkBB);
-        piece.setBlockState(worldIn, glassPane, 2, 7, 4, chunkBB);
-        piece.setBlockState(worldIn, glassPane, 0, 3, 6, chunkBB);
-        piece.setBlockState(worldIn, glassPane, 4, 3, 6, chunkBB);
-        piece.setBlockState(worldIn, glassPane, 2, 3, 8, chunkBB);
+        piece.setBlockState(worldIn, chunkBB, 0, 2, 2, glassPane);
+        piece.setBlockState(worldIn, chunkBB, 0, 3, 2, glassPane);
+        piece.setBlockState(worldIn, chunkBB, 4, 2, 2, glassPane);
+        piece.setBlockState(worldIn, chunkBB, 4, 3, 2, glassPane);
+        piece.setBlockState(worldIn, chunkBB, 0, 6, 2, glassPane);
+        piece.setBlockState(worldIn, chunkBB, 0, 7, 2, glassPane);
+        piece.setBlockState(worldIn, chunkBB, 4, 6, 2, glassPane);
+        piece.setBlockState(worldIn, chunkBB, 4, 7, 2, glassPane);
+        piece.setBlockState(worldIn, chunkBB, 2, 6, 0, glassPane);
+        piece.setBlockState(worldIn, chunkBB, 2, 7, 0, glassPane);
+        piece.setBlockState(worldIn, chunkBB, 2, 6, 4, glassPane);
+        piece.setBlockState(worldIn, chunkBB, 2, 7, 4, glassPane);
+        piece.setBlockState(worldIn, chunkBB, 0, 3, 6, glassPane);
+        piece.setBlockState(worldIn, chunkBB, 4, 3, 6, glassPane);
+        piece.setBlockState(worldIn, chunkBB, 2, 3, 8, glassPane);
 
         placeTorch(worldIn, EnumFacing::SOUTH, piece, 2, 4, 7, chunkBB);
         placeTorch(worldIn, EnumFacing::EAST, piece, 1, 4, 6, chunkBB);
@@ -206,20 +223,19 @@ namespace build::village {
         const lce::BlockState ladderWest = lce::BlocksInit::LADDER.getStateFromMeta(
                 Ladder::withProperty(piece.rotation.apply(piece.mirror, EnumFacing::WEST)));
 
-        for (int i=1; i <= 9; ++i) {
-            piece.setBlockState(worldIn, ladderWest, 3, i, 3, chunkBB);
+        for (int i=1; i <= 9; ++i) { piece.setBlockState(worldIn, chunkBB, 3, i, 3, ladderWest);
         }
 
-        piece.setBlockState(worldIn, lce::BlocksInit::AIR.getState(), 2, 1, 0, chunkBB);
-        piece.setBlockState(worldIn, lce::BlocksInit::AIR.getState(), 2, 2, 0, chunkBB);
+        piece.setBlockState(worldIn, chunkBB, 2, 1, 0, lce::BlocksInit::AIR.getState());
+        piece.setBlockState(worldIn, chunkBB, 2, 2, 0, lce::BlocksInit::AIR.getState());
         placeDoor(worldIn, chunkBB, rng, piece, 2, 1, 0, EnumFacing::NORTH);
 
         if (isReplaceableBlock(piece.getBlockStateFromPos(worldIn, 2, 0, -1, chunkBB).getID()) &&
             !isReplaceableBlock(piece.getBlockStateFromPos(worldIn, 2, -1, -1, chunkBB).getID())) {
-            piece.setBlockState(worldIn, cobbleStairsNorth, 2, 0, -1, chunkBB);
+            piece.setBlockState(worldIn, chunkBB, 2, 0, -1, cobbleStairsNorth);
 
             if (piece.getBlockStateFromPos(worldIn, 2, -1, -1, chunkBB) == lce::BlocksInit::GRASS_PATH.getState()) {
-                piece.setBlockState(worldIn, lce::BlocksInit::GRASS.getState(), 2, -1, -1, chunkBB);
+                piece.setBlockState(worldIn, chunkBB, 2, -1, -1, lce::BlocksInit::GRASS.getState());
             }
         }
 
@@ -264,7 +280,7 @@ namespace build::village {
     }
 
 
-    bool Field1::addComponentParts(World& worldIn, RNG& rng, BoundingBox& chunkBB, StructureComponent& piece) {
+    bool Field1::addComponentParts(World& worldIn, RNG& rng, const BoundingBox& chunkBB, StructureComponent& piece) {
         if ((piece.data >> 16 & 1) == 0) {
             c_int averageGroundLvl = getAverageGroundLevel(worldIn, chunkBB, piece);
             if (averageGroundLvl < 0) { return true; }
@@ -294,20 +310,20 @@ namespace build::village {
         for (int i = 1; i <= 7; ++i) {
             c_int j = getMaxAgeFromCrop(cropTypeA.getID());
             c_int k = j / 3;
-            piece.setBlockState(worldIn, cropTypeA.getStateFromMeta(rng.nextInt(k, j)), 1, 1, i, chunkBB);
-            piece.setBlockState(worldIn, cropTypeA.getStateFromMeta(rng.nextInt(k, j)), 2, 1, i, chunkBB);
+            piece.setBlockState(worldIn, chunkBB, 1, 1, i, cropTypeA.getStateFromMeta(rng.nextInt(k, j)));
+            piece.setBlockState(worldIn, chunkBB, 2, 1, i, cropTypeA.getStateFromMeta(rng.nextInt(k, j)));
             c_int l = getMaxAgeFromCrop(cropTypeB.getID());
             c_int i1 = l / 3;
-            piece.setBlockState(worldIn, cropTypeB.getStateFromMeta(rng.nextInt(i1, l)), 4, 1, i, chunkBB);
-            piece.setBlockState(worldIn, cropTypeB.getStateFromMeta(rng.nextInt(i1, l)), 5, 1, i, chunkBB);
+            piece.setBlockState(worldIn, chunkBB, 4, 1, i, cropTypeB.getStateFromMeta(rng.nextInt(i1, l)));
+            piece.setBlockState(worldIn, chunkBB, 5, 1, i, cropTypeB.getStateFromMeta(rng.nextInt(i1, l)));
             c_int j1 = getMaxAgeFromCrop(cropTypeC.getID());
             c_int k1 = j1 / 3;
-            piece.setBlockState(worldIn, cropTypeC.getStateFromMeta(rng.nextInt(k1, j1)), 7, 1, i, chunkBB);
-            piece.setBlockState(worldIn, cropTypeC.getStateFromMeta(rng.nextInt(k1, j1)), 8, 1, i, chunkBB);
+            piece.setBlockState(worldIn, chunkBB, 7, 1, i, cropTypeC.getStateFromMeta(rng.nextInt(k1, j1)));
+            piece.setBlockState(worldIn, chunkBB, 8, 1, i, cropTypeC.getStateFromMeta(rng.nextInt(k1, j1)));
             c_int l1 = getMaxAgeFromCrop(cropTypeD.getID());
             c_int i2 = l1 / 3;
-            piece.setBlockState(worldIn, cropTypeD.getStateFromMeta(rng.nextInt(i2, l1)), 10, 1, i, chunkBB);
-            piece.setBlockState(worldIn, cropTypeD.getStateFromMeta(rng.nextInt(i2, l1)), 11, 1, i, chunkBB);
+            piece.setBlockState(worldIn, chunkBB, 10, 1, i, cropTypeD.getStateFromMeta(rng.nextInt(i2, l1)));
+            piece.setBlockState(worldIn, chunkBB, 11, 1, i, cropTypeD.getStateFromMeta(rng.nextInt(i2, l1)));
         }
 
 
@@ -323,7 +339,7 @@ namespace build::village {
 
 
 
-    bool Field2::addComponentParts(World& worldIn, RNG& rng, BoundingBox& chunkBB, StructureComponent& piece) {
+    bool Field2::addComponentParts(World& worldIn, RNG& rng, const BoundingBox& chunkBB, StructureComponent& piece) {
         if ((piece.data >> 16 & 1) == 0) {
             c_int averageGroundLvl = getAverageGroundLevel(worldIn, chunkBB, piece);
             if (averageGroundLvl < 0) { return true; }
@@ -348,12 +364,12 @@ namespace build::village {
         for (int i = 1; i <= 7; ++i) {
             c_int j = getMaxAgeFromCrop(cropTypeA.getID());
             c_int k = j / 3;
-            piece.setBlockState(worldIn, cropTypeA.getStateFromMeta(rng.nextInt(k, j)), 1, 1, i, chunkBB);
-            piece.setBlockState(worldIn, cropTypeA.getStateFromMeta(rng.nextInt(k, j)), 2, 1, i, chunkBB);
+            piece.setBlockState(worldIn, chunkBB, 1, 1, i, cropTypeA.getStateFromMeta(rng.nextInt(k, j)));
+            piece.setBlockState(worldIn, chunkBB, 2, 1, i, cropTypeA.getStateFromMeta(rng.nextInt(k, j)));
             c_int l = getMaxAgeFromCrop(cropTypeB.getID());
             c_int i1 = l / 3;
-            piece.setBlockState(worldIn, cropTypeB.getStateFromMeta(rng.nextInt(i1, l)), 4, 1, i, chunkBB);
-            piece.setBlockState(worldIn, cropTypeB.getStateFromMeta(rng.nextInt(i1, l)), 5, 1, i, chunkBB);
+            piece.setBlockState(worldIn, chunkBB, 4, 1, i, cropTypeB.getStateFromMeta(rng.nextInt(i1, l)));
+            piece.setBlockState(worldIn, chunkBB, 5, 1, i, cropTypeB.getStateFromMeta(rng.nextInt(i1, l)));
         }
 
         for (int j1=0; j1 < 9; ++j1) {
@@ -367,7 +383,7 @@ namespace build::village {
     }
 
 
-    bool Hall::addComponentParts(World& worldIn, RNG& rng, BoundingBox& chunkBB, StructureComponent& piece) {
+    bool Hall::addComponentParts(World& worldIn, RNG& rng, const BoundingBox& chunkBB, StructureComponent& piece) {
         if ((piece.data >> 16 & 1) == 0) {
             c_int averageGroundLvl = getAverageGroundLevel(worldIn, chunkBB, piece);
             if (averageGroundLvl < 0) { return true; }
@@ -389,7 +405,7 @@ namespace build::village {
         piece.fillWithAir(worldIn, chunkBB, 1, 1, 1, 7, 4, 4);
         piece.fillWithAir(worldIn, chunkBB, 2, 1, 6, 8, 4, 10);
         piece.fillWithBlocks(worldIn, chunkBB, 2, 0, 6, 8, 0, 10, lce::BlocksInit::DIRT.getState(), false);
-        piece.setBlockState(worldIn, iBlockState, 6, 0, 6, chunkBB);
+        piece.setBlockState(worldIn, chunkBB, 6, 0, 6, iBlockState);
         piece.fillWithBlocks(worldIn, chunkBB, 2, 1, 6, 2, 1, 10, iBlockState6, false);
         piece.fillWithBlocks(worldIn, chunkBB, 8, 1, 6, 8, 1, 10, iBlockState6, false);
         piece.fillWithBlocks(worldIn, chunkBB, 3, 1, 10, 7, 1, 10, iBlockState6, false);
@@ -403,58 +419,58 @@ namespace build::village {
         piece.fillWithBlocks(worldIn, chunkBB, 0, 4, 1, 8, 4, 1, iBlockState4, false);
         piece.fillWithBlocks(worldIn, chunkBB, 0, 4, 4, 8, 4, 4, iBlockState4, false);
         piece.fillWithBlocks(worldIn, chunkBB, 0, 5, 2, 8, 5, 3, iBlockState4, false);
-        piece.setBlockState(worldIn, iBlockState4, 0, 4, 2, chunkBB);
-        piece.setBlockState(worldIn, iBlockState4, 0, 4, 3, chunkBB);
-        piece.setBlockState(worldIn, iBlockState4, 8, 4, 2, chunkBB);
-        piece.setBlockState(worldIn, iBlockState4, 8, 4, 3, chunkBB);
+        piece.setBlockState(worldIn, chunkBB, 0, 4, 2, iBlockState4);
+        piece.setBlockState(worldIn, chunkBB, 0, 4, 3, iBlockState4);
+        piece.setBlockState(worldIn, chunkBB, 8, 4, 2, iBlockState4);
+        piece.setBlockState(worldIn, chunkBB, 8, 4, 3, iBlockState4);
         const lce::BlockState iBlockState7 = iBlockState1;
         const lce::BlockState iBlockState8 = iBlockState2;
 
         for (int i=-1; i <= 2; ++i) {
             for (int j=0; j <= 8; ++j) {
-                piece.setBlockState(worldIn, iBlockState7, j, 4 + i, i, chunkBB);
-                piece.setBlockState(worldIn, iBlockState8, j, 4 + i, 5 - i, chunkBB);
+                piece.setBlockState(worldIn, chunkBB, j, 4 + i, i, iBlockState7);
+                piece.setBlockState(worldIn, chunkBB, j, 4 + i, 5 - i, iBlockState8);
             }
         }
 
-        piece.setBlockState(worldIn, iBlockState5, 0, 2, 1, chunkBB);
-        piece.setBlockState(worldIn, iBlockState5, 0, 2, 4, chunkBB);
-        piece.setBlockState(worldIn, iBlockState5, 8, 2, 1, chunkBB);
-        piece.setBlockState(worldIn, iBlockState5, 8, 2, 4, chunkBB);
+        piece.setBlockState(worldIn, chunkBB, 0, 2, 1, iBlockState5);
+        piece.setBlockState(worldIn, chunkBB, 0, 2, 4, iBlockState5);
+        piece.setBlockState(worldIn, chunkBB, 8, 2, 1, iBlockState5);
+        piece.setBlockState(worldIn, chunkBB, 8, 2, 4, iBlockState5);
         constexpr lce::BlockState glassPane = lce::BlocksInit::GLASS_PANE.getState();
-        piece.setBlockState(worldIn, glassPane, 0, 2, 2, chunkBB);
-        piece.setBlockState(worldIn, glassPane, 0, 2, 3, chunkBB);
-        piece.setBlockState(worldIn, glassPane, 8, 2, 2, chunkBB);
-        piece.setBlockState(worldIn, glassPane, 8, 2, 3, chunkBB);
-        piece.setBlockState(worldIn, glassPane, 2, 2, 5, chunkBB);
-        piece.setBlockState(worldIn, glassPane, 3, 2, 5, chunkBB);
-        piece.setBlockState(worldIn, glassPane, 5, 2, 0, chunkBB);
-        piece.setBlockState(worldIn, glassPane, 6, 2, 5, chunkBB);
-        piece.setBlockState(worldIn, iBlockState6, 2, 1, 3, chunkBB);
-        piece.setBlockState(worldIn, lce::BlocksInit::BROWN_CARPET.getState(), 2, 2, 3, chunkBB);
-        piece.setBlockState(worldIn, iBlockState4, 1, 1, 4, chunkBB);
-        piece.setBlockState(worldIn, iBlockState7, 2, 1, 4, chunkBB);
-        piece.setBlockState(worldIn, iBlockState3, 1, 1, 3, chunkBB);
+        piece.setBlockState(worldIn, chunkBB, 0, 2, 2, glassPane);
+        piece.setBlockState(worldIn, chunkBB, 0, 2, 3, glassPane);
+        piece.setBlockState(worldIn, chunkBB, 8, 2, 2, glassPane);
+        piece.setBlockState(worldIn, chunkBB, 8, 2, 3, glassPane);
+        piece.setBlockState(worldIn, chunkBB, 2, 2, 5, glassPane);
+        piece.setBlockState(worldIn, chunkBB, 3, 2, 5, glassPane);
+        piece.setBlockState(worldIn, chunkBB, 5, 2, 0, glassPane);
+        piece.setBlockState(worldIn, chunkBB, 6, 2, 5, glassPane);
+        piece.setBlockState(worldIn, chunkBB, 2, 1, 3, iBlockState6);
+        piece.setBlockState(worldIn, chunkBB, 2, 2, 3, lce::BlocksInit::BROWN_CARPET.getState());
+        piece.setBlockState(worldIn, chunkBB, 1, 1, 4, iBlockState4);
+        piece.setBlockState(worldIn, chunkBB, 2, 1, 4, iBlockState7);
+        piece.setBlockState(worldIn, chunkBB, 1, 1, 3, iBlockState3);
         piece.fillWithBlocks(worldIn, chunkBB, 5, 0, 1, 7, 0, 3, lce::BlocksInit::DOUBLE_OLD_STONE_SLAB.getState(), false);
-        piece.setBlockState(worldIn, lce::BlocksInit::DOUBLE_OLD_STONE_SLAB.getState(), 6, 1, 1, chunkBB);
-        piece.setBlockState(worldIn, lce::BlocksInit::DOUBLE_OLD_STONE_SLAB.getState(), 6, 1, 2, chunkBB);
-        piece.setBlockState(worldIn, lce::BlocksInit::AIR.getState(), 2, 1, 0, chunkBB);
-        piece.setBlockState(worldIn, lce::BlocksInit::AIR.getState(), 2, 2, 0, chunkBB);
+        piece.setBlockState(worldIn, chunkBB, 6, 1, 1, lce::BlocksInit::DOUBLE_OLD_STONE_SLAB.getState());
+        piece.setBlockState(worldIn, chunkBB, 6, 1, 2, lce::BlocksInit::DOUBLE_OLD_STONE_SLAB.getState());
+        piece.setBlockState(worldIn, chunkBB, 2, 1, 0, lce::BlocksInit::AIR.getState());
+        piece.setBlockState(worldIn, chunkBB, 2, 2, 0, lce::BlocksInit::AIR.getState());
 
         placeTorch(worldIn, EnumFacing::NORTH, piece, 2, 3, 1, chunkBB);
         placeDoor(worldIn, chunkBB, rng, piece, 2, 1, 0, EnumFacing::NORTH);
 
         if (isReplaceableBlock(piece.getBlockStateFromPos(worldIn, 2, 0, -1, chunkBB).getID()) &&
             !isReplaceableBlock(piece.getBlockStateFromPos(worldIn, 2, -1, -1, chunkBB).getID())) {
-            piece.setBlockState(worldIn, iBlockState7, 2, 0, -1, chunkBB);
+            piece.setBlockState(worldIn, chunkBB, 2, 0, -1, iBlockState7);
 
             if (piece.getBlockStateFromPos(worldIn, 2, -1, -1, chunkBB) == lce::BlocksInit::GRASS_PATH.getState()) {
-                piece.setBlockState(worldIn, lce::BlocksInit::GRASS.getState(), 2, -1, -1, chunkBB);
+                piece.setBlockState(worldIn, chunkBB, 2, -1, -1, lce::BlocksInit::GRASS.getState());
             }
         }
 
-        piece.setBlockState(worldIn, lce::BlocksInit::AIR.getState(), 6, 1, 5, chunkBB);
-        piece.setBlockState(worldIn, lce::BlocksInit::AIR.getState(), 6, 2, 5, chunkBB);
+        piece.setBlockState(worldIn, chunkBB, 6, 1, 5, lce::BlocksInit::AIR.getState());
+        piece.setBlockState(worldIn, chunkBB, 6, 2, 5, lce::BlocksInit::AIR.getState());
 
         placeTorch(worldIn, EnumFacing::SOUTH, piece, 6, 3, 4, chunkBB);
         placeDoor(worldIn, chunkBB, rng, piece, 6, 1, 5, EnumFacing::SOUTH);
@@ -471,7 +487,7 @@ namespace build::village {
     }
 
 
-    bool House1::addComponentParts(World& worldIn, RNG& rng, BoundingBox& chunkBB, StructureComponent& piece) {
+    bool House1::addComponentParts(World& worldIn, RNG& rng, const BoundingBox& chunkBB, StructureComponent& piece) {
         if ((piece.data >> 16 & 1) == 0) {
             c_int averageGroundLvl = getAverageGroundLevel(worldIn, chunkBB, piece);
             if (averageGroundLvl < 0) { return true; }
@@ -500,8 +516,8 @@ namespace build::village {
 
         for (int i=-1; i <= 2; ++i) {
             for (int j=0; j <= 8; ++j) {
-                piece.setBlockState(worldIn, iBlockState1, j, 6 + i, i, chunkBB);
-                piece.setBlockState(worldIn, iBlockState2, j, 6 + i, 5 - i, chunkBB);
+                piece.setBlockState(worldIn, chunkBB, j, 6 + i, i, iBlockState1);
+                piece.setBlockState(worldIn, chunkBB, j, 6 + i, 5 - i, iBlockState2);
             }
         }
 
@@ -518,48 +534,48 @@ namespace build::village {
         piece.fillWithBlocks(worldIn, chunkBB, 8, 2, 1, 8, 4, 4, iBlockState4, false);
         piece.fillWithBlocks(worldIn, chunkBB, 1, 2, 0, 7, 4, 0, iBlockState4, false);
         constexpr lce::BlockState glassPane = lce::BlocksInit::GLASS_PANE.getState();
-        piece.setBlockState(worldIn, glassPane, 4, 2, 0, chunkBB);
-        piece.setBlockState(worldIn, glassPane, 5, 2, 0, chunkBB);
-        piece.setBlockState(worldIn, glassPane, 6, 2, 0, chunkBB);
-        piece.setBlockState(worldIn, glassPane, 4, 3, 0, chunkBB);
-        piece.setBlockState(worldIn, glassPane, 5, 3, 0, chunkBB);
-        piece.setBlockState(worldIn, glassPane, 6, 3, 0, chunkBB);
-        piece.setBlockState(worldIn, glassPane, 0, 2, 2, chunkBB);
-        piece.setBlockState(worldIn, glassPane, 0, 2, 3, chunkBB);
-        piece.setBlockState(worldIn, glassPane, 0, 3, 2, chunkBB);
-        piece.setBlockState(worldIn, glassPane, 0, 3, 3, chunkBB);
-        piece.setBlockState(worldIn, glassPane, 8, 2, 2, chunkBB);
-        piece.setBlockState(worldIn, glassPane, 8, 2, 3, chunkBB);
-        piece.setBlockState(worldIn, glassPane, 8, 3, 2, chunkBB);
-        piece.setBlockState(worldIn, glassPane, 8, 3, 3, chunkBB);
-        piece.setBlockState(worldIn, glassPane, 2, 2, 5, chunkBB);
-        piece.setBlockState(worldIn, glassPane, 3, 2, 5, chunkBB);
-        piece.setBlockState(worldIn, glassPane, 5, 2, 5, chunkBB);
-        piece.setBlockState(worldIn, glassPane, 6, 2, 5, chunkBB);
+        piece.setBlockState(worldIn, chunkBB, 4, 2, 0, glassPane);
+        piece.setBlockState(worldIn, chunkBB, 5, 2, 0, glassPane);
+        piece.setBlockState(worldIn, chunkBB, 6, 2, 0, glassPane);
+        piece.setBlockState(worldIn, chunkBB, 4, 3, 0, glassPane);
+        piece.setBlockState(worldIn, chunkBB, 5, 3, 0, glassPane);
+        piece.setBlockState(worldIn, chunkBB, 6, 3, 0, glassPane);
+        piece.setBlockState(worldIn, chunkBB, 0, 2, 2, glassPane);
+        piece.setBlockState(worldIn, chunkBB, 0, 2, 3, glassPane);
+        piece.setBlockState(worldIn, chunkBB, 0, 3, 2, glassPane);
+        piece.setBlockState(worldIn, chunkBB, 0, 3, 3, glassPane);
+        piece.setBlockState(worldIn, chunkBB, 8, 2, 2, glassPane);
+        piece.setBlockState(worldIn, chunkBB, 8, 2, 3, glassPane);
+        piece.setBlockState(worldIn, chunkBB, 8, 3, 2, glassPane);
+        piece.setBlockState(worldIn, chunkBB, 8, 3, 3, glassPane);
+        piece.setBlockState(worldIn, chunkBB, 2, 2, 5, glassPane);
+        piece.setBlockState(worldIn, chunkBB, 3, 2, 5, glassPane);
+        piece.setBlockState(worldIn, chunkBB, 5, 2, 5, glassPane);
+        piece.setBlockState(worldIn, chunkBB, 6, 2, 5, glassPane);
         piece.fillWithBlocks(worldIn, chunkBB, 1, 4, 1, 7, 4, 1, iBlockState4, false);
         piece.fillWithBlocks(worldIn, chunkBB, 1, 4, 4, 7, 4, 4, iBlockState4, false);
         piece.fillWithBlocks(worldIn, chunkBB, 1, 3, 4, 7, 3, 4, lce::BlocksInit::BOOKSHELF.getState(), false);
-        piece.setBlockState(worldIn, iBlockState4, 7, 1, 4, chunkBB);
-        piece.setBlockState(worldIn, iBlockState3, 7, 1, 3, chunkBB);
-        piece.setBlockState(worldIn, iBlockState1, 6, 1, 4, chunkBB);
-        piece.setBlockState(worldIn, iBlockState1, 5, 1, 4, chunkBB);
-        piece.setBlockState(worldIn, iBlockState1, 4, 1, 4, chunkBB);
-        piece.setBlockState(worldIn, iBlockState1, 3, 1, 4, chunkBB);
-        piece.setBlockState(worldIn, iBlockState6, 6, 1, 3, chunkBB);
-        piece.setBlockState(worldIn, lce::BlocksInit::BROWN_CARPET.getState(), 6, 2, 3, chunkBB);
-        piece.setBlockState(worldIn, iBlockState6, 4, 1, 3, chunkBB);
-        piece.setBlockState(worldIn, lce::BlocksInit::BROWN_CARPET.getState(), 4, 2, 3, chunkBB);
-        piece.setBlockState(worldIn, lce::BlocksInit::CRAFTING_TABLE.getState(), 7, 1, 1, chunkBB);
-        piece.setBlockState(worldIn, lce::BlocksInit::AIR.getState(), 1, 1, 0, chunkBB);
-        piece.setBlockState(worldIn, lce::BlocksInit::AIR.getState(), 1, 2, 0, chunkBB);
+        piece.setBlockState(worldIn, chunkBB, 7, 1, 4, iBlockState4);
+        piece.setBlockState(worldIn, chunkBB, 7, 1, 3, iBlockState3);
+        piece.setBlockState(worldIn, chunkBB, 6, 1, 4, iBlockState1);
+        piece.setBlockState(worldIn, chunkBB, 5, 1, 4, iBlockState1);
+        piece.setBlockState(worldIn, chunkBB, 4, 1, 4, iBlockState1);
+        piece.setBlockState(worldIn, chunkBB, 3, 1, 4, iBlockState1);
+        piece.setBlockState(worldIn, chunkBB, 6, 1, 3, iBlockState6);
+        piece.setBlockState(worldIn, chunkBB, 6, 2, 3, lce::BlocksInit::BROWN_CARPET.getState());
+        piece.setBlockState(worldIn, chunkBB, 4, 1, 3, iBlockState6);
+        piece.setBlockState(worldIn, chunkBB, 4, 2, 3, lce::BlocksInit::BROWN_CARPET.getState());
+        piece.setBlockState(worldIn, chunkBB, 7, 1, 1, lce::BlocksInit::CRAFTING_TABLE.getState());
+        piece.setBlockState(worldIn, chunkBB, 1, 1, 0, lce::BlocksInit::AIR.getState());
+        piece.setBlockState(worldIn, chunkBB, 1, 2, 0, lce::BlocksInit::AIR.getState());
         placeDoor(worldIn, chunkBB, rng, piece, 1, 1, 0, EnumFacing::NORTH);
 
         if (isReplaceableBlock(piece.getBlockStateFromPos(worldIn, 1, 0, -1, chunkBB).getID()) &&
             !isReplaceableBlock(piece.getBlockStateFromPos(worldIn, 1, -1, -1, chunkBB).getID())) {
-            piece.setBlockState(worldIn, iBlockState5, 1, 0, -1, chunkBB);
+            piece.setBlockState(worldIn, chunkBB, 1, 0, -1, iBlockState5);
 
             if (piece.getBlockStateFromPos(worldIn, 1, -1, -1, chunkBB) == lce::BlocksInit::GRASS_PATH.getState()) {
-                piece.setBlockState(worldIn, lce::BlocksInit::GRASS.getState(), 1, -1, -1, chunkBB);
+                piece.setBlockState(worldIn, chunkBB, 1, -1, -1, lce::BlocksInit::GRASS.getState());
             }
         }
 
@@ -575,7 +591,7 @@ namespace build::village {
     }
 
 
-    bool House2::addComponentParts(World& worldIn, RNG& rng, BoundingBox& chunkBB, StructureComponent& piece) {
+    bool House2::addComponentParts(World& worldIn, RNG& rng, const BoundingBox& chunkBB, StructureComponent& piece) {
         if ((piece.data >> 16 & 1) == 0) {
             c_int averageGroundLvl = getAverageGroundLevel(worldIn, chunkBB, piece);
             if (averageGroundLvl < 0) { return true; }
@@ -603,7 +619,7 @@ namespace build::village {
         piece.fillWithBlocks(worldIn, chunkBB, 0, 1, 0, 0, 4, 0, iBlockState5, false);
         piece.fillWithBlocks(worldIn, chunkBB, 3, 1, 0, 3, 4, 0, iBlockState5, false);
         piece.fillWithBlocks(worldIn, chunkBB, 0, 1, 6, 0, 4, 6, iBlockState5, false);
-        piece.setBlockState(worldIn, iBlockState3, 3, 3, 1, chunkBB);
+        piece.setBlockState(worldIn, chunkBB, 3, 3, 1, iBlockState3);
         piece.fillWithBlocks(worldIn, chunkBB, 3, 1, 2, 3, 3, 2, iBlockState3, false);
         piece.fillWithBlocks(worldIn, chunkBB, 4, 1, 3, 5, 3, 3, iBlockState3, false);
         piece.fillWithBlocks(worldIn, chunkBB, 0, 1, 1, 0, 3, 5, iBlockState3, false);
@@ -611,30 +627,30 @@ namespace build::village {
         piece.fillWithBlocks(worldIn, chunkBB, 5, 1, 0, 5, 3, 0, iBlockState6, false);
         piece.fillWithBlocks(worldIn, chunkBB, 9, 1, 0, 9, 3, 0, iBlockState6, false);
         piece.fillWithBlocks(worldIn, chunkBB, 6, 1, 4, 9, 4, 6, iBlockState, false);
-        piece.setBlockState(worldIn, lce::BlocksInit::FLOWING_LAVA.getState(), 7, 1, 5, chunkBB);
-        piece.setBlockState(worldIn, lce::BlocksInit::FLOWING_LAVA.getState(), 8, 1, 5, chunkBB);
-        piece.setBlockState(worldIn, lce::BlocksInit::IRON_BARS.getState(), 9, 2, 5, chunkBB);
-        piece.setBlockState(worldIn, lce::BlocksInit::IRON_BARS.getState(), 9, 2, 4, chunkBB);
+        piece.setBlockState(worldIn, chunkBB, 7, 1, 5, lce::BlocksInit::FLOWING_LAVA.getState());
+        piece.setBlockState(worldIn, chunkBB, 8, 1, 5, lce::BlocksInit::FLOWING_LAVA.getState());
+        piece.setBlockState(worldIn, chunkBB, 9, 2, 5, lce::BlocksInit::IRON_BARS.getState());
+        piece.setBlockState(worldIn, chunkBB, 9, 2, 4, lce::BlocksInit::IRON_BARS.getState());
         piece.fillWithAir(worldIn, chunkBB, 7, 2, 4, 8, 2, 5);
-        piece.setBlockState(worldIn, iBlockState, 6, 1, 3, chunkBB);
-        piece.setBlockState(worldIn, lce::BlocksInit::FURNACE.getState(), 6, 2, 3, chunkBB);
-        piece.setBlockState(worldIn, lce::BlocksInit::FURNACE.getState(), 6, 3, 3, chunkBB);
-        piece.setBlockState(worldIn, lce::BlocksInit::DOUBLE_OLD_STONE_SLAB.getState(), 8, 1, 1, chunkBB);
+        piece.setBlockState(worldIn, chunkBB, 6, 1, 3, iBlockState);
+        piece.setBlockState(worldIn, chunkBB, 6, 2, 3, lce::BlocksInit::FURNACE.getState());
+        piece.setBlockState(worldIn, chunkBB, 6, 3, 3, lce::BlocksInit::FURNACE.getState());
+        piece.setBlockState(worldIn, chunkBB, 8, 1, 1, lce::BlocksInit::DOUBLE_OLD_STONE_SLAB.getState());
         constexpr lce::BlockState glassPane = lce::BlocksInit::GLASS_PANE.getState();
-        piece.setBlockState(worldIn, glassPane, 0, 2, 2, chunkBB);
-        piece.setBlockState(worldIn, glassPane, 0, 2, 4, chunkBB);
-        piece.setBlockState(worldIn, glassPane, 2, 2, 6, chunkBB);
-        piece.setBlockState(worldIn, glassPane, 4, 2, 6, chunkBB);
-        piece.setBlockState(worldIn, iBlockState6, 2, 1, 4, chunkBB);
-        piece.setBlockState(worldIn, lce::BlocksInit::BROWN_CARPET.getState(), 2, 2, 4, chunkBB);
-        piece.setBlockState(worldIn, iBlockState3, 1, 1, 5, chunkBB);
-        piece.setBlockState(worldIn, iBlockState1, 2, 1, 5, chunkBB);
-        piece.setBlockState(worldIn, iBlockState2, 1, 1, 4, chunkBB);
+        piece.setBlockState(worldIn, chunkBB, 0, 2, 2, glassPane);
+        piece.setBlockState(worldIn, chunkBB, 0, 2, 4, glassPane);
+        piece.setBlockState(worldIn, chunkBB, 2, 2, 6, glassPane);
+        piece.setBlockState(worldIn, chunkBB, 4, 2, 6, glassPane);
+        piece.setBlockState(worldIn, chunkBB, 2, 1, 4, iBlockState6);
+        piece.setBlockState(worldIn, chunkBB, 2, 2, 4, lce::BlocksInit::BROWN_CARPET.getState());
+        piece.setBlockState(worldIn, chunkBB, 1, 1, 5, iBlockState3);
+        piece.setBlockState(worldIn, chunkBB, 2, 1, 5, iBlockState1);
+        piece.setBlockState(worldIn, chunkBB, 1, 1, 4, iBlockState2);
 
         bool hasMadeChest = false;
         Pos3D chestPos = piece.getWorldXYZ(5, 1, 5);
         if (!hasMadeChest && chunkBB.isVecInside(chestPos)) {
-            piece.setBlockState(worldIn, lce::BlocksInit::CHEST.getState(), 5, 1, 5, chunkBB);
+            piece.setBlockState(worldIn, chunkBB, 5, 1, 5, lce::BlocksInit::CHEST.getState());
             rng.nextLong();
             // generateChest(worldIn, chunkBB, rng, 5, 1, 5, LootTableList.CHESTS_VILLAGE_BLACKSMITH);
         }
@@ -643,10 +659,10 @@ namespace build::village {
         for (int i=6; i <= 8; ++i) {
             if (isReplaceableBlock(piece.getBlockStateFromPos(worldIn, i, 0, -1, chunkBB).getID()) &&
                 !isReplaceableBlock(piece.getBlockStateFromPos(worldIn, i, -1, -1, chunkBB).getID())) {
-                piece.setBlockState(worldIn, iBlockState4, i, 0, -1, chunkBB);
+                piece.setBlockState(worldIn, chunkBB, i, 0, -1, iBlockState4);
 
                 if (piece.getBlockStateFromPos(worldIn, i, -1, -1, chunkBB) == lce::BlocksInit::GRASS_PATH.getState()) {
-                    piece.setBlockState(worldIn, lce::BlocksInit::GRASS.getState(), i, -1, -1, chunkBB);
+                    piece.setBlockState(worldIn, chunkBB, i, -1, -1, lce::BlocksInit::GRASS.getState());
                 }
             }
         }
@@ -663,7 +679,7 @@ namespace build::village {
     }
 
 
-    bool House3::addComponentParts(World& worldIn, RNG& rng, BoundingBox& chunkBB, StructureComponent& piece) {
+    bool House3::addComponentParts(World& worldIn, RNG& rng, const BoundingBox& chunkBB, StructureComponent& piece) {
         if ((piece.data >> 16 & 1) == 0) {
             c_int averageGroundLvl = getAverageGroundLevel(worldIn, chunkBB, piece);
             if (averageGroundLvl < 0) { return true; }
@@ -698,11 +714,11 @@ namespace build::village {
         piece.fillWithBlocks(worldIn, chunkBB, 0, 4, 1, 8, 4, 1, iBlockState5, false);
         piece.fillWithBlocks(worldIn, chunkBB, 0, 4, 4, 3, 4, 4, iBlockState5, false);
         piece.fillWithBlocks(worldIn, chunkBB, 0, 5, 2, 8, 5, 3, iBlockState5, false);
-        piece.setBlockState(worldIn, iBlockState5, 0, 4, 2, chunkBB);
-        piece.setBlockState(worldIn, iBlockState5, 0, 4, 3, chunkBB);
-        piece.setBlockState(worldIn, iBlockState5, 8, 4, 2, chunkBB);
-        piece.setBlockState(worldIn, iBlockState5, 8, 4, 3, chunkBB);
-        piece.setBlockState(worldIn, iBlockState5, 8, 4, 4, chunkBB);
+        piece.setBlockState(worldIn, chunkBB, 0, 4, 2, iBlockState5);
+        piece.setBlockState(worldIn, chunkBB, 0, 4, 3, iBlockState5);
+        piece.setBlockState(worldIn, chunkBB, 8, 4, 2, iBlockState5);
+        piece.setBlockState(worldIn, chunkBB, 8, 4, 3, iBlockState5);
+        piece.setBlockState(worldIn, chunkBB, 8, 4, 4, iBlockState5);
         const lce::BlockState iBlockState7 = iBlockState1;
         const lce::BlockState iBlockState8 = iBlockState2;
         const lce::BlockState iBlockState9 = iBlockState4;
@@ -710,10 +726,10 @@ namespace build::village {
 
         for (int i=-1; i <= 2; ++i) {
             for (int j=0; j <= 8; ++j) {
-                piece.setBlockState(worldIn, iBlockState7, j, 4 + i, i, chunkBB);
+                piece.setBlockState(worldIn, chunkBB, j, 4 + i, i, iBlockState7);
 
                 if ((i > -1 || j <= 1) && (i > 0 || j <= 3) && (i > 1 || j <= 4 || j >= 6)) {
-                    piece.setBlockState(worldIn, iBlockState8, j, 4 + i, 5 - i, chunkBB);
+                    piece.setBlockState(worldIn, chunkBB, j, 4 + i, 5 - i, iBlockState8);
                 }
             }
         }
@@ -725,60 +741,58 @@ namespace build::village {
         piece.fillWithBlocks(worldIn, chunkBB, 5, 6, 3, 5, 6, 10, iBlockState5, false);
 
         for (int k=4; k >= 1; --k) {
-            piece.setBlockState(worldIn, iBlockState5, k, 2 + k, 7 - k, chunkBB);
+            piece.setBlockState(worldIn, chunkBB, k, 2 + k, 7 - k, iBlockState5);
 
-            for (int k1=8 - k; k1 <= 10; ++k1) {
-                piece.setBlockState(worldIn, iBlockState10, k, 2 + k, k1, chunkBB);
+            for (int k1=8 - k; k1 <= 10; ++k1) { piece.setBlockState(worldIn, chunkBB, k, 2 + k, k1, iBlockState10);
             }
         }
 
-        piece.setBlockState(worldIn, iBlockState5, 6, 6, 3, chunkBB);
-        piece.setBlockState(worldIn, iBlockState5, 7, 5, 4, chunkBB);
-        piece.setBlockState(worldIn, iBlockState4, 6, 6, 4, chunkBB);
+        piece.setBlockState(worldIn, chunkBB, 6, 6, 3, iBlockState5);
+        piece.setBlockState(worldIn, chunkBB, 7, 5, 4, iBlockState5);
+        piece.setBlockState(worldIn, chunkBB, 6, 6, 4, iBlockState4);
 
         for (int l=6; l <= 8; ++l) {
-            for (int l1=5; l1 <= 10; ++l1) {
-                piece.setBlockState(worldIn, iBlockState9, l, 12 - l, l1, chunkBB);
+            for (int l1=5; l1 <= 10; ++l1) { piece.setBlockState(worldIn, chunkBB, l, 12 - l, l1, iBlockState9);
             }
         }
 
         constexpr lce::BlockState glassPane = lce::BlocksInit::GLASS_PANE.getState();
-        piece.setBlockState(worldIn, iBlockState6, 0, 2, 1, chunkBB);
-        piece.setBlockState(worldIn, iBlockState6, 0, 2, 4, chunkBB);
-        piece.setBlockState(worldIn, glassPane, 0, 2, 2, chunkBB);
-        piece.setBlockState(worldIn, glassPane, 0, 2, 3, chunkBB);
-        piece.setBlockState(worldIn, iBlockState6, 4, 2, 0, chunkBB);
-        piece.setBlockState(worldIn, glassPane, 5, 2, 0, chunkBB);
-        piece.setBlockState(worldIn, iBlockState6, 6, 2, 0, chunkBB);
-        piece.setBlockState(worldIn, iBlockState6, 8, 2, 1, chunkBB);
-        piece.setBlockState(worldIn, glassPane, 8, 2, 2, chunkBB);
-        piece.setBlockState(worldIn, glassPane, 8, 2, 3, chunkBB);
-        piece.setBlockState(worldIn, iBlockState6, 8, 2, 4, chunkBB);
-        piece.setBlockState(worldIn, iBlockState5, 8, 2, 5, chunkBB);
-        piece.setBlockState(worldIn, iBlockState6, 8, 2, 6, chunkBB);
-        piece.setBlockState(worldIn, glassPane, 8, 2, 7, chunkBB);
-        piece.setBlockState(worldIn, glassPane, 8, 2, 8, chunkBB);
-        piece.setBlockState(worldIn, iBlockState6, 8, 2, 9, chunkBB);
-        piece.setBlockState(worldIn, iBlockState6, 2, 2, 6, chunkBB);
-        piece.setBlockState(worldIn, glassPane, 2, 2, 7, chunkBB);
-        piece.setBlockState(worldIn, glassPane, 2, 2, 8, chunkBB);
-        piece.setBlockState(worldIn, iBlockState6, 2, 2, 9, chunkBB);
-        piece.setBlockState(worldIn, iBlockState6, 4, 4, 10, chunkBB);
-        piece.setBlockState(worldIn, glassPane, 5, 4, 10, chunkBB);
-        piece.setBlockState(worldIn, iBlockState6, 6, 4, 10, chunkBB);
-        piece.setBlockState(worldIn, iBlockState5, 5, 5, 10, chunkBB);
-        piece.setBlockState(worldIn, lce::BlocksInit::AIR.getState(), 2, 1, 0, chunkBB);
-        piece.setBlockState(worldIn, lce::BlocksInit::AIR.getState(), 2, 2, 0, chunkBB);
+        piece.setBlockState(worldIn, chunkBB, 0, 2, 1, iBlockState6);
+        piece.setBlockState(worldIn, chunkBB, 0, 2, 4, iBlockState6);
+        piece.setBlockState(worldIn, chunkBB, 0, 2, 2, glassPane);
+        piece.setBlockState(worldIn, chunkBB, 0, 2, 3, glassPane);
+        piece.setBlockState(worldIn, chunkBB, 4, 2, 0, iBlockState6);
+        piece.setBlockState(worldIn, chunkBB, 5, 2, 0, glassPane);
+        piece.setBlockState(worldIn, chunkBB, 6, 2, 0, iBlockState6);
+        piece.setBlockState(worldIn, chunkBB, 8, 2, 1, iBlockState6);
+        piece.setBlockState(worldIn, chunkBB, 8, 2, 2, glassPane);
+        piece.setBlockState(worldIn, chunkBB, 8, 2, 3, glassPane);
+        piece.setBlockState(worldIn, chunkBB, 8, 2, 4, iBlockState6);
+        piece.setBlockState(worldIn, chunkBB, 8, 2, 5, iBlockState5);
+        piece.setBlockState(worldIn, chunkBB, 8, 2, 6, iBlockState6);
+        piece.setBlockState(worldIn, chunkBB, 8, 2, 7, glassPane);
+        piece.setBlockState(worldIn, chunkBB, 8, 2, 8, glassPane);
+        piece.setBlockState(worldIn, chunkBB, 8, 2, 9, iBlockState6);
+        piece.setBlockState(worldIn, chunkBB, 2, 2, 6, iBlockState6);
+        piece.setBlockState(worldIn, chunkBB, 2, 2, 7, glassPane);
+        piece.setBlockState(worldIn, chunkBB, 2, 2, 8, glassPane);
+        piece.setBlockState(worldIn, chunkBB, 2, 2, 9, iBlockState6);
+        piece.setBlockState(worldIn, chunkBB, 4, 4, 10, iBlockState6);
+        piece.setBlockState(worldIn, chunkBB, 5, 4, 10, glassPane);
+        piece.setBlockState(worldIn, chunkBB, 6, 4, 10, iBlockState6);
+        piece.setBlockState(worldIn, chunkBB, 5, 5, 10, iBlockState5);
+        piece.setBlockState(worldIn, chunkBB, 2, 1, 0, lce::BlocksInit::AIR.getState());
+        piece.setBlockState(worldIn, chunkBB, 2, 2, 0, lce::BlocksInit::AIR.getState());
         placeTorch(worldIn, EnumFacing::NORTH, piece, 2, 3, 1, chunkBB);
         placeDoor(worldIn, chunkBB, rng, piece, 2, 1, 0, EnumFacing::NORTH);
         piece.fillWithAir(worldIn, chunkBB, 1, 0, -1, 3, 2, -1);
 
         if (isReplaceableBlock(piece.getBlockStateFromPos(worldIn, 2, 0, -1, chunkBB).getID()) &&
             !isReplaceableBlock(piece.getBlockStateFromPos(worldIn, 2, -1, -1, chunkBB).getID())) {
-            piece.setBlockState(worldIn, iBlockState7, 2, 0, -1, chunkBB);
+            piece.setBlockState(worldIn, chunkBB, 2, 0, -1, iBlockState7);
 
             if (piece.getBlockStateFromPos(worldIn, 2, -1, -1, chunkBB) == lce::BlocksInit::GRASS_PATH.getState()) {
-                piece.setBlockState(worldIn, lce::BlocksInit::GRASS.getState(), 2, -1, -1, chunkBB);
+                piece.setBlockState(worldIn, chunkBB, 2, -1, -1, lce::BlocksInit::GRASS.getState());
             }
         }
 
@@ -814,7 +828,7 @@ namespace build::village {
     }
 
 
-    bool Path::addComponentParts(World& worldIn, MU RNG& rng, BoundingBox& chunkBB, StructureComponent& piece) {
+    bool Path::addComponentParts(World& worldIn, MU RNG& rng, const BoundingBox& chunkBB, StructureComponent& piece) {
 
         const lce::BlockState pathPrimary = getBiomeSpecificBlockState(lce::BlocksInit::GRASS_PATH.getState(), piece.variant);
         const lce::BlockState pathSecondary = getBiomeSpecificBlockState(lce::BlocksInit::GRAVEL.getState(), piece.variant);
@@ -868,7 +882,7 @@ namespace build::village {
     }
 
 
-    bool Torch::addComponentParts(World& worldIn, MU RNG& rng, BoundingBox& chunkBB, StructureComponent& piece) {
+    bool Torch::addComponentParts(World& worldIn, MU RNG& rng, const BoundingBox& chunkBB, StructureComponent& piece) {
         if ((piece.data >> 16 & 1) == 0) {
             c_int averageGroundLvl = getAverageGroundLevel(worldIn, chunkBB, piece);
             if (averageGroundLvl < 0) { return true; }
@@ -879,10 +893,10 @@ namespace build::village {
         const lce::BlockState oakFence = getBiomeSpecificBlockState(lce::BlocksInit::OAK_FENCE.getState(), piece.variant);
 
         piece.fillWithAir(worldIn, chunkBB, 0, 0, 0, 2, 3, 1);
-        piece.setBlockState(worldIn, oakFence, 1, 0, 0, chunkBB);
-        piece.setBlockState(worldIn, oakFence, 1, 1, 0, chunkBB);
-        piece.setBlockState(worldIn, oakFence, 1, 2, 0, chunkBB);
-        piece.setBlockState(worldIn, lce::BlocksInit::BLACK_WOOL.getState(), 1, 3, 0, chunkBB);
+        piece.setBlockState(worldIn, chunkBB, 1, 0, 0, oakFence);
+        piece.setBlockState(worldIn, chunkBB, 1, 1, 0, oakFence);
+        piece.setBlockState(worldIn, chunkBB, 1, 2, 0, oakFence);
+        piece.setBlockState(worldIn, chunkBB, 1, 3, 0, lce::BlocksInit::BLACK_WOOL.getState());
         placeTorch(worldIn, EnumFacing::EAST, piece, 2, 3, 0, chunkBB);
         placeTorch(worldIn, EnumFacing::NORTH, piece, 1, 3, 1, chunkBB);
         placeTorch(worldIn, EnumFacing::WEST, piece, 0, 3, 0, chunkBB);
@@ -891,7 +905,7 @@ namespace build::village {
     }
 
 
-    bool WoodHut::addComponentParts(World& worldIn, RNG& rng, BoundingBox& chunkBB, StructureComponent& piece) {
+    bool WoodHut::addComponentParts(World& worldIn, RNG& rng, const BoundingBox& chunkBB, StructureComponent& piece) {
         if ((piece.data >> 16 & 1) == 0) {
             c_int averageGroundLvl = getAverageGroundLevel(worldIn, chunkBB, piece);
             if (averageGroundLvl < 0) { return true; }
@@ -916,16 +930,16 @@ namespace build::village {
             piece.fillWithBlocks(worldIn, chunkBB, 1, 5, 1, 2, 5, 3, iBlockState3, false);
         }
 
-        piece.setBlockState(worldIn, iBlockState3, 1, 4, 0,  chunkBB);
-        piece.setBlockState(worldIn, iBlockState3, 2, 4, 0,  chunkBB);
-        piece.setBlockState(worldIn, iBlockState3, 1, 4, 4,  chunkBB);
-        piece.setBlockState(worldIn, iBlockState3, 2, 4, 4,  chunkBB);
-        piece.setBlockState(worldIn, iBlockState3, 0, 4, 1,  chunkBB);
-        piece.setBlockState(worldIn, iBlockState3, 0, 4, 2,  chunkBB);
-        piece.setBlockState(worldIn, iBlockState3, 0, 4, 3,  chunkBB);
-        piece.setBlockState(worldIn, iBlockState3, 3, 4, 1,  chunkBB);
-        piece.setBlockState(worldIn, iBlockState3, 3, 4, 2,  chunkBB);
-        piece.setBlockState(worldIn, iBlockState3, 3, 4, 3,  chunkBB);
+        piece.setBlockState(worldIn, chunkBB, 1, 4, 0, iBlockState3);
+        piece.setBlockState(worldIn, chunkBB, 2, 4, 0, iBlockState3);
+        piece.setBlockState(worldIn, chunkBB, 1, 4, 4, iBlockState3);
+        piece.setBlockState(worldIn, chunkBB, 2, 4, 4, iBlockState3);
+        piece.setBlockState(worldIn, chunkBB, 0, 4, 1, iBlockState3);
+        piece.setBlockState(worldIn, chunkBB, 0, 4, 2, iBlockState3);
+        piece.setBlockState(worldIn, chunkBB, 0, 4, 3, iBlockState3);
+        piece.setBlockState(worldIn, chunkBB, 3, 4, 1, iBlockState3);
+        piece.setBlockState(worldIn, chunkBB, 3, 4, 2, iBlockState3);
+        piece.setBlockState(worldIn, chunkBB, 3, 4, 3, iBlockState3);
         piece.fillWithBlocks(worldIn, chunkBB, 0, 1, 0, 0, 3, 0, iBlockState3, false);
         piece.fillWithBlocks(worldIn, chunkBB, 3, 1, 0, 3, 3, 0, iBlockState3, false);
         piece.fillWithBlocks(worldIn, chunkBB, 0, 1, 4, 0, 3, 4, iBlockState3, false);
@@ -934,25 +948,26 @@ namespace build::village {
         piece.fillWithBlocks(worldIn, chunkBB, 3, 1, 1, 3, 3, 3, iBlockState1, false);
         piece.fillWithBlocks(worldIn, chunkBB, 1, 1, 0, 2, 3, 0, iBlockState1, false);
         piece.fillWithBlocks(worldIn, chunkBB, 1, 1, 4, 2, 3, 4, iBlockState1, false);
-        piece.setBlockState(worldIn, lce::BlocksInit::GLASS_PANE.getState(), 0, 2, 2,  chunkBB);
-        piece.setBlockState(worldIn, lce::BlocksInit::GLASS_PANE.getState(), 3, 2, 2,  chunkBB);
+        piece.setBlockState(worldIn, chunkBB, 0, 2, 2, lce::BlocksInit::GLASS_PANE.getState());
+        piece.setBlockState(worldIn, chunkBB, 3, 2, 2, lce::BlocksInit::GLASS_PANE.getState());
 
         int tablePosition = piece.data & 3;
         if (tablePosition > 0) {
-            piece.setBlockState(worldIn, iBlockState4, tablePosition, 1, 3,  chunkBB);
-            piece.setBlockState(worldIn, lce::BlocksInit::WOODEN_PRESSURE_PLATE.getState(), tablePosition, 2, 3,  chunkBB);
+            piece.setBlockState(worldIn, chunkBB, tablePosition, 1, 3, iBlockState4);
+            piece.setBlockState(worldIn, chunkBB, tablePosition, 2, 3,
+                                lce::BlocksInit::WOODEN_PRESSURE_PLATE.getState());
         }
 
-        piece.setBlockState(worldIn, lce::BlocksInit::AIR.getState(), 1, 1, 0,  chunkBB);
-        piece.setBlockState(worldIn, lce::BlocksInit::AIR.getState(), 1, 2, 0,  chunkBB);
+        piece.setBlockState(worldIn, chunkBB, 1, 1, 0, lce::BlocksInit::AIR.getState());
+        piece.setBlockState(worldIn, chunkBB, 1, 2, 0, lce::BlocksInit::AIR.getState());
         placeDoor(worldIn, chunkBB, rng, piece, 1, 1, 0, EnumFacing::NORTH);
 
         if (isReplaceableBlock(piece.getBlockStateFromPos(worldIn, 1, 0, -1,  chunkBB).getID()) &&
             !isReplaceableBlock(piece.getBlockStateFromPos(worldIn, 1, -1, -1,  chunkBB).getID())) {
-            piece.setBlockState(worldIn, iBlockState2, 1, 0, -1,  chunkBB);
+            piece.setBlockState(worldIn, chunkBB, 1, 0, -1, iBlockState2);
 
             if (piece.getBlockStateFromPos(worldIn, 1, -1, -1,  chunkBB) == lce::BlocksInit::GRASS_PATH.getState()) {
-                piece.setBlockState(worldIn, lce::BlocksInit::GRASS.getState(), 1, -1, -1,  chunkBB);
+                piece.setBlockState(worldIn, chunkBB, 1, -1, -1, lce::BlocksInit::GRASS.getState());
             }
         }
 
@@ -968,7 +983,7 @@ namespace build::village {
     }
 
 
-    bool Well::addComponentParts(World& worldIn, MU RNG& rng, BoundingBox& chunkBB, StructureComponent& piece) {
+    bool Well::addComponentParts(World& worldIn, MU RNG& rng, const BoundingBox& chunkBB, StructureComponent& piece) {
         if ((piece.data >> 16 & 1) == 0) {
             c_int averageGroundLvl = getAverageGroundLevel(worldIn, chunkBB, piece);
             if (averageGroundLvl < 0) { return true; }
@@ -981,26 +996,26 @@ namespace build::village {
         const lce::BlockState fence = getBiomeSpecificBlockState(lce::BlocksInit::OAK_FENCE.getState(), piece.variant);
 
         piece.fillWithBlocks(worldIn, chunkBB, 1, 0, 1, 4, 12, 4, cobblestone, lce::BlocksInit::FLOWING_WATER.getState(), false);
-        piece.setBlockState(worldIn, lce::BlocksInit::AIR.getState(), 2, 12, 2, chunkBB);
-        piece.setBlockState(worldIn, lce::BlocksInit::AIR.getState(), 3, 12, 2, chunkBB);
-        piece.setBlockState(worldIn, lce::BlocksInit::AIR.getState(), 2, 12, 3, chunkBB);
-        piece.setBlockState(worldIn, lce::BlocksInit::AIR.getState(), 3, 12, 3, chunkBB);
+        piece.setBlockState(worldIn, chunkBB, 2, 12, 2, lce::BlocksInit::AIR.getState());
+        piece.setBlockState(worldIn, chunkBB, 3, 12, 2, lce::BlocksInit::AIR.getState());
+        piece.setBlockState(worldIn, chunkBB, 2, 12, 3, lce::BlocksInit::AIR.getState());
+        piece.setBlockState(worldIn, chunkBB, 3, 12, 3, lce::BlocksInit::AIR.getState());
 
-        piece.setBlockState(worldIn, fence, 1, 13, 1, chunkBB);
-        piece.setBlockState(worldIn, fence, 1, 14, 1, chunkBB);
-        piece.setBlockState(worldIn, fence, 4, 13, 1, chunkBB);
-        piece.setBlockState(worldIn, fence, 4, 14, 1, chunkBB);
-        piece.setBlockState(worldIn, fence, 1, 13, 4, chunkBB);
-        piece.setBlockState(worldIn, fence, 1, 14, 4, chunkBB);
-        piece.setBlockState(worldIn, fence, 4, 13, 4, chunkBB);
-        piece.setBlockState(worldIn, fence, 4, 14, 4, chunkBB);
+        piece.setBlockState(worldIn, chunkBB, 1, 13, 1, fence);
+        piece.setBlockState(worldIn, chunkBB, 1, 14, 1, fence);
+        piece.setBlockState(worldIn, chunkBB, 4, 13, 1, fence);
+        piece.setBlockState(worldIn, chunkBB, 4, 14, 1, fence);
+        piece.setBlockState(worldIn, chunkBB, 1, 13, 4, fence);
+        piece.setBlockState(worldIn, chunkBB, 1, 14, 4, fence);
+        piece.setBlockState(worldIn, chunkBB, 4, 13, 4, fence);
+        piece.setBlockState(worldIn, chunkBB, 4, 14, 4, fence);
         // Top piece
         piece.fillWithBlocks(worldIn, chunkBB, 1, 15, 1, 4, 15, 4, cobblestone, false);
 
         for (int z = 0; z <= 5; ++z) {
             for (int x = 0; x <= 5; ++x) {
                 if (x == 0 || x == 5 || z == 0 || z == 5) {
-                    piece.setBlockState(worldIn, bottomRing, x, 11, z, chunkBB);
+                    piece.setBlockState(worldIn, chunkBB, x, 11, z, bottomRing);
                     piece.clearCurrentPositionBlocksUpwards(worldIn, x, 12, z, chunkBB);
                 }
             }
@@ -1010,7 +1025,7 @@ namespace build::village {
     }
 
 
-    bool House4Garden::addComponentParts(World& worldIn, MU RNG& rng, BoundingBox& chunkBB,
+    bool House4Garden::addComponentParts(World& worldIn, MU RNG& rng, const BoundingBox& chunkBB,
                                          StructureComponent& piece) {
         if ((piece.data >> 16 & 1) == 0) {
             c_int averageGroundLvl = getAverageGroundLevel(worldIn, chunkBB, piece);
@@ -1029,71 +1044,71 @@ namespace build::village {
         piece.fillWithBlocks(worldIn, chunkBB, 0, 0, 0, 4, 0, 4, iBlockState, false);
         piece.fillWithBlocks(worldIn, chunkBB, 0, 4, 0, 4, 4, 4, iBlockState3, false);
         piece.fillWithBlocks(worldIn, chunkBB, 1, 4, 1, 3, 4, 3, iBlockState1, false);
-        piece.setBlockState(worldIn, iBlockState, 0, 1, 0, chunkBB);
-        piece.setBlockState(worldIn, iBlockState, 0, 2, 0, chunkBB);
-        piece.setBlockState(worldIn, iBlockState, 0, 3, 0, chunkBB);
-        piece.setBlockState(worldIn, iBlockState, 4, 1, 0, chunkBB);
-        piece.setBlockState(worldIn, iBlockState, 4, 2, 0, chunkBB);
-        piece.setBlockState(worldIn, iBlockState, 4, 3, 0, chunkBB);
-        piece.setBlockState(worldIn, iBlockState, 0, 1, 4, chunkBB);
-        piece.setBlockState(worldIn, iBlockState, 0, 2, 4, chunkBB);
-        piece.setBlockState(worldIn, iBlockState, 0, 3, 4, chunkBB);
-        piece.setBlockState(worldIn, iBlockState, 4, 1, 4, chunkBB);
-        piece.setBlockState(worldIn, iBlockState, 4, 2, 4, chunkBB);
-        piece.setBlockState(worldIn, iBlockState, 4, 3, 4, chunkBB);
+        piece.setBlockState(worldIn, chunkBB, 0, 1, 0, iBlockState);
+        piece.setBlockState(worldIn, chunkBB, 0, 2, 0, iBlockState);
+        piece.setBlockState(worldIn, chunkBB, 0, 3, 0, iBlockState);
+        piece.setBlockState(worldIn, chunkBB, 4, 1, 0, iBlockState);
+        piece.setBlockState(worldIn, chunkBB, 4, 2, 0, iBlockState);
+        piece.setBlockState(worldIn, chunkBB, 4, 3, 0, iBlockState);
+        piece.setBlockState(worldIn, chunkBB, 0, 1, 4, iBlockState);
+        piece.setBlockState(worldIn, chunkBB, 0, 2, 4, iBlockState);
+        piece.setBlockState(worldIn, chunkBB, 0, 3, 4, iBlockState);
+        piece.setBlockState(worldIn, chunkBB, 4, 1, 4, iBlockState);
+        piece.setBlockState(worldIn, chunkBB, 4, 2, 4, iBlockState);
+        piece.setBlockState(worldIn, chunkBB, 4, 3, 4, iBlockState);
         piece.fillWithBlocks(worldIn, chunkBB, 0, 1, 1, 0, 3, 3, iBlockState1, false);
         piece.fillWithBlocks(worldIn, chunkBB, 4, 1, 1, 4, 3, 3, iBlockState1, false);
         piece.fillWithBlocks(worldIn, chunkBB, 1, 1, 4, 3, 3, 4, iBlockState1, false);
         constexpr lce::BlockState glassPane = lce::BlocksInit::GLASS_PANE.getState();
-        piece.setBlockState(worldIn, glassPane, 0, 2, 2, chunkBB);
-        piece.setBlockState(worldIn, glassPane, 2, 2, 4, chunkBB);
-        piece.setBlockState(worldIn, glassPane, 4, 2, 2, chunkBB);
-        piece.setBlockState(worldIn, iBlockState1, 1, 1, 0, chunkBB);
-        piece.setBlockState(worldIn, iBlockState1, 1, 2, 0, chunkBB);
-        piece.setBlockState(worldIn, iBlockState1, 1, 3, 0, chunkBB);
-        piece.setBlockState(worldIn, iBlockState1, 2, 3, 0, chunkBB);
-        piece.setBlockState(worldIn, iBlockState1, 3, 3, 0, chunkBB);
-        piece.setBlockState(worldIn, iBlockState1, 3, 2, 0, chunkBB);
-        piece.setBlockState(worldIn, iBlockState1, 3, 1, 0, chunkBB);
+        piece.setBlockState(worldIn, chunkBB, 0, 2, 2, glassPane);
+        piece.setBlockState(worldIn, chunkBB, 2, 2, 4, glassPane);
+        piece.setBlockState(worldIn, chunkBB, 4, 2, 2, glassPane);
+        piece.setBlockState(worldIn, chunkBB, 1, 1, 0, iBlockState1);
+        piece.setBlockState(worldIn, chunkBB, 1, 2, 0, iBlockState1);
+        piece.setBlockState(worldIn, chunkBB, 1, 3, 0, iBlockState1);
+        piece.setBlockState(worldIn, chunkBB, 2, 3, 0, iBlockState1);
+        piece.setBlockState(worldIn, chunkBB, 3, 3, 0, iBlockState1);
+        piece.setBlockState(worldIn, chunkBB, 3, 2, 0, iBlockState1);
+        piece.setBlockState(worldIn, chunkBB, 3, 1, 0, iBlockState1);
 
         if (piece.getBlockStateFromPos(worldIn, 2, 0, -1, chunkBB).getID() != AIR_ID &&
             piece.getBlockStateFromPos(worldIn, 2, -1, -1, chunkBB).getID() != AIR_ID) { // material air
-            piece.setBlockState(worldIn, iBlockState2, 2, 0, -1, chunkBB);
+            piece.setBlockState(worldIn, chunkBB, 2, 0, -1, iBlockState2);
 
             if (piece.getBlockStateFromPos(worldIn, 2, -1, -1, chunkBB).getID() == GRASS_PATH_ID) {
-                piece.setBlockState(worldIn, lce::BlocksInit::GRASS.getState(), 2, -1, -1, chunkBB);
+                piece.setBlockState(worldIn, chunkBB, 2, -1, -1, lce::BlocksInit::GRASS.getState());
             }
         }
 
         piece.fillWithAir(worldIn, chunkBB, 1, 1, 1, 3, 3, 3);
 
         if (piece.data & 1) /* isRoofAccessible */ {
-            piece.setBlockState(worldIn, iBlockState4, 0, 5, 0, chunkBB);
-            piece.setBlockState(worldIn, iBlockState4, 1, 5, 0, chunkBB);
-            piece.setBlockState(worldIn, iBlockState4, 2, 5, 0, chunkBB);
-            piece.setBlockState(worldIn, iBlockState4, 3, 5, 0, chunkBB);
-            piece.setBlockState(worldIn, iBlockState4, 4, 5, 0, chunkBB);
-            piece.setBlockState(worldIn, iBlockState4, 0, 5, 4, chunkBB);
-            piece.setBlockState(worldIn, iBlockState4, 1, 5, 4, chunkBB);
-            piece.setBlockState(worldIn, iBlockState4, 2, 5, 4, chunkBB);
-            piece.setBlockState(worldIn, iBlockState4, 3, 5, 4, chunkBB);
-            piece.setBlockState(worldIn, iBlockState4, 4, 5, 4, chunkBB);
-            piece.setBlockState(worldIn, iBlockState4, 4, 5, 1, chunkBB);
-            piece.setBlockState(worldIn, iBlockState4, 4, 5, 2, chunkBB);
-            piece.setBlockState(worldIn, iBlockState4, 4, 5, 3, chunkBB);
-            piece.setBlockState(worldIn, iBlockState4, 0, 5, 1, chunkBB);
-            piece.setBlockState(worldIn, iBlockState4, 0, 5, 2, chunkBB);
-            piece.setBlockState(worldIn, iBlockState4, 0, 5, 3, chunkBB);
+            piece.setBlockState(worldIn, chunkBB, 0, 5, 0, iBlockState4);
+            piece.setBlockState(worldIn, chunkBB, 1, 5, 0, iBlockState4);
+            piece.setBlockState(worldIn, chunkBB, 2, 5, 0, iBlockState4);
+            piece.setBlockState(worldIn, chunkBB, 3, 5, 0, iBlockState4);
+            piece.setBlockState(worldIn, chunkBB, 4, 5, 0, iBlockState4);
+            piece.setBlockState(worldIn, chunkBB, 0, 5, 4, iBlockState4);
+            piece.setBlockState(worldIn, chunkBB, 1, 5, 4, iBlockState4);
+            piece.setBlockState(worldIn, chunkBB, 2, 5, 4, iBlockState4);
+            piece.setBlockState(worldIn, chunkBB, 3, 5, 4, iBlockState4);
+            piece.setBlockState(worldIn, chunkBB, 4, 5, 4, iBlockState4);
+            piece.setBlockState(worldIn, chunkBB, 4, 5, 1, iBlockState4);
+            piece.setBlockState(worldIn, chunkBB, 4, 5, 2, iBlockState4);
+            piece.setBlockState(worldIn, chunkBB, 4, 5, 3, iBlockState4);
+            piece.setBlockState(worldIn, chunkBB, 0, 5, 1, iBlockState4);
+            piece.setBlockState(worldIn, chunkBB, 0, 5, 2, iBlockState4);
+            piece.setBlockState(worldIn, chunkBB, 0, 5, 3, iBlockState4);
         }
 
         if (piece.data & 1) /* isRoofAccessible */ {
             // .withProperty(BlockLadder.FACING, FACING::SOUTH);
             c_auto ladderSouth = lce::BlocksInit::LADDER.getStateFromMeta(
                     Ladder::withProperty(piece.rotation.apply(piece.mirror, EnumFacing::SOUTH)));
-            piece.setBlockState(worldIn, ladderSouth, 3, 1, 3, chunkBB);
-            piece.setBlockState(worldIn, ladderSouth, 3, 2, 3, chunkBB);
-            piece.setBlockState(worldIn, ladderSouth, 3, 3, 3, chunkBB);
-            piece.setBlockState(worldIn, ladderSouth, 3, 4, 3, chunkBB);
+            piece.setBlockState(worldIn, chunkBB, 3, 1, 3, ladderSouth);
+            piece.setBlockState(worldIn, chunkBB, 3, 2, 3, ladderSouth);
+            piece.setBlockState(worldIn, chunkBB, 3, 3, 3, ladderSouth);
+            piece.setBlockState(worldIn, chunkBB, 3, 4, 3, ladderSouth);
         }
 
         placeTorch(worldIn, EnumFacing::NORTH, piece, 2, 3, 1, chunkBB);
@@ -1110,6 +1125,15 @@ namespace build::village {
     }
 
 
+
+    /**
+     * @brief Adds component parts to the world for a village structure.
+     * @param worldIn The world to modify.
+     * @param rng The random number generator.
+     * @param chunkBB The bounding box of the chunk.
+     * @param piece The structure component to add.
+     * @return True if the parts were added successfully, false otherwise.
+     */
     bool addComponentParts(World& worldIn, RNG& rng, BoundingBox& chunkBB, StructureComponent& piece) {
         bool result = false;
 

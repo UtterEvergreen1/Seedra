@@ -9,6 +9,16 @@
 namespace rolls {
 
     ///TODO: MAKE SURE IT WORKS!!!
+    /**
+     * @brief Generates the mineshaft structure in the world.
+     *
+     * @param worldIn The world to modify.
+     * @param chunk The chunk primer.
+     * @param mg The mineshaft generator.
+     * @param rng The random number generator.
+     * @param chunkX The X coordinate of the chunk.
+     * @param chunkZ The Z coordinate of the chunk.
+     */
     void Mineshaft::generateStructure(MU World& worldIn, const ChunkPrimer* chunk, const gen::Mineshaft* mg,
                                       RNG& rng, c_int chunkX, c_int chunkZ) {
         for (int pieceIndex = 0; pieceIndex < mg->getPieceCount(); ++pieceIndex) {
@@ -109,6 +119,14 @@ namespace rolls {
     }
 
 
+    /**
+     * @brief Generates all chests for the mineshaft.
+     *
+     * @param worldIn The world to modify.
+     * @param mg The mineshaft generator.
+     * @param g The generator.
+     * @param generateFullChunk Whether to generate the full chunk.
+     */
     MU void Mineshaft::generateAllChests(World& worldIn, const gen::Mineshaft* mg,
                                          const Generator& g, c_bool generateFullChunk) {
         Pos2D start = (mg->getStartPos() >> 4) - 6;
@@ -136,6 +154,17 @@ namespace rolls {
 
 
     // TODO: generate legacy chest where the loot is generated with the seed and doesn't use the loot table seed
+    /**
+     * @brief Generates a chest at a specific position.
+     *
+     * @param chunk The chunk primer.
+     * @param chunkBB The bounding box of the chunk.
+     * @param piece The structure component.
+     * @param rng The random number generator.
+     * @param x The X coordinate.
+     * @param y The Y coordinate.
+     * @param z The Z coordinate.
+     */
     void Mineshaft::generateChest(const ChunkPrimer* chunk, const BoundingBox& chunkBB,
                                   const StructureComponent *piece, RNG& rng, c_int x, c_int y, c_int z) {
         c_int xPos = piece->getWorldX(x, z);
@@ -148,7 +177,16 @@ namespace rolls {
         }
     }
 
-
+    /**
+     * @brief Places a cobweb at a specific position.
+     *
+     * @param chunk The chunk primer.
+     * @param chunkBB The bounding box of the chunk.
+     * @param piece The structure component.
+     * @param rng The random number generator.
+     * @param x The X coordinate.
+     * @param z The Z coordinate.
+     */
     void Mineshaft::placeCobWeb(const ChunkPrimer* chunk, const BoundingBox& chunkBB,
                                 const StructureComponent& piece, RNG& rng, c_int x, c_int z) {
         c_int xPos = piece.getWorldX(x, z);
