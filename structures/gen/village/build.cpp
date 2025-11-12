@@ -611,8 +611,8 @@ namespace build::village {
         piece.fillWithBlocks(worldIn, chunkBB, 5, 1, 0, 5, 3, 0, iBlockState6, false);
         piece.fillWithBlocks(worldIn, chunkBB, 9, 1, 0, 9, 3, 0, iBlockState6, false);
         piece.fillWithBlocks(worldIn, chunkBB, 6, 1, 4, 9, 4, 6, iBlockState, false);
-        piece.setBlockState(worldIn, lce::BlocksInit::FLOWING_LAVA.getState(), 7, 1, 5, chunkBB);
-        piece.setBlockState(worldIn, lce::BlocksInit::FLOWING_LAVA.getState(), 8, 1, 5, chunkBB);
+        piece.setBlockState(worldIn, lce::BlocksInit::STILL_LAVA.getState(), 7, 1, 5, chunkBB);
+        piece.setBlockState(worldIn, lce::BlocksInit::STILL_LAVA.getState(), 8, 1, 5, chunkBB);
         piece.setBlockState(worldIn, lce::BlocksInit::IRON_BARS.getState(), 9, 2, 5, chunkBB);
         piece.setBlockState(worldIn, lce::BlocksInit::IRON_BARS.getState(), 9, 2, 4, chunkBB);
         piece.fillWithAir(worldIn, chunkBB, 7, 2, 4, 8, 2, 5);

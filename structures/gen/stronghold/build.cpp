@@ -345,10 +345,10 @@ namespace build::stronghold {
         piece.fillWithRandomizedStrongholdStones(worldIn, chunkBB, 2, i, 14, 8, i, 14, false, rng);
         piece.fillWithRandomizedStrongholdStones(worldIn, chunkBB, 1, 1, 1, 2, 1, 4, false, rng);
         piece.fillWithRandomizedStrongholdStones(worldIn, chunkBB, 8, 1, 1, 9, 1, 4, false, rng);
-        piece.fillWithBlocks(worldIn, chunkBB, 1, 1, 1, 1, 1, 3, lce::BlocksInit::FLOWING_LAVA.getState(), false);
-        piece.fillWithBlocks(worldIn, chunkBB, 9, 1, 1, 9, 1, 3, lce::BlocksInit::FLOWING_LAVA.getState(), false);
+        piece.fillWithBlocks(worldIn, chunkBB, 1, 1, 1, 1, 1, 3, lce::BlocksInit::STILL_LAVA.getState(), false);
+        piece.fillWithBlocks(worldIn, chunkBB, 9, 1, 1, 9, 1, 3, lce::BlocksInit::STILL_LAVA.getState(), false);
         piece.fillWithRandomizedStrongholdStones(worldIn, chunkBB, 3, 1, 8, 7, 1, 12, false, rng);
-        piece.fillWithBlocks(worldIn, chunkBB, 4, 1, 9, 6, 1, 11, lce::BlocksInit::FLOWING_LAVA.getState(), false);
+        piece.fillWithBlocks(worldIn, chunkBB, 4, 1, 9, 6, 1, 11, lce::BlocksInit::STILL_LAVA.getState(), false);
 
         for (int j = 3; j < 14; j += 2) {
             piece.fillWithBlocks(worldIn, chunkBB, 0, 3, j, 0, 4, j, lce::BlocksInit::IRON_BARS.getState(), false);
