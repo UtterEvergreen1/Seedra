@@ -132,7 +132,7 @@ void WaterRavineGenerator::addTunnel(World& worldIn, c_i64 randomSeed, const Pos
         min.z = (int) floor(tunnel.z - adjustedWidth) - baseChunkX16.z - 1;
         max.z = (int) floor(tunnel.z + adjustedWidth) - baseChunkX16.z + 1;
 
-        max.y = MathHelper::clamp(max.y, 1, 120);
+        max.y = MathHelper::clamp(max.y, 1, 62);
         min.y = MathHelper::clamp(min.y, 1, max.y);
 
         min += baseChunkX16;
@@ -159,7 +159,7 @@ void WaterRavineGenerator::addTunnel(World& worldIn, c_i64 randomSeed, const Pos
                 for (pos.y = max.y - 1; pos.y >= min.y; --pos.y) {
                     scale.y = ((double) pos.y + 0.5 - tunnel.y) / adjustedHeight;
 
-                    if (scaleDXDZSq * (double) rs[pos.y - 1] + (scale.y * scale.y) / 6.0 >= 1.0 || pos.y >= 62) { continue; }
+                    if (scaleDXDZSq * (double) rs[pos.y - 1] + (scale.y * scale.y) / 6.0 >= 1.0) { continue; }
 
                     Pos3D blockPos = pos;
                     blockPos += baseChunkX16;
