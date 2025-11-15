@@ -2,10 +2,14 @@
 
 #include "components/StructureComponent.hpp"
 
-#include "terrain/ChunkPrimer.hpp"
 #include "terrain/World.hpp"
 
 #include "lce/blocks/__include.hpp"
+
+#include "structures/gen/desert_temple/desert_pyramid.hpp"
+#include "structures/gen/igloo/igloo.hpp"
+#include "structures/gen/jungle_temple/jungle_temple.hpp"
+#include "structures/gen/witch_hut/witch_hut.hpp"
 
 namespace scattered_features {
 

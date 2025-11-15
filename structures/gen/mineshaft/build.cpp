@@ -9,10 +9,39 @@
 
 namespace build::mineshaft {
 
+    // declarations
+
+
+    MU ND extern lce::BlockState getBiomeSpecificPlank(c_int structureType);
+    MU ND extern lce::BlockState getBiomeSpecificFence(c_int structureType);
+
+    extern bool func_189918_a(World& world, const BoundingBox& chunkBB, c_int minX, c_int maxX,
+                              c_int y, c_int z, const StructureComponent& piece);
+
+    static void Corridor_func_189921_a(World& world, const BoundingBox& chunkBB,
+                                       c_int minX, c_int minY, c_int minZ, c_int maxY, c_int maxX,
+                                       RNG& rng, const StructureComponent& piece);
+
+    static void Corridor_placeCobwebsRandomly(World& world, const BoundingBox& chunkBB, RNG& rng,
+                                              c_float chance, c_int x, c_int y, c_int z, const StructureComponent& piece);
+
+    void Crossing_placePlankPillar(World& world, const BoundingBox& chunkBB, c_int x, c_int minY,
+                                   c_int z, c_int maxY, const StructureComponent& piece);
+
+
+    // definitions
+
+
     using namespace lce::blocks;
     using namespace lce::blocks::states;
 
 
+    /**
+     * @brief Gets biome-specific plank block state for the mineshaft.
+     *
+     * @param structureType The type of the structure.
+     * @return The block state of the biome-specific plank.
+     */
     lce::BlockState getBiomeSpecificPlank(const StructureVariant variant) {
         switch (variant) {
             case StructureVariant::SV_Mineshaft_Normal:
@@ -23,7 +52,12 @@ namespace build::mineshaft {
         }
     }
 
-
+    /**
+     * @brief Gets biome-specific fence block state for the mineshaft.
+     *
+     * @param structureType The type of the structure.
+     * @return The block state of the biome-specific fence.
+     */
     lce::BlockState getBiomeSpecificFence(const StructureVariant variant) {
         switch (variant) {
             case StructureVariant::SV_Mineshaft_Normal:
@@ -34,7 +68,18 @@ namespace build::mineshaft {
         }
     }
 
-
+    /**
+     * @brief Performs a specific operation on the world and bounding box.
+     *
+     * @param world The world to modify.
+     * @param chunkBB The bounding box of the chunk.
+     * @param minX The minimum X coordinate.
+     * @param maxX The maximum X coordinate.
+     * @param y The Y coordinate.
+     * @param z The Z coordinate.
+     * @param piece The structure component.
+     * @return True if the operation was successful, false otherwise.
+     */
     bool func_189918_a(World& world, const BoundingBox& chunkBB, c_int minX, c_int maxX, c_int y,
                        c_int z, const StructureComponent& piece) {
         for (int x = minX; x <= maxX; ++x) {
@@ -47,9 +92,12 @@ namespace build::mineshaft {
         return true;
     }
 
+    FeaturePiece(Room);
+    FeaturePiece(Corridor);
+    FeaturePiece(Crossing);
+    FeaturePiece(Stairs);
 
-    bool Corridor::addComponentParts(World& worldIn, RNG& rng, const BoundingBox& chunkBB,
-                                     const StructureComponent& piece) {
+    bool Corridor::addComponentParts(World& worldIn, RNG& rng, const BoundingBox& chunkBB, StructureComponent& piece) {
         if (piece.isLiquidInStructureBoundingBox(worldIn, chunkBB)) { return false; }
 
         c_bool hasRails = piece.data & 1;
@@ -76,26 +124,26 @@ namespace build::mineshaft {
 
         for (int j1 = 0; j1 < sectionCount; ++j1) {
             c_int k1 = 2 + j1 * 5;
-            func_189921_a(worldIn, chunkBB, 0, 0, k1, 2, 2, rng, piece);
-            placeCobwebsRandomly(worldIn, chunkBB, rng, 0.1F, 0, 2, k1 - 1, piece);
-            placeCobwebsRandomly(worldIn, chunkBB, rng, 0.1F, 2, 2, k1 - 1, piece);
-            placeCobwebsRandomly(worldIn, chunkBB, rng, 0.1F, 0, 2, k1 + 1, piece);
-            placeCobwebsRandomly(worldIn, chunkBB, rng, 0.1F, 2, 2, k1 + 1, piece);
-            placeCobwebsRandomly(worldIn, chunkBB, rng, 0.05F, 0, 2, k1 - 2, piece);
-            placeCobwebsRandomly(worldIn, chunkBB, rng, 0.05F, 2, 2, k1 - 2, piece);
-            placeCobwebsRandomly(worldIn, chunkBB, rng, 0.05F, 0, 2, k1 + 2, piece);
-            placeCobwebsRandomly(worldIn, chunkBB, rng, 0.05F, 2, 2, k1 + 2, piece);
+            Corridor_func_189921_a(worldIn, chunkBB, 0, 0, k1, 2, 2, rng, piece);
+            Corridor_placeCobwebsRandomly(worldIn, chunkBB, rng, 0.1F, 0, 2, k1 - 1, piece);
+            Corridor_placeCobwebsRandomly(worldIn, chunkBB, rng, 0.1F, 2, 2, k1 - 1, piece);
+            Corridor_placeCobwebsRandomly(worldIn, chunkBB, rng, 0.1F, 0, 2, k1 + 1, piece);
+            Corridor_placeCobwebsRandomly(worldIn, chunkBB, rng, 0.1F, 2, 2, k1 + 1, piece);
+            Corridor_placeCobwebsRandomly(worldIn, chunkBB, rng, 0.05F, 0, 2, k1 - 2, piece);
+            Corridor_placeCobwebsRandomly(worldIn, chunkBB, rng, 0.05F, 2, 2, k1 - 2, piece);
+            Corridor_placeCobwebsRandomly(worldIn, chunkBB, rng, 0.05F, 0, 2, k1 + 2, piece);
+            Corridor_placeCobwebsRandomly(worldIn, chunkBB, rng, 0.05F, 2, 2, k1 + 2, piece);
 
             if (rng.nextInt(100) == 0) {
                 // generateChest(worldIn, chunkBB, rng, 2, 0, k1 - 1, LootTableList.CHESTS_ABANDONED_MINESHAFT);
-                piece.setBlockState(worldIn, lce::BlocksInit::CHEST.getState(), 2, 0, k1 - 1, chunkBB);
+                piece.setBlockState(worldIn, chunkBB, 2, 0, k1 - 1, lce::BlocksInit::CHEST.getState());
                 rng.nextLong();
             }
 
 
             if (rng.nextInt(100) == 0) {
                 // generateChest(worldIn, chunkBB, rng, 0, 0, k1 + 1, LootTableList.CHESTS_ABANDONED_MINESHAFT);
-                piece.setBlockState(worldIn, lce::BlocksInit::CHEST.getState(), 0, 0, k1 + 1, chunkBB);
+                piece.setBlockState(worldIn, chunkBB, 0, 0, k1 + 1, lce::BlocksInit::CHEST.getState());
                 rng.nextLong();
             }
 
@@ -106,7 +154,7 @@ namespace build::mineshaft {
                 if (chunkBB.isVecInside(blockPos) && piece.getLightLevelAtBlock(worldIn, 1, 0, i2, chunkBB) < 8) {
                     spawnerPlaced = true;
                     // caveSpider
-                    piece.setBlockState(worldIn, lce::BlocksInit::MONSTER_SPAWNER.getState(), 1, 0, 1, chunkBB);
+                    piece.setBlockState(worldIn, chunkBB, 1, 0, 1, lce::BlocksInit::MONSTER_SPAWNER.getState());
                 }
             }
         }
@@ -120,7 +168,7 @@ namespace build::mineshaft {
                 if (isReplaceableBlock(iBlockState3.getID()) &&
                     piece.getLightLevelAtBlock(worldIn, l2, -1, i3, chunkBB) < 8) {
                     MU int l3 = -1;
-                    piece.setBlockState(worldIn, iblockstate, l2, -1, i3, chunkBB);
+                    piece.setBlockState(worldIn, chunkBB, l2, -1, i3, iblockstate);
                 }
             }
         }
@@ -142,8 +190,20 @@ namespace build::mineshaft {
 
 
 
-
-    void Corridor::func_189921_a(World& world, const BoundingBox& chunkBB,
+    /**
+     * @brief Performs a specific operation on the corridor.
+     *
+     * @param world The world to modify.
+     * @param chunkBB The bounding box of the chunk.
+     * @param minX The minimum X coordinate.
+     * @param minY The minimum Y coordinate.
+     * @param minZ The minimum Z coordinate.
+     * @param maxY The maximum Y coordinate.
+     * @param maxX The maximum X coordinate.
+     * @param rng The random number generator.
+     * @param piece The structure component.
+     */
+    void Corridor_func_189921_a(World& world, const BoundingBox& chunkBB,
                                  c_int minX, c_int minY, c_int minZ, c_int maxY, c_int maxX, RNG& rng,
                                  const StructureComponent& piece) {
 
@@ -170,16 +230,26 @@ namespace build::mineshaft {
         }
     }
 
-
-    void Corridor::placeCobwebsRandomly(World& world, const BoundingBox& chunkBB, RNG& rng, c_float chance,
+    /**
+     * @brief Places cobwebs randomly in the corridor.
+     *
+     * @param world The world to modify.
+     * @param chunkBB The bounding box of the chunk.
+     * @param rng The random number generator.
+     * @param chance The chance of placing a cobweb.
+     * @param x The X coordinate.
+     * @param y The Y coordinate.
+     * @param z The Z coordinate.
+     * @param piece The structure component.
+     */
+    void Corridor_placeCobwebsRandomly(World& world, const BoundingBox& chunkBB, RNG& rng, c_float chance,
                                         c_int x, c_int y, c_int z, const StructureComponent& piece) {
         if (piece.getLightLevelAtBlock(world, x, y, z, chunkBB) < 8) {
             piece.randomlyPlaceBlock(world, chunkBB, rng, chance, x, y, z, lce::BlocksInit::COBWEB.getState());
         }
     }
 
-    bool Room::addComponentParts(World& worldIn, MU RNG& rng, const BoundingBox& chunkBB,
-                                 const StructureComponent& piece) {
+    bool Room::addComponentParts(World& worldIn, MU RNG& rng, const BoundingBox& chunkBB, StructureComponent& piece) {
         if (piece.isLiquidInStructureBoundingBox(worldIn, chunkBB)) { return false; }
 
 
@@ -200,8 +270,7 @@ namespace build::mineshaft {
     }
 
 
-    bool Crossing::addComponentParts(World& worldIn, MU RNG& rng, const BoundingBox& chunkBB,
-                                     const StructureComponent& piece) {
+    bool Crossing::addComponentParts(World& worldIn, MU RNG& rng, const BoundingBox& chunkBB, StructureComponent& piece) {
         if (piece.isLiquidInStructureBoundingBox(worldIn, chunkBB)) { return false; }
 
         const bool isMultipleFloors = piece.data & 1;
@@ -226,10 +295,10 @@ namespace build::mineshaft {
                               piece.maxZ - piece.minZ - 1);
         }
 
-        placePlankPillar(worldIn, chunkBB, 1, 0, 1, piece.maxY - piece.minY, piece);
-        placePlankPillar(worldIn, chunkBB, 1, 0, piece.maxZ - piece.minZ - 1, piece.maxY - piece.minY, piece);
-        placePlankPillar(worldIn, chunkBB, piece.maxX - piece.minX - 1, 0, 1, piece.maxY - piece.minY, piece);
-        placePlankPillar(worldIn, chunkBB, piece.maxX - piece.minX - 1, 0, piece.maxZ - piece.minZ - 1,
+        Crossing_placePlankPillar(worldIn, chunkBB, 1, 0, 1, piece.maxY - piece.minY, piece);
+        Crossing_placePlankPillar(worldIn, chunkBB, 1, 0, piece.maxZ - piece.minZ - 1, piece.maxY - piece.minY, piece);
+        Crossing_placePlankPillar(worldIn, chunkBB, piece.maxX - piece.minX - 1, 0, 1, piece.maxY - piece.minY, piece);
+        Crossing_placePlankPillar(worldIn, chunkBB, piece.maxX - piece.minX - 1, 0, piece.maxZ - piece.minZ - 1,
                          piece.maxY - piece.minY, piece);
 
         for (int i = 0; i <= piece.maxX - piece.minX; ++i) {
@@ -237,7 +306,7 @@ namespace build::mineshaft {
                 if (isReplaceableBlock(
                             piece.getBlockStateFromPos(worldIn, i, -1, j, chunkBB).getID()) &&
                     piece.getLightLevelAtBlock(worldIn, i, -1, j, chunkBB) < 8) {
-                    piece.setBlockState(worldIn, iblockstate, i, -1, j, chunkBB);
+                    piece.setBlockState(worldIn, chunkBB, i, -1, j, iblockstate);
                 }
             }
         }
@@ -246,7 +315,7 @@ namespace build::mineshaft {
     }
 
 
-    void Crossing::placePlankPillar(World& world, const BoundingBox& chunkBB, c_int x, c_int minY,
+    void Crossing_placePlankPillar(World& world, const BoundingBox& chunkBB, c_int x, c_int minY,
                                     c_int z, c_int maxY, const StructureComponent& piece) {
 
         c_auto block = piece.getBlockStateFromPos(world, x, maxY + 1, z, chunkBB);
@@ -258,8 +327,7 @@ namespace build::mineshaft {
     }
 
 
-    bool Stairs::addComponentParts(World& worldIn, MU RNG& rng, const BoundingBox& chunkBB,
-                                   const StructureComponent& piece) {
+    bool Stairs::addComponentParts(World& worldIn, MU RNG& rng, const BoundingBox& chunkBB, StructureComponent& piece) {
         if (piece.isLiquidInStructureBoundingBox(worldIn, chunkBB)) { return false; }
 
         piece.fillWithAir(worldIn, chunkBB, 0, 5, 0, 2, 7, 1);
@@ -272,7 +340,16 @@ namespace build::mineshaft {
     }
 
 
-    bool addComponentParts(World& worldIn, RNG& rng, const BoundingBox& chunkBB, const StructureComponent& piece) {
+    /**
+     * @brief Adds component parts to the world.
+     *
+     * @param worldIn The world to modify.
+     * @param rng The random number generator.
+     * @param chunkBB The bounding box of the chunk.
+     * @param piece The structure component.
+     * @return True if the parts were added successfully, false otherwise.
+     */
+    bool addComponentParts(World& worldIn, RNG& rng, const BoundingBox& chunkBB, StructureComponent& piece) {
         bool result = false;
 
         switch (piece.type) {

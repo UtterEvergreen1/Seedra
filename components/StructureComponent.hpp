@@ -166,9 +166,8 @@ public:
      * @param z The Z coordinate.
      * @param structureBB The bounding box of the structure.
      */
-    MU void setBlockState(
-        World &worldIn, lce::BlockState blockStateIn, int x, int y, int z,
-        const BoundingBox &structureBB) const;
+    MU void setBlockState(World& worldIn, const BoundingBox& structureBB, int x, int y, int z,
+                          lce::BlockState blockStateIn) const;
 
     /**
      * @brief Retrieves the block state at a specific position within the bounding box.
