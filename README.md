@@ -192,9 +192,6 @@ int main() {
 #include "Seedra/loot/Tables.hpp"
 
 int main(int argc, char* argv[]) {
-    // Set up the items
-    lce::registry::ItemRegistry::setup();
-    
     constexpr auto Mode = loot::GenMode::MODERN;
     int64_t worldSeed = 789;
     loot::Container<27> container;
@@ -240,6 +237,7 @@ int main() {
     loot::Container<27> container;
 
     for (const auto& pos : buriedTreasurePositions) {
+        container.clear();
         loot::buried_treasure.getLootFromChunk<Mode>(container, generator.getWorldSeed(), pos.x, pos.z);
         std::cout << "Loot for buried treasure at (" << pos.x << ", " << pos.z << "):" << std::endl;
         std::cout << container << std::endl;
