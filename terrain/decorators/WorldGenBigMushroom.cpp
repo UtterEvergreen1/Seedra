@@ -7,7 +7,7 @@ using namespace lce::blocks;
 
 
 bool WorldGenBigMushroom::generate(World* worldIn, RNG& rand, const Pos3D& position) const {
-    lce::BlockState block = this->mushroomType;
+    lce::BlockState block = this->m_mushroomType;
 
     if (block == lce::BlocksInit::AIR.getState()) {
         block = rand.nextBoolean() ? lce::BlocksInit::BROWN_MUSHROOM_BLOCK.getState()
@@ -41,14 +41,15 @@ bool WorldGenBigMushroom::generate(World* worldIn, RNG& rand, const Pos3D& posit
 
     const int maxY = position.getY() + height;
     const int startY = block == lce::BlocksInit::RED_MUSHROOM_BLOCK.getState() ? maxY - 3 : maxY;
+    int radius;
 
     for (int yPos = startY; yPos <= maxY; ++yPos) {
-        int radius = 1;
-
         if (block == lce::BlocksInit::BROWN_MUSHROOM_BLOCK.getState()) {
             radius = 3;
         } else if (yPos < maxY) {
-            ++radius;
+            radius = 2;
+        } else {
+            radius = 1;
         }
 
         c_int minX = position.getX() - radius;
@@ -65,13 +66,19 @@ bool WorldGenBigMushroom::generate(World* worldIn, RNG& rand, const Pos3D& posit
             for (int zPos = minZ; zPos <= maxZ; ++zPos) {
                 auto hugeMushroomMetaData = BlockHugeMushroom::EnumType::CENTER;
 
-                if (xPos == minX) {
+                if (xPos == minX && zPos == minZ) {
+                    hugeMushroomMetaData = BlockHugeMushroom::EnumType::NORTH_WEST;
+                } else if (xPos == minX && zPos == maxZ) {
+                    hugeMushroomMetaData = BlockHugeMushroom::EnumType::SOUTH_WEST;
+                } else if (xPos == maxX && zPos == minZ) {
+                    hugeMushroomMetaData = BlockHugeMushroom::EnumType::NORTH_EAST;
+                } else if (xPos == maxX && zPos == maxZ) {
+                    hugeMushroomMetaData = BlockHugeMushroom::EnumType::SOUTH_EAST;
+                } else if (xPos == minX) {
                     hugeMushroomMetaData = BlockHugeMushroom::EnumType::WEST;
                 } else if (xPos == maxX) {
                     hugeMushroomMetaData = BlockHugeMushroom::EnumType::EAST;
-                }
-
-                if (zPos == minZ) {
+                } else if (zPos == minZ) {
                     hugeMushroomMetaData = BlockHugeMushroom::EnumType::NORTH;
                 } else if (zPos == maxZ) {
                     hugeMushroomMetaData = BlockHugeMushroom::EnumType::SOUTH;
@@ -89,7 +96,7 @@ bool WorldGenBigMushroom::generate(World* worldIn, RNG& rand, const Pos3D& posit
                         hugeMushroomMetaData = BlockHugeMushroom::EnumType::NORTH_EAST;
                     }
 
-                    if ((xPos == edgeMinX && zPos == maxZ) || (xPos == edgeMaxZ && xPos == minX)) {
+                    if ((xPos == edgeMinX && zPos == maxZ) || (zPos == edgeMaxZ && xPos == minX)) {
                         hugeMushroomMetaData = BlockHugeMushroom::EnumType::SOUTH_WEST;
                     }
 
@@ -105,7 +112,7 @@ bool WorldGenBigMushroom::generate(World* worldIn, RNG& rand, const Pos3D& posit
                 if (position.getY() >= maxY - 1 || hugeMushroomMetaData != BlockHugeMushroom::EnumType::ALL_INSIDE) {
                     Pos3D blockPos(xPos, yPos, zPos);
                     if (!lce::blocks::isFullBlock(worldIn->getBlockId(blockPos))) {
-                        worldIn->setBlockAndData(position.up(yPos), block.getID(), (int) hugeMushroomMetaData);
+                        worldIn->setBlockAndData(blockPos, block.getID(), static_cast<u8>(hugeMushroomMetaData));
                     }
                 }
             }
@@ -114,7 +121,7 @@ bool WorldGenBigMushroom::generate(World* worldIn, RNG& rand, const Pos3D& posit
 
     for (int y_off = 0; y_off < height; ++y_off) {
         if (lce::blocks::isFullBlock(!worldIn->getBlockId(position.up(y_off)))) {
-            worldIn->setBlockAndData(position.up(y_off), block.getID(), (int) BlockHugeMushroom::EnumType::STEM);
+            worldIn->setBlockAndData(position.up(y_off), block.getID(), static_cast<u8>(BlockHugeMushroom::EnumType::STEM));
         }
     }
 

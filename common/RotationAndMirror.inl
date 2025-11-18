@@ -14,6 +14,24 @@ inline Rotation::Rotation(const Type typeIn) : type(typeIn) {
 
 inline Rotation Rotation::add(const Rotation &rotation) const {
     switch (rotation.type) {
+
+        case Type::NONE:
+            return *this;
+
+        case Type::CLOCKWISE_90:
+            switch (this->type) {
+                case Type::NONE:
+                    return CLOCKWISE_90;
+                case Type::CLOCKWISE_90:
+                        return CLOCKWISE_180;
+                case Type::CLOCKWISE_180:
+                        return COUNTERCLOCKWISE_90;
+                case Type::COUNTERCLOCKWISE_90:
+                        return NONE;
+            default:
+                    std::unreachable(); // return *this;
+            }
+
         case Type::CLOCKWISE_180:
             switch (this->type) {
                 case Type::NONE:
@@ -25,7 +43,7 @@ inline Rotation Rotation::add(const Rotation &rotation) const {
                 case Type::COUNTERCLOCKWISE_90:
                     return CLOCKWISE_90;
                 default:
-                    return *this;
+                    std::unreachable(); // return *this;
             }
 
         case Type::COUNTERCLOCKWISE_90:
@@ -39,25 +57,10 @@ inline Rotation Rotation::add(const Rotation &rotation) const {
                 case Type::COUNTERCLOCKWISE_90:
                     return CLOCKWISE_180;
                 default:
-                    return *this;
+                    std::unreachable(); // return *this;
             }
-
-        case Type::CLOCKWISE_90:
-            switch (this->type) {
-                case Type::NONE:
-                    return CLOCKWISE_90;
-                case Type::CLOCKWISE_90:
-                    return CLOCKWISE_180;
-                case Type::CLOCKWISE_180:
-                    return COUNTERCLOCKWISE_90;
-                case Type::COUNTERCLOCKWISE_90:
-                    return NONE;
-                default:
-                    return *this;
-            }
-
         default:
-            return *this;
+            std::unreachable();
     }
 }
 
@@ -68,15 +71,16 @@ inline bool Rotation::operator==(const Rotation &other) const {
 inline EnumFacing Rotation::apply(const Mirror &mirror, const EnumFacing facing) const {
     EnumFacing mirroredFacing = mirror.mirrorFACING(facing); // Apply mirror first
     switch (type) {
-        case Rotation::Type::CLOCKWISE_180:
+        case Type::CLOCKWISE_180:
             return getOpposite(mirroredFacing);
-        case Rotation::Type::COUNTERCLOCKWISE_90:
+        case Type::COUNTERCLOCKWISE_90:
             return rotateYCCW(mirroredFacing);
-        case Rotation::Type::CLOCKWISE_90:
+        case Type::CLOCKWISE_90:
             return rotateY(mirroredFacing);
-        case Rotation::Type::NONE:
-        default:
+        case Type::NONE:
             return mirroredFacing;
+        default:
+            std::unreachable();
     }
 }
 
@@ -102,8 +106,10 @@ inline EnumFacing Rotation::rotateFacing(const EnumFacing facing) const {
             return getOpposite(facing);
         case Type::COUNTERCLOCKWISE_90:
             return rotateYCCW(facing);
-        default:
+        case Type::NONE:
             return facing;
+        default:
+            std::unreachable();
     }
 }
 
@@ -115,8 +121,10 @@ inline int Rotation::rotate(const int index, const int rotationCount) const {
             return (index + rotationCount / 2) % rotationCount;
         case Type::COUNTERCLOCKWISE_90:
             return (index + (3 * rotationCount) / 4) % rotationCount;
-        default:
+        case Type::NONE:
             return index;
+        default:
+            std::unreachable();
     }
 }
 
@@ -134,8 +142,11 @@ inline EnumFacing Rotation::rotateY(const EnumFacing facing) {
             return EnumFacing::WEST;
         case EnumFacing::WEST:
             return EnumFacing::NORTH;
-        default:
+        case EnumFacing::UP:
+        case EnumFacing::DOWN:
             return facing;
+        default:
+            std::unreachable();
     }
 }
 
@@ -149,8 +160,11 @@ inline EnumFacing Rotation::rotateYCCW(const EnumFacing facing) {
             return EnumFacing::EAST;
         case EnumFacing::EAST:
             return EnumFacing::NORTH;
-        default:
+        case EnumFacing::UP:
+        case EnumFacing::DOWN:
             return facing;
+        default:
+            std::unreachable();
     }
 }
 
@@ -169,7 +183,7 @@ inline EnumFacing Rotation::getOpposite(const EnumFacing facing) {
         case EnumFacing::DOWN:
             return EnumFacing::UP;
         default:
-            return facing;
+            std::unreachable();
     }
 }
 
@@ -181,13 +195,14 @@ inline int Mirror::mirrorRotation(const int rotationIn, const int rotationCount)
     const int adjustedRotation = rotationIn > halfRotation ? rotationIn - rotationCount : rotationIn;
 
     switch (type) {
+        case Type::NONE:
+            return rotationIn;
         case Type::FRONT_BACK:
             return (rotationCount - adjustedRotation) % rotationCount;
         case Type::LEFT_RIGHT:
             return (halfRotation - adjustedRotation + rotationCount) % rotationCount;
-        case Type::NONE:
         default:
-            return rotationIn;
+            std::unreachable();
     }
 }
 
@@ -204,6 +219,9 @@ inline Rotation Mirror::toRotation(const EnumFacing facing) const {
 
 inline EnumFacing Mirror::mirrorFACING(EnumFacing facing) const {
     switch (type) {
+        case Type::NONE:
+            break;
+
         case Type::FRONT_BACK:
             if (facing == EnumFacing::WEST)
                 return EnumFacing::EAST;
@@ -217,10 +235,8 @@ inline EnumFacing Mirror::mirrorFACING(EnumFacing facing) const {
             if (facing == EnumFacing::SOUTH)
                 return EnumFacing::NORTH;
             break;
-
-        case Type::NONE:
         default:
-            break;
+            std::unreachable();
     }
     return facing;
 }

@@ -23,34 +23,34 @@ public:
     /**
      * @brief Reference to the world object used for generation.
      */
-    World &world;
+    World &m_world;
 
     /**
      * @brief Pointer to the generator associated with the world.
      */
-    Generator *g;
+    Generator *m_g;
 
     /**
      * @brief Random number generator used for feature generation.
      */
-    RNG rng;
+    RNG m_rng;
 
     /**
      * @brief Bounding box defining the generation area.
      */
-    BoundingBox genBounds = BoundingBox::EMPTY;
+    BoundingBox m_genBounds = BoundingBox::EMPTY;
 
     /**
      * @brief Constructs an AbstractMapGen object.
      * @param world Reference to the world object.
      */
-    explicit AbstractMapGen(World &world) : world(world), g(world.getGenerator()) {
+    explicit AbstractMapGen(World &world) : m_world(world), m_g(world.getGenerator()) {
     }
 
     /**
      * @brief Virtual destructor for AbstractMapGen.
      */
-    virtual ~AbstractMapGen() = default;
+    virtual ~AbstractMapGen();
 
     /**
      * @brief Retrieves the seed multiplier used for caves and ravines.
@@ -80,7 +80,7 @@ public:
      * @param bounds The bounding box to set.
      */
     void setGenBounds(const BoundingBox &bounds) {
-        genBounds = bounds;
+        m_genBounds = bounds;
     }
 
     /**
@@ -90,7 +90,7 @@ public:
      * @param accurate Whether to use accurate generation.
      */
     void generate(ChunkPrimer *primer, Pos2D target, bool accurate = true) {
-        Pos2DTemplate<i64> seedMultiplier = getSeedMultiplier(world.getGenerator());
+        Pos2DTemplate<i64> seedMultiplier = getSeedMultiplier(m_world.getGenerator());
 
         const Pos2D lower = target - CHUNK_RANGE;
         const Pos2D upper = target + CHUNK_RANGE;

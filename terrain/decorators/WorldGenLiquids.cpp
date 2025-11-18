@@ -30,7 +30,7 @@ bool WorldGenLiquids::generate(World * worldIn, MU RNG& rand, const Pos3D& posit
     }
 
     if (numStoneBlocks == 3 && numAirBlocks == 1) {
-        worldIn->setBlockId(position, this->blockId);
+        worldIn->setBlockId(position, this->m_blockId);
         //worldIn->immediateBlockTick(position, this->block, rand);
     }
 

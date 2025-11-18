@@ -2,8 +2,6 @@
 
 #include "scanBoxHull.hpp"
 
-#include <set>
-
 #include "common/MathHelper.hpp"
 #include "common/constants.hpp"
 #include "terrain/biomes/biome_t.hpp"
@@ -15,11 +13,11 @@ using namespace lce::blocks;
 
 MU Pos2DVec_t CaveGenerator::getStartingChunks(const Generator *g, Pos2D lower, Pos2D upper) {
     RNG rng;
-    Pos2DTemplate<i64> seedMultiplier = getSeedMultiplier(g);
+    const Pos2DTemplate<i64> seedMultiplier = getSeedMultiplier(g);
 
     Pos2DVec_t chunkPositions;
     c_int sizeChecked = std::abs(upper.x - lower.x) * std::abs(upper.z - lower.z);
-    c_int reserveSize = (int) ((float) (sizeChecked) * RESERVE_MULTIPLIER / 15.0F + 4);
+    const auto reserveSize =static_cast<size_t>(static_cast<float>(sizeChecked) * RESERVE_MULTIPLIER / 15.0F + 4);
     chunkPositions.reserve(reserveSize);
 
     lower = lower - CHUNK_RANGE;
@@ -44,49 +42,49 @@ MU Pos2DVec_t CaveGenerator::getStartingChunks(const Generator *g, Pos2D lower, 
 
 void CaveGenerator::addFeature(World& worldIn, Pos2D baseChunk, bool accurate) {
 
-    c_int tunnelCount = rng.nextInt(rng.nextInt(rng.nextInt(40) + 1) + 1);
+    c_int tunnelCount = m_rng.nextInt(m_rng.nextInt(m_rng.nextInt(40) + 1) + 1);
 
-    if EXPECT_TRUE (rng.nextInt(15) != 0) { return; }
+    if EXPECT_TRUE (m_rng.nextInt(15) != 0) { return; }
 
     for (int currentTunnel = 0; currentTunnel < tunnelCount; ++currentTunnel) {
         DoublePos3D tunnelStart;
-        tunnelStart.x = (double)(baseChunk.x * 16 + rng.nextInt(16));
-        tunnelStart.y = (double)(rng.nextInt(rng.nextInt(120) + 8));
-        tunnelStart.z = (double)(baseChunk.z * 16 + rng.nextInt(16));
+        tunnelStart.x = static_cast<double>(baseChunk.x * 16 + m_rng.nextInt(16));
+        tunnelStart.y = static_cast<double>(m_rng.nextInt(m_rng.nextInt(120) + 8));
+        tunnelStart.z = static_cast<double>(baseChunk.z * 16 + m_rng.nextInt(16));
 
         int segmentCount = 1;
 
-        if (rng.nextInt(4) == 0) {
-            addRoom(worldIn, rng.nextLongI(), baseChunk, tunnelStart, rng, accurate);
-            segmentCount = rng.nextInt(4) + 1;
+        if (m_rng.nextInt(4) == 0) {
+            addRoom(worldIn, m_rng.nextLongI(), baseChunk, tunnelStart, m_rng, accurate);
+            segmentCount = m_rng.nextInt(4) + 1;
         }
 
         for (int currentSegment = 0; currentSegment < segmentCount; ++currentSegment) {
-            c_float yaw = rng.nextFloat() * (PI_FLOAT * 2.0F);
-            c_float pitch = (rng.nextFloat() - 0.5F) * 2.0F / 8.0F;
-            float tunnelLength = rng.nextFloat() * 2.0F + rng.nextFloat();
+            c_float yaw = m_rng.nextFloat() * (PI_FLOAT * 2.0F);
+            c_float pitch = (m_rng.nextFloat() - 0.5F) * 2.0F / 8.0F;
+            float tunnelLength = m_rng.nextFloat() * 2.0F + m_rng.nextFloat();
 
-            if (rng.nextInt(10) == 0) { tunnelLength *= rng.nextFloat() * rng.nextFloat() * 3.0F + 1.0F; }
+            if (m_rng.nextInt(10) == 0) { tunnelLength *= m_rng.nextFloat() * m_rng.nextFloat() * 3.0F + 1.0F; }
 
-            addTunnel(worldIn, rng.nextLongI(), baseChunk, tunnelStart, tunnelLength, yaw, pitch, 0, 0, 1.0, accurate);
+            addTunnel(worldIn, m_rng.nextLongI(), baseChunk, tunnelStart, tunnelLength, yaw, pitch, 0, 0, 1.0, accurate);
 
         }
     }
 }
 
 
-void CaveGenerator::addTunnel(World& worldIn, i64 theSeedModifier, Pos2D currentChunk, DoublePos3D startPos,
+void CaveGenerator::addTunnel(World& worldIn, i64 theSeedModifier, Pos2D currentChunk, DoublePos3D start,
                               float theWidth, float theDirection, float theSlope, int theCurrentSegment,
                               int theMaxSegment, double theHeightMultiplier, bool accurate) {
 
     Pos2D currentChunkX16 = currentChunk * 16;
-    DoublePos2D currentChunkCenter = (currentChunkX16 + 8).asType<double>();
-    const Pos3D temp = startPos.asType<int>();
+    MU DoublePos2D currentChunkCenter = (currentChunkX16 + 8).asType<double>();
+    MU const Pos3D temp = start.asType<int>();
 
     float directionModifier = 0.0F;
     float slopeModifier = 0.0F;
     RNG rng;
-    rng.setSeed(theSeedModifier);
+    rng.setSeed(static_cast<u64>(theSeedModifier));
 
     if (theMaxSegment <= 0) {
         constexpr int RANGE_BOUNDARY = CHUNK_RANGE * 16 - 16;
@@ -101,23 +99,23 @@ void CaveGenerator::addTunnel(World& worldIn, i64 theSeedModifier, Pos2D current
     }
 
     int splitPoint = rng.nextInt(theMaxSegment / 2) + theMaxSegment / 4;
-    float theMaxSegmentFDivPI = PI_FLOAT / (float)(theMaxSegment);
+    float theMaxSegmentFDivPI = PI_FLOAT / static_cast<float>(theMaxSegment);
     bool isTunnelWide = rng.nextInt(6) == 0;
-    c_int yScaleOffset = g->getLCEVersion() == LCEVERSION::AQUATIC ? 1 : 0;
+    c_int yScaleOffset = m_g->getLCEVersion() == LCEVERSION::AQUATIC ? 1 : 0;
 
     for (; theCurrentSegment < theMaxSegment; ++theCurrentSegment) {
 
         // setup tunnelWidth + tunnelHeight
-        c_double adjustedWidth = 1.5 + (double) (MathHelper::sin(
-            (float) theCurrentSegment * theMaxSegmentFDivPI) * theWidth);
+        c_double adjustedWidth = 1.5 + static_cast<double>(MathHelper::sin(
+            static_cast<float>(theCurrentSegment) * theMaxSegmentFDivPI) * theWidth);
         c_double adjustedHeight = adjustedWidth * theHeightMultiplier;
 
         // setup tunnel start
         {
             c_float directionCos = (MathHelper::cos(theSlope));
-            startPos.x += (double) (MathHelper::cos(theDirection) * directionCos);
-            startPos.y += (double) (MathHelper::sin(theSlope));
-            startPos.z += (double) (MathHelper::sin(theDirection) * directionCos);
+            start.x += static_cast<double>(MathHelper::cos(theDirection) * directionCos);
+            start.y += static_cast<double>(MathHelper::sin(theSlope));
+            start.z += static_cast<double>(MathHelper::sin(theDirection) * directionCos);
         }
 
         // setup tunnel slope
@@ -150,7 +148,7 @@ void CaveGenerator::addTunnel(World& worldIn, i64 theSeedModifier, Pos2D current
             float tunnelWidth1, tunnelWidth2;
             i64 seedModifier1, seedModifier2;
 
-            if (lce::isXbox(g->getConsole())) {
+            if (lce::isXbox(m_g->getConsole())) {
                 tunnelWidth1 = rng.nextFloat();
                 seedModifier1 = rng.nextLongI();
                 tunnelWidth2 = rng.nextFloat();
@@ -161,16 +159,21 @@ void CaveGenerator::addTunnel(World& worldIn, i64 theSeedModifier, Pos2D current
                 seedModifier2 = rng.nextLongI();
                 tunnelWidth2 = rng.nextFloat();
             }
-            addTunnel(worldIn, seedModifier1, currentChunk, startPos, tunnelWidth1 * 0.5F + 0.5F,
+            addTunnel(worldIn, seedModifier1, currentChunk, start, tunnelWidth1 * 0.5F + 0.5F,
                       theDirection - HALF_PI_FLOAT, theSlope / 3.0F, theCurrentSegment, theMaxSegment, 1.0, accurate);
-            addTunnel(worldIn, seedModifier2, currentChunk, startPos, tunnelWidth2 * 0.5F + 0.5F,
+            addTunnel(worldIn, seedModifier2, currentChunk, start, tunnelWidth2 * 0.5F + 0.5F,
                       theDirection + HALF_PI_FLOAT, theSlope / 3.0F, theCurrentSegment, theMaxSegment, 1.0, accurate);
             return;
         }
 
         if (accurate &&
-            g->getLCEVersion() == LCEVERSION::AQUATIC &&
-            isOceanic(world.getBiomeIdAt((int)startPos.getX(), (int)startPos.getZ()))) { return; }
+            m_g->getLCEVersion() == LCEVERSION::AQUATIC &&
+            isOceanic(m_world.getBiomeIdAt(
+                static_cast<int>(start.getX()),
+                static_cast<int>(start.getZ())))
+        ) {
+            return;
+        }
 
         if (!isMainTunnel && rng.nextInt(4) == 0) { continue; }
 
@@ -183,12 +186,12 @@ void CaveGenerator::addTunnel(World& worldIn, i64 theSeedModifier, Pos2D current
 
         Pos3D min;
         Pos3D max;
-        min.x = static_cast<int>(floor(startPos.x - adjustedWidth)) - currentChunkX16.x - 1;
-        max.x = static_cast<int>(floor(startPos.x + adjustedWidth)) - currentChunkX16.x + 1;
-        min.y = static_cast<int>(floor(startPos.y - adjustedHeight)) - 1;
-        max.y = static_cast<int>(floor(startPos.y + adjustedHeight)) + 1;
-        min.z = static_cast<int>(floor(startPos.z - adjustedWidth)) - currentChunkX16.z - 1;
-        max.z = static_cast<int>(floor(startPos.z + adjustedWidth)) - currentChunkX16.z + 1;
+        min.x = static_cast<int>(floor(start.x - adjustedWidth)) - currentChunkX16.x - 1;
+        max.x = static_cast<int>(floor(start.x + adjustedWidth)) - currentChunkX16.x + 1;
+        min.y = static_cast<int>(floor(start.y - adjustedHeight)) - 1;
+        max.y = static_cast<int>(floor(start.y + adjustedHeight)) + 1;
+        min.z = static_cast<int>(floor(start.z - adjustedWidth)) - currentChunkX16.z - 1;
+        max.z = static_cast<int>(floor(start.z + adjustedWidth)) - currentChunkX16.z + 1;
 
         if (min.y < 1) min.y = 1;
         if (max.y > 120) max.y = 120;
@@ -205,7 +208,7 @@ void CaveGenerator::addTunnel(World& worldIn, i64 theSeedModifier, Pos2D current
         //       insideRange(min.z, max.z, genBounds.minZ, genBounds.maxZ))) {
         //     continue;
         // }
-        if (!genBounds.isVecInside(min) || !genBounds.isVecInside(max)) {
+        if (!m_genBounds.isVecInside(min) || !m_genBounds.isVecInside(max)) {
             continue;
         }
         Pos3D pos;
@@ -230,16 +233,16 @@ void CaveGenerator::addTunnel(World& worldIn, i64 theSeedModifier, Pos2D current
         pos.setPos(0, 0, 0);
         DoublePos3D scale;
         for (pos.x = min.x; pos.x < max.x; ++pos.x) {
-            scale.x = ((double) (pos.x + currentChunkX16.x) + 0.5 - startPos.x) * invW;
+            scale.x = (static_cast<double>(pos.x + currentChunkX16.x) + 0.5 - start.x) * invW;
 
             for (pos.z = min.z; pos.z < max.z; ++pos.z) {
-                scale.z = ((double) (pos.z + currentChunkX16.z) + 0.5 - startPos.z) * invW;
+                scale.z = (static_cast<double>(pos.z + currentChunkX16.z) + 0.5 - start.z) * invW;
                 bool isTopBlock = false;
 
                 if (scale.distanceSqXZ() >= 1.0) { continue; }
 
                 for (pos.y = max.y - 1; pos.y >= min.y; --pos.y) {
-                    scale.y = ((double) (pos.y - yScaleOffset) + 0.5 - startPos.y) * invH;
+                    scale.y = (static_cast<double>(pos.y - yScaleOffset) + 0.5 - start.y) * invH;
 
                     // 0.7 makes the floor and ceiling flatter
                     if (scale.y <= -0.7 || scale.distanceSq() >= 1.0) { continue; }
@@ -280,7 +283,7 @@ void CaveGenerator::addRoom(World &worldIn, i64 seedModifier, Pos2D currentChunk
 
 
 unsigned char CaveGenerator::topBlock(c_int x, c_int z) const {
-    switch (world.getBiomeIdAt(x, z)) {
+    switch (m_world.getBiomeIdAt(x, z)) {
         case biome_t::beach:
         case biome_t::desert:
         case biome_t::mesa:
@@ -326,31 +329,31 @@ bool CaveGenerator::canReplaceBlock(c_u16 blockAt, c_u16 blockAbove) {
 
 
 void CaveGenerator::addFeature(ChunkPrimer *chunkPrimer, Pos2D baseChunk, Pos2D currentChunk, bool accurate) {
-    c_int tunnelCount = rng.nextInt(rng.nextInt(rng.nextInt(40) + 1) + 1);
+    c_int tunnelCount = m_rng.nextInt(m_rng.nextInt(m_rng.nextInt(40) + 1) + 1);
 
-    if EXPECT_TRUE(rng.nextInt(15) != 0) { return; }
+    if EXPECT_TRUE(m_rng.nextInt(15) != 0) { return; }
 
     for (int currentTunnel = 0; currentTunnel < tunnelCount; ++currentTunnel) {
         DoublePos3D tunnelStart;
-        tunnelStart.x = (double) (baseChunk.x * 16 + rng.nextInt(16));
-        tunnelStart.y = (double) (rng.nextInt(rng.nextInt(120) + 8));
-        tunnelStart.z = (double) (baseChunk.z * 16 + rng.nextInt(16));
+        tunnelStart.x = static_cast<double>(baseChunk.x * 16 + m_rng.nextInt(16));
+        tunnelStart.y = static_cast<double>(m_rng.nextInt(m_rng.nextInt(120) + 8));
+        tunnelStart.z = static_cast<double>(baseChunk.z * 16 + m_rng.nextInt(16));
 
         int segmentCount = 1;
 
-        if (rng.nextInt(4) == 0) {
-            addRoom(chunkPrimer, rng.nextLongI(), currentChunk, tunnelStart, rng, accurate);
-            segmentCount = rng.nextInt(4) + 1;
+        if (m_rng.nextInt(4) == 0) {
+            addRoom(chunkPrimer, m_rng.nextLongI(), currentChunk, tunnelStart, m_rng, accurate);
+            segmentCount = m_rng.nextInt(4) + 1;
         }
 
         for (int currentSegment = 0; currentSegment < segmentCount; ++currentSegment) {
-            c_float yaw = rng.nextFloat() * (PI_FLOAT * 2.0F);
-            c_float pitch = (rng.nextFloat() - 0.5F) * 2.0F / 8.0F;
-            float tunnelLength = rng.nextFloat() * 2.0F + rng.nextFloat();
+            c_float yaw = m_rng.nextFloat() * (PI_FLOAT * 2.0F);
+            c_float pitch = (m_rng.nextFloat() - 0.5F) * 2.0F / 8.0F;
+            float tunnelLength = m_rng.nextFloat() * 2.0F + m_rng.nextFloat();
 
-            if (rng.nextInt(10) == 0) { tunnelLength *= rng.nextFloat() * rng.nextFloat() * 3.0F + 1.0F; }
+            if (m_rng.nextInt(10) == 0) { tunnelLength *= m_rng.nextFloat() * m_rng.nextFloat() * 3.0F + 1.0F; }
 
-            addTunnel(chunkPrimer, rng.nextLongI(), currentChunk, tunnelStart, tunnelLength, yaw, pitch, 0, 0, 1.0,
+            addTunnel(chunkPrimer, m_rng.nextLongI(), currentChunk, tunnelStart, tunnelLength, yaw, pitch, 0, 0, 1.0,
                       accurate);
         }
 
@@ -367,12 +370,12 @@ void CaveGenerator::addTunnel(ChunkPrimer *chunkPrimer, i64 theSeedModifier, Pos
 
     Pos2D currentChunkX16 = currentChunk * 16;
     DoublePos2D currentChunkCenter = (currentChunkX16 + 8).asType<double>();
-    const Pos3D temp = startPos.asType<int>();
+    MU const Pos3D temp = startPos.asType<int>();
 
     float directionModifier = 0.0F;
     float slopeModifier = 0.0F;
     RNG rng;
-    rng.setSeed(theSeedModifier);
+    rng.setSeed(static_cast<u64>(theSeedModifier));
 
     if (theMaxSegment <= 0) {
         constexpr int RANGE_BOUNDARY = CHUNK_RANGE * 16 - 16;
@@ -387,23 +390,23 @@ void CaveGenerator::addTunnel(ChunkPrimer *chunkPrimer, i64 theSeedModifier, Pos
     }
 
     int splitPoint = rng.nextInt(theMaxSegment / 2) + theMaxSegment / 4;
-    float maxSegmentFDivPI = PI_FLOAT / (float)(theMaxSegment);
+    float maxSegmentFDivPI = PI_FLOAT / static_cast<float>(theMaxSegment);
     bool isTunnelWide = rng.nextInt(6) == 0;
-    c_int yScaleOffset = g->getLCEVersion() == LCEVERSION::AQUATIC ? 1 : 0;
+    c_int yScaleOffset = m_g->getLCEVersion() == LCEVERSION::AQUATIC ? 1 : 0;
 
     for (; theCurrentSegment < theMaxSegment; ++theCurrentSegment) {
 
         // setup tunnelWidth + tunnelHeight
-        c_double adjustedWidth = 1.5 + (double) (MathHelper::sin(
-            (float) theCurrentSegment * maxSegmentFDivPI) * theWidth);
+        c_double adjustedWidth = 1.5 + static_cast<double>(MathHelper::sin(
+            static_cast<float>(theCurrentSegment) * maxSegmentFDivPI) * theWidth);
         c_double adjustedHeight = adjustedWidth * theHeightMultiplier;
 
         // setup tunnel start
         {
             c_float directionCos = (MathHelper::cos(theSlope));
-            startPos.x += (double) (MathHelper::cos(theDirection) * directionCos);
-            startPos.y += (double) (MathHelper::sin(theSlope));
-            startPos.z += (double) (MathHelper::sin(theDirection) * directionCos);
+            startPos.x += static_cast<double>(MathHelper::cos(theDirection) * directionCos);
+            startPos.y += static_cast<double>(MathHelper::sin(theSlope));
+            startPos.z += static_cast<double>(MathHelper::sin(theDirection) * directionCos);
         }
 
         // setup tunnel slope
@@ -436,7 +439,7 @@ void CaveGenerator::addTunnel(ChunkPrimer *chunkPrimer, i64 theSeedModifier, Pos
             float tunnelWidth1, tunnelWidth2;
             i64 seedModifier1, seedModifier2;
 
-            if (lce::isXbox(g->getConsole())) {
+            if (lce::isXbox(m_g->getConsole())) {
                 tunnelWidth1 = rng.nextFloat();
                 seedModifier1 = rng.nextLongI();
                 tunnelWidth2 = rng.nextFloat();
@@ -456,11 +459,16 @@ void CaveGenerator::addTunnel(ChunkPrimer *chunkPrimer, i64 theSeedModifier, Pos
 
         DoublePos2D distance = startPos.asPos2D() - currentChunkCenter;
         double segmentsRemaining = theMaxSegment - theCurrentSegment;
-        double maxDistance = theWidth + 18.0F;
+        auto maxDistance = static_cast<double>(theWidth + 18.0F);
 
         if (accurate &&
-            g->getLCEVersion() == LCEVERSION::AQUATIC &&
-            isOceanic(world.getBiomeIdAt((int)startPos.getX(), (int)startPos.getZ()))) { return; }
+            m_g->getLCEVersion() == LCEVERSION::AQUATIC &&
+            isOceanic(m_world.getBiomeIdAt(
+                static_cast<int>(startPos.getX()),
+                static_cast<int>(startPos.getZ())))
+        ) {
+            return;
+        }
 
         if (!isMainTunnel && rng.nextInt(4) == 0) { continue; }
 
@@ -520,16 +528,16 @@ void CaveGenerator::addTunnel(ChunkPrimer *chunkPrimer, i64 theSeedModifier, Pos
         pos.setPos(0, 0, 0);
         DoublePos3D scale;
         for (pos.x = min.x; pos.x < max.x; ++pos.x) {
-            scale.x = ((double) (pos.x + currentChunkX16.x) + 0.5 - startPos.x) / adjustedWidth;
+            scale.x = (static_cast<double>(pos.x + currentChunkX16.x) + 0.5 - startPos.x) / adjustedWidth;
 
             for (pos.z = min.z; pos.z < max.z; ++pos.z) {
-                scale.z = ((double) (pos.z + currentChunkX16.z) + 0.5 - startPos.z) / adjustedWidth;
+                scale.z = (static_cast<double>(pos.z + currentChunkX16.z) + 0.5 - startPos.z) / adjustedWidth;
                 bool isTopBlock = false;
 
                 if (scale.distanceSqXZ() >= 1.0) { continue; }
 
                 for (pos.y = max.y - 1; pos.y >= min.y; --pos.y) {
-                    scale.y = ((double) (pos.y - yScaleOffset) + 0.5 - startPos.y) / adjustedHeight;
+                    scale.y = (static_cast<double>(pos.y - yScaleOffset) + 0.5 - startPos.y) / adjustedHeight;
 
                     if (scale.y <= -0.7 || scale.distanceSq() >= 1.0) { continue; }
 

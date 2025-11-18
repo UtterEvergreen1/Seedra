@@ -72,19 +72,17 @@ double NoiseGeneratorSimplex::getValue(c_double posX, c_double posZ) const {
 }
 
 
-/**
- * @brief Adds simplex noise to a region.
- * @param noiseValues The vector to store noise values.
- * @param xOffset The X-offset.
- * @param zOffset The Z-offset.
- * @param width The width of the region.
- * @param height The height of the region.
- * @param xScale The X-scale.
- * @param zScale The Z-scale.
- * @param noiseScale The noise scale.
- * @return The vector with added noise values.
- */
 /*
+ * @ brief Adds simplex noise to a region.
+ * @ param noiseValues The vector to store noise values.
+ * @ param xOffset The X-offset.
+ * @ param zOffset The Z-offset.
+ * @ param width The width of the region.
+ * @ param height The height of the region.
+ * @ param xScale The X-scale.
+ * @ param zScale The Z-scale.
+ * @ param noiseScale The noise scale.
+
 void NoiseGeneratorSimplex::add(std::vector<double> &noiseValues,
                                 double xOffset, double zOffset,
                                 int width, int height,
@@ -355,25 +353,26 @@ void NoiseGeneratorImproved::populateNoiseArray(const Generator *g, std::vector<
 */
 /**
  * @brief Populates a noise array with generated noise values.
+ *
+ * @ tparam XSize The size of the noise array in the X-dimension.
+ * @ tparam YSize The size of the noise array in the Y-dimension.
+ * @ tparam ZSize The size of the noise array in the Z-dimension.
+ *
  * @param g The generator object used for console-specific behavior.
  * @param noiseArray The array to store the generated noise values.
  * @param xOffset The X-offset for noise generation.
  * @param yOffset The Y-offset for noise generation.
  * @param zOffset The Z-offset for noise generation.
- * @tparam XSize The size of the noise array in the X-dimension.
- * @tparam YSize The size of the noise array in the Y-dimension.
- * @tparam ZSize The size of the noise array in the Z-dimension.
  * @param xScale The scale factor for the X-dimension.
  * @param yScale The scale factor for the Y-dimension.
  * @param zScale The scale factor for the Z-dimension.
  * @param noiseScale The overall scale factor for the noise.
- * @return The populated noise array.
  */
 template<int XSize, int YSize, int ZSize>
-    void NoiseGeneratorImproved::add(
-        const Generator *g, std::array<double, XSize * YSize * ZSize> &noiseArray,
-        double xOffset, double yOffset, double zOffset,
-        double xScale, double yScale, double zScale, double noiseScale) const {
+void NoiseGeneratorImproved::add(
+    const Generator *g, std::array<double, XSize * YSize * ZSize> &noiseArray,
+    double xOffset, double yOffset, double zOffset,
+    double xScale, double yScale, double zScale, double noiseScale) const {
     const double invScale = 1.0 / noiseScale;
     double* __restrict out = noiseArray.data();
     const u8* __restrict P = permutations;
@@ -553,8 +552,8 @@ template<int XSize, int YSize, int ZSize>
  * @return The floor of the input value as a 64-bit integer.
  */
 static i64 lfloor(c_double value) {
-    c_auto i = (i64) value;
-    return value < (double) i ? i - 1L : i;
+    c_auto i = static_cast<i64>(value);
+    return value < static_cast<double>(i) ? i - 1L : i;
 }
 
 
@@ -625,18 +624,19 @@ void NoiseGeneratorOctaves::genNoiseOctaves(const Generator *g, std::vector<doub
 
 /**
  * @brief Generates noise values for a 3D region using multiple octaves.
+ *
+ * @ tparam XSize The size of the region in the X-dimension.
+ * @ tparam YSize The size of the region in the Y-dimension.
+ * @ tparam ZSize The size of the region in the Z-dimension.
+ * @ tparam XScale The scale factor for the X-dimension.
+ * @ tparam YScale The scale factor for the Y-dimension.
+ * @ tparam ZScale The scale factor for the Z-dimension.
+ *
  * @param g The generator object used for console-specific behavior.
  * @param noiseArray The array to store the generated noise values.
  * @param xOffset The X-offset for noise generation.
  * @param yOffset The Y-offset for noise generation.
  * @param zOffset The Z-offset for noise generation.
- * @tparam XSize The size of the region in the X-dimension.
- * @tparam YSize The size of the region in the Y-dimension.
- * @tparam ZSize The size of the region in the Z-dimension.
- * @tparam XScale The scale factor for the X-dimension.
- * @tparam YScale The scale factor for the Y-dimension.
- * @tparam ZScale The scale factor for the Z-dimension.
- * @return A vector containing the generated noise values.
  */
 template<int Octaves>
 template<typename Container, int XSize, int YSize, int ZSize, double XScale, double YScale, double ZScale>

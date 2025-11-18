@@ -48,7 +48,8 @@ public:
     ~ChunkGeneratorOverWorld(); ///< @brief Destructor for the ChunkGeneratorOverWorld class.
 
 
-    /*void generateHeightmap3(int x, int y, int z) {
+    /*
+    void generateHeightmap3(int x, int y, int z) {
         auto t0 = std::chrono::high_resolution_clock::now();
 
         depthNoise.genNoiseOctaves(g, depthRegion, x, 10, z, 5, 1, 5, 200.0, 1.0, 200.0);
@@ -67,7 +68,8 @@ public:
         printf("Main:   %lld ns\n", (t2-t1).count());
         printf("MinLim: %lld ns\n", (t3-t2).count());
         printf("MaxLim: %lld ns\n", (t4-t3).count());
-    }*/
+    }
+     */
 
     /*
     void genNoiseOctavesPaired(int x, int y, int z) {
@@ -134,7 +136,7 @@ public:
      * @param height The height of the area.
      * @param scale The scale of the biomes.
      */
-    void setBiomesForGeneration(int x, int z, int width, int height, int scale);
+    void setBiomesForGeneration(int x, int z, int width, int height, uint32_t scale);
 
     /**
      * @brief Sets the blocks in a chunk at the specified position.

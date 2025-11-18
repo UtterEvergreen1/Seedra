@@ -25,14 +25,14 @@ bool WorldGenIceSpike::generate(World * worldIn, RNG &rng, const Pos3D &pos) con
     }
 
     for (int k = 0; k < i; ++k) {
-        const float f = (1.0F - (float) k / (float) i) * (float) j;
-        const int l = std::ceil(f);
+        const float f = (1.0F - static_cast<float>(k) / static_cast<float>(i)) * static_cast<float>(j);
+        const int l = static_cast<int>(std::ceil(f));
 
         for (int i1 = -l; i1 <= l; ++i1) {
-            float f1 = static_cast<float>(std::abs(i1)) - 0.25F;
+            const float f1 = static_cast<float>(std::abs(i1)) - 0.25F;
 
             for (int j1 = -l; j1 <= l; ++j1) {
-                float f2 = static_cast<float>(std::abs(j1)) - 0.25F;
+                const float f2 = static_cast<float>(std::abs(j1)) - 0.25F;
 
                 if (((i1 == 0 && j1 == 0) || f1 * f1 + f2 * f2 <= f * f) && (
                         (i1 != -l && i1 != l && j1 != -l && j1 != l) || rng.nextFloat() <= 0.75F)) {

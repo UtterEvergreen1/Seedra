@@ -23,7 +23,7 @@ bool WorldGenMegaJungle::generate(World *worldIn, RNG &rng, const Pos3D &pos) co
         for (int i1 = 0; i1 < 5; ++i1) {
             k = pos.getX() + static_cast<int>(1.5F + MathHelper::cos(f) * static_cast<float>(i1));
             l = pos.getZ() + static_cast<int>(1.5F + MathHelper::sin(f) * static_cast<float>(i1));
-            worldIn->setBlock(k, j - 3 + i1 / 2, l, this->woodMetadata);
+            worldIn->setBlock(k, j - 3 + i1 / 2, l, this->m_woodMetadata);
         }
 
         c_int j2 = 1 + rng.nextInt(2);
@@ -39,7 +39,7 @@ bool WorldGenMegaJungle::generate(World *worldIn, RNG &rng, const Pos3D &pos) co
         Pos3D blockPos = pos.up(i2);
 
         if (canGrowInto(worldIn->getBlockId(blockPos))) {
-            worldIn->setBlock(blockPos, this->woodMetadata);
+            worldIn->setBlock(blockPos, this->m_woodMetadata);
 
             if (i2 > 0) {
                 placeVine(worldIn, rng, blockPos.west(), EnumFacing::EAST);
@@ -51,7 +51,7 @@ bool WorldGenMegaJungle::generate(World *worldIn, RNG &rng, const Pos3D &pos) co
             Pos3D blockPos1 = blockPos.east();
 
             if (canGrowInto(worldIn->getBlockId(blockPos1))) {
-                worldIn->setBlock(blockPos1, this->woodMetadata);
+                worldIn->setBlock(blockPos1, this->m_woodMetadata);
 
                 if (i2 > 0) {
                     placeVine(worldIn, rng, blockPos1.east(), EnumFacing::WEST);
@@ -62,7 +62,7 @@ bool WorldGenMegaJungle::generate(World *worldIn, RNG &rng, const Pos3D &pos) co
             Pos3D blockPos2 = blockPos.south().east();
 
             if (canGrowInto(worldIn->getBlockId(blockPos2))) {
-                worldIn->setBlock(blockPos2, this->woodMetadata);
+                worldIn->setBlock(blockPos2, this->m_woodMetadata);
 
                 if (i2 > 0) {
                     placeVine(worldIn, rng, blockPos2.east(), EnumFacing::WEST);
@@ -73,7 +73,7 @@ bool WorldGenMegaJungle::generate(World *worldIn, RNG &rng, const Pos3D &pos) co
             Pos3D blockPos3 = blockPos.south();
 
             if (canGrowInto(worldIn->getBlockId(blockPos3))) {
-                worldIn->setBlock(blockPos3, this->woodMetadata);
+                worldIn->setBlock(blockPos3, this->m_woodMetadata);
 
                 if (i2 > 0) {
                     placeVine(worldIn, rng, blockPos3.west(), EnumFacing::EAST);

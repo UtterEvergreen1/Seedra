@@ -55,8 +55,10 @@ static inline void print_mismatch(std::size_t idx, double a, double b) {
                 b, (unsigned long long)bits_of(b));
 }
 
-static inline void init_noise(NoiseGeneratorImproved& n, std::uint64_t permSeed) {
-    RNG rng; rng.setSeed(permSeed); perlinInit(&n, rng);
+static inline void init_noise(NoiseGeneratorImproved& n, uint64_t permSeed) {
+    RNG rng;
+    rng.setSeed(permSeed);
+    perlinInit(&n, rng);
 }
 
 using PopulateFn = void (NoiseGeneratorImproved::*)(

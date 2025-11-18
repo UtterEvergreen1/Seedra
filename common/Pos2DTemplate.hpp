@@ -1,9 +1,10 @@
 #pragma once
 
-#include <cmath>
-#include <iostream>
 #include <string>
 #include <vector>
+#include <type_traits>
+#include <cstdint>
+#include <functional>
 #ifdef INCLUDE_QT
     #include <QDebug>
 #endif
@@ -271,7 +272,7 @@ public:
      * @param chunkZ The z-coordinate of the chunk.
      * @return True if inside the chunk, false otherwise.
      */
-    MU ND bool insideChunk(int chunkX, int chunkZ) const {
+    MU ND bool insideChunk(const int chunkX, const int chunkZ) const {
         return insideBounds(chunkX << 4, chunkZ << 4, (chunkX << 4) + 15, (chunkZ << 4) + 15);
     }
 
@@ -281,7 +282,10 @@ public:
      * @return True if inside the chunk, false otherwise.
      */
     MU ND bool insideChunk(const Pos2DTemplate &chunkPos) const {
-        return insideChunk(chunkPos.x, chunkPos.z);
+        return insideChunk(
+            static_cast<int>(chunkPos.x),
+            static_cast<int>(chunkPos.z)
+        );
     }
 
     /**

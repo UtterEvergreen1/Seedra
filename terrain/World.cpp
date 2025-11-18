@@ -17,11 +17,17 @@
 #include <algorithm>
 
 
-World::World(Generator *g) : g(g), chunkPool(ChunkPrimer::getFootprintSize()) {
+World::World(Generator *_g) : chunkPool(ChunkPrimer::getFootprintSize()), g(_g) {
     int worldSize = lce::getChunkWorldBounds(g->getWorldSize());
     this->g->setupNoiseStack(); // setup noise for the world to avoid future data races
-    this->worldBounds = BoundingBox(-worldSize, 0, -worldSize,
-                                    worldSize, 256, worldSize);
+    this->worldBounds = BoundingBox(
+        static_cast<bbType_t>(-worldSize),
+        0,
+        static_cast<bbType_t>(-worldSize),
+        static_cast<bbType_t>(worldSize),
+        256,
+        static_cast<bbType_t>(worldSize)
+    );
 }
 
 World::~World() {
@@ -42,7 +48,7 @@ void World::deleteWorld() {
     villages.clear();
     strongholds.clear();
     mineshafts.clear();
-    for (auto* feature : scattered_features) {
+    for (const auto* feature : scattered_features) {
         delete feature;
         feature = nullptr;
     }
@@ -152,21 +158,22 @@ void World::generateMineshafts() {
     auto mineshaft_locations = Placement::Mineshaft::getAllPositions(*g);
 
     for (auto& pos : mineshaft_locations) {
-        auto mineshaft_gen = gen::Mineshaft();
-        mineshaft_gen.generate(g->getConsole(), g->getWorldSeed(), pos.toChunkPos());
-        mineshafts.push_back(mineshaft_gen);
+        mineshafts.emplace_back();
+        mineshafts.back().generate(g->getConsole(), g->getWorldSeed(), pos.toChunkPos());
     }
 }
 
 
 void World::generateVillages() {
-    auto village_locations = Placement::Village<false>::getAllPositions(g);
+    const auto village_locations = Placement::Village<false>::getAllPositions(g);
 
     for (auto& village_pos : village_locations) {
-        auto village_gen = gen::Village(g);
-        village_gen.generate(village_pos.toChunkPos());
-        if (village_gen.hasMoreThanTwoComponents()) {
-            villages.emplace_back(village_gen);
+        villages.emplace_back(g);
+        gen::Village& back = villages.back();
+        back.generate(village_pos.toChunkPos());
+
+        if (!back.hasMoreThanTwoComponents()) {
+            villages.pop_back();
         }
     }
 }
@@ -187,7 +194,7 @@ void World::generateScatteredFeatures() {
     auto features = Placement::Feature::getAllFeaturePositions(g);
 
     for (auto& feature : features) {
-        std::cout << "Placing Feature at " << feature.pos << "\n";
+        std::cout << "Placing Feature at " << feature.m_pos << "\n";
         scattered_features.emplace_back(scattered_features::ScatteredFeatureFactory(g, feature));
     }
 

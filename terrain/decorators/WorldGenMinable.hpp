@@ -11,8 +11,8 @@ class World;
  * Inherits from AbstractWorldGenerator and provides methods for ore vein generation.
  */
 class WorldGenMinable final : public AbstractWorldGenerator {
-    const lce::BlockState oreBlock; /**< The block state representing the type of ore to generate. */
-    int blockCount; /**< The number of blocks in the ore vein. */
+    const lce::BlockState m_oreBlock; /**< The block state representing the type of ore to generate. */
+    int m_blockCount; /**< The number of blocks in the ore vein. */
 
 public:
     /**

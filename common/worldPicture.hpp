@@ -30,7 +30,7 @@ inline std::string getBiomeImageFileNameFromGenerator(const Generator *g, const 
  * biome images using a Generator object.
  */
 class MU WorldPicture : public Picture {
-    Generator *g; ///< Pointer to the Generator object.
+    Generator *m_g; ///< Pointer to the Generator object.
 
 public:
     /**
@@ -40,7 +40,7 @@ public:
      * @param width The width of the picture.
      * @param height The height of the picture.
      */
-    MU WorldPicture(Generator *g, c_int width, c_int height) : Picture(width, height, 3), g(g) {
+    MU WorldPicture(Generator *g, c_int width, c_int height) : Picture(width, height, 3), m_g(g) {
     }
 
     /**
@@ -49,7 +49,7 @@ public:
      * @param g Pointer to the Generator object.
      */
     MU explicit WorldPicture(Generator *g) : Picture(
-        g->getWorldCoordinateBounds() << 1, g->getWorldCoordinateBounds() << 1, 3), g(g) {
+        g->getWorldCoordinateBounds() << 1, g->getWorldCoordinateBounds() << 1, 3), m_g(g) {
     }
 
     /**
@@ -65,13 +65,13 @@ public:
         unsigned char biomeColors[256][3];
         initBiomeColors(biomeColors);
 
-        if (g->getWorldBiomes() == nullptr) {
-            g->generateCache(1);
+        if (m_g->getWorldBiomes() == nullptr) {
+            m_g->generateCache(1);
         }
 
         for (i32 y = 0; y < m_height; ++y) {
             for (i32 x = 0; x < m_width; ++x) {
-                const biome_t id = *g->getCacheAtBlock(1, x - m_width / 2, y - m_height / 2);
+                const biome_t id = *m_g->getCacheAtBlock(1, x - m_width / 2, y - m_height / 2);
                 drawPixel(&biomeColors[static_cast<size_t>(id)][0], x, y);
             }
         }
@@ -102,7 +102,7 @@ public:
         c_int y = static_cast<int>(m_height);
         c_int w = static_cast<int>(m_width);
         c_int h = static_cast<int>(m_height);
-        const biome_t *ids = g->getBiomeRange(4, x, y, w, h);
+        const biome_t *ids = m_g->getBiomeRange(4, x, y, w, h);
 
         for (i32 yi = 0; yi < m_height; ++yi) {
             for (i32 xi = 0; xi < m_width; ++xi) {

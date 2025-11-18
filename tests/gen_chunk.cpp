@@ -140,8 +140,8 @@ int main() {
         std::cout << "Loaded Biome Map, writing chunks to file" << std::endl;
     }
 
-    const Pos2D lower(world.worldBounds.minX, world.worldBounds.minZ);
-    const Pos2D upper(world.worldBounds.maxX, world.worldBounds.maxZ);
+    const Pos2D lower(world.worldBounds.m_minX, world.worldBounds.m_minZ);
+    const Pos2D upper(world.worldBounds.m_maxX, world.worldBounds.m_maxZ);
 
     for (int cx = lower.x; cx < upper.x; cx++) {
         for (int cz = lower.z; cz < upper.z; cz++) {

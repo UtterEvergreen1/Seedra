@@ -1,14 +1,11 @@
 #pragma once
 
+#include <vector>
+
 #include "structures/gen/Structure.hpp"
-
 #include "components/GenerationStep.hpp"
-#include "components/StructureComponent.hpp"
-
 #include "common/rng.hpp"
 
-#include <map>
-#include <vector>
 
 class StructureComponent;
 class Generator;
@@ -30,25 +27,27 @@ namespace gen {
          * @brief Defines the weight and placement constraints for a specific piece type.
          */
         struct PieceWeight {
-            MU PieceType pieceType; ///< The type of the piece.
-            MU int weight; ///< The weight of the piece for random selection.
-            MU int PlaceCountMin; ///< Minimum number of times this piece can be placed.
-            MU int PlaceCountMax; ///< Maximum number of times this piece can be placed.
+            MU int m_weight; ///< The weight of the piece for random selection.
+            MU int m_PlaceCountMin; ///< Minimum number of times this piece can be placed.
+            MU int m_PlaceCountMax; ///< Maximum number of times this piece can be placed.
+            MU PieceType m_pieceType; ///< The type of the piece.
+
+            constexpr PieceWeight(c_i32 weight, c_i32 PlaceCountMin, c_i32 PlaceCountMax, const PieceType pieceType) :
+            m_weight(weight), m_PlaceCountMin(PlaceCountMin), m_PlaceCountMax(PlaceCountMax), m_pieceType(pieceType) {}
         };
 
         static c_int VILLAGE_SIZE; ///< The size of the village.
         static const PieceWeight PIECE_WEIGHTS[9]; ///< Array of piece weights for the village.
 
-    private:
         /**
          * @struct FinalPieceWeight
          * @brief Tracks the placement state of a specific piece type during generation.
          */
         struct FinalPieceWeight {
-            PieceType pieceType; ///< The type of the piece.
-            int weight; ///< The weight of the piece for random selection.
-            int maxPlaceCount; ///< Maximum number of times this piece can be placed.
-            int amountPlaced; ///< Number of times this piece has been placed.
+            int m_weight; ///< The weight of the piece for random selection.
+            int m_maxPlaceCount; ///< Maximum number of times this piece can be placed.
+            int m_amountPlaced; ///< Number of times this piece has been placed.
+            PieceType m_pieceType; ///< The type of the piece.
 
             /**
              * @brief Constructs a FinalPieceWeight object.
@@ -57,33 +56,33 @@ namespace gen {
              * @param maxPlaceCount The maximum placement count.
              * @param amountPlaced The initial placement count.
              */
-            FinalPieceWeight(const PieceType pieceType, c_int weight, c_int maxPlaceCount, c_int amountPlaced)
-                : pieceType(pieceType), weight(weight), maxPlaceCount(maxPlaceCount), amountPlaced(amountPlaced) {
+            FinalPieceWeight(c_int weight, c_int maxPlaceCount, c_int amountPlaced, const PieceType pieceType)
+                : m_weight(weight), m_maxPlaceCount(maxPlaceCount), m_amountPlaced(amountPlaced), m_pieceType(pieceType) {
             }
         };
 
-        std::vector<FinalPieceWeight> currentVillagePW; ///< Current piece weights for the village.
+        std::vector<FinalPieceWeight> m_currentVillagePW; ///< Current piece weights for the village.
 
-        int pendingRoadArray[VILLAGE_ARRAY_SIZE]{}; ///< Array of pending road pieces.
-        int pendingRoadArraySize{}; ///< Size of the pending road array.
+        int m_pendingRoadArray[VILLAGE_ARRAY_SIZE]{}; ///< Array of pending road pieces.
+        int m_pendingRoadArraySize{}; ///< Size of the pending road array.
 
-        const Generator *g; ///< Pointer to the generator.
-        RNG rng; ///< Random number generator for structure generation.
+        const Generator *m_g; ///< Pointer to the generator.
+        RNG m_rng; ///< Random number generator for structure generation.
 
-        PieceType previousPiece{}; ///< The previously placed piece type.
+        PieceType m_previousPiece{}; ///< The previously placed piece type.
 
-        int numInvalidPieces = 1; ///< Number of invalid pieces (e.g., roads and wells).
-        int myBlackSmithPieceIndex = -1; ///< Index of the blacksmith piece, if present.
+        int m_numInvalidPieces = 1; ///< Number of invalid pieces (e.g., roads and wells).
+        int m_myBlackSmithPieceIndex = -1; ///< Index of the blacksmith piece, if present.
 
-        bool useBiomes; ///< Flag indicating whether to check biomes for village generation.
-        bool isZombieInfested{}; ///< Flag indicating if the village is a zombie village.
+        bool m_useBiomes; ///< Flag indicating whether to check biomes for village generation.
+        bool m_isZombieInfested{}; ///< Flag indicating if the village is a zombie village.
 
     public:
         MU static std::string PIECE_TYPE_NAMES[13]; ///< Names of the different piece types.
 
-        StructureVariant myVariant{}; ///< The variant of the village.
+        StructureVariant m_myVariant{}; ///< The variant of the village.
 
-        GenerationStep generationStep = GS_Village_Full; ///< Current generation step.
+        GenerationStep m_generationStep = GS_Village_Full; ///< Current generation step.
 
         /**
          * @brief Deleted default constructor.
@@ -95,7 +94,7 @@ namespace gen {
          * @param generator Pointer to the generator.
          * @param useBiomes Flag indicating whether to check biomes for village generation.
          */
-        Village(const Generator *generator, bool useBiomes = true);
+        explicit Village(const Generator *generator, bool useBiomes = true);
 
         /**
          * @brief Destructor for the Village class.
@@ -130,13 +129,13 @@ namespace gen {
          * @brief Checks if the village has more than two valid components.
          * @return True if the village has more than two components, false otherwise.
          */
-        MU ND bool hasMoreThanTwoComponents() const { return pieceArraySize - numInvalidPieces > 2; }
+        MU ND bool hasMoreThanTwoComponents() const { return m_pieceArraySize - m_numInvalidPieces > 2; }
 
         /**
          * @brief Checks if the village is a zombie village.
          * @return True if the village is a zombie village, false otherwise.
          */
-        MU ND bool isZombieVillage() const { return isZombieInfested; }
+        MU ND bool isZombieVillage() const { return m_isZombieInfested; }
 
         /**
          * @brief Gets the name of a piece type.
@@ -237,245 +236,8 @@ namespace gen {
     };
 } // namespace gen
 
-namespace build {
-    namespace village {
-        /**
-         * @brief Adds component parts to the world for a village structure.
-         * @param worldIn The world to modify.
-         * @param rng The random number generator.
-         * @param chunkBB The bounding box of the chunk.
-         * @param piece The structure component to add.
-         * @return True if the parts were added successfully, false otherwise.
-         */
-        MU extern bool addComponentParts(
-            World &worldIn, RNG &rng, BoundingBox &chunkBB, StructureComponent &piece);
 
-        /*
-         * @struct Path
-         * @brief Represents a path component in the village.
-         */
-        struct MU Path final {
-            Path() = delete;
-
-            /**
-             * @brief Adds the path component parts to the world.
-             * @param worldIn The world to modify.
-             * @param rng The random number generator.
-             * @param chunkBB The bounding box of the chunk.
-             * @param piece The structure component.
-             * @return True if the parts were added successfully, false otherwise.
-             */
-            static bool addComponentParts(
-                World &worldIn, MU RNG &rng, BoundingBox &chunkBB, StructureComponent &piece);
-        };
-
-        /**
-         * @struct Church
-         * @brief Represents a church component in the village.
-         */
-        struct MU Church final {
-            Church() = delete;
-
-            /**
-             * @brief Adds the church component parts to the world.
-             * @param worldIn The world to modify.
-             * @param rng The random number generator.
-             * @param chunkBB The bounding box of the chunk.
-             * @param piece The structure component.
-             * @return True if the parts were added successfully, false otherwise.
-             */
-            static bool addComponentParts(
-                World &worldIn, MU RNG &rng, BoundingBox &chunkBB, StructureComponent &piece);
-        };
-
-        /**
-         * @struct Field1
-         * @brief Represents a double field component in the village.
-         */
-        struct MU Field1 final {
-            Field1() = delete;
-
-            /**
-             * @brief Adds the double field component parts to the world.
-             * @param worldIn The world to modify.
-             * @param rng The random number generator.
-             * @param chunkBB The bounding box of the chunk.
-             * @param piece The structure component.
-             * @return True if the parts were added successfully, false otherwise.
-             */
-            static bool addComponentParts(
-                World &worldIn, RNG &rng, BoundingBox &chunkBB, StructureComponent &piece);
-        };
-
-        /**
-         * @struct Field2
-         * @brief Represents a single field component in the village.
-         */
-        struct MU Field2 final {
-            Field2() = delete;
-
-            /**
-             * @brief Adds the single field component parts to the world.
-             * @param worldIn The world to modify.
-             * @param rng The random number generator.
-             * @param chunkBB The bounding box of the chunk.
-             * @param piece The structure component.
-             * @return True if the parts were added successfully, false otherwise.
-             */
-            static bool addComponentParts(
-                World &worldIn, RNG &rng, BoundingBox &chunkBB, StructureComponent &piece);
-        };
-
-        /**
-         * @struct Hall
-         * @brief Represents a hall component in the village.
-         */
-        struct MU Hall final {
-            Hall() = delete;
-
-            /**
-             * @brief Adds the hall component parts to the world.
-             * @param worldIn The world to modify.
-             * @param rng The random number generator.
-             * @param chunkBB The bounding box of the chunk.
-             * @param piece The structure component.
-             * @return True if the parts were added successfully, false otherwise.
-             */
-            static bool addComponentParts(
-                World &worldIn, MU RNG &rng, BoundingBox &chunkBB, StructureComponent &piece);
-        };
-
-        /**
-         * @struct House1
-         * @brief Represents a type 1 house component in the village.
-         */
-        struct MU House1 final {
-            House1() = delete;
-
-            /**
-             * @brief Adds the type 1 house component parts to the world.
-             * @param worldIn The world to modify.
-             * @param rng The random number generator.
-             * @param chunkBB The bounding box of the chunk.
-             * @param piece The structure component.
-             * @return True if the parts were added successfully, false otherwise.
-             */
-            static bool addComponentParts(
-                World &worldIn, MU RNG &rng, BoundingBox &chunkBB, StructureComponent &piece);
-        };
-
-        /*
-         * @struct House2
-         * @brief Represents a blacksmith house component in the village.
-         */
-        struct MU House2 final {
-            House2() = delete;
-
-            /**
-             * @brief Adds the blacksmith component parts to the world.
-             * @param worldIn The world to modify.
-             * @param rng The random number generator.
-             * @param chunkBB The bounding box of the chunk.
-             * @param piece The structure component.
-             * @return True if the parts were added successfully, false otherwise.
-             */
-            static bool addComponentParts(
-                World &worldIn, MU RNG &rng, BoundingBox &chunkBB, StructureComponent &piece);
-        };
-
-        /*
-         * @struct House3
-         * @brief Represents a type 3 house component in the village.
-         */
-        struct MU House3 final {
-            House3() = delete;
-
-            /**
-             * @brief Adds the type 3 house component parts to the world.
-             * @param worldIn The world to modify.
-             * @param rng The random number generator.
-             * @param chunkBB The bounding box of the chunk.
-             * @param piece The structure component.
-             * @return True if the parts were added successfully, false otherwise.
-             */
-            static bool addComponentParts(
-                World &worldIn, MU RNG &rng, BoundingBox &chunkBB, StructureComponent &piece);
-        };
-
-        /*
-         * @struct House4Garden
-         * @brief Represents a house for a garden component in the village.
-         */
-        struct MU House4Garden final {
-            House4Garden() = delete;
-
-            /**
-             * @brief Adds the house for a garden component parts to the world.
-             * @param worldIn The world to modify.
-             * @param rng The random number generator.
-             * @param chunkBB The bounding box of the chunk.
-             * @param piece The structure component.
-             * @return True if the parts were added successfully, false otherwise.
-             */
-            static bool addComponentParts(
-                World &worldIn, MU RNG &rng, BoundingBox &chunkBB, StructureComponent &piece);
-        };
-
-        /*
-         * @struct Torch
-         * @brief Represents a torch component in the village.
-         */
-        struct MU Torch final {
-            Torch() = delete;
-
-            /**
-             * @brief Adds the torch component parts to the world.
-             * @param worldIn The world to modify.
-             * @param rng The random number generator.
-             * @param chunkBB The bounding box of the chunk.
-             * @param piece The structure component.
-             * @return True if the parts were added successfully, false otherwise.
-             */
-            static bool addComponentParts(
-                World &worldIn, MU RNG &rng, BoundingBox &chunkBB, StructureComponent &piece);
-        };
-
-        /*
-         * @struct WoodHut
-         * @brief Represents a wood hut component in the village.
-         */
-        struct MU WoodHut final {
-            WoodHut() = delete;
-
-            /**
-             * @brief Adds the wood hut component parts to the world.
-             * @param worldIn The world to modify.
-             * @param rng The random number generator.
-             * @param chunkBB The bounding box of the chunk.
-             * @param piece The structure component.
-             * @return True if the parts were added successfully, false otherwise.
-             */
-            static bool addComponentParts(
-                World &worldIn, MU RNG &rng, BoundingBox &chunkBB, StructureComponent &piece);
-        };
-
-        /**
-         * @struct Well
-         * @brief Represents a well component in the village.
-         */
-        struct MU Well final {
-            Well() = delete;
-
-            /**
-             * @brief Adds the well component parts to the world.
-             * @param worldIn The world to modify.
-             * @param rng The random number generator.
-             * @param chunkBB The bounding box of the chunk.
-             * @param piece The structure component.
-             * @return True if the parts were added successfully, false otherwise.
-             */
-            static bool addComponentParts(
-                World &worldIn, MU RNG &rng, BoundingBox &chunkBB, StructureComponent &piece);
-        };
-    }
-}; // namespace build::village
+namespace build::village {
+    MU extern bool addComponentParts(
+        World &worldIn, RNG &rng, BoundingBox &chunkBB, StructureComponent &piece);
+} // namespace build::village

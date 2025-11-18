@@ -96,7 +96,7 @@ static consteval Tables makeTables() {
     set(bamboo_jungle_hills,              0.450, 0.300, 62);
 
     // Precompute 1/(d+2) for every valid biome (helps the 25-tap kernel)
-    for (int u = 0; u < 256; ++u) {
+    for (size_t u = 0; u < 256; ++u) {
         if (T.valid[u])
             T.inv_d_plus_2[u] = 1.0 / (T.depth[u] + 2.0);
     }

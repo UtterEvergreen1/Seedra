@@ -4,7 +4,7 @@
 #include <cstdlib>
 #include <cstring>
 
-#include "include/libdivide.h"
+// #include "include/libdivide.h"
 
 #include "common/MathHelper.hpp"
 #include "common/rng.hpp"
@@ -57,7 +57,7 @@ static int mcFirstInt(c_u64 s, c_int mod) {
     return ret;
 }
 
-static int mcFirstIsZero(c_u64 s, c_int mod) {
+MU static int mcFirstIsZero(c_u64 s, c_int mod) {
     return static_cast<i32>((static_cast<i64>(s) >> 24) % mod) == 0;
 }
 
@@ -78,10 +78,10 @@ static bool mcFirstIsZero(c_u64 s) {
 
 
 static u64 getChunkSeed(c_u64 ss, c_int x, c_int z) {
-    u64 cs = ss + x;
-    cs = mcStepSeed(cs, z);
-    cs = mcStepSeed(cs, x);
-    cs = mcStepSeed(cs, z);
+    u64 cs = ss + static_cast<u64>(x);
+    cs = mcStepSeed(cs, static_cast<u64>(z));
+    cs = mcStepSeed(cs, static_cast<u64>(x));
+    cs = mcStepSeed(cs, static_cast<u64>(z));
     return cs;
 }
 
@@ -684,7 +684,7 @@ void getMaxArea(const Layer* layer, int areaX, int areaZ, int* maxX, int* maxZ, 
     }
 
     // multi-layers and zoom-layers use a temporary copy of their parent area
-    if (layer->p2 || layer->zoom != 1) *siz += areaX * areaZ;
+    if (layer->p2 || layer->zoom != 1) *siz += static_cast<size_t>(areaX * areaZ);
 
     getMaxArea(layer->p1, areaX, areaZ, maxX, maxZ, siz);
     if (layer->p2) getMaxArea(layer->p2, areaX, areaZ, maxX, maxZ, siz);
@@ -741,7 +741,7 @@ void genArea(const Layer* layer, biome_t* out, c_int areaX, c_int areaZ, c_int a
  * @param xzFactor Factor for the XZ plane.
  * @param yFactor Factor for the Y axis.
  */
-void initSurfaceNoiseOld(SurfaceNoise* rnd, RNG& seed,
+MU void initSurfaceNoiseOld(SurfaceNoise* rnd, RNG& seed,
                          const double xzScale, const double yScale, const double xzFactor, const double yFactor) {
     rnd->xzScale = xzScale;
     rnd->yScale = yScale;
@@ -826,7 +826,7 @@ void setEndSeed(EndNoise* en, const u64 seed) {
 }
 
 
-float getEndHeightNoise(const EndNoise* en, c_int x, c_int z) {
+static float getEndHeightNoise(const EndNoise* en, c_int x, c_int z) {
     c_int hx = x / 2;
     c_int hz = z / 2;
     c_int oddX = x % 2;
@@ -857,7 +857,7 @@ float getEndHeightNoise(const EndNoise* en, c_int x, c_int z) {
 }
 
 
-void sampleNoiseColumnEnd(const Generator* g, double column[], const SurfaceNoise* sn, const EndNoise* en, c_int x,
+static void sampleNoiseColumnEnd(const Generator* g, double column[], const SurfaceNoise* sn, const EndNoise* en, c_int x,
                           c_int z, c_int colymin, c_int colymax) {
     c_double depth = getEndHeightNoise(en, x, z) - 8.0F;
     for (int y = colymin; y <= colymax; y++) {
@@ -952,8 +952,8 @@ static int isAny4(c_int id, c_int a, c_int b, c_int c, c_int d) {
  * @var mapContinent
  * @brief Mapping function for the continent layer.
  *        Previously known as mapIsland.
- * @BufferIn  reads nothing
- * @BufferOut writes { 0: ocean, 1: land }
+ * @ BufferIn  reads nothing
+ * @ BufferOut writes { 0: ocean, 1: land }
  */
 void mapContinent(const Layer* l, biome_t* out, c_int x, c_int z, c_int w, c_int h) {
     c_u64 ss = l->startSeed;
@@ -972,8 +972,8 @@ void mapContinent(const Layer* l, biome_t* out, c_int x, c_int z, c_int w, c_int
 /**
  * @var mapZoomFuzzy
  * @brief Mapping function for applying a fuzzy zoom effect.
- * @BufferIn  reads whatever parent has
- * @BufferOut writes whatever parent has, just smoothed.
+ * @ BufferIn  reads whatever parent has
+ * @ BufferOut writes whatever parent has, just smoothed.
  */
 void mapZoomFuzzy(const Layer* l, biome_t* out, c_int x, c_int z, c_int w, c_int h) {
     c_int pX = x >> 1;
@@ -1070,8 +1070,8 @@ static biome_t select4(u32 cs, c_u32 st, const biome_t v00, const biome_t v01, c
  * @brief Mapping function for applying a standard zoom effect.
  * This is the most common layer, and generally the second most performance
  * critical after mapAddIsland.
- * @BufferIn  reads whatever parent has
- * @BufferOut writes whatever parent has, just up-sampled.
+ * @ BufferIn  reads whatever parent has
+ * @ BufferOut writes whatever parent has, just up-sampled.
  */
 void mapZoom(const Layer* l, biome_t* out, c_int x, c_int z, c_int w, c_int h) {
     c_int pX = x >> 1;
@@ -1144,8 +1144,8 @@ void mapZoom(const Layer* l, biome_t* out, c_int x, c_int z, c_int w, c_int h) {
  * @brief Mapping function for adding land to the layer.
  *        Previously known as mapAddIsland.
  * This is the most performance critical layer, especially for getBiomeAtPos.
- * @BufferIn  reads { 0: ocean, 1: land, with exceptions }
- * @BufferOut writes
+ * @ BufferIn  reads { 0: ocean, 1: land, with exceptions }
+ * @ BufferOut writes
  */
 void mapLand(const Layer* l, biome_t* out, c_int x, c_int z, c_int w, c_int h) {
     c_int pX = x - 1;

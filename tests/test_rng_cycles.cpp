@@ -46,7 +46,7 @@ std::unordered_map<std::string, uint64_t> baseline_cycles = {
     do {                                                                            \
         const char* label = #expr;                                                  \
         uint64_t total = 0;                                                         \
-        rng.setSeed(SEED);                                                          \
+        rng.setSeed(static_cast<u64>(SEED));                                                          \
         for (int i = 0; i < MEASURE_N; ++i) {                                       \
             rng.advance();                                                          \
                                                                                     \

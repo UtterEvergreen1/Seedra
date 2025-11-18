@@ -50,8 +50,8 @@ void perlinInit(PerlinNoise* noise, RNG& rng) {
 
     static constexpr std::array<u8, 256> oneTo255Array = []() constexpr {
         std::array<u8, 256> arr = {};
-        for (int i = 0; i < 256; ++i) {
-            arr[i] = i;
+        for (size_t i = 0; i < 256; ++i) {
+            arr[i] = static_cast<u8>(i);
         }
         return arr;
     }();
@@ -62,7 +62,7 @@ void perlinInit(PerlinNoise* noise, RNG& rng) {
     // Shuffle the permutation array and duplicate it.
     for (int i = 0; i < 256; ++i) {
         int j = rng.nextInt(256 - i) + i;
-        u8 k = noise->permutations[i];
+        c_u8 k = noise->permutations[i];
         noise->permutations[i] = noise->permutations[j];
         noise->permutations[j] = k;
         noise->permutations[i + 256] = noise->permutations[i];
@@ -226,7 +226,7 @@ void octaveInit(OctaveNoise* noise, RNG& rng, PerlinNoise* octaves, c_int octave
     } else {
         // Skip RNG calls for "missing" octaves to maintain determinism
         // Each perlinInit makes 262 RNG calls
-        rng.skipNextN(-octaveMax * 262);
+        rng.skipNextN(static_cast<u64>(-octaveMax * 262));
         currentIndex = 0;
     }
 
@@ -262,7 +262,7 @@ MU double sampleOctave(const Generator* g, const OctaveNoise* noise,
 
 void initSurfaceNoise(SurfaceNoise* sn, const lce::DIMENSION dimension, c_u64 worldSeed) {
     RNG rng;
-    rng.setSeed(worldSeed);
+    rng.setSeed(static_cast<u64>(worldSeed));
     octaveInit(&sn->octaveMin, rng, sn->oct + 0, -15, 16);
     octaveInit(&sn->octaveMax, rng, sn->oct + 16, -15, 16);
     octaveInit(&sn->octaveMain, rng, sn->oct + 32, -7, 8);

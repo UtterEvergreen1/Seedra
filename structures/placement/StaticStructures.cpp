@@ -25,8 +25,11 @@ namespace Placement {
     template<typename Derived>
     Pos2D StaticStructure<Derived>::getRegionChunkPosition(c_i64 worldSeed, c_int regionX, c_int regionZ) {
         RNG rng;
-        rng.setSeed((i64) regionX * 341873128712ULL + (i64) regionZ * 132897987541ULL + worldSeed +
-                    Derived::SALT);
+        rng.setSeed(
+        static_cast<u64>(
+            static_cast<i64>(regionX) * 341873128712ULL +
+            static_cast<i64>(regionZ) * 132897987541ULL +
+            worldSeed + Derived::SALT));
         return {regionX * REGION_SIZE + rng.nextInt(CHUNK_RANGE), regionZ * REGION_SIZE + rng.nextInt(CHUNK_RANGE)};
     }
 
@@ -43,13 +46,14 @@ namespace Placement {
 
     template<typename Derived>
     std::vector<Pos2D>
-    StaticStructure<Derived>::getAllPositionsBounded(const Generator *g, int lowerX, int lowerZ, int upperX,
-                                                     int upperZ) {
+    StaticStructure<Derived>::getAllPositionsBounded(const Generator *g,
+        c_int lowerX, c_int lowerZ, c_int upperX, c_int upperZ
+    ) {
         std::vector<Pos2D> positions;
-        c_int lowerXRegion = std::floor((float)(lowerX >> 4) / REGION_SIZE);
-        c_int lowerZRegion = std::floor((float)(lowerZ >> 4) / REGION_SIZE);
-        c_int upperXRegion = std::floor((float)(upperX >> 4) / REGION_SIZE);
-        c_int upperZRegion = std::floor((float)(upperZ >> 4) / REGION_SIZE);
+        c_int lowerXRegion = static_cast<int>(std::floor(static_cast<float>(lowerX >> 4) / static_cast<float>(REGION_SIZE)));
+        c_int lowerZRegion = static_cast<int>(std::floor(static_cast<float>(lowerZ >> 4) / static_cast<float>(REGION_SIZE)));
+        c_int upperXRegion = static_cast<int>(std::floor(static_cast<float>(upperX >> 4) / static_cast<float>(REGION_SIZE)));
+        c_int upperZRegion = static_cast<int>(std::floor(static_cast<float>(upperZ >> 4) / static_cast<float>(REGION_SIZE)));
         for (int regionX = lowerXRegion; regionX <= upperXRegion; ++regionX) {
             for (int regionZ = lowerZRegion; regionZ <= upperZRegion; ++regionZ) {
                 if (const Pos2D structPos = getRegionBlockPosition(g->getWorldSeed(), regionX, regionZ);
@@ -74,8 +78,7 @@ namespace Placement {
     // #######################################################
 
 
-    template<>
-    MU c_int StaticStructure<Feature>::SALT = 14357617;
+    template<> c_int StaticStructure<Feature>::SALT = 14357617;
 
     void Feature::setWorldSize(const lce::WORLDSIZE worldSize) {
         CHUNK_BOUNDS = getChunkWorldBounds(worldSize);
@@ -126,20 +129,20 @@ namespace Placement {
 
     MU std::vector<std::vector<Pos2D>> Feature::getAllFeaturePositionsSeparated(const Generator *g) {
         auto features = getAllFeaturePositions(g);
-        std::vector<std::vector<Pos2D>> separatedFeatures((size_t) StructureType::FEATURE_NUM);
+        std::vector<std::vector<Pos2D>> separatedFeatures(static_cast<size_t>(StructureType::FEATURE_NUM));
         for (const auto &feature : features) {
-            separatedFeatures[(size_t) feature.type].push_back(feature.pos);
+            separatedFeatures[static_cast<size_t>(feature.m_type)].push_back(feature.m_pos);
         }
         return separatedFeatures;
     }
 
     std::vector<FeatureStructurePair>
-    Feature::getAllFeaturePositionsBounded(const Generator *g, int lowerX, int lowerZ, int upperX, int upperZ) {
+    Feature::getAllFeaturePositionsBounded(const Generator *g, c_int lowerX, c_int lowerZ, c_int upperX, c_int upperZ) {
         std::vector<FeatureStructurePair> features;
-        c_int lowerXRegion = std::floor((float)(lowerX >> 4) / REGION_SIZE);
-        c_int lowerZRegion = std::floor((float)(lowerZ >> 4) / REGION_SIZE);
-        c_int upperXRegion = std::floor((float)(upperX >> 4) / REGION_SIZE);
-        c_int upperZRegion = std::floor((float)(upperZ >> 4) / REGION_SIZE);
+        c_int lowerXRegion = static_cast<int>(std::floor(static_cast<float>(lowerX >> 4) / static_cast<float>(REGION_SIZE)));
+        c_int lowerZRegion = static_cast<int>(std::floor(static_cast<float>(lowerZ >> 4) / static_cast<float>(REGION_SIZE)));
+        c_int upperXRegion = static_cast<int>(std::floor(static_cast<float>(upperX >> 4) / static_cast<float>(REGION_SIZE)));
+        c_int upperZRegion = static_cast<int>(std::floor(static_cast<float>(upperZ >> 4) / static_cast<float>(REGION_SIZE)));
         for (int regionX = lowerXRegion; regionX <= upperXRegion; ++regionX) {
             for (int regionZ = lowerZRegion; regionZ <= upperZRegion; ++regionZ) {
                 Pos2D structPos = getRegionBlockPosition(g->getWorldSeed(), regionX, regionZ);

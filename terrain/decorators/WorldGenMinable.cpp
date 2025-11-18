@@ -12,19 +12,19 @@
 
 
 WorldGenMinable::WorldGenMinable(const lce::BlockState block, const int blockCount)
-    : oreBlock(block), blockCount(blockCount) {
+    : m_oreBlock(block), m_blockCount(blockCount) {
 }
 
 
 #ifdef USE_CHUNK_QUAD
-static inline void computeVeinBounds(const Pos3D& pos, int blockCount, float theta, int& minX, int& maxX, int& minZ,
+static inline void computeVeinBounds(const Pos3D& pos, c_int blockCount, c_float theta, int& minX, int& maxX, int& minZ,
                                      int& maxZ) {
     // Endpoints along the line
     const float halfSpan = static_cast<float>(blockCount) / 8.0f;
-    const double x0 = static_cast<double>(pos.getX() + 8) + MathHelper::sin(theta) * halfSpan;
-    const double x1 = static_cast<double>(pos.getX() + 8) - MathHelper::sin(theta) * halfSpan;
-    const double z0 = static_cast<double>(pos.getZ() + 8) + MathHelper::cos(theta) * halfSpan;
-    const double z1 = static_cast<double>(pos.getZ() + 8) - MathHelper::cos(theta) * halfSpan;
+    const double x0 = static_cast<double>(pos.getX() + 8) + static_cast<double>(MathHelper::sin(theta) * halfSpan);
+    const double x1 = static_cast<double>(pos.getX() + 8) - static_cast<double>(MathHelper::sin(theta) * halfSpan);
+    const double z0 = static_cast<double>(pos.getZ() + 8) + static_cast<double>(MathHelper::cos(theta) * halfSpan);
+    const double z1 = static_cast<double>(pos.getZ() + 8) - static_cast<double>(MathHelper::cos(theta) * halfSpan);
 
     // Max possible radius: when sin(πt)=+1 and randScale=max = blockCount/16
     // radius_max = ((2 * (B/16)) + 1) / 2 = B/16 + 0.5
@@ -48,20 +48,20 @@ static inline void computeVeinBounds(const Pos3D& pos, int blockCount, float the
 bool WorldGenMinable::generate(World* world, RNG& rng, const Pos3D& pos) const {
     // TODO: jerrin changed PI -> PI_FLOAT to silence warning
     c_float theta = rng.nextFloat() * PI_FLOAT;
-    c_float halfSpan = static_cast<float>(this->blockCount) / 8.0F;
-    c_auto x0 = (double) ((float) (pos.getX() + 8) + MathHelper::sin(theta) * halfSpan);
-    c_auto x1 = (double) ((float) (pos.getX() + 8) - MathHelper::sin(theta) * halfSpan);
-    c_auto z0 = (double) ((float) (pos.getZ() + 8) + MathHelper::cos(theta) * halfSpan);
-    c_auto z1 = (double) ((float) (pos.getZ() + 8) - MathHelper::cos(theta) * halfSpan);
-    c_auto y0 = (double) (pos.getY() + rng.nextInt(3) - 2);
-    c_auto y1 = (double) (pos.getY() + rng.nextInt(3) - 2);
+    c_float halfSpan = static_cast<float>(this->m_blockCount) / 8.0F;
+    c_auto x0 = static_cast<double>(static_cast<float>(pos.getX() + 8) + MathHelper::sin(theta) * halfSpan);
+    c_auto x1 = static_cast<double>(static_cast<float>(pos.getX() + 8) - MathHelper::sin(theta) * halfSpan);
+    c_auto z0 = static_cast<double>(static_cast<float>(pos.getZ() + 8) + MathHelper::cos(theta) * halfSpan);
+    c_auto z1 = static_cast<double>(static_cast<float>(pos.getZ() + 8) - MathHelper::cos(theta) * halfSpan);
+    c_auto y0 = static_cast<double>(pos.getY() + rng.nextInt(3) - 2);
+    c_auto y1 = static_cast<double>(pos.getY() + rng.nextInt(3) - 2);
 
 
 #ifdef USE_CHUNK_QUAD
     ChunkQuadAccessor quad;
     {
         int minX, maxX, minZ, maxZ;
-        computeVeinBounds(pos, this->blockCount, theta, minX, maxX, minZ, maxZ);
+        computeVeinBounds(pos, this->m_blockCount, theta, minX, maxX, minZ, maxZ);
 
         const int baseChunkX = (minX >> 4);
         const int baseChunkZ = (minZ >> 4);
@@ -79,15 +79,15 @@ bool WorldGenMinable::generate(World* world, RNG& rng, const Pos3D& pos) const {
     int maxHeight = std::min(  std::max(std::max(h00, h01), std::max(h10, h11)), 128 ) + 5;
 
 
-    for (int i = 0; i <= this->blockCount; ++i) {
-        c_float t = (float) i / (float) this->blockCount;
-        c_double centerX = x0 + (x1 - x0) * (double) t;
-        c_double centerY = y0 + (y1 - y0) * (double) t;
-        c_double centerZ = z0 + (z1 - z0) * (double) t;
-        c_double randScale = rng.nextDouble() * (double) this->blockCount / 16.0;
+    for (int i = 0; i <= this->m_blockCount; ++i) {
+        c_float t = static_cast<float>(i) / static_cast<float>(this->m_blockCount);
+        c_double centerX = x0 + (x1 - x0) * static_cast<double>(t);
+        c_double centerY = y0 + (y1 - y0) * static_cast<double>(t);
+        c_double centerZ = z0 + (z1 - z0) * static_cast<double>(t);
+        c_double randScale = rng.nextDouble() * static_cast<double>(this->m_blockCount) / 16.0;
         if (centerY >= maxHeight) continue;
 
-        c_double radius = ((MathHelper::sin(PI_FLOAT * t) + 1.0F) * randScale + 1.0) / 2.0;
+        c_double radius = (static_cast<double>(MathHelper::sin(PI_FLOAT * t) + 1.0F) * randScale + 1.0) / 2.0;
         c_int minX = MathHelper::floor(centerX - radius);
         c_int minY = MathHelper::floor(centerY - radius);
         c_int minZ = MathHelper::floor(centerZ - radius);
@@ -100,7 +100,7 @@ bool WorldGenMinable::generate(World* world, RNG& rng, const Pos3D& pos) const {
         const double dN = invR; // increment for nx/ny/nz when index++
 
         // start Y at minY, normalized ny for (minY + 0.5)
-        double ny = ( (double)minY + 0.5 - centerY ) * invR;
+        double ny = ( static_cast<double>(minY) + 0.5 - centerY ) * invR;
 
         for (int voxelY = minY; voxelY <= maxY; ++voxelY, ny += dN) {
             const double ny2 = ny * ny;
@@ -119,7 +119,7 @@ bool WorldGenMinable::generate(World* world, RNG& rng, const Pos3D& pos) const {
             if (xLo > xHi) continue;
 
             // normalized nx for xLo
-            double nx = ( (double)xLo + 0.5 - centerX ) * invR;
+            double nx = ( static_cast<double>(xLo) + 0.5 - centerX ) * invR;
 
             for (int voxelX = xLo; voxelX <= xHi; ++voxelX, nx += dN) {
                 const double nx2   = nx * nx;
@@ -138,7 +138,7 @@ bool WorldGenMinable::generate(World* world, RNG& rng, const Pos3D& pos) const {
                 if (zLo > zHi) continue;
 
                 // normalized nz for zLo
-                double nz = ( (double)zLo + 0.5 - centerZ ) * invR;
+                double nz = ( static_cast<double>(zLo) + 0.5 - centerZ ) * invR;
 
                 for (int voxelZ = zLo; voxelZ <= zHi; ++voxelZ, nz += dN) {
                     // keep the exact acceptance check for bit-identical behavior
@@ -154,7 +154,7 @@ bool WorldGenMinable::generate(World* world, RNG& rng, const Pos3D& pos) const {
                     if (blockId == lce::blocks::BlockID::STONE_ID /* &&
                             (block.getDataTag() == 0 || block.getDataTag() & 1)*/) {
 #ifdef USE_CHUNK_QUAD
-                        quad.setBlock(voxelX, voxelY, voxelZ, this->oreBlock);
+                        quad.setBlock(voxelX, voxelY, voxelZ, this->m_oreBlock);
 #else
                         world->setBlock(blockPos, this->oreBlock);
 #endif

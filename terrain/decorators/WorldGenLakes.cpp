@@ -58,7 +58,7 @@ bool WorldGenLakes::generate(World* worldIn, RNG& rng, const Pos3D& pos) const {
                     if (k >= 4 && isLiquidBlock(worldIn->getBlockId(materialPos))) { return false; }
 
                     if (k < 4 && !isSolidBlock(worldIn->getBlockId(materialPos)) &&
-                        worldIn->getBlockId(position.add(k1, k, l2)) != this->block.getID()) {
+                        worldIn->getBlockId(position.add(k1, k, l2)) != this->m_block.getID()) {
                         return false;
                     }
                 }
@@ -71,7 +71,7 @@ bool WorldGenLakes::generate(World* worldIn, RNG& rng, const Pos3D& pos) const {
             for (int i4 = 0; i4 < 8; ++i4) {
                 if (aboolean[(l1 * 16 + i3) * 8 + i4]) {
                     worldIn->setBlock(position.add(l1, i4, i3), i4 >= 4
-                        ? lce::BlocksInit::AIR.getState() : this->block);
+                        ? lce::BlocksInit::AIR.getState() : this->m_block);
                 }
             }
         }
@@ -85,9 +85,9 @@ bool WorldGenLakes::generate(World* worldIn, RNG& rng, const Pos3D& pos) const {
 
                     if (worldIn->getBlockId(blockPos) == DIRT_ID &&
                         !isFullyOpaqueBlock(worldIn->getBlockId(blockPos.up()))) {
-                        const Biome* biome = Biome::getBiomeForId(g->getBiomeIdAt(1, blockPos.asPos2D()));
+                        const Biome* biome = Biome::getBiomeForId(m_g->getBiomeIdAt(1, blockPos.asPos2D()));
 
-                        if (biome->topBlock == lce::BlocksInit::MYCELIUM.getState()) {
+                        if (biome->m_topBlock == lce::BlocksInit::MYCELIUM.getState()) {
                             worldIn->setBlockId(blockPos, MYCELIUM_ID);
                         } else {
                             worldIn->setBlockId(blockPos, GRASS_ID);
@@ -98,7 +98,7 @@ bool WorldGenLakes::generate(World* worldIn, RNG& rng, const Pos3D& pos) const {
         }
     }
 
-    if (this->block == lce::BlocksInit::STILL_LAVA.getState()) {
+    if (this->m_block == lce::BlocksInit::STILL_LAVA.getState()) {
         for (int j2 = 0; j2 < 16; ++j2) {
             for (int k3 = 0; k3 < 16; ++k3) {
                 for (int k4 = 0; k4 < 8; ++k4) {
@@ -119,7 +119,7 @@ bool WorldGenLakes::generate(World* worldIn, RNG& rng, const Pos3D& pos) const {
         }
     }
 
-    if (this->block == lce::BlocksInit::STILL_WATER.getState()) {
+    if (this->m_block == lce::BlocksInit::STILL_WATER.getState()) {
         for (int k2 = 0; k2 < 16; ++k2) {
             for (int l3 = 0; l3 < 16; ++l3) {
                 if (worldIn->canBlockFreezeWater(position.add(k2, 4, l3))) {

@@ -3,10 +3,8 @@
 #include "components/StructureComponent.hpp"
 #include "structures/gen/Structure.hpp"
 
-#include <map>
 #include <vector>
 
-#include "lce/blocks/block.hpp"
 #include "lce/enums.hpp"
 
 class World;
@@ -26,7 +24,7 @@ namespace gen {
      */
     class Mineshaft : public Structure<MINESHAFT_ARRAY_SIZE> {
     public:
-        StructureVariant myVariant = StructureVariant::SV_Mineshaft_Normal; ///< The variant of the mineshaft.
+        StructureVariant m_variant = StructureVariant::SV_Mineshaft_Normal; ///< The variant of the mineshaft.
 
         MU static std::string PIECE_TYPE_NAMES[5]; ///< Names of the different piece types in the mineshaft.
 
@@ -104,182 +102,10 @@ namespace gen {
 
 } // namespace gen
 
-namespace build {
-    namespace mineshaft {
 
-        /**
-         * @brief Gets biome-specific plank block state for the mineshaft.
-         *
-         * @param structureType The type of the structure.
-         * @return The block state of the biome-specific plank.
-         */
-        MU ND extern lce::BlockState getBiomeSpecificPlank(c_int structureType);
-
-        /**
-         * @brief Gets biome-specific fence block state for the mineshaft.
-         *
-         * @param structureType The type of the structure.
-         * @return The block state of the biome-specific fence.
-         */
-        MU ND extern lce::BlockState getBiomeSpecificFence(c_int structureType);
-
-        /**
-         * @brief Performs a specific operation on the world and bounding box.
-         *
-         * @param world The world to modify.
-         * @param chunkBB The bounding box of the chunk.
-         * @param minX The minimum X coordinate.
-         * @param maxX The maximum X coordinate.
-         * @param y The Y coordinate.
-         * @param z The Z coordinate.
-         * @param piece The structure component.
-         * @return True if the operation was successful, false otherwise.
-         */
-        extern bool func_189918_a(World& world, const BoundingBox& chunkBB, c_int minX, c_int maxX,
-                                  c_int y, c_int z, const StructureComponent& piece);
-
-        /**
-         * @class Room
-         * @brief Represents a room component in the mineshaft.
-         */
-        class MU Room final {
-        public:
-            MU Room() = delete; ///< Deleted default constructor.
-
-            /**
-             * @brief Adds the room component parts to the world.
-             *
-             * @param worldIn The world to modify.
-             * @param rng The random number generator.
-             * @param chunkBB The bounding box of the chunk.
-             * @param piece The structure component.
-             * @return True if the parts were added successfully, false otherwise.
-             */
-            static bool addComponentParts(
-                    World& worldIn, MU RNG& rng, const BoundingBox& chunkBB, const StructureComponent& piece);
-        };
-
-        /**
-         * @class Corridor
-         * @brief Represents a corridor component in the mineshaft.
-         */
-        class MU Corridor final {
-        public:
-            MU Corridor() = delete; ///< Deleted default constructor.
-
-            /**
-             * @brief Adds the corridor component parts to the world.
-             *
-             * @param worldIn The world to modify.
-             * @param rng The random number generator.
-             * @param chunkBB The bounding box of the chunk.
-             * @param piece The structure component.
-             * @return True if the parts were added successfully, false otherwise.
-             */
-            static bool addComponentParts(
-                    World& worldIn, RNG& rng, const BoundingBox& chunkBB, const StructureComponent& piece);
-
-            /**
-             * @brief Performs a specific operation on the corridor.
-             *
-             * @param world The world to modify.
-             * @param chunkBB The bounding box of the chunk.
-             * @param minX The minimum X coordinate.
-             * @param minY The minimum Y coordinate.
-             * @param minZ The minimum Z coordinate.
-             * @param maxY The maximum Y coordinate.
-             * @param maxX The maximum X coordinate.
-             * @param rng The random number generator.
-             * @param piece The structure component.
-             */
-            static void func_189921_a(World& world, const BoundingBox& chunkBB,
-                                      c_int minX, c_int minY, c_int minZ, c_int maxY, c_int maxX,
-                                      RNG& rng, const StructureComponent& piece);
-
-            /**
-             * @brief Places cobwebs randomly in the corridor.
-             *
-             * @param world The world to modify.
-             * @param chunkBB The bounding box of the chunk.
-             * @param rng The random number generator.
-             * @param chance The chance of placing a cobweb.
-             * @param x The X coordinate.
-             * @param y The Y coordinate.
-             * @param z The Z coordinate.
-             * @param piece The structure component.
-             */
-            static void placeCobwebsRandomly(World& world, const BoundingBox& chunkBB, RNG& rng,
-                                             c_float chance, c_int x, c_int y, c_int z, const StructureComponent& piece);
-        };
-
-        /**
-         * @class Crossing
-         * @brief Represents a crossing component in the mineshaft.
-         */
-        class MU Crossing final {
-        public:
-            MU Crossing() = delete; ///< Deleted default constructor.
-
-            /**
-             * @brief Adds the crossing component parts to the world.
-             *
-             * @param worldIn The world to modify.
-             * @param rng The random number generator.
-             * @param chunkBB The bounding box of the chunk.
-             * @param piece The structure component.
-             * @return True if the parts were added successfully, false otherwise.
-             */
-            static bool addComponentParts(
-                    World& worldIn, MU RNG& rng, const BoundingBox& chunkBB, const StructureComponent& piece);
-
-            /**
-             * @brief Places a plank pillar in the crossing.
-             *
-             * @param world The world to modify.
-             * @param chunkBB The bounding box of the chunk.
-             * @param x The X coordinate.
-             * @param minY The minimum Y coordinate.
-             * @param z The Z coordinate.
-             * @param maxY The maximum Y coordinate.
-             * @param piece The structure component.
-             */
-            static void placePlankPillar(World& world, const BoundingBox& chunkBB,
-                                         c_int x, c_int minY, c_int z, c_int maxY, const StructureComponent& piece);
-        };
-
-        /**
-         * @class Stairs
-         * @brief Represents a stairs component in the mineshaft.
-         */
-        class MU Stairs final {
-        public:
-            MU Stairs() = delete; ///< Deleted default constructor.
-
-            /**
-             * @brief Adds the stairs component parts to the world.
-             *
-             * @param worldIn The world to modify.
-             * @param rng The random number generator.
-             * @param chunkBB The bounding box of the chunk.
-             * @param piece The structure component.
-             * @return True if the parts were added successfully, false otherwise.
-             */
-            static bool addComponentParts(
-                    World& worldIn, MU RNG& rng, const BoundingBox& chunkBB, const StructureComponent& piece);
-        };
-
-        /**
-         * @brief Adds component parts to the world.
-         *
-         * @param worldIn The world to modify.
-         * @param rng The random number generator.
-         * @param chunkBB The bounding box of the chunk.
-         * @param piece The structure component.
-         * @return True if the parts were added successfully, false otherwise.
-         */
-        MU extern bool addComponentParts(
-                World& worldIn, RNG& rng, const BoundingBox& chunkBB, const StructureComponent& piece);
-    }
+namespace build::mineshaft {
+    MU extern bool addComponentParts(
+            World& worldIn, RNG& rng, const BoundingBox& chunkBB, StructureComponent& piece);
 } // namespace build::mineshaft
 
 namespace rolls {
@@ -290,56 +116,19 @@ namespace rolls {
      */
     class MU Mineshaft {
     public:
-        std::vector<std::pair<Pos3D, i64>> mineshaftChests{}; ///< List of mineshaft chests and their positions.
+        /// List of mineshaft chests and their positions.
+        std::vector<std::pair<Pos3D, i64>> m_mineshaftChests{};
 
-        /**
-         * @brief Generates the mineshaft structure in the world.
-         *
-         * @param worldIn The world to modify.
-         * @param chunk The chunk primer.
-         * @param mg The mineshaft generator.
-         * @param rng The random number generator.
-         * @param chunkX The X coordinate of the chunk.
-         * @param chunkZ The Z coordinate of the chunk.
-         */
         void generateStructure(World& worldIn, const ChunkPrimer* chunk, const gen::Mineshaft* mg,
                                RNG& rng, int chunkX, int chunkZ);
 
-        /**
-         * @brief Generates all chests for the mineshaft.
-         *
-         * @param worldIn The world to modify.
-         * @param mg The mineshaft generator.
-         * @param g The generator.
-         * @param generateFullChunk Whether to generate the full chunk.
-         */
-        MU void generateAllChests(World& worldIn, const gen::Mineshaft* mg, const Generator& g, bool generateFullChunk);
+        MU void generateAllChests(World& worldIn, const gen::Mineshaft* mg, const Generator& g,
+                                  bool generateFullChunk);
 
-        /**
-         * @brief Generates a chest at a specific position.
-         *
-         * @param chunk The chunk primer.
-         * @param chunkBB The bounding box of the chunk.
-         * @param piece The structure component.
-         * @param rng The random number generator.
-         * @param x The X coordinate.
-         * @param y The Y coordinate.
-         * @param z The Z coordinate.
-         */
         void generateChest(const ChunkPrimer* chunk, const BoundingBox& chunkBB,
                            const StructureComponent *piece, RNG& rng, int x, int y, int z);
 
     private:
-        /**
-         * @brief Places a cobweb at a specific position.
-         *
-         * @param chunk The chunk primer.
-         * @param chunkBB The bounding box of the chunk.
-         * @param piece The structure component.
-         * @param rng The random number generator.
-         * @param x The X coordinate.
-         * @param z The Z coordinate.
-         */
         static void placeCobWeb(const ChunkPrimer* chunk, const BoundingBox& chunkBB,
                                 const StructureComponent& piece, RNG& rng, int x, int z);
     };

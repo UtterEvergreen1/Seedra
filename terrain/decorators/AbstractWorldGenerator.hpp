@@ -16,7 +16,7 @@ public:
     /**
      * @brief Virtual destructor for AbstractWorldGenerator.
      */
-    virtual ~AbstractWorldGenerator() = default;
+    virtual ~AbstractWorldGenerator();
 
     /**
      * @brief Pure virtual method to generate features in the world.

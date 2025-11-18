@@ -54,10 +54,10 @@ namespace loot {
     template<bool checkCaves, bool shuffle, bool checkWaterCaves>
     std::vector<Container27> getAllAquaticAltarChestLoot(const Generator &g, gen::Stronghold *strongholdGenerator,
                                                   bool accurate) {
-        std::vector<Container27> altarChests(strongholdGenerator->altarChestArraySize);
-        for (int altarChestIndex = 0; altarChestIndex < strongholdGenerator->altarChestArraySize; altarChestIndex++)
+        std::vector<Container27> altarChests(strongholdGenerator->m_altarChestArraySize);
+        for (int altarChestIndex = 0; altarChestIndex < strongholdGenerator->m_altarChestArraySize; altarChestIndex++)
             altarChests[altarChestIndex] = getAquaticAltarChestLoot<checkCaves, shuffle, checkWaterCaves>(
-                        g, *strongholdGenerator->altarChestsArray[altarChestIndex], strongholdGenerator, accurate);
+                        g, *strongholdGenerator->m_altarChestsArray[altarChestIndex], strongholdGenerator, accurate);
 
         return altarChests;
     }

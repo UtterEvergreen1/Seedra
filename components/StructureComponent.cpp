@@ -9,7 +9,7 @@
 #include "common/rng.hpp"
 
 #include "lce/blocks/__include.hpp"
-#include "structures/gen/scattered_features/JungleStones.hpp"
+#include "structures/gen/jungle_temple/JungleStones.hpp"
 
 
 MU void StructureComponent::setBlockStateWithoutOffset(World& worldIn, const lce::BlockState blockStateIn, c_int x,
@@ -20,8 +20,8 @@ MU void StructureComponent::setBlockStateWithoutOffset(World& worldIn, const lce
 }
 
 
-MU void StructureComponent::setBlockState(World& worldIn, const lce::BlockState blockStateIn, c_int x, c_int y,
-                                          c_int z, const BoundingBox& structureBB) const {
+MU void StructureComponent::setBlockState(World& worldIn, const BoundingBox& structureBB, int x, int y, int z,
+                                          lce::BlockState blockStateIn) const {
     if (const auto blockPos = Pos3D(getWorldX(x, z), getWorldY(y), getWorldZ(x, z));
         structureBB.isVecInside(blockPos)) {
         worldIn.setBlock(blockPos, blockStateIn);
@@ -91,9 +91,9 @@ void StructureComponent::fillWithBlocks(World& worldIn, const BoundingBox& bbIn,
                     // TODO: probably replace with is MATERIAL::AIR? I cannot remember
                     if (!existingOnly || worldIn.getBlock(wX, wY, wZ).getID() != lce::blocks::AIR_ID) {
                         if (y != minY && y != maxY && x != minX && x != maxX && z != minZ && z != maxZ) {
-                            setBlockState(worldIn, insideBlockState, x, y, z, bbIn);
+                            setBlockState(worldIn, bbIn, x, y, z, insideBlockState);
                         } else {
-                            setBlockState(worldIn, boundaryBlockState, x, y, z, bbIn);
+                            setBlockState(worldIn, bbIn, x, y, z, boundaryBlockState);
                         }
                     }
                 }
@@ -119,7 +119,7 @@ void StructureComponent::fillWithBlocks(World& worldIn, const BoundingBox& bbIn,
                 if (bbIn.isVecInside({wX, wY, wZ})) {
 
                     if (!existingOnly || worldIn.getBlock(wX, wY, wZ).getID() != lce::blocks::AIR_ID) {
-                        setBlockState(worldIn, theBlockState, x, y, z, bbIn);
+                        setBlockState(worldIn, bbIn, x, y, z, theBlockState);
                     }
                 }
             }
@@ -142,7 +142,7 @@ void StructureComponent::fillWithAir(World& worldIn, const BoundingBox& bbIn,
                 c_int wZ = getWorldZ(x, z);
 
                 if (bbIn.isVecInside({wX, wY, wZ})) {
-                    setBlockState(worldIn, lce::BlocksInit::AIR.getState(), x, y, z, bbIn);
+                    setBlockState(worldIn, bbIn, x, y, z, lce::BlocksInit::AIR.getState());
                 }
             }
         }
@@ -153,12 +153,12 @@ void StructureComponent::fillWithAir(World& worldIn, const BoundingBox& bbIn,
 bool StructureComponent::isLiquidInStructureBoundingBox(const BoundingBox& chunkBoundingBoxIn,
                                                         const StructureComponent& piece, const ChunkPrimer* chunk) {
 
-    c_int minX = std::max(piece.minX - 1, static_cast<int>(chunkBoundingBoxIn.minX)) & 15;
-    c_int minY = std::max(piece.minY - 1, static_cast<int>(chunkBoundingBoxIn.minY));
-    c_int minZ = std::max(piece.minZ - 1, static_cast<int>(chunkBoundingBoxIn.minZ)) & 15;
-    c_int maxX = std::min(piece.maxX + 1, static_cast<int>(chunkBoundingBoxIn.maxX)) & 15;
-    c_int maxY = std::min(piece.maxY + 1, static_cast<int>(chunkBoundingBoxIn.maxY));
-    c_int maxZ = std::min(piece.maxZ + 1, static_cast<int>(chunkBoundingBoxIn.maxZ)) & 15;
+    c_int minX = std::max(piece.m_minX - 1, static_cast<int>(chunkBoundingBoxIn.m_minX)) & 15;
+    c_int minY = std::max(piece.m_minY - 1, static_cast<int>(chunkBoundingBoxIn.m_minY));
+    c_int minZ = std::max(piece.m_minZ - 1, static_cast<int>(chunkBoundingBoxIn.m_minZ)) & 15;
+    c_int maxX = std::min(piece.m_maxX + 1, static_cast<int>(chunkBoundingBoxIn.m_maxX)) & 15;
+    c_int maxY = std::min(piece.m_maxY + 1, static_cast<int>(chunkBoundingBoxIn.m_maxY));
+    c_int maxZ = std::min(piece.m_maxZ + 1, static_cast<int>(chunkBoundingBoxIn.m_maxZ)) & 15;
     for (int x = minX; x <= maxX; ++x) {
         for (int z = minZ; z <= maxZ; ++z) {
             if (lce::blocks::isLiquidBlock(chunk->getBlockId(x, minY, z))) return true;
@@ -182,17 +182,17 @@ bool StructureComponent::isLiquidInStructureBoundingBox(const BoundingBox& chunk
 
 
 bool StructureComponent::intersectsWithBlock(const BoundingBox& chunkBoundingBox, c_int x, c_int y, c_int z) {
-    return chunkBoundingBox.maxX >= x && chunkBoundingBox.minX <= x && chunkBoundingBox.maxY >= y &&
-           chunkBoundingBox.minY <= y && chunkBoundingBox.maxZ >= z && chunkBoundingBox.minZ <= z;
+    return chunkBoundingBox.m_maxX >= x && chunkBoundingBox.m_minX <= x && chunkBoundingBox.m_maxY >= y &&
+           chunkBoundingBox.m_minY <= y && chunkBoundingBox.m_maxZ >= z && chunkBoundingBox.m_minZ <= z;
 }
 
 
 MU bool StructureComponent::validToPlace(const BoundingBox& chunkBoundingBox, const BoundingBox& bb, c_int x, c_int y,
                                          c_int z) {
     if (intersectsWithBlock(chunkBoundingBox, x, y, z)) {
-        return (bb.maxX >= x && bb.minX <= x) &&
-               (bb.maxY >= y && bb.minY <= y) &&
-               (bb.maxZ >= z && bb.minZ <= z);
+        return (bb.m_maxX >= x && bb.m_minX <= x) &&
+               (bb.m_maxY >= y && bb.m_minY <= y) &&
+               (bb.m_maxZ >= z && bb.m_minZ <= z);
     }
     return false;
 }
@@ -235,12 +235,12 @@ void StructureComponent::generateChest(const BoundingBox& chunkBB, const Structu
 
 
 bool StructureComponent::isLiquidInStructureBoundingBox(World& worldIn, const BoundingBox& bbIn) const {
-    c_int checkMinX = std::max(minX - 1, static_cast<int>(bbIn.minX));
-    c_int checkMinY = std::max(minY - 1, static_cast<int>(bbIn.minY));
-    c_int checkMinZ = std::max(minZ - 1, static_cast<int>(bbIn.minZ));
-    c_int checkMaxX = std::min(maxX + 1, static_cast<int>(bbIn.maxX));
-    c_int checkMaxY = std::min(maxY + 1, static_cast<int>(bbIn.maxY));
-    c_int checkMaxZ = std::min(maxZ + 1, static_cast<int>(bbIn.maxZ));
+    c_int checkMinX = std::max(m_minX - 1, static_cast<int>(bbIn.m_minX));
+    c_int checkMinY = std::max(m_minY - 1, static_cast<int>(bbIn.m_minY));
+    c_int checkMinZ = std::max(m_minZ - 1, static_cast<int>(bbIn.m_minZ));
+    c_int checkMaxX = std::min(m_maxX + 1, static_cast<int>(bbIn.m_maxX));
+    c_int checkMaxY = std::min(m_maxY + 1, static_cast<int>(bbIn.m_maxY));
+    c_int checkMaxZ = std::min(m_maxZ + 1, static_cast<int>(bbIn.m_maxZ));
 
     for (int x = checkMinX; x <= checkMaxX; ++x) {
         for (int z = checkMinZ; z <= checkMaxZ; ++z) {
@@ -287,7 +287,7 @@ void StructureComponent::randomlyRareFillWithBlocks(World& worldIn, const Boundi
                     !lce::blocks::isReplaceableBlock(getBlockStateFromPos(worldIn, j, i, k, bbIn).getID())) {
                     c_auto f8 = f6 * f6 + f5 * f5 + f7 * f7;
 
-                    if (f8 <= 1.05F) { setBlockState(worldIn, blockStateIn, j, i, k, bbIn); }
+                    if (f8 <= 1.05F) { setBlockState(worldIn, bbIn, j, i, k, blockStateIn); }
                 }
             }
         }
@@ -310,7 +310,7 @@ int StructureComponent::getLightLevelAtBlock(MU World& world, MU int x, MU int y
 
 void StructureComponent::randomlyPlaceBlock(World& worldIn, const BoundingBox& bbIn, RNG& rand, c_float chance, c_int x,
                                             c_int y, c_int z, const lce::BlockState blockStateIn) const {
-    if (rand.nextFloat() < chance) { setBlockState(worldIn, blockStateIn, x, y, z, bbIn); }
+    if (rand.nextFloat() < chance) { setBlockState(worldIn, bbIn, x, y, z, blockStateIn); }
 }
 
 
@@ -333,9 +333,9 @@ void StructureComponent::fillWithBlocksRandomLightCheck(World& world, const Boun
                         && j != maxX
                         && k != minZ
                         && k != maxZ) {
-                        setBlockState(world, blockState2, j, i, k, structureBB);
+                        setBlockState(world, structureBB, j, i, k, blockState2);
                     } else {
-                        setBlockState(world, blockState1, j, i, k, structureBB);
+                        setBlockState(world, structureBB, j, i, k, blockState1);
                     }
                 }
             }
@@ -353,7 +353,7 @@ void StructureComponent::fillWithRandomizedJunglePyramidStones(World& worldIn, c
                 if (!alwaysReplace || !lce::blocks::isReplaceableBlock(
                                               getBlockStateFromPos(worldIn, j, i, k, structureBB).getID())) {
                     const lce::BlockState block = JunglePyramidStones::selectBlocks(rng);
-                    setBlockState(worldIn, block, j, i, k, structureBB);
+                    setBlockState(worldIn, structureBB, j, i, k, block);
                 }
             }
         }
@@ -371,7 +371,7 @@ void StructureComponent::fillWithRandomizedStrongholdStones(World& worldIn, cons
                                               getBlockStateFromPos(worldIn, j, i, k, structureBB).getID())) {
                     const lce::BlockState block = StrongholdStones::selectBlocks(
                             rng, i == minY || i == maxY || j == minX || j == maxX || k == minZ || k == maxZ);
-                    setBlockState(worldIn, block, j, i, k, structureBB);
+                    setBlockState(worldIn, structureBB, j, i, k, block);
                 }
             }
         }
@@ -380,7 +380,7 @@ void StructureComponent::fillWithRandomizedStrongholdStones(World& worldIn, cons
 
 
 std::ostream& operator<<(std::ostream& out, const StructureComponent& structureComponent) {
-    const std::string dir = facingToString(structureComponent.facing);
+    const std::string dir = facingToString(structureComponent.m_facing);
     out << "{" << structureComponent.toString() << ", FACE=" << dir << "}";
     return out;
 }

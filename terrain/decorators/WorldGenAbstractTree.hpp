@@ -11,12 +11,13 @@ class World;
  */
 class WorldGenAbstractTree : public AbstractWorldGenerator {
 public:
+    ~WorldGenAbstractTree() noexcept override;
+
     /**
      * @brief Sets default decoration parameters for the tree generation.
      * This method can be overridden by derived classes to provide specific defaults.
      */
-    virtual void setDecorationDefaults() const {
-    }
+    virtual void setDecorationDefaults() const {}
 
     /**
      * @brief Generates saplings at the specified position in the world.
@@ -25,8 +26,7 @@ public:
      * @param rand Reference to the random number generator.
      * @param pos The position where saplings should be generated.
      */
-    virtual void generateSaplings(MU World *worldIn, MU RNG &rand, MU const Pos3D &pos) const {
-    }
+    virtual void generateSaplings(MU World *worldIn, MU RNG &rand, MU const Pos3D &pos) const {}
 
 protected:
     /**

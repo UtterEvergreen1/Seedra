@@ -35,8 +35,8 @@ namespace gen {
          * @brief Tracks the placement count and constraints for a specific piece type.
          */
         struct PiecePlaceCount {
-            PieceType pieceType; ///< The type of the piece.
-            int placeCount; ///< The number of times this piece has been placed.
+            int m_placeCount; ///< The number of times this piece has been placed.
+            PieceType m_pieceType; ///< The type of the piece.
 
             /**
              * @brief Retrieves the weight configuration for a specific piece type.
@@ -52,8 +52,8 @@ namespace gen {
              * @return True if the piece can be placed, false otherwise.
              */
             ND bool isValid() const {
-                c_int maxPlaceCount = PIECE_WEIGHTS[pieceType].maxPlaceCount;
-                return maxPlaceCount == 0 || placeCount < maxPlaceCount;
+                c_int maxPlaceCount = PIECE_WEIGHTS[m_pieceType].maxPlaceCount;
+                return maxPlaceCount == 0 || m_placeCount < maxPlaceCount;
             }
 
             /**
@@ -62,7 +62,7 @@ namespace gen {
              * @return True if the piece can be placed, false otherwise.
              */
             ND bool canPlace(c_int depth) const {
-                return isValid() && depth >= PIECE_WEIGHTS[pieceType].minDepth;
+                return isValid() && depth >= PIECE_WEIGHTS[m_pieceType].minDepth;
             }
         };
 
@@ -82,12 +82,8 @@ namespace gen {
         //       class attributes, variables, functions
         // #######################################################
     private:
-        RNG rng; ///< Random number generator for structure generation.
+        RNG m_rng; ///< Random number generator for structure generation.
 
-        // StructureComponent pieceArray[STRONGHOLD_ARRAY_SIZE]{};
-        // int pieceArraySize = 0;
-        // BoundingBox structureBB;
-        // Pos2D startPos;
 
     public:
         /**
@@ -96,24 +92,24 @@ namespace gen {
          */
         MU static std::string PIECE_TYPE_NAMES[13];
 
-        int pendingPieceArray[STRONGHOLD_ARRAY_SIZE]{}; ///< Array of pending pieces to be placed.
-        PiecePlaceCount piecePlaceCounts[11]{}; ///< Array of piece placement counts.
-        StructureComponent *altarChestsArray[4]{}; ///< Array of altar chest components.
+        int m_pendingPieceArray[STRONGHOLD_ARRAY_SIZE]{}; ///< Array of pending pieces to be placed.
+        PiecePlaceCount m_piecePlaceCounts[11]{}; ///< Array of piece placement counts.
+        StructureComponent *m_altarChestsArray[4]{}; ///< Array of altar chest components.
 
-        StructureComponent *portalRoomPiece = nullptr; ///< Pointer to the portal room component.
-        int eyesCount = 0; ///< Number of eyes in the portal room (to be populated by the rolls).
+        StructureComponent *m_portalRoomPiece = nullptr; ///< Pointer to the portal room component.
+        int m_eyesCount = 0; ///< Number of eyes in the portal room (to be populated by the rolls).
 
         // int startX = 0;
         // int startZ = 0;
-        int pendingPiecesArraySize = 0; ///< Size of the pending pieces array.
-        int altarChestArraySize = 0; ///< Size of the altar chest array.
-        int totalWeight = 145; ///< Total weight of all pieces.
-        int piecePlaceCountsSize = 11; ///< Size of the piece placement counts array.
+        int m_pendingPiecesArraySize = 0; ///< Size of the pending pieces array.
+        int m_altarChestArraySize = 0; ///< Size of the altar chest array.
+        int m_totalWeight = 145; ///< Total weight of all pieces.
+        int m_piecePlaceCountsSize = 11; ///< Size of the piece placement counts array.
 
-        GenerationStep generationStep = GS_Stronghold_Full; ///< Current generation step.
-        PieceType forcedPiece = PT_NONE; ///< Piece type to be forced during generation.
-        PieceType previousPiece = PT_NONE; ///< Previously placed piece type.
-        bool generationStopped = false; ///< Flag indicating if generation has stopped.
+        GenerationStep m_generationStep = GS_Stronghold_Full; ///< Current generation step.
+        PieceType m_forcedPiece = PT_NONE; ///< Piece type to be forced during generation.
+        PieceType m_previousPiece = PT_NONE; ///< Previously placed piece type.
+        bool m_generationStopped = false; ///< Flag indicating if generation has stopped.
 
         /**
          * @brief Default constructor for the Stronghold class.
@@ -124,6 +120,12 @@ namespace gen {
          * @brief Destructor for the Stronghold class.
          */
         ~Stronghold();
+
+        Stronghold(const Stronghold&) = delete;
+        Stronghold& operator=(const Stronghold&) = delete;
+
+        Stronghold(Stronghold&&) noexcept = default;
+        Stronghold& operator=(Stronghold&&) noexcept = default;
 
         /**
          * @brief Deletes all pieces in the Stronghold.
@@ -189,7 +191,7 @@ namespace gen {
          * @param facing The orientation of the piece.
          * @param depth The depth of the piece in the structure hierarchy.
          */
-        void genAndAddPiece(const Pos3D &pos, EnumFacing facing, i8 depth);
+        void genAndAddPiece(const Pos3D &pos, EnumFacing facing, i16 depth);
 
         /**
          * @brief Generates a piece from a small door.
@@ -262,304 +264,10 @@ namespace gen {
     };
 } // namespace gen
 
-namespace build {
-    namespace stronghold {
-        /**
-         * @enum Door
-         * @brief Represents the different types of doors in the Stronghold.
-         */
-        enum class Door {
-            OPENING = 1, ///< An open doorway.
-            WOOD_DOOR = 2, ///< A wooden door.
-            GRATES = 3, ///< Grates as a door.
-            IRON_DOOR = 4 ///< An iron door.
-        };
 
-        /**
-         * @brief Gets a random door type based on the given data.
-         * @param data The input data.
-         * @return The randomly selected door type.
-         */
-        MU static Door getRandomDoor(c_int data) {
-            switch (data) {
-                case 0:
-                case 1:
-                default:
-                    return Door::OPENING;
-                case 2:
-                    return Door::WOOD_DOOR;
-                case 3:
-                    return Door::GRATES;
-                case 4:
-                    return Door::IRON_DOOR;
-            }
-        }
-
-        /**
-         * @brief Places a door in the world.
-         * @param worldIn The world to modify.
-         * @param rng The random number generator.
-         * @param chunkBB The bounding box of the chunk.
-         * @param piece The structure component.
-         * @param door The type of door to place.
-         * @param x The X coordinate.
-         * @param y The Y coordinate.
-         * @param z The Z coordinate.
-         */
-        extern void placeDoor(World &worldIn, MU RNG &rng, const BoundingBox &chunkBB,
-                              const StructureComponent &piece, Door door, c_int x, c_int y, c_int z);
-
-        /*
-         * @class ChestCorridor
-         * @brief Represents a chest corridor in the Stronghold.
-         */
-        class MU ChestCorridor final {
-        public:
-            MU ChestCorridor() = delete;
-
-            /**
-             * @brief Adds the chest corridor component parts to the world.
-             * @param worldIn The world to modify.
-             * @param rng The random number generator.
-             * @param chunkBB The bounding box of the chunk.
-             * @param piece The structure component.
-             * @return True if the parts were added successfully, false otherwise.
-             */
-            static bool addComponentParts(
-                World &worldIn, RNG &rng, const BoundingBox &chunkBB, const StructureComponent &piece);
-        };
-
-        /*
-         * @class Corridor
-         * @brief Represents a corridor in the Stronghold.
-         */
-        class Corridor final {
-        public:
-            MU Corridor() = delete;
-
-            /**
-             * @brief Adds the corridor component parts to the world.
-             * @param worldIn The world to modify.
-             * @param rng The random number generator.
-             * @param chunkBB The bounding box of the chunk.
-             * @param piece The structure component.
-             * @return True if the parts were added successfully, false otherwise.
-             */
-            static bool addComponentParts(
-                World &worldIn, MU RNG &rng, const BoundingBox &chunkBB, const StructureComponent &piece);
-        };
-
-        /*
-         * @class Crossing
-         * @brief Represents a crossing in the Stronghold.
-         */
-        class Crossing final {
-        public:
-            MU Crossing() = delete;
-
-            /**
-             * @brief Adds the crossing component parts to the world.
-             * @param worldIn The world to modify.
-             * @param rng The random number generator.
-             * @param chunkBB The bounding box of the chunk.
-             * @param piece The structure component.
-             * @return True if the parts were added successfully, false otherwise.
-             */
-            static bool addComponentParts(
-                World &worldIn, RNG &rng, const BoundingBox &chunkBB, const StructureComponent &piece);
-        };
-
-        /*
-         * @class LeftTurn
-         * @brief Represents a left turn in the Stronghold.
-         */
-        class MU LeftTurn final {
-        public:
-            MU LeftTurn() = delete;
-
-            /**
-             * @brief Adds the left turn component parts to the world.
-             * @param worldIn The world to modify.
-             * @param rng The random number generator.
-             * @param chunkBB The bounding box of the chunk.
-             * @param piece The structure component.
-             * @return True if the parts were added successfully, false otherwise.
-             */
-            static bool addComponentParts(
-                World &worldIn, RNG &rng, const BoundingBox &chunkBB, const StructureComponent &piece);
-        };
-
-        /*
-         * @class Library
-         * @brief Represents a library in the Stronghold.
-         */
-        class MU Library final {
-        public:
-            MU Library() = delete;
-
-            /**
-             * @brief Adds the library component parts to the world.
-             * @param worldIn The world to modify.
-             * @param rng The random number generator.
-             * @param chunkBB The bounding box of the chunk.
-             * @param piece The structure component.
-             * @return True if the parts were added successfully, false otherwise.
-             */
-            static bool addComponentParts(
-                World &worldIn, RNG &rng, const BoundingBox &chunkBB, const StructureComponent &piece);
-        };
-
-        /*
-         * @class PortalRoom
-         * @brief Represents the portal room in the Stronghold.
-         */
-        class MU PortalRoom final {
-        public:
-            MU PortalRoom() = delete;
-
-            /**
-             * @brief Adds the portal room component parts to the world.
-             * @param worldIn The world to modify.
-             * @param rng The random number generator.
-             * @param chunkBB The bounding box of the chunk.
-             * @param piece The structure component.
-             * @return True if the parts were added successfully, false otherwise.
-             */
-            static bool addComponentParts(
-                World &worldIn, RNG &rng, const BoundingBox &chunkBB, const StructureComponent &piece);
-        };
-
-        /*
-         * @class Prison
-         * @brief Represents a prison in the Stronghold.
-         */
-        class MU Prison final {
-        public:
-            MU Prison() = delete;
-
-            /**
-             * @brief Adds the prison component parts to the world.
-             * @param worldIn The world to modify.
-             * @param rng The random number generator.
-             * @param chunkBB The bounding box of the chunk.
-             * @param piece The structure component.
-             * @return True if the parts were added successfully, false otherwise.
-             */
-            static bool addComponentParts(
-                World &worldIn, RNG &rng, const BoundingBox &chunkBB, const StructureComponent &piece);
-        };
-
-        /*
-         * @class RightTurn
-         * @brief Represents a right turn in the Stronghold.
-         */
-        class MU RightTurn final {
-        public:
-            MU RightTurn() = delete;
-
-            /**
-             * @brief Adds the right turn component parts to the world.
-             * @param worldIn The world to modify.
-             * @param rng The random number generator.
-             * @param chunkBB The bounding box of the chunk.
-             * @param piece The structure component.
-             * @return True if the parts were added successfully, false otherwise.
-             */
-            static bool addComponentParts(
-                World &worldIn, RNG &rng, const BoundingBox &chunkBB, const StructureComponent &piece);
-        };
-
-        /*
-         * @class RoomCrossing
-         * @brief Represents a room crossing in the Stronghold.
-         */
-        class MU RoomCrossing final {
-        public:
-            MU RoomCrossing() = delete;
-
-            /**
-             * @brief Adds the room crossing component parts to the world.
-             * @param worldIn The world to modify.
-             * @param rng The random number generator.
-             * @param chunkBB The bounding box of the chunk.
-             * @param piece The structure component.
-             * @return True if the parts were added successfully, false otherwise.
-             */
-            static bool addComponentParts(
-                World &worldIn, RNG &rng, const BoundingBox &chunkBB, const StructureComponent &piece);
-        };
-
-        /*
-         * @class StairsDown
-         * @brief Represents stairs going down in the Stronghold.
-         */
-        class MU Stairs final {
-        public:
-            MU Stairs() = delete;
-
-            /**
-             * @brief Adds the stairs component parts to the world.
-             * @param worldIn The world to modify.
-             * @param rng The random number generator.
-             * @param chunkBB The bounding box of the chunk.
-             * @param piece The structure component.
-             * @return True if the parts were added successfully, false otherwise.
-             */
-            static bool addComponentParts(
-                World &worldIn, RNG &rng, const BoundingBox &chunkBB, const StructureComponent &piece);
-        };
-
-        /*
-         * @class StairsStraight
-         * @brief Represents straight stairs in the Stronghold.
-         */
-        class MU StairsStraight final {
-        public:
-            MU StairsStraight() = delete;
-
-            /**
-             * @brief Adds the straight stairs component parts to the world.
-             * @param worldIn The world to modify.
-             * @param rng The random number generator.
-             * @param chunkBB The bounding box of the chunk.
-             * @param piece The structure component.
-             * @return True if the parts were added successfully, false otherwise.
-             */
-            static bool addComponentParts(
-                World &worldIn, RNG &rng, const BoundingBox &chunkBB, const StructureComponent &piece);
-        };
-
-        /*
-         * @class Straight
-         * @brief Represents a straight corridor in the Stronghold.
-         */
-        class MU Straight final {
-        public:
-            MU Straight() = delete;
-
-            /**
-             * @brief Adds the straight corridor component parts to the world.
-             * @param worldIn The world to modify.
-             * @param rng The random number generator.
-             * @param chunkBB The bounding box of the chunk.
-             * @param piece The structure component.
-             * @return True if the parts were added successfully, false otherwise.
-             */
-            static bool addComponentParts(
-                World &worldIn, RNG &rng, const BoundingBox &chunkBB, const StructureComponent &piece);
-        };
-
-        /**
-         * @brief Adds the component parts to the world.
-         * @param worldIn The world to modify.
-         * @param rng The random number generator.
-         * @param chunkBB The bounding box of the chunk.
-         * @param piece The structure component.
-         * @return True if the parts were added successfully, false otherwise.
-         */
-        MU extern bool addComponentParts(
-            World &worldIn, RNG &rng, const BoundingBox &chunkBB, const StructureComponent &piece);
-    }
+namespace build::stronghold {
+    MU extern bool addComponentParts(
+        World &worldIn, RNG &rng, const BoundingBox &chunkBB, StructureComponent &piece);
 } // namespace build::stronghold
 
 namespace rolls {
@@ -612,7 +320,7 @@ namespace rolls {
          * @param index The index of the eye.
          */
         static void setEye(const BoundingBox &chunkBB, const StructureComponent *piece, int x, int z, RNG &random,
-                           std::vector<bool> &portalRoomEyes, int &success, int index);
+                           std::vector<bool> &portalRoomEyes, int &success, size_t index);
 
         /**
          * @brief Gets the placements of eyes in the portal room.

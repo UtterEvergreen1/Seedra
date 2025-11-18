@@ -87,8 +87,8 @@ public:
      */
     ND inline lce::BlockState getBlock(c_i32 x, c_i32 y, c_i32 z) const {
         if EXPECT_FALSE(isInvalidIndex(x, y, z)) { return lce::BlocksInit::AIR.getState(); }
-        u16 block = blocks[getStorageIndex(x, y, z)];
-        return lce::BlockState(block >> 4,  block & 15);
+        c_u16 block = blocks[getStorageIndex(x, y, z)];
+        return {static_cast<u16>(block >> 4),  static_cast<u8>(block & 15)};
     }
 
     /**
@@ -131,7 +131,7 @@ public:
     inline void setBlock(c_i32 x, c_i32 y, c_i32 z, const lce::BlockState block) {
         if EXPECT_FALSE(isInvalidIndex(x, y, z)) { return; }
         // TODO: optimize this
-        blocks[getStorageIndex(x, y, z)] = ((block.getID() << 4) | block.getDataTag());
+        blocks[getStorageIndex(x, y, z)] = static_cast<u16>((block.getID() << 4) | block.getDataTag());
     }
 
     /**
@@ -153,7 +153,7 @@ public:
      */
     MU inline void setBlockAndData(c_i32 x, c_i32 y, c_i32 z, c_u16 id, c_u8 data) {
         if EXPECT_FALSE(isInvalidIndex(x, y, z)) { return; }
-        blocks[getStorageIndex(x, y, z)] = ((id << 4) | data);
+        blocks[getStorageIndex(x, y, z)] = static_cast<u16>((id << 4) | data);
     }
 
     /**
@@ -175,7 +175,7 @@ public:
      */
     MU inline void setBlockId(c_i32 x, c_i32 y, c_i32 z, c_u16 block) {
         if EXPECT_FALSE(isInvalidIndex(x, y, z)) { return; }
-        blocks[getStorageIndex(x, y, z)] = block << 4;
+        blocks[getStorageIndex(x, y, z)] = static_cast<u16>(block << 4);
     }
 
     /**
@@ -320,8 +320,8 @@ public:
      * @param z Z-coordinate.
      * @return The storage index.
      */
-    static i64 getStorageIndex(c_i32 x, c_i32 y, c_i32 z) {
-        c_i32 value = x << 12 | z << 8 | y;
+    static size_t getStorageIndex(c_i32 x, c_i32 y, c_i32 z) {
+        const auto value = static_cast<size_t>(x << 12 | z << 8 | y);
         // c_i32 value = y << 8 | x << 4 | z;
         return value;
     }

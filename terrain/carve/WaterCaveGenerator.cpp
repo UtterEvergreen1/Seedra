@@ -9,7 +9,7 @@ MU Pos2DVec_t WaterCaveGenerator::getStartingChunks(const Generator* g, Pos2D lo
 
     Pos2DVec_t chunkPositions;
     c_int sizeChecked = std::abs(upper.x - lower.x) * std::abs(upper.z - lower.z);
-    c_int reserveSize = (int) ((float) (sizeChecked) *RESERVE_MULTIPLIER / 15.0F + 4);
+    const auto reserveSize = static_cast<size_t>(static_cast<float>(sizeChecked) *RESERVE_MULTIPLIER / 15.0F + 4);
     chunkPositions.reserve(reserveSize);
 
     lower = lower - CHUNK_RANGE;
@@ -23,7 +23,7 @@ MU Pos2DVec_t WaterCaveGenerator::getStartingChunks(const Generator* g, Pos2D lo
         for (chunkPos.z = lower.z; chunkPos.z <= upper.z; ++chunkPos.z) {
             setupRNG(g, rng, seedMultiplier, chunkPos);
 
-            int tunnelCount = rng.nextInt(rng.nextInt(rng.nextInt(40) + 1) + 1);
+            c_int tunnelCount = rng.nextInt(rng.nextInt(rng.nextInt(40) + 1) + 1);
 
             if EXPECT_TRUE (rng.nextInt(15) == 0 && tunnelCount != 0) {
                 chunkPositions.emplace_back(chunkPos.asType<int>());
@@ -43,7 +43,7 @@ void WaterCaveGenerator::addTunnel(World& worldIn, c_i64 seedModifier, Pos2D bas
     float directionModifier = 0.0F;
     float slopeModifier = 0.0F;
     RNG rng;
-    rng.setSeed(seedModifier);
+    rng.setSeed(static_cast<u64>(seedModifier));
 
     if (theMaxSegment <= 0) {
         constexpr int rangeBoundary = CHUNK_RANGE * 16 - 16;
@@ -59,22 +59,22 @@ void WaterCaveGenerator::addTunnel(World& worldIn, c_i64 seedModifier, Pos2D bas
     }
 
     c_int splitPoint = rng.nextInt(theMaxSegment / 2) + theMaxSegment / 4;
-    const Pos2D startPos((int) start.x, (int) start.z);
+    const Pos2D startPos(static_cast<int>(start.x), static_cast<int>(start.z));
     // DoublePos2D targetCenter = (baseChunk * 16 + 8).asType<double>();
-    float maxSegmentFDivPI = PI_FLOAT / (float)(theMaxSegment);
+    float maxSegmentFDivPI = PI_FLOAT / static_cast<float>(theMaxSegment);
     // c_double maxDistanceSq = (theTunnelWidth + 18.0F) * (theTunnelWidth + 18.0F);
     c_bool isTunnelWide = rng.nextInt(6) == 0;
 
     for (; theCurrentSegment < theMaxSegment; ++theCurrentSegment) {
         c_double tunnelWidthScaled =
-                1.5 + (double) (MathHelper::sin((float) theCurrentSegment * maxSegmentFDivPI) * theTunnelWidth);
+                1.5 + static_cast<double>(MathHelper::sin(static_cast<float>(theCurrentSegment) * maxSegmentFDivPI) * theTunnelWidth);
         c_double tunnelHeight = tunnelWidthScaled * theHeightMultiplier;
 
         {
             c_float directionCosine = MathHelper::cos(theTunnelSlope);
-            start.x += (double) (MathHelper::cos(theTunnelDirection) * directionCosine);
-            start.y += (double) (MathHelper::sin(theTunnelSlope));
-            start.z += (double) (MathHelper::sin(theTunnelDirection) * directionCosine);
+            start.x += static_cast<double>(MathHelper::cos(theTunnelDirection) * directionCosine);
+            start.y += static_cast<double>(MathHelper::sin(theTunnelSlope));
+            start.z += static_cast<double>(MathHelper::sin(theTunnelDirection) * directionCosine);
         }
 
         if (isTunnelWide) {
@@ -101,7 +101,7 @@ void WaterCaveGenerator::addTunnel(World& worldIn, c_i64 seedModifier, Pos2D bas
             float tunnelWidth1, tunnelWidth2;
             i64 seed1, seed2;
 
-            if (lce::isXbox(g->getConsole())) {
+            if (lce::isXbox(m_g->getConsole())) {
                 tunnelWidth1 = rng.nextFloat();
                 seed1 = rng.nextLongI();
                 tunnelWidth2 = rng.nextFloat();
@@ -120,7 +120,7 @@ void WaterCaveGenerator::addTunnel(World& worldIn, c_i64 seedModifier, Pos2D bas
             return;
         }
 
-        if (!isOceanic(world.getBiomeIdAt(startPos.x, startPos.z))) return;
+        if (!isOceanic(m_world.getBiomeIdAt(startPos.x, startPos.z))) return;
 
         if (!isMainTunnel && rng.nextInt(4) == 0) { continue; }
         // DoublePos2D distance = start.asPos2D() - targetCenter;
@@ -146,24 +146,24 @@ void WaterCaveGenerator::addTunnel(World& worldIn, c_i64 seedModifier, Pos2D bas
 
         min += baseChunkX16;
         max += baseChunkX16;
-        if (!genBounds.isVecInside(min) || !genBounds.isVecInside(max)) {
+        if (!m_genBounds.isVecInside(min) || !m_genBounds.isVecInside(max)) {
             continue;
         }
         min -= baseChunkX16;
         max -= baseChunkX16;
 
         for (pos.x = min.x; pos.x < max.x; ++pos.x) {
-            scale.x = ((double) (pos.x + baseChunk.x * 16) + 0.5 - start.x) / tunnelWidthScaled;
+            scale.x = (static_cast<double>(pos.x + baseChunk.x * 16) + 0.5 - start.x) / tunnelWidthScaled;
 
             for (pos.z = min.z; pos.z < max.z; ++pos.z) {
-                scale.z = ((double) (pos.z + baseChunk.z * 16) + 0.5 - start.z) / tunnelWidthScaled;
+                scale.z = (static_cast<double>(pos.z + baseChunk.z * 16) + 0.5 - start.z) / tunnelWidthScaled;
 
                 double scaleXZSq = scale.distanceSqXZ();
 
                 if (scaleXZSq >= 1.0) { continue; }
 
                 for (pos.y = max.y - 1; pos.y >= min.y; --pos.y) {
-                    scale.y = ((double) pos.y + 0.5 - start.y) / tunnelHeight;
+                    scale.y = (static_cast<double>(pos.y) + 0.5 - start.y) / tunnelHeight;
 
                     if (scale.y <= -0.7 || scaleXZSq + scale.y * scale.y >= 1.0 || pos.y >= 62) { continue; }
 
@@ -175,7 +175,7 @@ void WaterCaveGenerator::addTunnel(World& worldIn, c_i64 seedModifier, Pos2D bas
                     if (blockPos.y < 9) {
                         worldIn.setBlockId(blockPos, lce::blocks::STILL_LAVA_ID);
                     } else if (blockPos.y < 10) {
-                        if (rng.nextFloat() >= 0.25) {
+                        if (rng.nextFloat() >= 0.25F) {
                             worldIn.setBlockId(blockPos, lce::blocks::OBSIDIAN_ID);
                         } else {
                             worldIn.setBlockId(blockPos, lce::blocks::MAGMA_BLOCK_ID);
@@ -224,34 +224,34 @@ void WaterCaveGenerator::addTunnel(World& worldIn, c_i64 seedModifier, Pos2D bas
     }
 }
 
-void WaterCaveGenerator::addRoom(World& worldIn, i64 seedModifier, Pos2D target, const DoublePos3D& roomStart,
+void WaterCaveGenerator::addRoom(World& worldIn, c_i64 seedModifier, const Pos2D baseChunk, const DoublePos3D& roomStart,
                                  RNG& rng) {
-    addTunnel(worldIn, seedModifier, target, roomStart, 1.0F + rng.nextFloat() * 6.0F, 0.0F, 0.0F, -1, -1, 0.5);
+    addTunnel(worldIn, seedModifier, baseChunk, roomStart, 1.0F + rng.nextFloat() * 6.0F, 0.0F, 0.0F, -1, -1, 0.5);
 }
 
 
-void WaterCaveGenerator::addFeature(World& worldIn, Pos2D baseChunk, bool accurate) {
-    c_int tunnelCount = rng.nextInt(rng.nextInt(rng.nextInt(40) + 1) + 1);
+void WaterCaveGenerator::addFeature(World& worldIn, const Pos2D baseChunk, MU c_bool accurate) {
+    c_int tunnelCount = m_rng.nextInt(m_rng.nextInt(m_rng.nextInt(40) + 1) + 1);
 
-    if EXPECT_TRUE (rng.nextInt(15) != 0) { return; }
+    if EXPECT_TRUE (m_rng.nextInt(15) != 0) { return; }
 
     for (int currentTunnel = 0; currentTunnel < tunnelCount; ++currentTunnel) {
-        auto tunnelStartZ = (double) (baseChunk.z * 16 + rng.nextInt(16));
-        auto tunnelStartY = (double) rng.nextInt(rng.nextInt(120) + 8);
-        auto tunnelStartX = (double) (baseChunk.x * 16 + rng.nextInt(16));
+        auto tunnelStartZ = static_cast<double>(baseChunk.z * 16 + m_rng.nextInt(16));
+        auto tunnelStartY = static_cast<double>(m_rng.nextInt(m_rng.nextInt(120) + 8));
+        auto tunnelStartX = static_cast<double>(baseChunk.x * 16 + m_rng.nextInt(16));
         int segmentCount = 1;
 
-        if (rng.nextInt(4) == 0) {
-            addRoom(worldIn, rng.nextLongI(), baseChunk, {tunnelStartX, tunnelStartY, tunnelStartZ}, rng);
-            segmentCount = rng.nextInt(4) + 1;
+        if (m_rng.nextInt(4) == 0) {
+            addRoom(worldIn, m_rng.nextLongI(), baseChunk, {tunnelStartX, tunnelStartY, tunnelStartZ}, m_rng);
+            segmentCount = m_rng.nextInt(4) + 1;
         }
 
         for (int currentSegment = 0; currentSegment < segmentCount; ++currentSegment) {
-            c_float yaw = rng.nextFloat() * (PI_FLOAT * 2.0F);
-            c_float pitch = (rng.nextFloat() - 0.5F) * 2.0F / 8.0F;
-            c_float tunnelLength = rng.nextFloat() * 2.0F + rng.nextFloat();
+            c_float yaw = m_rng.nextFloat() * (PI_FLOAT * 2.0F);
+            c_float pitch = (m_rng.nextFloat() - 0.5F) * 2.0F / 8.0F;
+            c_float tunnelLength = m_rng.nextFloat() * 2.0F + m_rng.nextFloat();
 
-            addTunnel(worldIn, rng.nextLongI(), baseChunk, {tunnelStartX, tunnelStartY, tunnelStartZ},
+            addTunnel(worldIn, m_rng.nextLongI(), baseChunk, {tunnelStartX, tunnelStartY, tunnelStartZ},
                       tunnelLength, yaw, pitch, 0, 0, 1.0);
         }
     }
@@ -291,7 +291,7 @@ void WaterCaveGenerator::addTunnel(ChunkPrimer* chunkPrimer, c_i64 seedModifier,
     float directionModifier = 0.0F;
     float slopeModifier = 0.0F;
     RNG rng;
-    rng.setSeed(seedModifier);
+    rng.setSeed(static_cast<u64>(seedModifier));
 
     if (maxTunnelSegment <= 0) {
         constexpr int rangeBoundary = CHUNK_RANGE * 16 - 16;
@@ -307,22 +307,22 @@ void WaterCaveGenerator::addTunnel(ChunkPrimer* chunkPrimer, c_i64 seedModifier,
     }
 
     c_int splitPoint = rng.nextInt(maxTunnelSegment / 2) + maxTunnelSegment / 4;
-    const Pos2D startPos((int) start.x, (int) start.z);
+    const Pos2D startPos(static_cast<int>(start.x), static_cast<int>(start.z));
     DoublePos2D targetCenter = (chunk * 16 + 8).asType<double>();
-    float maxSegmentFDivPI = PI_FLOAT / (float)(maxTunnelSegment);
-    c_double maxDistanceSq = (tunnelWidth + 18.0F) * (tunnelWidth + 18.0F);
+    float maxSegmentFDivPI = PI_FLOAT / static_cast<float>(maxTunnelSegment);
+    c_auto maxDistanceSq = static_cast<double>((tunnelWidth + 18.0F) * (tunnelWidth + 18.0F));
     c_bool isTunnelWide = rng.nextInt(6) == 0;
 
     for (; currentTunnelSegment < maxTunnelSegment; ++currentTunnelSegment) {
         c_double tunnelWidthScaled =
-                1.5 + (double) (MathHelper::sin((float) currentTunnelSegment * maxSegmentFDivPI) * tunnelWidth);
+                1.5 + static_cast<double>(MathHelper::sin(static_cast<float>(currentTunnelSegment) * maxSegmentFDivPI) * tunnelWidth);
         c_double tunnelHeight = tunnelWidthScaled * tunnelHeightMultiplier;
 
         {
             c_float directionCosine = MathHelper::cos(tunnelSlope);
-            start.x += (double) (MathHelper::cos(tunnelDirection) * directionCosine);
-            start.y += (double) (MathHelper::sin(tunnelSlope));
-            start.z += (double) (MathHelper::sin(tunnelDirection) * directionCosine);
+            start.x += static_cast<double>(MathHelper::cos(tunnelDirection) * directionCosine);
+            start.y += static_cast<double>(MathHelper::sin(tunnelSlope));
+            start.z += static_cast<double>(MathHelper::sin(tunnelDirection) * directionCosine);
         }
 
         if (isTunnelWide) {
@@ -349,7 +349,7 @@ void WaterCaveGenerator::addTunnel(ChunkPrimer* chunkPrimer, c_i64 seedModifier,
             float tunnelWidth1, tunnelWidth2;
             i64 seed1, seed2;
 
-            if (lce::isXbox(g->getConsole())) {
+            if (lce::isXbox(m_g->getConsole())) {
                 tunnelWidth1 = rng.nextFloat();
                 seed1 = rng.nextLongI();
                 tunnelWidth2 = rng.nextFloat();
@@ -368,7 +368,7 @@ void WaterCaveGenerator::addTunnel(ChunkPrimer* chunkPrimer, c_i64 seedModifier,
             return;
         }
 
-        if (!isOceanic(world.getBiomeIdAt(startPos.x, startPos.z))) return;
+        if (!isOceanic(m_world.getBiomeIdAt(startPos.x, startPos.z))) return;
 
         if (!isMainTunnel && rng.nextInt(4) == 0) { continue; }
         DoublePos2D distance = start.asPos2D() - targetCenter;
@@ -377,10 +377,10 @@ void WaterCaveGenerator::addTunnel(ChunkPrimer* chunkPrimer, c_i64 seedModifier,
 
         if (distance.distanceSq() - segmentsRemaining * segmentsRemaining > maxDistanceSq) { return; }
 
-        if (start.x < targetCenter.x - 16.0 - tunnelWidth * 2.0 ||
-            start.z < targetCenter.z - 16.0 - tunnelWidth * 2.0 ||
-            start.x > targetCenter.x + 16.0 + tunnelWidth * 2.0 ||
-            start.z > targetCenter.z + 16.0 + tunnelWidth * 2.0) { continue; }
+        if (start.x < targetCenter.x - 16.0 - static_cast<double>(tunnelWidth) * 2.0 ||
+            start.z < targetCenter.z - 16.0 - static_cast<double>(tunnelWidth) * 2.0 ||
+            start.x > targetCenter.x + 16.0 + static_cast<double>(tunnelWidth) * 2.0 ||
+            start.z > targetCenter.z + 16.0 + static_cast<double>(tunnelWidth) * 2.0) { continue; }
 
         Pos3D min;
         Pos3D max;
@@ -406,17 +406,17 @@ void WaterCaveGenerator::addTunnel(ChunkPrimer* chunkPrimer, c_i64 seedModifier,
 
 
         for (pos.x = min.x; pos.x < max.x; ++pos.x) {
-            scale.x = ((double) (pos.x + chunk.x * 16) + 0.5 - start.x) / tunnelWidthScaled;
+            scale.x = (static_cast<double>(pos.x + chunk.x * 16) + 0.5 - start.x) / tunnelWidthScaled;
 
             for (pos.z = min.z; pos.z < max.z; ++pos.z) {
-                scale.z = ((double) (pos.z + chunk.z * 16) + 0.5 - start.z) / tunnelWidthScaled;
+                scale.z = (static_cast<double>(pos.z + chunk.z * 16) + 0.5 - start.z) / tunnelWidthScaled;
 
                 double scaleXZSq = scale.distanceSqXZ();
 
                 if (scaleXZSq >= 1.0) { continue; }
 
                 for (pos.y = max.y - 1; pos.y >= min.y; --pos.y) {
-                    scale.y = ((double) pos.y + 0.5 - start.y) / tunnelHeight;
+                    scale.y = (static_cast<double>(pos.y) + 0.5 - start.y) / tunnelHeight;
 
                     if (scale.y <= -0.7 || scaleXZSq + scale.y * scale.y >= 1.0 || pos.y >= 62) { continue; }
 
@@ -428,7 +428,7 @@ void WaterCaveGenerator::addTunnel(ChunkPrimer* chunkPrimer, c_i64 seedModifier,
                     if (blockPos.y < 9) {
                         chunkPrimer->setBlockId(blockPos, lce::blocks::STILL_LAVA_ID);
                     } else if (blockPos.y < 10) {
-                        if (rng.nextFloat() >= 0.25) {
+                        if (rng.nextFloat() >= 0.25F) {
                             chunkPrimer->setBlockId(blockPos, lce::blocks::OBSIDIAN_ID);
                         } else {
                             chunkPrimer->setBlockId(blockPos, lce::blocks::MAGMA_BLOCK_ID);
@@ -484,28 +484,28 @@ void WaterCaveGenerator::addRoom(i64 seedModifier, Pos2D target, ChunkPrimer* ch
 }
 
 
-void WaterCaveGenerator::addFeature(ChunkPrimer* chunkPrimer, Pos2D baseChunk, Pos2D currentChunk, bool accurate) {
-    c_int tunnelCount = rng.nextInt(rng.nextInt(rng.nextInt(40) + 1) + 1);
+void WaterCaveGenerator::addFeature(ChunkPrimer* chunkPrimer, const Pos2D baseChunk, const Pos2D currentChunk, MU c_bool accurate) {
+    c_int tunnelCount = m_rng.nextInt(m_rng.nextInt(m_rng.nextInt(40) + 1) + 1);
 
-    if EXPECT_TRUE (rng.nextInt(15) != 0) { return; }
+    if EXPECT_TRUE (m_rng.nextInt(15) != 0) { return; }
 
     for (int currentTunnel = 0; currentTunnel < tunnelCount; ++currentTunnel) {
-        auto tunnelStartZ = (double) (baseChunk.z * 16 + rng.nextInt(16));
-        auto tunnelStartY = (double) rng.nextInt(rng.nextInt(120) + 8);
-        auto tunnelStartX = (double) (baseChunk.x * 16 + rng.nextInt(16));
+        auto tunnelStartZ = static_cast<double>(baseChunk.z * 16 + m_rng.nextInt(16));
+        auto tunnelStartY = static_cast<double>(m_rng.nextInt(m_rng.nextInt(120) + 8));
+        auto tunnelStartX = static_cast<double>(baseChunk.x * 16 + m_rng.nextInt(16));
         int segmentCount = 1;
 
-        if (rng.nextInt(4) == 0) {
-            addRoom(rng.nextLongI(), currentChunk, chunkPrimer, {tunnelStartX, tunnelStartY, tunnelStartZ}, rng);
-            segmentCount = rng.nextInt(4) + 1;
+        if (m_rng.nextInt(4) == 0) {
+            addRoom(m_rng.nextLongI(), currentChunk, chunkPrimer, {tunnelStartX, tunnelStartY, tunnelStartZ}, m_rng);
+            segmentCount = m_rng.nextInt(4) + 1;
         }
 
         for (int currentSegment = 0; currentSegment < segmentCount; ++currentSegment) {
-            c_float yaw = rng.nextFloat() * (PI_FLOAT * 2.0F);
-            c_float pitch = (rng.nextFloat() - 0.5F) * 2.0F / 8.0F;
-            c_float tunnelLength = rng.nextFloat() * 2.0F + rng.nextFloat();
+            c_float yaw = m_rng.nextFloat() * (PI_FLOAT * 2.0F);
+            c_float pitch = (m_rng.nextFloat() - 0.5F) * 2.0F / 8.0F;
+            c_float tunnelLength = m_rng.nextFloat() * 2.0F + m_rng.nextFloat();
 
-            addTunnel(chunkPrimer, rng.nextLongI(), currentChunk, {tunnelStartX, tunnelStartY, tunnelStartZ},
+            addTunnel(chunkPrimer, m_rng.nextLongI(), currentChunk, {tunnelStartX, tunnelStartY, tunnelStartZ},
                       tunnelLength, yaw, pitch, 0, 0, 1.0);
         }
     }

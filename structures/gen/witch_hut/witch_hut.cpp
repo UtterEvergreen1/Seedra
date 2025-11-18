@@ -6,6 +6,7 @@
 #include "terrain/World.hpp"
 
 #include "lce/blocks/__include.hpp"
+#include "witch_hut.hpp"
 
 namespace scattered_features {
 
@@ -13,10 +14,13 @@ namespace scattered_features {
     using namespace lce::blocks::states;
 
 
+    SwampHut::~SwampHut() = default;
+
+
     bool SwampHut::addComponentParts(World& worldIn, RNG& rng, const BoundingBox& chunkBB) {
 
-        int sFSX = this->scatteredFeatureSizeX;
-        int sFSZ = this->scatteredFeatureSizeZ;
+        MU int sFSX = this->scatteredFeatureSizeX;
+        MU int sFSZ = this->scatteredFeatureSizeZ;
 
         if (!this->offsetToAverageGroundLevel(worldIn, chunkBB, 0)) {
             return false;
@@ -32,16 +36,16 @@ namespace scattered_features {
             this->fillWithBlocks(worldIn, chunkBB, 5, 0, 2, 5, 3, 2, lce::BlocksInit::OAK_WOOD.getDefaultState(), lce::BlocksInit::OAK_WOOD.getDefaultState(), false);
             this->fillWithBlocks(worldIn, chunkBB, 1, 0, 7, 1, 3, 7, lce::BlocksInit::OAK_WOOD.getDefaultState(), lce::BlocksInit::OAK_WOOD.getDefaultState(), false);
             this->fillWithBlocks(worldIn, chunkBB, 5, 0, 7, 5, 3, 7, lce::BlocksInit::OAK_WOOD.getDefaultState(), lce::BlocksInit::OAK_WOOD.getDefaultState(), false);
-            this->setBlockState(worldIn, lce::BlocksInit::OAK_FENCE.getDefaultState(), 2, 3, 2, chunkBB);
-            this->setBlockState(worldIn, lce::BlocksInit::OAK_FENCE.getDefaultState(), 3, 3, 7, chunkBB);
-            this->setBlockState(worldIn, lce::BlocksInit::AIR.getDefaultState(), 1, 3, 4, chunkBB);
-            this->setBlockState(worldIn, lce::BlocksInit::AIR.getDefaultState(), 5, 3, 4, chunkBB);
-            this->setBlockState(worldIn, lce::BlocksInit::AIR.getDefaultState(), 5, 3, 5, chunkBB);
+            this->setBlockState(worldIn, chunkBB, 2, 3, 2, lce::BlocksInit::OAK_FENCE.getDefaultState());
+            this->setBlockState(worldIn, chunkBB, 3, 3, 7, lce::BlocksInit::OAK_FENCE.getDefaultState());
+            this->setBlockState(worldIn, chunkBB, 1, 3, 4, lce::BlocksInit::AIR.getDefaultState());
+            this->setBlockState(worldIn, chunkBB, 5, 3, 4, lce::BlocksInit::AIR.getDefaultState());
+            this->setBlockState(worldIn, chunkBB, 5, 3, 5, lce::BlocksInit::AIR.getDefaultState());
             // this->setBlockState(worldIn, lce::BlocksInit::FLOWER_POT.getDefaultState().withProperty(BlockFlowerPot.CONTENTS, BlockFlowerPot.EnumFlowerType.MUSHROOM_RED), 1, 3, 5, chunkBB);
-            this->setBlockState(worldIn, lce::BlocksInit::CRAFTING_TABLE.getDefaultState(), 3, 2, 6, chunkBB);
-            this->setBlockState(worldIn, lce::BlocksInit::CAULDRON.getDefaultState(), 4, 2, 6, chunkBB);
-            this->setBlockState(worldIn, lce::BlocksInit::OAK_FENCE.getDefaultState(), 1, 2, 1, chunkBB);
-            this->setBlockState(worldIn, lce::BlocksInit::OAK_FENCE.getDefaultState(), 5, 2, 1, chunkBB);
+            this->setBlockState(worldIn, chunkBB, 3, 2, 6, lce::BlocksInit::CRAFTING_TABLE.getDefaultState());
+            this->setBlockState(worldIn, chunkBB, 4, 2, 6, lce::BlocksInit::CAULDRON.getDefaultState());
+            this->setBlockState(worldIn, chunkBB, 1, 2, 1, lce::BlocksInit::OAK_FENCE.getDefaultState());
+            this->setBlockState(worldIn, chunkBB, 5, 2, 1, lce::BlocksInit::OAK_FENCE.getDefaultState());
             lce::BlockState iblockstate=lce::BlocksInit::SPRUCE_WOOD_STAIRS.getStateFromMeta(states::Stairs::withProperty(this->rotation.apply(this->mirror, EnumFacing::NORTH)));
             lce::BlockState iblockstate1=lce::BlocksInit::SPRUCE_WOOD_STAIRS.getStateFromMeta(states::Stairs::withProperty(this->rotation.apply(this->mirror, EnumFacing::EAST)));
             lce::BlockState iblockstate2=lce::BlocksInit::SPRUCE_WOOD_STAIRS.getStateFromMeta(states::Stairs::withProperty(this->rotation.apply(this->mirror, EnumFacing::WEST)));

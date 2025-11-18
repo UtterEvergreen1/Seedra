@@ -89,7 +89,7 @@ namespace enchants {
         /**
          * @brief Virtual destructor.
          */
-        virtual ~Enchant() = default;
+        virtual ~Enchant() noexcept;
 
         /**
          * @brief Returns the name of the enchantment.
@@ -191,5 +191,4 @@ namespace enchants {
             return getID() != enchant->getID();
         }
     };
-
 } // namespace enchants

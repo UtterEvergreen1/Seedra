@@ -191,7 +191,9 @@ public:
      * @brief Checks if the position is null (all coordinates are 0).
      * @return True if null, false otherwise.
      */
-    MU ND bool isNull() const { return x == 0 && y == 0 && z == 0; }
+    MU ND bool isNull() const {
+                return x == 0 && y == 0 && z == 0;
+            }
 
     /**
      * @brief Computes the absolute value of the position.

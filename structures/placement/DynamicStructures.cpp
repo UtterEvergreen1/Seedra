@@ -11,7 +11,7 @@ namespace Placement {
     template<typename Derived>
     int DynamicStructure<Derived>::CHUNK_RANGE = 16;
     template<typename Derived>
-    MU int DynamicStructure<Derived>::ATTEMPTS = 60;
+    MU size_t DynamicStructure<Derived>::ATTEMPTS = 60;
     template<typename Derived>
     MU int DynamicStructure<Derived>::CHUNK_BOUNDS = 24;
     template<typename Derived>
@@ -19,14 +19,14 @@ namespace Placement {
 
     template<typename Derived>
     Pos2D DynamicStructure<Derived>::getPosition(const Generator *g, c_int regionX, c_int regionZ) {
-        RNG rnds;
+        RNG rng;
         c_i64 featureSeed = static_cast<i64>(regionX * Derived::REGION_SIZE) * 341873128712ULL +
                             static_cast<i64>(regionZ * Derived::REGION_SIZE) * 132897987541ULL + g->getWorldSeed() + Derived::SALT;
-        rnds.setSeed(featureSeed);
+        rng.setSeed(static_cast<u64>(featureSeed));
         std::unordered_set<Pos2D, Pos2D::Hasher> attempted;
-        for (int attempts = 0; attempts < Derived::ATTEMPTS; attempts++) {
-            int xChunk = rnds.nextInt(Derived::CHUNK_RANGE);
-            int zChunk = rnds.nextInt(Derived::CHUNK_RANGE);
+        for (size_t attempts = 0; attempts < Derived::ATTEMPTS; attempts++) {
+            int xChunk = rng.nextInt(Derived::CHUNK_RANGE);
+            int zChunk = rng.nextInt(Derived::CHUNK_RANGE);
             if (attempted.emplace(xChunk, zChunk).second) {
                 // successfully placed
                 xChunk = regionX * Derived::REGION_SIZE + xChunk;
@@ -50,17 +50,17 @@ namespace Placement {
     template<typename Derived>
     Pos2DVec_t DynamicStructure<Derived>::
     getAllPossibleChunks(int64_t worldSeed, int regionX, int regionZ) {
-        RNG rnds;
+        RNG rng;
         c_i64 featureSeed = static_cast<i64>(regionX * Derived::REGION_SIZE) * 341873128712ULL +
                             static_cast<i64>(regionZ * Derived::REGION_SIZE) * 132897987541ULL + worldSeed + Derived::SALT;
-        rnds.setSeed(featureSeed);
+        rng.setSeed(static_cast<u64>(featureSeed));
         Pos2DVec_t positions;
         std::unordered_set<Pos2D, Pos2D::Hasher> attempted;
         positions.reserve(Derived::ATTEMPTS);
         attempted.reserve(Derived::ATTEMPTS);
-        for (int attempts = 0; attempts < Derived::ATTEMPTS; attempts++) {
-            int xChunk = rnds.nextInt(Derived::CHUNK_RANGE);
-            int zChunk = rnds.nextInt(Derived::CHUNK_RANGE);
+        for (size_t attempts = 0; attempts < Derived::ATTEMPTS; attempts++) {
+            int xChunk = rng.nextInt(Derived::CHUNK_RANGE);
+            int zChunk = rng.nextInt(Derived::CHUNK_RANGE);
             if (attempted.emplace(xChunk, zChunk).second) {
                 // successfully placed
                 xChunk = regionX * Derived::REGION_SIZE + xChunk;
@@ -90,14 +90,14 @@ namespace Placement {
 
     template<typename Derived>
     bool DynamicStructure<Derived>::isPossibleChunkPos(int64_t worldSeed, int regionX, int regionZ, const Pos2D &pos) {
-        RNG rnds;
+        RNG rng;
         c_i64 featureSeed = static_cast<i64>(regionX * Derived::REGION_SIZE) * 341873128712ULL +
                             static_cast<i64>(regionZ * Derived::REGION_SIZE) * 132897987541ULL + worldSeed + Derived::SALT;
-        rnds.setSeed(featureSeed);
+        rng.setSeed(static_cast<u64>(featureSeed));
         std::unordered_set<Pos2D, Pos2D::Hasher> attempted;
-        for (int attempts = 0; attempts < Derived::ATTEMPTS; attempts++) {
-            int xChunk = rnds.nextInt(Derived::CHUNK_RANGE);
-            int zChunk = rnds.nextInt(Derived::CHUNK_RANGE);
+        for (size_t attempts = 0; attempts < Derived::ATTEMPTS; attempts++) {
+            int xChunk = rng.nextInt(Derived::CHUNK_RANGE);
+            int zChunk = rng.nextInt(Derived::CHUNK_RANGE);
             if (attempted.emplace(xChunk, zChunk).second) {
                 // successfully placed
                 xChunk = regionX * Derived::REGION_SIZE + xChunk;
@@ -144,14 +144,14 @@ namespace Placement {
     template<typename Derived>
     MU bool DynamicStructure<Derived>::canSpawnAtChunk(c_i64 worldSeed, c_int chunkX, c_int chunkZ, c_int regionX,
                                                        c_int regionZ) {
-        RNG rnds;
+        RNG rng;
         c_i64 featureSeed = static_cast<i64>(regionX * Derived::REGION_SIZE) * 341873128712ULL +
                             static_cast<i64>(regionZ * Derived::REGION_SIZE) * 132897987541ULL + worldSeed + Derived::SALT;
-        rnds.setSeed(featureSeed);
+        rng.setSeed(static_cast<u64>(featureSeed));
         std::unordered_set<Pos2D, Pos2D::Hasher> attempted;
-        for (int attempts = 0; attempts < Derived::ATTEMPTS; attempts++) {
-            int xChunk = rnds.nextInt(Derived::CHUNK_RANGE);
-            int zChunk = rnds.nextInt(Derived::CHUNK_RANGE);
+        for (size_t attempts = 0; attempts < Derived::ATTEMPTS; attempts++) {
+            int xChunk = rng.nextInt(Derived::CHUNK_RANGE);
+            int zChunk = rng.nextInt(Derived::CHUNK_RANGE);
             if (attempted.emplace(xChunk, zChunk).second) {
                 // successfully placed
                 xChunk = regionX * Derived::REGION_SIZE + xChunk;

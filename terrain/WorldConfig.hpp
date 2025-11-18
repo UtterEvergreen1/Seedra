@@ -97,8 +97,12 @@ public:
                 const lce::BIOMESCALE scale, WORLDGENERATOR worldGen = WORLDGENERATOR::DEFAULT)
         : m_worldSeed(seed), m_console(console), m_version(version), m_worldSize(size), m_biomeScale(scale),
           m_worldGen(worldGen), m_worldCoordinateBounds(getChunkWorldBounds(size) << 4),
-          m_worldBounds(-m_worldCoordinateBounds, -m_worldCoordinateBounds, m_worldCoordinateBounds,
-                        m_worldCoordinateBounds) {
+          m_worldBounds(
+              static_cast<bbType_t>(-m_worldCoordinateBounds),
+              static_cast<bbType_t>(-m_worldCoordinateBounds),
+              static_cast<bbType_t>(m_worldCoordinateBounds),
+              static_cast<bbType_t>(m_worldCoordinateBounds)
+            ) {
     }
 
     /**
@@ -162,8 +166,12 @@ public:
     void setWorldSize(lce::WORLDSIZE size) {
         this->m_worldSize = size;
         this->m_worldCoordinateBounds = getChunkWorldBounds(size) << 4;
-        this->m_worldBounds = BoundingBox(-this->m_worldCoordinateBounds, -this->m_worldCoordinateBounds,
-                                         this->m_worldCoordinateBounds, this->m_worldCoordinateBounds);
+        this->m_worldBounds = BoundingBox(
+            static_cast<bbType_t>(-this->m_worldCoordinateBounds),
+            static_cast<bbType_t>(-this->m_worldCoordinateBounds),
+            static_cast<bbType_t>(this->m_worldCoordinateBounds),
+            static_cast<bbType_t>(this->m_worldCoordinateBounds)
+        );
     }
 
     /**

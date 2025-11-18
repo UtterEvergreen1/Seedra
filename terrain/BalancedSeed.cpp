@@ -1,5 +1,5 @@
 #include "BalancedSeed.hpp"
-#include "common/timer.hpp"
+
 #include "generator.hpp"
 #include "terrain/biomes/biome_t.hpp"
 
@@ -96,28 +96,28 @@ namespace BalancedSeed {
         }
     }
 
-    std::vector<float> getFracs(c_int* biomes) {
+    std::vector<float> getFracs(const biome_t* biomes) {
         constexpr int biomesSize = 40000; // size of biomes
         std::vector fracs(8, 0.0F);
         int index = 0;
         while (index < biomesSize) {
-            c_int biomeGroup = getBiomeGroup(
-                    biomes[index]); // getting the biome group it is in (take the biomeID and assign it a category)
+            // getting the biome group it is in (take the biomeID and assign it a category)
+            const auto biomeGroup = static_cast<size_t>(getBiomeGroup(biomes[index]));
             if (biomeGroup != 8)
                 fracs[biomeGroup]++;
             index++;
         }
-        for (int div = 0; div < 8; div++) { fracs[div] /= biomesSize; }
+        for (size_t div = 0; div < 8; div++) { fracs[div] /= biomesSize; }
         return fracs;
     }
 
-    bool getIsMatch(c_int* biomes) {
+    bool getIsMatch(const biome_t* biomes) {
         const std::vector<float> floatFrac = getFracs(biomes);
         // Check if the biome distribution is balanced
         // Check mushroom biomes first since they are the rarest
         if (floatFrac[7] < 0.001F) { return false; } // mushroom biomes
         // Check for the minimum amount of each biome group
-        for (int i = 0; i < 5; i++) {
+        for (size_t i = 0; i < 5; i++) {
             if (floatFrac[i] < 0.01F) { return false; } // cold, high elevation, moderate climate, high humidity, hot and dry
         }
         // Check for the maximum amount of ocean and river biomes

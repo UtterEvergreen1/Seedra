@@ -6,10 +6,13 @@
 using namespace lce::blocks;
 
 
+WorldGenHugeTrees::~WorldGenHugeTrees() = default;
+
+
 int WorldGenHugeTrees::getHeight(RNG &rand) const {
-    int height = rand.nextInt(3) + this->baseHeight;
-    if (this->extraRandomHeight > 1) {
-        height += rand.nextInt(this->extraRandomHeight);
+    int height = rand.nextInt(3) + this->m_baseHeight;
+    if (this->m_extraRandomHeight > 1) {
+        height += rand.nextInt(this->m_extraRandomHeight);
     }
     return height;
 }
@@ -33,7 +36,7 @@ bool WorldGenHugeTrees::isSpaceAt(World *worldIn, const Pos3D &leavesPos, const 
     return true;
 }
 
-bool WorldGenHugeTrees::ensureDirtsUnderneath(const Pos3D &pos, World *worldIn) {
+bool WorldGenHugeTrees::ensureDirtUnderneath(const Pos3D &pos, World *worldIn) {
     const Pos3D blockPos = pos.down();
     const int block = worldIn->getBlockId(blockPos);
 
@@ -48,7 +51,7 @@ bool WorldGenHugeTrees::ensureDirtsUnderneath(const Pos3D &pos, World *worldIn) 
 }
 
 bool WorldGenHugeTrees::ensureGrowable(World *worldIn, MU RNG &rng, const Pos3D &treePos, const int height) {
-    return isSpaceAt(worldIn, treePos, height) && ensureDirtsUnderneath(treePos, worldIn);
+    return isSpaceAt(worldIn, treePos, height) && ensureDirtUnderneath(treePos, worldIn);
 }
 
 void WorldGenHugeTrees::growLeavesLayerStrict(World *worldIn, const Pos3D &layerCenter, const int width) const {
@@ -58,10 +61,10 @@ void WorldGenHugeTrees::growLeavesLayerStrict(World *worldIn, const Pos3D &layer
             const int l = j - 1;
             const int i1 = k - 1;
             if (j * j + k * k <= i || l * l + i1 * i1 <= i || j * j + i1 * i1 <= i || l * l + k * k <= i) {
-                Pos3D blockpos = layerCenter.add(j, 0, k);
-                const int material = worldIn->getBlockId(blockpos);
+                Pos3D blockPos = layerCenter.add(j, 0, k);
+                const int material = worldIn->getBlockId(blockPos);
                 if (lce::blocks::isAirOrLeavesBlock(material)) {
-                    worldIn->setBlock(blockpos, leavesMetadata);
+                    worldIn->setBlock(blockPos, m_leavesMetadata);
                 }
             }
         }
@@ -76,7 +79,7 @@ void WorldGenHugeTrees::growLeavesLayer(World *worldIn, const Pos3D &layerCenter
                 Pos3D blockPos = layerCenter.add(j, 0, k);
                 const int material = worldIn->getBlockId(blockPos);
                 if (lce::blocks::isAirOrLeavesBlock(material)) {
-                    worldIn->setBlock(blockPos, leavesMetadata);
+                    worldIn->setBlock(blockPos, m_leavesMetadata);
                 }
             }
         }

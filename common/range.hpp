@@ -13,15 +13,15 @@
  * support. The vertical scaling is equal to 1:1 iff scale == 1, and 1:4
  * (default biome scale) in all other cases!
  *
- * @param scale Horizontal scale factor, should be one of 1, 4, 16, 64, or 256.
+ * param scale Horizontal scale factor, should be one of 1, 4, 16, 64, or 256.
  *              Additionally, a value of zero bypasses scaling and expects a
  *              manual generation entry layer.
- * @param x Horizontal position, i.e. coordinates of the northwest corner.
- * @param z Horizontal position, i.e. coordinates of the northwest corner.
- * @param sx Horizontal size (width and height for 2D), should be positive.
- * @param sz Horizontal size (width and height for 2D), should be positive.
- * @param y Vertical position (for 3D volume).
- * @param sy Vertical size (for 3D volume).
+ * param x Horizontal position, i.e. coordinates of the northwest corner.
+ * param z Horizontal position, i.e. coordinates of the northwest corner.
+ * param sx Horizontal size (width and height for 2D), should be positive.
+ * param sz Horizontal size (width and height for 2D), should be positive.
+ * param y Vertical position (for 3D volume).
+ * param sy Vertical size (for 3D volume).
  *
  * Volumes generated with a range are generally indexed as:
  * out[i_z * sx + i_x] where i_x, i_z are indices in their respective directions.
@@ -43,7 +43,7 @@
  * Range r_vol = {4, x, z, sx, sz, y, sy};
  */
 struct Range {
-    int scale; ///< Horizontal scale factor (e.g., 1, 4, 16, 64, or 256). A value of 0 bypasses scaling.
+    uint32_t scale; ///< Horizontal scale factor (e.g., 1, 4, 16, 64, or 256). A value of 0 bypasses scaling.
     int x;     ///< Horizontal x-coordinate of the northwest corner.
     int z;     ///< Horizontal z-coordinate of the northwest corner.
     int sx;    ///< Horizontal size (width) of the range. Must be positive.

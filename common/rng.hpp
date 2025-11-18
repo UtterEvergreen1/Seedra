@@ -1,9 +1,8 @@
 #pragma once
 
-#include <immintrin.h>
+#include <chrono>
 
 #include "lce/processor.hpp"
-#include <chrono>
 
 
 /*
@@ -32,9 +31,6 @@
  * Mult(7): 61282721086213
  */
 
-
-
-
 // ==========================================================================
 ///                    C++ implementation of Java Random
 // ==========================================================================
@@ -59,7 +55,7 @@ public:
 
     /// generate a random seed based on the current system clock (in nanoseconds)
     MU void setRandomSeed() {
-        this->setSeed(std::chrono::high_resolution_clock::now().time_since_epoch().count());
+        this->setSeed(static_cast<u64>(std::chrono::high_resolution_clock::now().time_since_epoch().count()));
     }
 
 
@@ -86,22 +82,22 @@ public:
 
     MU static RNG getLargeFeatureSeed(c_i64 worldSeed, c_i32 chunkX, c_i32 chunkZ) noexcept {
         RNG rng;
-        rng.setSeed(worldSeed);
-        const auto l2 = (i64) rng.nextLong();
-        const auto l3 = (i64) rng.nextLong();
-        c_i64 l4 = (i64) chunkX * l2 ^ (i64) chunkZ * l3 ^ worldSeed;
-        rng.setSeed(l4);
+        rng.setSeed(static_cast<u64>(worldSeed));
+        const auto l2 = rng.nextLongI();
+        const auto l3 = rng.nextLongI();
+        c_i64 l4 = static_cast<i64>(chunkX) * l2 ^ static_cast<i64>(chunkZ) * l3 ^ worldSeed;
+        rng.setSeed(static_cast<u64>(l4));
         return rng;
     }
 
     MU static uint64_t getChunkSeed(c_i64 worldSeed, c_i32 chunkX, c_i32 chunkZ) noexcept {
         RNG rng;
-        rng.setSeed(worldSeed);
-        auto a = (i64) rng.nextLong();
-        auto b = (i64) rng.nextLong();
+        rng.setSeed(static_cast<u64>(worldSeed));
+        auto a = rng.nextLongI();
+        auto b = rng.nextLongI();
         a = ((a / 2) * 2) + 1;
         b = ((b / 2) * 2) + 1;
-        return (chunkX * a + chunkZ * b) ^ worldSeed;
+        return static_cast<u64>((chunkX * a + chunkZ * b) ^ worldSeed);
     }
 
 
@@ -141,7 +137,7 @@ public:
     template<int BITS>
     MU i32 next() noexcept {
         mySeed = (mySeed * RNG_MULT_1 + RNG_ADDEND_1) & RNG_MASK;
-        return (i32) ((i64) mySeed >> (48 - BITS));
+        return static_cast<i32>(static_cast<i64>(mySeed) >> (48 - BITS));
     }
 
     // ========================================================================
@@ -157,7 +153,7 @@ public:
 
     MU FORCEINLINE i32 nextInt() noexcept {
         mySeed = (mySeed * RNG_MULT_1 + RNG_ADDEND_1) & RNG_MASK;
-        return (i32) (mySeed >> 16);
+        return static_cast<i32>(mySeed >> 16);
 
     }
 
@@ -165,9 +161,9 @@ public:
         i32 bits, val;
 
         if ((n & (n - 1)) == 0) {
-            c_i32 k = CTZ(n);
+            c_i32 k = CTZ(static_cast<u32>(n));
             mySeed = (mySeed * RNG_MULT_1 + RNG_ADDEND_1) & RNG_MASK;
-            c_i32 result = (i32) ((i64) mySeed >> (48 - k));
+            c_i32 result = static_cast<i32>(static_cast<i64>(mySeed) >> (48 - k));
             return result;
         }
 
@@ -188,8 +184,8 @@ public:
 
         if constexpr ((N & (N - 1)) == 0) {
             mySeed = (mySeed * RNG_MULT_1 + RNG_ADDEND_1) & RNG_MASK;
-            constexpr i32 k = std::countr_zero((u32)N);
-            c_i32 result = (i32) (mySeed >> (48 - k));
+            constexpr i32 k = std::countr_zero(static_cast<u32>(N));
+            c_i32 result = static_cast<i32>(mySeed >> (48 - k));
             return result;
         } else {
             int val, bits;
@@ -227,29 +223,29 @@ public:
     // ========================================================================
 
     MU u64 nextLong() noexcept {
-        u64 seed1 = (mySeed * RNG_MULT_1 + RNG_ADDEND_1);
-        u64 seed2 = (mySeed * RNG_MULT_2 + RNG_ADDEND_2);
+        c_u64 seed1 = mySeed * RNG_MULT_1 + RNG_ADDEND_1;
+        c_u64 seed2 = mySeed * RNG_MULT_2 + RNG_ADDEND_2;
 
         mySeed = seed2 & RNG_MASK;
 
-        u64 n1 = (i32) ((seed1 & RNG_MASK) >> 16);
-        u64 n2 = (i32) ((seed2 & RNG_MASK) >> 16);
+        c_u64 n1 = static_cast<u64>(static_cast<i32>((seed1 & RNG_MASK) >> 16));
+        c_u64 n2 = static_cast<u64>(static_cast<i32>((seed2 & RNG_MASK) >> 16));
 
-        u64 n = (n1 << 32) + n2;
+        c_u64 n = (n1 << 32) + n2;
         return n;
     }
 
     MU i64 nextLongI() noexcept {
-        u64 seed1 = (mySeed * RNG_MULT_1 + RNG_ADDEND_1);
-        u64 seed2 = (mySeed * RNG_MULT_2 + RNG_ADDEND_2);
+        c_u64 seed1 = mySeed * RNG_MULT_1 + RNG_ADDEND_1;
+        c_u64 seed2 = mySeed * RNG_MULT_2 + RNG_ADDEND_2;
 
         mySeed = seed2 & RNG_MASK;
 
-        u64 n1 = (i32) ((seed1 & RNG_MASK) >> 16);
-        u64 n2 = (i32) ((seed2 & RNG_MASK) >> 16);
+        c_u64 n1 = static_cast<u64>(static_cast<i32>((seed1 & RNG_MASK) >> 16));
+        c_u64 n2 = static_cast<u64>(static_cast<i32>((seed2 & RNG_MASK) >> 16));
 
-        u64 n = (n1 << 32) + n2;
-        return (i64)n;
+        c_u64 n = (n1 << 32) + n2;
+        return static_cast<i64>(n);
     }
 
     // ========================================================================
@@ -338,9 +334,9 @@ public:
 
     // nextGaussianFloat__6RandomFv
     MU double nextGaussianFloat() noexcept {
-        const double dVar1 = nextFloat();
-        const double dVar2 = nextFloat(); // passes this to function?
-        return static_cast<float>(dVar1 - dVar2);
+        const auto dVar1 = static_cast<double>(nextFloat());
+        const auto dVar2 = static_cast<double>(nextFloat()); // passes this to function?
+        return static_cast<double>(static_cast<float>(dVar1 - dVar2));
     }
 
     // nextGaussianInt__6RandomFi

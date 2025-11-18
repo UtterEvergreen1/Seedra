@@ -2,10 +2,14 @@
 
 #include "components/StructureComponent.hpp"
 
-#include "terrain/ChunkPrimer.hpp"
 #include "terrain/World.hpp"
 
 #include "lce/blocks/__include.hpp"
+
+#include "structures/gen/desert_temple/desert_pyramid.hpp"
+#include "structures/gen/igloo/igloo.hpp"
+#include "structures/gen/jungle_temple/jungle_temple.hpp"
+#include "structures/gen/witch_hut/witch_hut.hpp"
 
 namespace scattered_features {
 
@@ -13,13 +17,16 @@ namespace scattered_features {
     using namespace lce::blocks::states;
 
 
+    ScatteredFeature::~ScatteredFeature() = default;
+
+
     ScatteredFeature::ScatteredFeature(Generator* g, RNG& rng, int chunkX, int y, int chunkZ, int sizeX, int sizeY, int sizeZ)
         : StructureComponent() {
         this->scatteredFeatureSizeX = sizeX;
         this->scatteredFeatureSizeY = sizeY;
         this->scatteredFeatureSizeZ = sizeZ;
-        EnumFacing direction = FACING_HORIZONTAL[rng.nextInt(4)];
-        this->facing = direction;
+        const EnumFacing direction = FACING_HORIZONTAL[rng.nextInt(4)];
+        this->m_facing = direction;
         this->setCoordMode(direction);
 
         c_int x = chunkX << 4;
@@ -27,17 +34,52 @@ namespace scattered_features {
 
         if (g->getLCEVersion() == LCEVERSION::AQUATIC) {
             if (direction == EnumFacing::NORTH) {
-                setBoundingBox(BoundingBox(x, y, z - sizeZ, x + sizeX - 1, y + sizeY - 1, z));
+                setBoundingBox(BoundingBox(
+                    static_cast<bbType_t>(x),
+                    static_cast<bbType_t>(y),
+                    static_cast<bbType_t>(z - sizeZ),
+                    static_cast<bbType_t>(x + sizeX - 1),
+                    static_cast<bbType_t>(y + sizeY - 1),
+                    static_cast<bbType_t>(z)
+                ));
             } else if (direction == EnumFacing::SOUTH) {
-                setBoundingBox(BoundingBox(x, y, z, x + sizeX - 1, y + sizeY - 1, z + sizeZ - 1));
+                setBoundingBox(BoundingBox(
+                    static_cast<bbType_t>(x),
+                    static_cast<bbType_t>(y),
+                    static_cast<bbType_t>(z),
+                    static_cast<bbType_t>(x + sizeX - 1),
+                    static_cast<bbType_t>(y + sizeY - 1),
+                    static_cast<bbType_t>(z + sizeZ - 1)
+                ));
             } else {
-                setBoundingBox(BoundingBox(x - sizeX, y, z - sizeZ, x, y + sizeY - 1, z));
+                setBoundingBox(BoundingBox(
+                    static_cast<bbType_t>(x - sizeX),
+                    static_cast<bbType_t>(y),
+                    static_cast<bbType_t>(z - sizeZ),
+                    static_cast<bbType_t>(x),
+                    static_cast<bbType_t>(y + sizeY - 1),
+                    static_cast<bbType_t>(z)
+                ));
             }
         } else {
             if (direction == EnumFacing::NORTH || direction == EnumFacing::SOUTH) {
-                setBoundingBox(BoundingBox(x, y, z, x + sizeX - 1, y + sizeY - 1, z + sizeZ - 1));
+                setBoundingBox(BoundingBox(
+                    static_cast<bbType_t>(x),
+                    static_cast<bbType_t>(y),
+                    static_cast<bbType_t>(z),
+                    static_cast<bbType_t>(x + sizeX - 1),
+                    static_cast<bbType_t>(y + sizeY - 1),
+                    static_cast<bbType_t>(z + sizeZ - 1)
+                ));
             } else {
-                setBoundingBox(BoundingBox(x, y, z, x + sizeZ - 1, y + sizeY - 1, z + sizeX - 1));
+                setBoundingBox(BoundingBox(
+                    static_cast<bbType_t>(x),
+                    static_cast<bbType_t>(y),
+                    static_cast<bbType_t>(z),
+                    static_cast<bbType_t>(x + sizeZ - 1),
+                    static_cast<bbType_t>(y + sizeY - 1),
+                    static_cast<bbType_t>(z + sizeX - 1)
+                ));
             }
         }
     }
@@ -51,8 +93,8 @@ namespace scattered_features {
             int j = 0;
             Pos3D blockPos;
 
-            for (int k=this->minZ; k <= this->maxZ; ++k) {
-                for (int l=this->minX; l <= this->maxX; ++l) {
+            for (int k=this->m_minZ; k <= this->m_maxZ; ++k) {
+                for (int l=this->m_minX; l <= this->m_maxX; ++l) {
                     blockPos.setPos(l, 64, k);
 
                     if (structureBB.isVecInside(blockPos)) {
@@ -67,18 +109,18 @@ namespace scattered_features {
                 return false;
             } else {
                 this->horizontalPos = i / j;
-                this->offset(0, this->horizontalPos - this->minY + yOffset, 0);
+                this->offset(0, this->horizontalPos - this->m_minY + yOffset, 0);
                 return true;
             }
         }
     }
 
     ScatteredFeature* ScatteredFeatureFactory(Generator* g, const Placement::FeatureStructurePair& pair) {
-        Pos2D structChunkPos = pair.pos.toChunkPos();
+        Pos2D structChunkPos = pair.m_pos.toChunkPos();
         RNG rng = RNG::getLargeFeatureSeed(g->getWorldSeed(), structChunkPos.x, structChunkPos.z);
         rng.advance();
 
-        switch(pair.type) {
+        switch(pair.m_type) {
             case StructureType::DesertPyramid:
                 return new DesertPyramid(g, rng, structChunkPos.x, structChunkPos.z);
             case StructureType::JunglePyramid:
@@ -87,8 +129,23 @@ namespace scattered_features {
                 return new SwampHut(g, rng, structChunkPos.x, structChunkPos.z);
             case StructureType::Igloo:
                 return new Igloo(g, rng, structChunkPos.x, structChunkPos.z);
-            default:
+
+            case StructureType::FEATURE_NUM:
+            case StructureType::Village:
+            case StructureType::OceanRuin:
+            case StructureType::Mansion:
+            case StructureType::Monument:
+            case StructureType::Treasure:
+            case StructureType::Shipwreck:
+            case StructureType::Outpost:
+            case StructureType::Mineshaft:
+            case StructureType::Fortress:
+            case StructureType::EndCity:
+            case StructureType::EndGateway:
+            case StructureType::NONE:
                 return nullptr;
+            default:
+                std::unreachable();
         }
     }
 

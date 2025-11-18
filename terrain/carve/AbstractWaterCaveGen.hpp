@@ -21,7 +21,7 @@ public:
     /**
      * @brief Virtual destructor for AbstractWaterCaveGen.
      */
-    ~AbstractWaterCaveGen() override = default;
+    ~AbstractWaterCaveGen() override;
 
     /**
      * @brief Retrieves the seed multiplier for water caves and water ravines.

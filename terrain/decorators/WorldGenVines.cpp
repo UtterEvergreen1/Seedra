@@ -34,7 +34,7 @@ bool WorldGenVines::generate(World* worldIn, RNG& rng, const Pos3D& position) co
         if (worldIn->isAirBlock(pos)) {
             for (const EnumFacing& facing: FACING_HORIZONTAL) {
                 if (BlockVine::canPlaceBlockOnSide(worldIn, pos, facing)) {
-                    worldIn->setBlockAndData(pos, VINES_ID, states::Vine::withProperty(facing));
+                    worldIn->setBlockAndData(pos, VINES_ID, static_cast<u8>(states::Vine::withProperty(facing)));
                     break;
                 }
             }

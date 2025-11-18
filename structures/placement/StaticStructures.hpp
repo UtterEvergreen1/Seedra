@@ -108,15 +108,15 @@ namespace Placement {
      */
     class FeatureStructurePair {
     public:
-        Pos2D pos; ///< The position of the structure.
-        StructureType type; ///< The type of the structure.
+        Pos2D m_pos; ///< The position of the structure.
+        StructureType m_type; ///< The type of the structure.
 
         /**
          * @brief Constructs a FeatureStructurePair.
          * @param pos The position of the structure.
          * @param type The type of the structure.
          */
-        FeatureStructurePair(const Pos2D &pos, const StructureType type) : pos(pos), type(type) {
+        FeatureStructurePair(const Pos2D &pos, const StructureType type) : m_pos(pos), m_type(type) {
         }
 
         /**
@@ -126,7 +126,7 @@ namespace Placement {
          * @return The output stream.
          */
         friend std::ostream &operator<<(std::ostream &out, const FeatureStructurePair &feature) {
-            out << "Feature: " << feature.pos << " Type: " << getStructureName(feature.type);
+            out << "Feature: " << feature.m_pos << " Type: " << getStructureName(feature.m_type);
             return out;
         }
 
@@ -230,3 +230,4 @@ namespace Placement {
         static void setWorldSize(lce::WORLDSIZE worldSize);
     };
 } // namespace Placement
+

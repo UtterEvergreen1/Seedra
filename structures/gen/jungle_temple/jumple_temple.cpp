@@ -5,12 +5,16 @@
 #include "terrain/ChunkPrimer.hpp"
 #include "terrain/World.hpp"
 
+#include "jungle_temple.hpp"
 #include "lce/blocks/__include.hpp"
 
 namespace scattered_features {
 
     using namespace lce::blocks;
     using namespace lce::blocks::states;
+
+
+    JunglePyramid::~JunglePyramid() = default;
 
 
     bool JunglePyramid::addComponentParts(World& worldIn, RNG& rng, const BoundingBox& chunkBB) {
@@ -39,10 +43,10 @@ namespace scattered_features {
             this->fillWithAir(worldIn, chunkBB, 5, 2, 12, 6, 2, 12);
             this->fillWithAir(worldIn, chunkBB, 5, 5, 1, 6, 5, 1);
             this->fillWithAir(worldIn, chunkBB, 5, 5, 13, 6, 5, 13);
-            this->setBlockState(worldIn, lce::BlocksInit::AIR.getDefaultState(), 1, 5, 5, chunkBB);
-            this->setBlockState(worldIn, lce::BlocksInit::AIR.getDefaultState(), 10, 5, 5, chunkBB);
-            this->setBlockState(worldIn, lce::BlocksInit::AIR.getDefaultState(), 1, 5, 9, chunkBB);
-            this->setBlockState(worldIn, lce::BlocksInit::AIR.getDefaultState(), 10, 5, 9, chunkBB);
+            this->setBlockState(worldIn, chunkBB, 1, 5, 5, lce::BlocksInit::AIR.getDefaultState());
+            this->setBlockState(worldIn, chunkBB, 10, 5, 5, lce::BlocksInit::AIR.getDefaultState());
+            this->setBlockState(worldIn, chunkBB, 1, 5, 9, lce::BlocksInit::AIR.getDefaultState());
+            this->setBlockState(worldIn, chunkBB, 10, 5, 9, lce::BlocksInit::AIR.getDefaultState());
             
             for (int i = 0; i <= 14; i += 14) {
                 this->fillWithRandomizedJunglePyramidStones(worldIn, chunkBB, 2, 4, i, 2, 5, i, false, rng);
@@ -76,30 +80,30 @@ namespace scattered_features {
             lce::BlockState iblockstate3 = lce::BlocksInit::STONE_STAIRS.getStateFromMeta(Stairs::withProperty(this->rotation.apply(this->mirror, EnumFacing::WEST)));
             lce::BlockState iblockstate = lce::BlocksInit::STONE_STAIRS.getStateFromMeta(Stairs::withProperty(this->rotation.apply(this->mirror, EnumFacing::SOUTH)));
             lce::BlockState iblockstate1 = lce::BlocksInit::STONE_STAIRS.getStateFromMeta(Stairs::withProperty(this->rotation.apply(this->mirror, EnumFacing::NORTH)));
-            this->setBlockState(worldIn, iblockstate1, 5, 9, 6, chunkBB);
-            this->setBlockState(worldIn, iblockstate1, 6, 9, 6, chunkBB);
-            this->setBlockState(worldIn, iblockstate, 5, 9, 8, chunkBB);
-            this->setBlockState(worldIn, iblockstate, 6, 9, 8, chunkBB);
-            this->setBlockState(worldIn, iblockstate1, 4, 0, 0, chunkBB);
-            this->setBlockState(worldIn, iblockstate1, 5, 0, 0, chunkBB);
-            this->setBlockState(worldIn, iblockstate1, 6, 0, 0, chunkBB);
-            this->setBlockState(worldIn, iblockstate1, 7, 0, 0, chunkBB);
-            this->setBlockState(worldIn, iblockstate1, 4, 1, 8, chunkBB);
-            this->setBlockState(worldIn, iblockstate1, 4, 2, 9, chunkBB);
-            this->setBlockState(worldIn, iblockstate1, 4, 3, 10, chunkBB);
-            this->setBlockState(worldIn, iblockstate1, 7, 1, 8, chunkBB);
-            this->setBlockState(worldIn, iblockstate1, 7, 2, 9, chunkBB);
-            this->setBlockState(worldIn, iblockstate1, 7, 3, 10, chunkBB);
+            this->setBlockState(worldIn, chunkBB, 5, 9, 6, iblockstate1);
+            this->setBlockState(worldIn, chunkBB, 6, 9, 6, iblockstate1);
+            this->setBlockState(worldIn, chunkBB, 5, 9, 8, iblockstate);
+            this->setBlockState(worldIn, chunkBB, 6, 9, 8, iblockstate);
+            this->setBlockState(worldIn, chunkBB, 4, 0, 0, iblockstate1);
+            this->setBlockState(worldIn, chunkBB, 5, 0, 0, iblockstate1);
+            this->setBlockState(worldIn, chunkBB, 6, 0, 0, iblockstate1);
+            this->setBlockState(worldIn, chunkBB, 7, 0, 0, iblockstate1);
+            this->setBlockState(worldIn, chunkBB, 4, 1, 8, iblockstate1);
+            this->setBlockState(worldIn, chunkBB, 4, 2, 9, iblockstate1);
+            this->setBlockState(worldIn, chunkBB, 4, 3, 10, iblockstate1);
+            this->setBlockState(worldIn, chunkBB, 7, 1, 8, iblockstate1);
+            this->setBlockState(worldIn, chunkBB, 7, 2, 9, iblockstate1);
+            this->setBlockState(worldIn, chunkBB, 7, 3, 10, iblockstate1);
             this->fillWithRandomizedJunglePyramidStones(worldIn, chunkBB, 4, 1, 9, 4, 1, 9, false, rng);
             this->fillWithRandomizedJunglePyramidStones(worldIn, chunkBB, 7, 1, 9, 7, 1, 9, false, rng);
             this->fillWithRandomizedJunglePyramidStones(worldIn, chunkBB, 4, 1, 10, 7, 2, 10, false, rng);
             this->fillWithRandomizedJunglePyramidStones(worldIn, chunkBB, 5, 4, 5, 6, 4, 5, false, rng);
-            this->setBlockState(worldIn, iblockstate2, 4, 4, 5, chunkBB);
-            this->setBlockState(worldIn, iblockstate3, 7, 4, 5, chunkBB);
+            this->setBlockState(worldIn, chunkBB, 4, 4, 5, iblockstate2);
+            this->setBlockState(worldIn, chunkBB, 7, 4, 5, iblockstate3);
 
             for (int k = 0; k < 4; ++k) {
-                this->setBlockState(worldIn, iblockstate, 5, 0 - k, 6 + k, chunkBB);
-                this->setBlockState(worldIn, iblockstate, 6, 0 - k, 6 + k, chunkBB);
+                this->setBlockState(worldIn, chunkBB, 5, 0 - k, 6 + k, iblockstate);
+                this->setBlockState(worldIn, chunkBB, 6, 0 - k, 6 + k, iblockstate);
                 this->fillWithAir(worldIn, chunkBB, 5, 0 - k, 7 + k, 6, 0 - k, 9 + k);
             }
 
@@ -123,70 +127,82 @@ namespace scattered_features {
             // this->setBlockState(worldIn, lce::BlocksInit::TRIPWIRE_HOOK.getDefaultState().withProperty(BlockTripWireHook.FACING, EnumFacing.WEST).withProperty(BlockTripWireHook.ATTACHED, Boolean.valueOf(true)), 4, -3, 8, chunkBB);
             // this->setBlockState(worldIn, lce::BlocksInit::TRIPWIRE.getDefaultState().withProperty(BlockTripWire.ATTACHED, Boolean.valueOf(true)), 2, -3, 8, chunkBB);
             // this->setBlockState(worldIn, lce::BlocksInit::TRIPWIRE.getDefaultState().withProperty(BlockTripWire.ATTACHED, Boolean.valueOf(true)), 3, -3, 8, chunkBB);
-            this->setBlockState(worldIn, lce::BlocksInit::REDSTONE_WIRE.getDefaultState(), 5, -3, 7, chunkBB);
-            this->setBlockState(worldIn, lce::BlocksInit::REDSTONE_WIRE.getDefaultState(), 5, -3, 6, chunkBB);
-            this->setBlockState(worldIn, lce::BlocksInit::REDSTONE_WIRE.getDefaultState(), 5, -3, 5, chunkBB);
-            this->setBlockState(worldIn, lce::BlocksInit::REDSTONE_WIRE.getDefaultState(), 5, -3, 4, chunkBB);
-            this->setBlockState(worldIn, lce::BlocksInit::REDSTONE_WIRE.getDefaultState(), 5, -3, 3, chunkBB);
-            this->setBlockState(worldIn, lce::BlocksInit::REDSTONE_WIRE.getDefaultState(), 5, -3, 2, chunkBB);
-            this->setBlockState(worldIn, lce::BlocksInit::REDSTONE_WIRE.getDefaultState(), 5, -3, 1, chunkBB);
-            this->setBlockState(worldIn, lce::BlocksInit::REDSTONE_WIRE.getDefaultState(), 4, -3, 1, chunkBB);
-            this->setBlockState(worldIn, lce::BlocksInit::MOSS_STONE.getDefaultState(), 3, -3, 1, chunkBB);
+            this->setBlockState(worldIn, chunkBB, 5, -3, 7, lce::BlocksInit::REDSTONE_WIRE.getDefaultState());
+            this->setBlockState(worldIn, chunkBB, 5, -3, 6, lce::BlocksInit::REDSTONE_WIRE.getDefaultState());
+            this->setBlockState(worldIn, chunkBB, 5, -3, 5, lce::BlocksInit::REDSTONE_WIRE.getDefaultState());
+            this->setBlockState(worldIn, chunkBB, 5, -3, 4, lce::BlocksInit::REDSTONE_WIRE.getDefaultState());
+            this->setBlockState(worldIn, chunkBB, 5, -3, 3, lce::BlocksInit::REDSTONE_WIRE.getDefaultState());
+            this->setBlockState(worldIn, chunkBB, 5, -3, 2, lce::BlocksInit::REDSTONE_WIRE.getDefaultState());
+            this->setBlockState(worldIn, chunkBB, 5, -3, 1, lce::BlocksInit::REDSTONE_WIRE.getDefaultState());
+            this->setBlockState(worldIn, chunkBB, 4, -3, 1, lce::BlocksInit::REDSTONE_WIRE.getDefaultState());
+            this->setBlockState(worldIn, chunkBB, 3, -3, 1, lce::BlocksInit::MOSS_STONE.getDefaultState());
 
             if (!this->placedTrap1) {
                 // this->placedTrap1 = this->createDispenser(worldIn, chunkBB, rng, 3, -2, 1, EnumFacing.NORTH, LootTableList.CHESTS_JUNGLE_TEMPLE_DISPENSER);
             }
 
-            this->setBlockState(worldIn, lce::BlocksInit::VINES.getStateFromMeta(states::Vine::withProperty(this->rotation.apply(this->mirror, EnumFacing::SOUTH))), 3, -2, 2, chunkBB);
+            this->setBlockState(worldIn, chunkBB, 3, -2, 2,
+                                lce::BlocksInit::VINES.getStateFromMeta(states::Vine::withProperty(
+                                        this->rotation.apply(this->mirror, EnumFacing::SOUTH))));
             // this->setBlockState(worldIn, lce::BlocksInit::TRIPWIRE_HOOK.getDefaultState().withProperty(BlockTripWireHook.FACING, EnumFacing.NORTH).withProperty(BlockTripWireHook.ATTACHED, Boolean.valueOf(true)), 7, -3, 1, chunkBB);
             // this->setBlockState(worldIn, lce::BlocksInit::TRIPWIRE_HOOK.getDefaultState().withProperty(BlockTripWireHook.FACING, EnumFacing.SOUTH).withProperty(BlockTripWireHook.ATTACHED, Boolean.valueOf(true)), 7, -3, 5, chunkBB);
             // this->setBlockState(worldIn, lce::BlocksInit::TRIPWIRE.getDefaultState().withProperty(BlockTripWire.ATTACHED, Boolean.valueOf(true)), 7, -3, 2, chunkBB);
             // this->setBlockState(worldIn, lce::BlocksInit::TRIPWIRE.getDefaultState().withProperty(BlockTripWire.ATTACHED, Boolean.valueOf(true)), 7, -3, 3, chunkBB);
             // this->setBlockState(worldIn, lce::BlocksInit::TRIPWIRE.getDefaultState().withProperty(BlockTripWire.ATTACHED, Boolean.valueOf(true)), 7, -3, 4, chunkBB);
-            this->setBlockState(worldIn, lce::BlocksInit::REDSTONE_WIRE.getDefaultState(), 8, -3, 6, chunkBB);
-            this->setBlockState(worldIn, lce::BlocksInit::REDSTONE_WIRE.getDefaultState(), 9, -3, 6, chunkBB);
-            this->setBlockState(worldIn, lce::BlocksInit::REDSTONE_WIRE.getDefaultState(), 9, -3, 5, chunkBB);
-            this->setBlockState(worldIn, lce::BlocksInit::MOSS_STONE.getDefaultState(), 9, -3, 4, chunkBB);
-            this->setBlockState(worldIn, lce::BlocksInit::REDSTONE_WIRE.getDefaultState(), 9, -2, 4, chunkBB);
+            this->setBlockState(worldIn, chunkBB, 8, -3, 6, lce::BlocksInit::REDSTONE_WIRE.getDefaultState());
+            this->setBlockState(worldIn, chunkBB, 9, -3, 6, lce::BlocksInit::REDSTONE_WIRE.getDefaultState());
+            this->setBlockState(worldIn, chunkBB, 9, -3, 5, lce::BlocksInit::REDSTONE_WIRE.getDefaultState());
+            this->setBlockState(worldIn, chunkBB, 9, -3, 4, lce::BlocksInit::MOSS_STONE.getDefaultState());
+            this->setBlockState(worldIn, chunkBB, 9, -2, 4, lce::BlocksInit::REDSTONE_WIRE.getDefaultState());
 
             if (!this->placedTrap2) {
                 // this->placedTrap2 = this->createDispenser(worldIn, chunkBB, rng, 9, -2, 3, EnumFacing.WEST, LootTableList.CHESTS_JUNGLE_TEMPLE_DISPENSER);
             }
 
-            this->setBlockState(worldIn, lce::BlocksInit::VINES.getStateFromMeta(states::Vine::withProperty(this->rotation.apply(this->mirror, EnumFacing::EAST))), 8, -1, 3, chunkBB);
-            this->setBlockState(worldIn, lce::BlocksInit::VINES.getStateFromMeta(states::Vine::withProperty(this->rotation.apply(this->mirror, EnumFacing::EAST))), 8, -2, 3, chunkBB);
+            this->setBlockState(worldIn, chunkBB, 8, -1, 3,
+                                lce::BlocksInit::VINES.getStateFromMeta(states::Vine::withProperty(
+                                        this->rotation.apply(this->mirror, EnumFacing::EAST))));
+            this->setBlockState(worldIn, chunkBB, 8, -2, 3,
+                                lce::BlocksInit::VINES.getStateFromMeta(states::Vine::withProperty(
+                                        this->rotation.apply(this->mirror, EnumFacing::EAST))));
 
             if (!this->placedMainChest) {
                 // this->placedMainChest = this->generateChest(worldIn, chunkBB, rng, 8, -3, 3, LootTableList.CHESTS_JUNGLE_TEMPLE);
             }
 
-            this->setBlockState(worldIn, lce::BlocksInit::MOSS_STONE.getDefaultState(), 9, -3, 2, chunkBB);
-            this->setBlockState(worldIn, lce::BlocksInit::MOSS_STONE.getDefaultState(), 8, -3, 1, chunkBB);
-            this->setBlockState(worldIn, lce::BlocksInit::MOSS_STONE.getDefaultState(), 4, -3, 5, chunkBB);
-            this->setBlockState(worldIn, lce::BlocksInit::MOSS_STONE.getDefaultState(), 5, -2, 5, chunkBB);
-            this->setBlockState(worldIn, lce::BlocksInit::MOSS_STONE.getDefaultState(), 5, -1, 5, chunkBB);
-            this->setBlockState(worldIn, lce::BlocksInit::MOSS_STONE.getDefaultState(), 6, -3, 5, chunkBB);
-            this->setBlockState(worldIn, lce::BlocksInit::MOSS_STONE.getDefaultState(), 7, -2, 5, chunkBB);
-            this->setBlockState(worldIn, lce::BlocksInit::MOSS_STONE.getDefaultState(), 7, -1, 5, chunkBB);
-            this->setBlockState(worldIn, lce::BlocksInit::MOSS_STONE.getDefaultState(), 8, -3, 5, chunkBB);
+            this->setBlockState(worldIn, chunkBB, 9, -3, 2, lce::BlocksInit::MOSS_STONE.getDefaultState());
+            this->setBlockState(worldIn, chunkBB, 8, -3, 1, lce::BlocksInit::MOSS_STONE.getDefaultState());
+            this->setBlockState(worldIn, chunkBB, 4, -3, 5, lce::BlocksInit::MOSS_STONE.getDefaultState());
+            this->setBlockState(worldIn, chunkBB, 5, -2, 5, lce::BlocksInit::MOSS_STONE.getDefaultState());
+            this->setBlockState(worldIn, chunkBB, 5, -1, 5, lce::BlocksInit::MOSS_STONE.getDefaultState());
+            this->setBlockState(worldIn, chunkBB, 6, -3, 5, lce::BlocksInit::MOSS_STONE.getDefaultState());
+            this->setBlockState(worldIn, chunkBB, 7, -2, 5, lce::BlocksInit::MOSS_STONE.getDefaultState());
+            this->setBlockState(worldIn, chunkBB, 7, -1, 5, lce::BlocksInit::MOSS_STONE.getDefaultState());
+            this->setBlockState(worldIn, chunkBB, 8, -3, 5, lce::BlocksInit::MOSS_STONE.getDefaultState());
             this->fillWithRandomizedJunglePyramidStones(worldIn, chunkBB, 9, -1, 1, 9, -1, 5, false, rng);
             this->fillWithAir(worldIn, chunkBB, 8, -3, 8, 10, -1, 10);
-            this->setBlockState(worldIn, lce::BlocksInit::CHISELED_STONE_BRICKS.getDefaultState(), 8, -2, 11, chunkBB);
-            this->setBlockState(worldIn, lce::BlocksInit::CHISELED_STONE_BRICKS.getDefaultState(), 9, -2, 11, chunkBB);
-            this->setBlockState(worldIn, lce::BlocksInit::CHISELED_STONE_BRICKS.getDefaultState(), 10, -2, 11, chunkBB);
+            this->setBlockState(worldIn, chunkBB, 8, -2, 11, lce::BlocksInit::CHISELED_STONE_BRICKS.getDefaultState());
+            this->setBlockState(worldIn, chunkBB, 9, -2, 11, lce::BlocksInit::CHISELED_STONE_BRICKS.getDefaultState());
+            this->setBlockState(worldIn, chunkBB, 10, -2, 11, lce::BlocksInit::CHISELED_STONE_BRICKS.getDefaultState());
             lce::BlockState iblockstate4 = lce::BlocksInit::LEVER.getStateFromMeta(Stairs::withProperty(this->rotation.apply(this->mirror, EnumFacing::NORTH)));
-            this->setBlockState(worldIn, iblockstate4, 8, -2, 12, chunkBB);
-            this->setBlockState(worldIn, iblockstate4, 9, -2, 12, chunkBB);
-            this->setBlockState(worldIn, iblockstate4, 10, -2, 12, chunkBB);
+            this->setBlockState(worldIn, chunkBB, 8, -2, 12, iblockstate4);
+            this->setBlockState(worldIn, chunkBB, 9, -2, 12, iblockstate4);
+            this->setBlockState(worldIn, chunkBB, 10, -2, 12, iblockstate4);
             this->fillWithRandomizedJunglePyramidStones(worldIn, chunkBB, 8, -3, 8, 8, -3, 10, false, rng);
             this->fillWithRandomizedJunglePyramidStones(worldIn, chunkBB, 10, -3, 8, 10, -3, 10, false, rng);
-            this->setBlockState(worldIn, lce::BlocksInit::MOSS_STONE.getDefaultState(), 10, -2, 9, chunkBB);
-            this->setBlockState(worldIn, lce::BlocksInit::REDSTONE_WIRE.getDefaultState(), 8, -2, 9, chunkBB);
-            this->setBlockState(worldIn, lce::BlocksInit::REDSTONE_WIRE.getDefaultState(), 8, -2, 10, chunkBB);
-            this->setBlockState(worldIn, lce::BlocksInit::REDSTONE_WIRE.getDefaultState(), 10, -1, 9, chunkBB);
-            this->setBlockState(worldIn, lce::BlocksInit::STICKY_PISTON.getStateFromMeta(Piston::withProperty(this->rotation.apply(this->mirror, EnumFacing::UP))), 9, -2, 8, chunkBB);
-            this->setBlockState(worldIn, lce::BlocksInit::STICKY_PISTON.getStateFromMeta(Piston::withProperty(this->rotation.apply(this->mirror, EnumFacing::WEST))), 10, -2, 8, chunkBB);
-            this->setBlockState(worldIn, lce::BlocksInit::STICKY_PISTON.getStateFromMeta(Piston::withProperty(this->rotation.apply(this->mirror, EnumFacing::WEST))), 10, -1, 8, chunkBB);
+            this->setBlockState(worldIn, chunkBB, 10, -2, 9, lce::BlocksInit::MOSS_STONE.getDefaultState());
+            this->setBlockState(worldIn, chunkBB, 8, -2, 9, lce::BlocksInit::REDSTONE_WIRE.getDefaultState());
+            this->setBlockState(worldIn, chunkBB, 8, -2, 10, lce::BlocksInit::REDSTONE_WIRE.getDefaultState());
+            this->setBlockState(worldIn, chunkBB, 10, -1, 9, lce::BlocksInit::REDSTONE_WIRE.getDefaultState());
+            this->setBlockState(worldIn, chunkBB, 9, -2, 8,
+                                lce::BlocksInit::STICKY_PISTON.getStateFromMeta(
+                                        Piston::withProperty(this->rotation.apply(this->mirror, EnumFacing::UP))));
+            this->setBlockState(worldIn, chunkBB, 10, -2, 8,
+                                lce::BlocksInit::STICKY_PISTON.getStateFromMeta(
+                                        Piston::withProperty(this->rotation.apply(this->mirror, EnumFacing::WEST))));
+            this->setBlockState(worldIn, chunkBB, 10, -1, 8,
+                                lce::BlocksInit::STICKY_PISTON.getStateFromMeta(
+                                        Piston::withProperty(this->rotation.apply(this->mirror, EnumFacing::WEST))));
             // this->setBlockState(worldIn, lce::BlocksInit::OFF_REDSTONE_REPEATER_BLOCK.getStateFromMeta( withProperty(BlockRedstoneRepeater.FACING, EnumFacing.NORTH), 10, -2, 10, chunkBB);
 
             if (!this->placedHiddenChest) {

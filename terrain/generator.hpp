@@ -18,32 +18,81 @@ struct Range;
 struct ChunkNoise;
 
 class BiomeCache {
-    int scale;
-    BoundingBox box;
-    biome_t *biomes;
-    bool generated;
+    u32 m_scale;
+    BoundingBox m_box;
+    biome_t *m_biomes;
+    bool m_generated;
 
 public:
-    BiomeCache(int scale, BoundingBox box)
-        : scale(scale), box(box), biomes(nullptr), generated(false) {
+    BiomeCache(c_u32 scale, const BoundingBox box)
+        : m_scale(scale), m_box(box), m_biomes(nullptr), m_generated(false) {
     }
 
     ~BiomeCache() {
-        free(biomes);
+        free(m_biomes);
     }
 
-    ND int getScale() const { return scale; }
+    BiomeCache(const BiomeCache& other)
+    : m_scale(other.m_scale),
+      m_box(other.m_box),
+      m_biomes(nullptr),
+      m_generated(false)
+    {
+        if (other.m_generated && other.m_biomes) {
+            this->m_biomes = nullptr;
+            this->m_generated = false;
+        }
+    }
 
-    ND const BoundingBox &getBox() const { return box; }
+    BiomeCache& operator=(const BiomeCache& other) {
+        if (this == &other) return *this;
+        free(m_biomes);
 
-    ND biome_t *getBiomes() const { return biomes; }
+        m_scale = other.m_scale;
+        m_box   = other.m_box;
 
-    ND bool isGenerated() const { return generated; }
+        m_biomes   = nullptr;
+        m_generated = false;
+
+        return *this;
+    }
+
+    // transfers ownership of biomes
+    BiomeCache(BiomeCache&& other) noexcept
+        : m_scale(other.m_scale),
+          m_box(other.m_box),
+          m_biomes(other.m_biomes),
+          m_generated(other.m_generated) {
+        other.m_biomes = nullptr;
+        other.m_generated = false;
+    }
+
+    BiomeCache& operator=(BiomeCache&& other) noexcept {
+        if (this != &other) {
+            free(m_biomes);
+            m_scale = other.m_scale;
+            m_box = other.m_box;
+            m_biomes = other.m_biomes;
+            m_generated = other.m_generated;
+
+            other.m_biomes = nullptr;
+            other.m_generated = false;
+        }
+        return *this;
+    }
+
+    ND u32 getScale() const { return m_scale; }
+
+    ND const BoundingBox &getBox() const { return m_box; }
+
+    ND biome_t *getBiomes() const { return m_biomes; }
+
+    ND bool isGenerated() const { return m_generated; }
 
     void setBiomes(biome_t *_biomes) {
-        free(this->biomes);
-        this->generated = true;
-        this->biomes = _biomes;
+        free(this->m_biomes);
+        this->m_generated = true;
+        this->m_biomes = _biomes;
     }
 };
 
@@ -133,6 +182,11 @@ public:
      * @param other The Generator instance to copy from.
      */
     Generator(const Generator &other);
+    Generator& operator=(const Generator&) = default;
+
+    // enable moving
+    Generator(Generator&&) noexcept = default;
+    Generator& operator=(Generator&&) noexcept = default;
 
     /**
      * @brief Retrieves the stored world seed.
@@ -156,7 +210,7 @@ public:
      * @brief Generates a biome cache for the specified scale.
      * @param scale The scale of the cache to generate.
      */
-    void generateCache(int scale);
+    void generateCache(u32 scale);
 
     /**
      * @brief Generates biome caches for all scales up to the specified maximum scale.
@@ -164,7 +218,7 @@ public:
      * as it reuses the upper layers to generate the lower ones and avoids regenerating the upper layers
      * @param maxScale The maximum scale to generate caches for.
      */
-    void generateCachesUpTo(int maxScale);
+    void generateCachesUpTo(u32 maxScale);
 
     /**
      * @brief Generates all biome caches for all scales. (1-256)
@@ -195,7 +249,7 @@ public:
      * @param z The Z-coordinate of the cache.
      * @return Pointer to the biome cache at the specified scale and coordinates.
      */
-    ND biome_t *getCacheAtBlock(int scale, int x, int z) const;
+    ND biome_t *getCacheAtBlock(u32 scale, int x, int z) const;
 
     /**
      * @brief Increments the world seed by 1.
@@ -314,7 +368,7 @@ public:
      * @param sz The height of the cache.
      * @return The minimum cache size.
      */
-    ND size_t getMinCacheSize(i32 scale, i32 sx, i32 sz) const;
+    ND size_t getMinCacheSize(uint32_t scale, i32 sx, i32 sz) const;
 
     /**
      * @brief Allocates a cache for biome generation.
@@ -338,7 +392,7 @@ public:
      * @param z The Z-coordinate.
      * @return The biome ID.
      */
-    ND biome_t getBiomeIdAt(i32 scale, i32 x, i32 z) const;
+    ND biome_t getBiomeIdAt(u32 scale, i32 x, i32 z) const;
 
     /**
      * @brief Retrieves the biome at a specific scale and 2D position.
@@ -346,7 +400,7 @@ public:
      * @param pos The 2D position.
      * @return The biome ID.
      */
-    ND biome_t getBiomeIdAt(i32 scale, Pos2D pos) const;
+    ND biome_t getBiomeIdAt(u32 scale, Pos2D pos) const;
 
     /**
      * @brief Retrieves the biome at a specific scale and 3D position.
@@ -354,7 +408,7 @@ public:
      * @param pos The 3D position.
      * @return The biome ID.
      */
-    ND biome_t getBiomeIdAt(i32 scale, Pos3D pos) const;
+    ND biome_t getBiomeIdAt(u32 scale, Pos3D pos) const;
 
     /**
      * @brief Retrieves the biome at the specified coordinates.
@@ -362,7 +416,7 @@ public:
      * @param z The Z-coordinate.
      * @return Pointer to the Biome.
      */
-    ND Biome *getBiomeAt(int scale, int x, int z) const;
+    ND Biome *getBiomeAt(u32 scale, int x, int z) const;
 
     /**
      * @brief Retrieves a range of biomes at a specific scale and coordinates.
@@ -373,21 +427,21 @@ public:
      * @param h The height of the range.
      * @return A pointer to the range of biomes.
      */
-    ND biome_t *getBiomeRange(i32 scale, i32 x, i32 z, i32 w, i32 h) const;
+    ND biome_t *getBiomeRange(uint32_t scale, i32 x, i32 z, i32 w, i32 h) const;
 
     /**
      * @brief Retrieves the world biomes at a specific scale.
      * @param scale The scale of the world biomes.
      * @return A pointer to the world biomes if it exists in the cache.
      */
-    ND biome_t *getWorldBiomes(int scale = 1) const;
+    ND biome_t *getWorldBiomes(u32 scale = 1) const;
 
     /**
      * @brief Retrieves the layer for a specific scale.
      * @param scale The scale of the layer.
      * @return A pointer to the layer.
      */
-    ND Layer *getLayerForScale(i32 scale) const;
+    ND Layer *getLayerForScale(u32 scale) const;
 
     //========================================================================
     // Checking Biomes & Biome Helper Functions

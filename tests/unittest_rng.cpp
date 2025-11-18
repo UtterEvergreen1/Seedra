@@ -68,8 +68,8 @@ int main() {
         RNG rng1;
         RNG /*__RNG_OLD*/ rng2;
         uint64_t seed = 1234567890ULL;
-        rng1.setSeed(seed);
-        rng2.setSeed(seed);
+        rng1.setSeed(static_cast<u64>(seed));
+        rng2.setSeed(static_cast<u64>(seed));
 
         auto seq1 = generateSequence(rng1, 1000);
         auto seq2 = generateSequence(rng2, 1000);

@@ -10,14 +10,14 @@ class World;
  * Inherits from AbstractWorldGenerator and provides methods for liquid generation.
  */
 class WorldGenLiquids final : public AbstractWorldGenerator {
-    int blockId; /**< The ID of the liquid block to generate. */
+    u16 m_blockId; /**< The ID of the liquid block to generate. */
 
 public:
     /**
      * @brief Constructs a WorldGenLiquids object with the specified block ID.
      * @param blockId The ID of the liquid block to generate.
      */
-    explicit WorldGenLiquids(const int blockId) : blockId(blockId) {
+    explicit WorldGenLiquids(const u16 blockId) : m_blockId(blockId) {
     }
 
     /**

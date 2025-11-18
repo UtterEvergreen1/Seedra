@@ -10,14 +10,15 @@ bool WorldGenCucurbitsBlock::generate(World* worldIn, RNG &rng, const Pos3D &pos
 
         if (lce::blocks::isReplaceableBlock(worldIn->getBlockId(blockPos)) &&
             worldIn->getBlockId(blockPos.down()) == lce::blocks::GRASS_ID) {
-            worldIn->setBlockAndData(blockPos, this->blockId, this->hasRotation ? getRandomRotationMetaData(rng) : 0);
+            worldIn->setBlockAndData(blockPos, this->m_blockId, this->m_hasRotation
+                ? getRandomRotationMetaData(rng) : 0);
         }
     }
 
     return true;
 }
 
-int WorldGenCucurbitsBlock::getRandomRotationMetaData(RNG &rng) {
+u8 WorldGenCucurbitsBlock::getRandomRotationMetaData(RNG &rng) {
     rng.nextInt(4);
     return 0;
     //return getMetaFromHorizontalFacing(FACING_HORIZONTAL[rng.nextInt(4)]);

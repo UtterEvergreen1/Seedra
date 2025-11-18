@@ -9,31 +9,41 @@
 namespace rolls {
 
     ///TODO: MAKE SURE IT WORKS!!!
+    /**
+     * @brief Generates the mineshaft structure in the world.
+     *
+     * @param worldIn The world to modify.
+     * @param chunk The chunk primer.
+     * @param mg The mineshaft generator.
+     * @param rng The random number generator.
+     * @param chunkX The X coordinate of the chunk.
+     * @param chunkZ The Z coordinate of the chunk.
+     */
     void Mineshaft::generateStructure(MU World& worldIn, const ChunkPrimer* chunk, const gen::Mineshaft* mg,
                                       RNG& rng, c_int chunkX, c_int chunkZ) {
         for (int pieceIndex = 0; pieceIndex < mg->getPieceCount(); ++pieceIndex) {
             const StructureComponent& piece = mg->getPieceConst(pieceIndex);
 
-            if (piece.type == PT_Mineshaft_NONE) continue;
+            if (piece.m_type == PT_Mineshaft_NONE) continue;
 
             BoundingBox chunkBoundingBox(chunkX << 4, 0, chunkZ << 4, (chunkX << 4) + 15, 255, (chunkZ << 4) + 15);
 
             if (!piece.intersects(chunkBoundingBox)) continue;
 
 
-            if (piece.type == PT_Mineshaft_Corridor) {
+            if (piece.m_type == PT_Mineshaft_Corridor) {
                 if (chunk && StructureComponent::isLiquidInStructureBoundingBox(chunkBoundingBox, piece, chunk))
                     continue;
 
                 c_int sectionCount =
-                        (piece.facing == EnumFacing::NORTH ||
-                                         piece.facing == EnumFacing::SOUTH
+                        (piece.m_facing == EnumFacing::NORTH ||
+                                         piece.m_facing == EnumFacing::SOUTH
                                  ? piece.getZSize()
                                  : piece.getXSize()) / 5;
                 c_int depth = sectionCount * 5;
 
                 rng.skipNextN(3 * depth);
-                if (piece.data & 2) rng.skipNextN(6 * depth);
+                if (piece.m_data & 2) rng.skipNextN(6 * depth);
 
 
                 for (int i = 0; i < sectionCount; ++i) {
@@ -84,13 +94,13 @@ namespace rolls {
                         generateChest(chunk, chunkBoundingBox, &piece, rng, 0, 0, currentDepth + 1);
                     }
                     //if it has spawner
-                    if (piece.data & 2) {
+                    if (piece.m_data & 2) {
                         // advance rng for placement on the depth axis
                         rng.advance();
                     }
 
                     // if it has rails
-                    if (piece.data & 1) {
+                    if (piece.m_data & 1) {
                         for (int railPos = 0; railPos < depth; ++railPos) {
                             c_int xPos = piece.getWorldX(1, railPos);
                             c_int yPos = piece.getWorldY(-1);
@@ -109,6 +119,14 @@ namespace rolls {
     }
 
 
+    /**
+     * @brief Generates all chests for the mineshaft.
+     *
+     * @param worldIn The world to modify.
+     * @param mg The mineshaft generator.
+     * @param g The generator.
+     * @param generateFullChunk Whether to generate the full chunk.
+     */
     MU void Mineshaft::generateAllChests(World& worldIn, const gen::Mineshaft* mg,
                                          const Generator& g, c_bool generateFullChunk) {
         Pos2D start = (mg->getStartPos() >> 4) - 6;
@@ -136,6 +154,17 @@ namespace rolls {
 
 
     // TODO: generate legacy chest where the loot is generated with the seed and doesn't use the loot table seed
+    /**
+     * @brief Generates a chest at a specific position.
+     *
+     * @param chunk The chunk primer.
+     * @param chunkBB The bounding box of the chunk.
+     * @param piece The structure component.
+     * @param rng The random number generator.
+     * @param x The X coordinate.
+     * @param y The Y coordinate.
+     * @param z The Z coordinate.
+     */
     void Mineshaft::generateChest(const ChunkPrimer* chunk, const BoundingBox& chunkBB,
                                   const StructureComponent *piece, RNG& rng, c_int x, c_int y, c_int z) {
         c_int xPos = piece->getWorldX(x, z);
@@ -144,11 +173,20 @@ namespace rolls {
         if (StructureComponent::intersectsWithBlock(chunkBB, xPos, yPos, zPos) &&
             (chunk == nullptr || chunk->getBlockId(xPos & 15, yPos - 1, zPos & 15) != 0)) {
             rng.advance(); // advance rng for next boolean roll for rail shape
-            mineshaftChests.emplace_back(Pos3D(xPos, yPos, zPos), rng.nextLong());
+            m_mineshaftChests.emplace_back(Pos3D(xPos, yPos, zPos), rng.nextLong());
         }
     }
 
-
+    /**
+     * @brief Places a cobweb at a specific position.
+     *
+     * @param chunk The chunk primer.
+     * @param chunkBB The bounding box of the chunk.
+     * @param piece The structure component.
+     * @param rng The random number generator.
+     * @param x The X coordinate.
+     * @param z The Z coordinate.
+     */
     void Mineshaft::placeCobWeb(const ChunkPrimer* chunk, const BoundingBox& chunkBB,
                                 const StructureComponent& piece, RNG& rng, c_int x, c_int z) {
         c_int xPos = piece.getWorldX(x, z);

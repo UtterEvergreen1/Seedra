@@ -9,7 +9,7 @@ using namespace lce::blocks;
 bool WorldGenSand::generate(World* worldIn, RNG& rand, const Pos3D& position) const {
     if (!isWaterMaterial(worldIn->getBlockId(position))) { return false; }
 
-    c_int tempRadius = rand.nextInt(this->radius - 2) + 2;
+    c_int tempRadius = rand.nextInt(this->m_radius - 2) + 2;
 
     for (int k = position.getX() - tempRadius; k <= position.getX() + tempRadius; ++k) {
         for (int l = position.getZ() - tempRadius; l <= position.getZ() + tempRadius; ++l) {
@@ -22,7 +22,7 @@ bool WorldGenSand::generate(World* worldIn, RNG& rand, const Pos3D& position) co
                     c_int blockId = worldIn->getBlockId(blockPos);
 
                     if (blockId == DIRT_ID || blockId == GRASS_ID) {
-                        worldIn->setBlock(blockPos, this->block);
+                        worldIn->setBlock(blockPos, this->m_block);
                     }
                 }
             }
