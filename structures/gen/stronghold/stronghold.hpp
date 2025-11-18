@@ -9,6 +9,7 @@
 
 #include "components/PieceWeight.hpp"
 #include "components/StructureComponent.hpp"
+#include "structures/gen/FeaturePiece.hpp"
 #include "structures/gen/Structure.hpp"
 
 class World;
