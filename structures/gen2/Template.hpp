@@ -6,6 +6,7 @@
 #include "terrain/World.hpp"
 #include <list>
 #include <utility>
+#include <unordered_map>
 
 class Template {
 public:
@@ -14,10 +15,10 @@ public:
     public:
         const Pos3D pos;
         const lce::BlockState blockState;
-        const NBTCompound tileentityData;
+        const NBTCompound tileEntityData;
     
-        BlockInfo(Pos3D posIn, lce::BlockState stateIn, NBTCompound compoundIn)
-                : pos(posIn), blockState(stateIn), tileentityData(std::move(compoundIn)) {}
+        BlockInfo(const Pos3D posIn, const lce::BlockState stateIn, NBTCompound compoundIn)
+                : pos(posIn), blockState(stateIn), tileEntityData(std::move(compoundIn)) {}
     };
     
     class EntityInfo {
@@ -26,14 +27,14 @@ public:
         const Pos3D blockPos;
         const NBTCompound entityData;
     
-        EntityInfo(Pos3DTemplate<double> vecIn, Pos3D posIn, NBTCompound compoundIn)
+        EntityInfo(const Pos3DTemplate<double>& vecIn, const Pos3D posIn, NBTCompound compoundIn)
             : pos(vecIn), blockPos(posIn), entityData(std::move(compoundIn)) {}
     };
     
     
 private:
-    const std::list<Template::BlockInfo> blocks = std::list<Template::BlockInfo>();
-    const std::list<Template::EntityInfo> entities = std::list<Template::EntityInfo>();
+    std::list<BlockInfo> blocks = std::list<BlockInfo>();
+    std::list<EntityInfo> entities = std::list<EntityInfo>();
 
     Pos3D size = {0, 0, 0};
 
@@ -42,7 +43,7 @@ private:
                                                                                             
 public:
     
-    Pos3D getSize() {
+    ND Pos3D getSize() const {
         return this->size;
     }
 
@@ -50,41 +51,42 @@ public:
         this->author = authorIn;
     }
 
-    std::string getAuthor() {
+    ND std::string getAuthor() {
         return this->author;
     }
 
-    void takeBlocksFromWorld(World worldIn, Pos3D startPos, Pos3D endPos, bool takeEntities, lce::BlockState toIgnore) {
+    /*
+    void takeBlocksFromWorld(World worldIn, const Pos3D startPos, const Pos3D endPos, const bool takeEntities, lce::BlockState toIgnore) {
         if (endPos.getX() >= 1 && endPos.getY() >= 1 && endPos.getZ() >= 1) {
-            Pos3D blockpos = startPos.add(endPos).add(-1, -1, -1);
-            std::list<Template::BlockInfo> list = std::list<Template::BlockInfo>();
-            std::list<Template::BlockInfo> list1 = std::list<Template::BlockInfo>();
-            std::list<Template::BlockInfo> list2 = std::list<Template::BlockInfo>();
-            Pos3D blockpos1 =
-                    Pos3D(std::min(startPos.getX(), blockpos.getX()), std::min(startPos.getY(), blockpos.getY()),
-                                 std::min(startPos.getZ(), blockpos.getZ()));
-            Pos3D blockpos2 =
-                    Pos3D(std::max(startPos.getX(), blockpos.getX()), std::max(startPos.getY(), blockpos.getY()),
-                                 std::max(startPos.getZ(), blockpos.getZ()));
+            const Pos3D blockPos = startPos.add(endPos).add(-1, -1, -1);
+            std::list<BlockInfo> list = std::list<BlockInfo>();
+            std::list<BlockInfo> list1 = std::list<BlockInfo>();
+            std::list<BlockInfo> list2 = std::list<BlockInfo>();
+            Pos3D blockPos1 =
+                    Pos3D(std::min(startPos.getX(), blockPos.getX()), std::min(startPos.getY(), blockPos.getY()),
+                                 std::min(startPos.getZ(), blockPos.getZ()));
+            Pos3D blockPos2 =
+                    Pos3D(std::max(startPos.getX(), blockPos.getX()), std::max(startPos.getY(), blockPos.getY()),
+                                 std::max(startPos.getZ(), blockPos.getZ()));
             this->size = endPos;
 
-            for (BlockPos.MutablePos3D blockpos$mutableblockpos: BlockPos.getAllInBoxMutable(blockpos1, blockpos2)) {
-                Pos3D blockpos3 = blockpos$mutableblockpos.subtract(blockpos1);
-                lce::BlockState iblockstate = worldIn.getBlockState(blockpos$mutableblockpos);
+            for (Pos3D blockPos$mutableBlockPos: BlockPos::getAllInBoxMutable(blockPos1, blockPos2)) {
+                Pos3D blockpos3 = blockPos$mutableBlockPos.subtract(blockPos1);
+                lce::BlockState iBlockState = worldIn.getBlockState(blockPos$mutableBlockPos);
 
-                if (toIgnore == null || toIgnore != iblockstate.getBlock()) {
-                    TileEntity tileentity = worldIn.getTileEntity(blockpos$mutableblockpos);
+                if (toIgnore == null || toIgnore != iBlockState.getBlock()) {
+                    TileEntity tileentity = worldIn.getTileEntity(blockPos$mutableBlockPos);
 
                     if (tileentity != null) {
-                        NBTCompound nbttagcompound = tileentity.writeToNBT(new NBTCompound());
-                        nbttagcompound.removeTag("x");
-                        nbttagcompound.removeTag("y");
-                        nbttagcompound.removeTag("z");
-                        list1.add(new Template::BlockInfo(blockpos3, iblockstate, nbttagcompound));
-                    } else if (!iblockstate.isFullBlock() && !iblockstate.isFullCube()) {
-                        list2.add(new Template::BlockInfo(blockpos3, iblockstate, (NBTCompound) null));
+                        NBTCompound nBTTagCompound = tileentity.writeToNBT(new NBTCompound());
+                        nBTTagCompound.removeTag("x");
+                        nBTTagCompound.removeTag("y");
+                        nBTTagCompound.removeTag("z");
+                        list1.add(new Template::BlockInfo(blockpos3, iBlockState, nBTTagCompound));
+                    } else if (!iBlockState.isFullBlock() && !iBlockState.isFullCube()) {
+                        list2.add(new Template::BlockInfo(blockpos3, iBlockState, (NBTCompound) null));
                     } else {
-                        list.add(new Template::BlockInfo(blockpos3, iblockstate, (NBTCompound) null));
+                        list.add(new Template::BlockInfo(blockpos3, iBlockState, (NBTCompound) null));
                     }
                 }
             }
@@ -95,15 +97,17 @@ public:
             this->blocks.addAll(list2);
 
             if (takeEntities) {
-                this->takeEntitiesFromWorld(worldIn, blockpos1, blockpos2.add(1, 1, 1));
+                this->takeEntitiesFromWorld(worldIn, blockPos1, blockPos2.add(1, 1, 1));
             } else {
                 this->entities.clear();
             }
         }
     }
+    */
 
 private:
-    void takeEntitiesFromWorld(World worldIn, Pos3D startPos, Pos3D endPos) {
+    /*
+    void takeEntitiesFromWorld(World& worldIn, Pos3D startPos, Pos3D endPos) {
         std::list<Entity> list = worldIn.<Entity>getEntitiesWithinAABB(
                 Entity.class, new AxisAlignedBB(startPos, endPos), new Predicate<Entity>() {
                 public
@@ -116,8 +120,8 @@ private:
         for (Entity entity: list) {
             Pos3DTemplate<double> vec3d = new Pos3DTemplate<double>(entity.posX - (double) startPos.getX(), entity.posY - (double) startPos.getY(),
                                     entity.posZ - (double) startPos.getZ());
-            NBTCompound nbttagcompound = new NBTCompound();
-            entity.writeToNBTOptional(nbttagcompound);
+            NBTCompound nBTTagCompound = new NBTCompound();
+            entity.writeToNBTOptional(nBTTagCompound);
             Pos3D blockpos;
 
             if (entity instanceof EntityPainting) {
@@ -126,28 +130,32 @@ private:
                 blockpos = Pos3D(vec3d);
             }
 
-            this->entities.add(new Template::EntityInfo(vec3d, blockpos, nbttagcompound));
+            this->entities.add(new Template::EntityInfo(vec3d, blockpos, nBTTagCompound));
         }
     }
+    */
 
 public:
-    Map<BlockPos, String> getDataBlocks(Pos3D pos, PlacementSettings placementIn) {
-        Map<BlockPos, String> map = Maps.<BlockPos, String>newHashMap();
-        StructureBoundingBox structureboundingbox = placementIn.getBoundingBox();
+    std::map<Pos3D, std::string> getDataBlocks(const Pos3D pos, const PlacementSettings& placementIn) {
+        std::map<Pos3D, std::string> map = {};
+        std::optional<BoundingBox> structureBB = placementIn.getBoundingBox();
 
-        for (Template::BlockInfo template$blockinfo: this->blocks) {
-            Pos3D blockpos = transformedBlockPos(placementIn, template$blockinfo.pos).add(pos);
+        for (const BlockInfo& template$blockInfo: this->blocks) {
+            Pos3D blockPos = transformedBlockPos(placementIn, template$blockInfo.pos).add(pos);
 
-            if (structureboundingbox == null || structureboundingbox.isVecInside(blockpos)) {
-                lce::BlockState iblockstate = template$blockinfo.blockState;
+            if (structureBB == std::nullopt || structureBB.value().isVecInside(blockPos)) {
+                lce::BlockState iBlockState = template$blockInfo.blockState;
 
-                if (iblockstate.getBlock() == Blocks.STRUCTURE_BLOCK && template$blockinfo.tileentityData != null) {
-                    TileEntityStructure.Mode tileentitystructure$mode =
-                            TileEntityStructure.Mode.valueOf(template$blockinfo.tileentityData.getString("mode"));
+                if (iBlockState == lce::BlocksInit::STRUCTURE_BLOCK.getDefaultState()
+                    /*&& template$blockInfo.tileEntityData != std::nullopt*/) {
+                    /*
+                    TileEntityStructure::Mode tileEntityStructure$mode =
+                            TileEntityStructure::Mode::valueOf(template$blockInfo.tileEntityData.getString("mode"));
 
-                    if (tileentitystructure$mode == TileEntityStructure.Mode.DATA) {
-                        map.put(blockpos, template$blockinfo.tileentityData.getString("metadata"));
+                    if (tileEntityStructure$mode == TileEntityStructure::Mode::DATA) {
+                        map.insert(blockPos, template$blockInfo.tileEntityData.getString("metadata"));
                     }
+                    */
                 }
             }
         }
@@ -155,120 +163,133 @@ public:
         return map;
     }
 
-    Pos3D calculateConnectedPos(PlacementSettings fromSettings, Pos3D fromPos, PlacementSettings toSettings, Pos3D toPos) {
-        Pos3D blockpos = transformedBlockPos(fromSettings, fromPos);
-        Pos3D blockpos1 = transformedBlockPos(toSettings, toPos);
-        return blockpos.subtract(blockpos1);
+    static Pos3D calculateConnectedPos(const PlacementSettings& fromSettings, const Pos3D fromPos, const PlacementSettings& toSettings, Pos3D toPos) {
+        const Pos3D blockPos = transformedBlockPos(fromSettings, fromPos);
+        const Pos3D blockPos1 = transformedBlockPos(toSettings, toPos);
+        return blockPos.subtract(blockPos1);
     }
 
-    static Pos3D transformedBlockPos(PlacementSettings settings, Pos3D localPos) {
+    static Pos3D transformedBlockPos(const PlacementSettings& settings, const Pos3D localPos) {
         return transformedBlockPos(localPos, settings.getMirror(), settings.getRotation());
     }
 
-    void addBlocksToWorldChunk(World worldIn, Pos3D pos, PlacementSettings placementIn) {
+    void addBlocksToWorldChunk(World& worldIn, const Pos3D pos, const PlacementSettings& placementIn) {
         placementIn.setBoundingBoxFromChunk();
         this->addBlocksToWorld(worldIn, pos, placementIn);
     }
 
-    void addBlocksToWorld(World worldIn, Pos3D pos, PlacementSettings placementIn) {
+    void addBlocksToWorld(World& worldIn, Pos3D pos, const PlacementSettings& placementIn) {
         this->addBlocksToWorld(worldIn, pos, new BlockRotationProcessor(pos, placementIn), placementIn, 2);
     }
 
-    void addBlocksToWorld(World worldIn, Pos3D pos, PlacementSettings placementIn, int flags) {
+    void addBlocksToWorld(World& worldIn, Pos3D pos, const PlacementSettings& placementIn, const int flags) {
         this->addBlocksToWorld(worldIn, pos, new BlockRotationProcessor(pos, placementIn), placementIn, flags);
     }
 
-    void addBlocksToWorld(World world, Pos3D origin, ITemplateProcessor processor, PlacementSettings settings, int flags) {
-        if ((!this->blocks.isEmpty() || !settings.getIgnoreEntities() && !this->entities.isEmpty()) &&
+    void addBlocksToWorld(World& world, Pos3D origin, ITemplateProcessor processor, PlacementSettings settings, MU int flags) {
+        if ((!this->blocks.empty() || !settings.getIgnoreEntities() && !this->entities.empty()) &&
             this->size.getX() >= 1 && this->size.getY() >= 1 && this->size.getZ() >= 1) {
-            Block block = settings.getReplacedBlock();
-            StructureBoundingBox structureboundingbox = settings.getBoundingBox();
+            std::optional<lce::BlockState> block = settings.getReplacedBlock();
+            std::optional<BoundingBox> structureBB = settings.getBoundingBox();
 
-            for (Template::BlockInfo template$blockinfo: this->blocks) {
-                Pos3D blockpos = transformedBlockPos(settings, template$blockinfo.pos).add(origin);
-                Template::BlockInfo template$blockinfo1 =
-                        processor != null ? processor.processBlock(world, blockpos, template$blockinfo)
-                                          : template$blockinfo;
+            for (BlockInfo template$blockInfo: this->blocks) {
+                Pos3D blockPos = transformedBlockPos(settings, template$blockInfo.pos).add(origin);
+                BlockInfo template$blockInfo1 =
+                        processor != nullptr ? processor.processBlock(world, blockPos, template$blockInfo)
+                                          : template$blockInfo;
 
-                if (template$blockinfo1 != null) {
-                    Block block1 = template$blockinfo1.blockState.getBlock();
+                if (template$blockInfo1 != nullptr) {
+                    lce::BlockState block1 = template$blockInfo1.blockState;
 
-                    if ((block == null || block != block1) &&
-                        (!settings.getIgnoreStructureBlock() || block1 != Blocks.STRUCTURE_BLOCK) &&
-                        (structureboundingbox == null || structureboundingbox.isVecInside(blockpos))) {
-                        lce::BlockState iblockstate = template$blockinfo1.blockState.withMirror(settings.getMirror());
-                        lce::BlockState iblockstate1 = iblockstate.withRotation(settings.getRotation());
+                    if ((block == std::nullopt || block != block1) &&
+                        (!settings.getIgnoreStructureBlock() || block1 != lce::BlocksInit::STRUCTURE_BLOCK.getDefaultState()) &&
+                        (structureBB == std::nullopt || structureBB.value().isVecInside(blockPos))) {
 
-                        if (template$blockinfo1.tileentityData != null) {
-                            TileEntity tileentity = world.getTileEntity(blockpos);
+                        lce::BlockState iBlockState = template$blockInfo1.blockState;
+                        lce::BlockState iBlockState1 = iBlockState;
+                        // lce::BlockState iBlockState = template$blockInfo1.blockState.withMirror(settings.getMirror());
+                        // lce::BlockState iBlockState1 = iBlockState.withRotation(settings.getRotation());
+
+                        /*
+                        if (template$blockInfo1.tileEntityData != null) {
+                            TileEntity tileentity = world.getTileEntity(blockPos);
 
                             if (tileentity != null) {
                                 if (tileentity instanceof IInventory) { ((IInventory) tileentity).clear(); }
 
-                                world.setBlockState(blockpos, Blocks.BARRIER.getDefaultState(), 4);
+                                world.setBlockState(blockPos, Blocks.BARRIER.getDefaultState(), 4);
                             }
                         }
+                        */
 
-                        if (world.setBlockState(blockpos, iblockstate1, flags) &&
-                            template$blockinfo1.tileentityData != null) {
-                            TileEntity tileentity2 = world.getTileEntity(blockpos);
+                        if (world.setBlock(blockPos, iBlockState1/*, flags*/)/* &&
+                            template$blockInfo1.tileEntityData != std::nullopt*/) {
+                            /*
+                            TileEntity tileEntity2 = world.getTileEntity(blockPos);
 
-                            if (tileentity2 != null) {
-                                template$blockinfo1.tileentityData.setInteger("x", blockpos.getX());
-                                template$blockinfo1.tileentityData.setInteger("y", blockpos.getY());
-                                template$blockinfo1.tileentityData.setInteger("z", blockpos.getZ());
-                                tileentity2.readFromNBT(template$blockinfo1.tileentityData);
-                                tileentity2.mirror(settings.getMirror());
-                                tileentity2.rotate(settings.getRotation());
+                            if (tileEntity2 != std::nullopt) {
+                                template$blockInfo1.tileEntityData.setInteger("x", blockPos.getX());
+                                template$blockInfo1.tileEntityData.setInteger("y", blockPos.getY());
+                                template$blockInfo1.tileEntityData.setInteger("z", blockPos.getZ());
+                                tileEntity2.readFromNBT(template$blockInfo1.tileEntityData);
+                                tileEntity2.mirror(settings.getMirror());
+                                tileEntity2.rotate(settings.getRotation());
                             }
+                            */
                         }
                     }
                 }
             }
 
-            for (Template::BlockInfo template$blockinfo2: this->blocks) {
-                if (block == null || block != template$blockinfo2.blockState.getBlock()) {
-                    Pos3D blockpos1 = transformedBlockPos(settings, template$blockinfo2.pos).add(origin);
+            /*
+            for (BlockInfo template$blockInfo2: this->blocks) {
+                if (block == std::nullopt || block != template$blockInfo2.blockState) {
+                    Pos3D blockPos1 = transformedBlockPos(settings, template$blockInfo2.pos).add(origin);
 
-                    if (structureboundingbox == null || structureboundingbox.isVecInside(blockpos1)) {
-                        world.notifyNeighborsRespectDebug(blockpos1, template$blockinfo2.blockState.getBlock(), false);
+                    if (structureBB == std::nullopt || structureBB.value().isVecInside(blockPos1)) {
+                        world.notifyNeighborsRespectDebug(blockPos1, template$blockInfo2.blockState, false);
 
-                        if (template$blockinfo2.tileentityData != null) {
-                            TileEntity tileentity1 = world.getTileEntity(blockpos1);
+                        if (template$blockInfo2.tileEntityData != null) {
+                            TileEntity tileentity1 = world.getTileEntity(blockPos1);
 
                             if (tileentity1 != null) { tileentity1.markDirty(); }
                         }
                     }
                 }
             }
+            */
 
+            /*
             if (!settings.getIgnoreEntities()) {
                 this->addEntitiesToWorld(world, origin, settings.getMirror(), settings.getRotation(),
-                                        structureboundingbox);
+                                        structureBB);
             }
+            */
         }
     }
 
 private:
-    void addEntitiesToWorld(World worldIn, Pos3D pos, Mirror mirrorIn, Rotation rotationIn, BoundingBox aabb) {
-        for (Template::EntityInfo template$entityinfo: this->entities) {
-            Pos3D blockpos = transformedBlockPos(template$entityinfo.blockPos, mirrorIn, rotationIn).add(pos);
+    
+    void addEntitiesToWorld(MU World& worldIn, const Pos3D pos, const Mirror mirrorIn, const Rotation rotationIn, const BoundingBox aabb) {
+        for (const EntityInfo& template$entityinfo: this->entities) {
+            Pos3D blockPos = transformedBlockPos(template$entityinfo.blockPos, mirrorIn, rotationIn).add(pos);
 
-            if (/*aabb == null || */aabb.isVecInside(blockpos)) {
-                NBTCompound nbttagcompound = template$entityinfo.entityData;
+            if (/*aabb == null || */aabb.isVecInside(blockPos)) {
+                /*
+                NBTCompound nBTTagCompound = template$entityinfo.entityData;
                 Pos3DTemplate<double> vec3d =
                         transformedBlockPos<double>(template$entityinfo.pos, mirrorIn, rotationIn);
-                Pos3DTemplate<double> vec3d1 = vec3d.addVector((double) pos.getX(), (double) pos.getY(), (double) pos.getZ());
-                NBTList nbttaglist = new NBTList();
-                nbttaglist.appendTag(new NBTTagDouble(vec3d1.xCoord));
-                nbttaglist.appendTag(new NBTTagDouble(vec3d1.yCoord));
-                nbttaglist.appendTag(new NBTTagDouble(vec3d1.zCoord));
-                nbttagcompound.setTag("Pos", nbttaglist);
-                nbttagcompound.setUniqueId("UUID", UUID.randomUUID());
+                Pos3DTemplate<double> vec3d1 = vec3d.add(pos.getX(), pos.getY(), pos.getZ());
+                NBTList nbtTagList = NBTList(eNBT::DOUBLE); // new NBTList();
+                nbtTagList.push_back(makeDouble(vec3d1.x));
+                nbtTagList.push_back(makeDouble(vec3d1.y));
+                nbtTagList.push_back(makeDouble(vec3d1.z));
+                nBTTagCompound.insert("Pos", nbtTagList);
+                nBTTagCompound.setUniqueId("UUID", UUID.randomUUID());
                 Entity entity;
 
                 try {
-                    entity = EntityList.createEntityFromNBT(nbttagcompound, worldIn);
+                    entity = EntityList.createEntityFromNBT(nBTTagCompound, worldIn);
                 } catch (Exception var15) { entity = null; }
 
                 if (entity != null) {
@@ -277,22 +298,23 @@ private:
                     entity.setLocationAndAngles(vec3d1.xCoord, vec3d1.yCoord, vec3d1.zCoord, f, entity.rotationPitch);
                     worldIn.spawnEntityInWorld(entity);
                 }
+                */
             }
         }
     }
 public:
-    Pos3D transformedSize(Rotation rotationIn) {
+    ND Pos3D transformedSize(const Rotation rotationIn) const {
         switch (rotationIn.type) {
             case Rotation::Type::COUNTERCLOCKWISE_90:
             case Rotation::Type::CLOCKWISE_90:
-                return Pos3D(this->size.getZ(), this->size.getY(), this->size.getX());
+                return {this->size.getZ(), this->size.getY(), this->size.getX()};
 
             default:
                 return this->size;
         }
     }
 private:
-    static Pos3D transformedBlockPos(Pos3D pos, Mirror mirrorIn, Rotation rotationIn) {
+    static Pos3D transformedBlockPos(const Pos3D pos, const Mirror mirrorIn, const Rotation rotationIn) {
         int x = pos.getX();
         int y = pos.getY();
         int z = pos.getZ();
@@ -313,13 +335,13 @@ private:
 
         switch (rotationIn.type) {
             case Rotation::Type::COUNTERCLOCKWISE_90:
-                return Pos3D(z, y, -x);
+                return {z, y, -x};
 
             case Rotation::Type::CLOCKWISE_90:
-                return Pos3D(-z, y, x);
+                return {-z, y, x};
 
             case Rotation::Type::CLOCKWISE_180:
-                return Pos3D(-x, y, -z);
+                return {-x, y, -z};
 
             default:
                 return flag ? Pos3D(x, y, z) : pos;
@@ -347,223 +369,314 @@ private:
 
         switch (rotationIn.type) {
             case Rotation::Type::COUNTERCLOCKWISE_90:
-                return Pos3DTemplate<double>(dz, dy, 1.0 - dx);
+                return {dz, dy, 1.0 - dx};
 
             case Rotation::Type::CLOCKWISE_90:
-                return Pos3DTemplate<double>(1.0 - dz, dy, dx);
+                return {1.0 - dz, dy, dx};
 
             case Rotation::Type::CLOCKWISE_180:
-                return Pos3DTemplate<double>(1.0 - dx, dy, 1.0 - dz);
+                return {1.0 - dx, dy, 1.0 - dz};
 
             default:
                 return flag ? Pos3DTemplate<double>(dx, dy, dz) : vec;
         }
     }
 public:
-    Pos3D getZeroPositionWithTransform(Pos3D origin, Mirror mirror, Rotation rotation) {
+    ND Pos3D getZeroPositionWithTransform(const Pos3D origin, const Mirror mirror, const Rotation rotation) const {
         return transformOrigin(origin, mirror, rotation, this->getSize().getX(), this->getSize().getZ());
     }
 
-    static Pos3D transformOrigin(Pos3D origin, Mirror mirror, Rotation rotation, int width, int depth) {
+    static Pos3D transformOrigin(const Pos3D origin, const Mirror mirror, const Rotation rotation, int width, int depth) {
         --width;
         --depth;
-        int i = mirror == Mirror::FRONT_BACK ? width : 0;
-        int j = mirror == Mirror::LEFT_RIGHT ? depth : 0;
-        Pos3D blockpos = origin;
+        const int i = mirror == Mirror::FRONT_BACK ? width : 0;
+        const int j = mirror == Mirror::LEFT_RIGHT ? depth : 0;
+        Pos3D blockPos = origin;
 
         switch (rotation.type) {
             case Rotation::Type::COUNTERCLOCKWISE_90:
-                blockpos = origin.add(j, 0, width - i);
+                blockPos = origin.add(j, 0, width - i);
                 break;
 
             case Rotation::Type::CLOCKWISE_90:
-                blockpos = origin.add(depth - j, 0, i);
+                blockPos = origin.add(depth - j, 0, i);
                 break;
 
             case Rotation::Type::CLOCKWISE_180:
-                blockpos = origin.add(width - i, 0, depth - j);
+                blockPos = origin.add(width - i, 0, depth - j);
                 break;
 
             case Rotation::Type::NONE:
-                blockpos = origin.add(i, 0, j);
+                blockPos = origin.add(i, 0, j);
         }
 
-        return blockpos;
+        return blockPos;
     }
 
-    static void registerTemplateDataFixers(DataFixer dataFixer) {
+    static void registerTemplateDataFixers(/*DataFixer dataFixer*/) {
+        /*
         dataFixer.registerWalker(FixTypes.STRUCTURE, new IDataWalker() {
             public NBTCompound process(IDataFixer fixer, NBTCompound compound, int versionIn) {
                 if (compound.hasKey("entities", 9)) {
-                    NBTList nbttaglist = compound.getTagList("entities", 10);
+                    NBTList nBTTagList = compound.getTagList("entities", 10);
 
-                    for (int i = 0; i < nbttaglist.tagCount(); ++i) {
-            NBTCompound nbttagcompound = (NBTCompound) nbttaglist.get(i);
+                        for (int i = 0; i < nBTTagList.tagCount(); ++i) {
+                NBTCompound nBTTagCompound = (NBTCompound) nBTTagList.get(i);
 
-            if (nbttagcompound.hasKey("nbt", 10)) {
-                nbttagcompound.setTag("nbt",
-                                      fixer.process(FixTypes.ENTITY, nbttagcompound.getCompoundTag("nbt"), versionIn));
+                if (nBTTagCompound.hasKey("nbt", 10)) {
+                    nBTTagCompound.setTag("nbt",
+                                          fixer.process(FixTypes.ENTITY, nBTTagCompound.getCompoundTag("nbt"), versionIn));
+                }
             }
-                    }
-    }
+            
+        }
 
-    if (compound.hasKey("blocks", 9)) {
-        NBTList nbttaglist1 = compound.getTagList("blocks", 10);
+        if (compound.hasKey("blocks", 9)) {
+            NBTList nBTTagList1 = compound.getTagList("blocks", 10);
 
-        for (int j = 0; j < nbttaglist1.tagCount(); ++j) {
-            NBTCompound nbttagcompound1 = (NBTCompound) nbttaglist1.get(j);
+            for (int j = 0; j < nBTTagList1.tagCount(); ++j) {
+                NBTCompound nBTTagCompound1 = (NBTCompound) nBTTagList1.get(j);
 
-            if (nbttagcompound1.hasKey("nbt", 10)) {
-                nbttagcompound1.setTag(
-                        "nbt", fixer.process(FixTypes.BLOCK_ENTITY, nbttagcompound1.getCompoundTag("nbt"), versionIn));
+                if (nBTTagCompound1.hasKey("nbt", 10)) {
+                    nBTTagCompound1.setTag(
+                            "nbt", fixer.process(FixTypes.BLOCK_ENTITY, nBTTagCompound1.getCompoundTag("nbt"), versionIn));
+                }
             }
         }
-    }
 
-    return compound;
-}
-});}
+        return compound;
+        }
+    });
+        */
+    }
 
 public:
+    /*
     NBTCompound writeToNBT(NBTCompound nbt) {
-        Template::BasicPalette template$basicpalette = new Template::BasicPalette();
-        NBTList nbttaglist = new NBTList();
+        Template::BasicPalette template$basicPalette = new Template::BasicPalette();
+        NBTList nBTTagList = new NBTList();
     
-        for (Template::BlockInfo template$blockinfo: this->blocks) {
-            NBTCompound nbttagcompound = new NBTCompound();
-            nbttagcompound.setTag("pos", this->writeInts(template$blockinfo.pos.getX(), template$blockinfo.pos.getY(),
-                                                        template$blockinfo.pos.getZ()));
-            nbttagcompound.setInteger("state", template$basicpalette.idFor(template$blockinfo.blockState));
+        for (Template::BlockInfo template$blockInfo: this->blocks) {
+            NBTCompound nBTTagCompound = new NBTCompound();
+            nBTTagCompound.setTag("pos", this->writeInts(template$blockInfo.pos.getX(), template$blockInfo.pos.getY(),
+                                                        template$blockInfo.pos.getZ()));
+            nBTTagCompound.setInteger("state", template$basicPalette.idFor(template$blockInfo.blockState));
     
-            if (template$blockinfo.tileentityData != null) {
-                nbttagcompound.setTag("nbt", template$blockinfo.tileentityData);
+            if (template$blockInfo.tileEntityData != null) {
+                nBTTagCompound.setTag("nbt", template$blockInfo.tileEntityData);
             }
     
-            nbttaglist.appendTag(nbttagcompound);
+            nBTTagList.appendTag(nBTTagCompound);
         }
     
-        NBTList nbttaglist1 = new NBTList();
+        NBTList nBTTagList1 = new NBTList();
     
         for (Template::EntityInfo template$entityinfo: this->entities) {
-            NBTCompound nbttagcompound1 = new NBTCompound();
-            nbttagcompound1.setTag("pos", this->writeDoubles(template$entityinfo.pos.xCoord, template$entityinfo.pos.yCoord,
+            NBTCompound nBTTagCompound1 = new NBTCompound();
+            nBTTagCompound1.setTag("pos", this->writeDoubles(template$entityinfo.pos.xCoord, template$entityinfo.pos.yCoord,
                                                             template$entityinfo.pos.zCoord));
-            nbttagcompound1.setTag("blockPos",
+            nBTTagCompound1.setTag("blockPos",
                                    this->writeInts(template$entityinfo.blockPos.getX(), template$entityinfo.blockPos.getY(),
                                                   template$entityinfo.blockPos.getZ()));
     
-            if (template$entityinfo.entityData != null) { nbttagcompound1.setTag("nbt", template$entityinfo.entityData); }
+            if (template$entityinfo.entityData != null) { nBTTagCompound1.setTag("nbt", template$entityinfo.entityData); }
     
-            nbttaglist1.appendTag(nbttagcompound1);
+            nBTTagList1.appendTag(nBTTagCompound1);
         }
     
-        NBTList nbttaglist2 = new NBTList();
+        NBTList nBTTagList2 = new NBTList();
     
-        for (lce::BlockState iblockstate: template$basicpalette) {
-            nbttaglist2.appendTag(NBTUtil.writeBlockState(new NBTCompound(), iblockstate));
+        for (lce::BlockState iBlockState: template$basicPalette) {
+            nBTTagList2.appendTag(NBTUtil.writeBlockState(new NBTCompound(), iBlockState));
         }
     
-        nbt.setTag("palette", nbttaglist2);
-        nbt.setTag("blocks", nbttaglist);
-        nbt.setTag("entities", nbttaglist1);
+        nbt.setTag("palette", nBTTagList2);
+        nbt.setTag("blocks", nBTTagList);
+        nbt.setTag("entities", nBTTagList1);
         nbt.setTag("size", this->writeInts(this->size.getX(), this->size.getY(), this->size.getZ()));
         nbt.setString("author", this->author);
         nbt.setInteger("DataVersion", 1139);
         return nbt;
     }
+    */
+
+    static inline bool readPosXYZ(const NBTBase& tag, int& x, int& y, int& z) {
+        // Supports either INT_ARRAY [x,y,z] or LIST of 3 ints
+        if (tag.is<NBTIntArray>()) {
+            const auto& arr = tag.get<NBTIntArray>();
+            if (arr.size() < 3) return false;
+            x = arr[0]; y = arr[1]; z = arr[2];
+            return true;
+        }
+        if (tag.is<NBTList>()) {
+            const auto& li = tag.get<NBTList>();
+            if (li.size() < 3) return false;
+            x = li[0].get<i32>();
+            y = li[1].get<i32>();
+            z = li[2].get<i32>();
+            return true;
+        }
+        return false;
+    }
 
     void read(NBTCompound& compound) {
         this->blocks.clear();
         this->entities.clear();
-        NBTList nbttaglist = compound.getTagList("size", 3);
-        this->size = Pos3D(nbttaglist.getIntAt(0), nbttaglist.getIntAt(1), nbttaglist.getIntAt(2));
-        this->author = compound.getString("author");
-        Template.BasicPalette template$basicpalette = new Template.BasicPalette();
-        NBTList nbttaglist1 = compound.getTagList("palette", 10);
-    
-        for (int i = 0; i < nbttaglist1.tagCount(); ++i) {
-            template$basicpalette.addMapping(NBTUtil.readBlockState(nbttaglist1.getCompoundTagAt(i)), i);
+
+        auto sizeTag = compound("size").get<NBTList>();
+        this->size = Pos3D(sizeTag[0].get<i32>(), sizeTag[1].get<i32>(), sizeTag[2].get<i32>());
+
+        // this->author = compound("author").get<eNBT::STRING>();
+        BasicPalette template$basicPalette{};
+
+        const NBTBase& paletteTag = compound("palette");
+        if (!paletteTag || !paletteTag.is<NBTList>()) {
+            throw std::runtime_error("palette missing or not a list");
         }
+        const auto& nBTTagList1 = paletteTag.get<NBTList>();
+
+
+        for (const auto & entry : nBTTagList1) {
+            std::string name = entry("Name").is<std::string>() ? entry("Name").get<std::string>() : std::string{};
+            if (name.empty() && entry.is<NBTCompound>()) {
+                if (auto opt = entry.get<NBTCompound>().value<std::string>("Name")) name = *opt;
+            }
+            auto* block = lce::registry::BlockRegistry::getBlockFromName(name);
+            if (block == nullptr) {
+                throw std::runtime_error("nbt has block state that does not exist");
+            }
+            int id = 0;
+            template$basicPalette.addMapping(block->getDefaultState(), id);
+        }
+
+        const NBTBase& blocksTag = compound("blocks");
+        if (!blocksTag || !blocksTag.is<NBTList>()) {
+            throw std::runtime_error("blocks missing or not a list");
+        }
+        const auto& blockList = paletteTag.get<NBTList>();
+
+        for (const auto & b : blockList) {
+            if (!b.is<NBTCompound>()) continue;
+
+            auto block = b.get<NBTCompound>();
+
+            auto posTag = compound("pos").get<NBTList>();
+            Pos3D blockPos(posTag[0].get<i32>(), posTag[1].get<i32>(), posTag[2].get<i32>());
+
+            lce::BlockState iBlockState = template$basicPalette.stateFor(block.getOr("state", -1));
+            NBTCompound nBTTagCompound1;
     
-        NBTList nbttaglist3 = compound.getTagList("blocks", 10);
-    
-        for (int j = 0; j < nbttaglist3.tagCount(); ++j) {
-            NBTCompound nbttagcompound = nbttaglist3.getCompoundTagAt(j);
-            NBTList nbttaglist2 = nbttagcompound.getTagList("pos", 3);
-            Pos3D blockpos = Pos3D(nbttaglist2.getIntAt(0), nbttaglist2.getIntAt(1), nbttaglist2.getIntAt(2));
-            lce::BlockState iblockstate = template$basicpalette.stateFor(nbttagcompound.getInteger("state"));
-            NBTCompound nbttagcompound1;
-    
-            if (nbttagcompound.hasKey("nbt")) {
-                nbttagcompound1 = nbttagcompound.getCompoundTag("nbt");
+            if (block("nbt")) {
+                nBTTagCompound1 = block["nbt"].get<NBTCompound>();
             } else {
-                nbttagcompound1 = null;
+                nBTTagCompound1 = makeCompound().get<NBTCompound>();
             }
     
-            this->blocks.add(new Template::BlockInfo(blockpos, iblockstate, nbttagcompound1));
+            this->blocks.emplace_back(blockPos, iBlockState, nBTTagCompound1);
         }
+
+        /*
+        NBTList nBTTagList4 = compound.getTagList("entities", 10);
     
-        NBTList nbttaglist4 = compound.getTagList("entities", 10);
+        for (int k = 0; k < nBTTagList4.tagCount(); ++k) {
+            NBTCompound nBTTagCompound3 = nBTTagList4.getCompoundTagAt(k);
+            NBTList nBTTagList5 = nBTTagCompound3.getTagList("pos", 6);
+            Pos3DTemplate<double> vec3d = new Pos3DTemplate<double>(nBTTagList5.getDoubleAt(0), nBTTagList5.getDoubleAt(1), nBTTagList5.getDoubleAt(2));
+            NBTList nBTTagList6 = nBTTagCompound3.getTagList("blockPos", 3);
+            Pos3D blockpos1 = Pos3D(nBTTagList6.getIntAt(0), nBTTagList6.getIntAt(1), nBTTagList6.getIntAt(2));
     
-        for (int k = 0; k < nbttaglist4.tagCount(); ++k) {
-            NBTCompound nbttagcompound3 = nbttaglist4.getCompoundTagAt(k);
-            NBTList nbttaglist5 = nbttagcompound3.getTagList("pos", 6);
-            Pos3DTemplate<double> vec3d = new Pos3DTemplate<double>(nbttaglist5.getDoubleAt(0), nbttaglist5.getDoubleAt(1), nbttaglist5.getDoubleAt(2));
-            NBTList nbttaglist6 = nbttagcompound3.getTagList("blockPos", 3);
-            Pos3D blockpos1 = Pos3D(nbttaglist6.getIntAt(0), nbttaglist6.getIntAt(1), nbttaglist6.getIntAt(2));
-    
-            if (nbttagcompound3.hasKey("nbt")) {
-                NBTCompound nbttagcompound2 = nbttagcompound3.getCompoundTag("nbt");
-                this->entities.add(new Template::EntityInfo(vec3d, blockpos1, nbttagcompound2));
+            if (nBTTagCompound3.hasKey("nbt")) {
+                NBTCompound nBTTagCompound2 = nBTTagCompound3.getCompoundTag("nbt");
+                this->entities.add(new Template::EntityInfo(vec3d, blockpos1, nBTTagCompound2));
             }
         }
+        */
     }
 
 private:
+    /*
     NBTList writeInts(int... values) {
-        NBTList nbttaglist = new NBTList();
+        NBTList nBTTagList = new NBTList();
     
-        for (int i: values) { nbttaglist.appendTag(new NBTTagInt(i)); }
+        for (int i: values) { nBTTagList.appendTag(new NBTTagInt(i)); }
     
-        return nbttaglist;
+        return nBTTagList;
     }
     
     NBTList writeDoubles(double... values) {
-        NBTList nbttaglist = new NBTList();
+        NBTList nBTTagList = new NBTList();
     
-        for (double d0: values) { nbttaglist.appendTag(new NBTDouble(d0)); }
+        for (double d0: values) { nBTTagList.appendTag(new NBTDouble(d0)); }
     
-        return nbttaglist;
+        return nBTTagList;
     }
+    */
 
-    class BasicPalette : public Iterable<lce::BlockState> {
+    class BasicPalette {
     public:
-        static constexpr lce::BlockState DEFAULT_BLOCK_STATE = lce::BlocksInit::AIR.getDefaultState();
-        const ObjectIntIdentityMap<lce::BlockState> ids;
+        static inline const lce::BlockState DEFAULT_BLOCK_STATE = lce::BlocksInit::AIR.getDefaultState();
+
     private:
-        int lastId;
-        BasicPalette() { this->ids = new ObjectIntIdentityMap<lce::BlockState>(16); }
-    
-    public:
-        int idFor(lce::BlockState state) {
-            int i = this->ids.get(state);
-    
-            if (i == -1) {
-                i = this->lastId++;
-                this->ids.put(state, i);
+        struct BlockStateHash {
+            size_t operator()(const lce::BlockState& state) const noexcept {
+                return std::hash<int>{}(state.getID() + 16 * state.getDataTag());
             }
-    
-            return i;
+        };
+
+        struct BlockStateEqual {
+            bool operator()(const lce::BlockState& a, const lce::BlockState& b) const noexcept {
+                return a == b;
+            }
+        };
+
+        std::unordered_map<lce::BlockState, int, BlockStateHash, BlockStateEqual> m_stateToId;
+        std::unordered_map<int, lce::BlockState> m_idToState;
+        int m_lastId = 0;
+
+    public:
+        BasicPalette() = default;
+
+        int idFor(const lce::BlockState& state) {
+            auto it = m_stateToId.find(state);
+
+            if (it == m_stateToId.end()) {
+                const int newId = m_lastId++;
+                m_stateToId.emplace(state, newId);
+                m_idToState.emplace(newId, state);
+                return newId;
+            }
+
+            return it->second;
         }
-    
-        @Nullable public lce::BlockState stateFor(int id) {
-            lce::BlockState iblockstate = this->ids.getByValue(id);
-            return iblockstate == null ? DEFAULT_BLOCK_STATE : iblockstate;
+
+        ND lce::BlockState stateFor(const int id) const {
+            const auto it = m_idToState.find(id);
+            return (it == m_idToState.end()) ? DEFAULT_BLOCK_STATE : it->second;
         }
-    
-        Iterator<lce::BlockState> iterator() { return this->ids.iterator(); }
-        
-        void addMapping(lce::BlockState state, int id) { this->ids.put(state, id); }
+
+        auto begin() { return m_stateToId.begin(); }
+        auto end() { return m_stateToId.end(); }
+        ND auto begin() const { return m_stateToId.begin(); }
+        ND auto end() const { return m_stateToId.end(); }
+
+        void addMapping(const lce::BlockState& state, int id) {
+            m_stateToId.emplace(state, id);
+            m_idToState.emplace(id, state);
+
+            if (id >= m_lastId) {
+                m_lastId = id + 1;
+            }
+        }
+
+        ND size_t size() const { return m_stateToId.size(); }
+
+        ND bool contains(const lce::BlockState& state) const {
+            return m_stateToId.contains(state);
+        }
+
+        ND bool containsId(const int id) const {
+            return m_idToState.contains(id);
+        }
     };
     
     

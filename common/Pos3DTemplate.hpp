@@ -4,7 +4,7 @@
 #include <ostream>
 
 #ifdef INCLUDE_QT
-        #include <QDebug>
+#include <QDebug>
 #endif
 
 #include "lce/processor.hpp"
@@ -156,16 +156,16 @@ public:
     MU ND Pos3DTemplate convertToChunkCoords() const;
 
 #ifdef INCLUDE_QT
-            /**
+    /**
              * @brief Outputs the position to a QDebug stream.
              * @param out The QDebug stream.
              * @param pos The position to output.
              * @return The modified QDebug stream.
              */
-            friend QDebug operator<<(QDebug out, const Pos3DTemplate &pos) {
-                out.nospace() << "(" << pos.x << ", " << pos.y << ", " << pos.z << ")";
-                return out.space();
-            }
+    friend QDebug operator<<(QDebug out, const Pos3DTemplate &pos) {
+        out.nospace() << "(" << pos.x << ", " << pos.y << ", " << pos.z << ")";
+        return out.space();
+    }
 #endif
 
     /**
@@ -192,8 +192,8 @@ public:
      * @return True if null, false otherwise.
      */
     MU ND bool isNull() const {
-                return x == 0 && y == 0 && z == 0;
-            }
+        return x == 0 && y == 0 && z == 0;
+    }
 
     /**
      * @brief Computes the absolute value of the position.
@@ -225,6 +225,24 @@ public:
      */
     ND Pos3DTemplate add(T xOff, T yOff, T zOff) const {
         return {x + xOff, y + yOff, z + zOff};
+    }
+
+    /**
+     * @brief Adds offsets to the current position.
+     * @param pos the position to add.
+     * @return A new Pos3DTemplate object with the updated coordinates.
+     */
+    ND Pos3DTemplate add(const Pos3DTemplate& pos) const {
+        return {x + pos.x, y + pos.y, z + pos.z};
+    }
+
+    /**
+     * @brief Subtracts offsets to the current position.
+     * @param pos the position to subtract.
+     * @return A new Pos3DTemplate object with the updated coordinates.
+     */
+    ND Pos3DTemplate subtract(const Pos3DTemplate& pos) const {
+        return {x - pos.x, y - pos.y, z - pos.z};
     }
 
     /**

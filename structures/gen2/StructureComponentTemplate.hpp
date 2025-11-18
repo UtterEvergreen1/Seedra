@@ -1,135 +1,145 @@
 #pragma once
+#include "PlacementSettings.hpp"
+#include "Template.hpp"
 
 
-class StructureComponentTemplate : Public StructureComponent {
-private:
-    static final PlacementSettings DEFAULT_PLACE_SETTINGS = new PlacementSettings();
+class StructureComponentTemplate : public StructureComponent {
+    static const PlacementSettings DEFAULT_PLACE_SETTINGS = PlacementSettings();
+
 protected:
-    Template template;
-protected:
-    PlacementSettings placeSettings;
-protected:
-    BlockPos templatePosition;
+    Template m_template;
+    PlacementSettings m_placeSettings;
+    Pos3D m_templatePosition;
 
 public:
     StructureComponentTemplate() {
-        this.placeSettings = DEFAULT_PLACE_SETTINGS.setIgnoreEntities(true).setReplacedBlock(Blocks.AIR);
+        this->m_placeSettings = DEFAULT_PLACE_SETTINGS.copy().setIgnoreEntities(true).setReplacedBlock(lce::BlocksInit::AIR.getDefaultState());
+    }
+
+    explicit StructureComponentTemplate(const PieceType componentType) : StructureComponent() {
+        this->m_type = componentType;
+        this->m_placeSettings = DEFAULT_PLACE_SETTINGS.copy().setIgnoreEntities(true).setReplacedBlock(lce::BlocksInit::AIR.getDefaultState());
+    }
+
+protected:
+    void setup(const Template& templateIn, const Pos3D templatePos, const PlacementSettings& settings) {
+        this->m_template = templateIn;
+        this->setCoordMode(EnumFacing::NORTH);
+        this->m_templatePosition = templatePos;
+        this->m_placeSettings = settings;
+        this->setBoundingBoxFromTemplate();
+    }
+
+    virtual void writeStructureToNBT(NBTCompound& tagCompound) {
+        tagCompound.insert("TPX", makeInt(this->m_templatePosition.getX()));
+        tagCompound.insert("TPY", makeInt(this->m_templatePosition.getY()));
+        tagCompound.insert("TPZ", makeInt(this->m_templatePosition.getZ()));
+    }
+
+    virtual void readStructureFromNBT(NBTCompound& tagCompound, MU const TemplateManager& manager) {
+        this->m_templatePosition = Pos3D(
+            tagCompound.getOr<int>("TPX", 0),
+            tagCompound.getOr<int>("TPY", 0),
+            tagCompound.getOr<int>("TPZ", 0)
+        );
     }
 
 public:
-    StructureComponentTemplate(int componentType) {
-        super(componentType);
-        this.placeSettings = DEFAULT_PLACE_SETTINGS.setIgnoreEntities(true).setReplacedBlock(Blocks.AIR);
-    }
+    bool addComponentParts(World& worldIn, RNG& rngIn, const BoundingBox structureBB) {
+        this->m_placeSettings.setBoundingBox(structureBB);
+        this->m_template.addBlocksToWorld(worldIn, this->m_templatePosition, this->m_placeSettings, 18);
+        const std::map<Pos3D, std::string> map = this->m_template.getDataBlocks(this->m_templatePosition, this->m_placeSettings);
 
-protected:
-    void setup(Template templateIn, BlockPos templatePos, PlacementSettings settings) {
-        this.template = templateIn;
-        this.setCoordBaseMode(EnumFacing.NORTH);
-        this.templatePosition = templatePos;
-        this.placeSettings = settings;
-        this.setBoundingBoxFromTemplate();
-    }
-
-protected:
-    void writeStructureToNBT(NBTTagCompound tagCompound) {
-        tagCompound.setInteger("TPX", this.templatePosition.getX());
-        tagCompound.setInteger("TPY", this.templatePosition.getY());
-        tagCompound.setInteger("TPZ", this.templatePosition.getZ());
-    }
-
-protected:
-    void readStructureFromNBT(NBTTagCompound tagCompound, TemplateManager p_143011_2_) {
-        this.templatePosition = new BlockPos(tagCompound.getInteger("TPX"), tagCompound.getInteger("TPY"),
-                                             tagCompound.getInteger("TPZ"));
-    }
-
-public:
-    boolean addComponentParts(World worldIn, Random randomIn, StructureBoundingBox structureBoundingBoxIn) {
-        this.placeSettings.setBoundingBox(structureBoundingBoxIn);
-        this.template.addBlocksToWorld(worldIn, this.templatePosition, this.placeSettings, 18);
-        Map<BlockPos, String> map = this.template.getDataBlocks(this.templatePosition, this.placeSettings);
-
-        for (Entry<BlockPos, String> entry: map.entrySet()) {
-            String s = (String) entry.getValue();
-            this.handleDataMarker(s, (BlockPos) entry.getKey(), worldIn, randomIn, structureBoundingBoxIn);
+        for (auto& entry: map) {
+            const std::string& s = entry.second;
+            this->handleDataMarker(s, entry.first, worldIn, rngIn, structureBB);
         }
 
         return true;
     }
 
 protected:
-    abstract void handleDataMarker(String marker, BlockPos pos, World world, Random random,
-                                   StructureBoundingBox structureBB);
+    virtual void handleDataMarker(std::string marker, Pos3D pos, World& world, RNG& random, BoundingBox structureBB);
 
 private:
     void setBoundingBoxFromTemplate() {
-        Rotation rotation = this.placeSettings.getRotation();
-        BlockPos blockpos = this.template.transformedSize(rotation);
-        Mirror mirror = this.placeSettings.getMirror();
-        this.boundingBox = new StructureBoundingBox(0, 0, 0, blockpos.getX(), blockpos.getY() - 1, blockpos.getZ());
+        const Rotation rotation = this->m_placeSettings.getRotation();
+        const Pos3D blockPos = this->m_template.transformedSize(rotation);
+        const Mirror mirror = this->m_placeSettings.getMirror();
+        this->setBoundingBox(BoundingBox(
+            0,
+            0,
+            0,
+            static_cast<bbType_t>(blockPos.getX()),
+            static_cast<bbType_t>(blockPos.getY() - 1),
+            static_cast<bbType_t>(blockPos.getZ())
+        ));
 
-        switch (rotation) {
-            case NONE:
+        switch (rotation.type) {
+            case Rotation::Type::NONE:
             default:
                 break;
 
-            case CLOCKWISE_90:
-                this.boundingBox.offset(-blockpos.getX(), 0, 0);
+            case Rotation::Type::CLOCKWISE_90:
+                this->offset(-blockPos.getX(), 0, 0);
                 break;
 
-            case COUNTERCLOCKWISE_90:
-                this.boundingBox.offset(0, 0, -blockpos.getZ());
+            case Rotation::Type::COUNTERCLOCKWISE_90:
+                this->offset(0, 0, -blockPos.getZ());
                 break;
 
-            case CLOCKWISE_180:
-                this.boundingBox.offset(-blockpos.getX(), 0, -blockpos.getZ());
+            case Rotation::Type::CLOCKWISE_180:
+                this->offset(-blockPos.getX(), 0, -blockPos.getZ());
         }
 
-        switch (mirror) {
-            case NONE:
+        switch (mirror.type) {
+            case Mirror::Type::NONE:
             default:
                 break;
 
-            case FRONT_BACK:
-                BlockPos blockpos2 = BlockPos.ORIGIN;
+            case Mirror::Type::FRONT_BACK: {
 
-                if (rotation != Rotation.CLOCKWISE_90 && rotation != Rotation.COUNTERCLOCKWISE_90) {
-                    if (rotation == Rotation.CLOCKWISE_180) {
-                        blockpos2 = blockpos2.offset(EnumFacing.EAST, blockpos.getX());
+                Pos3D blockPos2 = {0, 0, 0}; // Pos3D.ORIGIN;
+
+                if (rotation != Rotation::CLOCKWISE_90 && rotation != Rotation::COUNTERCLOCKWISE_90) {
+                    if (rotation == Rotation::CLOCKWISE_180) {
+                        blockPos2 = blockPos2.offset(EnumFacing::EAST, blockPos.getX());
                     } else {
-                        blockpos2 = blockpos2.offset(EnumFacing.WEST, blockpos.getX());
+                        blockPos2 = blockPos2.offset(EnumFacing::WEST, blockPos.getX());
                     }
                 } else {
-                    blockpos2 = blockpos2.offset(rotation.rotate(EnumFacing.WEST), blockpos.getZ());
+                    blockPos2 = blockPos2.offset(rotation.rotateFacing(EnumFacing::WEST), blockPos.getZ());
                 }
 
-                this.boundingBox.offset(blockpos2.getX(), 0, blockpos2.getZ());
+                this->offset(blockPos2.getX(), 0, blockPos2.getZ());
                 break;
+            }
 
-            case LEFT_RIGHT:
-                BlockPos blockpos1 = BlockPos.ORIGIN;
+            case Mirror::Type::LEFT_RIGHT: {
 
-                if (rotation != Rotation.CLOCKWISE_90 && rotation != Rotation.COUNTERCLOCKWISE_90) {
-                    if (rotation == Rotation.CLOCKWISE_180) {
-                        blockpos1 = blockpos1.offset(EnumFacing.SOUTH, blockpos.getZ());
+                Pos3D blockPos1 = {0, 0, 0}; // Pos3D.ORIGIN;
+
+                if (rotation != Rotation::CLOCKWISE_90 && rotation != Rotation::COUNTERCLOCKWISE_90) {
+                    if (rotation == Rotation::CLOCKWISE_180) {
+                        blockPos1 = blockPos1.offset(EnumFacing::SOUTH, blockPos.getZ());
                     } else {
-                        blockpos1 = blockpos1.offset(EnumFacing.NORTH, blockpos.getZ());
+                        blockPos1 = blockPos1.offset(EnumFacing::NORTH, blockPos.getZ());
                     }
                 } else {
-                    blockpos1 = blockpos1.offset(rotation.rotate(EnumFacing.NORTH), blockpos.getX());
+                    blockPos1 = blockPos1.offset(rotation.rotateFacing(EnumFacing::NORTH), blockPos.getX());
                 }
 
-                this.boundingBox.offset(blockpos1.getX(), 0, blockpos1.getZ());
+                this->offset(blockPos1.getX(), 0, blockPos1.getZ());
+            }
         }
 
-        this.boundingBox.offset(this.templatePosition.getX(), this.templatePosition.getY(),
-                                this.templatePosition.getZ());
+        this->offset(this->m_templatePosition.getX(), this->m_templatePosition.getY(),
+                     this->m_templatePosition.getZ());
     }
 
 public:
-    void offset(int x, int y, int z) {
-        super.offset(x, y, z);
-        this.templatePosition = this.templatePosition.add(x, y, z);
+    void offset(const int x, const int y, const int z) {
+        this->BoundingBox::offset(x, y, z);
+        this->m_templatePosition = this->m_templatePosition.add(x, y, z);
     }
-}
+};
