@@ -10,7 +10,7 @@ void ChunkPrimer::generateSkylightMap() {
     c_int topFilledSegment = getHighestYBlock();
     for (int x = 0; x < 16; ++x) {
         for (int z = 0; z < 16; ++z) {
-            int lightValue = 15;
+            u8 lightValue = 15;
             int topPos = topFilledSegment + 15;
             while (true) {
                 int blockOpacity = getBlockLightOpacity(getBlockId(x, topPos, z));
@@ -31,7 +31,7 @@ void ChunkPrimer::generateSkylightMap() {
 int ChunkPrimer::getPrecipitationHeight(c_int wX, c_int wZ) {
     c_int x = wX & 15;
     c_int z = wZ & 15;
-    c_int k = x | z << 4;
+    const auto k = static_cast<size_t>(x | z << 4);
 
     using namespace lce::blocks;
     if (precipitationHeightMap[k] == -999) {

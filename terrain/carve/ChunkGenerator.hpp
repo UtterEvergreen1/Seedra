@@ -136,7 +136,7 @@ public:
      * @param height The height of the area.
      * @param scale The scale of the biomes.
      */
-    void setBiomesForGeneration(int x, int z, int width, int height, int scale);
+    void setBiomesForGeneration(int x, int z, int width, int height, uint32_t scale);
 
     /**
      * @brief Sets the blocks in a chunk at the specified position.

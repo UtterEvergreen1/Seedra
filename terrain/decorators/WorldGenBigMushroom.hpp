@@ -44,7 +44,7 @@ public:
      * @param mushroomType The type of mushroom block to generate. Defaults to AIR.
      */
     explicit WorldGenBigMushroom(const lce::BlockState mushroomType = lce::BlocksInit::AIR.getState())
-        : mushroomType(mushroomType) {
+        : m_mushroomType(mushroomType) {
     }
 
     /**
@@ -57,5 +57,5 @@ public:
     bool generate(World *worldIn, RNG &rand, const Pos3D &position) const override;
 
 private:
-    lce::BlockState mushroomType; /**< The type of mushroom block to generate. */
+    lce::BlockState m_mushroomType; /**< The type of mushroom block to generate. */
 };

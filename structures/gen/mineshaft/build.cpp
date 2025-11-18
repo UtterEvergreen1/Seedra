@@ -6,6 +6,7 @@
 #include "terrain/World.hpp"
 
 #include "lce/blocks/__include.hpp"
+#include "structures/gen/FeaturePiece.hpp"
 
 namespace build::mineshaft {
 
@@ -100,11 +101,11 @@ namespace build::mineshaft {
     bool Corridor::addComponentParts(World& worldIn, RNG& rng, const BoundingBox& chunkBB, StructureComponent& piece) {
         if (piece.isLiquidInStructureBoundingBox(worldIn, chunkBB)) { return false; }
 
-        c_bool hasRails = piece.data & 1;
-        c_bool hasSpiders = piece.data >> 1 & 1;
+        c_bool hasRails = piece.m_data & 1;
+        c_bool hasSpiders = piece.m_data >> 1 & 1;
         bool spawnerPlaced = false;
         int sectionCount;
-        if (getAxis(piece.facing) == EnumAxis::Z) {
+        if (getAxis(piece.m_facing) == EnumAxis::Z) {
             sectionCount = piece.getZSize() / 5;
         } else {
             sectionCount = piece.getXSize() / 5;
@@ -253,10 +254,10 @@ namespace build::mineshaft {
         if (piece.isLiquidInStructureBoundingBox(worldIn, chunkBB)) { return false; }
 
 
-        piece.fillWithBlocks(worldIn, chunkBB, 0, 0, 0, piece.maxX - piece.minX, 0, piece.maxZ - piece.minZ,
+        piece.fillWithBlocks(worldIn, chunkBB, 0, 0, 0, piece.m_maxX - piece.m_minX, 0, piece.m_maxZ - piece.m_minZ,
                              lce::BlocksInit::DIRT.getState(), lce::BlocksInit::AIR.getState(), false);
-        piece.fillWithAir(worldIn, chunkBB, 0, 1, 0, piece.maxX - piece.minX,
-                          std::min(3, piece.maxY - piece.minY), piece.maxZ - piece.minZ);
+        piece.fillWithAir(worldIn, chunkBB, 0, 1, 0, piece.m_maxX - piece.m_minX,
+                          std::min(3, piece.m_maxY - piece.m_minY), piece.m_maxZ - piece.m_minZ);
 
         // for (const BoundingBox& sbb: roomsLinkedToTheRoom) {
         //     piece.fillWithBlocks(worldIn, chunkBB, sbb.piece.minX, sbb.piece.maxY - 2,
@@ -264,8 +265,8 @@ namespace build::mineshaft {
         //                    sbb.piece.maxZ, air, air, false);
         // }
 
-        piece.randomlyRareFillWithBlocks(worldIn, chunkBB, 0, 4, 0, piece.maxX - piece.minX,
-                                         piece.maxY - piece.minY, piece.maxZ - piece.minZ, lce::BlocksInit::AIR.getState(), false);
+        piece.randomlyRareFillWithBlocks(worldIn, chunkBB, 0, 4, 0, piece.m_maxX - piece.m_minX,
+                                         piece.m_maxY - piece.m_minY, piece.m_maxZ - piece.m_minZ, lce::BlocksInit::AIR.getState(), false);
         return true;
     }
 
@@ -273,36 +274,36 @@ namespace build::mineshaft {
     bool Crossing::addComponentParts(World& worldIn, MU RNG& rng, const BoundingBox& chunkBB, StructureComponent& piece) {
         if (piece.isLiquidInStructureBoundingBox(worldIn, chunkBB)) { return false; }
 
-        const bool isMultipleFloors = piece.data & 1;
+        const bool isMultipleFloors = piece.m_data & 1;
 
         const lce::BlockState iblockstate = getBiomeSpecificPlank(piece.variant);
 
         if (isMultipleFloors) {
-            piece.fillWithAir(worldIn, chunkBB, 1, 0, 0, piece.maxX - piece.minX - 1, 3 - 1,
-                              piece.maxZ - piece.minZ);
-            piece.fillWithAir(worldIn, chunkBB, 0, 0, 1, piece.maxX - piece.minX, 3 - 1,
-                              piece.maxZ - piece.minZ - 1);
-            piece.fillWithAir(worldIn, chunkBB, 1, -2, 0, piece.maxX - piece.minX - 1, piece.maxY - piece.minY,
-                              piece.maxZ - piece.minZ);
-            piece.fillWithAir(worldIn, chunkBB, 0, -2, 1, piece.maxX - piece.minX, piece.maxY - piece.minY,
-                              piece.maxZ - piece.minZ - 1);
-            piece.fillWithAir(worldIn, chunkBB, 1, 3, 1, piece.maxX - piece.minX - 1, 3,
-                              piece.maxZ - piece.minZ - 1);
+            piece.fillWithAir(worldIn, chunkBB, 1, 0, 0, piece.m_maxX - piece.m_minX - 1, 3 - 1,
+                              piece.m_maxZ - piece.m_minZ);
+            piece.fillWithAir(worldIn, chunkBB, 0, 0, 1, piece.m_maxX - piece.m_minX, 3 - 1,
+                              piece.m_maxZ - piece.m_minZ - 1);
+            piece.fillWithAir(worldIn, chunkBB, 1, -2, 0, piece.m_maxX - piece.m_minX - 1, piece.m_maxY - piece.m_minY,
+                              piece.m_maxZ - piece.m_minZ);
+            piece.fillWithAir(worldIn, chunkBB, 0, -2, 1, piece.m_maxX - piece.m_minX, piece.m_maxY - piece.m_minY,
+                              piece.m_maxZ - piece.m_minZ - 1);
+            piece.fillWithAir(worldIn, chunkBB, 1, 3, 1, piece.m_maxX - piece.m_minX - 1, 3,
+                              piece.m_maxZ - piece.m_minZ - 1);
         } else {
-            piece.fillWithAir(worldIn, chunkBB, 1, 0, 0, piece.maxX - piece.minX - 1, piece.maxY - piece.minY,
-                              piece.maxZ - piece.minZ);
-            piece.fillWithAir(worldIn, chunkBB, 0, 0, 1, piece.maxX - piece.minX, piece.maxY - piece.minY,
-                              piece.maxZ - piece.minZ - 1);
+            piece.fillWithAir(worldIn, chunkBB, 1, 0, 0, piece.m_maxX - piece.m_minX - 1, piece.m_maxY - piece.m_minY,
+                              piece.m_maxZ - piece.m_minZ);
+            piece.fillWithAir(worldIn, chunkBB, 0, 0, 1, piece.m_maxX - piece.m_minX, piece.m_maxY - piece.m_minY,
+                              piece.m_maxZ - piece.m_minZ - 1);
         }
 
-        Crossing_placePlankPillar(worldIn, chunkBB, 1, 0, 1, piece.maxY - piece.minY, piece);
-        Crossing_placePlankPillar(worldIn, chunkBB, 1, 0, piece.maxZ - piece.minZ - 1, piece.maxY - piece.minY, piece);
-        Crossing_placePlankPillar(worldIn, chunkBB, piece.maxX - piece.minX - 1, 0, 1, piece.maxY - piece.minY, piece);
-        Crossing_placePlankPillar(worldIn, chunkBB, piece.maxX - piece.minX - 1, 0, piece.maxZ - piece.minZ - 1,
-                         piece.maxY - piece.minY, piece);
+        Crossing_placePlankPillar(worldIn, chunkBB, 1, 0, 1, piece.m_maxY - piece.m_minY, piece);
+        Crossing_placePlankPillar(worldIn, chunkBB, 1, 0, piece.m_maxZ - piece.m_minZ - 1, piece.m_maxY - piece.m_minY, piece);
+        Crossing_placePlankPillar(worldIn, chunkBB, piece.m_maxX - piece.m_minX - 1, 0, 1, piece.m_maxY - piece.m_minY, piece);
+        Crossing_placePlankPillar(worldIn, chunkBB, piece.m_maxX - piece.m_minX - 1, 0, piece.m_maxZ - piece.m_minZ - 1,
+                         piece.m_maxY - piece.m_minY, piece);
 
-        for (int i = 0; i <= piece.maxX - piece.minX; ++i) {
-            for (int j = 0; j <= piece.maxZ - piece.minZ; ++j) {
+        for (int i = 0; i <= piece.m_maxX - piece.m_minX; ++i) {
+            for (int j = 0; j <= piece.m_maxZ - piece.m_minZ; ++j) {
                 if (isReplaceableBlock(
                             piece.getBlockStateFromPos(worldIn, i, -1, j, chunkBB).getID()) &&
                     piece.getLightLevelAtBlock(worldIn, i, -1, j, chunkBB) < 8) {
@@ -352,7 +353,7 @@ namespace build::mineshaft {
     bool addComponentParts(World& worldIn, RNG& rng, const BoundingBox& chunkBB, StructureComponent& piece) {
         bool result = false;
 
-        switch (piece.type) {
+        switch (piece.m_type) {
             case PT_Mineshaft_Crossing:
                 result = Crossing::addComponentParts(worldIn, rng, chunkBB, piece);
                 break;

@@ -90,7 +90,7 @@ namespace enchants {
          *
          * @note It is the caller's responsibility to ensure that the index is within bounds.
          */
-        const Enchant* operator[](c_int index) const {
+        const Enchant* operator[](const size_t index) const {
             return m_activeEnchants[index];
         }
 
@@ -109,7 +109,7 @@ namespace enchants {
          * @param id The enchantment's unique identifier.
          * @return A pointer to the corresponding Enchant object.
          */
-        ND const Enchant* getEnchantFromID(c_int id) const {
+        ND const Enchant* getEnchantFromID(const size_t id) const {
             return m_registeredEnchants[id];
         }
 
@@ -119,7 +119,7 @@ namespace enchants {
          * @param id The enchantment's unique identifier.
          * @return The weight of the enchantment.
          */
-        ND int getWeightFromID(c_int id) const {
+        ND int getWeightFromID(const size_t id) const {
             return m_registeredWeights[id];
         }
 
@@ -263,7 +263,7 @@ namespace enchants {
         MU void orderValues(const std::span<const eEnchantId>& lookupValues) {
             m_numActive = std::min(m_numRegistered, lookupValues.size());
             for (size_t i = 0; i < m_numActive; ++i) {
-                c_int idx = lookupValues[i];
+                const auto idx = static_cast<size_t>(lookupValues[i]);
                 m_activeEnchants[i] = m_registeredEnchants[idx];
                 m_activeWeights[i] = m_registeredWeights[idx];
             }

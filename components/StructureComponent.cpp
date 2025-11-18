@@ -153,12 +153,12 @@ void StructureComponent::fillWithAir(World& worldIn, const BoundingBox& bbIn,
 bool StructureComponent::isLiquidInStructureBoundingBox(const BoundingBox& chunkBoundingBoxIn,
                                                         const StructureComponent& piece, const ChunkPrimer* chunk) {
 
-    c_int minX = std::max(piece.minX - 1, static_cast<int>(chunkBoundingBoxIn.minX)) & 15;
-    c_int minY = std::max(piece.minY - 1, static_cast<int>(chunkBoundingBoxIn.minY));
-    c_int minZ = std::max(piece.minZ - 1, static_cast<int>(chunkBoundingBoxIn.minZ)) & 15;
-    c_int maxX = std::min(piece.maxX + 1, static_cast<int>(chunkBoundingBoxIn.maxX)) & 15;
-    c_int maxY = std::min(piece.maxY + 1, static_cast<int>(chunkBoundingBoxIn.maxY));
-    c_int maxZ = std::min(piece.maxZ + 1, static_cast<int>(chunkBoundingBoxIn.maxZ)) & 15;
+    c_int minX = std::max(piece.m_minX - 1, static_cast<int>(chunkBoundingBoxIn.m_minX)) & 15;
+    c_int minY = std::max(piece.m_minY - 1, static_cast<int>(chunkBoundingBoxIn.m_minY));
+    c_int minZ = std::max(piece.m_minZ - 1, static_cast<int>(chunkBoundingBoxIn.m_minZ)) & 15;
+    c_int maxX = std::min(piece.m_maxX + 1, static_cast<int>(chunkBoundingBoxIn.m_maxX)) & 15;
+    c_int maxY = std::min(piece.m_maxY + 1, static_cast<int>(chunkBoundingBoxIn.m_maxY));
+    c_int maxZ = std::min(piece.m_maxZ + 1, static_cast<int>(chunkBoundingBoxIn.m_maxZ)) & 15;
     for (int x = minX; x <= maxX; ++x) {
         for (int z = minZ; z <= maxZ; ++z) {
             if (lce::blocks::isLiquidBlock(chunk->getBlockId(x, minY, z))) return true;
@@ -182,17 +182,17 @@ bool StructureComponent::isLiquidInStructureBoundingBox(const BoundingBox& chunk
 
 
 bool StructureComponent::intersectsWithBlock(const BoundingBox& chunkBoundingBox, c_int x, c_int y, c_int z) {
-    return chunkBoundingBox.maxX >= x && chunkBoundingBox.minX <= x && chunkBoundingBox.maxY >= y &&
-           chunkBoundingBox.minY <= y && chunkBoundingBox.maxZ >= z && chunkBoundingBox.minZ <= z;
+    return chunkBoundingBox.m_maxX >= x && chunkBoundingBox.m_minX <= x && chunkBoundingBox.m_maxY >= y &&
+           chunkBoundingBox.m_minY <= y && chunkBoundingBox.m_maxZ >= z && chunkBoundingBox.m_minZ <= z;
 }
 
 
 MU bool StructureComponent::validToPlace(const BoundingBox& chunkBoundingBox, const BoundingBox& bb, c_int x, c_int y,
                                          c_int z) {
     if (intersectsWithBlock(chunkBoundingBox, x, y, z)) {
-        return (bb.maxX >= x && bb.minX <= x) &&
-               (bb.maxY >= y && bb.minY <= y) &&
-               (bb.maxZ >= z && bb.minZ <= z);
+        return (bb.m_maxX >= x && bb.m_minX <= x) &&
+               (bb.m_maxY >= y && bb.m_minY <= y) &&
+               (bb.m_maxZ >= z && bb.m_minZ <= z);
     }
     return false;
 }
@@ -235,12 +235,12 @@ void StructureComponent::generateChest(const BoundingBox& chunkBB, const Structu
 
 
 bool StructureComponent::isLiquidInStructureBoundingBox(World& worldIn, const BoundingBox& bbIn) const {
-    c_int checkMinX = std::max(minX - 1, static_cast<int>(bbIn.minX));
-    c_int checkMinY = std::max(minY - 1, static_cast<int>(bbIn.minY));
-    c_int checkMinZ = std::max(minZ - 1, static_cast<int>(bbIn.minZ));
-    c_int checkMaxX = std::min(maxX + 1, static_cast<int>(bbIn.maxX));
-    c_int checkMaxY = std::min(maxY + 1, static_cast<int>(bbIn.maxY));
-    c_int checkMaxZ = std::min(maxZ + 1, static_cast<int>(bbIn.maxZ));
+    c_int checkMinX = std::max(m_minX - 1, static_cast<int>(bbIn.m_minX));
+    c_int checkMinY = std::max(m_minY - 1, static_cast<int>(bbIn.m_minY));
+    c_int checkMinZ = std::max(m_minZ - 1, static_cast<int>(bbIn.m_minZ));
+    c_int checkMaxX = std::min(m_maxX + 1, static_cast<int>(bbIn.m_maxX));
+    c_int checkMaxY = std::min(m_maxY + 1, static_cast<int>(bbIn.m_maxY));
+    c_int checkMaxZ = std::min(m_maxZ + 1, static_cast<int>(bbIn.m_maxZ));
 
     for (int x = checkMinX; x <= checkMaxX; ++x) {
         for (int z = checkMinZ; z <= checkMaxZ; ++z) {
@@ -380,7 +380,7 @@ void StructureComponent::fillWithRandomizedStrongholdStones(World& worldIn, cons
 
 
 std::ostream& operator<<(std::ostream& out, const StructureComponent& structureComponent) {
-    const std::string dir = facingToString(structureComponent.facing);
+    const std::string dir = facingToString(structureComponent.m_facing);
     out << "{" << structureComponent.toString() << ", FACE=" << dir << "}";
     return out;
 }

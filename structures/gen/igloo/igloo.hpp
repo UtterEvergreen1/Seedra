@@ -23,9 +23,9 @@ namespace scattered_features {
     class MU Igloo : public ScatteredFeature {
     public:
         Igloo() = delete;
-        MU Igloo(Generator* g, RNG& rng, int chunkX, int chunkZ)
+        MU Igloo(Generator* g, RNG& rng, c_int chunkX, c_int chunkZ)
             : ScatteredFeature(g, rng, chunkX, 64, chunkZ, 7, 5, 8) {}
-        ~Igloo() = default;
+        ~Igloo() override;
         bool addComponentParts(World& worldIn, MU RNG& rng, const BoundingBox& chunkBB) override;
     };
 

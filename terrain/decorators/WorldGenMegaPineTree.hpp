@@ -10,7 +10,7 @@ class World;
  * Inherits from WorldGenHugeTrees and provides methods for tree generation, sapling generation, and additional features like crowns and podzol placement.
  */
 class WorldGenMegaPineTree final : public WorldGenHugeTrees {
-    bool useBaseHeight; /**< Flag indicating whether to use the base height for tree generation. */
+    bool m_useBaseHeight; /**< Flag indicating whether to use the base height for tree generation. */
 
 public:
     /**

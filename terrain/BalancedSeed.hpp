@@ -1,7 +1,6 @@
 #pragma once
 
 #include <atomic>
-#include <cstdint>
 #include <thread>
 #include <vector>
 
@@ -17,7 +16,7 @@ namespace BalancedSeed {
      * @param biomeID The ID of the biome.
      * @return The biome group as an integer.
      */
-    int getBiomeGroup(c_int biomeID);
+    extern int getBiomeGroup(biome_t biomeID);
 
     /**
      * @brief Calculates fractional values for a set of biomes.
@@ -28,7 +27,7 @@ namespace BalancedSeed {
      * @param biomes Pointer to an array of biome IDs.
      * @return A vector of fractional values corresponding to the biomes.
      */
-    std::vector<float> getFracs(c_int *biomes);
+    std::vector<float> getFracs(const biome_t *biomes);
 
     /**
      * @brief Determines if a set of biomes matches specific criteria.
@@ -39,7 +38,7 @@ namespace BalancedSeed {
      * @param biomes Pointer to an array of biome IDs.
      * @return True if the biomes match the criteria, false otherwise.
      */
-    bool getIsMatch(c_int *biomes);
+    bool getIsMatch(const biome_t *biomes);
 
     // Test seeds for specific scenarios:
     // - wow: 580880946693975163, -8560550246955989385
@@ -75,7 +74,7 @@ namespace BalancedSeed {
             while (!found.load()) {
                 c_i64 seed = localRng.nextLongI();
                 g->applyWorldSeed(seed);
-                int* biomes = g->getBiomeRange(4, -100, -100, 200, 200);
+                biome_t* biomes = g->getBiomeRange(4, -100, -100, 200, 200);
                 c_bool isMatch = getIsMatch(biomes);
                 free(biomes);
                 if (isMatch) {
@@ -85,7 +84,7 @@ namespace BalancedSeed {
                     return;
                 }
                 if constexpr (returnAfter10Seconds) {
-                    if (10.0F < timer.getSeconds()) {
+                    if (10.0 < timer.getSeconds()) {
                         found.store(true);
                         return;
                     }
@@ -97,7 +96,7 @@ namespace BalancedSeed {
         std::vector<Generator*> generators;
         for (int i = 0; i < numThreads; ++i) {
             RNG rng = RNG::initializeWithRandomSeed();
-            rng.setValue(rng.getSeed() + i);
+            rng.setValue(rng.getSeed() + static_cast<u64>(i));
             auto* g = new Generator(lce::CONSOLE::XBOX360, version, lce::WORLDSIZE::CLASSIC, lce::BIOMESCALE::SMALL);
             generators.push_back(g);
             threads.emplace_back(searchSeed, g, rng);

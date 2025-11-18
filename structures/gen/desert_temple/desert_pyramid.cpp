@@ -13,6 +13,9 @@ namespace scattered_features {
     using namespace lce::blocks::states;
 
 
+    DesertPyramid::~DesertPyramid() = default;
+
+
     bool DesertPyramid::addComponentParts(World& worldIn, RNG& rng, const BoundingBox& chunkBB) {
 
         int sFSX = this->scatteredFeatureSizeX;
@@ -35,7 +38,7 @@ namespace scattered_features {
 
         for (int i2 = 0; i2 < sFSX; ++i2) {
             for (int j = 0; j < sFSZ; ++j) {
-                int k = -5;
+                // int k = -5;
                 this->replaceAirAndLiquidDownwards(worldIn, sandstone, i2, -5, j, chunkBB);
             }
         }

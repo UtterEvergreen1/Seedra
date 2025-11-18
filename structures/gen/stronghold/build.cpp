@@ -4,6 +4,7 @@
 #include "stronghold.hpp"
 
 #include "lce/blocks/blockStates.hpp"
+#include "structures/gen/FeaturePiece.hpp"
 #include "terrain/Chunk.hpp"
 #include "terrain/World.hpp"
 
@@ -79,7 +80,7 @@ namespace build::stronghold {
     using namespace lce::blocks::states;
 
 
-    void placeDoor(World& worldIn, const BoundingBox& chunkBB, const StructureComponent& piece,
+    static void placeDoor(World& worldIn, const BoundingBox& chunkBB, const StructureComponent& piece,
                    const Door door, const int x, const int y, const int z) {
         switch (door) {
             case Door::OPENING:
@@ -149,7 +150,7 @@ namespace build::stronghold {
     bool ChestCorridor::addComponentParts(World& worldIn, RNG& rng, const BoundingBox& chunkBB, StructureComponent& piece) {
         if (piece.isLiquidInStructureBoundingBox(worldIn, chunkBB)) { return false; }
 
-        const Door entryDoor = getRandomDoor(piece.data >> 16 & 7);
+        const Door entryDoor = getRandomDoor(piece.m_data >> 16 & 7);
         bool hasMadeChest = false;
 
 
@@ -182,7 +183,7 @@ namespace build::stronghold {
     bool Corridor::addComponentParts(World& worldIn, MU RNG& rng, const BoundingBox& chunkBB, StructureComponent& piece) {
         if (piece.isLiquidInStructureBoundingBox(worldIn, chunkBB)) { return false; }
 
-        c_int steps = piece.facing != EnumFacing::NORTH && piece.facing != EnumFacing::SOUTH ? piece.getXSize() : piece.getZSize();
+        c_int steps = piece.m_facing != EnumFacing::NORTH && piece.m_facing != EnumFacing::SOUTH ? piece.getXSize() : piece.getZSize();
 
         for (int i = 0; i < steps; ++i) {
             piece.setBlockState(worldIn, chunkBB, 0, 0, i, lce::BlocksInit::STONE_BRICKS.getState());
@@ -213,11 +214,11 @@ namespace build::stronghold {
     bool Crossing::addComponentParts(World& worldIn, RNG& rng, const BoundingBox& chunkBB, StructureComponent& piece) {
         if (piece.isLiquidInStructureBoundingBox(worldIn, chunkBB)) { return false; }
 
-        const Door entryDoor = getRandomDoor(piece.data >> 16 & 7);
-        c_bool leftLow = piece.data & 1;
-        c_bool leftHigh = piece.data & 2;
-        c_bool rightLow = piece.data & 4;
-        c_bool rightHigh = piece.data & 8;
+        const Door entryDoor = getRandomDoor(piece.m_data >> 16 & 7);
+        c_bool leftLow = piece.m_data & 1;
+        c_bool leftHigh = piece.m_data & 2;
+        c_bool rightLow = piece.m_data & 4;
+        c_bool rightHigh = piece.m_data & 8;
 
         piece.fillWithRandomizedStrongholdStones(worldIn, chunkBB, 0, 0, 0, 9, 8, 10, true, rng);
         placeDoor(worldIn, chunkBB, piece, entryDoor, 4, 3, 0);
@@ -253,12 +254,12 @@ namespace build::stronghold {
     bool LeftTurn::addComponentParts(World& worldIn, RNG& rng, const BoundingBox& chunkBB, StructureComponent& piece) {
         if (piece.isLiquidInStructureBoundingBox(worldIn, chunkBB)) { return false; }
 
-        const Door entryDoor = getRandomDoor(piece.data >> 16 & 7);
+        const Door entryDoor = getRandomDoor(piece.m_data >> 16 & 7);
 
         piece.fillWithRandomizedStrongholdStones(worldIn, chunkBB, 0, 0, 0, 4, 4, 4, true, rng);
         placeDoor(worldIn, chunkBB, piece, entryDoor, 1, 1, 0);
 
-        if (piece.facing != EnumFacing::NORTH && piece.facing != EnumFacing::EAST) {
+        if (piece.m_facing != EnumFacing::NORTH && piece.m_facing != EnumFacing::EAST) {
             piece.fillWithAir(worldIn, chunkBB, 4, 1, 1, 4, 3, 3);
         } else {
             piece.fillWithAir(worldIn, chunkBB, 0, 1, 1, 0, 3, 3);
@@ -271,8 +272,8 @@ namespace build::stronghold {
     bool Library::addComponentParts(World& worldIn, RNG& rng, const BoundingBox& chunkBB, StructureComponent& piece) {
         if (piece.isLiquidInStructureBoundingBox(worldIn, chunkBB)) { return false; }
 
-        const Door entryDoor = getRandomDoor(piece.data >> 16 & 7);
-        c_bool isLargeRoom = piece.data & 1;
+        const Door entryDoor = getRandomDoor(piece.m_data >> 16 & 7);
+        c_bool isLargeRoom = piece.m_data & 1;
 
         int i = 11;
 
@@ -503,7 +504,7 @@ namespace build::stronghold {
     bool Prison::addComponentParts(World& worldIn, RNG& rng, const BoundingBox& chunkBB, StructureComponent& piece) {
         if (piece.isLiquidInStructureBoundingBox(worldIn, chunkBB)) { return false; }
 
-        const Door entryDoor = getRandomDoor(piece.data >> 16 & 7);
+        const Door entryDoor = getRandomDoor(piece.m_data >> 16 & 7);
 
         piece.fillWithRandomizedStrongholdStones(worldIn, chunkBB, 0, 0, 0, 8, 4, 10, true, rng);
         placeDoor(worldIn, chunkBB, piece, entryDoor, 1, 1, 0);
@@ -536,12 +537,12 @@ namespace build::stronghold {
     bool RightTurn::addComponentParts(World& worldIn, RNG& rng, const BoundingBox& chunkBB, StructureComponent& piece) {
         if (piece.isLiquidInStructureBoundingBox(worldIn, chunkBB)) { return false; }
 
-        const Door entryDoor = getRandomDoor(piece.data >> 16 & 7);
+        const Door entryDoor = getRandomDoor(piece.m_data >> 16 & 7);
 
         piece.fillWithRandomizedStrongholdStones(worldIn, chunkBB, 0, 0, 0, 4, 4, 4, true, rng);
         placeDoor(worldIn, chunkBB, piece, entryDoor, 1, 1, 0);
 
-        if (piece.facing != EnumFacing::NORTH && piece.facing != EnumFacing::EAST) {
+        if (piece.m_facing != EnumFacing::NORTH && piece.m_facing != EnumFacing::EAST) {
             piece.fillWithAir(worldIn, chunkBB, 0, 1, 1, 0, 3, 3);
         } else {
             piece.fillWithAir(worldIn, chunkBB, 4, 1, 1, 4, 3, 3);
@@ -555,8 +556,8 @@ namespace build::stronghold {
         if (piece.isLiquidInStructureBoundingBox(worldIn, chunkBB)) { return false; }
 
         // TODO: these might need swapped
-        const Door entryDoor = getRandomDoor(piece.data >> 16 & 7);
-        c_int roomType = piece.data & 7;
+        const Door entryDoor = getRandomDoor(piece.m_data >> 16 & 7);
+        c_int roomType = piece.m_data & 7;
 
         piece.fillWithRandomizedStrongholdStones(worldIn, chunkBB, 0, 0, 0, 10, 6, 10, true, rng);
         placeDoor(worldIn, chunkBB, piece, entryDoor, 4, 1, 0);
@@ -672,7 +673,7 @@ namespace build::stronghold {
     bool Stairs::addComponentParts(World& worldIn, RNG& rng, const BoundingBox& chunkBB, StructureComponent& piece) {
         if (piece.isLiquidInStructureBoundingBox(worldIn, chunkBB)) { return false; }
 
-        const Door entryDoor = getRandomDoor(piece.data >> 16 & 7);
+        const Door entryDoor = getRandomDoor(piece.m_data >> 16 & 7);
 
         piece.fillWithRandomizedStrongholdStones(worldIn, chunkBB, 0, 0, 0, 4, 10, 4, true, rng);
         placeDoor(worldIn, chunkBB, piece, entryDoor, 1, 7, 0);
@@ -701,7 +702,7 @@ namespace build::stronghold {
     bool StairsStraight::addComponentParts(World& worldIn, RNG& rng, const BoundingBox& chunkBB, StructureComponent& piece) {
         if (piece.isLiquidInStructureBoundingBox(worldIn, chunkBB)) { return false; }
 
-        const Door entryDoor = getRandomDoor(piece.data >> 16 & 7);
+        const Door entryDoor = getRandomDoor(piece.m_data >> 16 & 7);
 
         piece.fillWithRandomizedStrongholdStones(worldIn, chunkBB, 0, 0, 0, 4, 10, 7, true, rng);
         placeDoor(worldIn, chunkBB, piece, entryDoor, 1, 7, 0);
@@ -729,7 +730,7 @@ namespace build::stronghold {
     bool Straight::addComponentParts(World& worldIn, RNG& rng, const BoundingBox& chunkBB, StructureComponent& piece) {
         if (piece.isLiquidInStructureBoundingBox(worldIn, chunkBB)) { return false; }
 
-        const Door entryDoor = getRandomDoor(piece.data >> 16 & 7);
+        const Door entryDoor = getRandomDoor(piece.m_data >> 16 & 7);
 
         piece.fillWithRandomizedStrongholdStones(worldIn, chunkBB, 0, 0, 0, 4, 4, 6, true, rng);
         placeDoor(worldIn, chunkBB, piece, entryDoor, 1, 1, 0);
@@ -745,12 +746,12 @@ namespace build::stronghold {
         piece.randomlyPlaceBlock(worldIn, chunkBB, rng, 0.1F, 1, 2, 5, iBlockState);
         piece.randomlyPlaceBlock(worldIn, chunkBB, rng, 0.1F, 3, 2, 5, iBlockState1);
 
-        c_bool expandsX = piece.data & 1;
+        c_bool expandsX = piece.m_data & 1;
         if (expandsX) {
             piece.fillWithAir(worldIn, chunkBB, 0, 1, 2, 0, 3, 4);
         }
 
-        c_bool expandsZ = piece.data & 2;
+        c_bool expandsZ = piece.m_data & 2;
         if (expandsZ) {
             piece.fillWithAir(worldIn, chunkBB, 4, 1, 2, 4, 3, 4);
         }
@@ -770,7 +771,7 @@ namespace build::stronghold {
     bool addComponentParts(World& worldIn, RNG& rng, const BoundingBox& chunkBB, StructureComponent& piece) {
         bool result = false;
 
-        switch (piece.type) {
+        switch (piece.m_type) {
             case PT_Stronghold_Straight:
                 result = Straight::addComponentParts(worldIn, rng, chunkBB, piece);
                 break;

@@ -7,7 +7,7 @@ namespace Placement {
     Pos2DVec_t Mineshaft::getPositions(c_i64 worldSeed, int xLower, int zLower, int xUpper, int zUpper) {
         RNG rng;
         Pos2DVec_t positions;
-        rng.setSeed(worldSeed);
+        rng.setSeed(static_cast<u64>(worldSeed));
         xLower >>= 4;
         zLower >>= 4;
         xUpper >>= 4;

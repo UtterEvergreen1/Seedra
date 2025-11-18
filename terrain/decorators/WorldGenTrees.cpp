@@ -10,7 +10,7 @@ const lce::BlockState WorldGenTrees::DEFAULT_TRUNK = lce::BlocksInit::OAK_WOOD.g
 const lce::BlockState WorldGenTrees::DEFAULT_LEAF = lce::BlocksInit::OAK_LEAVES.getState();
 
 bool WorldGenTrees::generate(World* worldIn, RNG& rng, const Pos3D& pos) const {
-    const int height = rng.nextInt(3) + this->minTreeHeight;
+    const int height = rng.nextInt(3) + this->m_minTreeHeight;
 
     if (pos.getY() >= 1 && pos.getY() + height <= 255) {
         bool flag = true;
@@ -41,7 +41,7 @@ bool WorldGenTrees::generate(World* worldIn, RNG& rng, const Pos3D& pos) const {
             pos.getY() < 256 - height - 1) {
             setDirtAt(worldIn, pos.down());
             //placeTrunk
-            if (!placeTrunk(worldIn, rng, pos, height, this->metaWood, this->vinesGrow)) return true;
+            if (!placeTrunk(worldIn, rng, pos, height, this->m_metaWood, this->m_vinesGrow)) return true;
             const int startY = pos.getY();
             const int topY = startY + height;
             const int leafStartY = startY - 3 + height;
@@ -57,7 +57,7 @@ bool WorldGenTrees::generate(World* worldIn, RNG& rng, const Pos3D& pos) const {
                             const int blockId = worldIn->getBlockId(blockPos);
 
                             if (lce::blocks::isAirOrLeavesBlock(blockId) || blockId == VINES_ID) {
-                                worldIn->setBlock(blockPos, this->metaLeaves);
+                                worldIn->setBlock(blockPos, this->m_metaLeaves);
                             }
                         }
                     }
@@ -65,7 +65,7 @@ bool WorldGenTrees::generate(World* worldIn, RNG& rng, const Pos3D& pos) const {
             }
 
 
-            if (this->vinesGrow) {
+            if (this->m_vinesGrow) {
                 for (int k3 = pos.getY() - 3 + height; k3 <= pos.getY() + height; ++k3) {
                     const int j4 = k3 - (pos.getY() + height);
                     const int k4 = 2 - j4 / 2;

@@ -1,11 +1,10 @@
 #pragma once
 
-#include <climits>
-#include <iostream>
-
 #include "lce/enums.hpp"
 #include "lce/processor.hpp"
 #include "common/Pos3DTemplate.hpp"
+
+typedef short bbType_t;
 
 /**
  * @class BoundingBox
@@ -13,11 +12,12 @@
  */
 class BoundingBox {
 public:
+
     /// A constant representing an empty bounding box.
     static const BoundingBox EMPTY;
 
     /// Minimum and maximum coordinates of the bounding box.
-    short minX{}, minY{}, minZ{}, maxX{}, maxY{}, maxZ{};
+    bbType_t m_minX{}, m_minY{}, m_minZ{}, m_maxX{}, m_maxY{}, m_maxZ{};
 
     /**
      * @brief Default constructor initializing an empty bounding box.
@@ -34,7 +34,7 @@ public:
      * @param maxY Maximum Y coordinate.
      * @param maxZ Maximum Z coordinate.
      */
-    BoundingBox(int minX, int minY, int minZ, int maxX, int maxY, int maxZ);
+    BoundingBox(bbType_t minX, bbType_t minY, bbType_t minZ, bbType_t maxX, bbType_t maxY, bbType_t maxZ);
 
     /**
      * @brief Constructs a 2D bounding box with specified minimum and maximum X and Z coordinates.
@@ -44,7 +44,7 @@ public:
      * @param maxX Maximum X coordinate.
      * @param maxZ Maximum Z coordinate.
      */
-    BoundingBox(int minX, int minZ, int maxX, int maxZ);
+    BoundingBox(bbType_t minX, bbType_t minZ, bbType_t maxX, bbType_t maxZ);
 
     /**
      * @brief Equality operator to compare two bounding boxes.
@@ -69,8 +69,14 @@ public:
      * @return A new bounding box shifted by the specified amount in the opposite direction.
      */
     BoundingBox operator>>(int shiftAmount) const {
-        return {minX >> shiftAmount, minY >> shiftAmount, minZ >> shiftAmount, maxX >> shiftAmount, maxY >> shiftAmount,
-                maxZ >> shiftAmount};
+        return {
+            static_cast<bbType_t>(m_minX >> shiftAmount),
+            static_cast<bbType_t>(m_minY >> shiftAmount),
+            static_cast<bbType_t>(m_minZ >> shiftAmount),
+            static_cast<bbType_t>(m_maxX >> shiftAmount),
+            static_cast<bbType_t>(m_maxY >> shiftAmount),
+            static_cast<bbType_t>(m_maxZ >> shiftAmount)
+        };
     }
 
     void setBoundingBox(BoundingBox boundingBox);
@@ -149,28 +155,28 @@ public:
      *
      * @return The size in the X dimension.
      */
-    MU ND int getXSize() const { return maxX - minX + 1; }
+    MU ND int getXSize() const { return m_maxX - m_minX + 1; }
 
     /**
      * @brief Gets the size of the bounding box in the Y dimension.
      *
      * @return The size in the Y dimension.
      */
-    MU ND int getYSize() const { return maxY - minY + 1; }
+    MU ND int getYSize() const { return m_maxY - m_minY + 1; }
 
     /**
      * @brief Gets the size of the bounding box in the Z dimension.
      *
      * @return The size in the Z dimension.
      */
-    MU ND int getZSize() const { return maxZ - minZ + 1; }
+    MU ND int getZSize() const { return m_maxZ - m_minZ + 1; }
 
     /**
      * @brief Gets the maximum length of the bounding box in the X or Z dimension.
      *
      * @return The maximum length.
      */
-    MU ND int getLength() const { return std::max(maxX - minX, maxZ - minZ); }
+    MU ND int getLength() const { return std::max(m_maxX - m_minX, m_maxZ - m_minZ); }
 
     /*
      * @brief Gets the area of the bounding box in the X-Z plane.
@@ -183,14 +189,14 @@ public:
      *
      * @return The center X coordinate.
      */
-    MU ND int getCenterX() const { return (minX + maxX) / 2; }
+    MU ND int getCenterX() const { return (m_minX + m_maxX) / 2; }
 
     /**
      * @brief Gets the center coordinate in the Z dimension.
      *
      * @return The center Z coordinate.
      */
-    MU ND int getCenterZ() const { return (minZ + maxZ) / 2; }
+    MU ND int getCenterZ() const { return (m_minZ + m_maxZ) / 2; }
 
     /**
      * @brief Creates a bounding box for a specific chunk.
@@ -216,8 +222,10 @@ public:
      * @param direction The direction to orient the box.
      * @return The created bounding box.
      */
-    static BoundingBox orientBox(int x, int y, int z, int offsetWidth, int offsetHeight, int offsetDepth, int width,
-                                 int height, int depth, EnumFacing direction);
+    static BoundingBox orientBox(
+        int x, int y, int z,
+        int offsetWidth, int offsetHeight, int offsetDepth,
+        int width, int height, int depth, EnumFacing direction);
 
     /**
      * @brief Creates an oriented bounding box based on specified dimensions and direction.

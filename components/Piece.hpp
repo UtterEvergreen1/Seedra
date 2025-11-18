@@ -15,15 +15,15 @@
  */
 class Piece : public BoundingBox {
 public:
-    EnumFacing facing; ///< The orientation of the piece.
-    PieceType type; ///< The type of the piece (e.g., NONE, specific structure types).
-    i8 depth; ///< The depth of the piece in the structure hierarchy.
-    i32 data; ///< Additional data associated with the piece.
+    i32 m_data; ///< Additional data associated with the piece.
+    EnumFacing m_facing; ///< The orientation of the piece.
+    PieceType m_type; ///< The type of the piece (e.g., NONE, specific structure types).
+    i16 m_depth; ///< The depth of the piece in the structure hierarchy.
 
     /**
      * @brief Default constructor initializing a piece with default values.
      */
-    Piece() : facing(), type(PT_NONE), depth(0), data(0) {
+    Piece() : m_data(0), m_facing(), m_type(PT_NONE), m_depth(0) {
     }
 
     /**
@@ -33,7 +33,7 @@ public:
      * @param facing The orientation of the piece.
      */
     Piece(const BoundingBox bb, const EnumFacing facing)
-        : BoundingBox(bb), facing(facing), type(PT_NONE), depth(0), data(0) {
+        : BoundingBox(bb), m_data(0), m_facing(facing), m_type(PT_NONE), m_depth(0) {
     }
 
     /**
@@ -48,7 +48,10 @@ public:
      * @param facing The orientation of the piece.
      */
     Piece(c_int minX, c_int minY, c_int minZ, c_int maxX, c_int maxY, c_int maxZ, const EnumFacing facing)
-        : BoundingBox(minX, minY, minZ, maxX, maxY, maxZ), facing(facing), type(PT_NONE), depth(0), data(0) {
+        : BoundingBox(
+            static_cast<bbType_t>(minX), static_cast<bbType_t>(minY), static_cast<bbType_t>(minZ),
+            static_cast<bbType_t>(maxX), static_cast<bbType_t>(maxY), static_cast<bbType_t>(maxZ)
+            ), m_data(0), m_facing(facing), m_type(PT_NONE), m_depth(0) {
     }
 
     /**
@@ -61,7 +64,7 @@ public:
      * @param data Additional data associated with the piece.
      */
     Piece(const PieceType type, c_i8 depth, const BoundingBox &bb, const EnumFacing facing, c_int data)
-        : BoundingBox(bb), facing(facing), type(type), depth(depth), data(data) {
+        : BoundingBox(bb), m_data(data), m_facing(facing), m_type(type), m_depth(depth) {
     }
 
     /**
@@ -75,6 +78,7 @@ public:
      * @brief Gets the world X coordinate based on an offset.
      *
      * @param offsetWidth The offset in the width dimension.
+     * @param offsetDepth The offset in the depth dimension.
      * @return The world X coordinate.
      */
     ND int getWorldX(int offsetWidth, int offsetDepth) const;
@@ -134,7 +138,7 @@ public:
      *
      * @return True if the piece type is NONE, false otherwise.
      */
-    MU ND bool isTypeNone() const { return type == PT_NONE; }
+    MU ND bool isTypeNone() const { return m_type == PT_NONE; }
 };
 
 #include "Piece.inl"

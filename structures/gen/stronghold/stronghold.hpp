@@ -36,8 +36,8 @@ namespace gen {
          * @brief Tracks the placement count and constraints for a specific piece type.
          */
         struct PiecePlaceCount {
-            PieceType pieceType; ///< The type of the piece.
-            int placeCount; ///< The number of times this piece has been placed.
+            int m_placeCount; ///< The number of times this piece has been placed.
+            PieceType m_pieceType; ///< The type of the piece.
 
             /**
              * @brief Retrieves the weight configuration for a specific piece type.
@@ -53,8 +53,8 @@ namespace gen {
              * @return True if the piece can be placed, false otherwise.
              */
             ND bool isValid() const {
-                c_int maxPlaceCount = PIECE_WEIGHTS[pieceType].maxPlaceCount;
-                return maxPlaceCount == 0 || placeCount < maxPlaceCount;
+                c_int maxPlaceCount = PIECE_WEIGHTS[m_pieceType].maxPlaceCount;
+                return maxPlaceCount == 0 || m_placeCount < maxPlaceCount;
             }
 
             /**
@@ -63,7 +63,7 @@ namespace gen {
              * @return True if the piece can be placed, false otherwise.
              */
             ND bool canPlace(c_int depth) const {
-                return isValid() && depth >= PIECE_WEIGHTS[pieceType].minDepth;
+                return isValid() && depth >= PIECE_WEIGHTS[m_pieceType].minDepth;
             }
         };
 
@@ -83,7 +83,7 @@ namespace gen {
         //       class attributes, variables, functions
         // #######################################################
     private:
-        RNG rng; ///< Random number generator for structure generation.
+        RNG m_rng; ///< Random number generator for structure generation.
 
 
     public:
@@ -93,24 +93,24 @@ namespace gen {
          */
         MU static std::string PIECE_TYPE_NAMES[13];
 
-        int pendingPieceArray[STRONGHOLD_ARRAY_SIZE]{}; ///< Array of pending pieces to be placed.
-        PiecePlaceCount piecePlaceCounts[11]{}; ///< Array of piece placement counts.
-        StructureComponent *altarChestsArray[4]{}; ///< Array of altar chest components.
+        int m_pendingPieceArray[STRONGHOLD_ARRAY_SIZE]{}; ///< Array of pending pieces to be placed.
+        PiecePlaceCount m_piecePlaceCounts[11]{}; ///< Array of piece placement counts.
+        StructureComponent *m_altarChestsArray[4]{}; ///< Array of altar chest components.
 
-        StructureComponent *portalRoomPiece = nullptr; ///< Pointer to the portal room component.
-        int eyesCount = 0; ///< Number of eyes in the portal room (to be populated by the rolls).
+        StructureComponent *m_portalRoomPiece = nullptr; ///< Pointer to the portal room component.
+        int m_eyesCount = 0; ///< Number of eyes in the portal room (to be populated by the rolls).
 
         // int startX = 0;
         // int startZ = 0;
-        int pendingPiecesArraySize = 0; ///< Size of the pending pieces array.
-        int altarChestArraySize = 0; ///< Size of the altar chest array.
-        int totalWeight = 145; ///< Total weight of all pieces.
-        int piecePlaceCountsSize = 11; ///< Size of the piece placement counts array.
+        int m_pendingPiecesArraySize = 0; ///< Size of the pending pieces array.
+        int m_altarChestArraySize = 0; ///< Size of the altar chest array.
+        int m_totalWeight = 145; ///< Total weight of all pieces.
+        int m_piecePlaceCountsSize = 11; ///< Size of the piece placement counts array.
 
-        GenerationStep generationStep = GS_Stronghold_Full; ///< Current generation step.
-        PieceType forcedPiece = PT_NONE; ///< Piece type to be forced during generation.
-        PieceType previousPiece = PT_NONE; ///< Previously placed piece type.
-        bool generationStopped = false; ///< Flag indicating if generation has stopped.
+        GenerationStep m_generationStep = GS_Stronghold_Full; ///< Current generation step.
+        PieceType m_forcedPiece = PT_NONE; ///< Piece type to be forced during generation.
+        PieceType m_previousPiece = PT_NONE; ///< Previously placed piece type.
+        bool m_generationStopped = false; ///< Flag indicating if generation has stopped.
 
         /**
          * @brief Default constructor for the Stronghold class.
@@ -121,6 +121,12 @@ namespace gen {
          * @brief Destructor for the Stronghold class.
          */
         ~Stronghold();
+
+        Stronghold(const Stronghold&) = delete;
+        Stronghold& operator=(const Stronghold&) = delete;
+
+        Stronghold(Stronghold&&) noexcept = default;
+        Stronghold& operator=(Stronghold&&) noexcept = default;
 
         /**
          * @brief Deletes all pieces in the Stronghold.
@@ -186,7 +192,7 @@ namespace gen {
          * @param facing The orientation of the piece.
          * @param depth The depth of the piece in the structure hierarchy.
          */
-        void genAndAddPiece(const Pos3D &pos, EnumFacing facing, i8 depth);
+        void genAndAddPiece(const Pos3D &pos, EnumFacing facing, i16 depth);
 
         /**
          * @brief Generates a piece from a small door.
@@ -315,7 +321,7 @@ namespace rolls {
          * @param index The index of the eye.
          */
         static void setEye(const BoundingBox &chunkBB, const StructureComponent *piece, int x, int z, RNG &random,
-                           std::vector<bool> &portalRoomEyes, int &success, int index);
+                           std::vector<bool> &portalRoomEyes, int &success, size_t index);
 
         /**
          * @brief Gets the placements of eyes in the portal room.

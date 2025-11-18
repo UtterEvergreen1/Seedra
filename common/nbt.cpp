@@ -124,7 +124,11 @@ NBTBase NBTBase::readInternal(DataReader& reader, eNBT type) {
             for (int i = 0; i < size; ++i) arr[i] = reader.read<i64>();
             return makeLongArray(arr);
         }
-        default: return {};
+        case eNBT::NONE:
+        case eNBT::PRIMITIVE:
+            return {};
+        default:
+            std::unreachable();
     }
 }
 

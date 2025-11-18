@@ -14,10 +14,13 @@ namespace scattered_features {
     using namespace lce::blocks::states;
 
 
+    SwampHut::~SwampHut() = default;
+
+
     bool SwampHut::addComponentParts(World& worldIn, RNG& rng, const BoundingBox& chunkBB) {
 
-        int sFSX = this->scatteredFeatureSizeX;
-        int sFSZ = this->scatteredFeatureSizeZ;
+        MU int sFSX = this->scatteredFeatureSizeX;
+        MU int sFSZ = this->scatteredFeatureSizeZ;
 
         if (!this->offsetToAverageGroundLevel(worldIn, chunkBB, 0)) {
             return false;

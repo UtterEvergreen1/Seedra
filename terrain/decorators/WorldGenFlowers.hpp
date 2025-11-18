@@ -35,8 +35,8 @@ public:
  * Inherits from AbstractWorldGenerator and provides methods for flower generation.
  */
 class WorldGenFlowers final : public AbstractWorldGenerator {
-    int flowerId; /**< The ID of the flower block to generate. */
-    BlockFlower::EnumFlowerType flowerType; /**< The type of flower to generate. */
+    int m_flowerId; /**< The ID of the flower block to generate. */
+    BlockFlower::EnumFlowerType m_flowerType; /**< The type of flower to generate. */
 
 public:
     /**
@@ -45,7 +45,7 @@ public:
      * @param type The type of flower to generate.
      */
     WorldGenFlowers(const int flowerId, const BlockFlower::EnumFlowerType type)
-        : flowerId(flowerId), flowerType(type) {
+        : m_flowerId(flowerId), m_flowerType(type) {
     }
 
     /**
@@ -54,8 +54,8 @@ public:
      * @param typeIn The type of flower to generate.
      */
     void setGeneratedBlock(const int flowerId, const BlockFlower::EnumFlowerType typeIn) {
-        this->flowerId = flowerId;
-        this->flowerType = typeIn;
+        this->m_flowerId = flowerId;
+        this->m_flowerType = typeIn;
     }
 
     /**

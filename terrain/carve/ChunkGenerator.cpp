@@ -54,7 +54,8 @@ ChunkGeneratorOverWorld::~ChunkGeneratorOverWorld() {
 }
 
 
-void ChunkGeneratorOverWorld::setBiomesForGeneration(c_int x, c_int z, c_int width, c_int height, c_int scale) {
+void ChunkGeneratorOverWorld::setBiomesForGeneration(c_int x, c_int z, c_int width, c_int height,
+                                                     c_u32 scale) {
     Range r{};
     // if ((scale & 0b1000000010101) == scale ) { // faster comparison
     if (scale == 1 || scale == 4 || scale == 16 || scale == 64 || scale == 256) {
@@ -63,8 +64,8 @@ void ChunkGeneratorOverWorld::setBiomesForGeneration(c_int x, c_int z, c_int wid
         r.scale = 1;
     }
     // Define the position and size for a horizontal area:
-    r.x = x, r.z = z;            // position (x,z)
-    r.sx = width, r.sz = height; // size (width,height)
+    r.x = x; r.z = z;            // position (x,z)
+    r.sx = width; r.sz = height; // size (width,height)
     // Set the vertical range as a plane near sea level at scale 1:4.
     // r.y = 1, r.sy = 1;
 
@@ -179,15 +180,16 @@ void ChunkGeneratorOverWorld::replaceBiomeBlocks(c_int chunkX, c_int chunkZ, Chu
     for (int i = 0; i < 16; ++i) {
         for (int j = 0; j < 16; ++j) {
             Biome* biome = Biome::getBiomeForId(biomesForGeneration[j + i * 16]);
-            biome->genTerrainBlocks(g->getWorldSeed(), rng, primer, blockX + i, blockZ + j, depthBuffer[j + i * 16],
-                                    biome->topBlock, biome->fillerBlock);
+            biome->genTerrainBlocks(g->getWorldSeed(), rng, primer, blockX + i, blockZ + j,
+                                    depthBuffer[static_cast<u64>(static_cast<u32>(j + i * 16))],
+                                    biome->m_topBlock, biome->m_fillerBlock);
         }
     }
 }
 
 
 void ChunkGeneratorOverWorld::provideChunk(ChunkPrimer *chunkPrimer, c_int x,c_int z) {
-    rng.setSeed((i64) x * 341873128712LL + (i64) z * 132897987541LL);
+    rng.setSeed(static_cast<u64>(static_cast<i64>(x) * 341873128712LL + static_cast<i64>(z) * 132897987541LL));
     setBiomesForGeneration(x * 4 - 2, z * 4 - 2, 10, 10, 4);
     setBlocksInChunk(x, z, chunkPrimer);
     setBiomesForGeneration(x * 16, z * 16, 16, 16, 1);
@@ -201,8 +203,8 @@ void ChunkGeneratorOverWorld::generateHeightmap(c_int x, c_int y, c_int z) {
     chunkNoise.mainPerlinNoise.    getRegion<double, 5, 33, 5, 8.55515, 4.277575, 8.55515>(g, mainNoiseRegion, x,  y, z);
     chunkNoise.minLimitPerlinNoise.getRegion<double, 5, 33, 5, 684.412, 684.412,  684.412>(g, minLimitRegion,  x,  y, z);
     chunkNoise.maxLimitPerlinNoise.getRegion<double, 5, 33, 5, 684.412, 684.412,  684.412>(g, maxLimitRegion,  x,  y, z);
-    int noiseIdx = 0;
-    int depthIdx = 0;
+    size_t noiseIdx = 0;
+    size_t depthIdx = 0;
 
     for (int cellX = 0; cellX < 5; ++cellX) {
         for (int cellZ = 0; cellZ < 5; ++cellZ) {
@@ -261,24 +263,24 @@ void ChunkGeneratorOverWorld::generateHeightmap(c_int x, c_int y, c_int z) {
             }
 
             ++depthIdx;
-            auto depthBlend = (double) depthAvg;
-            c_auto scaleAvgD = (double) scaleAvg;
+            auto depthBlend = static_cast<double>(depthAvg);
+            c_auto scaleAvgD = static_cast<double>(scaleAvg);
             depthBlend = depthBlend + depthNoiseOffset * 0.2;
-            depthBlend = depthBlend * (double) 8.5 / 8.0; // baseSize = 8.5
-            c_double heightCenter = (double) 8.5 + depthBlend * 4.0;
+            depthBlend = depthBlend * 8.5 / 8.0; // baseSize = 8.5
+            c_double heightCenter = 8.5 + depthBlend * 4.0;
 
             for (int yIdx = 0; yIdx < 33; ++yIdx) {
-                double densityFalloff = ((double) yIdx - heightCenter) * (double) 12.0 * 128.0 / 256.0 / scaleAvgD;
+                double densityFalloff = (static_cast<double>(yIdx) - heightCenter) * 12.0 * 128.0 / 256.0 / scaleAvgD;
 
                 if (densityFalloff < 0.0) densityFalloff *= 4.0;
 
-                c_double minNoise = minLimitRegion[noiseIdx] / (double) 512.0; // lowerLimitScale = 512.0
-                c_double maxNoise = maxLimitRegion[noiseIdx] / (double) 512.0; // upperLimitScale = 512.0
+                c_double minNoise = minLimitRegion[noiseIdx] / 512.0; // lowerLimitScale = 512.0
+                c_double maxNoise = maxLimitRegion[noiseIdx] / 512.0; // upperLimitScale = 512.0
                 c_double mainBlend = (mainNoiseRegion[noiseIdx] / 10.0 + 1.0) / 2.0;
                 double density = MathHelper::clampedLerp(mainBlend, minNoise, maxNoise) - densityFalloff;
 
                 if (yIdx > 29) {
-                    c_auto topFade = (double) ((float) (yIdx - 29) / 3.0F);
+                    c_auto topFade = static_cast<double>(static_cast<float>(yIdx - 29) / 3.0F);
                     density = density * (1.0 - topFade) + -10.0 * topFade;
                 }
 

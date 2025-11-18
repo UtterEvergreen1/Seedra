@@ -88,7 +88,7 @@ MU static std::string LceVersionToString(const LCEVERSION version) {
             return "POTIONS";
         case LCEVERSION::ADVENTURE:
             return "ADVENTURE";
-        default:
+        case LCEVERSION::NONE:
             return "NONE";
     }
 }
@@ -155,8 +155,12 @@ MU static std::string getStructureName(const StructureType type) {
             return "EndCity";
         case StructureType::EndGateway:
             return "EndGateway";
-        default:
+        case StructureType::NONE:
             return "NONE";
+        case StructureType::FEATURE_NUM:
+            return "FEATURE_NUM";
+        default:
+            return "N/A";
     }
 }
 
@@ -182,13 +186,15 @@ MU static MCVERSION getMCVersion(const LCEVERSION lceVersionIn) {
             return MCVERSION::MC_1_0;
         case LCEVERSION::PILLAGE:
             return MCVERSION::MC_1_14;
+        case LCEVERSION::NONE:
+            return MCVERSION::MC_1_0;
     }
 }
 
 
 /**
  * @brief Maps an LCEVERSION value to its corresponding MCVERSION.
- * @param lceVersionIn The LCEVERSION value to map.
+ * @tparam LceVersion The LCEVERSION value to map.
  * @return The corresponding MCVERSION value.
  */
 template<LCEVERSION LceVersion>
@@ -209,6 +215,8 @@ MU static MCVERSION getMCVersion() {
             return MCVERSION::MC_1_0;
         case LCEVERSION::PILLAGE:
             return MCVERSION::MC_1_14;
+        case LCEVERSION::NONE:
+            return MCVERSION::MC_1_0;
     }
 }
 

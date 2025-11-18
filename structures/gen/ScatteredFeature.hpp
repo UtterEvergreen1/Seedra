@@ -1,14 +1,6 @@
 #pragma once
 
 #include "components/StructureComponent.hpp"
-#include "structures/gen/Structure.hpp"
-#include "common/rng.hpp"
-
-#include <map>
-#include <vector>
-
-#include "lce/blocks/block.hpp"
-#include "lce/enums.hpp"
 #include "structures/placement/StaticStructures.hpp"
 
 
@@ -25,14 +17,14 @@ namespace scattered_features {
         int scatteredFeatureSizeZ{};
         int horizontalPos=-1;
 
-        ScatteredFeature() {}
+        ScatteredFeature() = default;
 
         ScatteredFeature(Generator* g, RNG& rng, int x, int y, int z, int sizeX, int sizeY, int sizeZ);
 
         bool offsetToAverageGroundLevel(World& worldIn, BoundingBox structureBB, int yOffset);
 
     public:
-        virtual ~ScatteredFeature() = default;
+        virtual ~ScatteredFeature();
         virtual bool addComponentParts(World& worldIn, RNG& rng, const BoundingBox& chunkBB) = 0;
     };
 

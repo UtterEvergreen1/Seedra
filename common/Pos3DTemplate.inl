@@ -75,9 +75,10 @@ Pos3DTemplate<T> Pos3DTemplate<T>::offset(const EnumFacing facing, const int n) 
             return {x, y + n, z};
         case EnumFacing::DOWN:
             return {x, y - n, z};
-        default:
-            return *this;
+        // default:
+            // return *this;
     }
+    std::unreachable();
 }
 
 
@@ -138,18 +139,20 @@ Pos3DTemplate<T> Pos3DTemplate<T>::convertToChunkCoords() const {
 template<class T>
 std::vector<Pos3DTemplate<T>> Pos3DTemplate<T>::getAllInBox(
     const Pos3DTemplate &from, const Pos3DTemplate &to) {
-    c_int minX = std::min(from.getX(), to.getX());
-    c_int minY = std::min(from.getY(), to.getY());
-    c_int minZ = std::min(from.getZ(), to.getZ());
-    c_int maxX = std::max(from.getX(), to.getX());
-    c_int maxY = std::max(from.getY(), to.getY());
-    c_int maxZ = std::max(from.getZ(), to.getZ());
+    const T minX = std::min(from.getX(), to.getX());
+    const T minY = std::min(from.getY(), to.getY());
+    const T minZ = std::min(from.getZ(), to.getZ());
+    const T maxX = std::max(from.getX(), to.getX());
+    const T maxY = std::max(from.getY(), to.getY());
+    const T maxZ = std::max(from.getZ(), to.getZ());
 
-    std::vector<Pos3DTemplate> positions((maxX - minX + 1) * (maxY - minY + 1) * (maxZ - minZ + 1));
-    int posIndex = 0;
-    for (int x = minX; x <= maxX; ++x) {
-        for (int y = minY; y <= maxY; ++y) {
-            for (int z = minZ; z <= maxZ; ++z) {
+    std::vector<Pos3DTemplate> positions(
+        static_cast<size_t>((maxX - minX + 1) * (maxY - minY + 1) * (maxZ - minZ + 1))
+    );
+    size_t posIndex = 0;
+    for (int x = static_cast<int>(minX); x <= static_cast<int>(maxX); ++x) {
+        for (int y = static_cast<int>(minY); y <= static_cast<int>(maxY); ++y) {
+            for (int z = static_cast<int>(minZ); z <= static_cast<int>(maxZ); ++z) {
                 positions[posIndex++] = {static_cast<T>(x), static_cast<T>(y), static_cast<T>(z)};
             }
         }

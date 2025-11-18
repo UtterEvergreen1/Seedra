@@ -1,36 +1,42 @@
 #pragma once
 
 inline Pos2D Piece::getBoundingBoxCenter() const {
-    return {minX + maxX / 2, minZ + maxZ / 2};
+    return {m_minX + m_maxX / 2, m_minZ + m_maxZ / 2};
 }
 
 inline int Piece::getWorldX(c_int offsetWidth, c_int offsetDepth) const {
-    switch (facing) {
+    switch (m_facing) {
         case EnumFacing::NORTH:
         case EnumFacing::SOUTH:
-            return minX + offsetWidth;
+            return m_minX + offsetWidth;
         case EnumFacing::WEST:
-            return maxX - offsetDepth;
-        default:
+            return m_maxX - offsetDepth;
         case EnumFacing::EAST:
-            return minX + offsetDepth;
+            return m_minX + offsetDepth;
+        default:
+        case EnumFacing::UP:
+        case EnumFacing::DOWN:
+            std::unreachable();
     }
 }
 
 inline int Piece::getWorldY(c_int offsetHeight) const {
-    return minY + offsetHeight;
+    return m_minY + offsetHeight;
 }
 
 inline int Piece::getWorldZ(c_int offsetWidth, c_int offsetDepth) const {
-    switch (facing) {
+    switch (m_facing) {
         case EnumFacing::NORTH:
-            return maxZ - offsetDepth;
+            return m_maxZ - offsetDepth;
         case EnumFacing::SOUTH:
-            return minZ + offsetDepth;
-        default:
+            return m_minZ + offsetDepth;
         case EnumFacing::WEST:
         case EnumFacing::EAST:
-            return minZ + offsetWidth;
+            return m_minZ + offsetWidth;
+        default:
+        case EnumFacing::UP:
+        case EnumFacing::DOWN:
+            std::unreachable();
     }
 }
 
@@ -46,8 +52,21 @@ inline Pos2D Piece::getWorldPos(c_int offsetWidth, c_int offsetDepth) const {
 inline BoundingBox Piece::makeBoundingBox(c_int x, c_int y, c_int z, const EnumFacing direction,
                                    c_int width, c_int height, c_int depth) {
     if (direction == EnumFacing::NORTH || direction == EnumFacing::SOUTH) {
-        return {x, y, z, x + width - 1, y + height - 1, z + depth - 1};
+        return {
+            static_cast<bbType_t>(x),
+            static_cast<bbType_t>(y),
+            static_cast<bbType_t>(z),
+            static_cast<bbType_t>(x + width - 1),
+            static_cast<bbType_t>(y + height - 1),
+            static_cast<bbType_t>(z + depth - 1)
+        };
     }
-    return {x, y, z, x + depth - 1, y + height - 1, z + width - 1};
-
+    return {
+        static_cast<bbType_t>(x),
+        static_cast<bbType_t>(y),
+        static_cast<bbType_t>(z),
+        static_cast<bbType_t>(x + depth - 1),
+        static_cast<bbType_t>(y + height - 1),
+        static_cast<bbType_t>(z + width - 1)
+    };
 }

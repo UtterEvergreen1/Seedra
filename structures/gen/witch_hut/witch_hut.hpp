@@ -28,7 +28,7 @@ namespace scattered_features {
         SwampHut() = default;
         MU SwampHut(Generator* g, RNG& rng, int chunkX, int chunkZ)
             : ScatteredFeature(g, rng, chunkX, 64, chunkZ, 7, 7, 9) {}
-        ~SwampHut() = default;
+        ~SwampHut() override;
         bool addComponentParts(World& worldIn, MU RNG& rng, const BoundingBox& chunkBB) override;
     };
 

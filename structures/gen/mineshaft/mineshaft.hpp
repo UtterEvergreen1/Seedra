@@ -3,10 +3,8 @@
 #include "components/StructureComponent.hpp"
 #include "structures/gen/Structure.hpp"
 
-#include <map>
 #include <vector>
 
-#include "lce/blocks/block.hpp"
 #include "lce/enums.hpp"
 
 class World;
@@ -26,7 +24,7 @@ namespace gen {
      */
     class Mineshaft : public Structure<MINESHAFT_ARRAY_SIZE> {
     public:
-        StructureVariant myVariant = StructureVariant::SV_Mineshaft_Normal; ///< The variant of the mineshaft.
+        StructureVariant m_variant = StructureVariant::SV_Mineshaft_Normal; ///< The variant of the mineshaft.
 
         MU static std::string PIECE_TYPE_NAMES[5]; ///< Names of the different piece types in the mineshaft.
 
@@ -119,7 +117,7 @@ namespace rolls {
     class MU Mineshaft {
     public:
         /// List of mineshaft chests and their positions.
-        std::vector<std::pair<Pos3D, i64>> mineshaftChests{};
+        std::vector<std::pair<Pos3D, i64>> m_mineshaftChests{};
 
         void generateStructure(World& worldIn, const ChunkPrimer* chunk, const gen::Mineshaft* mg,
                                RNG& rng, int chunkX, int chunkZ);

@@ -32,7 +32,7 @@ namespace scattered_features {
         JunglePyramid() = default;
         MU JunglePyramid(Generator* g, RNG& rng, int chunkX, int chunkZ)
             : ScatteredFeature(g, rng, chunkX, 64, chunkZ, 12, 10, 15) {}
-        ~JunglePyramid() = default;
+        ~JunglePyramid() override;
         bool addComponentParts(World& worldIn, MU RNG& rng, const BoundingBox& chunkBB) override;
     };
 

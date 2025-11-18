@@ -125,7 +125,7 @@ void WorldGenBigTree::limb(const Pos3D& start, const Pos3D& end, const lce::Bloc
                 start.add((int) (0.5F + (float) j * f), (int) (0.5F + (float) j * f1), (int) (0.5F + (float) j * f2));
         const EnumAxis axis = getLogAxis(start, blockPos1);
         c_int metaStateAxis = axis == EnumAxis::Y ? 0 : axis == EnumAxis::X ? 4 : 8;
-        this->world->setBlockAndData(blockPos1, block.getID(), block.getDataTag() | metaStateAxis);
+        this->world->setBlockAndData(blockPos1, block.getID(), static_cast<u8>(block.getDataTag() | metaStateAxis));
     }
 }
 

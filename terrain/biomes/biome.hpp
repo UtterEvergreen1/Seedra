@@ -64,27 +64,27 @@ public:
     static constexpr size_t MAX_BIOME_MASK = MAX_BIOMES - 1; ///< Maximum biome mask.
     static std::array<Biome *, MAX_BIOMES> registry; ///< Registry of all biomes by ID.
 
-    biome_t biomeID = biome_t::ocean; ///< Unique ID of the biome.
-    std::string biomeName; ///< Name of the biome.
+    std::string m_biomeName; ///< Name of the biome.
+    BiomeDecorator *m_decorator = this->createBiomeDecorator(); ///< Biome decorator instance.
+    biome_t m_biomeID = biome_t::ocean; ///< Unique ID of the biome.
 
-    MU float baseHeight; ///< Base height of the biome. Default is 0.1.
-    MU float heightVariation; ///< Height variation of the biome. Default is 0.2.
-    float temperature; ///< Temperature of the biome. Default is 0.5.
-    MU bool enableSnow; ///< Indicates if snow is enabled for the biome.
-    float rainFall; ///< Rainfall in the biome. Default is 0.5.
-    uint32_t waterColor; ///< Color of the water in the biome. Default is 16777215.
+    MU float m_baseHeight; ///< Base height of the biome. Default is 0.1.
+    MU float m_heightVariation; ///< Height variation of the biome. Default is 0.2.
+    float m_temperature; ///< Temperature of the biome. Default is 0.5.
+    u32 m_waterColor; ///< Color of the water in the biome. Default is 16777215.
+    float m_rainFall; ///< Rainfall in the biome. Default is 0.5.
 
-    lce::BlockState topBlock = lce::BlocksInit::GRASS.getState(); ///< Top block of the biome.
-    lce::BlockState fillerBlock = lce::BlocksInit::DIRT.getState(); ///< Filler block of the biome.
+    lce::BlockState m_topBlock = lce::BlocksInit::GRASS.getState(); ///< Top block of the biome.
+    lce::BlockState m_fillerBlock = lce::BlocksInit::DIRT.getState(); ///< Filler block of the biome.
 
-    BiomeDecorator *decorator = this->createBiomeDecorator(); ///< Biome decorator instance.
+    MU bool m_enableSnow; ///< Indicates if snow is enabled for the biome.
 
     /**
      * @brief Retrieves a biome by its ID.
      * @param id The ID of the biome.
      * @return Pointer to the biome.
      */
-    static Biome *getBiomeForId(const biome_t id);
+    static Biome *getBiomeForId(biome_t id);
 
     /**
      * @brief Registers a biome with a specific ID.
@@ -92,8 +92,8 @@ public:
      * @param biome Pointer to the biome to register.
      */
     static void registerBiome(int id, Biome *biome) {
-        biome->biomeID = static_cast<biome_t>(id);
-        registry[biome->biomeID & MAX_BIOME_MASK] = biome;
+        biome->m_biomeID = static_cast<biome_t>(id);
+        registry[static_cast<size_t>(biome->m_biomeID) & MAX_BIOME_MASK] = biome;
     }
 
     /**
@@ -108,8 +108,8 @@ public:
      */
     Biome(std::string biomeNameIn, c_float baseHeightIn, c_float heightVariationIn, c_bool enableSnowIn,
           c_float temperatureIn, c_float rainFallIn = 0.5f, c_u32 waterColorIn = 0xA5F5AF44)
-        : biomeName(std::move(biomeNameIn)), baseHeight(baseHeightIn), heightVariation(heightVariationIn),
-          temperature(temperatureIn), enableSnow(enableSnowIn), rainFall(rainFallIn), waterColor(waterColorIn) {
+        : m_biomeName(std::move(biomeNameIn)), m_baseHeight(baseHeightIn), m_heightVariation(heightVariationIn),
+          m_temperature(temperatureIn), m_waterColor(waterColorIn), m_rainFall(rainFallIn), m_enableSnow(enableSnowIn) {
     }
 
     /**
@@ -125,7 +125,7 @@ public:
     Biome(std::string biomeNameIn, c_float baseHeightIn, c_float heightVariationIn, c_bool enableSnowIn,
           c_float temperatureIn, c_float rainFallIn, lce::BlockState topBlockIn)
         : Biome(std::move(biomeNameIn), baseHeightIn, heightVariationIn, enableSnowIn, temperatureIn, rainFallIn) {
-        this->topBlock = topBlockIn;
+        this->m_topBlock = topBlockIn;
     }
 
     /**
@@ -140,11 +140,11 @@ public:
      * @param fillerBlockIn Filler block of the biome.
      */
     Biome(std::string biomeNameIn, c_float baseHeightIn, c_float heightVariationIn, c_bool enableSnowIn,
-          c_float temperatureIn, c_float rainFallIn, lce::BlockState topBlockIn,
-          lce::BlockState fillerBlockIn)
+          c_float temperatureIn, c_float rainFallIn, const lce::BlockState topBlockIn,
+          const lce::BlockState fillerBlockIn)
         : Biome(std::move(biomeNameIn), baseHeightIn, heightVariationIn, enableSnowIn, temperatureIn, rainFallIn,
                 topBlockIn) {
-        this->fillerBlock = fillerBlockIn;
+        this->m_fillerBlock = fillerBlockIn;
     }
 
     /**
@@ -214,27 +214,27 @@ public:
      * @brief Retrieves the water color of the biome.
      * @return The water color as a 32-bit integer.
      */
-    uint32_t getWaterColor() const { return this->waterColor; }
+    ND u32 getWaterColor() const { return this->m_waterColor; }
 
     /**
      * @brief Retrieves the rainfall of the biome.
      * @return The rainfall as a float.
      */
-    float getRainfall() const { return this->rainFall; }
+    ND float getRainfall() const { return this->m_rainFall; }
 
     /**
      * @brief Retrieves the grass color at a position.
      * @param pos Position in the world.
      * @return The grass color as a 32-bit integer.
      */
-    virtual uint32_t getGrassColor(const Pos3D &pos) const;
+    ND virtual uint32_t getGrassColor(const Pos3D &pos) const;
 
     /**
      * @brief Retrieves the foliage color at a position.
      * @param pos Position in the world.
      * @return The foliage color as a 32-bit integer.
      */
-    virtual uint32_t getFoliageColor(const Pos3D &pos) const;
+    ND virtual uint32_t getFoliageColor(const Pos3D &pos) const;
 
     /**
      * @brief Generates terrain for the biome.
@@ -284,10 +284,12 @@ public:
      * @param temperature Temperature of the biome.
      * @param waterColor Color of the water in the biome.
      */
-    BiomeNone(MU std::string biomeName, c_float baseHeight, c_float heightVariation, c_bool enableSnow,
-               c_float temperature, c_u32 waterColor)
+    BiomeNone(MU std::string biomeName, MU c_float baseHeight, MU c_float heightVariation, MU c_bool enableSnow,
+               MU c_float temperature, c_u32 waterColor)
         : Biome(std::move(biomeName), 0, 0, false, 0, 0.0f, waterColor) {
     }
+
+    ~BiomeNone() override;
 };
 
 
@@ -310,6 +312,8 @@ public:
                c_float temperature, c_u32 waterColor)
         : Biome(std::move(biomeName), baseHeight, heightVariation, enableSnow, temperature, 0.5f, waterColor) {
     }
+
+    ~BiomeOcean() override;
 };
 
 /**
@@ -318,7 +322,7 @@ public:
  */
 class BiomePlains final : public Biome {
 public:
-    bool hasSunflowers; ///< Indicates if the biome has sunflowers.
+    bool m_hasSunflowers; ///< Indicates if the biome has sunflowers.
 
     /**
      * @brief Constructs a BiomePlains instance.
@@ -332,11 +336,11 @@ public:
     BiomePlains(c_bool hasSunflowers, MU std::string biomeName, c_float baseHeight, c_float heightVariation,
                 c_bool enableSnow, c_float temperature)
         : Biome(std::move(biomeName), baseHeight, heightVariation, enableSnow, temperature, 0.4f),
-          hasSunflowers(hasSunflowers) {
-        this->decorator->treesPerChunk = 0;
-        this->decorator->extraTreeChance = 0.05F;
-        this->decorator->flowersPerChunk = 4;
-        this->decorator->grassPerChunk = 10;
+          m_hasSunflowers(hasSunflowers) {
+        this->m_decorator->treesPerChunk = 0;
+        this->m_decorator->extraTreeChance = 0.05F;
+        this->m_decorator->flowersPerChunk = 4;
+        this->m_decorator->grassPerChunk = 10;
     }
 
     /**
@@ -383,11 +387,11 @@ public:
         : Biome(std::move(biomeName), baseHeight, heightVariation, enableSnow, temperature, 0.0F,
                 lce::BlocksInit::SAND.getState(),
                 lce::BlocksInit::SAND.getState()) {
-        this->waterColor = waterColor;
-        this->decorator->treesPerChunk = -999;
-        this->decorator->deadBushPerChunk = 2;
-        this->decorator->reedsPerChunk = 50;
-        this->decorator->cactiPerChunk = 10;
+        this->m_waterColor = waterColor;
+        this->m_decorator->treesPerChunk = -999;
+        this->m_decorator->deadBushPerChunk = 2;
+        this->m_decorator->reedsPerChunk = 50;
+        this->m_decorator->cactiPerChunk = 10;
     }
 
     /**
@@ -430,7 +434,7 @@ public:
         : Biome(std::move(biomeName), baseHeight, heightVariation, enableSnow, temperature, 0.3f, waterColor),
           type(typeIn) {
         if (type == Type::EXTRA_TREES) {
-            this->decorator->treesPerChunk = 3;
+            this->m_decorator->treesPerChunk = 3;
         }
     }
 
@@ -509,15 +513,15 @@ public:
                 c_bool enableSnow, c_float temperature, c_u32 waterColor = 0xA5F5AF44)
         : Biome(std::move(biomeName), baseHeight, heightVariation, enableSnow, temperature, 0.8f, waterColor),
           type(typeIn) {
-        this->decorator->treesPerChunk = 10;
-        this->decorator->grassPerChunk = 2;
+        this->m_decorator->treesPerChunk = 10;
+        this->m_decorator->grassPerChunk = 2;
 
         if (type == Type::FLOWER) {
-            this->decorator->treesPerChunk = 6;
-            this->decorator->flowersPerChunk = 100;
-            this->decorator->grassPerChunk = 1;
+            this->m_decorator->treesPerChunk = 6;
+            this->m_decorator->flowersPerChunk = 100;
+            this->m_decorator->grassPerChunk = 1;
         } else if (type == Type::ROOFED) {
-            this->decorator->treesPerChunk = -999;
+            this->m_decorator->treesPerChunk = -999;
         }
     }
 
@@ -549,7 +553,7 @@ public:
      * @param pos Position in the world.
      * @return The grass color as a 32-bit integer.
      */
-    uint32_t getGrassColor(const Pos3D &pos) const override;
+    ND u32 getGrassColor(const Pos3D &pos) const override;
 
 private:
     /**
@@ -640,14 +644,14 @@ public:
                c_bool enableSnow, c_float temperature, c_u32 waterColor = 0xA5F5AF44)
         : Biome(std::move(biomeName), baseHeight, heightVariation, enableSnow, temperature, 0.8f, waterColor),
           type(typeIn) {
-        this->decorator->treesPerChunk = 10;
+        this->m_decorator->treesPerChunk = 10;
 
         if (type != Type::MEGA && type != Type::MEGA_SPRUCE) {
-            this->decorator->mushroomsPerChunk = 1;
+            this->m_decorator->mushroomsPerChunk = 1;
         } else {
-            this->decorator->grassPerChunk = 7;
-            this->decorator->deadBushPerChunk = 1;
-            this->decorator->mushroomsPerChunk = 3;
+            this->m_decorator->grassPerChunk = 7;
+            this->m_decorator->deadBushPerChunk = 1;
+            this->m_decorator->mushroomsPerChunk = 3;
         }
     }
 
@@ -717,16 +721,16 @@ public:
     BiomeSwamp(MU std::string biomeName, c_float baseHeight, c_float heightVariation, c_bool enableSnow,
                c_float temperature, c_u32 waterColor = 0xA5F5AF44)
         : Biome(std::move(biomeName), baseHeight, heightVariation, enableSnow, temperature, 0.9F, waterColor) {
-        this->decorator->treesPerChunk = 2;
-        this->decorator->flowersPerChunk = 1;
-        this->decorator->deadBushPerChunk = 1;
-        this->decorator->mushroomsPerChunk = 8;
-        this->decorator->reedsPerChunk = 10;
-        this->decorator->clayPerChunk = 1;
-        this->decorator->waterlilyPerChunk = 4;
-        this->decorator->sandPatchesPerChunk = 0;
-        this->decorator->gravelPatchesPerChunk = 0;
-        this->decorator->grassPerChunk = 5;
+        this->m_decorator->treesPerChunk = 2;
+        this->m_decorator->flowersPerChunk = 1;
+        this->m_decorator->deadBushPerChunk = 1;
+        this->m_decorator->mushroomsPerChunk = 8;
+        this->m_decorator->reedsPerChunk = 10;
+        this->m_decorator->clayPerChunk = 1;
+        this->m_decorator->waterlilyPerChunk = 4;
+        this->m_decorator->sandPatchesPerChunk = 0;
+        this->m_decorator->gravelPatchesPerChunk = 0;
+        this->m_decorator->grassPerChunk = 5;
     }
 
     /**
@@ -771,14 +775,14 @@ public:
      * @param pos Position in the world.
      * @return The grass color as a 32-bit integer.
      */
-    uint32_t getGrassColor(const Pos3D &pos) const override;
+    ND u32 getGrassColor(const Pos3D &pos) const override;
 
     /**
      * @brief Retrieves the foliage color at a position.
      * @param pos Position in the world.
      * @return The foliage color as a 32-bit integer.
      */
-    uint32_t getFoliageColor(const Pos3D &pos) const override;
+    ND u32 getFoliageColor(const Pos3D &pos) const override;
 
 private:
     static const WorldGenSwamp SWAMP_FEATURE; ///< Generator for swamp-specific features.
@@ -803,6 +807,8 @@ public:
                c_float temperature, c_u32 waterColor = 0xA5F5AF44)
         : Biome(std::move(biomeName), baseHeight, heightVariation, enableSnow, temperature, 0.5f, waterColor) {
     }
+
+    ~BiomeRiver() override;
 };
 
 /**
@@ -811,7 +817,7 @@ public:
  */
 class BiomeSnow final : public Biome {
 public:
-    MU bool superIcy; ///< Indicates if the biome is super icy.
+    MU bool m_superIcy; ///< Indicates if the biome is super icy.
 
     /**
      * @brief Constructs a BiomeSnow instance.
@@ -826,8 +832,8 @@ public:
     BiomeSnow(c_bool superIcy, MU std::string biomeName, c_float baseHeight, c_float heightVariation,
               c_bool enableSnow, c_float temperature, c_u32 waterColor = 0xA5F5AF44)
         : Biome(std::move(biomeName), baseHeight, heightVariation, enableSnow, temperature, 0.5f, waterColor) {
-        this->superIcy = superIcy;
-        if (superIcy) this->topBlock = lce::BlocksInit::SNOW_BLOCK.getState();
+        this->m_superIcy = superIcy;
+        if (superIcy) this->m_topBlock = lce::BlocksInit::SNOW_BLOCK.getState();
     }
 
     /**
@@ -869,13 +875,15 @@ public:
                         c_bool enableSnow, c_float temperature, c_u32 waterColor = 0xA5F5AF44)
         : Biome(std::move(biomeName), baseHeight, heightVariation, enableSnow, temperature, 1.0F,
                 lce::BlocksInit::MYCELIUM.getState()) {
-        this->waterColor = waterColor;
-        this->decorator->treesPerChunk = -100;
-        this->decorator->flowersPerChunk = -100;
-        this->decorator->grassPerChunk = -100;
-        this->decorator->mushroomsPerChunk = 1;
-        this->decorator->bigMushroomsPerChunk = 1;
+        this->m_waterColor = waterColor;
+        this->m_decorator->treesPerChunk = -100;
+        this->m_decorator->flowersPerChunk = -100;
+        this->m_decorator->grassPerChunk = -100;
+        this->m_decorator->mushroomsPerChunk = 1;
+        this->m_decorator->bigMushroomsPerChunk = 1;
     }
+
+    ~BiomeMushroomIsland() override;
 };
 
 /**
@@ -899,9 +907,11 @@ public:
         : Biome(std::move(biomeName), baseHeight, heightVariation, enableSnow, temperature, rainfall,
                 lce::BlocksInit::SAND.getState(),
                 lce::BlocksInit::SAND.getState()) {
-        this->waterColor = waterColor;
-        this->decorator->treesPerChunk = -999; ///< No trees are generated in this biome.
+        this->m_waterColor = waterColor;
+        this->m_decorator->treesPerChunk = -999; ///< No trees are generated in this biome.
     }
+
+    ~BiomeBeach() override;
 };
 
 /**
@@ -926,13 +936,13 @@ public:
         : Biome(std::move(biomeName), baseHeight, heightVariation, enableSnow, temperature, rainfall, waterColor),
           isEdge(isEdgeIn) {
         if (isEdgeIn) {
-            this->decorator->treesPerChunk = 2; ///< Fewer trees for jungle edges.
+            this->m_decorator->treesPerChunk = 2; ///< Fewer trees for jungle edges.
         } else {
-            this->decorator->treesPerChunk = 50; ///< Dense trees for standard jungle.
+            this->m_decorator->treesPerChunk = 50; ///< Dense trees for standard jungle.
         }
 
-        this->decorator->grassPerChunk = 25; ///< Abundant grass in the jungle.
-        this->decorator->flowersPerChunk = 4; ///< Moderate number of flowers in the jungle.
+        this->m_decorator->grassPerChunk = 25; ///< Abundant grass in the jungle.
+        this->m_decorator->flowersPerChunk = 4; ///< Moderate number of flowers in the jungle.
     }
 
     /**
@@ -984,9 +994,11 @@ public:
         : Biome(std::move(biomeName), baseHeight, heightVariation, enableSnow, temperature, 0.3f,
                 lce::BlocksInit::STONE.getState(),
                 lce::BlocksInit::STONE.getState()) {
-        this->waterColor = 0xA5BB670D; ///< Sets the water color specific to the stone beach biome.
-        this->decorator->treesPerChunk = -999; ///< No trees are generated in this biome.
+        this->m_waterColor = 0xA5BB670D; ///< Sets the water color specific to the stone beach biome.
+        this->m_decorator->treesPerChunk = -999; ///< No trees are generated in this biome.
     }
+
+    ~BiomeStoneBeach() override;
 };
 
 /**
@@ -1007,9 +1019,9 @@ public:
     BiomeSavanna(MU std::string biomeName, c_float baseHeight, c_float heightVariation, c_bool enableSnow,
                  c_float temperature, c_u32 waterColor = 0xA5F5AF44)
         : Biome(std::move(biomeName), baseHeight, heightVariation, enableSnow, temperature, 0.0F, waterColor) {
-        this->decorator->treesPerChunk = 1; ///< Number of trees generated per chunk.
-        this->decorator->flowersPerChunk = 4; ///< Number of flowers generated per chunk.
-        this->decorator->grassPerChunk = 20; ///< Number of grass patches generated per chunk.
+        this->m_decorator->treesPerChunk = 1; ///< Number of trees generated per chunk.
+        this->m_decorator->flowersPerChunk = 4; ///< Number of flowers generated per chunk.
+        this->m_decorator->grassPerChunk = 20; ///< Number of grass patches generated per chunk.
     }
 
     /**
@@ -1037,13 +1049,13 @@ private:
  */
 class BiomeMesa final : public Biome {
 public:
-    i64 worldSeed = 0; ///< The world seed used for terrain generation.
-    std::vector<lce::BlockState> clayBands{}; ///< A collection of clay bands for the mesa biome.
-    NoiseGeneratorPerlin<4> pillarNoise{}; ///< Noise generator for mesa pillars.
-    NoiseGeneratorPerlin<1> pillarRoofNoise{}; ///< Noise generator for mesa pillar roofs.
-    NoiseGeneratorPerlin<1> clayBandsOffsetNoise{}; ///< Noise generator for clay band offsets.
-    bool brycePillars = false; ///< Indicates if the biome has Bryce-like pillars.
-    bool hasForest = false; ///< Indicates if the biome contains forested areas.
+    i64 m_worldSeed = 0; ///< The world seed used for terrain generation.
+    std::vector<lce::BlockState> m_clayBands{}; ///< A collection of clay bands for the mesa biome.
+    NoiseGeneratorPerlin<4> m_pillarNoise{}; ///< Noise generator for mesa pillars.
+    NoiseGeneratorPerlin<1> m_pillarRoofNoise{}; ///< Noise generator for mesa pillar roofs.
+    NoiseGeneratorPerlin<1> m_clayBandsOffsetNoise{}; ///< Noise generator for clay band offsets.
+    bool m_brycePillars = false; ///< Indicates if the biome has Bryce-like pillars.
+    bool m_hasForest = false; ///< Indicates if the biome contains forested areas.
 
     /**
      * @brief Constructs a BiomeMesa instance.
@@ -1059,18 +1071,18 @@ public:
     BiomeMesa(c_bool hasBrycePillars, c_bool hasForest, MU std::string biomeName, c_float baseHeight,
               c_float heightVariation, c_bool enableSnow, c_float temperature, c_u32 waterColor = 0x80CA8900)
         : Biome(std::move(biomeName), baseHeight, heightVariation, enableSnow, temperature, 0.0F, waterColor),
-          brycePillars(hasBrycePillars),
-          hasForest(hasForest) {
-        this->topBlock = lce::BlocksInit::RED_SAND.getState();
-        this->fillerBlock = lce::BlocksInit::ORANGE_HARDENED_CLAY.getState();
-        this->decorator->treesPerChunk = -999;
-        this->decorator->deadBushPerChunk = 20;
-        this->decorator->reedsPerChunk = 3;
-        this->decorator->cactiPerChunk = 5;
-        this->decorator->flowersPerChunk = 0;
+          m_brycePillars(hasBrycePillars),
+          m_hasForest(hasForest) {
+        this->m_topBlock = lce::BlocksInit::RED_SAND.getState();
+        this->m_fillerBlock = lce::BlocksInit::ORANGE_HARDENED_CLAY.getState();
+        this->m_decorator->treesPerChunk = -999;
+        this->m_decorator->deadBushPerChunk = 20;
+        this->m_decorator->reedsPerChunk = 3;
+        this->m_decorator->cactiPerChunk = 5;
+        this->m_decorator->flowersPerChunk = 0;
 
         if (hasForest) {
-            this->decorator->treesPerChunk = 5;
+            this->m_decorator->treesPerChunk = 5;
         }
     }
 
@@ -1100,7 +1112,7 @@ public:
      * @param y Y-coordinate.
      * @return The clay band block state.
      */
-    lce::BlockState getClayBand(c_int x, c_int y);
+    ND lce::BlockState getClayBand(c_int x, c_int y) const;
 
     /**
      * @brief Creates a biome decorator for the mesa biome.
@@ -1120,14 +1132,14 @@ public:
      * @param pos Position in the world.
      * @return The foliage color as a 32-bit integer.
      */
-    uint32_t getFoliageColor(const Pos3D &pos) const override;
+    ND u32 getFoliageColor(const Pos3D &pos) const override;
 
     /**
      * @brief Retrieves the grass color at a specific position.
      * @param pos Position in the world.
      * @return The grass color as a 32-bit integer.
      */
-    uint32_t getGrassColor(const Pos3D &pos) const override;
+    ND u32 getGrassColor(const Pos3D &pos) const override;
 
     /**
      * @class Decorator
@@ -1162,9 +1174,9 @@ public:
     MU BiomeSavannaMutated(MU std::string biomeName, c_float baseHeight, c_float heightVariation,
                            c_bool enableSnow, c_float temperature, c_u32 waterColor)
         : BiomeSavanna(std::move(biomeName), baseHeight, heightVariation, enableSnow, temperature, waterColor) {
-        this->decorator->treesPerChunk = 2;
-        this->decorator->flowersPerChunk = 2;
-        this->decorator->grassPerChunk = 5;
+        this->m_decorator->treesPerChunk = 2;
+        this->m_decorator->flowersPerChunk = 2;
+        this->m_decorator->grassPerChunk = 5;
     }
 
     /**

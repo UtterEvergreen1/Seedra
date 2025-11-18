@@ -101,9 +101,8 @@ enum LayerId {
  * @param z Z-coordinate of the area being processed.
  * @param width Width of the area being processed.
  * @param height Height of the area being processed.
- * @return An integer status code indicating success or failure.
  */
-typedef void(mapFunc_t)(const Layer*, biome_t*, int, int, int, int);
+typedef void(mapFunc_t)(const Layer* layer, biome_t* out, int x, int z, int width, int height);
 
 /**
  * @struct Layer
@@ -147,7 +146,7 @@ typedef PerlinNoise EndNoise;
 void setLayerSeed(Layer *layer, u64 worldSeed);
 
 
-MU void initSurfaceNoiseOld(SurfaceNoise *rnd, u64 *seed, double xzScale, double yScale, double xzFactor,
+MU void initSurfaceNoiseOld(SurfaceNoise *rnd, RNG& rng, double xzScale, double yScale, double xzFactor,
                             double yFactor);
 
 

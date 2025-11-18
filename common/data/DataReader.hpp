@@ -22,9 +22,9 @@ public:
     // navigation ----------------------------------------------------
 
     [[nodiscard]] const uint8_t* data() const { return _buf.data(); }
-    [[nodiscard]] uint32_t size() const { return _buf.size(); }
+    [[nodiscard]] size_t size() const { return _buf.size(); }
     [[nodiscard]] const uint8_t* ptr() const { return _ptr; }
-    [[nodiscard]] std::size_t tell() const { return _ptr - _buf.data(); }
+    [[nodiscard]] std::size_t tell() const { return static_cast<size_t>(_ptr - _buf.data()); }
     [[nodiscard]] bool eof() const { return tell() >= _buf.size(); }
     void rewind() { _ptr = _buf.data(); }
     [[maybe_unused]] [[nodiscard]] uint8_t peek() const { return _ptr[0]; }
@@ -113,7 +113,7 @@ public:
     static Buffer readFile(const fs::path& p) {
         std::ifstream in(p, std::ios::binary | std::ios::ate);
         if (!in) throw std::runtime_error("open failed " + p.string());
-        Buffer buf(in.tellg());
+        Buffer buf(static_cast<uint32_t>(in.tellg()));
         in.seekg(0);
         in.read(reinterpret_cast<char*>(buf.data()), buf.size());
         return buf;

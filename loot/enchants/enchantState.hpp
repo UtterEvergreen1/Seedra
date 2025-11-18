@@ -43,11 +43,11 @@ namespace enchants {
          * @brief Constructs an EnchantState with specified values.
          *
          * @param id The unique identifier of the enchantment.
-         * @param enchLevel The level at which the enchantment is applied.
+         * @param enchantLevel The level at which the enchantment is applied.
          * @param extra (Optional) Additional data associated with the enchantment. Defaults to 0.
          */
-        constexpr EnchantState(c_int id, c_int enchLevel, c_int extra = 0)
-            : m_id(id), m_level(enchLevel), m_extra(extra) {}
+        constexpr EnchantState(c_u16 id, c_u8 enchantLevel, c_u8 extra = 0)
+            : m_id(id), m_level(enchantLevel), m_extra(extra) {}
 
         /**
          * @brief Retrieves the enchantment ID.
@@ -83,9 +83,9 @@ namespace enchants {
          * @return A std::string representing the enchantment state (name and level in Roman numerals).
          *
          * @details
-         * This function retrieves the corresponding Enchant object (using EnchantController::getEnchantFromID)
+         * This function retrieves the corresponding 'Enchant' object (using EnchantController::getEnchantFromID)
          * and constructs a string by combining the enchant's name with its level in Roman numerals.
-         * If the enchant has only one level, only the name is returned.
+         * If the enchantment has only one level, only the name is returned.
          *
          * @note If the Enchant object cannot be found (i.e. returns nullptr), the function returns "NULLPTR 0".
          */

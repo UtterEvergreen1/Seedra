@@ -9,7 +9,7 @@ using namespace lce::blocks;
 
 WorldGenMegaPineTree::WorldGenMegaPineTree(const bool useBaseHeight)
     : WorldGenHugeTrees(13, 15, lce::BlocksInit::SPRUCE_WOOD.getState(), lce::BlocksInit::SPRUCE_LEAVES.getState()),
-    useBaseHeight(useBaseHeight) {}
+    m_useBaseHeight(useBaseHeight) {}
 
 
 bool WorldGenMegaPineTree::generate(World* worldIn, RNG& rand, const Pos3D& position) const {
@@ -24,23 +24,23 @@ bool WorldGenMegaPineTree::generate(World* worldIn, RNG& rand, const Pos3D& posi
         Pos3D upPos = position.up(j);
 
         if (worldIn->isAirBlock(upPos) || isLeavesBlock(worldIn->getBlockId(upPos))) {
-            worldIn->setBlock(upPos, this->woodMetadata);
+            worldIn->setBlock(upPos, this->m_woodMetadata);
         }
 
         if (j < height - 1) {
             Pos3D addPos1 = position.add(1, j, 0);
             if (lce::blocks::isAirOrLeavesBlock(worldIn->getBlockId(addPos1))) {
-                worldIn->setBlock(addPos1, this->woodMetadata);
+                worldIn->setBlock(addPos1, this->m_woodMetadata);
             }
 
             Pos3D addPos2 = position.add(1, j, 1);
             if (lce::blocks::isAirOrLeavesBlock(worldIn->getBlockId(addPos2))) {
-                worldIn->setBlock(addPos2, this->woodMetadata);
+                worldIn->setBlock(addPos2, this->m_woodMetadata);
             }
 
             Pos3D addPos3 = position.add(0, j, 1);
             if (lce::blocks::isAirOrLeavesBlock(worldIn->getBlockId(addPos3))) {
-                worldIn->setBlock(addPos3, this->woodMetadata);
+                worldIn->setBlock(addPos3, this->m_woodMetadata);
             }
         }
     }
@@ -49,12 +49,12 @@ bool WorldGenMegaPineTree::generate(World* worldIn, RNG& rand, const Pos3D& posi
 }
 
 void WorldGenMegaPineTree::createCrown(World* worldIn, c_int x, c_int z, c_int y, c_int val, RNG& rand) const {
-    c_int i = rand.nextInt(5) + (this->useBaseHeight ? this->baseHeight : 3);
+    c_int i = rand.nextInt(5) + (this->m_useBaseHeight ? this->m_baseHeight : 3);
     int j = 0;
 
     for (int k = y - i; k <= y; ++k) {
         c_int l = y - k;
-        c_int i1 = val + MathHelper::floor((float) l / (float) i * 3.5F);
+        c_int i1 = val + MathHelper::floor(static_cast<float>(l) / static_cast<float>(i) * 3.5F);
         this->growLeavesLayerStrict(worldIn, Pos3D(x, k, z), i1 + (l > 0 && i1 == j && (k & 1) == 0 ? 1 : 0));
         j = i1;
     }

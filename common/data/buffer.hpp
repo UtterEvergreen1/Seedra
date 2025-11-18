@@ -35,7 +35,7 @@ public:
 
     // ───────── construction ─────────
     BufferBase() = default;
-    [[maybe_unused]] explicit BufferBase(const uint32_t n) { allocate(n); }
+    [[maybe_unused]] explicit BufferBase(const size_t n) { allocate(n); }
     [[maybe_unused]] BufferBase(std::unique_ptr<T[]> data, const uint32_t size)
         : m_data(std::move(data)), m_size(size) {}
 
@@ -78,13 +78,13 @@ public:
         m_size = 0;
     }
 
-    bool isAllZeros() const {
+    [[nodiscard]] bool isAllZeros() const {
         for (size_t i = 0; i < m_size; ++i)
             if (m_data[i] != 0) return false;
         return true;
     }
 
-    bool allocate(std::size_t n, bool fillZero = false) {
+    bool allocate(const size_t n, const bool fillZero = false) {
         if (n == 0) { return false; }
         auto p = std::make_unique<T[]>(n);
         if (!p) { return false; }

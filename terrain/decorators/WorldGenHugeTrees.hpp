@@ -20,9 +20,11 @@ public:
      */
     WorldGenHugeTrees(const int baseHeightIn, const int extraRandomHeightIn, const lce::BlockState woodMetadataIn,
                       const lce::BlockState leavesMetadataIn)
-        : baseHeight(baseHeightIn), extraRandomHeight(extraRandomHeightIn), woodMetadata(woodMetadataIn),
-          leavesMetadata(leavesMetadataIn) {
+        : m_baseHeight(baseHeightIn), m_extraRandomHeight(extraRandomHeightIn), m_woodMetadata(woodMetadataIn),
+          m_leavesMetadata(leavesMetadataIn) {
     }
+
+    ~WorldGenHugeTrees() override;
 
 protected:
     /**
@@ -47,7 +49,7 @@ protected:
      * @param worldIn Pointer to the World object.
      * @return True if dirt blocks are present, false otherwise.
      */
-    static bool ensureDirtsUnderneath(const Pos3D &pos, World *worldIn);
+    static bool ensureDirtUnderneath(const Pos3D &pos, World *worldIn);
 
     /**
      * @brief Ensures that the tree can grow at the specified position.
@@ -75,8 +77,8 @@ protected:
      */
     void growLeavesLayer(World *worldIn, const Pos3D &layerCenter, int width) const;
 
-    int baseHeight; /**< The base height of the tree. */
-    int extraRandomHeight; /**< The additional random height added to the base height. */
-    lce::BlockState woodMetadata; /**< The metadata for the wood block state. */
-    lce::BlockState leavesMetadata; /**< The metadata for the leaves block state. */
+    int m_baseHeight; /**< The base height of the tree. */
+    int m_extraRandomHeight; /**< The additional random height added to the base height. */
+    lce::BlockState m_woodMetadata; /**< The metadata for the wood block state. */
+    lce::BlockState m_leavesMetadata; /**< The metadata for the leaves block state. */
 };

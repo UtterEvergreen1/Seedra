@@ -3,7 +3,7 @@
 
 
 void WorldPicture::save(const std::string& directory) const {
-    const std::string filename = getBiomeImageFileNameFromGenerator(g, directory);
+    const std::string filename = getBiomeImageFileNameFromGenerator(m_g, directory);
     stbi_write_png(filename.c_str(), m_width, m_height,
         m_channels, m_data, m_width * m_channels);
 }

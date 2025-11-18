@@ -6,6 +6,9 @@
 using namespace lce::blocks;
 
 
+WorldGenAbstractTree::~WorldGenAbstractTree() noexcept = default;
+
+
 void WorldGenAbstractTree::setDirtAt(World* worldIn, const Pos3D& pos) {
     if (worldIn->getBlockId(pos) != DIRT_ID) { worldIn->setBlockId(pos, DIRT_ID); }
 }

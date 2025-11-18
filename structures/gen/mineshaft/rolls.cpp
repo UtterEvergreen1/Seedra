@@ -24,26 +24,26 @@ namespace rolls {
         for (int pieceIndex = 0; pieceIndex < mg->getPieceCount(); ++pieceIndex) {
             const StructureComponent& piece = mg->getPieceConst(pieceIndex);
 
-            if (piece.type == PT_Mineshaft_NONE) continue;
+            if (piece.m_type == PT_Mineshaft_NONE) continue;
 
             BoundingBox chunkBoundingBox(chunkX << 4, 0, chunkZ << 4, (chunkX << 4) + 15, 255, (chunkZ << 4) + 15);
 
             if (!piece.intersects(chunkBoundingBox)) continue;
 
 
-            if (piece.type == PT_Mineshaft_Corridor) {
+            if (piece.m_type == PT_Mineshaft_Corridor) {
                 if (chunk && StructureComponent::isLiquidInStructureBoundingBox(chunkBoundingBox, piece, chunk))
                     continue;
 
                 c_int sectionCount =
-                        (piece.facing == EnumFacing::NORTH ||
-                                         piece.facing == EnumFacing::SOUTH
+                        (piece.m_facing == EnumFacing::NORTH ||
+                                         piece.m_facing == EnumFacing::SOUTH
                                  ? piece.getZSize()
                                  : piece.getXSize()) / 5;
                 c_int depth = sectionCount * 5;
 
                 rng.skipNextN(3 * depth);
-                if (piece.data & 2) rng.skipNextN(6 * depth);
+                if (piece.m_data & 2) rng.skipNextN(6 * depth);
 
 
                 for (int i = 0; i < sectionCount; ++i) {
@@ -94,13 +94,13 @@ namespace rolls {
                         generateChest(chunk, chunkBoundingBox, &piece, rng, 0, 0, currentDepth + 1);
                     }
                     //if it has spawner
-                    if (piece.data & 2) {
+                    if (piece.m_data & 2) {
                         // advance rng for placement on the depth axis
                         rng.advance();
                     }
 
                     // if it has rails
-                    if (piece.data & 1) {
+                    if (piece.m_data & 1) {
                         for (int railPos = 0; railPos < depth; ++railPos) {
                             c_int xPos = piece.getWorldX(1, railPos);
                             c_int yPos = piece.getWorldY(-1);
@@ -173,7 +173,7 @@ namespace rolls {
         if (StructureComponent::intersectsWithBlock(chunkBB, xPos, yPos, zPos) &&
             (chunk == nullptr || chunk->getBlockId(xPos & 15, yPos - 1, zPos & 15) != 0)) {
             rng.advance(); // advance rng for next boolean roll for rail shape
-            mineshaftChests.emplace_back(Pos3D(xPos, yPos, zPos), rng.nextLong());
+            m_mineshaftChests.emplace_back(Pos3D(xPos, yPos, zPos), rng.nextLong());
         }
     }
 

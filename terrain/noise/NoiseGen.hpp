@@ -5,7 +5,6 @@
 #include <utility>
 #include <vector>
 
-#include "common/MathHelper.hpp"
 #include "common/rng.hpp"
 #include "noise.hpp"
 
@@ -36,7 +35,7 @@ namespace noise_values {
      * @param z The Z-coordinate of the input vector.
      * @return The dot product of the gradient and the input vector.
      */
-    ND static double grad(c_int hash, c_double x, c_double y, c_double z) {
+    MU ND static double grad(c_int hash, c_double x, c_double y, c_double z) {
         static constexpr double GRAD_X[16] = { 1.0, -1.0, 1.0, -1.0, 1.0, -1.0, 1.0, -1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, -1.0, 0.0 };
         static constexpr double GRAD_Y[16] = { 1.0, 1.0, -1.0, -1.0, 0.0, 0.0, 0.0, 0.0, 1.0, -1.0, 1.0, -1.0, 1.0, -1.0, 1.0, -1.0 };
         static constexpr double GRAD_Z[16] = { 0.0, 0.0, 0.0, 0.0, 1.0, 1.0, -1.0, -1.0, 1.0, 1.0, -1.0, -1.0, 0.0, 1.0, 0.0, -1.0 };
@@ -52,7 +51,7 @@ namespace noise_values {
      * @param z The Z-coordinate of the input vector.
      * @return The dot product of the gradient and the input vector.
      */
-    ND static double grad2(c_int hash, c_double x, c_double z) {
+    MU ND static double grad2(c_int hash, c_double x, c_double z) {
         static constexpr double GRAD_2X[16] = { 1.0, -1.0, 1.0, -1.0, 1.0, -1.0, 1.0, -1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, -1.0, 0.0 };
         static constexpr double GRAD_2Z[16] = { 0.0, 0.0, 0.0, 0.0, 1.0, 1.0, -1.0, -1.0, 1.0, 1.0, -1.0, -1.0, 0.0, 1.0, 0.0, -1.0 };
 
@@ -66,8 +65,8 @@ namespace noise_values {
      * @param value The input value.
      * @return The floor of the input value as an integer.
      */
-    static int fastFloor(c_double value) {
-        return value > 0.0 ? (int) value : (int) value - 1;
+    MU static int fastFloor(c_double value) {
+        return value > 0.0 ? static_cast<int>(value) : static_cast<int>(value) - 1;
     }
 
     /**
@@ -77,7 +76,7 @@ namespace noise_values {
       * @param y The Y-coordinate of the vector.
       * @return The dot product.
       */
-    static double dot(const int gradient[], double x, double y) {
+    MU static double dot(const int gradient[], double x, double y) {
         return gradient[0] * x + gradient[1] * y;
     }
 
@@ -126,7 +125,7 @@ public:
      */
     void setNoiseGeneratorPerlin(RNG &rng) {
         noiseLevels = {};
-        for (int i = 0; i < Levels; ++i) {
+        for (size_t i = 0; i < Levels; ++i) {
             perlinInit(&noiseLevels[i], rng);
         }
     }
@@ -139,7 +138,7 @@ public:
      */
     ND double getValue(c_double posX, c_double posZ) const {
         double d0 = 0.0, d1 = 1.0;
-        for (int i = 0; i < Levels; ++i) {
+        for (size_t i = 0; i < Levels; ++i) {
             d0 += noiseLevels[i].getValue(posX * d1, posZ * d1) / d1;
             d1 /= 2.0;
         }
@@ -208,7 +207,7 @@ public:
      */
     void setNoiseGeneratorOctaves(RNG &rng) {
         generatorCollection = {};
-        for (int i = 0; i < Octaves; ++i) {
+        for (size_t i = 0; i < Octaves; ++i) {
             perlinInit(&generatorCollection[i], rng);
         }
     }
@@ -224,10 +223,10 @@ public:
 struct ChunkNoise {
     bool initialized = false; ///< Indicates if the noise generators have been initialized.
     RNG rng; ///< The RNG state after setting up the scales.
-    NoiseGeneratorOctaves<16> minLimitPerlinNoise; ///< Noise generator for minimum limit Perlin noise.
-    NoiseGeneratorOctaves<16> maxLimitPerlinNoise; ///< Noise generator for maximum limit Perlin noise.
-    NoiseGeneratorOctaves<8> mainPerlinNoise; ///< Noise generator for main Perlin noise.
-    NoiseGeneratorPerlin<4> surfaceNoise; ///< Noise generator for surface noise.
-    NoiseGeneratorOctaves<10> scaleNoise; ///< Noise generator for scale noise (currently unused).
-    NoiseGeneratorOctaves<16> depthNoise; ///< Noise generator for depth noise.
+    NoiseGeneratorOctaves<16> minLimitPerlinNoise{}; ///< Noise generator for minimum limit Perlin noise.
+    NoiseGeneratorOctaves<16> maxLimitPerlinNoise{}; ///< Noise generator for maximum limit Perlin noise.
+    NoiseGeneratorOctaves<8> mainPerlinNoise{}; ///< Noise generator for main Perlin noise.
+    NoiseGeneratorPerlin<4> surfaceNoise{}; ///< Noise generator for surface noise.
+    NoiseGeneratorOctaves<10> scaleNoise{}; ///< Noise generator for scale noise (currently unused).
+    NoiseGeneratorOctaves<16> depthNoise{}; ///< Noise generator for depth noise.
 };

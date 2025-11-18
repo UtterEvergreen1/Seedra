@@ -8,7 +8,7 @@
  * This file defines the @c eEnchantType enumeration which categorizes enchantments based on the type
  * of item they affect (e.g., armor, weapon, digger). It also defines a function pointer type
  * (@c CanEnchantItemFn) and a set of helper functions for determining whether a given item (represented
- * by an @c lce::ItemState) can be enchanted with a particular type. Additionally, a constant array,
+ * by a @c lce::ItemState) can be enchanted with a particular type. Additionally, a constant array,
  * @c ALL_ITERABLE, is provided to facilitate iterating over all applicable enchantment-checking functions.
  * Finally, overloaded versions of @c canEnchantItem are provided to check whether an item can be enchanted
  * for a specific @c eEnchantType.
@@ -47,10 +47,10 @@ namespace enchants {
     /**
      * @brief Function pointer type for checking if an item can be enchanted.
      *
-     * @param itemIn A constant reference to an @c lce::ItemState.
+     * @param itemIn A constant reference to a @c lce::ItemState.
      * @return @c true if the item can be enchanted with the given criteria; otherwise, @c false.
      */
-    using CanEnchantItemFn = bool (*)(const lce::ItemState&);
+    using CanEnchantItemFn = bool (*)(const lce::ItemState& itemIn);
 
     /**
      * @brief Checks if an armor item can be enchanted.
@@ -222,7 +222,7 @@ namespace enchants {
             }
             return false;
         }
-        return ALL_ITERABLE[static_cast<int>(theType)](itemIn);
+        return ALL_ITERABLE[static_cast<size_t>(theType)](itemIn);
     }
 
     /**

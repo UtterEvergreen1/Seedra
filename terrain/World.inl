@@ -1,8 +1,8 @@
 #pragma once
 
 inline bool World::chunkExists(const Pos2D &pos) {
-    if (pos.x < worldBounds.minX || pos.x > worldBounds.maxX || pos.z < worldBounds.minZ ||
-        pos.z > worldBounds.maxZ) {
+    if (pos.x < worldBounds.m_minX || pos.x > worldBounds.m_maxX || pos.z < worldBounds.m_minZ ||
+        pos.z > worldBounds.m_maxZ) {
         return false;
     }
 
@@ -18,8 +18,8 @@ inline ChunkPrimer *World::getChunk(const Pos2D &pos) {
         }
     }
 
-    if (pos.x < worldBounds.minX || pos.x > worldBounds.maxX ||
-        pos.z < worldBounds.minZ || pos.z > worldBounds.maxZ) {
+    if (pos.x < worldBounds.m_minX || pos.x > worldBounds.m_maxX ||
+        pos.z < worldBounds.m_minZ || pos.z > worldBounds.m_maxZ) {
         return nullptr;
     }
 
@@ -39,8 +39,8 @@ inline ChunkPrimer *World::getOrCreateChunk(const Pos2D &chunkPos) {
         return chunk;
     }
 
-    if (chunkPos.x < worldBounds.minX || chunkPos.x > worldBounds.maxX ||
-        chunkPos.z < worldBounds.minZ || chunkPos.z > worldBounds.maxZ) {
+    if (chunkPos.x < worldBounds.m_minX || chunkPos.x > worldBounds.m_maxX ||
+        chunkPos.z < worldBounds.m_minZ || chunkPos.z > worldBounds.m_maxZ) {
         return nullptr;
     }
 

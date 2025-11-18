@@ -76,14 +76,14 @@ public:
     StructureComponent(const StructureComponent& other) : Piece() {
         usingPiece(other);
         // ensure coord-mode matches facing
-        setCoordMode(other.facing);
+        setCoordMode(other.m_facing);
     }
 
     // Safe copy assignment
     StructureComponent& operator=(const StructureComponent& other) {
         if (this != &other) {
             usingPiece(other);
-            setCoordMode(other.facing);
+            setCoordMode(other.m_facing);
         }
         return *this;
     }
@@ -100,8 +100,10 @@ public:
     void setCoordMode(const EnumFacing facing) {
 
         switch (facing) {
-            case EnumFacing::NORTH:
             default:
+            case EnumFacing::DOWN:
+            case EnumFacing::UP:
+            case EnumFacing::NORTH:
                 rotation = Rotation::NONE;
                 mirror = Mirror::NONE;
                 break;
@@ -128,18 +130,18 @@ public:
      * @param scIn The structure component to copy from.
      */
     MU void usingPiece(const StructureComponent &scIn) {
-        minX = scIn.minX;
-        maxX = scIn.maxX;
-        minY = scIn.minY;
-        maxY = scIn.maxY;
-        minZ = scIn.minZ;
-        maxZ = scIn.maxZ;
-        type = scIn.type;
-        facing = scIn.facing;
+        m_minX = scIn.m_minX;
+        m_maxX = scIn.m_maxX;
+        m_minY = scIn.m_minY;
+        m_maxY = scIn.m_maxY;
+        m_minZ = scIn.m_minZ;
+        m_maxZ = scIn.m_maxZ;
+        m_type = scIn.m_type;
+        m_facing = scIn.m_facing;
         rotation = scIn.rotation;
         mirror = scIn.mirror;
-        data = scIn.data;
-        depth = scIn.depth;
+        m_data = scIn.m_data;
+        m_depth = scIn.m_depth;
         variant = scIn.variant;
     }
 

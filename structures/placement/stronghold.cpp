@@ -12,14 +12,15 @@ namespace Placement {
         int out = 0;
         int multiplier = 0;
         c_bool xboxStronghold = lce::isXbox(g.getConsole());
-        int maxAttempts = g.getConsole() == lce::CONSOLE::XBOX1 ? 30 : 10;
-        std::vector<Pos2D> worldPositions(g.getStrongholdCount());
-        rng.setSeed(g.getWorldSeed());
+        const int maxAttempts = g.getConsole() == lce::CONSOLE::XBOX1 ? 30 : 10;
+        const auto strongholdCount = static_cast<size_t>(g.getStrongholdCount());
+        std::vector<Pos2D> worldPositions(strongholdCount);
+        rng.setSeed(static_cast<u64>(g.getWorldSeed()));
 
         double angle = static_cast<double>(TWO_PI_FLOAT) * rng.nextDouble();
 
         for (int attempts = 0; attempts < maxAttempts && !out; ++attempts) {
-            for (int index = 0; index < g.getStrongholdCount(); ++index) {
+            for (size_t index = 0; index < strongholdCount; ++index) {
                 if (useFarStronghold) multiplier = 32;
                 else if (xboxStronghold) multiplier = rng.nextInt(4) + 3;
                 double dist = rng.nextDouble() + 1.25;

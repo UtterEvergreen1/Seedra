@@ -58,7 +58,7 @@ namespace finders {
     struct SeedMul { i64 x, z; };
 
     inline SeedMul getSeedMultiplier(c_i64 worldSeed) {
-        RNG r; r.setSeed(worldSeed);
+        RNG r; r.setSeed(static_cast<u64>(worldSeed));
         return { r.nextLongI(), r.nextLongI() };
     }
 
@@ -139,7 +139,7 @@ namespace finders {
                 const i64 ax = static_cast<i64>(x) * mul.x;
                 for (int z = lower.z; z <= upper.z; ++z) {
                     const i64 az = static_cast<i64>(z) * mul.z;
-                    self.rng.setSeed(ax ^ az ^ worldSeed);
+                    self.rng.setSeed(static_cast<u64>(ax ^ az ^ worldSeed));
                     self.genBounds = bounds;
                     self.addFeature(Pos2D(x, z), out);
                 }
@@ -212,7 +212,7 @@ namespace finders {
 
             float yawModifier   = 0.0F;
             float pitchModifier = 0.0F;
-            RNG localRng; localRng.setSeed(theSeedModifier);
+            RNG localRng; localRng.setSeed(static_cast<u64>(theSeedModifier));
 
             if (theMaxSegment <= 0) {
                 constexpr int RANGE_BOUNDARY = CHUNK_RANGE * 16 - 16;
@@ -260,10 +260,10 @@ namespace finders {
             int    countVert = 0;
 
             // Precompute interior (big-section) XZ bounds once
-            const double minX8 = static_cast<double>(genBounds.minX) + 8.0;
-            const double maxX8 = static_cast<double>(genBounds.maxX) - 8.0;
-            const double minZ8 = static_cast<double>(genBounds.minZ) + 8.0;
-            const double maxZ8 = static_cast<double>(genBounds.maxZ) - 8.0;
+            const double minX8 = static_cast<double>(genBounds.m_minX) + 8.0;
+            const double maxX8 = static_cast<double>(genBounds.m_maxX) - 8.0;
+            const double minZ8 = static_cast<double>(genBounds.m_minZ) + 8.0;
+            const double maxZ8 = static_cast<double>(genBounds.m_maxZ) - 8.0;
 
             auto emit_if_ok = [&](const DoublePos3D& pos, int minYAnyCombined) {
                 // If the connected branch (this + children) reaches below Y_BOT, drop the hit.

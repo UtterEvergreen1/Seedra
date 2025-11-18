@@ -17,6 +17,7 @@ namespace scattered_features {
     FeaturePiece(IglooBottom);
 
 
+    Igloo::~Igloo() = default;
 
 
     bool Igloo::addComponentParts(World& worldIn, RNG& rng, const BoundingBox& chunkBB) {
@@ -24,9 +25,9 @@ namespace scattered_features {
         if (!this->offsetToAverageGroundLevel(worldIn, chunkBB, -1)) {
             return false;
         } else {
-            Pos3D blockPos = Pos3D(this->minX, this->minY, this->minZ);
+            Pos3D blockPos = Pos3D(this->m_minX, this->m_minY, this->m_minZ);
 
-            StructureComponent piece(static_cast<const BoundingBox&>(*this), this->facing);
+            StructureComponent piece(static_cast<const BoundingBox&>(*this), this->m_facing);
             std::cout << "Piece: " << piece << std::endl;
             IglooTop::addComponentParts(worldIn, rng, chunkBB, piece);
 
@@ -56,7 +57,7 @@ namespace scattered_features {
     }
 
 
-    bool IglooTop::addComponentParts(World& worldIn, RNG& rng, const BoundingBox& chunkBB, StructureComponent& piece) {
+    bool IglooTop::addComponentParts(World& worldIn, MU RNG& rng, const BoundingBox& chunkBB, StructureComponent& piece) {
 
         const lce::BlockState snow = lce::BlocksInit::SNOW_BLOCK.getDefaultState();
         const lce::BlockState carpet = lce::BlocksInit::RED_CARPET.getDefaultState();
@@ -119,16 +120,16 @@ namespace scattered_features {
     }
 
 
-    bool IglooMiddle::addComponentParts(World& worldIn, RNG& rng, const BoundingBox& chunkBB, StructureComponent& piece) {
+    bool IglooMiddle::addComponentParts(World& worldIn, MU RNG& rng, const BoundingBox& chunkBB, StructureComponent& piece) {
 
-        const lce::BlockState snow = lce::BlocksInit::SNOW_BLOCK.getDefaultState();
-        const lce::BlockState carpet = lce::BlocksInit::RED_CARPET.getDefaultState();
-        const lce::BlockState ice = lce::BlocksInit::ICE.getDefaultState();
-        const lce::BlockState trapdoor = lce::BlocksInit::WOODEN_TRAPDOOR.getDefaultState();
-        const lce::BlockState bed = lce::BlocksInit::BED_BLOCK.getDefaultState();
-        const lce::BlockState crafting_table = lce::BlocksInit::CRAFTING_TABLE.getDefaultState();
-        const lce::BlockState redstone_torch = lce::BlocksInit::ON_REDSTONE_TORCH.getDefaultState();
-        const lce::BlockState furnace = lce::BlocksInit::FURNACE.getDefaultState();
+        constexpr lce::BlockState snow = lce::BlocksInit::SNOW_BLOCK.getDefaultState();
+        constexpr lce::BlockState carpet = lce::BlocksInit::RED_CARPET.getDefaultState();
+        constexpr lce::BlockState ice = lce::BlocksInit::ICE.getDefaultState();
+        constexpr lce::BlockState trapdoor = lce::BlocksInit::WOODEN_TRAPDOOR.getDefaultState();
+        constexpr lce::BlockState bed = lce::BlocksInit::BED_BLOCK.getDefaultState();
+        constexpr lce::BlockState crafting_table = lce::BlocksInit::CRAFTING_TABLE.getDefaultState();
+        constexpr lce::BlockState redstone_torch = lce::BlocksInit::ON_REDSTONE_TORCH.getDefaultState();
+        constexpr lce::BlockState furnace = lce::BlocksInit::FURNACE.getDefaultState();
 
         // === Fill calls ===
 
@@ -184,14 +185,14 @@ namespace scattered_features {
 
     bool IglooBottom::addComponentParts(World& worldIn, RNG& rng, const BoundingBox& chunkBB, StructureComponent& piece) {
 
-        const lce::BlockState snow = lce::BlocksInit::SNOW_BLOCK.getDefaultState();
-        const lce::BlockState carpet = lce::BlocksInit::RED_CARPET.getDefaultState();
-        const lce::BlockState ice = lce::BlocksInit::ICE.getDefaultState();
-        const lce::BlockState trapdoor = lce::BlocksInit::WOODEN_TRAPDOOR.getDefaultState();
-        const lce::BlockState bed = lce::BlocksInit::BED_BLOCK.getDefaultState();
-        const lce::BlockState crafting_table = lce::BlocksInit::CRAFTING_TABLE.getDefaultState();
-        const lce::BlockState redstone_torch = lce::BlocksInit::ON_REDSTONE_TORCH.getDefaultState();
-        const lce::BlockState furnace = lce::BlocksInit::FURNACE.getDefaultState();
+        constexpr lce::BlockState snow = lce::BlocksInit::SNOW_BLOCK.getDefaultState();
+        constexpr lce::BlockState carpet = lce::BlocksInit::RED_CARPET.getDefaultState();
+        constexpr lce::BlockState ice = lce::BlocksInit::ICE.getDefaultState();
+        constexpr lce::BlockState trapdoor = lce::BlocksInit::WOODEN_TRAPDOOR.getDefaultState();
+        constexpr lce::BlockState bed = lce::BlocksInit::BED_BLOCK.getDefaultState();
+        constexpr lce::BlockState crafting_table = lce::BlocksInit::CRAFTING_TABLE.getDefaultState();
+        constexpr lce::BlockState redstone_torch = lce::BlocksInit::ON_REDSTONE_TORCH.getDefaultState();
+        constexpr lce::BlockState furnace = lce::BlocksInit::FURNACE.getDefaultState();
 
         // === Fill calls ===
 

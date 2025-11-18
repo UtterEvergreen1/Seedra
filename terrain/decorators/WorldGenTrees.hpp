@@ -24,22 +24,22 @@ public:
     /**
      * @brief The minimum height of a generated tree.
      */
-    const int minTreeHeight;
+    const int m_minTreeHeight;
 
     /**
      * @brief Indicates whether this tree should grow vines.
      */
-    const bool vinesGrow;
+    const bool m_vinesGrow;
 
     /**
      * @brief The block state representing the type of wood used in tree generation.
      */
-    const lce::BlockState metaWood;
+    const lce::BlockState m_metaWood;
 
     /**
      * @brief The block state representing the type of leaves used in tree generation.
      */
-    const lce::BlockState metaLeaves;
+    const lce::BlockState m_metaLeaves;
 
     /**
      * @brief Default constructor that initializes the tree with default trunk and leaf states, a minimum height of 4, and no vines.
@@ -56,7 +56,7 @@ public:
      */
     WorldGenTrees(const int minTreeHeight, const lce::BlockState metaWood, const lce::BlockState metaLeaves,
                   const bool vinesGrow)
-        : minTreeHeight(minTreeHeight), vinesGrow(vinesGrow), metaWood(metaWood), metaLeaves(metaLeaves) {
+        : m_minTreeHeight(minTreeHeight), m_vinesGrow(vinesGrow), m_metaWood(metaWood), m_metaLeaves(metaLeaves) {
     }
 
     /**

@@ -246,9 +246,8 @@ int main() {
             bool hasBiomes[ (int)BiomeID::small_end_islands] = {};
             bool hasMutatedBiomes[mutatedBiomesSize] = {};
             const int worldSize = g.getWorldCoordinateBounds() * 2; // world size in blocks
-            int* biomes = g.getBiomeRange(1, -g.getWorldCoordinateBounds(), -g.getWorldCoordinateBounds(),
-                                                            worldSize,
-                                                            worldSize);
+            int* biomes = g.getBiomeRange(1, -g.getWorldCoordinateBounds(), -g.getWorldCoordinateBounds(), worldSize,
+                                          worldSize);
             for (int i = 0; i < CLASSIC_WORLD_SIZE; ++i) {
                 int biome = biomes[i];
                 if (biome > 128) {

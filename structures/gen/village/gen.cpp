@@ -37,33 +37,33 @@ namespace gen {
     c_int Village::VILLAGE_SIZE = 0;
 
     constexpr Village::PieceWeight Village::PIECE_WEIGHTS[9] = {
-            {PieceType::PT_Village_House4Garden, 4, 2 + VILLAGE_SIZE, 4 + VILLAGE_SIZE * 2},
-            {PieceType::PT_Village_Church, 20, 0 + VILLAGE_SIZE, 1 + VILLAGE_SIZE},
-            {PieceType::PT_Village_House1, 20, 0 + VILLAGE_SIZE, 2 + VILLAGE_SIZE},
-            {PieceType::PT_Village_WoodHut, 3, 2 + VILLAGE_SIZE, 5 + VILLAGE_SIZE * 3},
-            {PieceType::PT_Village_Hall, 15, 0 + VILLAGE_SIZE, 2 + VILLAGE_SIZE},
-            {PieceType::PT_Village_Field1, 3, 1 + VILLAGE_SIZE, 4 + VILLAGE_SIZE},
-            {PieceType::PT_Village_Field2, 3, 2 + VILLAGE_SIZE, 4 + VILLAGE_SIZE * 2},
-            {PieceType::PT_Village_House2, 15, 0, 1 + VILLAGE_SIZE},
-            {PieceType::PT_Village_House3, 8, 0 + VILLAGE_SIZE, 3 + VILLAGE_SIZE * 2}};
+            {4, 2 + VILLAGE_SIZE, 4 + VILLAGE_SIZE * 2, PieceType::PT_Village_House4Garden},
+            {20, 0 + VILLAGE_SIZE, 1 + VILLAGE_SIZE, PieceType::PT_Village_Church},
+            {20, 0 + VILLAGE_SIZE, 2 + VILLAGE_SIZE, PieceType::PT_Village_House1},
+            {3, 2 + VILLAGE_SIZE, 5 + VILLAGE_SIZE * 3, PieceType::PT_Village_WoodHut},
+            {15, 0 + VILLAGE_SIZE, 2 + VILLAGE_SIZE, PieceType::PT_Village_Hall},
+            {3, 1 + VILLAGE_SIZE, 4 + VILLAGE_SIZE, PieceType::PT_Village_Field1},
+            {3, 2 + VILLAGE_SIZE, 4 + VILLAGE_SIZE * 2, PieceType::PT_Village_Field2},
+            {15, 0, 1 + VILLAGE_SIZE, PieceType::PT_Village_House2},
+            {8, 0 + VILLAGE_SIZE, 3 + VILLAGE_SIZE * 2, PieceType::PT_Village_House3}};
 
 
 
-    Village::Village(const Generator* generator, bool useBiomes) { g = generator; this->useBiomes = useBiomes; }
+    Village::Village(const Generator* generator, c_bool useBiomes) { m_g = generator; this->m_useBiomes = useBiomes; }
 
     Village::~Village() {
         this->reset();
     }
 
     void Village::reset() {
-        // for (int i = 0; i < pieceArraySize; i++) {
+        // for (int i = 0; i < m_pieceArraySize; i++) {
         //     delete pieceArray[i];
         // }
-        previousPiece = PieceType::PT_Village_NONE;
-        myBlackSmithPieceIndex = -1;
-        numInvalidPieces = 1;
-        pieceArraySize = 0;
-        pendingRoadArraySize = 0;
+        m_previousPiece = PieceType::PT_Village_NONE;
+        m_myBlackSmithPieceIndex = -1;
+        m_numInvalidPieces = 1;
+        m_pieceArraySize = 0;
+        m_pendingRoadArraySize = 0;
     }
 
     /**
@@ -80,78 +80,77 @@ namespace gen {
      * @param chunkZ z coordinate of the chunk
      */
     void Village::generate(c_int chunkX, c_int chunkZ) {
-        rng = RNG::getLargeFeatureSeed(g->getWorldSeed(), chunkX, chunkZ);
-        rng.advance();
-        startPos.x = (chunkX << 4) + 2;
-        startPos.z = (chunkZ << 4) + 2;
+        m_rng = RNG::getLargeFeatureSeed(m_g->getWorldSeed(), chunkX, chunkZ);
+        m_rng.advance();
+        m_startPos.x = (chunkX << 4) + 2;
+        m_startPos.z = (chunkZ << 4) + 2;
 
         this->reset();
         setVillageBiomeType();
 
         setupPieces();
-        rng.nextInt(4); // direction: this.setCoordBaseMode(EnumFacing.Plane.HORIZONTAL.random(rand));
-        isZombieInfested = rng.nextInt(50) == 0;
+        m_rng.nextInt(4); // direction: this.setCoordBaseMode(EnumFacing.Plane.HORIZONTAL.random(rand));
+        m_isZombieInfested = m_rng.nextInt(50) == 0;
 
         c_auto startPiece = StructureComponent(PieceType::PT_Village_Start, 0,
-            createPieceBB(PieceType::PT_Village_Start, {startPos.x, 64, startPos.z}, EnumFacing::NORTH),
+            createPieceBB(PieceType::PT_Village_Start, {m_startPos.x, 64, m_startPos.z}, EnumFacing::NORTH),
                 EnumFacing::NORTH, 0);
-        pieceArray[pieceArraySize++] = startPiece;
+        m_pieceArray[m_pieceArraySize++] = startPiece;
 
         buildComponentStart(startPiece);
 
-        while (pendingRoadArraySize != 0) {
-            if (generationStep == GS_Village_Valid && hasMoreThanTwoComponents()) {
+        while (m_pendingRoadArraySize != 0) {
+            if (m_generationStep == GS_Village_Valid && hasMoreThanTwoComponents()) {
                 return;
             }
 
-            c_int i = rng.nextInt(pendingRoadArraySize);
-            const StructureComponent& structureComponent = pieceArray[pendingRoadArray[i]];
-            pendingRoadArraySize--;
+            c_int i = m_rng.nextInt(m_pendingRoadArraySize);
+            const StructureComponent& structureComponent = m_pieceArray[m_pendingRoadArray[i]];
+            m_pendingRoadArraySize--;
 
             // possible faster way to shift over
-            // size_t bytesToShift = (pendingRoadArraySize - i) * sizeof(pendingRoadArray[0]);
+            // size_t bytesToShift = (m_pendingRoadArraySize - i) * sizeof(pendingRoadArray[0]);
             // memcpy(&pendingRoadArray[i], &pendingRoadArray[i + 1], bytesToShift);
 
-            for (int j = i; j < pendingRoadArraySize; j++) {
-                pendingRoadArray[j] = pendingRoadArray[j + 1];
+            for (int j = i; j < m_pendingRoadArraySize; j++) {
+                m_pendingRoadArray[j] = m_pendingRoadArray[j + 1];
             }
 
             buildComponent(structureComponent);
 
             // stop at blacksmith
-            if (generationStep == GS_Village_Blacksmith && myBlackSmithPieceIndex != -1)
+            if (m_generationStep == GS_Village_Blacksmith && m_myBlackSmithPieceIndex != -1)
                 return;
         }
 
-        if (generationStep == GS_Village_Layout) return;
+        if (m_generationStep == GS_Village_Layout) return;
 
         // encompass structure bounding box
-        structureBB = BoundingBox::EMPTY;
-        for (int index = 0; index < pieceArraySize; index++) {
-            structureBB.encompass(pieceArray[index]);
-            pieceArray[index].variant = myVariant;
+        m_structureBB = BoundingBox::EMPTY;
+        for (int index = 0; index < m_pieceArraySize; index++) {
+            m_structureBB.encompass(m_pieceArray[index]);
+            m_pieceArray[index].variant = m_myVariant;
         }
 
     }
 
 
     void Village::setupPieces() {
-        currentVillagePW.clear();
-        for (c_auto [pieceType, weight, PlaceCountMin, PlaceCountMax]: PIECE_WEIGHTS) {
-            if (auto fPiece = FinalPieceWeight(pieceType, weight,
-                                               rng.nextInt(PlaceCountMin, PlaceCountMax), 0);
-                fPiece.maxPlaceCount > 0) {
-                currentVillagePW.push_back(fPiece);
+        m_currentVillagePW.clear();
+        for (c_auto [weight, PlaceCountMin, PlaceCountMax, pieceType]: PIECE_WEIGHTS) {
+            if (auto fPiece = FinalPieceWeight(weight,  m_rng.nextInt(PlaceCountMin, PlaceCountMax), 0, pieceType);
+                fPiece.m_maxPlaceCount > 0) {
+                m_currentVillagePW.push_back(fPiece);
             }
         }
     }
 
 
     void Village::buildComponentStart(const StructureComponent& piece) {
-        genAndAddRoadPiece({piece.minX - 1, piece.maxY - 4, piece.minZ + 1}, EnumFacing::WEST);
-        genAndAddRoadPiece({piece.maxX + 1, piece.maxY - 4, piece.minZ + 1}, EnumFacing::EAST);
-        genAndAddRoadPiece({piece.minX + 1, piece.maxY - 4, piece.minZ - 1}, EnumFacing::NORTH);
-        genAndAddRoadPiece({piece.minX + 1, piece.maxY - 4, piece.maxZ + 1}, EnumFacing::SOUTH);
+        genAndAddRoadPiece({piece.m_minX - 1, piece.m_maxY - 4, piece.m_minZ + 1}, EnumFacing::WEST);
+        genAndAddRoadPiece({piece.m_maxX + 1, piece.m_maxY - 4, piece.m_minZ + 1}, EnumFacing::EAST);
+        genAndAddRoadPiece({piece.m_minX + 1, piece.m_maxY - 4, piece.m_minZ - 1}, EnumFacing::NORTH);
+        genAndAddRoadPiece({piece.m_minX + 1, piece.m_maxY - 4, piece.m_maxZ + 1}, EnumFacing::SOUTH);
     }
 
 
@@ -160,7 +159,14 @@ namespace gen {
             case PieceType::PT_Village_Road:
                 return BoundingBox::EMPTY;
             case PieceType::PT_Village_Start:
-                return {pos.getX(), 64, pos.getZ(), pos.getX() + 6 - 1, 78, pos.getZ() + 6 - 1};
+                return {
+                    static_cast<bbType_t>(pos.getX()),
+                    static_cast<bbType_t>(64),
+                    static_cast<bbType_t>(pos.getZ()),
+                    static_cast<bbType_t>(pos.getX() + 6 - 1),
+                    static_cast<bbType_t>(78),
+                    static_cast<bbType_t>(pos.getZ() + 6 - 1)
+                };
             case PieceType::PT_Village_House4Garden:
                 return BoundingBox::orientBox(pos, 5, 6, 5, direction);
             case PieceType::PT_Village_Church:
@@ -189,9 +195,9 @@ namespace gen {
 
 
     void Village::genAndAddRoadPiece(const Pos3D pos, const EnumFacing facing) {
-        if (abs(startPos.x - pos.getX()) > 112 || abs(startPos.z - pos.getZ()) > 112) return;
+        if (abs(m_startPos.x - pos.getX()) > 112 || abs(m_startPos.z - pos.getZ()) > 112) return;
 
-        if (const BoundingBox boundingBox = road(pos, facing); boundingBox.maxY != 0) {
+        if (const BoundingBox boundingBox = road(pos, facing); boundingBox.m_maxY != 0) {
             auto sc = StructureComponent(PieceType::PT_Village_Road, 0, boundingBox, facing, boundingBox.getLength() + 1);
             addPiece(sc);
         }
@@ -201,16 +207,16 @@ namespace gen {
     int Village::updatePieceWeight() const {
         bool flag = false;
         int i = 0;
-        for (const FinalPieceWeight& pWeight: currentVillagePW) {
-            if (pWeight.maxPlaceCount > 0 && pWeight.amountPlaced < pWeight.maxPlaceCount) { flag = true; }
-            i += pWeight.weight;
+        for (const FinalPieceWeight& pWeight: m_currentVillagePW) {
+            if (pWeight.m_maxPlaceCount > 0 && pWeight.m_amountPlaced < pWeight.m_maxPlaceCount) { flag = true; }
+            i += pWeight.m_weight;
         }
         return flag ? i : -1;
     }
 
 
     BoundingBox Village::road(const Pos3D pos, const EnumFacing facing) {
-        for (int i = 7 * rng.nextInt(3, 5); i >= 7; i -= 7) {
+        for (int i = 7 * m_rng.nextInt(3, 5); i >= 7; i -= 7) {
             if (BoundingBox structure = BoundingBox::orientBox(pos, 3, 3, i, facing);
                 !hasCollisionPiece(structure))
                 return structure;
@@ -220,30 +226,30 @@ namespace gen {
 
 
     void Village::additionalRngRolls(StructureComponent& p) {
-        switch (p.type) {
+        switch (p.m_type) {
             case PieceType::PT_Village_WoodHut: {
-                c_u8 isTallHouse = rng.nextBoolean() ? 1 : 0;
-                c_u8 tablePosition = rng.nextInt(3);
-                p.data = isTallHouse << 8 | tablePosition;
+                c_u8 isTallHouse = m_rng.nextBoolean() ? 1 : 0;
+                c_u8 tablePosition = static_cast<u8>(m_rng.nextInt(3));
+                p.m_data = isTallHouse << 8 | tablePosition;
                 return;
             }
             case PieceType::PT_Village_House4Garden: {
-                c_i32 isRoofAccessible = rng.nextBoolean() ? 1 : 0;
-                p.data = isRoofAccessible;
+                c_i32 isRoofAccessible = m_rng.nextBoolean() ? 1 : 0;
+                p.m_data = isRoofAccessible;
                 return;
             }
             case PieceType::PT_Village_Field2: {
-                c_u8 cropTypeA = rng.nextInt(10);
-                c_u8 cropTypeB = rng.nextInt(10);
-                p.data = cropTypeA << 4 | cropTypeB;
+                c_u8 cropTypeA = static_cast<u8>(m_rng.nextInt(10));
+                c_u8 cropTypeB = static_cast<u8>(m_rng.nextInt(10));
+                p.m_data = cropTypeA << 4 | cropTypeB;
                 return;
             }
             case PieceType::PT_Village_Field1: {
-                c_u8 cropTypeA = rng.nextInt(10);
-                c_u8 cropTypeB = rng.nextInt(10);
-                c_u8 cropTypeC = rng.nextInt(10);
-                c_u8 cropTypeD = rng.nextInt(10);
-                p.data = cropTypeA << 12 | cropTypeB << 8 | cropTypeC << 4 | cropTypeD;
+                c_u8 cropTypeA = static_cast<u8>(m_rng.nextInt(10));
+                c_u8 cropTypeB = static_cast<u8>(m_rng.nextInt(10));
+                c_u8 cropTypeC = static_cast<u8>(m_rng.nextInt(10));
+                c_u8 cropTypeD = static_cast<u8>(m_rng.nextInt(10));
+                p.m_data = cropTypeA << 12 | cropTypeB << 8 | cropTypeC << 4 | cropTypeD;
                 return;
             }
             case PieceType::PT_Village_House2:
@@ -268,26 +274,26 @@ namespace gen {
 
         while (j < 5) {
             ++j;
-            int k = rng.nextInt(i);
+            int k = m_rng.nextInt(i);
 
-            c_int pieceWeightsSize = static_cast<int>(currentVillagePW.size());
-            for (int pieceTypeNum = 0; pieceTypeNum < pieceWeightsSize; pieceTypeNum++) {
-                FinalPieceWeight& pieceWeight = currentVillagePW[pieceTypeNum];
-                k -= pieceWeight.weight;
+            c_int pieceWeightsSize = static_cast<int>(m_currentVillagePW.size());
+            for (size_t pieceTypeNum = 0; pieceTypeNum < pieceWeightsSize; pieceTypeNum++) {
+                FinalPieceWeight& pieceWeight = m_currentVillagePW[pieceTypeNum];
+                k -= pieceWeight.m_weight;
 
                 if (k < 0) {
-                    if ((pieceWeight.amountPlaced >= pieceWeight.maxPlaceCount
-                        || pieceWeight.pieceType == previousPiece)
-                        && currentVillagePW.size() > 1) {
+                    if ((pieceWeight.m_amountPlaced >= pieceWeight.m_maxPlaceCount
+                        || pieceWeight.m_pieceType == m_previousPiece)
+                        && m_currentVillagePW.size() > 1) {
                         break;
                     }
-                    auto structureVillagePiece = StructureComponent(pieceWeight.pieceType, depth, createPieceBB(pieceWeight.pieceType, pos, facing), facing, 0);
+                    auto structureVillagePiece = StructureComponent(pieceWeight.m_pieceType, depth, createPieceBB(pieceWeight.m_pieceType, pos, facing), facing, 0);
                     if (!hasCollisionPiece(structureVillagePiece)) {
                         additionalRngRolls(structureVillagePiece);
-                        pieceWeight.amountPlaced++;
-                        previousPiece = pieceWeight.pieceType;
-                        if (pieceWeight.amountPlaced >= pieceWeight.maxPlaceCount) {
-                            currentVillagePW.erase(currentVillagePW.begin() + pieceTypeNum);
+                        pieceWeight.m_amountPlaced++;
+                        m_previousPiece = pieceWeight.m_pieceType;
+                        if (pieceWeight.m_amountPlaced >= pieceWeight.m_maxPlaceCount) {
+                            m_currentVillagePW.erase(m_currentVillagePW.begin() + pieceTypeNum);
                         }
                         return structureVillagePiece;
                     }
@@ -307,24 +313,24 @@ namespace gen {
         // don't do this for elytra???
         if (depth > 50) return {};
         // 48 for elytra???
-        if (abs(startPos.x - pos.getX()) > 112 || abs(startPos.z - pos.getZ()) > 112) { return {}; }
+        if (abs(m_startPos.x - pos.getX()) > 112 || abs(m_startPos.z - pos.getZ()) > 112) { return {}; }
 
         StructureComponent structureComponent = generateComponent(pos, facing, static_cast<i8>(depth + 1));
-        if (structureComponent.type == PieceType::PT_Village_NONE) {
+        if (structureComponent.m_type == PieceType::PT_Village_NONE) {
             return {};
         }
 
         c_int radius = structureComponent.getLength() / 2 + 4;
-        if (!this->useBiomes || g->areBiomesViable(structureComponent.getCenterX(),
+        if (!this->m_useBiomes || m_g->areBiomesViable(structureComponent.getCenterX(),
                                structureComponent.getCenterZ(),
                                radius,
                                Placement::Village<false>::VALID_BIOMES)) {
 
-            if (structureComponent.type == PieceType::PT_Village_House2) {
-                myBlackSmithPieceIndex = pieceArraySize;
+            if (structureComponent.m_type == PieceType::PT_Village_House2) {
+                m_myBlackSmithPieceIndex = m_pieceArraySize;
             }
 
-            pieceArray[pieceArraySize++] = structureComponent;
+            m_pieceArray[m_pieceArraySize++] = structureComponent;
             return structureComponent;
         }
 
@@ -335,92 +341,92 @@ namespace gen {
     void Village::buildComponent(const StructureComponent& scIn) {
         bool flag = false;
 
-        for (int i = rng.nextInt(5); i < scIn.data - 8; i += 2 + rng.nextInt(5)) {
+        for (int i = m_rng.nextInt(5); i < scIn.m_data - 8; i += 2 + m_rng.nextInt(5)) {
             StructureComponent sc;
-            switch (scIn.facing) {
+            switch (scIn.m_facing) {
                 case EnumFacing::NORTH:
                 case EnumFacing::SOUTH:
                 default:
-                    sc = genAndAddComponent({scIn.minX - 1, scIn.minY, scIn.minZ + i}, EnumFacing::WEST, scIn.depth);
+                    sc = genAndAddComponent({scIn.m_minX - 1, scIn.m_minY, scIn.m_minZ + i}, EnumFacing::WEST, scIn.m_depth);
                     break;
                 case EnumFacing::WEST:
                 case EnumFacing::EAST:
-                    sc = genAndAddComponent({scIn.minX + i, scIn.minY, scIn.minZ - 1}, EnumFacing::NORTH, scIn.depth);
+                    sc = genAndAddComponent({scIn.m_minX + i, scIn.m_minY, scIn.m_minZ - 1}, EnumFacing::NORTH, scIn.m_depth);
                     break;
             }
 
-            if (sc.type != PieceType::PT_Village_NONE) {
+            if (sc.m_type != PieceType::PT_Village_NONE) {
                 i += sc.getLength() + 1;
                 flag = true;
             }
         }
 
-        for (int j = rng.nextInt(5); j < scIn.data - 8; j += 2 + rng.nextInt(5)) {
+        for (int j = m_rng.nextInt(5); j < scIn.m_data - 8; j += 2 + m_rng.nextInt(5)) {
             StructureComponent sc1;
-            switch (scIn.facing) {
+            switch (scIn.m_facing) {
                 case EnumFacing::NORTH:
                 case EnumFacing::SOUTH:
                 default:
-                    sc1 = genAndAddComponent({scIn.maxX + 1, scIn.minY, scIn.minZ + j}, EnumFacing::EAST, scIn.depth);
+                    sc1 = genAndAddComponent({scIn.m_maxX + 1, scIn.m_minY, scIn.m_minZ + j}, EnumFacing::EAST, scIn.m_depth);
                     break;
                 case EnumFacing::EAST:
                 case EnumFacing::WEST:
-                    sc1 = genAndAddComponent({scIn.minX + j, scIn.minY, scIn.maxZ + 1}, EnumFacing::SOUTH, scIn.depth);
+                    sc1 = genAndAddComponent({scIn.m_minX + j, scIn.m_minY, scIn.m_maxZ + 1}, EnumFacing::SOUTH, scIn.m_depth);
                     break;
             }
 
-            if (sc1.type != PieceType::PT_Village_NONE) {
+            if (sc1.m_type != PieceType::PT_Village_NONE) {
                 j += sc1.getLength() + 1;
                 flag = true;
             }
         }
 
-        if (flag && rng.nextInt(3) > 0) {
-            switch (scIn.facing) {
+        if (flag && m_rng.nextInt(3) > 0) {
+            switch (scIn.m_facing) {
                 case EnumFacing::NORTH:
                 default:
-                    genAndAddRoadPiece({scIn.minX - 1, scIn.minY, scIn.minZ}, EnumFacing::WEST);
+                    genAndAddRoadPiece({scIn.m_minX - 1, scIn.m_minY, scIn.m_minZ}, EnumFacing::WEST);
                     break;
                 case EnumFacing::SOUTH:
-                    genAndAddRoadPiece({scIn.minX - 1, scIn.minY, scIn.maxZ - 2}, EnumFacing::WEST);
+                    genAndAddRoadPiece({scIn.m_minX - 1, scIn.m_minY, scIn.m_maxZ - 2}, EnumFacing::WEST);
                     break;
                 case EnumFacing::WEST:
-                    genAndAddRoadPiece({scIn.minX, scIn.minY, scIn.minZ - 1}, EnumFacing::NORTH);
+                    genAndAddRoadPiece({scIn.m_minX, scIn.m_minY, scIn.m_minZ - 1}, EnumFacing::NORTH);
                     break;
                 case EnumFacing::EAST:
-                    genAndAddRoadPiece({scIn.maxX - 2, scIn.minY, scIn.minZ - 1}, EnumFacing::NORTH);
+                    genAndAddRoadPiece({scIn.m_maxX - 2, scIn.m_minY, scIn.m_minZ - 1}, EnumFacing::NORTH);
             }
         }
 
-        if (flag && rng.nextInt(3) > 0) {
-            switch (scIn.facing) {
+        if (flag && m_rng.nextInt(3) > 0) {
+            switch (scIn.m_facing) {
                 case EnumFacing::NORTH:
                 default:
-                    genAndAddRoadPiece({scIn.maxX + 1, scIn.minY, scIn.minZ}, EnumFacing::EAST);
+                    genAndAddRoadPiece({scIn.m_maxX + 1, scIn.m_minY, scIn.m_minZ}, EnumFacing::EAST);
                     break;
                 case EnumFacing::SOUTH:
-                    genAndAddRoadPiece({scIn.maxX + 1, scIn.minY, scIn.maxZ - 2}, EnumFacing::EAST);
+                    genAndAddRoadPiece({scIn.m_maxX + 1, scIn.m_minY, scIn.m_maxZ - 2}, EnumFacing::EAST);
                     break;
                 case EnumFacing::WEST:
-                    genAndAddRoadPiece({scIn.minX, scIn.minY, scIn.maxZ + 1}, EnumFacing::SOUTH);
+                    genAndAddRoadPiece({scIn.m_minX, scIn.m_minY, scIn.m_maxZ + 1}, EnumFacing::SOUTH);
                     break;
                 case EnumFacing::EAST:
-                    genAndAddRoadPiece({scIn.maxX - 2, scIn.minY, scIn.maxZ + 1}, EnumFacing::SOUTH);
+                    genAndAddRoadPiece({scIn.m_maxX - 2, scIn.m_minY, scIn.m_maxZ + 1}, EnumFacing::SOUTH);
             }
         }
     }
 
 
     void Village::addPiece(StructureComponent& piece) {
-        pendingRoadArray[pendingRoadArraySize++] = pieceArraySize;
-        pieceArray[pieceArraySize++] = piece;
-        if (piece.type == PieceType::PT_Village_Road) { numInvalidPieces++; }
+        m_pendingRoadArray[m_pendingRoadArraySize++] = m_pieceArraySize;
+        m_pieceArray[m_pieceArraySize++] = piece;
+        if (piece.m_type == PieceType::PT_Village_Road) { m_numInvalidPieces++; }
     }
 
 
     bool Village::hasCollisionPiece(const BoundingBox& boundingBox) const {
-        for (int i = 0; i < pieceArraySize; i++) {
-            if (pieceArray[i].intersects(boundingBox)) { return true; }
+        for (int i = 0; i < m_pieceArraySize; i++) {
+            if (m_pieceArray[i].intersects(boundingBox)) { return true; }
         }
         return false;
     }
@@ -430,30 +436,32 @@ namespace gen {
 
 
     MU ND const StructureComponent *Village::getBlackSmithPiece() {
-        if (myBlackSmithPieceIndex == -1) {
+        if (m_myBlackSmithPieceIndex == -1) {
             return nullptr;
         }
-        return &pieceArray[myBlackSmithPieceIndex];
+        return &m_pieceArray[m_myBlackSmithPieceIndex];
 
     }
 
 
     MU void Village::setVillageBiomeType() {
-        switch (g->getBiomeIdAt(1, startPos)) {
+        const biome_t chosen = m_g->getBiomeIdAt(1, m_startPos);
+        switch (chosen) {
             case biome_t::plains:
             default:
-                myVariant = StructureVariant::SV_Village_Plains;
+                m_myVariant = StructureVariant::SV_Village_Plains;
                 break;
             case biome_t::desert:
-                myVariant = StructureVariant::SV_Village_Desert;
+            case biome_t::desert_hills:
+                m_myVariant = StructureVariant::SV_Village_Desert;
                 break;
             case biome_t::savanna:
-                myVariant = StructureVariant::SV_Village_Savanna;
+                m_myVariant = StructureVariant::SV_Village_Savanna;
                 break;
             case biome_t::taiga:
             case biome_t::ice_plains:
             case biome_t::cold_taiga:
-                myVariant = StructureVariant::SV_Village_Taiga;
+                m_myVariant = StructureVariant::SV_Village_Taiga;
                 break;
         }
     }

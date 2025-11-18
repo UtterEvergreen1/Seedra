@@ -2,13 +2,13 @@
 float getMinTemperature(const Biome* biome, int y) {
     constexpr double noiseVal = -0.707106781186548; // -sqrt(2/4)
     constexpr double f = noiseVal * 4.0;
-    return biome->temperature - (f + y - 64.0F) * 0.05F / 30.0F;
+    return biome->m_temperature - (f + y - 64.0F) * 0.05F / 30.0F;
 }
 
 float getMaxTemperature(const Biome* biome, int y) {
     constexpr double noiseVal = 0.707106781186548; // sqrt(2/4)
     constexpr double f = noiseVal * 4.0;
-    return biome->temperature - (f + y - 64.0F) * 0.05F / 30.0F;
+    return biome->m_temperature - (f + y - 64.0F) * 0.05F / 30.0F;
 }
 
 struct MinMaxTemp {

@@ -1,9 +1,6 @@
 #pragma once
 
 #include "AbstractMapGen.hpp"
-#include <set>
-
-
 
 /**
  * @class CaveGenerator

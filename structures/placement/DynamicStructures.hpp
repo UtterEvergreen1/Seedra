@@ -62,7 +62,7 @@ namespace Placement {
         static int CHUNK_BOUNDS; ///< Bounds for chunk placement.
         static int REGION_SIZE; ///< Size of the region for structure placement.
         static int CHUNK_RANGE; ///< Range of chunks to consider for placement.
-        static int ATTEMPTS; ///< Maximum number of placement attempts.
+        static size_t ATTEMPTS; ///< Maximum number of placement attempts.
         MU static bool REDUCED_SPACING; ///< Flag for reduced spacing between structures.
 
         static constexpr int  SALT                        = 0; ///< Salt value for structure placement.

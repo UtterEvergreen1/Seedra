@@ -165,7 +165,7 @@ namespace loot {
         Container<ContainerSize> &container, c_i64 lootTableSeed, Buffer *buffer) const {
 
         RNG rng;
-        rng.setSeed(lootTableSeed);
+        rng.setSeed(static_cast<u64>(lootTableSeed));
 
         if constexpr (Mode == GenMode::LEGACY) {
             std::apply([&](auto const &...table) {

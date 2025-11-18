@@ -14,6 +14,9 @@ namespace scattered_features {
     using namespace lce::blocks::states;
 
 
+    JunglePyramid::~JunglePyramid() = default;
+
+
     bool JunglePyramid::addComponentParts(World& worldIn, RNG& rng, const BoundingBox& chunkBB) {
         if (!this->offsetToAverageGroundLevel(worldIn, chunkBB, 0)) {
             return false;

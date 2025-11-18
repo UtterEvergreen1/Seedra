@@ -11,16 +11,16 @@ class World;
  */
 class WorldGenCucurbitsBlock final : public AbstractWorldGenerator {
 public:
-    int blockId; /**< The ID of the block to generate. */
-    bool hasRotation; /**< Indicates whether the block has rotation metadata. */
+    u16 m_blockId; /**< The ID of the block to generate. */
+    bool m_hasRotation; /**< Indicates whether the block has rotation metadata. */
 
     /**
      * @brief Constructs a WorldGenCucurbitsBlock object.
      * @param block The ID of the block to generate.
      * @param has_rotation Optional parameter indicating if the block has rotation metadata. Defaults to false.
      */
-    explicit WorldGenCucurbitsBlock(const int block, const bool has_rotation = false)
-        : blockId(block), hasRotation(has_rotation) {
+    explicit WorldGenCucurbitsBlock(c_u16 block, const bool has_rotation = false)
+        : m_blockId(block), m_hasRotation(has_rotation) {
     }
 
     /**
@@ -38,5 +38,5 @@ private:
      * @param rng Reference to the random number generator.
      * @return An integer representing the rotation metadata.
      */
-    static int getRandomRotationMetaData(RNG &rng);
+    static u8 getRandomRotationMetaData(RNG &rng);
 };

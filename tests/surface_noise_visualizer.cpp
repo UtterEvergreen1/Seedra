@@ -56,7 +56,7 @@ int main(int argc, char* argv[]) {
 
     // Initialize the noise generator
     RNG rng;
-    rng.setSeed(worldSeed);
+    rng.setSeed(static_cast<u64>(worldSeed));
     rng.advance<10360>();
 
     NoiseGeneratorPerlin<4> surfaceNoise;

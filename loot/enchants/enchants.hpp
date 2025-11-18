@@ -117,9 +117,13 @@ namespace enchants {
 
     /// Macro to generate a constructor for an enchantment.
 #define ENCHANTMENT_CONSTRUCTOR(func_name) \
-    (func_name)(const char* name, const eEnchantId id, \
+    func_name(const char* name, const eEnchantId id, \
         const eEnchantType type, const eEnchantRarity rarity, c_u8 maxLevel) : \
         Enchant(name, id, type, rarity, maxLevel)
+
+    /// Macro to generate a deconstructor for an enchantment.
+#define ENCHANTMENT_DECONSTRUCTOR(func_name) \
+    ~func_name() noexcept override
 
     /* Concrete enchantment classes follow. Each class provides an implementation for
      * cost functions and (if necessary) compatibility checks using canApplyTogether.
@@ -128,6 +132,8 @@ namespace enchants {
     class EnchantArrowDamage final : public Enchant {
     public:
         ENCHANTMENT_CONSTRUCTOR(EnchantArrowDamage) {}
+        ENCHANTMENT_DECONSTRUCTOR(EnchantArrowDamage);
+
         MU ND int getMinCost(c_int enchantLevel) const override { return ARROW_DAMAGE_MIN[enchantLevel - 1]; }
         MU ND int getMaxCost(c_int enchantLevel) const override { return ARROW_DAMAGE_MAX[enchantLevel - 1]; }
     };
@@ -136,6 +142,8 @@ namespace enchants {
     class EnchantArrowFire final : public Enchant {
     public:
         ENCHANTMENT_CONSTRUCTOR(EnchantArrowFire) {}
+        ENCHANTMENT_DECONSTRUCTOR(EnchantArrowFire);
+
         MU ND int getMinCost(MU c_int enchantLevel) const override { return 20; }
         MU ND int getMaxCost(MU c_int enchantLevel) const override { return 50; }
     };
@@ -144,6 +152,8 @@ namespace enchants {
     class EnchantArrowInfinite final : public Enchant {
     public:
         ENCHANTMENT_CONSTRUCTOR(EnchantArrowInfinite) {}
+        ENCHANTMENT_DECONSTRUCTOR(EnchantArrowInfinite);
+
         MU ND int getMinCost(MU c_int enchantLevel) const override { return 20; }
         MU ND int getMaxCost(MU c_int enchantLevel) const override { return 50; }
 
@@ -157,6 +167,8 @@ namespace enchants {
     class EnchantArrowKnockback final : public Enchant {
     public:
         ENCHANTMENT_CONSTRUCTOR(EnchantArrowKnockback) {}
+        ENCHANTMENT_DECONSTRUCTOR(EnchantArrowKnockback);
+
         MU ND int getMinCost(c_int enchantLevel) const override { return ARROW_KNOCKBACK_MIN[enchantLevel - 1]; }
         MU ND int getMaxCost(c_int enchantLevel) const override { return ARROW_KNOCKBACK_MAX[enchantLevel - 1]; }
     };
@@ -165,6 +177,8 @@ namespace enchants {
     class EnchantBindingCurse final : public Enchant {
     public:
         ENCHANTMENT_CONSTRUCTOR(EnchantBindingCurse) {}
+        ENCHANTMENT_DECONSTRUCTOR(EnchantBindingCurse);
+
         MU ND int getMinCost(MU c_int enchantLevel) const override { return 25; }
         MU ND int getMaxCost(MU c_int enchantLevel) const override { return 50; }
     };
@@ -176,6 +190,8 @@ namespace enchants {
     class EnchantSharpness final : public Enchant {
     public:
         ENCHANTMENT_CONSTRUCTOR(EnchantSharpness) {}
+        ENCHANTMENT_DECONSTRUCTOR(EnchantSharpness);
+
         MU ND int getMinCost(c_int enchantLevel) const override { return SHARPNESS_MIN[enchantLevel - 1]; }
         MU ND int getMaxCost(c_int enchantLevel) const override { return SHARPNESS_MAX[enchantLevel - 1]; }
 
@@ -191,6 +207,8 @@ namespace enchants {
     class EnchantSmite final : public Enchant {
     public:
         ENCHANTMENT_CONSTRUCTOR(EnchantSmite) {}
+        ENCHANTMENT_DECONSTRUCTOR(EnchantSmite);
+
         MU ND int getMinCost(c_int enchantLevel) const override { return SMITE_BANE_MIN[enchantLevel - 1]; }
         MU ND int getMaxCost(c_int enchantLevel) const override { return SMITE_BANE_MAX[enchantLevel - 1]; }
 
@@ -200,13 +218,15 @@ namespace enchants {
         }
     };
 
-    
+
     // canApply should be
     // item->getID() == ANY AXE ID || Enchant::canApply(item);
     // but loot tables never try to enchant axes
     class EnchantBaneOfArthropods final : public Enchant {
     public:
         ENCHANTMENT_CONSTRUCTOR(EnchantBaneOfArthropods) {}
+        ENCHANTMENT_DECONSTRUCTOR(EnchantBaneOfArthropods);
+
         MU ND int getMinCost(c_int enchantLevel) const override { return SMITE_BANE_MIN[enchantLevel - 1]; }
         MU ND int getMaxCost(c_int enchantLevel) const override { return SMITE_BANE_MAX[enchantLevel - 1]; }
 
@@ -220,6 +240,8 @@ namespace enchants {
     class EnchantDigging final : public Enchant {
     public:
         ENCHANTMENT_CONSTRUCTOR(EnchantDigging) {}
+        ENCHANTMENT_DECONSTRUCTOR(EnchantDigging);
+
         MU ND int getMinCost(c_int enchantLevel) const override { return DIGGING_MIN[enchantLevel - 1]; }
         MU ND int getMaxCost(c_int enchantLevel) const override { return DIGGING_MAX[enchantLevel - 1]; }
     };
@@ -228,6 +250,8 @@ namespace enchants {
     class EnchantDurability final : public Enchant {
     public:
         ENCHANTMENT_CONSTRUCTOR(EnchantDurability) {}
+        ENCHANTMENT_DECONSTRUCTOR(EnchantDurability);
+
         MU ND int getMinCost(c_int enchantLevel) const override { return DURABILITY_MIN[enchantLevel - 1]; }
         MU ND int getMaxCost(c_int enchantLevel) const override { return DURABILITY_MAX[enchantLevel - 1]; }
     };
@@ -236,6 +260,8 @@ namespace enchants {
     class EnchantFireAspect final : public Enchant {
     public:
         ENCHANTMENT_CONSTRUCTOR(EnchantFireAspect) {}
+        ENCHANTMENT_DECONSTRUCTOR(EnchantFireAspect);
+
         MU ND int getMinCost(c_int enchantLevel) const override { return FIRE_ASPECT_MIN[enchantLevel - 1]; }
         MU ND int getMaxCost(c_int enchantLevel) const override { return FIRE_ASPECT_MAX[enchantLevel - 1]; }
     };
@@ -244,6 +270,8 @@ namespace enchants {
     class EnchantFishingSpeed final : public Enchant {
     public:
         ENCHANTMENT_CONSTRUCTOR(EnchantFishingSpeed) {}
+        ENCHANTMENT_DECONSTRUCTOR(EnchantFishingSpeed);
+
         MU ND int getMinCost(c_int enchantLevel) const override { return FISHING_SPEED_MIN[enchantLevel - 1]; }
         MU ND int getMaxCost(c_int enchantLevel) const override { return FISHING_SPEED_MAX[enchantLevel - 1]; }
     };
@@ -252,6 +280,8 @@ namespace enchants {
     class EnchantFrostWalker final : public Enchant {
     public:
         ENCHANTMENT_CONSTRUCTOR(EnchantFrostWalker) {}
+        ENCHANTMENT_DECONSTRUCTOR(EnchantFrostWalker);
+
         MU ND int getMinCost(c_int enchantLevel) const override { return FROST_WALKER_MIN[enchantLevel - 1]; }
         MU ND int getMaxCost(c_int enchantLevel) const override { return FROST_WALKER_MAX[enchantLevel - 1]; }
 
@@ -265,6 +295,8 @@ namespace enchants {
     class EnchantKnockback final : public Enchant {
     public:
         ENCHANTMENT_CONSTRUCTOR(EnchantKnockback) {}
+        ENCHANTMENT_DECONSTRUCTOR(EnchantKnockback);
+
         MU ND int getMinCost(c_int enchantLevel) const override { return KNOCKBACK_OXYGEN_MIN[enchantLevel - 1]; }
         MU ND int getMaxCost(c_int enchantLevel) const override { return KNOCKBACK_OXYGEN_MAX[enchantLevel - 1]; }
     };
@@ -273,6 +305,8 @@ namespace enchants {
     class EnchantLootBonus final : public Enchant {
     public:
         ENCHANTMENT_CONSTRUCTOR(EnchantLootBonus) {}
+        ENCHANTMENT_DECONSTRUCTOR(EnchantLootBonus);
+
         MU ND int getMinCost(c_int enchantLevel) const override { return LOOT_BONUS_MIN[enchantLevel - 1]; }
         MU ND int getMaxCost(c_int enchantLevel) const override { return LOOT_BONUS_MAX[enchantLevel - 1]; }
 
@@ -286,6 +320,8 @@ namespace enchants {
     class EnchantMending final : public Enchant {
     public:
         ENCHANTMENT_CONSTRUCTOR(EnchantMending) {}
+        ENCHANTMENT_DECONSTRUCTOR(EnchantMending);
+
         MU ND int getMinCost(MU c_int enchantLevel) const override { return 25; }
         MU ND int getMaxCost(MU c_int enchantLevel) const override { return 75; }
 
@@ -299,6 +335,8 @@ namespace enchants {
     class EnchantOxygen final : public Enchant {
     public:
         ENCHANTMENT_CONSTRUCTOR(EnchantOxygen) {}
+        ENCHANTMENT_DECONSTRUCTOR(EnchantOxygen);
+
         MU ND int getMinCost(c_int enchantLevel) const override { return OXYGEN_MIN[enchantLevel - 1]; }
         MU ND int getMaxCost(c_int enchantLevel) const override { return OXYGEN_MAX[enchantLevel - 1]; }
     };
@@ -307,6 +345,8 @@ namespace enchants {
     class EnchantThorns final : public Enchant {
     public:
         ENCHANTMENT_CONSTRUCTOR(EnchantThorns) {}
+        ENCHANTMENT_DECONSTRUCTOR(EnchantThorns);
+
         MU ND int getMinCost(c_int enchantLevel) const override { return THORNS_MIN[enchantLevel - 1]; }
         MU ND int getMaxCost(c_int enchantLevel) const override { return THORNS_MAX[enchantLevel - 1]; }
 
@@ -320,6 +360,8 @@ namespace enchants {
     class EnchantTridentChanneling final : public Enchant {
     public:
         ENCHANTMENT_CONSTRUCTOR(EnchantTridentChanneling) {}
+        ENCHANTMENT_DECONSTRUCTOR(EnchantTridentChanneling);
+
         MU ND int getMinCost(MU c_int enchantLevel) const override { return 25; }
         MU ND int getMaxCost(MU c_int enchantLevel) const override { return 50; }
 
@@ -333,6 +375,8 @@ namespace enchants {
     class EnchantTridentImpaler final : public Enchant {
     public:
         ENCHANTMENT_CONSTRUCTOR(EnchantTridentImpaler) {}
+        ENCHANTMENT_DECONSTRUCTOR(EnchantTridentImpaler);
+
         MU ND int getMinCost(c_int enchantLevel) const override { return TRIDENT_IMPALER_MIN[enchantLevel - 1]; }
         MU ND int getMaxCost(MU c_int enchantLevel) const override { return 50; }
     };
@@ -341,6 +385,8 @@ namespace enchants {
     class EnchantTridentLoyalty final : public Enchant {
     public:
         ENCHANTMENT_CONSTRUCTOR(EnchantTridentLoyalty) {}
+        ENCHANTMENT_DECONSTRUCTOR(EnchantTridentLoyalty);
+
         MU ND int getMinCost(c_int enchantLevel) const override { return TRIDENT_LOYALTY_MIN[enchantLevel - 1]; }
         MU ND int getMaxCost(MU c_int enchantLevel) const override { return 50; }
 
@@ -354,6 +400,8 @@ namespace enchants {
     class EnchantTridentRiptide final : public Enchant {
     public:
         ENCHANTMENT_CONSTRUCTOR(EnchantTridentRiptide) {}
+        ENCHANTMENT_DECONSTRUCTOR(EnchantTridentRiptide);
+
         MU ND int getMinCost(c_int enchantLevel) const override { return RIPTIDE_WATER_WALKER_MIN[enchantLevel - 1]; }
         MU ND int getMaxCost(MU c_int enchantLevel) const override { return 50; }
 
@@ -367,6 +415,8 @@ namespace enchants {
     class EnchantUntouching final : public Enchant {
     public:
         ENCHANTMENT_CONSTRUCTOR(EnchantUntouching) {}
+        ENCHANTMENT_DECONSTRUCTOR(EnchantUntouching);
+
         MU ND int getMinCost(MU c_int enchantLevel) const override { return 15; }
         MU ND int getMaxCost(MU c_int enchantLevel) const override { return 61; }
 
@@ -381,6 +431,8 @@ namespace enchants {
     class EnchantVanishingCurse final : public Enchant {
     public:
         ENCHANTMENT_CONSTRUCTOR(EnchantVanishingCurse) {}
+        ENCHANTMENT_DECONSTRUCTOR(EnchantVanishingCurse);
+
         MU ND int getMinCost(MU c_int enchantLevel) const override { return 25; }
         MU ND int getMaxCost(MU c_int enchantLevel) const override { return 50; }
     };
@@ -389,6 +441,8 @@ namespace enchants {
     class EnchantWaterWalker final : public Enchant {
     public:
         ENCHANTMENT_CONSTRUCTOR(EnchantWaterWalker) {}
+        ENCHANTMENT_DECONSTRUCTOR(EnchantWaterWalker);
+
         MU ND int getMinCost(c_int enchantLevel) const override { return WATER_WALKER_MIN[enchantLevel - 1]; }
         MU ND int getMaxCost(c_int enchantLevel) const override { return WATER_WALKER_MAX[enchantLevel - 1]; }
 
@@ -402,6 +456,8 @@ namespace enchants {
     class EnchantWaterWorker final : public Enchant {
     public:
         ENCHANTMENT_CONSTRUCTOR(EnchantWaterWorker) {}
+        ENCHANTMENT_DECONSTRUCTOR(EnchantWaterWorker);
+
         MU ND int getMinCost(MU c_int enchantLevel) const override { return 1; }
         MU ND int getMaxCost(MU c_int enchantLevel) const override { return 41; }
     };
@@ -411,6 +467,8 @@ namespace enchants {
     class EnchantNormalProtection final : public Enchant {
     public:
         ENCHANTMENT_CONSTRUCTOR(EnchantNormalProtection) {}
+        ENCHANTMENT_DECONSTRUCTOR(EnchantNormalProtection);
+
         MU ND int getMinCost(c_int enchantLevel) const override { return NORMAL_PROT_MIN[enchantLevel - 1]; }
         MU ND int getMaxCost(c_int enchantLevel) const override { return NORMAL_PROT_MAX[enchantLevel - 1]; }
 
@@ -427,6 +485,8 @@ namespace enchants {
     class EnchantFireProtection final : public Enchant {
     public:
         ENCHANTMENT_CONSTRUCTOR(EnchantFireProtection) {}
+        ENCHANTMENT_DECONSTRUCTOR(EnchantFireProtection);
+
         MU ND int getMinCost(c_int enchantLevel) const override { return FIRE_PROT_MIN[enchantLevel - 1]; }
         MU ND int getMaxCost(c_int enchantLevel) const override { return FIRE_PROT_MAX[enchantLevel - 1]; }
 
@@ -442,6 +502,8 @@ namespace enchants {
     class EnchantFeatherFalling final : public Enchant {
     public:
         ENCHANTMENT_CONSTRUCTOR(EnchantFeatherFalling) {}
+        ENCHANTMENT_DECONSTRUCTOR(EnchantFeatherFalling);
+
         MU ND int getMinCost(c_int enchantLevel) const override { return FEATHER_FALLING_MIN[enchantLevel - 1]; }
         MU ND int getMaxCost(c_int enchantLevel) const override { return FEATHER_FALLING_MAX[enchantLevel - 1]; }
 
@@ -455,6 +517,8 @@ namespace enchants {
     class EnchantBlastProtection final : public Enchant {
     public:
         ENCHANTMENT_CONSTRUCTOR(EnchantBlastProtection) {}
+        ENCHANTMENT_DECONSTRUCTOR(EnchantBlastProtection);
+
         MU ND int getMinCost(c_int enchantLevel) const override { return BLAST_PROT_MIN[enchantLevel - 1]; }
         MU ND int getMaxCost(c_int enchantLevel) const override { return BLAST_PROT_MAX[enchantLevel - 1]; }
 
@@ -470,6 +534,8 @@ namespace enchants {
     class EnchantProjectileProtection final : public Enchant {
     public:
         ENCHANTMENT_CONSTRUCTOR(EnchantProjectileProtection) {}
+        ENCHANTMENT_DECONSTRUCTOR(EnchantProjectileProtection);
+
         MU ND int getMinCost(c_int enchantLevel) const override { return PROJECTILE_PROT_MIN[enchantLevel - 1]; }
         MU ND int getMaxCost(c_int enchantLevel) const override { return PROJECTILE_PROT_MAX[enchantLevel - 1]; }
 

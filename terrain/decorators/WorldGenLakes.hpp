@@ -12,8 +12,8 @@ class World;
  * Inherits from AbstractWorldGenerator and provides methods for lake generation.
  */
 class WorldGenLakes final : public AbstractWorldGenerator {
-    Generator const *g; /**< Pointer to the generator used for terrain generation. */
-    const lce::BlockState block; /**< The block state representing the type of lake (e.g., water or lava). */
+    Generator const *m_g; /**< Pointer to the generator used for terrain generation. */
+    const lce::BlockState m_block; /**< The block state representing the type of lake (e.g., water or lava). */
 
 public:
     /**
@@ -22,7 +22,7 @@ public:
      * @param blockIn The block state representing the type of lake.
      */
     MU explicit WorldGenLakes(const Generator *g, const lce::BlockState blockIn)
-        : g(g), block(blockIn) {
+        : m_g(g), m_block(blockIn) {
     }
 
     /**

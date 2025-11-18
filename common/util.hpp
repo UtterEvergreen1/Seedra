@@ -14,13 +14,13 @@
  * @param id The biome ID to set the color for.
  * @param hex The color in hexadecimal format (e.g., 0xRRGGBB).
  */
-MU static void setColor(unsigned char colors[256][3], biome_t id, u32 hex) {
+MU static void setColor(unsigned char colors[256][3], const biome_t id, c_u32 hex) {
     colors[static_cast<biome_u>(id)][0] = (hex >> 16) & 0xff;
     colors[static_cast<biome_u>(id)][1] = (hex >> 8) & 0xff;
     colors[static_cast<biome_u>(id)][2] = (hex >> 0) & 0xff;
 }
 
-MU static void setColor(unsigned char colors[256][3], biome_category_t id, u32 hex) {
+MU static void setColor(unsigned char colors[256][3], const biome_category_t id, c_u32 hex) {
     colors[static_cast<biome_u>(id)][0] = (hex >> 16) & 0xff;
     colors[static_cast<biome_u>(id)][1] = (hex >> 8) & 0xff;
     colors[static_cast<biome_u>(id)][2] = (hex >> 0) & 0xff;
@@ -34,7 +34,7 @@ MU static void setColor(unsigned char colors[256][3], biome_category_t id, u32 h
  *
  * @param colors A 2D array to store the RGB colors for each biome.
  */
-static void initBiomeColors(u8 colors[256][3]) {
+MU static void initBiomeColors(u8 colors[256][3]) {
     memset(colors, 0, 256 * 3);
 
     // Set colors for various biomes
@@ -142,12 +142,11 @@ MU static void initBiomeTypeColors(unsigned char colors[256][3]) {
  * @return 1 if invalid biomes are encountered, 0 otherwise.
  */
 MU static int biomesToImage(u8 *pixels, u8 biomeColors[256][3], c_int *biomes, c_u32 sx, c_u32 sy, c_u32 pixScale) {
-    u32 i, j;
     int containsInvalidBiomes = 0;
 
-    for (j = 0; j < sy; j++) {
-        for (i = 0; i < sx; i++) {
-            int id = biomes[j * sx + i];
+    for (size_t j = 0; j < sy; j++) {
+        for (size_t i = 0; i < sx; i++) {
+            const int id = biomes[j * sx + i];
             u32 r, g, b;
 
             if (id < 0 || id >= 256) {
@@ -165,15 +164,14 @@ MU static int biomesToImage(u8 *pixels, u8 biomeColors[256][3], c_int *biomes, c
                 b = biomeColors[id][2];
             }
 
-            u32 m, n;
-            for (m = 0; m < pixScale; m++) {
-                for (n = 0; n < pixScale; n++) {
+            for (u32 m = 0; m < pixScale; m++) {
+                for (u32 n = 0; n < pixScale; n++) {
                     const int idx = static_cast<int>(pixScale) * i + n + (pixScale * sx) * (pixScale * j + m);
 
                     unsigned char *pix = pixels + 3 * idx;
-                    pix[0] = (u8) r;
-                    pix[1] = (u8) g;
-                    pix[2] = (u8) b;
+                    pix[0] = static_cast<u8>(r);
+                    pix[1] = static_cast<u8>(g);
+                    pix[2] = static_cast<u8>(b);
                 }
             }
         }
@@ -194,9 +192,9 @@ MU static int biomesToImage(u8 *pixels, u8 biomeColors[256][3], c_int *biomes, c
 MU static int savePPM(const char *path, c_u8 *pixels, c_u32 sx, c_u32 sy) {
     FILE *fp = fopen(path, "wb");
     if (!fp) return -1;
-    fprintf(fp, "P6\n%d %d\n255\n", sx, sy);
-    size_t pixelsLen = 3 * sx * sy;
-    size_t written = fwrite(pixels, sizeof pixels[0], pixelsLen, fp);
+    fprintf(fp, "P6\n%d %d\n255\n", static_cast<i32>(sx), static_cast<i32>(sy));
+    const size_t pixelsLen = 3 * sx * sy;
+    const size_t written = fwrite(pixels, sizeof pixels[0], pixelsLen, fp);
     fclose(fp);
     return written != pixelsLen;
 }

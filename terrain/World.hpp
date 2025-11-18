@@ -76,23 +76,20 @@ public:
 
     /**
      * @brief Creates chunks around the specified position within a given radius.
-     * @param pos The center position.
-     * @param radius The radius around the position.
+     * @param range The radius around the position.
      */
     void createChunks(const AreaRange& range);
 
     /**
      * @brief Decorates caves in the specified area.
-     * @param theStartPosition The starting position.
-     * @param radius The radius around the starting position.
+     * @param range The radius around the starting position.
      * @param hasWaterCaves Whether the caves contain water.
      */
     void decorateCaves(const AreaRange& range, bool hasWaterCaves);
 
     /**
      * @brief Decorates chunks around the specified position within a given radius.
-     * @param pos The center position.
-     * @param radius The radius around the position.
+     * @param range The radius around the position.
      */
     void decorateChunks(const AreaRange& range);
 
@@ -168,14 +165,14 @@ public:
      * @param x The X-coordinate.
      * @param y The Y-coordinate.
      * @param z The Z-coordinate.
-     * @param blockstate The block state to set.
+     * @param blockState The block state to set.
      */
     void setBlock(i32 x, i32 y, i32 z, lce::BlockState blockState);
 
     /**
      * @brief Sets the block state at the specified position.
      * @param pos The position.
-     * @param blockstate The block state to set.
+     * @param blockState The block state to set.
      */
     void setBlock(const Pos3D &pos, lce::BlockState blockState);
 
@@ -214,17 +211,6 @@ public:
     void setBlockId(const Pos3D &pos, u16 blockId);
 
     u16* mutBlockPtr(i32 x, i32 y, i32 z);
-
-
-
-
-
-
-
-
-
-
-
 
 
 

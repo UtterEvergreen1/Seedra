@@ -14,7 +14,7 @@ public:
      * @enum EnumPlantType
      * @brief Enum representing the different types of double plants.
      */
-    enum class EnumPlantType {
+    enum class EnumPlantType : u8 {
         SUNFLOWER, /**< Represents a sunflower plant. */
         SYRINGA, /**< Represents a syringa plant. */
         GRASS, /**< Represents a grass plant. */

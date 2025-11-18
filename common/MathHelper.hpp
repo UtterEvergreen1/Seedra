@@ -29,13 +29,31 @@ public:
         return static_cast<int>(std::floor(value));
     }
 
+    /**
+     * @brief Computes the largest integer less than or equal to the given value.
+     * @param value The input value.
+     * @return The floored integer value.
+     */
+    static int floor(c_float value) {
+        return static_cast<int>(std::floor(value));
+    }
+
 
     /**
      * @brief Computes the largest integer larger than or equal to the given value.
      * @param value The input value.
-     * @return The ceil'ed integer value.
+     * @return The ceiling'ed integer value.
      */
     static int ceil(c_double value) {
+        return static_cast<int>(-MathHelper::floor(-value));
+    }
+
+    /**
+     * @brief Computes the largest integer larger than or equal to the given value.
+     * @param value The input value.
+     * @return The ceiling'ed integer value.
+     */
+    static int ceil(c_float value) {
         return static_cast<int>(-MathHelper::floor(-value));
     }
 
@@ -136,3 +154,4 @@ public:
         return lerp(ratio, startValue, endValue);
     }
 };
+

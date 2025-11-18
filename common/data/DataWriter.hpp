@@ -71,8 +71,8 @@ public:
     // navigation ----------------------------------------------------
 
     [[nodiscard]] const uint8_t* data() const { return _buf.get(); }
-    [[nodiscard]] uint32_t size() const { return _pos; }
-    [[nodiscard]] uint32_t tell() const { return _pos; }
+    [[nodiscard]] size_t size() const { return _pos; }
+    [[nodiscard]] size_t tell() const { return _pos; }
 
     template<std::integral N>
     void seek(N p) {
@@ -143,20 +143,20 @@ public:
     // string helpers ------------------------------------------------
 
     void writeStringLengthPrefixed(std::string str) {
-        const uint32_t str_size = str.size();
-        write<uint16_t>(str_size);
+        const size_t str_size = str.size();
+        write<uint16_t>(static_cast<u16>(str_size));
         writeBytes(reinterpret_cast<uint8_t*>(str.data()), str_size);
     }
 
     void writeUTF16(const std::wstring& w, const std::size_t max) {
-        const uint32_t wstr_size_min = std::min(w.size(), max);
-        for (uint32_t i = 0; i < max && i < wstr_size_min; ++i) {
-            write<uint16_t>(w[i]);
+        const uint32_t w_str_size_min = std::min(w.size(), max);
+        for (size_t i = 0; i < max && i < w_str_size_min; ++i) {
+            write<uint16_t>(static_cast<u16>(w[i]));
         }
         // hack, write null char if there is space, and fill rest of space with null as well
-        if (wstr_size_min < max) {
-            const uint32_t count = max - wstr_size_min;
-            for (uint32_t i = 0; i < count; i++) {
+        if (w_str_size_min < max) {
+            const size_t count = max - w_str_size_min;
+            for (size_t i = 0; i < count; i++) {
                 write<uint16_t>(0);
             }
         }
@@ -164,14 +164,14 @@ public:
 
     // Switch/WiiU "WWW" string (char + null char)
     void writeWWWString(const std::wstring& w, const std::size_t max) {
-        const uint32_t wstr_size_min = std::min(w.size(), max);
-        for (std::size_t i = 0; i < max && i < wstr_size_min; ++i) {
-            write<uint16_t>(w[i]);
+        const size_t w_str_size_min = std::min(w.size(), max);
+        for (std::size_t i = 0; i < max && i < w_str_size_min; ++i) {
+            write<uint16_t>(static_cast<uint16_t>(w[i]));
             write<uint16_t>(0);
         }
         // fill rest of space with null
-        if (wstr_size_min < max) {
-            for (int i = 0; i < max - wstr_size_min; i++) {
+        if (w_str_size_min < max) {
+            for (size_t i = 0; i < max - w_str_size_min; i++) {
                 write<uint32_t>(0); // null char
             }
         }

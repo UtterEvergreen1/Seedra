@@ -10,8 +10,8 @@ class World;
  * Inherits from AbstractWorldGenerator and provides methods for sand generation.
  */
 class WorldGenSand final : public AbstractWorldGenerator {
-    const lce::BlockState block; /**< The block state representing the type of sand to generate. */
-    int radius; /**< The radius of the sand structure to generate. */
+    const lce::BlockState m_block; /**< The block state representing the type of sand to generate. */
+    int m_radius; /**< The radius of the sand structure to generate. */
 
 public:
     /**
@@ -19,7 +19,7 @@ public:
      * @param block The block state representing the type of sand to generate.
      * @param radiusIn The radius of the sand structure to generate.
      */
-    explicit WorldGenSand(const lce::BlockState block, const int radiusIn) : block(block), radius(radiusIn) {
+    explicit WorldGenSand(const lce::BlockState block, const int radiusIn) : m_block(block), m_radius(radiusIn) {
     }
 
     /**
