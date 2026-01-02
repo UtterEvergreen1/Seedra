@@ -291,6 +291,18 @@ inline BoundingBox BoundingBox::orientBox(const Pos3D& posXYZ, c_int offsetWidth
     );
 }
 
+// used by ocean monument
+inline BoundingBox BoundingBox::createProper(int x1, int y1, int z1, int x2, int y2, int z2) {
+    return {
+        static_cast<bbType_t>(std::min(x1, x2)),
+        static_cast<bbType_t>(std::min(y1, y2)),
+        static_cast<bbType_t>(std::min(z1, z2)),
+        static_cast<bbType_t>(std::max(x1, x2)),
+        static_cast<bbType_t>(std::max(y1, y2)),
+        static_cast<bbType_t>(std::max(z1, z2))
+    };
+}
+
 inline std::string BoundingBox::toString() const {
     return "(" + std::to_string(m_minX) + ", " + std::to_string(m_minY) + ", " + std::to_string(m_minZ) + ") -> (" +
            std::to_string(m_maxX) + ", " + std::to_string(m_maxY) + ", " + std::to_string(m_maxZ) + ")";

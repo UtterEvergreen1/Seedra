@@ -281,6 +281,8 @@ public:
     static BoundingBox orientBox(const Pos3D &posXYZ, int offsetWidth, int offsetHeight, int offsetDepth, int width,
                                  int height, int depth, EnumFacing direction);
 
+    static BoundingBox createProper(int x1, int y1, int z1, int x2, int y2, int z2);
+
     /**
      * @brief Converts the bounding box to a string representation.
      *

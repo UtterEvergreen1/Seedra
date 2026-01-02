@@ -11,6 +11,7 @@
 #include "structures/gen/mineshaft/mineshaft.hpp"
 #include "structures/gen/stronghold/stronghold.hpp"
 
+#include "Seedra/structures/gen2/woodland_mansion/WoodlandMansionPieces.hpp"
 #include "common/AreaRange.hpp"
 #include "common/Pos2DTemplate.hpp"
 #include "common/Pos3DTemplate.hpp"
@@ -340,10 +341,18 @@ public:
      */
     void generateStrongholds();
 
+    /**
+     *
+     */
+     void generateMonuments();
+
     std::vector<gen::Village> villages; ///< List of generated villages.
     std::vector<gen::Mineshaft> mineshafts; ///< List of generated mineshafts.
     std::vector<gen::Stronghold> strongholds; ///< List of generated strongholds.
     std::vector<scattered_features::ScatteredFeature*> scattered_features; ///< List of generated strongholds.
+    std::list<WoodlandMansionPieces::MansionTemplate> wm_pieces;
+    std::vector<void*> monuments;
+
 
     std::unordered_map<Pos2D, ChunkPrimer *, Pos2D::Hasher> chunks; ///< Map of chunks in the world.
     BoundingBox worldBounds; ///< Bounding box of the world.

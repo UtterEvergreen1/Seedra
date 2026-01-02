@@ -7,8 +7,13 @@
 #include "structures/placement/stronghold.hpp"
 #include "terrain/biomes/biome.hpp"
 
+#include "Seedra/structures/gen2/woodland_mansion/WoodlandMansionPieces.hpp"
+#include "Seedra/structures/gen2/ocean_monument/OceanMonumentPieces.hpp"
 #include "common/AreaRange.hpp"
+#include "common/timer.hpp"
 #include "structures/gen/ScatteredFeature.hpp"
+#include "structures/gen2/TemplateManager.hpp"
+#include "structures/placement/DynamicStructures.hpp"
 #include "terrain/carve/CaveGenerator.hpp"
 #include "terrain/carve/ChunkGenerator.hpp"
 #include "terrain/carve/RavineGenerator.hpp"
@@ -48,11 +53,19 @@ void World::deleteWorld() {
     villages.clear();
     strongholds.clear();
     mineshafts.clear();
+    // scattered features
     for (const auto* feature : scattered_features) {
         delete feature;
         feature = nullptr;
     }
     scattered_features.clear();
+    // monuments
+    // for (auto* piece : monuments) {
+    //     auto* monument = reinterpret_cast<OceanMonumentPieces::MonumentBuilding*>(piece);
+    //     delete monument;
+    //     piece = nullptr;
+    // }
+    // monuments.clear();
 
     // Reset last-chunk caches
     lastChunk.store(nullptr);
@@ -190,12 +203,71 @@ void World::generateStrongholds() {
 }
 
 
+
+void World::generateMonuments() {
+    Placement::Monument::setWorldSize(g->getWorldSize());
+
+    std::vector<Pos2D> monumentBlockPositions =
+            Placement::Monument::getAllPositions(g);
+    monumentBlockPositions.emplace_back(100, 100);
+
+    monuments.reserve(monumentBlockPositions.size());
+
+
+    for (const Pos2D& blockPos : monumentBlockPositions) {
+        // Vanilla-ish structure seed – adjust constant to match your port
+        RNG structureRng(0
+                // RNG::getStructureSeed(
+                //         g->getWorldSeed(),
+                //         chunkPos.x,
+                //         chunkPos.z,
+                //         10387313ull // vanilla ocean monument salt
+                //         )
+        );
+
+        // If your ctor takes block coords:
+        auto* monument = new OceanMonumentPieces::MonumentBuilding(structureRng, blockPos.x, blockPos.z, EnumFacing::NORTH);
+        monuments.emplace_back(reinterpret_cast<void*>(monument));
+
+        // Or if it expects chunk coords:
+        // monuments.emplace_back(structureRng, chunkPos.x, chunkPos.z);
+    }
+}
+
+
+
+
 void World::generateScatteredFeatures() {
     auto features = Placement::Feature::getAllFeaturePositions(g);
 
     for (auto& feature : features) {
-        std::cout << "Placing Feature at " << feature.m_pos << "\n";
-        scattered_features.emplace_back(scattered_features::ScatteredFeatureFactory(g, feature));
+        auto* featureObj = scattered_features::ScatteredFeatureFactory(g, feature);
+        if (featureObj != nullptr) {
+            std::cout << "Placing Feature at " << feature.m_pos << "\n";
+            scattered_features.emplace_back(featureObj);
+        }
     }
+
+    // DataFixer dataFixer;
+    // TemplateManager templateManager("structures", dataFixer);
+
+    // Timer timer;
+    // RNG rng(0);
+    // Pos3D origin{60, 110, 252};
+    // WoodlandMansionPieces::generateAt(
+    //         templateManager,
+    //         origin,
+    //         Rotation::NONE,
+    //         wm_pieces,
+    //         rng
+    // );
+    // auto end = timer.getSeconds();
+    // std::cout << "Time to gen mansion: " << end << "\n";
+
+    // for (auto& f : wm_pieces) {
+    //     std::cout << "min=(" << f.m_minX << ", " << f.m_minY << ", "<< f.m_minZ << ") " <<
+    //                  "max=(" << f.m_maxX << ", " << f.m_maxY << ", "<< f.m_maxZ << ") " <<
+    //                   f.getName() << "\n";
+    // }
 
 }

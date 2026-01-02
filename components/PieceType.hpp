@@ -50,4 +50,16 @@ enum PieceType : i8 {
     PT_Village_House2 = 10, ///< A type 2 house in a village.
     PT_Village_House3 = 11, ///< A type 3 house in a village.
     PT_Village_Torch = 12, ///< A torch in a village.
+
+    PT_Monument_MonumentCoreRoom = 13,
+    PT_Monument_Penthouse = 14,
+    PT_Monument_SimpleRoom = 15,
+    PT_Monument_SimpleTopRoom = 16,
+    PT_Monument_WingRoom = 17,
+    PT_Monument_DoubleXRoom = 18,
+    PT_Monument_DoubleXYRoom = 19,
+    PT_Monument_DoubleYRoom = 20,
+    PT_Monument_DoubleYZRoom = 21,
+    PT_Monument_DoubleZRoom = 22,
+    PT_Monument_EntryRoom = 23,
 };

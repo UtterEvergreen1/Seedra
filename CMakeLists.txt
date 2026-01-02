@@ -37,12 +37,12 @@ elseif(APPLE)
     set(CMAKE_C_FLAGS_RELEASE   "${CMAKE_C_FLAGS_RELEASE}   -O3")
     set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O3")
 
-    set(CMAKE_C_FLAGS_DEBUG
-            "${CMAKE_C_FLAGS_DEBUG} -O0 -g -Wall -Wextra -Wpedantic -Wshadow -Wcast-align -Wconversion -Wsign-conversion -Wno-global-constructors -Wold-style-cast -Wundef -Wunreachable-code -Wno-covered-switch-default -Wfloat-equal -Wpointer-arith -Wstrict-prototypes -Wredundant-decls -Weverything"
-    )
-    set(CMAKE_CXX_FLAGS_DEBUG
-            "${CMAKE_CXX_FLAGS_DEBUG} -O0 -g -Wall -Wextra -Wpedantic -Wshadow -Wcast-align -Wconversion -Wsign-conversion -Wno-global-constructors -Wold-style-cast -Wundef -Wunreachable-code -Wno-covered-switch-default -Wfloat-equal -Wpointer-arith -Wstrict-prototypes -Wredundant-decls -Weverything"
-    )
+    # set(CMAKE_C_FLAGS_DEBUG
+    #         "${CMAKE_C_FLAGS_DEBUG} -O0 -g -Wall -Wextra -Wpedantic -Wshadow -Wcast-align -Wconversion -Wsign-conversion -Wno-global-constructors -Wold-style-cast -Wundef -Wunreachable-code -Wno-covered-switch-default -Wfloat-equal -Wpointer-arith -Wstrict-prototypes -Wredundant-decls -Weverything"
+    # )
+    # set(CMAKE_CXX_FLAGS_DEBUG
+    #         "${CMAKE_CXX_FLAGS_DEBUG} -O0 -g -Wall -Wextra -Wpedantic -Wshadow -Wcast-align -Wconversion -Wsign-conversion -Wno-global-constructors -Wold-style-cast -Wundef -Wunreachable-code -Wno-covered-switch-default -Wfloat-equal -Wpointer-arith -Wstrict-prototypes -Wredundant-decls -Weverything"
+    # )
 
     set(CMAKE_C_FLAGS_RELWITHDEBINFO   "-O2 -g -fno-omit-frame-pointer -fno-optimize-sibling-calls")
     set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "-O2 -g -fno-omit-frame-pointer -fno-optimize-sibling-calls")
