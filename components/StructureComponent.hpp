@@ -98,7 +98,7 @@ public:
      * @param facing The orientation of the structure component.
      */
     void setCoordMode(const EnumFacing facing) {
-
+        this->m_facing = facing; // TODO: this is probably should that of there be here yeah :thumbup:
         switch (facing) {
             default:
             case EnumFacing::DOWN:

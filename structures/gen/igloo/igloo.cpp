@@ -12,6 +12,10 @@ namespace scattered_features {
     using namespace lce::blocks;
     using namespace lce::blocks::states;
 
+    const ResourceLocation Igloo::IGLOO_TOP_ID = ResourceLocation("igloo/igloo_top");
+    const ResourceLocation Igloo::IGLOO_MIDDLE_ID = ResourceLocation("igloo/igloo_middle");
+    const ResourceLocation Igloo::IGLOO_BOTTOM_ID = ResourceLocation("igloo/igloo_bottom");
+
     FeaturePiece(IglooTop);
     FeaturePiece(IglooMiddle);
     FeaturePiece(IglooBottom);
@@ -21,36 +25,53 @@ namespace scattered_features {
 
 
     bool Igloo::addComponentParts(World& worldIn, RNG& rng, const BoundingBox& chunkBB) {
-
         if (!this->offsetToAverageGroundLevel(worldIn, chunkBB, -1)) {
             return false;
         } else {
-            Pos3D blockPos = Pos3D(this->m_minX, this->m_minY, this->m_minZ);
+            BoundingBox structureboundingbox= static_cast<BoundingBox>(*this);
+            Pos3D blockpos(structureboundingbox.m_minX, structureboundingbox.m_minY, structureboundingbox.m_minZ);
+            // auto arotation = Rotation::values();
+            // MinecraftServer minecraftserver=worldIn.getMinecraftServer();
+            DataFixer fixer;
+            TemplateManager tm("structures", fixer);
+            PlacementSettings ps = PlacementSettings()
+                                           .setRotation(this->rotation)
+                                           .setReplacedBlock(lce::BlocksInit::STRUCTURE_VOID.getDefaultState())
+                                           .setBoundingBox(structureboundingbox);
+            Template* _template= tm.getTemplate(IGLOO_TOP_ID);
+            _template->addBlocksToWorldChunk(worldIn, blockpos, ps);
 
-            StructureComponent piece(static_cast<const BoundingBox&>(*this), this->m_facing);
-            std::cout << "Piece: " << piece << std::endl;
-            IglooTop::addComponentParts(worldIn, rng, chunkBB, piece);
-
-            if (true || rng.nextDouble() < 0.5) {
-                int i = rng.nextInt(8) + 4;
+            if (rng.nextDouble() < 0.5) {
+                Template* template1= tm.getTemplate(IGLOO_MIDDLE_ID);
+                Template* template2= tm.getTemplate(IGLOO_BOTTOM_ID);
+                int i=rng.nextInt(8) + 4;
 
                 for (int j=0; j < i; ++j) {
-                    // Pos3D blockpos1 = template.calculateConnectedPos(placementsettings, Pos3D(3, -1 - j * 3, 5),
-                    //                                                  placementsettings, Pos3D(1, 2, 1));
-                    // template1.addBlocksToWorldChunk(worldIn, blockPos.add(blockpos1), placementsettings);
-                    IglooMiddle::addComponentParts(worldIn, rng, chunkBB, piece);
+                    Pos3D blockpos1=_template->calculateConnectedPos(ps, {3, -1 - j * 3, 5}, ps, {1, 2, 1});
+                    template1->addBlocksToWorldChunk(worldIn, blockpos.add(blockpos1), ps);
                 }
 
+                Pos3D blockpos4=blockpos.add(_template->calculateConnectedPos(ps, {3, -1 - i * 3, 5}, ps, {3, 5, 7}));
+                template2->addBlocksToWorldChunk(worldIn, blockpos4, ps);
+                /*
+                Map<BlockPos, String> map=template2.getDataBlocks(blockpos4, ps);
 
+                for (Entry<BlockPos, String> entry : map.entrySet()) {
+                    if ("chest".equals(entry.getValue())) {
+                        Pos3D blockpos2=(BlockPos) entry.getKey();
+                        worldIn.setBlockState(blockpos2, Blocks.AIR.getDefaultState(), 3);
+                        TileEntity tileentity=worldIn.getTileEntity(blockpos2.down());
 
-                IglooBottom::addComponentParts(worldIn, rng, chunkBB, piece);
+                        if (tileentity instanceof TileEntityChest) {
+                            ((TileEntityChest) tileentity).setLootTable(LootTableList.CHESTS_IGLOO_CHEST, randomIn.nextLong());
+                        }
+                    }
+                }
+                 */
             } else {
-                // Pos3D blockPos3 = Template.transformedBlockPos(placementsettings, Pos3D(3, 0, 5));
-                // Pos3D blockPos3 =
-                Pos3D sp = blockPos.add(3, 0, 5);
-                setBlockState(worldIn, chunkBB, sp.x, sp.y, sp.z, lce::BlocksInit::SNOW_BLOCK.getDefaultState());
+                Pos3D blockpos3=Template::transformedBlockPos(ps, {3, 0, 5});
+                worldIn.setBlock(blockpos.add(blockpos3), lce::BlocksInit::SNOW.getDefaultState()/*, 3*/);
             }
-
 
             return true;
         }

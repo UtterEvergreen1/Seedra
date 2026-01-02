@@ -43,6 +43,14 @@ namespace Chunk {
     MU static bool GENERATE_SCATTERED_FEATURES = true;
 
     /**
+     * @brief Flag to enable or disable ocean monument generation.
+     *
+     * This static variable determines whether ocean monuments should be generated
+     * in the chunk.
+     */
+    MU static bool GENERATE_OCEAN_MONUMENTS = true;
+
+    /**
      * @brief Provides a chunk by populating the given ChunkPrimer.
      *
      * This function generates the terrain and features for a chunk at the

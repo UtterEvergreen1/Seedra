@@ -12,7 +12,7 @@ class PlacementSettings {
     bool m_ignoreEntities = false;
     std::optional<lce::BlockState> m_replacedBlock;
     std::optional<Pos2D> m_chunkPos;
-    mutable std::optional<BoundingBox> m_boundingBox;
+    std::optional<BoundingBox> m_boundingBox;
     bool m_ignoreStructureBlock = true;
     float m_integrity = 1.0F;
     std::optional<RNG> m_rng;
@@ -54,7 +54,7 @@ public:
         return *this;
     }
 
-    PlacementSettings& setChunkPos(const Pos2D chunkPos) {
+    MU PlacementSettings& setChunkPos(const Pos2D chunkPos) {
         this->m_chunkPos = chunkPos;
         return *this;
     }
@@ -69,26 +69,26 @@ public:
         return *this;
     }
 
-    PlacementSettings& setRNG(const std::optional<RNG>& rng) {
+    MU PlacementSettings& setRNG(const std::optional<RNG>& rng) {
         this->m_rng = rng;
         return *this;
     }
 
-    PlacementSettings& setIntegrity(const float integrity) {
+    MU PlacementSettings& setIntegrity(const float integrity) {
         this->m_integrity = integrity;
         return *this;
     }
 
     ND Mirror getMirror() const { return this->m_mirror; }
 
-    PlacementSettings& setIgnoreStructureBlock(const bool ignoreStructureBlock) {
+    MU PlacementSettings& setIgnoreStructureBlock(const bool ignoreStructureBlock) {
         this->m_ignoreStructureBlock = ignoreStructureBlock;
         return *this;
     }
 
     ND Rotation getRotation() const { return this->m_rotation; }
 
-    ND RNG getRandom(const std::optional<Pos3D>& posIn) const {
+    MU ND RNG getRandom(const std::optional<Pos3D>& posIn) const {
         if (this->m_rng.has_value()) {
             return this->m_rng.value();
         }
@@ -108,13 +108,13 @@ public:
         );
     }
 
-    ND float getIntegrity() const { return this->m_integrity; }
+    MU ND float getIntegrity() const { return this->m_integrity; }
 
     ND bool getIgnoreEntities() const { return this->m_ignoreEntities; }
 
     ND std::optional<lce::BlockState> getReplacedBlock() const { return this->m_replacedBlock; }
 
-    ND std::optional<BoundingBox> getBoundingBox() const {
+    ND std::optional<BoundingBox> getBoundingBox() {
         if (!this->m_boundingBox.has_value() && this->m_chunkPos.has_value()) {
             this->setBoundingBoxFromChunk();
         }
@@ -123,7 +123,7 @@ public:
 
     ND bool getIgnoreStructureBlock() const { return this->m_ignoreStructureBlock; }
 
-    void setBoundingBoxFromChunk() const {
+    void setBoundingBoxFromChunk() {
         this->m_boundingBox = createChunkBoundingBox(this->m_chunkPos);
     }
 private:

@@ -11,6 +11,7 @@
 #include "lce/enums.hpp"
 #include "structures/gen/FeaturePiece.hpp"
 #include "structures/gen/ScatteredFeature.hpp"
+#include "structures/gen2/ResourceLocation.hpp"
 #include "structures/placement/StaticStructures.hpp"
 
 
@@ -21,6 +22,10 @@ class ChunkPrimer;
 namespace scattered_features {
 
     class MU Igloo : public ScatteredFeature {
+        static const ResourceLocation IGLOO_TOP_ID;
+        static const ResourceLocation IGLOO_MIDDLE_ID;
+        static const ResourceLocation IGLOO_BOTTOM_ID;
+
     public:
         Igloo() = delete;
         MU Igloo(Generator* g, RNG& rng, c_int chunkX, c_int chunkZ)

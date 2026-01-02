@@ -12,6 +12,7 @@
 #include "terrain/carve/WaterRavineGenerator.hpp"
 
 #include "common/timer.hpp"
+#include "structures/gen2/ocean_monument/OceanMonumentPieces.hpp"
 #include "terrain/decorators/WorldGenDungeons.hpp"
 #include "terrain/decorators/WorldGenLakes.hpp"
 
@@ -217,8 +218,24 @@ namespace Chunk {
         if (GENERATE_SCATTERED_FEATURES) {
             for (auto& feature : world.scattered_features) {
                 if (feature->intersects(chunkBB)) {
+                    // feature->fillWithBlocks(world, chunkBB, )
                     feature->addComponentParts(world, chunk->decorateRng, chunkBB);
                 }
+            }
+        }
+
+        if (GENERATE_OCEAN_MONUMENTS) {
+            for (auto& _monument : world.monuments) {
+                auto* monument = reinterpret_cast<OceanMonumentPieces::MonumentBuilding*>(_monument);
+                if (chunkBB.intersects(*monument)) {
+                    monument->addComponentParts(world, chunk->decorateRng, chunkBB);
+                }
+            }
+        }
+
+        for (auto& feature : world.wm_pieces) {
+            if (feature.intersects(chunkBB)) {
+                feature.addComponentParts(world, chunk->decorateRng, chunkBB);
             }
         }
 

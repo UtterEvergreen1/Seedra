@@ -128,7 +128,8 @@ namespace scattered_features {
             case StructureType::SwampHut:
                 return new SwampHut(g, rng, structChunkPos.x, structChunkPos.z);
             case StructureType::Igloo:
-                return new Igloo(g, rng, structChunkPos.x, structChunkPos.z);
+                return nullptr;
+                // return new Igloo(g, rng, structChunkPos.x, structChunkPos.z);
 
             case StructureType::FEATURE_NUM:
             case StructureType::Village:

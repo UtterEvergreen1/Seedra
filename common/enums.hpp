@@ -89,6 +89,7 @@ MU static std::string LceVersionToString(const LCEVERSION version) {
         case LCEVERSION::ADVENTURE:
             return "ADVENTURE";
         case LCEVERSION::NONE:
+        default:
             return "NONE";
     }
 }

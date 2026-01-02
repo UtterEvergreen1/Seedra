@@ -4,6 +4,7 @@ inline Pos2D Piece::getBoundingBoxCenter() const {
     return {m_minX + m_maxX / 2, m_minZ + m_maxZ / 2};
 }
 
+// getXWithOffset
 inline int Piece::getWorldX(c_int offsetWidth, c_int offsetDepth) const {
     switch (m_facing) {
         case EnumFacing::NORTH:
@@ -16,14 +17,16 @@ inline int Piece::getWorldX(c_int offsetWidth, c_int offsetDepth) const {
         default:
         case EnumFacing::UP:
         case EnumFacing::DOWN:
-            std::unreachable();
+            return m_minX; // needed by ocean monument?
     }
 }
 
+// getYWithOffset
 inline int Piece::getWorldY(c_int offsetHeight) const {
     return m_minY + offsetHeight;
 }
 
+// getZWithOffset
 inline int Piece::getWorldZ(c_int offsetWidth, c_int offsetDepth) const {
     switch (m_facing) {
         case EnumFacing::NORTH:
