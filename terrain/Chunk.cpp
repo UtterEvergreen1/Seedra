@@ -36,14 +36,14 @@ namespace Chunk {
         // Timer start;
         // std::cout << "[Start] CavePop: " << chunkPos << "\n";
         ChunkPrimer* chunkPrimer = world.getChunk(chunkPos);
-        if (chunkPrimer == nullptr || chunkPrimer->isModifying.load() || chunkPrimer->stage != Stage::STAGE_WATER_CAVES) {
+        if (chunkPrimer == nullptr || chunkPrimer->isModifying.load() || chunkPrimer->stage != Stage::STAGE_CAVES) {
             return;
         }
 
         chunkPrimer->isModifying.store(true);
-        bool accurate = true;
+        bool accurate = false;
 
-        if (world.getGenerator()->getLCEVersion() != LCEVERSION::AQUATIC &&
+        /*if (world.getGenerator()->getLCEVersion() != LCEVERSION::AQUATIC &&
             (chunkPrimer->stage == Stage::STAGE_TERRAIN ||
             chunkPrimer->stage == Stage::STAGE_WATER_CAVES || 
             chunkPrimer->stage == Stage::STAGE_WATER_RAVINES)) {
@@ -64,7 +64,7 @@ namespace Chunk {
             WaterRavineGenerator waterRavineGenerator(world);
             waterRavineGenerator.setupRNG(seedMultiplierWaterCaves, chunkPos);
             waterRavineGenerator.generateUnderwater(chunkPrimer, chunkPos, accurate);
-        }
+        }*/
         
         const Pos2DTemplate<i64> seedMultiplierCaves = AbstractMapGen::getSeedMultiplier(world.getGenerator());
         if (chunkPrimer->stage == Stage::STAGE_CAVES) {

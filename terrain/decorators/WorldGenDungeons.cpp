@@ -7,102 +7,110 @@
 std::string WorldGenDungeons::SPAWNER_TYPES[] = {"Skeleton", "Zombie", "Zombie", "Spider"};
 
 
-bool WorldGenDungeons::generate(World* worldIn, RNG& rng, const Pos3D& position) const {
+bool WorldGenDungeons::generate(World *worldIn, RNG &rng, const Pos3D &position) const {
     using namespace lce::blocks;
-    // int i = 3;
-    const int j = rng.nextInt(2) + 2;
-    const int k = -j - 1;
-    const int l = j + 1;
-    // int i1 = -1;
-    // int j1 = 4;
-    const int k1 = rng.nextInt(2) + 2;
-    const int l1 = -k1 - 1;
-    const int i2 = k1 + 1;
-    int j2 = 0;
+    // Random dungeon dimensions
+    const int halfSizeX = rng.nextInt(2) + 2;
+    const int minX = -halfSizeX - 1;
+    const int maxX = halfSizeX + 1;
+    constexpr int minY = -1;
+    constexpr int maxY = 4;
+    const int halfSizeZ = rng.nextInt(2) + 2;
+    const int minZ = -halfSizeZ - 1;
+    const int maxZ = halfSizeZ + 1;
+    int airCount = 0;
 
-    for (int k2 = k; k2 <= l; ++k2) {
-        for (int l2 = -1; l2 <= 4; ++l2) {
-            for (int i3 = l1; i3 <= i2; ++i3) {
-                Pos3D blockPos = position.add(k2, l2, i3);
-                const bool flag = lce::blocks::isSolidBlock(worldIn->getBlockId(blockPos));
+    // First pass: validate location has solid blocks on floor/ceiling and count airs
+    for (int offsetX = minX; offsetX <= maxX; ++offsetX) {
+        for (int offsetY = minY; offsetY <= maxY; ++offsetY) {
+            for (int offsetZ = minZ; offsetZ <= maxZ; ++offsetZ) {
+                Pos3D blockPos = position.add(offsetX, offsetY, offsetZ);
+                const bool isSolid = lce::blocks::isSolidBlock(worldIn->getBlockId(blockPos));
 
-                if (l2 == -1 && !flag) { return false; }
+                if (offsetY == minY && !isSolid) { return false; }
 
-                if (l2 == 4 && !flag) { return false; }
+                if (offsetY == maxY && !isSolid) { return false; }
 
-                if ((k2 == k || k2 == l || i3 == l1 || i3 == i2) && l2 == 0 && worldIn->isAirBlock(blockPos) &&
+                if ((offsetX == minX || offsetX == maxX || offsetZ == minZ || offsetZ == maxZ) && offsetY == 0 &&
+                    worldIn->isAirBlock(blockPos) &&
                     worldIn->isAirBlock(blockPos.up())) {
-                    ++j2;
+                    ++airCount;
                 }
             }
         }
     }
 
-    if (j2 >= 1 && j2 <= 5) {
-        for (int k3 = k; k3 <= l; ++k3) {
-            for (int i4 = 3; i4 >= -1; --i4) {
-                for (int k4 = l1; k4 <= i2; ++k4) {
-                    Pos3D blockPos1 = position.add(k3, i4, k4);
+    // Valid dungeon must have 1-5 air blocks
+    if (airCount < 1 || airCount > 5) { return false; }
 
-                    if (k3 != k && i4 != -1 && k4 != l1 && k3 != l && i4 != 4 && k4 != i2) {
-                        if (worldIn->getBlockId(blockPos1) != CHEST_ID) { worldIn->setBlockId(blockPos1, AIR_ID);
-                        }
-                    } else if (blockPos1.getY() >= 0 && !isSolidBlock(worldIn->getBlockId(blockPos1.down()))) {
-                        worldIn->setBlockId(blockPos1, AIR_ID);
-                    } else if (isSolidBlock(worldIn->getBlockId(blockPos1)) &&
-                               worldIn->getBlockId(blockPos1) != CHEST_ID) {
-                        if (i4 == -1 && rng.nextInt(4) != 0) {
-                            worldIn->setBlockId(blockPos1, MOSS_STONE_ID);
-                        } else {
-                            worldIn->setBlockId(blockPos1, COBBLESTONE_ID);
-                        }
+    // Second pass: build the dungeon structure
+    for (int offsetX = minX; offsetX <= maxX; ++offsetX) {
+        for (int offsetY = maxY - 1; offsetY >= minY; --offsetY) {
+            for (int offsetZ = minZ; offsetZ <= maxZ; ++offsetZ) {
+                Pos3D blockPos = position.add(offsetX, offsetY, offsetZ);
+
+                // Check if this is an interior block (not on walls, floor, or ceiling)
+                if (offsetX != minX && offsetY != minY && offsetZ != minZ &&
+                    offsetX != maxX && offsetY != maxY && offsetZ != maxZ) {
+                    if (worldIn->getBlockId(blockPos) != CHEST_ID) { worldIn->setBlockId(blockPos, AIR_ID); }
+                } else if (blockPos.getY() >= 0 && !isSolidBlock(worldIn->getBlockId(blockPos.down()))) {
+                    worldIn->setBlockId(blockPos, AIR_ID);
+                } else if (isSolidBlock(worldIn->getBlockId(blockPos)) &&
+                           worldIn->getBlockId(blockPos) != CHEST_ID) {
+                    // Make floor mossy sometimes, walls are always cobblestone
+                    if (offsetY == minY && rng.nextInt(4) != 0) {
+                        worldIn->setBlockId(blockPos, MOSS_STONE_ID);
+                    } else {
+                        worldIn->setBlockId(blockPos, COBBLESTONE_ID);
                     }
                 }
             }
         }
-
-        for (int l3 = 0; l3 < 2; ++l3) {
-            for (int j4 = 0; j4 < 3; ++j4) {
-                const int l4 = position.getX() + rng.nextInt(j * 2 + 1) - j;
-                const int i5 = position.getY();
-                const int j5 = position.getZ() + rng.nextInt(k1 * 2 + 1) - k1;
-                Pos3D blockPos2(l4, i5, j5);
-
-                if (worldIn->isAirBlock(blockPos2)) {
-                    int j3 = 0;
-
-                    for (const auto facing: FACING_HORIZONTAL) {
-                        if (isSolidBlock(worldIn->getBlockId(blockPos2.offset(facing)))) { ++j3; }
-                    }
-
-                    if (j3 == 1) {
-                        worldIn->setBlockId(blockPos2, CHEST_ID);
-                        rng.nextLong(); // skip the loot seed
-                        /*TileEntity *tileentity1 = worldIn.getTileEntity(blockpos2);
-
-                        if (auto chest = dynamic_cast<TileEntityChest*>(tileentity1)) {
-                            chest->setLootTable(LootTableList::CHESTS_SIMPLE_DUNGEON, rng);
-                        }*/
-
-                        break;
-                    }
-                }
-            }
-        }
-
-        worldIn->setBlockId(position, MONSTER_SPAWNER_ID);
-        pickMobSpawner(rng);
-        /*TileEntity *tileentity = worldIn.getTileEntity(position);
-
-        if (auto spawner = dynamic_cast<TileEntityMobSpawner*>(tileentity)) {
-            spawner->getSpawnerBaseLogic().setEntityId(pickMobSpawner(rng));
-        } else {
-            std::cerr << "Failed to fetch mob spawner entity at (" << position.getX() << ", " << position.getY() << ", " << position.getZ() << ")" << std::endl;
-        }*/
-
-        return true;
     }
-    return false;
+
+    // Try to place up to 2 chests in the dungeon
+    for (int chestAttempt = 0; chestAttempt < 2; ++chestAttempt) {
+        for (int positionAttempt = 0; positionAttempt < 3; ++positionAttempt) {
+            const int chestX = position.getX() + rng.nextInt(halfSizeX * 2 + 1) - halfSizeX;
+            const int chestY = position.getY();
+            const int chestZ = position.getZ() + rng.nextInt(halfSizeZ * 2 + 1) - halfSizeZ;
+            Pos3D chestPos(chestX, chestY, chestZ);
+
+            if (worldIn->isAirBlock(chestPos)) {
+                int adjacentSolidWalls = 0;
+
+                for (const auto facing: FACING_HORIZONTAL) {
+                    if (isSolidBlock(worldIn->getBlockId(chestPos.offset(facing)))) { ++adjacentSolidWalls; }
+                }
+
+                // Place chest only if it has exactly one solid wall adjacent
+                if (adjacentSolidWalls == 1) {
+                    worldIn->setBlockId(chestPos, CHEST_ID);
+                    rng.nextLong(); // skip the loot seed
+                    /*TileEntity *tileentity1 = worldIn.getTileEntity(blockpos2);
+
+                    if (auto chest = dynamic_cast<TileEntityChest*>(tileentity1)) {
+                        chest->setLootTable(LootTableList::CHESTS_SIMPLE_DUNGEON, rng);
+                    }*/
+
+                    break;
+                }
+            }
+        }
+    }
+
+    // Place mob spawner in the center
+    worldIn->setBlockId(position, MONSTER_SPAWNER_ID);
+    pickMobSpawner(rng);
+    /*TileEntity *tileentity = worldIn.getTileEntity(position);
+
+    if (auto spawner = dynamic_cast<TileEntityMobSpawner*>(tileentity)) {
+        spawner->getSpawnerBaseLogic().setEntityId(pickMobSpawner(rng));
+    } else {
+        std::cerr << "Failed to fetch mob spawner entity at (" << position.getX() << ", " << position.getY() << ", " << position.getZ() << ")" << std::endl;
+    }*/
+
+    return true;
 }
 
-void WorldGenDungeons::pickMobSpawner(RNG& rng) { rng.nextInt(sizeof(SPAWNER_TYPES)); }
+void WorldGenDungeons::pickMobSpawner(RNG &rng) { rng.nextInt(sizeof(SPAWNER_TYPES)); }

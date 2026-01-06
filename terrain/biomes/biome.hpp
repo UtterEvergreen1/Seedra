@@ -284,9 +284,8 @@ public:
      * @param temperature Temperature of the biome.
      * @param waterColor Color of the water in the biome.
      */
-    BiomeNone(MU std::string biomeName, MU c_float baseHeight, MU c_float heightVariation, MU c_bool enableSnow,
-               MU c_float temperature, c_u32 waterColor)
-        : Biome(std::move(biomeName), 0, 0, false, 0, 0.0f, waterColor) {
+    BiomeNone()
+        : Biome("None", -1.0F, 0.1F, false, 0.5F, 0.0F, 0xA5333333) {
     }
 
     ~BiomeNone() override;

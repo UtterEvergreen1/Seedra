@@ -1,8 +1,27 @@
 cmake_minimum_required(VERSION 3.24)
+
+# Check if CUDA is available
+include(CheckLanguage)
+check_language(CUDA)
+
+if(CMAKE_CUDA_COMPILER)
+    enable_language(CUDA)
+    set(CUDA_AVAILABLE TRUE)
+    message(STATUS "CUDA support enabled")
+else()
+    set(CUDA_AVAILABLE FALSE)
+    message(STATUS "CUDA not found - CUDA executables will not be built")
+endif()
+
 project(LIB_Seedra)
 
 set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
+if(CUDA_AVAILABLE)
+    set(CMAKE_CUDA_STANDARD 20)
+    set(CMAKE_CUDA_STANDARD_REQUIRED ON)
+endif()
 
 if (MSVC)
     # ----------------------------
@@ -179,4 +198,32 @@ if(LC_BUILD_EXECUTABLE)
     add_cli(EXE_NoiseProfiler "tests/noiseProfiler.cpp")
     add_cli(EXE_DrawSurfaceNoise "tests/surface_noise_visualizer.cpp")
     add_cli(EXE_StructureReader "tests/structureReader.cpp")
+    add_cli(EXE_GodDungeon "tests/find_god_dungeon.cpp")
+    add_cli(EXE_ReverseGodDungeon "tests/reverse_god_dungeon.cpp")
+    add_cli(EXE_ValidateReversedSeeds "tests/validate_reversed_seeds.cpp")
+    add_cli(EXE_ValidateWorldSeeds "tests/validate_world_seeds.cpp")
+    add_cli(EXE_CheckChestAdjacency "tests/check_chest_adjacency.cpp")
+
+    # CUDA executables (if CUDA is available)
+    if(CUDA_AVAILABLE)
+        add_executable(EXE_GodDungeon_CUDA "tests/find_god_dungeon_cuda.cu")
+        set_target_properties(EXE_GodDungeon_CUDA PROPERTIES
+            CUDA_SEPARABLE_COMPILATION ON
+            CUDA_ARCHITECTURES "50;60;70;75;80;86"
+        )
+        target_compile_options(EXE_GodDungeon_CUDA PRIVATE
+            $<$<COMPILE_LANGUAGE:CUDA>:--use_fast_math>
+        )
+        message(STATUS "CUDA god dungeon search will be built")
+
+        add_executable(EXE_ReverseWorldSeeds_CUDA "tests/reverse_world_seeds.cu" "tests/reverser/PopulationReverser.cu")
+        set_target_properties(EXE_ReverseWorldSeeds_CUDA PROPERTIES
+            CUDA_SEPARABLE_COMPILATION ON
+            CUDA_ARCHITECTURES "50;60;70;75;80;86"
+        )
+        target_compile_options(EXE_ReverseWorldSeeds_CUDA PRIVATE
+            $<$<COMPILE_LANGUAGE:CUDA>:--use_fast_math>
+        )
+        message(STATUS "CUDA world seed reverser will be built")
+    endif()
 endif()

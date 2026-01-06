@@ -101,7 +101,7 @@ Biome* Biome::getBiomeForId(const biome_t id) {
     if (biomeForId != nullptr) {
         return biomeForId;
     }
-    static BiomeNone defaultBiome = BiomeNone("None", -1.0F, 0.1F, false, 0.5F, 0xA5333333);
+    static BiomeNone defaultBiome = BiomeNone();
     return &defaultBiome;
 }
 
@@ -112,7 +112,7 @@ BiomeDecorator *Biome::createBiomeDecorator() const {
 }
 
 void Biome::registerBiomes() {
-    registerBiome(255, new BiomeNone("None", -1.0F, 0.1F, false, 0.5F, 0xA5333333));
+    registerBiome(255, new BiomeNone());
     registerBiome(0, new BiomeOcean("Ocean", -1.0F, 0.1F, false, 0.5F, 0xA5D48717));
     registerBiome(1, new BiomePlains(false, "Plains", 0.125F, 0.05F, false, 0.8F));
     registerBiome(2, new BiomeDesert("Desert", 0.125F, 0.05F, false, 2.0F, 0xA598A532));

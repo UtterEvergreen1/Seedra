@@ -9,7 +9,7 @@ class World;
  * @brief A final class responsible for generating dungeon structures in the world.
  * Inherits from AbstractWorldGenerator and provides methods for dungeon generation.
  */
-class WorldGenDungeons final : public AbstractWorldGenerator {
+class WorldGenDungeons : public AbstractWorldGenerator {
     static std::string SPAWNER_TYPES[]; /**< Array of possible mob spawner types. */
 
     /**
