@@ -9,7 +9,7 @@
 
 
 Generator::Generator(const WorldConfig &config) : m_config(config) {
-    // this->setup();
+    this->setup();
 }
 
 Generator::Generator(const lce::CONSOLE console, const LCEVERSION version,
@@ -20,7 +20,7 @@ Generator::Generator(const lce::CONSOLE console, const LCEVERSION version,
 Generator::Generator(const lce::CONSOLE console, const LCEVERSION version, c_i64 seed, const lce::WORLDSIZE size,
                      const lce::BIOMESCALE scale, const WORLDGENERATOR worldGen)
     : m_config(seed, console, version, size, scale, worldGen) {
-    // this->setup();
+    this->setup();
 }
 
 Generator::Generator(const lce::CONSOLE console, const LCEVERSION version, const std::string &seed,

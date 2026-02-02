@@ -6,7 +6,7 @@
 using namespace lce::blocks;
 
 void ChunkPrimer::generateSkylightMap() {
-    /*skyLight.resize(65536, 0);
+    skyLight.resize(65536, 0);
     c_int topFilledSegment = getHighestYBlock();
     for (int x = 0; x < 16; ++x) {
         for (int z = 0; z < 16; ++z) {
@@ -25,11 +25,11 @@ void ChunkPrimer::generateSkylightMap() {
                 if (lightValue <= 0 || topPos <= 0) break;
             }
         }
-    }*/
+    }
 }
 
 int ChunkPrimer::getPrecipitationHeight(c_int wX, c_int wZ) {
-    /*c_int x = wX & 15;
+    c_int x = wX & 15;
     c_int z = wZ & 15;
     const auto k = static_cast<size_t>(x | z << 4);
 
@@ -49,7 +49,7 @@ int ChunkPrimer::getPrecipitationHeight(c_int wX, c_int wZ) {
 
         precipitationHeightMap[k] = y;
     }
-    return precipitationHeightMap[k];*/
+    return precipitationHeightMap[k];
 }
 
 bool ChunkPrimer::canBlockFreeze(const Pos3D &pos) const {

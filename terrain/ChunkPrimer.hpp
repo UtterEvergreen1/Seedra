@@ -53,13 +53,13 @@ public:
 
     std::array<u16, STORAGE_SIZE> blocks = std::array<u16, STORAGE_SIZE>(); ///< Array storing block IDs and data for the chunk.
 
-    // std::vector<u8> skyLight; ///< Buffer for storing skylight values.
+    std::vector<u8> skyLight; ///< Buffer for storing skylight values.
 
     int highestYBlock = -1; ///< The highest Y-coordinate of a non-air block in the chunk.
 
-    // MU u8 heightMap[16][16]{}; ///< Height map for the chunk.
+    MU u8 heightMap[16][16]{}; ///< Height map for the chunk.
 
-    // std::vector<int> precipitationHeightMap = std::vector(256, -999); ///< Precipitation height map for the chunk.
+    std::vector<int> precipitationHeightMap = std::vector(256, -999); ///< Precipitation height map for the chunk.
 
     ChunkPrimer() = default; ///< Default constructor.
 
