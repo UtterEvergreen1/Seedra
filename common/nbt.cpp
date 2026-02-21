@@ -1,3 +1,4 @@
+// common/nbt.cpp
 #include "nbt.hpp"
 
 
@@ -46,6 +47,12 @@ void NBTList::reserve(size_t n) { m_elements.reserve(n); }
 void NBTList::clear() {
     m_elements.clear();
 }
+
+
+NBTList::iterator NBTList::begin() { return m_elements.begin(); }
+NBTList::iterator NBTList::end() { return m_elements.end(); }
+NBTList::const_iterator NBTList::begin() const { return m_elements.begin(); }
+NBTList::const_iterator NBTList::end() const { return m_elements.end(); }
 
 
 MU NBTBase NBTBase::readFile(const std::string &path) {

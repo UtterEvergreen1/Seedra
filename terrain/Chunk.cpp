@@ -16,6 +16,44 @@
 #include "terrain/decorators/WorldGenDungeons.hpp"
 #include "terrain/decorators/WorldGenLakes.hpp"
 
+
+
+
+void buildTestChunk_WaterGradient(ChunkPrimer* primer) {
+    constexpr int CHUNK = 16;
+
+    constexpr int BEDROCK_ID = 7;
+    constexpr int WATER_ID   = 9;
+
+    constexpr int yBedrock = 76;
+    constexpr int yWater   = 77;
+
+    constexpr int cx = 8;
+    constexpr int cz = 8;
+
+    // 1) Bedrock layer at y=96
+    for (int z = 0; z < CHUNK; ++z) {
+        for (int x = 0; x < CHUNK; ++x) {
+            primer->setBlock(x, yBedrock, z, {BEDROCK_ID, 0});
+        }
+    }
+
+    // 2) Water distance pattern at y=97 (Manhattan distance)
+    for (int z = 0; z < CHUNK; ++z) {
+        for (int x = 0; x < CHUNK; ++x) {
+            const u8 dist = std::abs(x - cx) + std::abs(z - cz);
+
+            if (dist <= 7) {
+                primer->setBlock(x, yWater, z, {WATER_ID, dist});
+            }
+            // else: leave as air (do nothing)
+        }
+    }
+}
+
+
+
+
 namespace Chunk {
     void provideChunk(ChunkPrimer *chunkPrimer, const Generator &g, const Pos2D& chunkPos) {
         ChunkGeneratorOverWorld chunk(g);
@@ -303,6 +341,11 @@ namespace Chunk {
                 }
             }
         }
+
+        if (chunkPos.x == 0 && chunkPos.z == 0) {
+            buildTestChunk_WaterGradient(chunk);
+        }
+
         chunk->stage = Stage::STAGE_DONE;
         chunk->isModifying.store(false);
     }
