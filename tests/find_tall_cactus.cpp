@@ -36,7 +36,7 @@ int main() {
         Pos2D chunkPos = (originalChunkPos.toBlockPos() + offsetPos).toChunkPos();
         offsetPos = {offsetPos.x & 15, offsetPos.z & 15};
         int biomeLen = g.getMinCacheSize(4, 10, 10);
-        chunk.biomesForGeneration = static_cast<int *>(calloc(biomeLen, sizeof(int)));
+        chunk.biomesForGeneration = static_cast<biome_t *>(calloc(biomeLen, sizeof(int)));
         std::fill_n(chunk.biomesForGeneration, biomeLen, desert);
         chunk.setBlocksInChunk(chunkPos.x, chunkPos.z, cactusChunk.get());
 
@@ -79,7 +79,7 @@ int main() {
         // Generate the actual chunk to check for tall cactus
         free(chunk.biomesForGeneration);
         biomeLen = g.getMinCacheSize(1, 16, 16);
-        chunk.biomesForGeneration = static_cast<int *>(calloc(biomeLen, sizeof(int)));
+        chunk.biomesForGeneration = static_cast<biome_t*>(calloc(biomeLen, sizeof(int)));
         std::fill_n(chunk.biomesForGeneration, biomeLen, desert);
         chunk.replaceBiomeBlocks(chunkPos.x, chunkPos.z, cactusChunk.get());
 
@@ -125,6 +125,7 @@ int main() {
             break; // only output the first valid sister seed
         }
     }
+
     /*Biome::registerBiomes();
     Generator g(lce::CONSOLE::XBOX1, LCEVERSION::ELYTRA, 2, lce::WORLDSIZE::CLASSIC, lce::BIOMESCALE::SMALL);
     World world(&g);

@@ -1,7 +1,9 @@
 #include <filesystem>
 #include <thread>
 #include <fstream>
-#include <unordered_set>
+#include <mutex>
+#include <map>
+#include <sstream>
 
 #include "common/timer.hpp"
 #include "loot/tables/buried_treasure.hpp"
@@ -181,8 +183,6 @@ void findMostCake() {
     i64 seed;
     int x, z;
     int maxThreads = (int) regions.size();
-    std::vector<std::thread> threads;
-    threads.reserve(maxThreads);
     std::atomic_bool invalidSeed = false;
     std::vector<SeedVecPos> validSeeds;
     std::mutex validSeedsMutex;
@@ -195,56 +195,91 @@ void findMostCake() {
         }
         int currentRegionX = x >> 5; // divide by 32 to get region coordinates
         int currentRegionZ = z >> 5;
-        std::vector<Pos2D> validCoords;
+
+        // Create a new vector for each iteration to avoid race conditions
+        auto validCoords = std::make_shared<std::vector<Pos2D>>();
         invalidSeed.store(false);
-        threads.clear();
+
+        // Use array of unique_ptr to threads to avoid moves
+        std::vector<std::unique_ptr<std::thread>> threads(maxThreads);
+
         for (int t = 0; t < maxThreads; ++t) {
-            threads.emplace_back([&, t]() {
-                int regionNum = t;
-                int regionX = regions[regionNum].x;
-                int regionZ = regions[regionNum].z;
-                if (regionX == currentRegionX && regionZ == currentRegionZ) return;
-
-                loot::Container27 container;
-                bool foundHighCakeInRegion = false;
-                for (auto [x, z]: coords[regionNum]) {
-                    if (invalidSeed.load() == true) {
-                        return; // early exit if seed is already invalid
+            try {
+                threads[t] = std::make_unique<std::thread>([&coords, &regions, validCoords, &validSeedsMutex, &invalidSeed, seed, currentRegionX, currentRegionZ, t, x, z]() {
+                    int regionNum = t;
+                    int regionX = regions[regionNum].x;
+                    int regionZ = regions[regionNum].z;
+                    if (regionX == currentRegionX && regionZ == currentRegionZ) {
+                        // already done in other filter
+                        /*if (!Placement::BuriedTreasure::isPossibleChunkPos(seed, regionX, regionZ, {x, z})) {
+                            invalidSeed.store(true);
+                            return;
+                        }*/
+                        std::lock_guard<std::mutex> lock(validSeedsMutex);
+                        validCoords->emplace_back(x, z);
+                        return;
                     }
+                    Pos2DVec_t allPositionsInRegion = Placement::BuriedTreasure::getAllPossibleChunks(seed, regionX, regionZ);
 
-                    // test if any of the seeds can generate 4+ cakes in the chunk at (x, z)
-                    int cakeCount = 0;
-                    container.clear();
-                    loot::buried_treasure.getLootFromChunk<loot::GenMode::MOD_NO_SHUF>(container, seed, x, z);
-                    for (int itemAt = 0; itemAt < container.slotCount(); itemAt++) {
-                        lce::ItemState item = container.getSlotAt(itemAt);
-                        if (item.id == lce::items::ids::CAKE_ID) {
-                            ++cakeCount;
+                    loot::Container27 container;
+                    bool foundHighCakeInRegion = false;
+                    for (auto [chunkX, chunkZ]: coords[regionNum]) {
+                        if (invalidSeed.load() == true) {
+                            return; // early exit if seed is already invalid
                         }
-                    }
 
-                    if (cakeCount < 2) continue;
-                    if (Placement::BuriedTreasure::isPossibleChunkPos(seed, regionX, regionZ, {x, z})) {
+                        if (std::ranges::find(allPositionsInRegion, Pos2D(chunkX, chunkZ)) == allPositionsInRegion.end()) {
+                            continue;
+                        }
+
+                        // test if any of the seeds can generate 4+ cakes in the chunk at (chunkX, chunkZ)
+                        int cakeCount = 0;
+                        container.clear();
+                        loot::buried_treasure.getLootFromChunk<loot::GenMode::MOD_NO_SHUF>(container, seed, chunkX, chunkZ);
+                        for (int itemAt = 0; itemAt < container.slotCount(); itemAt++) {
+                            lce::ItemState item = container.getSlotAt(itemAt);
+                            if (item.id == lce::items::ids::CAKE_ID) {
+                                ++cakeCount;
+                            }
+                        }
+
+                        if (cakeCount < 2) continue;
                         foundHighCakeInRegion = true;
                         std::lock_guard<std::mutex> lock(validSeedsMutex);
-                        validCoords.emplace_back(x, z);
+                        validCoords->emplace_back(chunkX, chunkZ);
                     }
-                }
-                if (!foundHighCakeInRegion) {
-                    invalidSeed.store(true);
-                }
-            });
+                    if (!foundHighCakeInRegion) {
+                        invalidSeed.store(true);
+                    }
+                });
+            } catch (const std::system_error& e) {
+                std::cerr << "Failed to create thread " << t << ": " << e.what() << " (code: " << e.code() << ")" << std::endl;
+                invalidSeed.store(true);
+            }
         }
 
-        for (auto &thread: threads) thread.join();
+        // Join all threads
+        for (int t = 0; t < maxThreads; ++t) {
+            if (threads[t] && threads[t]->joinable()) {
+                try {
+                    threads[t]->join();
+                } catch (const std::system_error& e) {
+                    std::cerr << "Failed to join thread " << t << ": " << e.what() << " (code: " << e.code() << ")" << std::endl;
+                    // Try to detach to prevent std::terminate()
+                    if (threads[t]->joinable()) {
+                        threads[t]->detach();
+                    }
+                }
+            }
+        }
 
         if (invalidSeed.load() == true) continue;
 
         std::cout << "Seed: " << seed << " has cakes in all regions." << std::endl;
-        std::sort(validCoords.begin(), validCoords.end());
-        validSeeds.emplace_back(seed, validCoords);
+        std::sort(validCoords->begin(), validCoords->end());
+        validSeeds.emplace_back(seed, *validCoords);
         outFile << seed;
-        for (const auto &pos: validCoords) {
+        for (const auto &pos: *validCoords) {
             outFile << " " << pos.x << " " << pos.z;
         }
         outFile << "\n";
@@ -255,7 +290,7 @@ void findMostCake() {
     for (const auto &seedVecPos: validSeeds) {
         finalOutFile << seedVecPos.seed;
         for (const auto &pos: seedVecPos.pos) {
-            finalOutFile << pos.x << " " << pos.z;
+            finalOutFile << " " << pos.x << " " << pos.z;
         }
         finalOutFile << "\n";
     }
@@ -263,36 +298,297 @@ void findMostCake() {
     finalOutFile.close();
 }
 
-void findValidCake() {
-    constexpr i64 structureSeed = 67674954898411;
-    constexpr i64 maxSisterSeed = 0x7FFF000000000000;
+void checkCakePopulationSeeds() {
+    std::string cakeResultsFile = "C:/Users/Daniel/CLionProjects/ReversePopulationSeeds/build/cakeResults.txt";
+
+    std::ifstream cakeFile(cakeResultsFile);
+    if (!cakeFile.is_open()) {
+        std::cerr << "Could not open cake results file: " << cakeResultsFile << std::endl;
+        return;
+    }
+
+    // Load all cake results into a multimap (seed -> count)
+    std::cout << "Loading cake results..." << std::endl;
+    std::map<i64, int> cakeResultsCounts;
+    i64 seed;
+    int x, z;
+    while (cakeFile >> seed >> x >> z) {
+        cakeResultsCounts[seed]++;
+    }
+    cakeFile.close();
+    std::cout << "Loaded " << cakeResultsCounts.size() << " unique seeds from cake results." << std::endl;
+
+    // Define the 4 regions we need to check
     std::vector<Pos2D> regions = {
-        {-1, -1}
-    };
-    std::vector<std::vector<Pos2D>> correctChunks = {
-        {{-24, -21}, {-17, 18}},
-        {{19, -7}, {15, 7}}
+        {-1, -1}, {0, 0},
+        {0, -1}, {-1, 0}
     };
 
-    Generator g(lce::CONSOLE::WIIU, LCEVERSION::AQUATIC, lce::WORLDSIZE::CLASSIC, lce::BIOMESCALE::SMALL);
-    g.generateCache(4);
-    for (auto seed = (int64_t) ((uint64_t) (structureSeed & 0xFFFFFFFFFFFFLL) | 0x8000000000000000ULL);
-         seed <= maxSisterSeed; seed += 0x1000000000000) {
-        g.applyWorldSeed(seed);
+    // Loop through all region pairs (n^2 style)
+    for (const auto& region1 : regions) {
+        for (const auto& region2 : regions) {
+            std::string filename = "cakePopulationSeedsIn_" +
+                                   std::to_string(region1.x) + "_" + std::to_string(region1.z) +
+                                   "__" +
+                                   std::to_string(region2.x) + "_" + std::to_string(region2.z) + ".txt";
 
-        for (auto &region: regions) {
-            Pos2D &correctChunk = correctChunks[region.x + 1][region.z + 1];
-            Pos2D buriedTreasureChunk = Placement::BuriedTreasure::getPosition(&g, region.x, region.z).toChunkPos();
-            if (buriedTreasureChunk.x != correctChunk.x || buriedTreasureChunk.z != correctChunk.z) {
-                goto INVALID_SEED;
+            std::ifstream file(filename);
+            if (!file.is_open()) {
+                std::cout << "Could not open file: " << filename << " (skipping)" << std::endl;
+                continue;
+            }
+
+            std::cout << "\nProcessing file: " << filename << std::endl;
+
+            // Read all seeds from this file and check against cakeResults
+            int totalSeeds = 0;
+            int foundSeeds = 0;
+            std::map<int, int> countDistribution; // count -> how many seeds have that count
+
+            std::string line;
+            while (std::getline(file, line)) {
+                if (line.empty() || std::all_of(line.begin(), line.end(), isspace)) continue;
+
+                i64 currentSeed = std::stoll(line);
+                if (currentSeed == 0) continue;
+
+                totalSeeds++;
+
+                // Check if this seed exists in cakeResults
+                auto it = cakeResultsCounts.find(currentSeed);
+                if (it != cakeResultsCounts.end()) {
+                    foundSeeds++;
+                    int count = it->second;
+                    std::cout << "  Seed " << currentSeed << " found in cakeResults with count: " << count << std::endl;
+                    countDistribution[count]++;
+                }
+            }
+            file.close();
+
+            // Output statistics for this file
+            std::cout << "  Total seeds in file: " << totalSeeds << std::endl;
+            std::cout << "  Seeds found in cakeResults: " << foundSeeds << std::endl;
+            std::cout << "  Match percentage: " << (totalSeeds > 0 ? (100.0 * foundSeeds / totalSeeds) : 0.0) << "%" << std::endl;
+
+            if (!countDistribution.empty()) {
+                std::cout << "  Distribution of occurrence counts:" << std::endl;
+                for (const auto& [count, numSeeds] : countDistribution) {
+                    std::cout << "    " << numSeeds << " seeds appear " << count << " time(s) in cakeResults" << std::endl;
+                }
+            } else if (foundSeeds > 0) {
+                std::cout << "  (No distribution data available)" << std::endl;
             }
         }
-        std::cout << "Seed: " << seed << std::endl;
-        INVALID_SEED:
     }
+
+    std::cout << "\nCheck complete!" << std::endl;
+}
+
+void reconstructCakeSeeds() {
+    std::string inputFile = "17cakeStructureSeeds.txt";
+    std::string cakeResultsFile = "C:/Users/Daniel/CLionProjects/ReversePopulationSeeds/build/cakeResults.txt";
+    std::string outputFile = "17cakeStructureSeedsComplete.txt";
+
+    std::ifstream file(inputFile);
+    std::ifstream cakeFile(cakeResultsFile);
+    std::ofstream outFile(outputFile);
+
+    if (!file.is_open()) {
+        std::cerr << "Could not open input file: " << inputFile << std::endl;
+        return;
+    }
+    if (!cakeFile.is_open()) {
+        std::cerr << "Could not open cake results file: " << cakeResultsFile << std::endl;
+        return;
+    }
+    if (!outFile.is_open()) {
+        std::cerr << "Could not open output file: " << outputFile << std::endl;
+        return;
+    }
+
+    // Load all cake results into a multimap (seed -> position)
+    std::cout << "Loading cake results..." << std::endl;
+    std::multimap<i64, Pos2D> cakeResultsMap;
+    i64 seed;
+    int x, z;
+    while (cakeFile >> seed >> x >> z) {
+        cakeResultsMap.emplace(seed, Pos2D(x, z));
+    }
+    cakeFile.close();
+    std::cout << "Loaded " << cakeResultsMap.size() << " cake results." << std::endl;
+
+    // Read each line from 17cakeStructureSeeds.txt and reconstruct with all positions
+    std::vector<SeedVecPos> allSeeds;
+    std::string line;
+    int lineCount = 0;
+
+    while (std::getline(file, line)) {
+        lineCount++;
+        if (line.empty() || std::all_of(line.begin(), line.end(), isspace)) continue;
+
+        std::istringstream iss(line);
+        i64 structureSeed;
+        iss >> structureSeed;
+
+        // Read existing chunk coordinates from the line (these are the ones from other regions)
+        std::vector<Pos2D> allPositions;
+        while (iss >> x >> z) {
+            allPositions.emplace_back(x, z);
+        }
+
+        // Find all matching positions from cakeResults for this seed
+        auto range = cakeResultsMap.equal_range(structureSeed);
+        for (auto it = range.first; it != range.second; ++it) {
+            allPositions.push_back(it->second);
+        }
+
+        if (allPositions.empty()) {
+            std::cerr << "Warning: No positions found for seed " << structureSeed << std::endl;
+            continue;
+        }
+
+        // Sort positions before adding
+        std::sort(allPositions.begin(), allPositions.end());
+        allSeeds.emplace_back(structureSeed, allPositions);
+    }
+    file.close();
+
+    std::cout << "Processing complete. Sorting " << allSeeds.size() << " seeds..." << std::endl;
+
+    // Sort all seeds
+    std::sort(allSeeds.begin(), allSeeds.end(), SeedVecPos::Less());
+
+    // Write sorted results to output file
+    std::cout << "Writing results to: " << outputFile << std::endl;
+    for (const auto& seedVecPos : allSeeds) {
+        outFile << seedVecPos.seed;
+        for (const auto& pos : seedVecPos.pos) {
+            outFile << " " << pos.x << " " << pos.z;
+        }
+        outFile << "\n";
+    }
+    outFile.close();
+
+    std::cout << "Reconstruction complete! Results written to: " << outputFile << std::endl;
+}
+
+void findValidCake() {
+    // std::string inputFile = "17cakeStructureSeeds.txt";
+    std::string inputFile = "2_5cakeStructureSeeds.txt";
+    // std::string outputFile = "validSisterSeeds.txt";
+    std::string outputFile = "2_5cake_validSisterSeeds.txt";
+
+    std::ifstream file(inputFile);
+    std::ofstream outFile(outputFile);
+
+    if (!file.is_open()) {
+        std::cerr << "Could not open input file: " << inputFile << std::endl;
+        return;
+    }
+    if (!outFile.is_open()) {
+        std::cerr << "Could not open output file: " << outputFile << std::endl;
+        return;
+    }
+
+    // Define the 4 regions we need to check
+    std::vector<Pos2D> regions = {
+        {-1, -1}, {0, 0},
+        {0, -1}, {-1, 0}
+    };
+
+    constexpr i64 maxSisterSeed = 0x7FFF000000000000;
+
+    Generator g(lce::CONSOLE::WIIU, LCEVERSION::AQUATIC, lce::WORLDSIZE::CLASSIC, lce::BIOMESCALE::LARGE);
+    // g.generateCache(4);
+
+    std::string line;
+    int lineCount = 0;
+
+    while (std::getline(file, line)) {
+        lineCount++;
+        if (line.empty() || std::all_of(line.begin(), line.end(), isspace)) continue;
+
+        std::istringstream iss(line);
+        i64 structureSeed;
+        iss >> structureSeed;
+
+        // Read all chunk coordinates from the line
+        // Group them by region
+        std::map<Pos2D, std::vector<Pos2D>> chunksByRegion;
+        int x, z;
+        while (iss >> x >> z) {
+            Pos2D chunkPos(x, z);
+            int regionX = x >> 5; // divide by 32 to get region coordinates
+            int regionZ = z >> 5;
+            Pos2D regionPos(regionX, regionZ);
+            chunksByRegion[regionPos].push_back(chunkPos);
+        }
+
+        // Verify we have all 4 regions
+        /*bool hasAllRegions = true;
+        for (const auto& region : regions) {
+            if (chunksByRegion.find(region) == chunksByRegion.end()) {
+                std::cerr << "Warning: Line " << lineCount << " missing region ("
+                          << region.x << ", " << region.z << ")" << std::endl;
+                hasAllRegions = false;
+                break;
+            }
+        }
+
+        if (!hasAllRegions) continue;*/
+
+        std::cout << "Processing structure seed: " << structureSeed
+                  << " (line " << lineCount << ")" << std::endl;
+
+        // Search through sister seeds
+        for (auto seed = (int64_t)((uint64_t)(structureSeed & 0xFFFFFFFFFFFFLL) | 0x8000000000000000ULL);
+             seed <= maxSisterSeed; seed += 0x1000000000000) {
+
+            g.applyWorldSeed(seed);
+
+            bool validSeed = true;
+            std::vector<Pos2D> matchedPositions; // Store which positions matched
+
+            // Check each region
+            for (const auto& region : regions) {
+                if (!chunksByRegion.contains(region)) continue;
+                Pos2D buriedTreasureChunk = Placement::BuriedTreasure::getPosition(&g, region.x, region.z).toChunkPos();
+
+                // Check if this buried treasure position matches any of the valid chunks for this region
+                const auto& validChunks = chunksByRegion[region];
+                bool foundMatch = false;
+                for (const auto& validChunk : validChunks) {
+                    if (buriedTreasureChunk.x == validChunk.x && buriedTreasureChunk.z == validChunk.z) {
+                        foundMatch = true;
+                        matchedPositions.push_back(buriedTreasureChunk);
+                        break;
+                    }
+                }
+
+                if (!foundMatch) {
+                    validSeed = false;
+                    break;
+                }
+            }
+
+            if (validSeed) {
+                std::cout << "Found valid sister seed: " << seed << std::endl;
+                outFile << seed;
+                for (const auto& pos : matchedPositions) {
+                    outFile << " " << pos.x << " " << pos.z;
+                }
+                outFile << "\n";
+                outFile.flush();
+            }
+        }
+    }
+
+    file.close();
+    outFile.close();
+    std::cout << "Search complete. Results written to: " << outputFile << std::endl;
 }
 
 int main() {
-    findMostCake();
+    findValidCake();
     return 0;
 }

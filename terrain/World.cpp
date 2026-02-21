@@ -24,7 +24,7 @@
 
 World::World(Generator *_g) : chunkPool(ChunkPrimer::getFootprintSize()), g(_g) {
     int worldSize = lce::getChunkWorldBounds(g->getWorldSize());
-    this->g->setupNoiseStack(); // setup noise for the world to avoid future data races
+    // this->g->setupNoiseStack(); // setup noise for the world to avoid future data races
     this->worldBounds = BoundingBox(
         static_cast<bbType_t>(-worldSize),
         0,
@@ -42,11 +42,12 @@ World::~World() {
 void World::deleteWorld() {
     // Free or pool all live chunks
     for (auto &entry : chunks) {
-        ChunkPrimer *chunk = entry.second;
+        /*ChunkPrimer *chunk = entry.second;
         if (chunk) {
             chunk->reset();
             chunkPool.releaseToPool(chunk);
-        }
+        }*/
+        delete entry.second;
     }
     chunks.clear();
 

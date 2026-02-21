@@ -51,7 +51,7 @@ public:
 
     RNG decorateRng; ///< Random number generator used for decoration.
 
-    std::vector<u16> blocks = std::vector<u16>(STORAGE_SIZE); ///< Array storing block IDs and data for the chunk.
+    std::array<u16, STORAGE_SIZE> blocks = std::array<u16, STORAGE_SIZE>(); ///< Array storing block IDs and data for the chunk.
 
     std::vector<u8> skyLight; ///< Buffer for storing skylight values.
 
@@ -72,10 +72,10 @@ public:
         isModifying = false;
         decorateRng = RNG();
         std::memset(blocks.data(), 0, STORAGE_SIZE * sizeof(u16));
-        skyLight.clear();
+        // skyLight.clear();
         highestYBlock = -1;
-        std::memset(heightMap, 0, 256);
-        precipitationHeightMap = std::vector(256, -999);
+        // std::memset(heightMap, 0, 256);
+        // precipitationHeightMap = std::vector(256, -999);
     }
 
     /**
@@ -213,7 +213,7 @@ public:
      */
     void setSkyLight(c_i32 x, c_i32 y, c_i32 z, c_u8 lightValue) {
         if EXPECT_FALSE(isInvalidIndex(x, y, z)) { return; }
-        skyLight[getStorageIndex(x, y, z)] = lightValue;
+        // skyLight[getStorageIndex(x, y, z)] = lightValue;
     }
 
     /**

@@ -59,8 +59,10 @@ int main(int argc, char* argv[]) {
     rng.setSeed(static_cast<u64>(worldSeed));
     rng.advance<10360>();
 
-    NoiseGeneratorPerlin<4> surfaceNoise;
-    surfaceNoise.setNoiseGeneratorPerlin(rng);
+    // NoiseGeneratorPerlin<4> surfaceNoise;
+    // surfaceNoise.setNoiseGeneratorPerlin(rng);
+    NoiseGeneratorPerlin<1> TEMPERATURE_NOISE(RNG(1234ULL));
+    // TEMPERATURE_NOISE.setNoiseGeneratorPerlin(rng);
 
     std::cout << "Generating noise data...\n";
 
@@ -83,7 +85,9 @@ int main(int argc, char* argv[]) {
     for (int chunkZ = minChunkZ; chunkZ <= maxChunkZ; ++chunkZ) {
         for (int chunkX = minChunkX; chunkX <= maxChunkX; ++chunkX) {
             // Get the region for this chunk
-            surfaceNoise.getRegion<16, 16, 0.0625, 0.0625, 0.5, 1.0>(lce::CONSOLE::XBOX360,
+            /*surfaceNoise.getRegion<16, 16, 0.0625, 0.0625, 0.5, 1.0>(lce::CONSOLE::XBOX360,
+                noiseRegion, chunkX * 16, chunkZ * 16);*/
+            TEMPERATURE_NOISE.getRegion<16, 16, 0.0625, 0.0625, 0.5, 1.0>(lce::CONSOLE::WIIU,
                 noiseRegion, chunkX * 16, chunkZ * 16);
 
             // Copy noise values to the output buffer
