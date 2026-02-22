@@ -11,8 +11,6 @@
 
 #include <filesystem>
 
-namespace fs = std::filesystem;
-
 
 template<typename T>
 void fileWrite(std::ofstream& file, T obj) {

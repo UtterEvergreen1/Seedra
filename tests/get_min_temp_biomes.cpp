@@ -28,14 +28,14 @@ int main() {
 
     //std::cout << std::endl << "Always valid snow biomes:" << std::endl;
     int biomeCount = 0;
-    for (auto& biome : Biome::registry) {
+    for (auto* biome : Biome::registry) {
         int yMin = 0;
         int yMax = 255;
-        std::string biomeString = biome.second->biomeName;
+        std::string biomeString = biome->m_biomeName;
         std::ranges::transform(biomeString, biomeString.begin(), ::toupper);
         std::ranges::replace(biomeString, ' ', '_');
         for (int i = 255; i >= 0; i--) {
-            float temp = getMaxTemperature(biome.second, i);
+            float temp = getMaxTemperature(biome, i);
             if (temp >= 0.15F) {
                 // Upper case all letters and replace spaces with underscores
                 //std::cout << biomeString << " y <= " << i << std::endl;
@@ -45,7 +45,7 @@ int main() {
         }
 
         for (int i = 0; i < 256; i++) {
-            float temp = getMinTemperature(biome.second, i);
+            float temp = getMinTemperature(biome, i);
             if (temp < 0.15F) {
                 //std::cout << biomeString << " y >= " << i << std::endl;
                 yMax = i;

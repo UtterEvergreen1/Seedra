@@ -44,10 +44,10 @@ namespace loot {
          * This compile-time constant is computed as the sum of maximum item counts from all loot tables.
          * It is calculated by the private member function @c computeMaxItemCount().
          */
-#ifndef _MSC_VER
-        static constexpr i32 MAX_ITEM_COUNT = computeMaxItemCount();
-#else
+#if defined(_MSC_VER) || defined(__EMSCRIPTEN__)
         static constexpr i32 MAX_ITEM_COUNT = 27;
+#else
+        static constexpr i32 MAX_ITEM_COUNT = computeMaxItemCount();
 #endif
     public:
         consteval Loot() = delete;

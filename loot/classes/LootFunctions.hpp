@@ -50,7 +50,7 @@ namespace loot {
                 random.nextInt((int)EnchantController::getActiveSize())
         ];
         c_int level = random.nextInt(1, enchPtr->getMaxLevel());
-        container.addEnchant({enchPtr->getID(), level, 0});
+        container.addEnchant({(u16)enchPtr->getID(), (u8)level, 0});
     }
 
     /**
@@ -69,7 +69,7 @@ namespace loot {
     static void applyEnchantRandomlyItem(Container<ContainerSize>& container, lce::ItemState& itemIn, RNG& random) {
         using namespace enchants;
         // leave this uninitialized
-        std::array<const Enchant*, MAX_ENCHANTMENT_COUNT> tempEnchants;
+        std::array<const Enchant*, MAX_ENCHANTMENT_COUNT> tempEnchants{};
         int index = 0;
         for (const Enchant* EnchantPointer: EnchantController::getActiveEnchants()) {
             if (EnchantPointer->canApply(itemIn)) {
@@ -80,7 +80,7 @@ namespace loot {
 
         const Enchant* enchPtr = tempEnchants[random.nextInt(index)];
         c_int level = random.nextInt(1, enchPtr->getMaxLevel());
-        container.addEnchant({enchPtr->getID(), level, 0});
+        container.addEnchant({(u16)enchPtr->getID(), (u8)level, 0});
     }
 
     /**
@@ -275,7 +275,7 @@ namespace loot {
 
         for (int i = 0; i < EnchantVector->enchants.getIndex(); i++) {
             auto& eData = EnchantVector->data[EnchantVector->enchants.getValueAt(i)];
-            container.addEnchant({eData.getID(), eData.getLevel(), (int)container.slotCount()});
+            container.addEnchant({(u16)eData.getID(), (u8)eData.getLevel(), (u8)((int)container.slotCount())});
         }
     }
 

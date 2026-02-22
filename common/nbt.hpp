@@ -1,3 +1,4 @@
+// common/nbt.hpp
 #pragma once
 
 #include "lce/processor.hpp"
@@ -77,10 +78,10 @@ public:
 
     void reserve(size_t n);
 
-       iterator       begin()       { return m_elements.begin(); }
-       iterator       end()         { return m_elements.end(); }
-    ND const_iterator begin() const { return m_elements.begin(); }
-    ND const_iterator end()   const { return m_elements.end(); }
+       iterator       begin();
+       iterator       end();
+    ND const_iterator begin() const;
+    ND const_iterator end()   const;
 
     // additional
     MU ND eNBT subType() const { return m_subType; }

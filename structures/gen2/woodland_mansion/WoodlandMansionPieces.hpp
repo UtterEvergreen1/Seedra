@@ -105,7 +105,7 @@ public:
             // ANSI escape codes
             const std::string reset = "\033[0m";
 
-            // 8-bit color palette (change or trim as you like)
+            // 8-bit color palette
             static const std::array<const char*, 16> ROOM_COLORS = {
                     "\033[38;5;196m", // red
                     "\033[38;5;202m", // orange
@@ -228,7 +228,6 @@ public:
                 cout << endl;
             }
 
-            // Optional small legend
             cout << "\nLegend:\n"
                  << "  " << "\033[38;5;239m.\033[0m" << " = empty\n"
                  << "  " << "\033[38;5;250m#\033[0m" << " = corridor\n"

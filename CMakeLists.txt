@@ -1,3 +1,4 @@
+cmake_minimum_required(VERSION 3.23.1)
 cmake_minimum_required(VERSION 3.24)
 
 # Check if CUDA is available
@@ -72,7 +73,10 @@ elseif(APPLE)
     set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -std=c++23")
     set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -std=c++23")
 
-    if(CMAKE_SYSTEM_PROCESSOR MATCHES "x86_64")
+    if(EMSCRIPTEN)
+        # WASM
+        set(SEEDRA_COMPILE_OPTIONS "")
+    elseif(CMAKE_SYSTEM_PROCESSOR MATCHES "x86_64")
         # Intel Macs: enable AVX/SSE
         set(SEEDRA_COMPILE_OPTIONS "-mavx2;-msse4.1")
     elseif(CMAKE_SYSTEM_PROCESSOR MATCHES "arm64")
@@ -95,7 +99,12 @@ else()
     set(CMAKE_C_FLAGS_RELWITHDEBINFO   "-O2 -g -fno-omit-frame-pointer -fno-optimize-sibling-calls")
     set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "-O2 -g -fno-omit-frame-pointer -fno-optimize-sibling-calls")
 
-    set(SEEDRA_COMPILE_OPTIONS "-mavx2;-msse4.1")
+    if(EMSCRIPTEN)
+        set(SEEDRA_COMPILE_OPTIONS "")
+    else()
+        set(SEEDRA_COMPILE_OPTIONS "-mavx2;-msse4.1")
+    endif()
+
 endif()
 
 
@@ -146,7 +155,7 @@ function(add_cli NAME SRC)
 
 
     target_include_directories(${NAME} PRIVATE ${LCE_INCLUDE_DIR})
-    target_compile_options(${NAME} PRIVATE ${LCE_COMPILE_OPTIONS} ${SEEDRA_COMPILE_OPTIONS} -Wno-c++98-compat -Wno-c++98-compat-pedantic)
+    target_compile_options(${NAME} PRIVATE ${LCE_COMPILE_OPTIONS} ${SEEDRA_COMPILE_OPTIONS} -fexceptions -Wno-c++98-compat -Wno-c++98-compat-pedantic)
     target_compile_definitions(${NAME} PRIVATE ${LCE_COMPILE_DEFINITIONS})
     set_target_properties(${NAME} PROPERTIES
             PDB_OUTPUT_DIRECTORY "${CMAKE_PDB_OUTPUT_DIRECTORY_RELWITHDEBINFO}"
@@ -169,8 +178,15 @@ endfunction()
 
 
 # (Optional) If you want a standalone Seedra exe for testing:
-unset(LC_BUILD_EXECUTABLE CACHE)
-option(LC_BUILD_EXECUTABLE "Build Seedra standalone executable" ON)
+
+if(NOT DEFINED LC_BUILD_EXECUTABLE)
+    if(EMSCRIPTEN)
+        set(LC_BUILD_EXECUTABLE OFF CACHE BOOL "Build Seedra standalone executables" FORCE)
+    else()
+        option(LC_BUILD_EXECUTABLE "Build Seedra standalone executables" ON)
+    endif()
+endif()
+
 if(LC_BUILD_EXECUTABLE)
 
     add_cli(EXE_GenCreateWorld "tests/gen_chunk.cpp")

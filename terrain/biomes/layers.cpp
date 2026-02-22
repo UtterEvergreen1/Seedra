@@ -36,8 +36,8 @@ static u64 mcStepSeed(c_u64 s, c_u64 salt) {
     return s * (s * 6364136223846793005ULL + 1442695040888963407ULL) + salt;
 }
 
-u64 mcFirstInt_Calls = 0;
-u64 mcFirstIsZero_Calls = 0;
+MU u64 mcFirstInt_Calls = 0;
+MU u64 mcFirstIsZero_Calls = 0;
 
 
 template <int MOD>
@@ -164,7 +164,7 @@ int biomeExists(const MCVERSION mc, const biome_t id) {
  * @param id The biome ID.
  * @return 1 if the biome is in the Overworld, 0 otherwise.
  */
-int isOverworld(const MCVERSION mc, const biome_t id) {
+MU int isOverworld(const MCVERSION mc, const biome_t id) {
     if (!biomeExists(mc, id)) return 0;
 
     if (id >= small_end_islands && id <= end_barrens) return 0;
@@ -1279,11 +1279,11 @@ void mapIsland(const Layer* l, biome_t* out, c_int x, c_int z, c_int w, c_int h)
             const biome_t v11 = out[i + 1 + (j + 1) * pW];
             out[i + j * w] = v11;
 
-            if (v11 == oceanic) {
-                if (out[i + 1 + (j + 0) * pW] != oceanic) continue;
-                if (out[i + 2 + (j + 1) * pW] != oceanic) continue;
-                if (out[i + 0 + (j + 1) * pW] != oceanic) continue;
-                if (out[i + 1 + (j + 2) * pW] != oceanic) continue;
+            if (v11 == static_cast<biome_t>(oceanic)) {
+                if (out[i + 1 + (j + 0) * pW] != static_cast<biome_t>(oceanic)) continue;
+                if (out[i + 2 + (j + 1) * pW] != static_cast<biome_t>(oceanic)) continue;
+                if (out[i + 0 + (j + 1) * pW] != static_cast<biome_t>(oceanic)) continue;
+                if (out[i + 1 + (j + 2) * pW] != static_cast<biome_t>(oceanic)) continue;
 
                 const u64 cs = getChunkSeed(ss, i + x, j + z);
                 if (mcFirstIsZero<2>(cs)) { out[i + j * w] = biome_t::plains; }
@@ -1352,7 +1352,7 @@ void mapCoolWarm(const Layer* l, biome_t* out, c_int x, c_int z, c_int w, c_int 
         for (int i = 0; i < w; i++) {
             biome_t v11 = out[i + 1 + (j + 1) * pW];
 
-            if (v11 == warm) {
+            if (v11 == static_cast<biome_t>(warm)) {
                 c_int v10 = out[i + 1 + (j + 0) * pW];
                 c_int v21 = out[i + 2 + (j + 1) * pW];
                 c_int v01 = out[i + 0 + (j + 1) * pW];
@@ -1386,7 +1386,7 @@ void mapHeatIce(const Layer* l, biome_t* out, c_int x, c_int z, c_int w, c_int h
         for (int i = 0; i < w; i++) {
             biome_t v11 = out[i + 1 + (j + 1) * pW];
 
-            if (v11 == freezing) {
+            if (v11 == static_cast<biome_t>(freezing)) {
                 c_int v10 = out[i + 1 + (j + 0) * pW];
                 c_int v21 = out[i + 2 + (j + 1) * pW];
                 c_int v01 = out[i + 0 + (j + 1) * pW];
