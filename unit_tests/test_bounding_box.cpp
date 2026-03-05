@@ -1,6 +1,7 @@
 #include "include/doctest.h"
 #include "components/BoundingBox.hpp"
 #include <sstream>
+#include <string>
 
 TEST_SUITE("BoundingBox") {
 

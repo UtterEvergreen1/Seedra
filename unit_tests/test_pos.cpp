@@ -2,6 +2,7 @@
 #include "common/Pos2DTemplate.hpp"
 #include "common/Pos3DTemplate.hpp"
 #include <sstream>
+#include <string>
 
 TEST_SUITE("Pos2D") {
 

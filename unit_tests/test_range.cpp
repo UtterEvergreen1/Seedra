@@ -3,6 +3,7 @@
 #include "common/AreaRange.hpp"
 
 #include <sstream>
+#include <string>
 #include <vector>
 
 // ============================================================

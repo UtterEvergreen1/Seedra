@@ -16,6 +16,7 @@
 #include "lce/items/itemsInit.hpp"
 
 #include <sstream>
+#include <string>
 
 using namespace loot;
 using namespace lce::items;

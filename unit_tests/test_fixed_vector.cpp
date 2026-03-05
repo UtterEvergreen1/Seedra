@@ -1,5 +1,6 @@
 #include "include/doctest.h"
 #include "common/fixedVector.hpp"
+#include <string>
 
 TEST_SUITE("FixedVector") {
 
