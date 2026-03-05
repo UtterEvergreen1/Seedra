@@ -7,8 +7,8 @@
 #include "structures/placement/stronghold.hpp"
 #include "terrain/biomes/biome.hpp"
 
-#include "Seedra/structures/gen2/woodland_mansion/WoodlandMansionPieces.hpp"
-#include "Seedra/structures/gen2/ocean_monument/OceanMonumentPieces.hpp"
+// #include "Seedra/structures/gen2/woodland_mansion/WoodlandMansionPieces.hpp"
+// #include "Seedra/structures/gen2/ocean_monument/OceanMonumentPieces.hpp"
 #include "common/AreaRange.hpp"
 #include "common/timer.hpp"
 #include "structures/gen/ScatteredFeature.hpp"
@@ -22,7 +22,7 @@
 #include <algorithm>
 
 
-World::World(Generator *_g) : chunkPool(ChunkPrimer::getFootprintSize()), g(_g) {
+World::World(const Generator *_g) : chunkPool(ChunkPrimer::getFootprintSize()), g(_g) {
     int worldSize = lce::getChunkWorldBounds(g->getWorldSize());
     // this->g->setupNoiseStack(); // setup noise for the world to avoid future data races
     this->worldBounds = BoundingBox(
@@ -227,8 +227,8 @@ void World::generateMonuments() {
         );
 
         // If your ctor takes block coords:
-        auto* monument = new OceanMonumentPieces::MonumentBuilding(structureRng, blockPos.x, blockPos.z, EnumFacing::NORTH);
-        monuments.emplace_back(reinterpret_cast<void*>(monument));
+        // auto* monument = new OceanMonumentPieces::MonumentBuilding(structureRng, blockPos.x, blockPos.z, EnumFacing::NORTH);
+        // monuments.emplace_back(reinterpret_cast<void*>(monument));
 
         // Or if it expects chunk coords:
         // monuments.emplace_back(structureRng, chunkPos.x, chunkPos.z);

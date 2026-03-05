@@ -70,7 +70,7 @@ namespace Chunk {
 
 
 
-    MU void populateCaves(World& world, Pos2D chunkPos) {
+    MU void populateCaves(World& world, Pos2D chunkPos, bool accurate) {
         // Timer start;
         // std::cout << "[Start] CavePop: " << chunkPos << "\n";
         ChunkPrimer* chunkPrimer = world.getChunk(chunkPos);
@@ -79,7 +79,6 @@ namespace Chunk {
         }
 
         chunkPrimer->isModifying.store(true);
-        bool accurate = true;
 
         if (world.getGenerator()->getLCEVersion() != LCEVERSION::AQUATIC &&
             (chunkPrimer->stage == Stage::STAGE_TERRAIN ||
@@ -271,11 +270,11 @@ namespace Chunk {
             }
         }
 
-        for (auto& feature : world.wm_pieces) {
+        /*for (auto& feature : world.wm_pieces) {
             if (feature.intersects(chunkBB)) {
                 feature.addComponentParts(world, chunk->decorateRng, chunkBB);
             }
-        }
+        }*/
 
 
         chunk->stage = Stage::STAGE_DECORATE;
@@ -292,7 +291,7 @@ namespace Chunk {
         }
         chunk->isModifying.store(true);
 
-        Generator* g = world.getGenerator();
+        const Generator* g = world.getGenerator();
         if (const Pos3D waterPos = FeaturePositions::waterLake(
                     g, chunk->decorateRng, chunkPos.x, chunkPos.z); !waterPos.isNull()) {
             const WorldGenLakes waterGen(g, lce::BlocksInit::STILL_WATER.getState());

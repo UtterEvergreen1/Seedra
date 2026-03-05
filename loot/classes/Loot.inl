@@ -1,10 +1,12 @@
 #pragma once
 
 #include "Buffer.hpp"
+#include "Loot.hpp"
 #include "LootTable.hpp"
 #include "common/Pos2DTemplate.hpp"
-#include "terrain/Chunk.hpp"
 #include "structures/gen/stronghold/stronghold.hpp"
+#include "terrain/Chunk.hpp"
+#include "terrain/World.hpp"
 
 namespace loot {
 
@@ -60,11 +62,8 @@ namespace loot {
      * @details Uses a lambda with std::apply to iterate over the tuple of loot tables.
      */
     template<size_t ContainerSize, bool Aquatic, typename... Tables>
-    consteval i32 Loot<ContainerSize, Aquatic, Tables...>::computeMaxItemCount() const noexcept {
-        return std::apply([](auto const &...table) -> i32 {
-            return (0 + ... + table.maxItemCount());
-        },
-                          m_LootTables);
+    consteval i32 Loot<ContainerSize, Aquatic, Tables...>::computeMaxItemCount() noexcept {
+        return (0 + ... + static_cast<i32>(Tables::k_MaxRoll));
     }
 
     /**
@@ -168,15 +167,13 @@ namespace loot {
         rng.setSeed(static_cast<u64>(lootTableSeed));
 
         if constexpr (Mode == GenMode::LEGACY) {
-            std::apply([&](auto const &...table) {
-                (processLootTableLegacy<ContainerSize>(container, rng, table), ...);
-            },
-                       m_LootTables);
+            m_LootTables.forEach([&](const auto& table) {
+                processLootTableLegacy<ContainerSize>(container, rng, table);
+            });
         } else {
-            std::apply([&](auto const &...table) {
-                (processLootTableModern<ContainerSize>(container, rng, table), ...);
-            },
-                       m_LootTables);
+            m_LootTables.forEach([&](const auto& table) {
+                processLootTableModern<ContainerSize>(container, rng, table);
+            });
 
             if constexpr (Mode == GenMode::MODERN) {
                 if (buffer == nullptr) {
@@ -296,8 +293,11 @@ namespace loot {
          RNG rng = RNG::getPopulationSeed(g.getWorldSeed(), chestChunkX, chestChunkZ);
 
          if constexpr (checkCaves) {
-             // TODO: probably needs fixed
-             ChunkPrimer* chunk = Chunk::provideNewChunk(g, {chestChunkX, chestChunkZ}); // , accurate
+             Pos2D chestChunkPos = {chestChunkX, chestChunkZ};
+             World tempWorld(&g);
+             ChunkPrimer* chunk = Chunk::provideNewChunk(g, chestChunkPos);
+             tempWorld.addChunk(chestChunkPos, chunk);
+             Chunk::populateCaves(tempWorld, chestChunkPos, accurate);
              // we roll rng equal to the stone bricks in the chunk that generated before the chest corridor
              if (!rolls::Stronghold::generateStructure<true>(chunk, strongholdGenerator, rng, chestChunkX, chestChunkZ,
                                                              piece)) {

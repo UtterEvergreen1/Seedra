@@ -19,7 +19,7 @@ namespace scattered_features {
 
         ScatteredFeature() = default;
 
-        ScatteredFeature(Generator* g, RNG& rng, int x, int y, int z, int sizeX, int sizeY, int sizeZ);
+        ScatteredFeature(const Generator* g, RNG& rng, int x, int y, int z, int sizeX, int sizeY, int sizeZ);
 
         bool offsetToAverageGroundLevel(World& worldIn, BoundingBox structureBB, int yOffset);
 
@@ -30,7 +30,7 @@ namespace scattered_features {
 
 
     ScatteredFeature* ScatteredFeatureFactory(
-            Generator* g,
+            const Generator* g,
             const Placement::FeatureStructurePair& pair
     );
 

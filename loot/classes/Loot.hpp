@@ -16,6 +16,42 @@ class StructureComponent;
 namespace loot {
 
     /**
+     * @brief A constexpr-safe alternative to std::tuple that avoids libc++ EBO/constexpr bugs.
+     *
+     * Stores each element in a separate base class indexed by position, so the compiler
+     * never sees two bases of the same type even when Tables... are instantiated from the
+     * same template.
+     */
+    template<std::size_t I, typename T>
+    struct PackedTupleLeaf {
+        T value;
+        consteval explicit PackedTupleLeaf(const T& v) noexcept : value(v) {}
+    };
+
+    template<typename Indices, typename... Ts>
+    struct PackedTupleImpl;
+
+    template<std::size_t... Is, typename... Ts>
+    struct PackedTupleImpl<std::index_sequence<Is...>, Ts...>
+        : PackedTupleLeaf<Is, Ts>... {
+        consteval explicit PackedTupleImpl(const Ts&... vs) noexcept
+            : PackedTupleLeaf<Is, Ts>(vs)... {}
+    };
+
+    template<typename... Ts>
+    struct PackedTuple : PackedTupleImpl<std::index_sequence_for<Ts...>, Ts...> {
+        consteval explicit PackedTuple(const Ts&... vs) noexcept
+            : PackedTupleImpl<std::index_sequence_for<Ts...>, Ts...>(vs...) {}
+
+        template<typename Func>
+        constexpr void forEach(Func&& f) const {
+            [&]<std::size_t... Is>(std::index_sequence<Is...>) {
+                (f(static_cast<const PackedTupleLeaf<Is, Ts>&>(*this).value), ...);
+            }(std::index_sequence_for<Ts...>{});
+        }
+    };
+
+    /**
      * @brief Aggregates multiple loot tables to generate loot.
      *
      * @tparam ContainerSize The size of the container for generated loot.
@@ -34,9 +70,9 @@ namespace loot {
          * This tuple stores the loot tables provided during construction. Each element in the tuple
          * represents a loot table that will be used during loot generation.
          */
-        const std::tuple<Tables...> m_LootTables;
+        const PackedTuple<Tables...> m_LootTables;
 
-        ND consteval i32 computeMaxItemCount() const noexcept;
+        ND static consteval i32 computeMaxItemCount() noexcept;
 
         /**
          * @brief The maximum number of items that can be generated.

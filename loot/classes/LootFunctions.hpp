@@ -50,7 +50,7 @@ namespace loot {
                 random.nextInt((int)EnchantController::getActiveSize())
         ];
         c_int level = random.nextInt(1, enchPtr->getMaxLevel());
-        container.addEnchant({(u16)enchPtr->getID(), (u8)level, 0});
+        container.addEnchant({static_cast<u16>(enchPtr->getID()), static_cast<u8>(level), u8{0}});
     }
 
     /**
@@ -80,7 +80,7 @@ namespace loot {
 
         const Enchant* enchPtr = tempEnchants[random.nextInt(index)];
         c_int level = random.nextInt(1, enchPtr->getMaxLevel());
-        container.addEnchant({(u16)enchPtr->getID(), (u8)level, 0});
+        container.addEnchant({static_cast<u16>(enchPtr->getID()), static_cast<u8>(level), u8{0}});
     }
 
     /**
@@ -275,7 +275,7 @@ namespace loot {
 
         for (int i = 0; i < EnchantVector->enchants.getIndex(); i++) {
             auto& eData = EnchantVector->data[EnchantVector->enchants.getValueAt(i)];
-            container.addEnchant({(u16)eData.getID(), (u8)eData.getLevel(), (u8)((int)container.slotCount())});
+            container.addEnchant({static_cast<u16>(eData.getID()), static_cast<u8>(eData.getLevel()), static_cast<u8>(container.slotCount())});
         }
     }
 

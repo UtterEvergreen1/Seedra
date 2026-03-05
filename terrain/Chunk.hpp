@@ -93,8 +93,9 @@ namespace Chunk {
      *
      * @param world Reference to the World object.
      * @param chunkPos The position of the chunk to populate with caves.
+     * @param accurate Whether to use an accurate cave generation method (default: true).
      */
-    MU extern void populateCaves(World& world, Pos2D chunkPos);
+    MU extern void populateCaves(World& world, Pos2D chunkPos, bool accurate = true);
 
     /**
      * @brief Populates light levels in the specified chunk.

@@ -1,0 +1,49 @@
+name: Unit Tests
+
+on:
+  push:
+    branches: ["**"]
+  pull_request:
+    branches: ["**"]
+
+jobs:
+  build-and-test:
+    name: Build & Run Unit Tests
+    runs-on: ubuntu-latest
+
+    steps:
+      # ── 1. Checkout (including lce submodule) ──────────────────────
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      # ── 2. Install dependencies ────────────────────────────────────
+      - name: Install Clang 18 and CMake
+        run: |
+          sudo apt-get update -y
+          sudo apt-get install -y \
+            clang-18 \
+            cmake \
+            ninja-build \
+            lld-18
+
+      # ── 3. Configure ──────────────────────────────────────────────
+      - name: Configure CMake
+        run: |
+          cmake -S . -B build \
+            -G Ninja \
+            -DCMAKE_BUILD_TYPE=Debug \
+            -DCMAKE_CXX_COMPILER=clang++-18 \
+            -DCMAKE_C_COMPILER=clang-18 \
+            -DLC_BUILD_EXECUTABLE=ON
+
+      # ── 4. Build only the unit-test target ────────────────────────
+      - name: Build EXE_UnitTests
+        run: cmake --build build --target EXE_UnitTests -j $(nproc)
+
+      # ── 5. Run tests via CTest ────────────────────────────────────
+      - name: Run unit tests
+        working-directory: build
+        run: ctest --test-dir . --output-on-failure -j $(nproc)
+

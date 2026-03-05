@@ -1,4 +1,3 @@
-cmake_minimum_required(VERSION 3.23.1)
 cmake_minimum_required(VERSION 3.24)
 
 # Check if CUDA is available
@@ -221,6 +220,42 @@ if(LC_BUILD_EXECUTABLE)
     add_cli(EXE_ValidateReversedSeeds "tests/validate_reversed_seeds.cpp")
     add_cli(EXE_ValidateWorldSeeds "tests/validate_world_seeds.cpp")
     add_cli(EXE_CheckChestAdjacency "tests/check_chest_adjacency.cpp")
+
+    # ── Unit Tests (doctest) ──────────────────────────────────────────
+    enable_testing()
+    add_executable(EXE_UnitTests
+        unit_tests/test_main.cpp
+        unit_tests/test_rng.cpp
+        unit_tests/test_math_helper.cpp
+        unit_tests/test_fixed_vector.cpp
+        unit_tests/test_string_hash.cpp
+        unit_tests/test_bounding_box.cpp
+        unit_tests/test_pos.cpp
+        unit_tests/test_range.cpp
+        unit_tests/test_mem_pool.cpp
+        unit_tests/test_rotation_mirror.cpp
+        unit_tests/test_piece_weight.cpp
+        unit_tests/test_loot.cpp
+        unit_tests/test_terrain.cpp
+        common/MathHelper.cpp          # only non-header dep needed by tests
+        lce/enums.cpp                  # provides getAxis() used by RotationAndMirror
+        terrain/PopulationReverser.cpp # needed by test_terrain
+        loot/enchants/enchant.cpp
+        loot/enchants/enchants.cpp
+        loot/enchants/enchantController.cpp
+        loot/enchants/enchantRegistry.cpp
+        loot/enchants/enchantState.cpp
+        loot/enchants/enchantsInit.cpp
+        loot/enchants/fastBookEnchantArray.cpp
+    )
+    target_include_directories(EXE_UnitTests PRIVATE
+        ${CMAKE_CURRENT_SOURCE_DIR}    # project root for "common/..." includes
+        ${LCE_INCLUDE_DIR}             # lce headers
+    )
+    target_compile_features(EXE_UnitTests PRIVATE cxx_std_23)
+    target_compile_options(EXE_UnitTests PRIVATE ${SEEDRA_COMPILE_OPTIONS} -Wno-c++98-compat -Wno-c++98-compat-pedantic)
+    target_compile_definitions(EXE_UnitTests PRIVATE ${LCE_COMPILE_DEFINITIONS})
+    add_test(NAME SeedraUnitTests COMMAND EXE_UnitTests)
 
     # CUDA executables (if CUDA is available)
     if(CUDA_AVAILABLE)

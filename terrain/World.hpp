@@ -11,7 +11,7 @@
 #include "structures/gen/mineshaft/mineshaft.hpp"
 #include "structures/gen/stronghold/stronghold.hpp"
 
-#include "Seedra/structures/gen2/woodland_mansion/WoodlandMansionPieces.hpp"
+// #include "Seedra/structures/gen2/woodland_mansion/WoodlandMansionPieces.hpp"
 #include "common/AreaRange.hpp"
 #include "common/Pos2DTemplate.hpp"
 #include "common/Pos3DTemplate.hpp"
@@ -29,7 +29,7 @@ public:
      * @brief Constructs a World object with the specified generator.
      * @param g Pointer to the Generator used for world generation.
      */
-    explicit World(Generator *g);
+    explicit World(const Generator *g);
 
     /**
      * @brief Destructor for the World class.
@@ -45,7 +45,7 @@ public:
      * @brief Retrieves the generator associated with the world.
      * @return Pointer to the Generator.
      */
-    Generator *getGenerator() const { return g; }
+    const Generator *getGenerator() const { return g; }
 
     /**
      * @brief Adds a chunk to the world at the specified position.
@@ -350,7 +350,7 @@ public:
     std::vector<gen::Mineshaft> mineshafts; ///< List of generated mineshafts.
     std::vector<gen::Stronghold> strongholds; ///< List of generated strongholds.
     std::vector<scattered_features::ScatteredFeature*> scattered_features; ///< List of generated strongholds.
-    std::list<WoodlandMansionPieces::MansionTemplate> wm_pieces;
+    // std::list<WoodlandMansionPieces::MansionTemplate> wm_pieces;
     std::vector<void*> monuments;
 
 
@@ -363,7 +363,7 @@ private:
     std::atomic<ChunkPrimer *> lastChunk = nullptr; ///< Pointer to the last accessed chunk.
     std::atomic<Pos2D> lastChunkCoords = Pos2D(-100000, -100000); ///< Coordinates of the last accessed chunk.
 
-    Generator *g; ///< Pointer to the Generator used for world generation.
+    const Generator *g; ///< Pointer to the Generator used for world generation.
 };
 
 #include "World.inl"

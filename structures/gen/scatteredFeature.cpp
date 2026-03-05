@@ -20,7 +20,7 @@ namespace scattered_features {
     ScatteredFeature::~ScatteredFeature() = default;
 
 
-    ScatteredFeature::ScatteredFeature(Generator* g, RNG& rng, int chunkX, int y, int chunkZ, int sizeX, int sizeY, int sizeZ)
+    ScatteredFeature::ScatteredFeature(const Generator* g, RNG& rng, int chunkX, int y, int chunkZ, int sizeX, int sizeY, int sizeZ)
         : StructureComponent() {
         this->scatteredFeatureSizeX = sizeX;
         this->scatteredFeatureSizeY = sizeY;
@@ -115,7 +115,7 @@ namespace scattered_features {
         }
     }
 
-    ScatteredFeature* ScatteredFeatureFactory(Generator* g, const Placement::FeatureStructurePair& pair) {
+    ScatteredFeature* ScatteredFeatureFactory(const Generator* g, const Placement::FeatureStructurePair& pair) {
         Pos2D structChunkPos = pair.m_pos.toChunkPos();
         RNG rng = RNG::getLargeFeatureSeed(g->getWorldSeed(), structChunkPos.x, structChunkPos.z);
         rng.advance();

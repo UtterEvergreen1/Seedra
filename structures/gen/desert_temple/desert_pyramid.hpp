@@ -18,7 +18,7 @@ namespace scattered_features {
 
     public:
         DesertPyramid() = default;
-        DesertPyramid(Generator* g, RNG& rng, c_int chunkX, c_int chunkZ)
+        DesertPyramid(const Generator* g, RNG& rng, c_int chunkX, c_int chunkZ)
             : ScatteredFeature(g, rng, chunkX, 64, chunkZ, 21, 15, 21) {}
         ~DesertPyramid() override;
         bool addComponentParts(World& worldIn, MU RNG& rng, const BoundingBox& chunkBB) override;
