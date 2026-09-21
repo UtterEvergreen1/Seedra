@@ -162,13 +162,13 @@ public:
     void getRegion(lce::CONSOLE console, std::array<double, Width * Height> &noiseValues, double xOffset, double zOffset) const {
         memset(noiseValues.data(), 0, sizeof(noiseValues));
         double amplitude = 1.0, frequency = 1.0;
-        bool isWiiU = console == lce::CONSOLE::WIIU;
+        //bool isWiiU = console == lce::CONSOLE::WIIU;
 
         // Add noise from each level
         for (int i = 0; i < Levels; ++i) {
-            c_double coordinateMultiplier = isWiiU ? (frequency / 1.5) : (frequency * amplitude);
+            //c_double coordinateMultiplier = isWiiU ? (frequency / 1.5) : (frequency * amplitude);
             noiseLevels[i].template add<Width, Height>(noiseValues, xOffset, zOffset,
-                               XScale * coordinateMultiplier, ZScale * coordinateMultiplier, 0.55 / amplitude);
+                               XScale * frequency, ZScale * frequency, 0.55 / amplitude);
             frequency *= Lacunarity;
             amplitude *= Persistence;
         }
@@ -229,4 +229,7 @@ struct ChunkNoise {
     NoiseGeneratorPerlin<4> surfaceNoise{}; ///< Noise generator for surface noise.
     NoiseGeneratorOctaves<10> scaleNoise{}; ///< Noise generator for scale noise (currently unused).
     NoiseGeneratorOctaves<16> depthNoise{}; ///< Noise generator for depth noise.
+    NoiseGeneratorPerlin<4> tempNoise{};
+    NoiseGeneratorPerlin<4> humidNoise{};
+    NoiseGeneratorPerlin<2> detailNoise{};
 };

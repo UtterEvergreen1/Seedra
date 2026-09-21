@@ -86,12 +86,12 @@ void ChunkGeneratorOverWorld::setBlocksInChunk(c_int chunkX, c_int chunkZ, Chunk
         c_int k = (subX + 1) * 5;
 
         for (int subZ = 0; subZ < 4; ++subZ) {
-            c_int i1 = (j + subZ) * 33;
-            c_int j1 = (j + subZ + 1) * 33;
-            c_int k1 = (k + subZ) * 33;
-            c_int l1 = (k + subZ + 1) * 33;
+            c_int i1 = (j + subZ) * 17;
+            c_int j1 = (j + subZ + 1) * 17;
+            c_int k1 = (k + subZ) * 17;
+            c_int l1 = (k + subZ + 1) * 17;
 
-            for (int subY = 0; subY < 32; ++subY) {
+            for (int subY = 0; subY < 16; ++subY) {
 
                 double h00 = heightMap[i1 + subY];
                 double h10 = heightMap[j1 + subY];
@@ -112,7 +112,7 @@ void ChunkGeneratorOverWorld::setBlocksInChunk(c_int chunkX, c_int chunkZ, Chunk
                     c_double xiZ0 = (h01 - h00) * 0.25;
                     c_double xzZ1 = (h11 - h10) * 0.25;
 
-                    static constexpr int SEA_LEVEL = 63;
+                    static constexpr int SEA_LEVEL = 64;
 
                     for (int xm = 0; xm < 4; ++xm) {
                         c_int x = subX * 4 + xm;
@@ -199,94 +199,116 @@ void ChunkGeneratorOverWorld::provideChunk(ChunkPrimer *chunkPrimer, c_int x,c_i
 
 
 void ChunkGeneratorOverWorld::generateHeightmap(c_int x, c_int y, c_int z) {
+    chunkNoise.tempNoise.          getRegion<5, 5, 0.025 / 1.5, 0.025 / 1.5, 0.5, 0.25>(g->getConsole(), tempRegion,     x * 4, z * 4);
+    chunkNoise.humidNoise.         getRegion<5, 5, 0.05 / 1.5, 0.05 / 1.5, 0.5, 1.0 / 3.0>(g->getConsole(), humidRegion,     x * 4, z * 4);
+    chunkNoise.detailNoise.        getRegion<5, 5, 0.25 / 1.5, 0.25 / 1.5, 0.5, 0.5882352941176471>(g->getConsole(), detailRegion,     x * 4, z * 4);
+
+    for(int i = 0; i < 25; ++i) {
+        double detail_blend = detailRegion[i] * 1.1 + 0.5;
+
+        // --- BLEND TEMPERATURE ---
+        double temp = (tempRegion[i] * 0.15 + 0.7) * 0.99 + (detail_blend * 0.01);
+
+        // Square the inverse
+        temp = 1.0 - (1.0 - temp) * (1.0 - temp);
+
+        // Clamp 0.0 to 1.0
+        if(temp < 0.0) temp = 0.0;
+        if(temp > 1.0) temp = 1.0;
+
+        tempRegion[i] = temp;
+
+        // --- BLEND HUMIDITY ---
+        double humid = (humidRegion[i] * 0.15 + 0.5) * 0.998 + (detail_blend * 0.002);
+
+        // Clamp 0.0 to 1.
+        if(humid < 0.0) humid = 0.0;
+        if(humid > 1.0) humid = 1.0;
+
+        humidRegion[i] = humid;
+    }
+
+    chunkNoise.scaleNoise.         getRegion<double, 5,  1, 5, 1.121,   1.0,      1.121  >(g, scaleRegion,     x, 10, z);
     chunkNoise.depthNoise.         getRegion<double, 5,  1, 5, 200.0,   1.0,      200.0  >(g, depthRegion,     x, 10, z);
-    chunkNoise.mainPerlinNoise.    getRegion<double, 5, 33, 5, 8.55515, 4.277575, 8.55515>(g, mainNoiseRegion, x,  y, z);
-    chunkNoise.minLimitPerlinNoise.getRegion<double, 5, 33, 5, 684.412, 684.412,  684.412>(g, minLimitRegion,  x,  y, z);
-    chunkNoise.maxLimitPerlinNoise.getRegion<double, 5, 33, 5, 684.412, 684.412,  684.412>(g, maxLimitRegion,  x,  y, z);
-    size_t noiseIdx = 0;
-    size_t depthIdx = 0;
+    chunkNoise.maxLimitPerlinNoise.getRegion<double, 5, 17, 5, 684.412, 684.412,  684.412>(g, maxLimitRegion,  x,  y, z);
+    chunkNoise.minLimitPerlinNoise.getRegion<double, 5, 17, 5, 684.412, 684.412,  684.412>(g, minLimitRegion,  x,  y, z);
+    chunkNoise.mainPerlinNoise.    getRegion<double, 5, 17, 5, 8.55515, 4.277575, 8.55515>(g, mainNoiseRegion, x,  y, z);
+    size_t limitIdx = 0;
+    int gridIdx = 0;
+    constexpr int y_segments = 17;
 
     for (int cellX = 0; cellX < 5; ++cellX) {
         for (int cellZ = 0; cellZ < 5; ++cellZ) {
-            float scaleAvg = 0.0F;
-            float depthAvg = 0.0F;
-            float weightSum = 0.0F;
-            const biome_t centerBiome = biomesForGeneration[cellX + 2 + (cellZ + 2) * 10];
+            double temp = tempRegion[gridIdx];
+            double humid = humidRegion[gridIdx];
 
-            for (int nbDX = -2; nbDX <= 2; ++nbDX) {
-                for (int nbDZ = -2; nbDZ <= 2; ++nbDZ) {
-                    const biome_t neighborBiome = biomesForGeneration[cellX + nbDX + 2 + (cellZ + nbDZ + 2) * 10];
-                    double neighborDepth, neighborScale, neighborInvDPlus2;
-                    getBiomeDepthAndScale<true, true, false, true>
-                            (neighborBiome, &neighborDepth, &neighborScale, nullptr, &neighborInvDPlus2);
-                    /*
-                    if (this->terrainType == WorldType.AMPLIFIED && f5 > 0.0F) {
-                        f5 = 1.0F + f5 * 2.0F;
-                        f6 = 1.0F + f6 * 4.0F;
-                    }
-                    */
-                    // TODO: double being casted to float?
-                    float w = *reinterpret_cast<const float*>(&BIOME_WEIGHTS[nbDX + 2 + (nbDZ + 2) * 5]) * neighborInvDPlus2;
+            double tempHumidFactor = humid * temp;
+            double climateMultiplier = 1.0 - tempHumidFactor;
+            climateMultiplier *= climateMultiplier;
+            climateMultiplier *= climateMultiplier;
+            climateMultiplier = 1.0 - climateMultiplier;
 
-                    double centerDepth, neighborBaseDepth;
-                    getBiomeDepthAndScale<true, false, false, false>(centerBiome, &centerDepth, nullptr, nullptr, nullptr);
-                    getBiomeDepthAndScale<true, false, false, false>(neighborBiome, &neighborBaseDepth, nullptr, nullptr, nullptr);
-                    if (neighborBaseDepth > centerDepth) w /= 2.0F;
+            // 2. Calculate Volatility (Terrain Roughness)
+            double volatility = (scaleRegion[gridIdx] + 256.0) / 512.0;
+            volatility *= climateMultiplier;
+            if(volatility > 1.0) volatility = 1.0;
 
-                    scaleAvg += neighborScale * w;
-                    depthAvg += neighborDepth * w;
-                    weightSum += w;
-                }
-            }
+            // 3. Calculate Raw Base Height
+            double rawBaseHeight = depthRegion[gridIdx] / 8000.0;
 
-            scaleAvg = scaleAvg / weightSum;
-            depthAvg = depthAvg / weightSum;
-            scaleAvg = scaleAvg * 0.9F + 0.1F;
-            depthAvg = (depthAvg * 4.0F - 1.0F) / 8.0F;
-            double depthNoiseOffset = depthRegion[depthIdx] / 8000.0;
+            // Replicate the exact Beta 1.6.6 shaping logic
+            if(rawBaseHeight < 0.0) rawBaseHeight = -rawBaseHeight * 0.3;
+            rawBaseHeight = rawBaseHeight * 3.0 - 2.0;
 
-            if (depthNoiseOffset < 0.0) {
-                depthNoiseOffset = -depthNoiseOffset * 0.3;
-            }
-            depthNoiseOffset = depthNoiseOffset * 3.0 - 2.0;
-
-            if (depthNoiseOffset < 0.0) {
-                depthNoiseOffset = depthNoiseOffset / 2.0;
-                if (depthNoiseOffset < -1.0)
-                    depthNoiseOffset = -1.0;
-                depthNoiseOffset = depthNoiseOffset / 1.4;
-                depthNoiseOffset = depthNoiseOffset / 2.0;
+            if(rawBaseHeight < 0.0) {
+                rawBaseHeight /= 2.0;
+                if(rawBaseHeight < -1.0) rawBaseHeight = -1.0;
+                rawBaseHeight /= 1.4;
+                rawBaseHeight /= 2.0;
+                volatility = 0.0;
             } else {
-                if (depthNoiseOffset > 1.0)
-                    depthNoiseOffset = 1.0;
-                depthNoiseOffset = depthNoiseOffset / 8.0;
+                if(rawBaseHeight > 1.0) rawBaseHeight = 1.0;
+                rawBaseHeight /= 8.0;
             }
 
-            ++depthIdx;
-            auto depthBlend = static_cast<double>(depthAvg);
-            c_auto scaleAvgD = static_cast<double>(scaleAvg);
-            depthBlend = depthBlend + depthNoiseOffset * 0.2;
-            depthBlend = depthBlend * 8.5 / 8.0; // baseSize = 8.5
-            c_double heightCenter = 8.5 + depthBlend * 4.0;
+            if(volatility < 0.0) volatility = 0.0;
+            volatility += 0.5;
 
-            for (int yIdx = 0; yIdx < 33; ++yIdx) {
-                double densityFalloff = (static_cast<double>(yIdx) - heightCenter) * 12.0 * 128.0 / 256.0 / scaleAvgD;
+            rawBaseHeight = rawBaseHeight * y_segments / 16.0;
 
-                if (densityFalloff < 0.0) densityFalloff *= 4.0;
+            // Final Base Height for this X/Z column
+            double baseHeight = y_segments / 2.0 + rawBaseHeight * 4.0;
 
-                c_double minNoise = minLimitRegion[noiseIdx] / 512.0; // lowerLimitScale = 512.0
-                c_double maxNoise = maxLimitRegion[noiseIdx] / 512.0; // upperLimitScale = 512.0
-                c_double mainBlend = (mainNoiseRegion[noiseIdx] / 10.0 + 1.0) / 2.0;
-                double density = MathHelper::clampedLerp(mainBlend, minNoise, maxNoise) - densityFalloff;
-
-                if (yIdx > 29) {
-                    c_auto topFade = static_cast<double>(static_cast<float>(yIdx - 29) / 3.0F);
-                    density = density * (1.0 - topFade) + -10.0 * topFade;
+            for(int y_segment = 0; y_segment < y_segments; ++y_segment) {
+                double interpolatedNoise = 0.0;
+                double heightFalloff = ((double)y_segment - baseHeight) * 12.0 / volatility;
+                if(heightFalloff < 0.0) {
+                    heightFalloff *= 4.0;
                 }
 
-                heightMap[noiseIdx] = density;
-                ++noiseIdx;
+                double maxLimit = maxLimitRegion[limitIdx] / 512.0;
+                double minLimit = minLimitRegion[limitIdx] / 512.0;
+                double mainNoiseBlend = (mainNoiseRegion[limitIdx] / 10.0 + 1.0) / 2.0;
+                if(mainNoiseBlend < 0.0) {
+                    interpolatedNoise = maxLimit;
+                } else if(mainNoiseBlend > 1.0) {
+                    interpolatedNoise = minLimit;
+                } else {
+                    interpolatedNoise = maxLimit + (minLimit - maxLimit) * mainNoiseBlend;
+                }
+
+                interpolatedNoise -= heightFalloff;
+                if(y_segment > y_segments - 4) {
+                    double topFade = (double)((float)(y_segment - (y_segments - 4)) / 3.0F);
+                    interpolatedNoise = interpolatedNoise * (1.0 - topFade) + -10.0 * topFade;
+                }
+
+                heightMap[limitIdx] = interpolatedNoise;
+                ++limitIdx;
             }
+
+
+            ++gridIdx;
         }
     }
 }

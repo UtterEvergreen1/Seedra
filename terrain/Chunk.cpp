@@ -254,7 +254,7 @@ namespace Chunk {
         }
         chunk->isModifying.store(true);
 
-        Generator* g = world.getGenerator();
+        /*Generator* g = world.getGenerator();
         if (const Pos3D waterPos = FeaturePositions::waterLake(
                     g, chunk->decorateRng, chunkPos.x, chunkPos.z); !waterPos.isNull()) {
             const WorldGenLakes waterGen(g, lce::BlocksInit::STILL_WATER.getState());
@@ -302,7 +302,7 @@ namespace Chunk {
                     }
                 }
             }
-        }
+        }*/
         chunk->stage = Stage::STAGE_DONE;
         chunk->isModifying.store(false);
     }

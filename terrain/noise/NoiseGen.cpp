@@ -227,6 +227,9 @@ void NoiseGeneratorSimplex::add(std::array<double, Width * Height> &noiseValues,
     }
 }
 
+template void NoiseGeneratorSimplex::add<5, 5>(std::array<double, 25> &noiseValues,
+             c_double xOffset, c_double zOffset,
+             c_double xScale, c_double zScale, c_double noiseScale) const;
 
 /*
 void NoiseGeneratorImproved::populateNoiseArray(const Generator *g, std::vector<double> &noiseArray,
@@ -351,6 +354,10 @@ void NoiseGeneratorImproved::populateNoiseArray(const Generator *g, std::vector<
     }
 }
 */
+
+bool isAccurate(double value, double target, double epsilon = 1e-3) {
+    return std::abs(value - target) < epsilon;
+}
 /**
  * @brief Populates a noise array with generated noise values.
  *
@@ -424,11 +431,11 @@ void NoiseGeneratorImproved::add(
 
                 const double nA = MathHelper::lerp(fadeX,
                                                    grad2(P[permRow0], xCoord, zFrac),
-                                                   grad (P[permRow1], xCoord - 1.0, 0.0, zFrac));
+                                                   grad2 (P[permRow1], xCoord - 1.0, zFrac));
 
                 const double nB = MathHelper::lerp(fadeX,
-                                                   grad (P[permRow0 + 1], xCoord, 0.0, zFrac - 1.0),
-                                                   grad (P[permRow1 + 1], xCoord - 1.0, 0.0, zFrac - 1.0));
+                                                   grad2 (P[permRow0 + 1], xCoord, zFrac - 1.0),
+                                                   grad2 (P[permRow1 + 1], xCoord - 1.0, zFrac - 1.0));
 
                 *out++ += MathHelper::lerp(fZ, nA, nB) * invScale;
             }
@@ -514,9 +521,9 @@ void NoiseGeneratorImproved::add(
                 if (yi == 0 || permY != lastYInt) {
                     lastYInt = permY;
                     permBase0 = P[permX] + permY;
+                    permBase1 = P[permX + 1] + permY;
                     permXZ00  = P[permBase0]     + permZ;
                     permXZ01  = P[permBase0 + 1] + permZ;
-                    permBase1 = P[permX + 1] + permY;
                     permXZ10  = P[permBase1]     + permZ;
                     permXZ12  = P[permBase1 + 1] + permZ; // same as permXZ11 + 1
 
@@ -683,11 +690,12 @@ template class NoiseGeneratorPerlin<4>;
 template void NoiseGeneratorSimplex::add<16, 16>(std::array<double, 256>&, double, double, double, double, double) const;
 
 template void NoiseGeneratorImproved::add<5, 1, 5>(const Generator *, std::array<double, 25> &, double, double, double, double, double, double, double) const;
-template void NoiseGeneratorImproved::add<5, 33, 5>(const Generator *, std::array<double, 825> &, double, double, double, double, double, double, double) const;
+template void NoiseGeneratorImproved::add<5, 17, 5>(const Generator *, std::array<double, 425> &, double, double, double, double, double, double, double) const;
 
 template class NoiseGeneratorOctaves<8>;
 template class NoiseGeneratorOctaves<16>;
 
+template void NoiseGeneratorOctaves<10>::getRegion<double, 5,  1, 5, 1.121,   1.0,      1.121 >(const Generator *, std::array<double, 25> &, int, int, int) const;
 template void NoiseGeneratorOctaves<16>::getRegion<double, 5,  1, 5, 200.0,   1.0,      200.0  >(const Generator *, std::array<double, 25> &, int, int, int) const;
-template void NoiseGeneratorOctaves<8>::getRegion<double, 5, 33, 5, 8.55515, 4.277575, 8.55515>(const Generator *, std::array<double, 825> &, int, int, int) const;
-template void NoiseGeneratorOctaves<16>::getRegion<double, 5, 33, 5, 684.412, 684.412,  684.412>(const Generator *, std::array<double, 825> &, int, int, int) const;
+template void NoiseGeneratorOctaves<8>::getRegion<double, 5, 17, 5, 8.55515, 4.277575, 8.55515>(const Generator *, std::array<double, 425> &, int, int, int) const;
+template void NoiseGeneratorOctaves<16>::getRegion<double, 5, 17, 5, 684.412, 684.412,  684.412>(const Generator *, std::array<double, 425> &, int, int, int) const;

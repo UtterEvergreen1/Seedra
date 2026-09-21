@@ -122,12 +122,20 @@ void Generator::reloadCache() {
 
 void Generator::setupNoiseStack() const {
     m_chunk_noise.rng.setSeed(static_cast<u64>(this->getWorldSeed()));
-    m_chunk_noise.minLimitPerlinNoise.setNoiseGeneratorOctaves(m_chunk_noise.rng);
     m_chunk_noise.maxLimitPerlinNoise.setNoiseGeneratorOctaves(m_chunk_noise.rng);
+    m_chunk_noise.minLimitPerlinNoise.setNoiseGeneratorOctaves(m_chunk_noise.rng);
     m_chunk_noise.mainPerlinNoise.setNoiseGeneratorOctaves(m_chunk_noise.rng);
+    m_chunk_noise.surfaceNoise.setNoiseGeneratorPerlin(m_chunk_noise.rng);
     m_chunk_noise.surfaceNoise.setNoiseGeneratorPerlin(m_chunk_noise.rng);
     m_chunk_noise.scaleNoise.setNoiseGeneratorOctaves(m_chunk_noise.rng);
     m_chunk_noise.depthNoise.setNoiseGeneratorOctaves(m_chunk_noise.rng);
+
+    m_chunk_noise.rng.setSeed(static_cast<u64>(this->getWorldSeed() * 9871LL));
+    m_chunk_noise.tempNoise.setNoiseGeneratorPerlin(m_chunk_noise.rng);
+    m_chunk_noise.rng.setSeed(static_cast<u64>(this->getWorldSeed() * 39811LL));
+    m_chunk_noise.humidNoise.setNoiseGeneratorPerlin(m_chunk_noise.rng);
+    m_chunk_noise.rng.setSeed(static_cast<u64>(this->getWorldSeed() * 543321LL));
+    m_chunk_noise.detailNoise.setNoiseGeneratorPerlin(m_chunk_noise.rng);
     m_chunk_noise.initialized = true;
 }
 

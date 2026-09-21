@@ -33,11 +33,15 @@ public:
     std::span<int> biomesForGenerationSpan;
 
     std::array<double, 25> depthRegion;     ///< Buffer for depth region values.
+    std::array<double, 25> scaleRegion;     ///< Buffer for depth region values.
+    std::array<double, 25> tempRegion;     ///< Buffer for depth region values.
+    std::array<double, 25> humidRegion;     ///< Buffer for depth region values.
+    std::array<double, 25> detailRegion;     ///< Buffer for depth region values.
     std::array<double, 256> depthBuffer;     ///< Buffer for depth values.
-    std::array<double, 825> heightMap;       ///< Buffer for heightmap values.
-    std::array<double, 825> mainNoiseRegion; ///< Buffer for main noise region values.
-    std::array<double, 825> minLimitRegion;  ///< Buffer for minimum limit region values.
-    std::array<double, 825> maxLimitRegion;  ///< Buffer for maximum limit region values.
+    std::array<double, 425> heightMap;       ///< Buffer for heightmap values.
+    std::array<double, 425> mainNoiseRegion; ///< Buffer for main noise region values.
+    std::array<double, 425> minLimitRegion;  ///< Buffer for minimum limit region values.
+    std::array<double, 425> maxLimitRegion;  ///< Buffer for maximum limit region values.
 
     /**
      * @brief Constructs a ChunkGeneratorOverWorld object with the specified generator.
