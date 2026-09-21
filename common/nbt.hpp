@@ -260,7 +260,7 @@ public:
     MU void merge(const NBTBase& other);
 
     ND static NBTBase read(DataReader& reader);
-    ND static NBTBase readInternal(DataReader& reader, eNBT type);
+    ND static NBTBase readInternal(DataReader& reader, eNBT type, int depth = 0);
 
     NBTBase readFile(const std::string& path);
 

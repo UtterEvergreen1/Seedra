@@ -7,6 +7,7 @@
 #include <string>
 #include <utility>
 
+#include "Template.hpp"
 #include "common/data/buffer.hpp"
 
 class ResourceLocation;
@@ -24,6 +25,15 @@ class TemplateManager {
 public:
     TemplateManager(std::string baseFolder, DataFixer fixer)
         : m_baseFolder(std::move(baseFolder)), field_191154_c(fixer) {}
+
+    ~TemplateManager() {
+        for (auto& [id, tpl] : this->templates) {
+            delete tpl;
+        }
+    }
+
+    TemplateManager(const TemplateManager&) = delete;
+    TemplateManager& operator=(const TemplateManager&) = delete;
 
     Template* getTemplate(const ResourceLocation& id);
 

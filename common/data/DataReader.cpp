@@ -4,6 +4,8 @@
 
 i32 DataReader::readInt24() {
     int val;
+    if (!canRead(3))
+        throw std::out_of_range("DataReader::readInt24 past end");
     if (_end == Endian::Native) {
         val = ((_ptr[2] << 16) | (_ptr[1] << 8) | _ptr[0]);
     } else {
@@ -15,6 +17,10 @@ i32 DataReader::readInt24() {
 
 
 Buffer DataReader::readBuffer(const uint32_t length) {
+    if (!canRead(length))
+        throw std::out_of_range("DataReader::readBuffer past end");
+    if (length == 0)
+        return Buffer{};
     Buffer buffer(length);
     std::memcpy(buffer.data(), _ptr, length);
     skip(length);
@@ -23,12 +29,16 @@ Buffer DataReader::readBuffer(const uint32_t length) {
 
 
 void DataReader::readBytes(const uint32_t length, uint8_t* dataIn) {
+    if (!canRead(length))
+        throw std::out_of_range("DataReader::readBytes past end");
     std::memcpy(dataIn, _ptr, length);
     skip(length);
 }
 
 
 std::span<const uint8_t> DataReader::readSpan(const uint32_t length) {
+    if (!canRead(length))
+        throw std::out_of_range("DataReader::readSpan past end");
     const std::span _span = {_ptr, length};
     skip(length);
     return std::move(_span);
@@ -36,6 +46,8 @@ std::span<const uint8_t> DataReader::readSpan(const uint32_t length) {
 
 
 std::string DataReader::readString(const uint32_t length) {
+    if (!canRead(length))
+        throw std::out_of_range("DataReader::readString past end");
     const char* start = reinterpret_cast<const char*>(_ptr);
     // Look for a NUL in the next `length` bytes (nullptr if none found).
     const char* nul = static_cast<const char*>(std::memchr(start, 0, length));

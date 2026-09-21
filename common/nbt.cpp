@@ -1,4 +1,3 @@
-// common/nbt.cpp
 #include "nbt.hpp"
 
 
@@ -75,7 +74,14 @@ MU NBTBase NBTBase::read(DataReader& reader) {
 }
 
 
-NBTBase NBTBase::readInternal(DataReader& reader, eNBT type) {
+NBTBase NBTBase::readInternal(DataReader& reader, eNBT type, int depth) {
+    // Real templates nest < 20 levels; 512 leaves ample headroom while
+    // keeping worst-case stack usage bounded (~512 frames * ~500 B).
+    // Throws a normal C++ exception so the existing catch(...) handlers
+    // in consumers can intercept it.
+    if (depth > 512)
+        throw std::runtime_error("NBT: nesting deeper than 512 levels");
+
     switch (type) {
         case eNBT::UINT8: return makeByte(reader.read<u8>());
         case eNBT::INT16: return makeShort(reader.read<i16>());
@@ -86,6 +92,8 @@ NBTBase NBTBase::readInternal(DataReader& reader, eNBT type) {
 
         case eNBT::BYTE_ARRAY: {
             i32 size = reader.read<i32>();
+            if (size < 0 || !reader.canRead(size))
+                throw std::out_of_range("NBT BYTE_ARRAY size out of range");
             c_u8* start = reader.ptr();
             reader.skip(size);
             return makeByteArray( {start, start + size} );
@@ -98,11 +106,23 @@ NBTBase NBTBase::readInternal(DataReader& reader, eNBT type) {
         case eNBT::LIST: {
             auto subType = static_cast<eNBT>(reader.read<u8>());
             auto size = (i32) reader.read<u32>();
+            if (size < 0)
+                throw std::runtime_error("NBT list: negative size");
+            if (subType == eNBT::NONE || subType == eNBT::PRIMITIVE) {
+                // END/PRIMITIVE-typed elements consume no input bytes: any
+                // size > 0 would allocate `size` elements from a 0-byte payload.
+                if (size != 0)
+                    throw std::runtime_error("NBT list: empty-typed list with non-zero size");
+            } else if (!reader.canRead(size)) {
+                // Every well-formed element consumes at least one input byte;
+                // refuse sizes the remaining input cannot possibly back.
+                throw std::runtime_error("NBT list: size exceeds remaining input");
+            }
             NBTList list(subType);
             list.reserve(size);
             for (int i = 0; i < size; ++i) {
                 NBTBase element(subType, {});
-                list.push_back(readInternal(reader, subType));
+                list.push_back(readInternal(reader, subType, depth + 1));
             }
             return makeList(std::move(list));
         }
@@ -114,19 +134,25 @@ NBTBase NBTBase::readInternal(DataReader& reader, eNBT type) {
                 if (subType == eNBT::NONE) break;
                 c_u32 length = reader.read<u16>();
                 std::string key = reader.readString(length);
-                NBTBase subTag = readInternal(reader, subType);
+                NBTBase subTag = readInternal(reader, subType, depth + 1);
                 compound.insert(key, subTag);
             }
             return makeCompound(std::move(compound));
         }
         case eNBT::INT_ARRAY: {
             i32 size = reader.read<i32>();
+            // Declared elements must be backed by remaining input bytes before
+            // the count-constructor commits and zero-fills 4*size bytes.
+            if (size < 0 || !reader.canRead(i64(size) * 4))
+                throw std::runtime_error("NBT INT_ARRAY size exceeds remaining input");
             NBTIntArray arr(size);
             for (int i = 0; i < size; ++i) arr[i] = reader.read<i32>();
             return makeIntArray(arr);
         }
         case eNBT::LONG_ARRAY: {
             i32 size = reader.read<i32>();
+            if (size < 0 || !reader.canRead(i64(size) * 8))
+                throw std::runtime_error("NBT LONG_ARRAY size exceeds remaining input");
             NBTLongArray arr(size);
             for (int i = 0; i < size; ++i) arr[i] = reader.read<i64>();
             return makeLongArray(arr);
@@ -135,7 +161,7 @@ NBTBase NBTBase::readInternal(DataReader& reader, eNBT type) {
         case eNBT::PRIMITIVE:
             return {};
         default:
-            std::unreachable();
+            throw std::runtime_error("NBT: unknown tag type " + std::to_string(static_cast<int>(type)));
     }
 }
 

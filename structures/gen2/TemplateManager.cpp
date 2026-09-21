@@ -1,6 +1,7 @@
 #include "TemplateManager.hpp"
 #include "ResourceLocation.hpp"
 #include "Template.hpp"
+#include <memory>
 
 Template* TemplateManager::getTemplate(const ResourceLocation& id) {
     std::string s = id.getResourcePath();
@@ -48,6 +49,20 @@ bool TemplateManager::readTemplate(const ResourceLocation& id) {
     std::string s = id.getResourcePath();
     fs::path root = fs::current_path();
 
+    // Confine the read target to <cwd>/<baseFolder>: an absolute id (or one
+    // with a root name) replaces the whole accumulated path in operator/,
+    // and ".." segments are resolved by the OS at stat/open time - neither
+    // is caught by the fs::exists gate below.
+    fs::path idPath(s);
+    if (idPath.is_absolute() || idPath.has_root_name()) {
+        return false;
+    }
+    for (const auto& segment : idPath) {
+        if (segment == "..") {
+            return false;
+        }
+    }
+
     fs::path filePath = (root / this->m_baseFolder / s).make_preferred();
 
     if (!fs::exists(filePath)) {
@@ -75,7 +90,7 @@ void TemplateManager::readTemplateFromBuffer(const std::string& id, Buffer& buff
         nbtCompound["DataVersion"] = makeInt(500);
     }
 
-    auto* _template = new Template();
+    std::unique_ptr<Template> _template = std::make_unique<Template>();
     _template->read(nbtCompound.get<NBTCompound>());
 
     // Delete old template if it exists
@@ -84,7 +99,7 @@ void TemplateManager::readTemplateFromBuffer(const std::string& id, Buffer& buff
         delete it->second;
     }
 
-    this->templates[id] = _template;
+    this->templates[id] = _template.release();
 }
 
 bool TemplateManager::writeTemplate(const ResourceLocation& id) {
