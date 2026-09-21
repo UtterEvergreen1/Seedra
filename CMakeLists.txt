@@ -221,6 +221,7 @@ if(LC_BUILD_EXECUTABLE)
     add_cli(EXE_ValidateWorldSeeds "tests/validate_world_seeds.cpp")
     add_cli(EXE_CheckChestAdjacency "tests/check_chest_adjacency.cpp")
     add_cli(EXE_FindBookWeightSeeds "tests/find_book_weight_seeds.cpp")
+    add_cli(EXE_SimpleDungeonChests "tests/print_simple_dungeon_chests.cpp")
 
     # ── Unit Tests (doctest) ──────────────────────────────────────────
     enable_testing()

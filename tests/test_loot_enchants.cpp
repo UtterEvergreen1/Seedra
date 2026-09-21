@@ -190,9 +190,6 @@ int testMending() {
 
 int main() {
 
-    // return testMending();
-
-    lce::registry::ItemRegistry::setup();
     enchants::EnchantController::setup(lce::CONSOLE::WIIU, LCEVERSION::AQUATIC);
     unit_test();
     return 0;
