@@ -542,7 +542,7 @@ TEST_SUITE("Enchants") {
     }
 
     TEST_CASE("Correct enchants for given loot seed (PS3 aquatic)") {
-        enchants::EnchantController::setup(lce::CONSOLE::PS3, LCEVERSION::AQUATIC);
+        enchants::EnchantController::setup(lce::CONSOLE::PS3, LCEVERSION::ELYTRA);
         Container<27> c;
         stronghold_library.getLootFromLootTableSeed<GenMode::MOD_NO_SHUF>(c, 2540137978986425799LL);
         CHECK(c.enchantCount() == 1u);

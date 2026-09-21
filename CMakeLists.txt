@@ -253,7 +253,7 @@ if(LC_BUILD_EXECUTABLE)
     add_test(NAME SeedraUnitTests COMMAND EXE_UnitTests)
 
     # CUDA executables (if CUDA is available)
-    if(CUDA_AVAILABLE)
+    if(CUDA_AVAILABLE AND BUILD_CUDA_EXECUTABLES)
         add_executable(EXE_GodDungeon_CUDA "tests/find_god_dungeon_cuda.cu")
         set_target_properties(EXE_GodDungeon_CUDA PROPERTIES
             CUDA_SEPARABLE_COMPILATION ON
