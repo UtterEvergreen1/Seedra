@@ -16,7 +16,7 @@ int main() {
     std::unordered_map <Pos2D, int, Pos2D::Hasher> chunkPositions;
     for (int seed = 0; seed < sampleSize; ++seed) {
         generator.applyWorldSeed(seed);
-        Pos2D rawPos = Placement::Stronghold::getStartChunk(generator);
+        Pos2D rawPos = Placement::Stronghold::getWorldPositions(generator)[0].toChunkPos();
         chunkPositions[rawPos]++;
     }
 
