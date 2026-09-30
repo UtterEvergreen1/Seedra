@@ -3,3 +3,5 @@ cmake-build-release
 cmake-build-relwithdebinfo
 build
 pyth
+# EXE_StrongholdMining output (see tools/stronghold_mining/README.md)
+/stronghold_data/
