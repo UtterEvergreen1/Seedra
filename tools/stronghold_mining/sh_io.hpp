@@ -19,6 +19,10 @@ namespace shm {
         return "<u4";
     }
     template<>
+    constexpr const char* npyDescr<uint8_t>() {
+        return "|u1";
+    }
+    template<>
     constexpr const char* npyDescr<int32_t>() {
         return "<i4";
     }

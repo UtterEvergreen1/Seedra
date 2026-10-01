@@ -67,6 +67,41 @@ Parquet once. A 1M-world report takes about 35 s; sections 3c-5 use a random 2M-
 `python report.py -h` lists the options: the main method, how far you look around, the time model (reset, look,
 dig, xray, travel speed), rule depth and minimum group sizes.
 
+### Multi-step plans
+
+What to do after the first xray fails (look in another direction, walk to a second spot, or reset) needs the joint
+outcome of several xrays within one layout, which the kernels do not have. `layouts` mode stores it, and
+`multistep.py` turns it into plans:
+
+```sh
+for s in small medium large; do
+  $EXE layouts --scale $s --seeds 250000 --out $OUT      # ~5 min each, 650 MB; must print "0 mismatches"
+done
+cd tools/stronghold_mining/analysis
+for t in small medium large small_balanced medium_balanced large_balanced; do
+  python multistep.py --data ../../../stronghold_data --tag $t     # 10M worlds: ~5 min, ~7 GB RAM
+done
+```
+
+It writes `reports/<tag>/multistep.md`, one CSV of plans per spawn cell per variant, and adds two columns to
+`summary.md`. Each plan is spelled out ("go to (16, 136), dig in, xray down; if nothing: look north; ...; then
+reset", or "reset at once"). The plan families:
+
+- one xray down;
+- xray down, and if nothing, a second xray down at another spot;
+- any sequence of xrays at one spot: down and/or the 4 looks, in the best order, stopping at the first hit;
+- the best of the above, or one xray at spot A and then one at spot B (any two methods).
+
+Each family is scored with the same plan for everyone and with a plan per 64-block spawn cell (including "reset at
+once"). Both xray-down models (flat, 3D) are reported. `--budget S` drops finds later than S seconds after spawning;
+the time model options are the same as report.py's.
+
+How: for a group of worlds, P(A fails, B hits) = sum over start chunks s of P(s | group) * P_layout(B - 16 s hit,
+A - 16 s miss). The layout term is one Gram matrix over the 250k layouts (only cells that are ever visible). Plans
+minimise seconds per find on the training worlds (Dinkelbach over a grid of break-even values) and are scored on the
+test worlds. Test worlds whose own layout is in the layouts file are also simulated with it; the report prints that
+check. Spots are on an 8-block grid.
+
 ## How it works
 
 **Sampling like the game.** A random world seed is `nextLong()` of a `java.util.Random` seeded from the performance
@@ -146,6 +181,8 @@ Other outputs:
 | `heatmap_<name>_<tag>.npy` | uint32 counts per column `[z + 432, x + 432]` from real layouts: `any`, `any_balanced`, `portal`, `start` |
 | `run_<tag>.json` | settings, timing, balanced count, placement retries, checks |
 | `oracle_<tag>.csv` | per world and target: best spot, cross-fitted chance, whether that spot hit the real stronghold |
+| `layouts_<scale>.npy` | uint8 `[world, dz, dx]`, offsets -200..200 step 8 from the start chunk origin; bits dig, down_flat, down_3d, portal30, look_n/e/s/w (settings in `layouts_run_<scale>.json`) |
+| `layouts_index_<scale>.npy` | int32 `[world, (sample, chunk x, chunk z)]`, same samples as the dataset run |
 
 Biome ids are Seedra's `biome_t` values; `analysis/shlib.py` has the names and the groups used in the reports.
 

@@ -455,7 +455,8 @@ def time_table(c: Ctx, m: Method, sub: np.ndarray, rules: Rules) -> tuple[list[d
                  f"spot by spawn cell ({a.cell} blocks)": cells,
                  f"rules (within {rules.radius})": rules.leaf}
     model = S.TimeModel(tm.reset, tm.look, 0.0, act, tm.speed)  # optimise_time charges dig + xray = act
-    rows, res = [], {}
+    rows, res, plan = [], {}, None
+    cell_name = f"spot by spawn cell ({a.cell} blocks)"
     for name, labels in groupings.items():
         groups = np.unique(labels[tr])
         ps, walks, shares = [], [], []
@@ -470,8 +471,8 @@ def time_table(c: Ctx, m: Method, sub: np.ndarray, rules: Rules) -> tuple[list[d
         gi = np.clip(np.searchsorted(groups, labels), 0, len(groups) - 1)
         gi[groups[gi] != labels] = int(np.argmax(shares))  # unseen group -> biggest group's choice
         for allow_reset in (False, True):
-            _, js, go = S.optimise_time(ps, walks, shares, model, allow_reset)
-            js, go = np.asarray(js)[gi[te]], np.asarray(go)[gi[te]]
+            _, js_g, go_g = S.optimise_time(ps, walks, shares, model, allow_reset)
+            js, go = np.asarray(js_g)[gi[te]], np.asarray(go_g)[gi[te]]
             k, pos = js // J, js % J
             sx, sz = spots[pos, 0], spots[pos, 1]
             walk = np.hypot(px[te] - sx, pz[te] - sz) / tm.speed
@@ -488,11 +489,33 @@ def time_table(c: Ctx, m: Method, sub: np.ndarray, rules: Rules) -> tuple[list[d
                          "attempts per find": f"{len(cost) / found.sum():.1f}",
                          "seconds per find": seconds})
             res[label] = float(seconds)
+            if name == cell_name and allow_reset:
+                plan = cell_plan(c, m, groups, shares, js_g, go_g, gi[te], found, walk, J, spots)
     base = res["same spot for every world"]
     for r in rows:
         r["speed-up"] = f"{base / r['seconds per find']:.2f}x"
         r["seconds per find"] = f"{r['seconds per find']:.0f}"
-    return rows, res
+    return rows, res, plan
+
+
+def cell_plan(c: Ctx, m: Method, groups, shares, js_g, go_g, gi_test, found, walk, J, spots) -> pd.DataFrame:
+    """The 'spot by spawn cell, reset bad worlds at once' plan, one row per cell (chances on test worlds)."""
+    size = c.args.cell
+    rows = []
+    for g, share, j, go in zip(groups, shares, js_g, go_g):
+        sel = gi_test == np.searchsorted(groups, g)
+        if g < 0:
+            where = ("other cells", "")
+        else:
+            cx, cz = cell_xz(g)
+            where = (f"{cx * size}..{cx * size + size - 1}", f"{cz * size}..{cz * size + size - 1}")
+        k, pos = divmod(int(j), J)
+        x, z = spots[pos]
+        rows.append({"you spawn at x": where[0], "z": where[1], "worlds": f"{share:.1%}",
+                     "do": f"go to ({x}, {z}){m.choice(k)}" if go else "reset at once",
+                     "travel": f"{walk[sel].mean():.0f}s" if go and sel.any() else "-",
+                     "chance (test)": pct(found[sel].mean()) if go and sel.any() else "-", "_s": share})
+    return pd.DataFrame(rows).sort_values("_s", ascending=False).drop(columns="_s")
 
 
 def section_time(c: Ctx, sub: np.ndarray, rules: dict) -> None:
@@ -509,9 +532,14 @@ def section_time(c: Ctx, sub: np.ndarray, rules: dict) -> None:
     c.summary["time"] = {}
     for key in dict.fromkeys([a.method, "look"]):
         m = METHOD[key]
-        rows, res = time_table(c, m, sub, rules[(key, a.radius)])
+        rows, res, plan = time_table(c, m, sub, rules[(key, a.radius)])
         c.summary["time"][key] = res
         c.add(f"### {m.label} ({c.action_seconds(m):g}s at the spot)", "", *md_table(pd.DataFrame(rows)))
+        if plan is not None:
+            plan.to_csv(c.out / f"plan_{key}.csv", index=False)
+            c.add(f"The plan behind 'spot by spawn cell ({a.cell} blocks), reset bad worlds at once' for the largest "
+                  f"cells (all {len(plan)} in `plan_{key}.csv`); travel and chance are on test worlds:", "",
+                  *md_table(plan.head(15)))
 
 
 # ------------------------------------------------------------------------------------------------- notes
@@ -528,6 +556,18 @@ def section_notes(c: Ctx) -> None:
 
 
 # --------------------------------------------------------------------------------------------- summary
+
+def multistep_columns(folder: Path) -> dict:
+    """s/find of the multistep.py plans for one report folder (flat down xray), or '-' if not run."""
+    f = folder / "multistep.json"
+    v = json.loads(f.read_text()).get("variants", {}).get("flat", {}) if f.exists() else {}
+
+    def best(prefix: str) -> str:
+        vals = [r["s_per_find"] for k, r in v.items() if k.split("|")[0] in prefix.split(",")]
+        return f"{min(vals):.0f}" if vals else "-"
+
+    return {"s/find, multistep, down only": best("down,down2"), "s/find, multistep, any": best("down,down2,spot,all")}
+
 
 def write_summary(reports: Path) -> None:
     rows = []
@@ -547,11 +587,13 @@ def write_summary(reports: Path) -> None:
             "look 1 dir": pct(b.get("look", {}).get("p")),
             "look, rules": pct(rt.get(f"look_r{s['radius']}")),
             "s/find, same spot": f"{tm.get(key, {}).get('same spot for every world', float('nan')):.0f}",
-            "s/find, best strategy": f"{best_time:.0f}"})
+            "s/find, best strategy": f"{best_time:.0f}"} | multistep_columns(f.parent))
     lines = ["# Stronghold reports side by side", "",
              "Chances are for one attempt at the chosen spot. 'rules' = decision tree over what you see near spawn "
              "(scored on test worlds). 'all biomes known' = the ceiling for any biome-based method. s/find = expected "
-             "seconds per stronghold found under each report's time model.", ""]
+             "seconds per stronghold found under each report's time model. 'multistep' columns (from multistep.py, "
+             "flat 30-block down xray, plan per spawn cell with resets): down xrays only (a second one at another "
+             "spot allowed), and any plan including directional looks.", ""]
     lines += md_table(pd.DataFrame(rows)) if rows else ["(no reports yet)"]
     (reports / "summary.md").write_text("\n".join(lines))
 

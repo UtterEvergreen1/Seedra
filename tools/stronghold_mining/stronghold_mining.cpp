@@ -3,6 +3,7 @@
 //   EXE_StrongholdMining selftest --scale small
 //   EXE_StrongholdMining dataset  --scale small --seeds 10000000 --out data
 //   EXE_StrongholdMining oracle   --scale small --seeds 20000 --out data     (after dataset: needs its kernels)
+//   EXE_StrongholdMining layouts  --scale small --seeds 200000 --out data    (joint outcomes, for multistep.py)
 //
 // See tools/stronghold_mining/README.md for what every output file contains.
 
@@ -62,12 +63,13 @@ namespace {
         std::string targets = "any_h:0,any_h:30,any_3d:30";
     };
 
-    const char* USAGE = R"(usage: EXE_StrongholdMining <selftest|dataset|oracle> --scale <small|medium|large> [options]
+    const char* USAGE = R"(usage: EXE_StrongholdMining <selftest|dataset|oracle|layouts> --scale <small|medium|large> [options]
 
 common options
   --console NAME       xbox1 (default), xbox360, ps4, ...
   --version NAME       elytra (default), aquatic, bountiful, horse, potions, adventure, pillage
-  --seeds N            worlds to sample (defaults: selftest 2000, dataset 1000000, oracle 10000)
+  --seeds N            worlds to sample (defaults: selftest 2000, dataset 1000000, oracle 10000,
+                       layouts 200000)
   --first-sample I     index of the first sample (default 0); samples I .. I+N-1 are generated
   --run-seed S         base value for sampling worlds (default 1); same value + same index = same world
   --threads T          worker threads (default: all hardware threads)
@@ -86,6 +88,10 @@ oracle options
   --kernel-tag TAG     use the kernels of that dataset run (e.g. small for a --balanced-only oracle;
                        layouts never depend on biomes, so any run's kernels are valid)
   --targets LIST       kernel:radius pairs (default any_h:0,any_h:30,any_3d:30)
+
+layouts mode
+  writes layouts_<tag>.npy: per world one byte per spot on an 8-block grid of offsets -200..200 from the
+  stronghold chunk origin; bits dig, down_flat, down_3d, portal30, look_n, look_e, look_s, look_w
 )";
 
     [[noreturn]] void usage(const std::string& error) {
@@ -153,7 +159,8 @@ oracle options
             else
                 usage("unknown option " + k);
         }
-        if (a.mode != "selftest" && a.mode != "dataset" && a.mode != "oracle") usage("unknown mode " + a.mode);
+        if (a.mode != "selftest" && a.mode != "dataset" && a.mode != "oracle" && a.mode != "layouts")
+            usage("unknown mode " + a.mode);
         if (a.scale != "small" && a.scale != "medium" && a.scale != "large")
             usage("--scale must be small, medium or large");
         if (a.threads <= 0) a.threads = static_cast<int>(std::max(1u, std::thread::hardware_concurrency()));
@@ -827,6 +834,91 @@ oracle options
         return 0;
     }
 
+    // ----------------------------------------------------------------------------------------------- layouts
+
+    int runLayouts(const Args& a) {
+        const Settings s = makeSettings(a);
+        const u64 total = a.seeds ? a.seeds : 200000;
+        fs::create_directories(a.out);
+        const std::string tag = tagOf(a);
+        std::vector<uint8_t> bytes(total * LAYOUT_CELLS, 0);
+        std::vector<int32_t> index(total * 3, 0); // sample, start chunk x, start chunk z
+        constexpr u64 CHECK_WORLDS = 64, CHECK_SPOTS = 300;
+        std::atomic<u64> checks{0}, mismatches{0};
+        std::mutex messageMutex;
+        std::vector<std::string> messages;
+
+        std::fprintf(stderr, "layouts %s/%s/%s: %llu worlds, %d threads -> %s\n", a.console.c_str(),
+                     a.version.c_str(), a.scale.c_str(), static_cast<unsigned long long>(total), a.threads,
+                     a.out.c_str());
+        Pool pool;
+        const auto t0 = Clock::now();
+        pool.run(a.threads, total, "layouts " + tag, [&](int) {
+            WorldSampler sampler(s);
+            KernelAccumulator acc(a.eyeY, nullptr);
+            u64 begin = 0, end = 0;
+            while (pool.take(total, a.balancedOnly ? 4 : 64, begin, end)) {
+                for (u64 i = begin; i < end; ++i) {
+                    const WorldSample w = sampler.sample(a.firstSample + i);
+                    const Pos2D chunk = w.stronghold.toChunkPos();
+                    uint8_t* out = &bytes[i * LAYOUT_CELLS];
+                    layoutBytes(acc, sampler.stronghold(), chunk, out);
+                    index[3 * i] = static_cast<int32_t>(w.sample);
+                    index[3 * i + 1] = chunk.x;
+                    index[3 * i + 2] = chunk.z;
+
+                    // brute-force check of every bit at random spots of the first worlds
+                    if (i < CHECK_WORLDS) {
+                        std::mt19937_64 pick(hash2(0x4C41594F5554ULL, i));
+                        for (u64 k = 0; k < CHECK_SPOTS; ++k) {
+                            const int ix = static_cast<int>(pick() % LAYOUT_SIDE);
+                            const int iz = static_cast<int>(pick() % LAYOUT_SIDE);
+                            c_int x = chunk.x * 16 + (ix - LAYOUT_HALF) * LAYOUT_STEP;
+                            c_int z = chunk.z * 16 + (iz - LAYOUT_HALF) * LAYOUT_STEP;
+                            const uint8_t got = out[static_cast<size_t>(iz) * LAYOUT_SIDE + static_cast<size_t>(ix)];
+                            for (size_t bit = 0; bit < LAYOUT_BITS.size(); ++bit) {
+                                const LayoutBit& b = LAYOUT_BITS[bit];
+                                const long long dist = distanceToStronghold(sampler.stronghold(), b.kind, x, z, a.eyeY);
+                                const bool want = dist != std::numeric_limits<long long>::max() &&
+                                                  withinRadius(b.kind, dist, b.radius);
+                                ++checks;
+                                if (want == (((got >> bit) & 1u) != 0)) continue;
+                                ++mismatches;
+                                std::lock_guard lock(messageMutex);
+                                if (messages.size() < 20)
+                                    messages.push_back("sample " + std::to_string(i) + " bit " + b.name + " at (" +
+                                                       std::to_string(x) + ", " + std::to_string(z) + ")");
+                            }
+                        }
+                    }
+                    ++pool.done;
+                }
+            }
+        });
+        const double seconds = secondsSince(t0);
+        for (const auto& m: messages) std::fprintf(stderr, "  MISMATCH %s\n", m.c_str());
+        std::fprintf(stderr, "brute-force check: %llu comparisons, %llu mismatches\n",
+                     static_cast<unsigned long long>(checks.load()), static_cast<unsigned long long>(mismatches.load()));
+        if (mismatches.load() != 0) throw std::runtime_error("layout bytes differ from the brute-force distances");
+
+        writeNpy(a.out + "/layouts_" + tag + ".npy", bytes.data(), {static_cast<size_t>(total), LAYOUT_SIDE, LAYOUT_SIDE});
+        writeNpy(a.out + "/layouts_index_" + tag + ".npy", index.data(), {static_cast<size_t>(total), 3});
+        json info = settingsJson(a, total);
+        info["seconds"] = seconds;
+        info["layout_step"] = LAYOUT_STEP;
+        info["layout_half"] = LAYOUT_HALF;
+        json bits = json::array();
+        for (const LayoutBit& b: LAYOUT_BITS)
+            bits.push_back({{"name", b.name}, {"kernel", KERNEL_NAMES[static_cast<size_t>(b.kind)]}, {"radius", b.radius}});
+        info["bits"] = bits;
+        info["brute_force_checks"] = checks.load();
+        info["brute_force_mismatches"] = mismatches.load();
+        info["files"] = {{"layouts", "layouts_" + tag + ".npy"}, {"index", "layouts_index_" + tag + ".npy"}};
+        writeJson(a.out + "/layouts_run_" + tag + ".json", info);
+        std::fprintf(stderr, "done: %llu layouts in %.1f min\n", static_cast<unsigned long long>(total), seconds / 60.0);
+        return 0;
+    }
+
 } // namespace
 
 int main(const int argc, char** argv) {
@@ -835,6 +927,7 @@ int main(const int argc, char** argv) {
     try {
         if (a.mode == "selftest") return runSelftest(a);
         if (a.mode == "dataset") return runDataset(a);
+        if (a.mode == "layouts") return runLayouts(a);
         return runOracle(a);
     } catch (const std::exception& e) {
         std::cerr << "error: " << e.what() << "\n";

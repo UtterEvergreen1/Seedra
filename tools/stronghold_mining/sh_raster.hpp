@@ -400,6 +400,57 @@ namespace shm {
         }
     };
 
+    // ------------------------------------------------------------------------------------- per-layout bytes
+
+    /// `layouts` mode: for every real layout, one byte per spot on an 8-block grid of offsets from the stronghold
+    /// chunk origin, one bit per method. Unlike the kernels (marginal chances), these keep the joint outcome of
+    /// several methods at one spot and across spots, which multi-step plans need.
+    inline constexpr int LAYOUT_STEP = 8;
+    inline constexpr int LAYOUT_HALF = KERNEL_HALF / LAYOUT_STEP; // offsets -200..200 -> indices 0..50
+    inline constexpr int LAYOUT_SIDE = 2 * LAYOUT_HALF + 1;
+    inline constexpr size_t LAYOUT_CELLS = static_cast<size_t>(LAYOUT_SIDE) * LAYOUT_SIDE;
+
+    struct LayoutBit {
+        const char* name;
+        KernelKind kind;
+        int radius;
+    };
+    /// Bit i of a layout byte = the method sees the stronghold from that spot.
+    inline constexpr std::array<LayoutBit, 8> LAYOUT_BITS = {{{"dig", K_ANY_H, 0},
+                                                              {"down_flat", K_ANY_H, 30},
+                                                              {"down_3d", K_ANY_3D, 30},
+                                                              {"portal30", K_PORTAL_H, 30},
+                                                              {"look_n", K_DIR_N, 100},
+                                                              {"look_e", K_DIR_E, 100},
+                                                              {"look_s", K_DIR_S, 100},
+                                                              {"look_w", K_DIR_W, 100}}};
+
+    /// Fills `out` (LAYOUT_CELLS bytes, [dz][dx]) for one layout, using the exact transforms of `acc`.
+    inline void layoutBytes(KernelAccumulator& acc, const gen::Stronghold& sh, const Pos2D chunk, uint8_t* out) {
+        std::fill(out, out + LAYOUT_CELLS, uint8_t{0});
+        for (int kind = 0; kind < K_COUNT; ++kind) {
+            int lo = 0, hi = -1;
+            if (!acc.transform(sh, chunk, static_cast<KernelKind>(kind), lo, hi)) continue;
+            const std::vector<double>& d = acc.distances();
+            for (size_t bit = 0; bit < LAYOUT_BITS.size(); ++bit) {
+                const LayoutBit& b = LAYOUT_BITS[bit];
+                if (b.kind != kind) continue;
+                const double limit = isDirectional(b.kind) ? b.radius + 0.5 : b.radius * b.radius + 0.5;
+                for (int iz = 0; iz < LAYOUT_SIDE; ++iz) {
+                    c_int z = iz * LAYOUT_STEP; // window cell (offset + KERNEL_HALF)
+                    if (z < lo || z > hi) continue;
+                    for (int ix = 0; ix < LAYOUT_SIDE; ++ix) {
+                        c_int x = ix * LAYOUT_STEP;
+                        if (x < lo || x > hi) continue;
+                        if (d[static_cast<size_t>(z) * KERNEL_SIDE + static_cast<size_t>(x)] <= limit)
+                            out[static_cast<size_t>(iz) * LAYOUT_SIDE + static_cast<size_t>(ix)] |=
+                                    static_cast<uint8_t>(1u << bit);
+                    }
+                }
+            }
+        }
+    }
+
     // ------------------------------------------------------------------------------------- direct heat maps
 
     /// Per-thread world-grid heat maps, accumulated directly from each world's real layout (no kernel).
