@@ -601,17 +601,19 @@ MU Pos2D Generator::getSpawnBlock() const {
     int grass = 0;
 
     for (int i = 0; i < 1000; i++) {
-        const int res = mapApproxHeight(&y, &id, &sn, spawn.x >> 2, spawn.z >> 2, 1, 1);
+        (void) mapApproxHeight(&y, &id, &sn, spawn.x >> 2, spawn.z >> 2, 1, 1);
         // getBiomeDepthAndScale(id, nullptr, nullptr, &grass);
         getBiomeDepthAndScale<false, false, true, false>(id, nullptr, nullptr, &grass, nullptr);
 
-        printf("res=%d, id=%d, spawn=(%d, %d), y=%.2f grass=%d\n",
-               res, id, spawn.x, spawn.z, y, grass);
-
         if (grass > 0 && y >= static_cast<float>(grass)) break;
 
-        spawn.x += rng.nextInt(64) - rng.nextInt(64);
-        spawn.z += rng.nextInt(64) - rng.nextInt(64);
+        // Java evaluates left to right; C++ leaves operand order unspecified, so sequence the calls explicitly.
+        c_int dx1 = rng.nextInt(64);
+        c_int dx2 = rng.nextInt(64);
+        spawn.x += dx1 - dx2;
+        c_int dz1 = rng.nextInt(64);
+        c_int dz2 = rng.nextInt(64);
+        spawn.z += dz1 - dz2;
 
         if (spawn.x > this->getWorldCoordinateBounds() || spawn.x < -this->getWorldCoordinateBounds())
             spawn.x = 0;
